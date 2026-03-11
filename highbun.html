@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>高BUN血症 鑑別診断ツール</title>
+<style>
+  :root {
+    --primary: #1b4332;
+    --primary-light: #2d6a4f;
+    --accent: #e74c3c;
+    --success: #27ae60;
+    --warning: #f39c12;
+    --bg: #f5f7f5;
+    --card-bg: #ffffff;
+    --text: #2c3e50;
+    --text-light: #7f8c8d;
+    --border: #dce1e8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    padding: 24px 20px;
+    text-align: center;
+  }
+  header h1 { font-size: 1.5rem; margin-bottom: 4px; }
+  header p { font-size: 0.85rem; opacity: 0.85; }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+
+  /* Progress */
+  .progress-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 16px 0;
+    padding: 12px;
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .progress-step {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 700;
+    background: #bdc3c7;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .progress-step.active {
+    background: var(--primary-light);
+    transform: scale(1.2);
+    box-shadow: 0 0 0 4px rgba(45,106,79,0.2);
+  }
+  .progress-step.done { background: var(--success); }
+
+  /* Cards */
+  .card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    display: none;
+  }
+  .card.visible { display: block; animation: fadeIn 0.3s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card h2 {
+    font-size: 1.15rem;
+    color: var(--primary);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card h2 .step-badge {
+    background: var(--primary);
+    color: white;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+  }
+  .card p, .card li { font-size: 0.92rem; margin-bottom: 8px; }
+  .card ul { padding-left: 20px; }
+
+  /* Inputs */
+  .input-group { margin: 12px 0; }
+  .input-group label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.88rem;
+    margin-bottom: 4px;
+  }
+  .input-group input[type="number"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+  }
+  .input-group input:focus {
+    outline: none;
+    border-color: var(--primary-light);
+  }
+
+  .radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 8px 0;
+  }
+  .radio-group label {
+    padding: 8px 16px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.88rem;
+    transition: all 0.2s;
+    font-weight: normal;
+  }
+  .radio-group input { display: none; }
+  .radio-group label:has(input:checked) {
+    border-color: var(--primary-light);
+    background: #e8f5e9;
+  }
+
+  .checkbox-list { margin: 8px 0; }
+  .checkbox-list label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    font-size: 0.88rem;
+    cursor: pointer;
+    font-weight: normal;
+  }
+  .checkbox-list input[type="checkbox"] {
+    width: 18px; height: 18px;
+    accent-color: var(--primary-light);
+  }
+
+  /* Result boxes */
+  .result-box {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin: 12px 0;
+    font-size: 0.9rem;
+  }
+  .result-normal { background: #e8f8f0; border-left: 4px solid var(--success); }
+  .result-abnormal { background: #fdedec; border-left: 4px solid var(--accent); }
+  .result-info { background: #eaf2f8; border-left: 4px solid #2980b9; }
+  .result-warning { background: #fef9e7; border-left: 4px solid var(--warning); }
+
+  /* BUN/Cr gauge */
+  .ratio-display {
+    text-align: center;
+    padding: 20px;
+    border-radius: 12px;
+    margin: 16px 0;
+  }
+  .ratio-display .ratio-value {
+    font-size: 2.2rem;
+    font-weight: 800;
+  }
+  .ratio-display .ratio-label {
+    font-size: 0.85rem;
+    margin-top: 4px;
+  }
+  .ratio-prerenal { background: linear-gradient(135deg, #fdebd0, #f9e79f); color: #7d6608; }
+  .ratio-renal { background: linear-gradient(135deg, #fadbd8, #f1948a); color: #922b21; }
+  .ratio-normal { background: linear-gradient(135deg, #d5f5e3, #abebc6); color: #1e8449; }
+  .ratio-low { background: linear-gradient(135deg, #d6eaf8, #aed6f1); color: #1a5276; }
+
+  /* Category cards */
+  .category-card {
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin: 10px 0;
+    transition: all 0.3s;
+  }
+  .category-card.highlighted {
+    border-color: var(--warning);
+    background: #fffdf5;
+    box-shadow: 0 0 0 3px rgba(243,156,18,0.15);
+  }
+  .category-card h3 {
+    font-size: 1rem;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .category-tag {
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: white;
+  }
+  .tag-prerenal { background: #e67e22; }
+  .tag-renal { background: #e74c3c; }
+  .tag-postrenal { background: #8e44ad; }
+  .tag-other { background: #2980b9; }
+
+  /* Buttons */
+  .btn-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-primary { background: var(--primary-light); color: white; }
+  .btn-primary:hover { background: var(--primary); }
+  .btn-secondary { background: var(--border); color: var(--text); }
+  .btn-secondary:hover { background: #c5ccd6; }
+
+  /* Table */
+  .info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 0.85rem;
+  }
+  .info-table th, .info-table td {
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+  .info-table th {
+    background: #e8f5e9;
+    font-weight: 600;
+    color: var(--primary);
+  }
+  .info-table tr:nth-child(even) { background: #f9fafb; }
+
+  /* Alert */
+  .alert {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin: 12px 0;
+    font-size: 0.88rem;
+  }
+  .alert-danger { background: #fdedec; border: 1px solid #f5b7b1; color: #922b21; }
+  .alert-warning { background: #fef9e7; border: 1px solid #f9e79f; color: #7d6608; }
+  .alert-info { background: #eaf2f8; border: 1px solid #aed6f1; color: #1a5276; }
+
+  /* Summary */
+  .summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+  }
+  .summary-item:last-child { border-bottom: none; }
+  .summary-label { font-weight: 600; }
+  .summary-value { color: var(--text-light); }
+  .summary-value.positive { color: var(--accent); font-weight: 600; }
+  .summary-value.negative { color: var(--success); }
+
+  .likelihood-bar {
+    height: 8px;
+    border-radius: 4px;
+    background: #ecf0f1;
+    margin: 4px 0 8px;
+    overflow: hidden;
+  }
+  .likelihood-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+
+  .footnote {
+    font-size: 0.78rem;
+    color: var(--text-light);
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  .final-card { border: 2px solid var(--primary-light); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>高BUN血症 鑑別診断ツール</h1>
+  <p>BUN上昇の4大分類に基づく系統的鑑別アプローチ</p>
+</header>
+
+<div class="container">
+  <div class="progress-bar" id="progressBar"></div>
+
+  <!-- Step 1: BUN/Cr入力 -->
+  <div class="card visible" id="step1">
+    <h2><span class="step-badge">Step 1</span> BUN・Cr値の確認とBUN/Cr比</h2>
+
+    <p>BUNとクレアチニン値を入力してください。BUN/Cr比は自動計算されます。</p>
+
+    <div class="input-group">
+      <label>BUN (mg/dL)</label>
+      <input type="number" id="bunValue" placeholder="例: 35" min="0" step="0.1" oninput="calcRatio()">
+    </div>
+
+    <div class="input-group">
+      <label>クレアチニン Cr (mg/dL)</label>
+      <input type="number" id="crValue" placeholder="例: 1.2" min="0" step="0.01" oninput="calcRatio()">
+    </div>
+
+    <div id="ratioDisplay" style="display:none;"></div>
+
+    <table class="info-table">
+      <thead>
+        <tr><th>BUN/Cr比</th><th>示唆する病態</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>&gt; 20</td><td>腎前性 または 腎外性（消化管出血、高タンパク食、異化亢進など）</td></tr>
+        <tr><td>10 - 15</td><td>正常（腎性の場合もこの範囲）</td></tr>
+        <tr><td>&lt; 10</td><td>肝機能低下、低栄養、横紋筋融解症</td></tr>
+      </tbody>
+    </table>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="evaluateStep1()">次へ</button>
+    </div>
+  </div>
+
+  <!-- Step 2: 脱水評価 -->
+  <div class="card" id="step2">
+    <h2><span class="step-badge">Step 2</span> 脱水の徴候評価</h2>
+
+    <p>以下の脱水所見の有無を確認してください:</p>
+
+    <div class="checkbox-list">
+      <label><input type="checkbox" name="dehydration" value="orthostatic">起立性低血圧</label>
+      <label><input type="checkbox" name="dehydration" value="tachycardia">頻脈</label>
+      <label><input type="checkbox" name="dehydration" value="dry_mucosa">口腔粘膜乾燥</label>
+      <label><input type="checkbox" name="dehydration" value="skin_turgor">皮膚ツルゴール低下</label>
+      <label><input type="checkbox" name="dehydration" value="oliguria">尿量減少</label>
+      <label><input type="checkbox" name="dehydration" value="thirst">口渇</label>
+      <label><input type="checkbox" name="dehydration" value="none">脱水所見なし</label>
+    </div>
+
+    <div id="dehydrationResult" style="display:none;"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep('step1')">戻る</button>
+      <button class="btn btn-primary" onclick="evaluateStep2()">次へ</button>
+    </div>
+  </div>
+
+  <!-- Step 3: 出血評価 -->
+  <div class="card" id="step3">
+    <h2><span class="step-badge">Step 3</span> 出血の有無確認</h2>
+
+    <div class="alert alert-danger">
+      <strong>重要:</strong> BUNが急に上昇したら出血を疑ってください。消化管出血では血液中タンパク代謝によりBUN産生が増加し、BUN/Cr比が30以上に達するケースもあります。
+    </div>
+
+    <div class="checkbox-list">
+      <label><input type="checkbox" name="bleeding" value="melena">黒色便（メレナ）</label>
+      <label><input type="checkbox" name="bleeding" value="hematemesis">吐血</label>
+      <label><input type="checkbox" name="bleeding" value="hematochezia">血便</label>
+      <label><input type="checkbox" name="bleeding" value="anemia">貧血症状（Hb低下）</label>
+      <label><input type="checkbox" name="bleeding" value="fob_positive">便潜血陽性</label>
+      <label><input type="checkbox" name="bleeding" value="none">出血所見なし</label>
+    </div>
+
+    <div id="bleedingResult" style="display:none;"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep('step2')">戻る</button>
+      <button class="btn btn-primary" onclick="evaluateStep3()">次へ</button>
+    </div>
+  </div>
+
+  <!-- Step 4: 尿路評価 -->
+  <div class="card" id="step4">
+    <h2><span class="step-badge">Step 4</span> 尿量・排尿の評価</h2>
+
+    <p>尿路閉塞（腎後性）の評価を行います。</p>
+
+    <div class="checkbox-list">
+      <label><input type="checkbox" name="urinary" value="oliguria">乏尿 / 無尿</label>
+      <label><input type="checkbox" name="urinary" value="dysuria">排尿困難</label>
+      <label><input type="checkbox" name="urinary" value="distension">膀胱膨満</label>
+      <label><input type="checkbox" name="urinary" value="hydronephrosis">水腎症（エコー所見）</label>
+      <label><input type="checkbox" name="urinary" value="prostate">前立腺肥大の既往</label>
+      <label><input type="checkbox" name="urinary" value="stone">尿路結石の既往</label>
+      <label><input type="checkbox" name="urinary" value="tumor">骨盤内腫瘍 / 後腹膜腫瘍</label>
+      <label><input type="checkbox" name="urinary" value="none">異常なし</label>
+    </div>
+
+    <div id="urinaryResult" style="display:none;"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep('step3')">戻る</button>
+      <button class="btn btn-primary" onclick="evaluateStep4()">次へ</button>
+    </div>
+  </div>
+
+  <!-- Step 5: 薬剤・食事 -->
+  <div class="card" id="step5">
+    <h2><span class="step-badge">Step 5</span> 服薬歴・食事の確認</h2>
+
+    <p>BUN上昇に関連する薬剤・食事因子を確認してください:</p>
+
+    <div class="checkbox-list">
+      <label><input type="checkbox" name="meds" value="steroid">ステロイド</label>
+      <label><input type="checkbox" name="meds" value="diuretic">利尿薬</label>
+      <label><input type="checkbox" name="meds" value="nsaid">NSAIDs</label>
+      <label><input type="checkbox" name="meds" value="acei_arb">ACE阻害薬 / ARB</label>
+      <label><input type="checkbox" name="meds" value="tetracycline">テトラサイクリン系</label>
+      <label><input type="checkbox" name="meds" value="high_protein">高タンパク食 / タンパク補助食品</label>
+      <label><input type="checkbox" name="meds" value="tpn">高カロリー輸液（TPN）</label>
+      <label><input type="checkbox" name="meds" value="none">該当なし</label>
+    </div>
+
+    <div id="medsResult" style="display:none;"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep('step4')">戻る</button>
+      <button class="btn btn-primary" onclick="evaluateStep5()">次へ</button>
+    </div>
+  </div>
+
+  <!-- Step 6: 基礎疾患 -->
+  <div class="card" id="step6">
+    <h2><span class="step-badge">Step 6</span> 基礎疾患の把握</h2>
+
+    <p>以下の基礎疾患・病態の有無を確認してください:</p>
+
+    <div class="checkbox-list">
+      <label><input type="checkbox" name="comorbid" value="dm">糖尿病</label>
+      <label><input type="checkbox" name="comorbid" value="hf">心不全</label>
+      <label><input type="checkbox" name="comorbid" value="liver">肝疾患（肝硬変など）</label>
+      <label><input type="checkbox" name="comorbid" value="ckd">慢性腎臓病（CKD）</label>
+      <label><input type="checkbox" name="comorbid" value="sepsis">敗血症 / 感染症</label>
+      <label><input type="checkbox" name="comorbid" value="catabolic">異化亢進状態（熱傷、外傷、術後）</label>
+      <label><input type="checkbox" name="comorbid" value="malignancy">悪性腫瘍</label>
+      <label><input type="checkbox" name="comorbid" value="none">特記すべき基礎疾患なし</label>
+    </div>
+
+    <div id="comorbidResult" style="display:none;"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep('step5')">戻る</button>
+      <button class="btn btn-primary" onclick="evaluateStep6()">次へ</button>
+    </div>
+  </div>
+
+  <!-- Step 7: 追加検査 -->
+  <div class="card" id="step7">
+    <h2><span class="step-badge">Step 7</span> 追加検査の確認</h2>
+
+    <p>鑑別に有用な追加検査結果を入力してください:</p>
+
+    <div class="input-group">
+      <label>尿検査所見</label>
+      <div class="radio-group">
+        <label><input type="radio" name="ua" value="normal"><span>正常</span></label>
+        <label><input type="radio" name="ua" value="proteinuria"><span>蛋白尿</span></label>
+        <label><input type="radio" name="ua" value="hematuria"><span>血尿</span></label>
+        <label><input type="radio" name="ua" value="cast"><span>円柱あり</span></label>
+        <label><input type="radio" name="ua" value="pending"><span>未実施</span></label>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>腎臓エコー</label>
+      <div class="radio-group">
+        <label><input type="radio" name="echo" value="normal"><span>正常</span></label>
+        <label><input type="radio" name="echo" value="hydronephrosis"><span>水腎症</span></label>
+        <label><input type="radio" name="echo" value="small_kidney"><span>腎萎縮</span></label>
+        <label><input type="radio" name="echo" value="retention"><span>膀胱内尿貯留</span></label>
+        <label><input type="radio" name="echo" value="pending"><span>未実施</span></label>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>FENa（尿中Na排泄分画）- 任意</label>
+      <input type="number" id="fenaValue" placeholder="例: 0.5" min="0" step="0.1">
+      <div style="font-size:0.8rem; color:var(--text-light); margin-top:4px;">
+        &lt;1%: 腎前性を示唆 / &gt;2%: 腎性（ATNなど）を示唆
+      </div>
+    </div>
+
+    <div id="labResult" style="display:none;"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep('step6')">戻る</button>
+      <button class="btn btn-primary" onclick="evaluateStep7()">総合評価へ</button>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="card final-card" id="summary">
+    <h2>総合評価サマリー</h2>
+
+    <div id="summaryContent"></div>
+
+    <div class="footnote">
+      本ツールは高BUN血症の鑑別診断を支援する参考情報です。臨床判断は担当医が行ってください。<br>
+      BUNは腎機能以外にも多くの因子で変動するため、必ず臨床所見と合わせて総合的に判断してください。
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep('step7')">戻る</button>
+      <button class="btn btn-primary" onclick="resetAll()">最初からやり直す</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const steps = ['step1','step2','step3','step4','step5','step6','step7','summary'];
+const stepLabels = ['1','2','3','4','5','6','7','結果'];
+let currentStep = 0;
+let data = {};
+
+// Scores for each category
+let scores = { prerenal: 0, renal: 0, postrenal: 0, other: 0 };
+
+function initProgress() {
+  const bar = document.getElementById('progressBar');
+  bar.innerHTML = '';
+  stepLabels.forEach((label, i) => {
+    const el = document.createElement('div');
+    el.className = 'progress-step' + (i === 0 ? ' active' : '');
+    el.textContent = label;
+    el.onclick = () => { if (i <= currentStep) goToStepIndex(i); };
+    bar.appendChild(el);
+  });
+}
+
+function updateProgress() {
+  document.querySelectorAll('.progress-step').forEach((d, i) => {
+    d.className = 'progress-step';
+    if (i < currentStep) d.classList.add('done');
+    if (i === currentStep) d.classList.add('active');
+  });
+}
+
+function goToStep(id) {
+  const idx = steps.indexOf(id);
+  if (idx >= 0) goToStepIndex(idx);
+}
+function goToStepIndex(idx) {
+  document.getElementById(steps[currentStep]).classList.remove('visible');
+  currentStep = idx;
+  document.getElementById(steps[currentStep]).classList.add('visible');
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function nextStep() {
+  if (currentStep < steps.length - 1) goToStepIndex(currentStep + 1);
+}
+
+function calcRatio() {
+  const bun = parseFloat(document.getElementById('bunValue').value);
+  const cr = parseFloat(document.getElementById('crValue').value);
+  const el = document.getElementById('ratioDisplay');
+
+  if (isNaN(bun) || isNaN(cr) || cr === 0) {
+    el.style.display = 'none';
+    return;
+  }
+
+  const ratio = (bun / cr).toFixed(1);
+  el.style.display = 'block';
+
+  let cls, label;
+  if (ratio > 20) {
+    cls = 'ratio-prerenal';
+    label = '腎前性 / 腎外性を示唆';
+  } else if (ratio >= 10) {
+    cls = 'ratio-normal';
+    label = '正常範囲';
+  } else {
+    cls = 'ratio-low';
+    label = '肝機能低下 / 低栄養を示唆';
+  }
+
+  el.innerHTML = `<div class="ratio-display ${cls}">
+    <div class="ratio-value">BUN/Cr = ${ratio}</div>
+    <div class="ratio-label">${label}</div>
+  </div>`;
+}
+
+function evaluateStep1() {
+  const bun = parseFloat(document.getElementById('bunValue').value);
+  const cr = parseFloat(document.getElementById('crValue').value);
+
+  if (isNaN(bun) || isNaN(cr) || cr === 0) {
+    document.getElementById('ratioDisplay').style.display = 'block';
+    document.getElementById('ratioDisplay').innerHTML = '<div class="result-box result-abnormal">BUNとCr値を入力してください。</div>';
+    return;
+  }
+
+  data.bun = bun;
+  data.cr = cr;
+  data.ratio = (bun / cr).toFixed(1);
+
+  // Score based on ratio
+  scores = { prerenal: 0, renal: 0, postrenal: 0, other: 0 };
+  if (data.ratio > 20) {
+    scores.prerenal += 3;
+    scores.other += 2;
+  } else if (data.ratio >= 10 && data.ratio <= 15) {
+    scores.renal += 2;
+  } else if (data.ratio > 15 && data.ratio <= 20) {
+    scores.postrenal += 1;
+    scores.renal += 1;
+  } else if (data.ratio < 10) {
+    // low ratio - liver disease, malnutrition
+  }
+
+  // BUN-only elevation (Cr normal)
+  if (cr <= 1.1 && bun > 20) {
+    scores.prerenal += 1;
+    scores.other += 2;
+  }
+
+  nextStep();
+}
+
+function getChecked(name) {
+  return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(c => c.value);
+}
+
+function evaluateStep2() {
+  const vals = getChecked('dehydration');
+  data.dehydration = vals;
+  const el = document.getElementById('dehydrationResult');
+  el.style.display = 'block';
+
+  const dehydrationSigns = vals.filter(v => v !== 'none');
+  if (dehydrationSigns.length >= 2) {
+    scores.prerenal += 3;
+    el.innerHTML = '<div class="result-box result-warning">複数の脱水所見あり &#8212; 腎前性の可能性が高いです。補液による改善を評価してください。</div>';
+  } else if (dehydrationSigns.length === 1) {
+    scores.prerenal += 1;
+    el.innerHTML = '<div class="result-box result-info">軽度の脱水所見あり &#8212; 腎前性の可能性を考慮してください。</div>';
+  } else {
+    el.innerHTML = '<div class="result-box result-normal">明らかな脱水所見なし</div>';
+  }
+  nextStep();
+}
+
+function evaluateStep3() {
+  const vals = getChecked('bleeding');
+  data.bleeding = vals;
+  const el = document.getElementById('bleedingResult');
+  el.style.display = 'block';
+
+  const bleedingSigns = vals.filter(v => v !== 'none');
+  if (bleedingSigns.some(v => ['melena', 'hematemesis'].includes(v))) {
+    scores.other += 4;
+    scores.prerenal += 1;
+    el.innerHTML = '<div class="result-box result-abnormal"><strong>上部消化管出血の所見あり</strong> &#8212; 血液中タンパク代謝によるBUN産生増加が原因の可能性が高いです。BUN/Cr比30以上も起こり得ます。緊急の消化管精査を検討してください。</div>';
+  } else if (bleedingSigns.length > 0) {
+    scores.other += 2;
+    el.innerHTML = '<div class="result-box result-warning">出血関連所見あり &#8212; 消化管出血によるBUN上昇の可能性を考慮してください。</div>';
+  } else {
+    el.innerHTML = '<div class="result-box result-normal">出血所見なし</div>';
+  }
+  nextStep();
+}
+
+function evaluateStep4() {
+  const vals = getChecked('urinary');
+  data.urinary = vals;
+  const el = document.getElementById('urinaryResult');
+  el.style.display = 'block';
+
+  const uriSigns = vals.filter(v => v !== 'none');
+  if (uriSigns.some(v => ['hydronephrosis', 'distension', 'tumor'].includes(v))) {
+    scores.postrenal += 4;
+    el.innerHTML = '<div class="result-box result-abnormal">尿路閉塞を強く示唆する所見あり &#8212; 腎後性の可能性が高いです。泌尿器科的介入を検討してください。</div>';
+  } else if (uriSigns.some(v => ['dysuria', 'prostate', 'stone'].includes(v))) {
+    scores.postrenal += 2;
+    el.innerHTML = '<div class="result-box result-warning">尿路閉塞のリスク因子あり &#8212; 膀胱エコー・腎エコーでの確認を推奨します。</div>';
+  } else if (uriSigns.includes('oliguria')) {
+    scores.prerenal += 1;
+    scores.renal += 1;
+    el.innerHTML = '<div class="result-box result-info">乏尿あり &#8212; 腎前性・腎性・腎後性いずれの可能性もあります。</div>';
+  } else {
+    el.innerHTML = '<div class="result-box result-normal">排尿異常なし</div>';
+  }
+  nextStep();
+}
+
+function evaluateStep5() {
+  const vals = getChecked('meds');
+  data.meds = vals;
+  const el = document.getElementById('medsResult');
+  el.style.display = 'block';
+
+  const medSigns = vals.filter(v => v !== 'none');
+  let msgs = [];
+
+  if (medSigns.includes('steroid')) {
+    scores.other += 2;
+    msgs.push('ステロイド &#8212; 異化亢進によるBUN産生増加');
+  }
+  if (medSigns.includes('diuretic')) {
+    scores.prerenal += 2;
+    msgs.push('利尿薬 &#8212; 脱水・腎前性BUN上昇のリスク');
+  }
+  if (medSigns.includes('nsaid') || medSigns.includes('acei_arb')) {
+    scores.prerenal += 1;
+    scores.renal += 1;
+    msgs.push('NSAIDs/ACEi/ARB &#8212; 腎血流低下によるBUN上昇');
+  }
+  if (medSigns.includes('tetracycline')) {
+    scores.other += 1;
+    msgs.push('テトラサイクリン &#8212; 抗同化作用によるBUN上昇');
+  }
+  if (medSigns.includes('high_protein') || medSigns.includes('tpn')) {
+    scores.other += 3;
+    msgs.push('高タンパク負荷 &#8212; BUN産生増加の直接的原因');
+  }
+
+  if (msgs.length > 0) {
+    el.innerHTML = `<div class="result-box result-warning"><strong>薬剤・食事因子:</strong><ul style="margin-top:6px;">${msgs.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
+  } else {
+    el.innerHTML = '<div class="result-box result-normal">BUN上昇に関連する薬剤・食事因子なし</div>';
+  }
+  nextStep();
+}
+
+function evaluateStep6() {
+  const vals = getChecked('comorbid');
+  data.comorbid = vals;
+  const el = document.getElementById('comorbidResult');
+  el.style.display = 'block';
+
+  const cSigns = vals.filter(v => v !== 'none');
+  let msgs = [];
+
+  if (cSigns.includes('hf')) {
+    scores.prerenal += 2;
+    msgs.push('心不全 &#8212; 腎血流低下による腎前性BUN上昇');
+  }
+  if (cSigns.includes('ckd')) {
+    scores.renal += 3;
+    msgs.push('CKD &#8212; 腎機能低下によるBUN排泄障害');
+  }
+  if (cSigns.includes('liver')) {
+    msgs.push('肝疾患 &#8212; BUN産生低下の可能性（BUN/Cr比低下）もあるが、肝腎症候群では腎前性パターン');
+    if (data.ratio < 10) scores.renal -= 1;
+  }
+  if (cSigns.includes('sepsis')) {
+    scores.prerenal += 1;
+    scores.renal += 1;
+    scores.other += 1;
+    msgs.push('敗血症 &#8212; 腎前性（循環不全）+ 異化亢進 + 腎性（敗血症性AKI）');
+  }
+  if (cSigns.includes('catabolic')) {
+    scores.other += 3;
+    msgs.push('異化亢進状態 &#8212; タンパク異化によるBUN産生増加');
+  }
+  if (cSigns.includes('dm')) {
+    scores.renal += 1;
+    msgs.push('糖尿病 &#8212; 糖尿病性腎症のリスク');
+  }
+  if (cSigns.includes('malignancy')) {
+    scores.postrenal += 1;
+    scores.other += 1;
+    msgs.push('悪性腫瘍 &#8212; 腫瘍崩壊・尿路圧迫・異化亢進の可能性');
+  }
+
+  if (msgs.length > 0) {
+    el.innerHTML = `<div class="result-box result-warning"><ul style="margin:0;">${msgs.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
+  } else {
+    el.innerHTML = '<div class="result-box result-normal">特記すべき基礎疾患なし</div>';
+  }
+  nextStep();
+}
+
+function evaluateStep7() {
+  const ua = document.querySelector('input[name="ua"]:checked')?.value;
+  const echo = document.querySelector('input[name="echo"]:checked')?.value;
+  const fena = parseFloat(document.getElementById('fenaValue').value);
+  data.ua = ua;
+  data.echo = echo;
+  data.fena = fena;
+
+  const el = document.getElementById('labResult');
+  el.style.display = 'block';
+  let msgs = [];
+
+  if (ua === 'proteinuria' || ua === 'cast') {
+    scores.renal += 2;
+    msgs.push('尿検査異常（蛋白尿/円柱） &#8212; 腎実質障害を示唆');
+  }
+  if (ua === 'hematuria') {
+    scores.renal += 1;
+    scores.postrenal += 1;
+    msgs.push('血尿 &#8212; 腎性・腎後性いずれの可能性');
+  }
+  if (echo === 'hydronephrosis' || echo === 'retention') {
+    scores.postrenal += 3;
+    msgs.push('エコー異常（水腎症/尿貯留） &#8212; 腎後性を強く示唆');
+  }
+  if (echo === 'small_kidney') {
+    scores.renal += 2;
+    msgs.push('腎萎縮 &#8212; 慢性腎臓病の進行を示唆');
+  }
+  if (!isNaN(fena)) {
+    if (fena < 1) {
+      scores.prerenal += 3;
+      msgs.push(`FENa ${fena}% (<1%) &#8212; 腎前性を強く示唆`);
+    } else if (fena >= 2) {
+      scores.renal += 3;
+      msgs.push(`FENa ${fena}% (>=2%) &#8212; 腎性（ATNなど）を示唆`);
+    } else {
+      msgs.push(`FENa ${fena}% &#8212; 境界域`);
+    }
+  }
+
+  if (msgs.length > 0) {
+    el.innerHTML = `<div class="result-box result-info"><ul style="margin:0;">${msgs.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
+  } else {
+    el.innerHTML = '<div class="result-box result-normal">追加検査結果入力なし</div>';
+  }
+
+  showSummary();
+}
+
+function showSummary() {
+  goToStep('summary');
+  const el = document.getElementById('summaryContent');
+
+  // Normalize scores
+  const maxScore = Math.max(scores.prerenal, scores.renal, scores.postrenal, scores.other, 1);
+
+  const categories = [
+    { key: 'prerenal', name: '腎前性', tag: 'tag-prerenal', color: '#e67e22',
+      causes: '脱水、出血、心不全、ショック、利尿薬',
+      detail: 'BUN/Cr比 >20、FENa <1%が特徴。補液で改善すれば確定的。' },
+    { key: 'renal', name: '腎性', tag: 'tag-renal', color: '#e74c3c',
+      causes: '急性腎障害（ATN）、慢性腎不全、糖尿病性腎症、腎炎',
+      detail: 'BUN/Cr比 10-15でCrと並行上昇。尿検査異常（蛋白尿、円柱）を伴うことが多い。' },
+    { key: 'postrenal', name: '腎後性', tag: 'tag-postrenal', color: '#8e44ad',
+      causes: '前立腺肥大、尿路結石、腫瘍による尿路圧迫',
+      detail: '初期はBUN/Cr比やや高値(>15)。持続すると腎性パターンに移行。エコーで水腎症確認。' },
+    { key: 'other', name: '腎外性（その他）', tag: 'tag-other', color: '#2980b9',
+      causes: '消化管出血、高タンパク食、異化亢進、ステロイド',
+      detail: 'BUN/Cr比 >20。Crは正常のことが多い。上部消化管出血ではBUN/Cr比30以上も。' }
+  ];
+
+  // Sort by score
+  categories.sort((a, b) => scores[b.key] - scores[a.key]);
+
+  let html = '';
+
+  // Basic data summary
+  html += '<div style="margin-bottom:16px;">';
+  html += `<div class="summary-item"><span class="summary-label">BUN</span><span class="summary-value positive">${data.bun} mg/dL</span></div>`;
+  html += `<div class="summary-item"><span class="summary-label">Cr</span><span class="summary-value">${data.cr} mg/dL</span></div>`;
+  html += `<div class="summary-item"><span class="summary-label">BUN/Cr比</span><span class="summary-value positive">${data.ratio}</span></div>`;
+  if (!isNaN(data.fena)) {
+    html += `<div class="summary-item"><span class="summary-label">FENa</span><span class="summary-value">${data.fena}%</span></div>`;
+  }
+  html += '</div>';
+
+  // Category likelihood
+  html += '<h3 style="color:var(--primary); margin-bottom:12px;">鑑別カテゴリー（可能性順）</h3>';
+
+  categories.forEach((cat, i) => {
+    const score = scores[cat.key];
+    const pct = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
+    const highlighted = i === 0 && score > 0 ? 'highlighted' : '';
+
+    html += `<div class="category-card ${highlighted}">
+      <h3><span class="category-tag ${cat.tag}">${cat.name}</span>
+        ${i === 0 && score > 0 ? '<span style="font-size:0.8rem; color:var(--warning);">&#9733; 最も疑わしい</span>' : ''}
+      </h3>
+      <div class="likelihood-bar">
+        <div class="likelihood-fill" style="width:${pct}%; background:${cat.color};"></div>
+      </div>
+      <div style="font-size:0.82rem; color:var(--text-light); margin-bottom:4px;">
+        <strong>主な原因:</strong> ${cat.causes}
+      </div>
+      <div style="font-size:0.82rem; color:var(--text-light);">
+        ${cat.detail}
+      </div>
+    </div>`;
+  });
+
+  // Recommended actions
+  html += '<h3 style="color:var(--primary); margin:16px 0 8px;">推奨される次のアクション</h3>';
+
+  let actions = [];
+  const topCat = categories[0].key;
+
+  if (topCat === 'prerenal') {
+    actions.push('補液負荷試験（生理食塩水投与後のBUN・Cr再検）');
+    actions.push('循環動態の評価（血圧、心拍出量）');
+    actions.push('原因の除去（利尿薬の減量・中止、出血のコントロール）');
+  }
+  if (topCat === 'renal') {
+    actions.push('腎臓内科コンサルト');
+    actions.push('尿沈渣の詳細評価（円柱の種類）');
+    actions.push('腎生検の適応検討');
+  }
+  if (topCat === 'postrenal') {
+    actions.push('泌尿器科コンサルト');
+    actions.push('膀胱カテーテル留置（尿閉の場合）');
+    actions.push('CT/エコーによる閉塞部位の特定');
+  }
+  if (topCat === 'other') {
+    actions.push('消化管出血が疑われる場合：上部消化管内視鏡');
+    actions.push('高タンパク負荷の場合：食事内容の見直し');
+    actions.push('異化亢進の場合：原疾患の治療');
+  }
+
+  // Common actions
+  actions.push('BUN・Crの経時的フォロー');
+
+  if (data.ua === 'pending' || !data.ua) actions.push('尿検査の実施');
+  if (data.echo === 'pending' || !data.echo) actions.push('腎臓・膀胱エコーの実施');
+  if (isNaN(data.fena)) actions.push('FENa（尿中Na排泄分画）の測定を検討');
+
+  html += '<div style="margin-top:8px;">';
+  actions.forEach(a => {
+    html += `<div class="result-box result-info" style="margin:6px 0; padding:8px 12px;">${a}</div>`;
+  });
+  html += '</div>';
+
+  el.innerHTML = html;
+}
+
+function resetAll() {
+  data = {};
+  scores = { prerenal: 0, renal: 0, postrenal: 0, other: 0 };
+  document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+  document.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
+  document.getElementById('bunValue').value = '';
+  document.getElementById('crValue').value = '';
+  document.getElementById('fenaValue').value = '';
+  document.querySelectorAll('[id$="Result"], #ratioDisplay').forEach(el => el.style.display = 'none');
+  document.getElementById('summaryContent').innerHTML = '';
+  goToStepIndex(0);
+}
+
+initProgress();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>無症候性高CK血症 鑑別診断ツール</title>
+<style>
+  :root {
+    --primary: #1a5276;
+    --primary-light: #2980b9;
+    --accent: #e74c3c;
+    --success: #27ae60;
+    --warning: #f39c12;
+    --bg: #f5f7fa;
+    --card-bg: #ffffff;
+    --text: #2c3e50;
+    --text-light: #7f8c8d;
+    --border: #dce1e8;
+    --step-inactive: #bdc3c7;
+    --step-active: #2980b9;
+    --step-done: #27ae60;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    padding: 24px 20px;
+    text-align: center;
+  }
+  header h1 { font-size: 1.5rem; margin-bottom: 4px; }
+  header p { font-size: 0.85rem; opacity: 0.85; }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+
+  /* Step Progress */
+  .progress-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 16px 0;
+    padding: 12px;
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .progress-step {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 700;
+    background: var(--step-inactive);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .progress-step.active {
+    background: var(--step-active);
+    transform: scale(1.2);
+    box-shadow: 0 0 0 4px rgba(41,128,185,0.2);
+  }
+  .progress-step.done {
+    background: var(--step-done);
+  }
+
+  /* Cards */
+  .card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    display: none;
+  }
+  .card.visible { display: block; animation: fadeIn 0.3s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card h2 {
+    font-size: 1.15rem;
+    color: var(--primary);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card h2 .step-badge {
+    background: var(--primary);
+    color: white;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+  }
+  .card .rec-level {
+    font-size: 0.78rem;
+    padding: 2px 8px;
+    border-radius: 8px;
+    display: inline-block;
+    margin-bottom: 12px;
+  }
+  .rec-strong { background: #e8f8f0; color: #1e8449; }
+  .rec-weak { background: #fef9e7; color: #b7950b; }
+  .rec-consensus { background: #eaf2f8; color: #2471a3; }
+  .rec-expert { background: #f4ecf7; color: #7d3c98; }
+
+  .card p, .card li { font-size: 0.92rem; margin-bottom: 8px; }
+  .card ul { padding-left: 20px; }
+
+  /* Input groups */
+  .input-group {
+    margin: 12px 0;
+  }
+  .input-group label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.88rem;
+    margin-bottom: 4px;
+  }
+  .input-group select, .input-group input[type="number"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+  }
+  .input-group select:focus, .input-group input:focus {
+    outline: none;
+    border-color: var(--primary-light);
+  }
+
+  .radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 8px 0;
+  }
+  .radio-group label {
+    padding: 8px 16px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.88rem;
+    transition: all 0.2s;
+    font-weight: normal;
+  }
+  .radio-group input { display: none; }
+  .radio-group input:checked + span {
+    color: var(--primary);
+  }
+  .radio-group label:has(input:checked) {
+    border-color: var(--primary-light);
+    background: #eaf2f8;
+  }
+
+  .checkbox-list {
+    margin: 8px 0;
+  }
+  .checkbox-list label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    font-size: 0.88rem;
+    cursor: pointer;
+    font-weight: normal;
+  }
+  .checkbox-list input[type="checkbox"] {
+    width: 18px; height: 18px;
+    accent-color: var(--primary-light);
+  }
+
+  /* Result box */
+  .result-box {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin: 12px 0;
+    font-size: 0.9rem;
+  }
+  .result-normal { background: #e8f8f0; border-left: 4px solid var(--success); }
+  .result-abnormal { background: #fdedec; border-left: 4px solid var(--accent); }
+  .result-info { background: #eaf2f8; border-left: 4px solid var(--primary-light); }
+  .result-warning { background: #fef9e7; border-left: 4px solid var(--warning); }
+
+  /* Buttons */
+  .btn-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-primary {
+    background: var(--primary-light);
+    color: white;
+  }
+  .btn-primary:hover { background: var(--primary); }
+  .btn-secondary {
+    background: var(--border);
+    color: var(--text);
+  }
+  .btn-secondary:hover { background: #c5ccd6; }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* CK Calculator */
+  .ck-result {
+    font-size: 1.3rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 16px;
+    border-radius: 8px;
+    margin: 12px 0;
+  }
+  .ck-normal { background: #e8f8f0; color: #1e8449; }
+  .ck-elevated { background: #fef9e7; color: #b7950b; }
+  .ck-high { background: #fdedec; color: #c0392b; }
+
+  /* Table */
+  .info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 0.85rem;
+  }
+  .info-table th, .info-table td {
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+  .info-table th {
+    background: #eaf2f8;
+    font-weight: 600;
+    color: var(--primary);
+  }
+  .info-table tr:nth-child(even) { background: #f9fafb; }
+
+  /* Summary */
+  .summary-section {
+    margin-top: 12px;
+  }
+  .summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+  }
+  .summary-item:last-child { border-bottom: none; }
+  .summary-label { font-weight: 600; }
+  .summary-value { color: var(--text-light); }
+  .summary-value.positive { color: var(--accent); font-weight: 600; }
+  .summary-value.negative { color: var(--success); }
+
+  /* Alert box */
+  .alert {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin: 12px 0;
+    font-size: 0.88rem;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .alert-danger {
+    background: #fdedec;
+    border: 1px solid #f5b7b1;
+    color: #922b21;
+  }
+  .alert-warning {
+    background: #fef9e7;
+    border: 1px solid #f9e79f;
+    color: #7d6608;
+  }
+  .alert-info {
+    background: #eaf2f8;
+    border: 1px solid #aed6f1;
+    color: #1a5276;
+  }
+
+  .footnote {
+    font-size: 0.78rem;
+    color: var(--text-light);
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Final summary page */
+  .final-card {
+    border: 2px solid var(--primary-light);
+  }
+  .final-card h2 {
+    font-size: 1.25rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>無症候性高CK血症 鑑別診断ツール</h1>
+  <p>EAN 2024ガイドライン準拠 | 12ステップ診断アプローチ</p>
+</header>
+
+<div class="container">
+
+  <!-- Progress -->
+  <div class="progress-bar" id="progressBar"></div>
+
+  <!-- Step 1-3: CK確認 -->
+  <div class="card visible" id="step1">
+    <h2><span class="step-badge">Step 1-3</span> CK値の確認と基準値判定</h2>
+    <span class="rec-level rec-consensus">コンセンサスステートメント</span>
+
+    <div class="alert alert-info">
+      CK測定前に運動・薬剤の影響を除外し、72時間以上（理想は1週間）待機後に再検査してください。1か月以上の間隔で計2回の再測定を推奨します。
+    </div>
+
+    <div class="input-group">
+      <label>性別</label>
+      <div class="radio-group">
+        <label><input type="radio" name="sex" value="female"><span>女性</span></label>
+        <label><input type="radio" name="sex" value="male"><span>男性</span></label>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>人種</label>
+      <div class="radio-group">
+        <label><input type="radio" name="race" value="white"><span>白人 / アジア人</span></label>
+        <label><input type="radio" name="race" value="black"><span>黒人</span></label>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>年齢</label>
+      <div class="radio-group">
+        <label><input type="radio" name="age" value="under50"><span>18-49歳</span></label>
+        <label><input type="radio" name="age" value="over50"><span>50歳以上</span></label>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>CK値 (U/L) &#8212; 運動回避後の安定値</label>
+      <input type="number" id="ckValue" placeholder="例: 350" min="0">
+    </div>
+
+    <div id="ckResult" style="display:none;"></div>
+
+    <table class="info-table">
+      <thead>
+        <tr><th>集団</th><th>ULN基準値</th><th>精査閾値 (1.5xULN)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>白人女性 (18歳以上)</td><td>210 U/L</td><td>315 U/L</td></tr>
+        <tr><td>白人男性 (18-50歳)</td><td>400 U/L</td><td>600 U/L</td></tr>
+        <tr><td>白人男性 (50歳以上)</td><td>280 U/L</td><td>420 U/L</td></tr>
+        <tr><td>黒人女性</td><td>414 U/L</td><td>621 U/L</td></tr>
+        <tr><td>黒人男性</td><td>801 U/L</td><td>1202 U/L</td></tr>
+      </tbody>
+    </table>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="evaluateCK()">CK値を評価</button>
+    </div>
+  </div>
+
+  <!-- Step 4: 神経学的診察 -->
+  <div class="card" id="step4">
+    <h2><span class="step-badge">Step 4</span> 神経学的診察・家族歴聴取</h2>
+    <span class="rec-level rec-expert">エキスパートオピニオン</span>
+
+    <p>以下の所見の有無を確認してください:</p>
+
+    <div class="checkbox-list">
+      <label><input type="checkbox" name="neuro" value="weakness">筋力低下</label>
+      <label><input type="checkbox" name="neuro" value="atrophy">筋萎縮</label>
+      <label><input type="checkbox" name="neuro" value="myalgia">筋痛</label>
+      <label><input type="checkbox" name="neuro" value="cramps">筋けいれん</label>
+      <label><input type="checkbox" name="neuro" value="myotonia">ミオトニア</label>
+      <label><input type="checkbox" name="neuro" value="contracture">拘縮</label>
+      <label><input type="checkbox" name="neuro" value="fatigue">易疲労性</label>
+      <label><input type="checkbox" name="neuro" value="myoglobinuria">ミオグロビン尿（横紋筋融解症歴）</label>
+      <label><input type="checkbox" name="neuro" value="family">神経筋疾患の家族歴</label>
+      <label><input type="checkbox" name="neuro" value="mh_family">悪性高熱症の家族歴</label>
+    </div>
+
+    <div id="neuroResult" style="display:none;"></div>
+
+    <div class="alert alert-danger">
+      <div>
+        <strong>麻酔リスク:</strong> 高CK患者では悪性高熱症の発生率が3-49%です。過去に問題なく全身麻酔を受けた患者でも発症し得ます。可能であれば遺伝学的検査またはin vitro contracture test結果を待機してください。
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep('step1')">戻る</button>
+      <button class="btn btn-primary" onclick="evaluateNeuro()">次へ</button>
+    </div>
+  </div>
+
+  <!-- Step 5: 後天性原因除外 -->
+  <div class="card" id="step5">
+    <h2><span class="step-badge">Step 5</span> 後天性・非神経筋原因の除外</h2>
+    <span class="rec-level rec-expert">エキスパートオピニオン</span>
+
+    <p>以下の原因が該当しないか確認してください:</p>
+
+    <div class="checkbox-list">
+      <label><input type="checkbox" name="acquired" value="exercise">過度の運動</label>
+      <label><input type="checkbox" name="acquired" value="trauma">外傷・筋肉注射</label>
+      <label><input type="checkbox" name="acquired" value="statin">スタチン服用中</label>
+      <label><input type="checkbox" name="acquired" value="drug">その他薬剤（免疫チェックポイント阻害薬など）</label>
+      <label><input type="checkbox" name="acquired" value="thyroid">甲状腺機能異常</label>
+      <label><input type="checkbox" name="acquired" value="cardiac">心筋梗塞・心疾患</label>
+      <label><input type="checkbox" name="acquired" value="viral">ウイルス感染</label>
+      <label><input type="checkbox" name="acquired" value="malignancy">悪性腫瘍</label>
+      <label><input type="checkbox" name="acquired" value="none">上記いずれも該当しない</label>
+    </div>
+
+    <div id="acquiredResult" style="display:none;"></div>
+
+    <div class="alert alert-info">
+      <div>
+        <strong>スタチンについて:</strong> CK 10xULN以下の無症候性患者ではスタチン合併症リスクの増加はありません。適応がある場合は密なフォローアップ下で継続可能です。
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep('step4')">戻る</button>
+      <button class="btn btn-primary" onclick="evaluateAcquired()">次へ</button>
+    </div>
+  </div>
+
+  <!-- Step 6: GAA-DBS -->
+  <div class="card" id="step6">
+    <h2><span class="step-badge">Step 6</span> GAA-DBS検査（ポンペ病スクリーニング）</h2>
+    <span class="rec-level rec-strong">強い推奨（同意率86%）</span>
+
+    <p>遅発型ポンペ病のスクリーニングとして、酸性アルファグルコシダーゼ（GAA）活性のドライブラッドスポット（DBS）検査を実施してください。</p>
+
+    <ul>
+      <li>症候性・乏症候性間で検査陽性率に有意差なし</li>
+      <li>診断確定で早期の酵素補充療法開始が可能</li>
+    </ul>
+
+    <div class="input-group">
+      <label>GAA-DBS検査結果</label>
+      <div class="radio-group">
+        <label><input type="radio" name="gaa" value="normal"><span>正常</span></label>
+        <label><input type="radio" name="gaa" value="low"><span>低下（異常）</span></label>
+        <label><input type="radio" name="gaa" value="pending"><span>未実施・結果待ち</span></label>
+      </div>
+    </div>
+
+    <div id="gaaResult" style="display:none;"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep('step5')">戻る</button>
+      <button class="btn btn-primary" onclick="evaluateGAA()">次へ</button>
+    </div>
+  </div>
+
+  <!-- Step 7: NCS/EMG -->
+  <div class="card" id="step7">
+    <h2><span class="step-badge">Step 7</span> NCS / EMG（電気生理学的検査）</h2>
+    <span class="rec-level rec-weak">弱い推奨（同意率78%）</span>
+
+    <p>筋原性 vs 神経原性の鑑別を目的とします。</p>
+
+    <div class="alert alert-warning">
+      <div>感度 0.53、特異度 0.67 &#8212; <strong>正常EMGはミオパチーを除外しません。</strong></div>
+    </div>
+
+    <div class="input-group">
+      <label>EMG/NCS結果</label>
+      <div class="radio-group">
+        <label><input type="radio" name="emg" value="normal"><span>正常</span></label>
+        <label><input type="radio" name="emg" value="myopathic"><span>筋原性パターン</span></label>
+        <label><input type="radio" name="emg" value="neurogenic"><span>神経原性パターン</span></label>
+        <label><input type="radio" name="emg" value="myotonic"><span>ミオトニア放電あり</span></label>
+        <label><input type="radio" name="emg" value="pending"><span>未実施</span></label>
+      </div>
+    </div>
+
+    <div id="emgResult" style="display:none;"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep('step6')">戻る</button>
+      <button class="btn btn-primary" onclick="evaluateEMG()">次へ</button>
+    </div>
+  </div>
+
+  <!-- Step 8: 代謝検査 -->
+  <div class="card" id="step8">
+    <h2><span class="step-badge">Step 8</span> 代謝検査</h2>
+    <span class="rec-level rec-consensus">コンセンサスステートメント</span>
+
+    <p>代謝性ミオパチーの評価として以下の検査を確認してください:</p>
+
+    <div class="checkbox-list">
+      <label><input type="checkbox" name="metabolic" value="lactate">血清乳酸上昇</label>
+      <label><input type="checkbox" name="metabolic" value="acylcarnitine">アシルカルニチンプロファイル異常</label>
+      <label><input type="checkbox" name="metabolic" value="urine_organic">尿中有機酸異常</label>
+      <label><input type="checkbox" name="metabolic" value="none">すべて正常 / 未実施</label>
+    </div>
+
+    <div id="metabolicResult" style="display:none;"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep('step7')">戻る</button>
+      <button class="btn btn-primary" onclick="evaluateMetabolic()">次へ</button>
+    </div>
+  </div>
+
+  <!-- Step 9: 筋MRI -->
+  <div class="card" id="step9">
+    <h2><span class="step-badge">Step 9</span> 筋MRI</h2>
+    <span class="rec-level rec-strong">強い推奨（同意率86%）</span>
+
+    <p>非侵襲的に筋障害パターンを評価します。</p>
+    <ul>
+      <li>感度: 全体 0.79、乏症候性患者 0.85</li>
+      <li>異常パターンで遺伝子パネル選択を支援</li>
+      <li>筋生検部位選択にも有用</li>
+    </ul>
+
+    <div class="input-group">
+      <label>筋MRI結果</label>
+      <div class="radio-group">
+        <label><input type="radio" name="mri" value="normal"><span>正常</span></label>
+        <label><input type="radio" name="mri" value="fatty"><span>脂肪変性パターン</span></label>
+        <label><input type="radio" name="mri" value="edema"><span>浮腫性変化（炎症示唆）</span></label>
+        <label><input type="radio" name="mri" value="mixed"><span>混合パターン</span></label>
+        <label><input type="radio" name="mri" value="pending"><span>未実施</span></label>
+      </div>
+    </div>
+
+    <div id="mriResult" style="display:none;"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep('step8')">戻る</button>
+      <button class="btn btn-primary" onclick="evaluateMRI()">次へ</button>
+    </div>
+  </div>
+
+  <!-- Step 10-11: NGS -->
+  <div class="card" id="step10">
+    <h2><span class="step-badge">Step 10-11</span> 次世代シーケンシング（NGS）</h2>
+    <span class="rec-level rec-strong">強い推奨 &#8212; 筋生検より優先（同意率84%）</span>
+
+    <p>NGSによる遺伝子解析は筋生検より優先されます。</p>
+    <ul>
+      <li>診断到達率: プール推定値 44%（範囲33-67%）</li>
+      <li>筋生検での特異的診断率: 20.5%のみ</li>
+    </ul>
+
+    <div class="alert alert-warning">
+      <div><strong>NGSで検出困難な疾患:</strong> リピート伸長疾患、大規模コピー数変異、ミトコンドリアDNA変異の一部</div>
+    </div>
+
+    <div class="input-group">
+      <label>NGS結果</label>
+      <div class="radio-group">
+        <label><input type="radio" name="ngs" value="pathogenic"><span>病的バリアント検出</span></label>
+        <label><input type="radio" name="ngs" value="vus"><span>VUS（意義不明バリアント）</span></label>
+        <label><input type="radio" name="ngs" value="negative"><span>陰性</span></label>
+        <label><input type="radio" name="ngs" value="pending"><span>未実施・結果待ち</span></label>
+      </div>
+    </div>
+
+    <div id="ngsResult" style="display:none;"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep('step9')">戻る</button>
+      <button class="btn btn-primary" onclick="evaluateNGS()">次へ</button>
+    </div>
+  </div>
+
+  <!-- Step 12: 筋生検 -->
+  <div class="card" id="step12">
+    <h2><span class="step-badge">Step 12</span> 筋生検の検討</h2>
+    <span class="rec-level rec-expert">エキスパートオピニオン</span>
+
+    <p>以下の条件のいずれか1つ以上を満たす場合、筋生検を考慮してください:</p>
+
+    <div class="checkbox-list" id="biopsyCriteria">
+      <label><input type="checkbox" name="biopsy" value="vus">NGSでVUS（意義不明バリアント）検出</label>
+      <label><input type="checkbox" name="biopsy" value="metabolic_suspicion">代謝性ミオパチー疑い</label>
+      <label><input type="checkbox" name="biopsy" value="inflammatory">炎症性筋疾患疑い</label>
+      <label><input type="checkbox" name="biopsy" value="mri_abnormal">筋MRI異常</label>
+      <label><input type="checkbox" name="biopsy" value="ck3x">CK 3xULN以上</label>
+      <label><input type="checkbox" name="biopsy" value="family_hx">家族歴陽性</label>
+      <label><input type="checkbox" name="biopsy" value="young">25歳未満</label>
+    </div>
+
+    <div id="biopsyResult" style="display:none;"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep('step10')">戻る</button>
+      <button class="btn btn-primary" onclick="evaluateBiopsy()">総合評価へ</button>
+    </div>
+  </div>
+
+  <!-- Final Summary -->
+  <div class="card final-card" id="summary">
+    <h2>総合評価サマリー</h2>
+
+    <div id="summaryContent"></div>
+
+    <div class="alert alert-info" style="margin-top: 16px;">
+      <div>
+        <strong>運動指導:</strong> 診断確定前は激しい運動を回避してください。確定後は疾患特異的な指導を行ってください（特にMcArdle病・代謝性ミオパチーで重要）。
+      </div>
+    </div>
+
+    <div class="footnote">
+      本ツールはEAN 2024ガイドライン（European Academy of Neurology）に基づく参考情報です。臨床判断は担当医が行ってください。<br>
+      参考: 一般人口での高CK血症有病率は約1.3%（Tromso研究: 12,828人）。筋痛・筋けいれんはCK正常者と高CK血症者で同等頻度です。
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep('step12')">戻る</button>
+      <button class="btn btn-primary" onclick="resetAll()">最初からやり直す</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const steps = ['step1','step4','step5','step6','step7','step8','step9','step10','step12','summary'];
+const stepLabels = ['1-3','4','5','6','7','8','9','10-11','12','結果'];
+let currentStep = 0;
+let data = {};
+
+function initProgress() {
+  const bar = document.getElementById('progressBar');
+  bar.innerHTML = '';
+  stepLabels.forEach((label, i) => {
+    const el = document.createElement('div');
+    el.className = 'progress-step' + (i === 0 ? ' active' : '');
+    el.textContent = label;
+    el.onclick = () => {
+      if (i <= currentStep) goToStepIndex(i);
+    };
+    bar.appendChild(el);
+  });
+}
+
+function updateProgress() {
+  const dots = document.querySelectorAll('.progress-step');
+  dots.forEach((d, i) => {
+    d.className = 'progress-step';
+    if (i < currentStep) d.classList.add('done');
+    if (i === currentStep) d.classList.add('active');
+  });
+}
+
+function goToStep(id) {
+  const idx = steps.indexOf(id);
+  if (idx >= 0) goToStepIndex(idx);
+}
+
+function goToStepIndex(idx) {
+  document.getElementById(steps[currentStep]).classList.remove('visible');
+  currentStep = idx;
+  document.getElementById(steps[currentStep]).classList.add('visible');
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function nextStep() {
+  if (currentStep < steps.length - 1) {
+    goToStepIndex(currentStep + 1);
+  }
+}
+
+function getULN() {
+  const sex = document.querySelector('input[name="sex"]:checked')?.value;
+  const race = document.querySelector('input[name="race"]:checked')?.value;
+  const age = document.querySelector('input[name="age"]:checked')?.value;
+  if (!sex || !race || !age) return null;
+
+  if (race === 'black') {
+    return sex === 'female' ? 414 : 801;
+  }
+  if (sex === 'female') return 210;
+  return age === 'under50' ? 400 : 280;
+}
+
+function evaluateCK() {
+  const ck = parseFloat(document.getElementById('ckValue').value);
+  const uln = getULN();
+  const el = document.getElementById('ckResult');
+
+  if (!uln || isNaN(ck)) {
+    el.style.display = 'block';
+    el.innerHTML = '<div class="result-box result-abnormal">全ての項目を入力してください。</div>';
+    return;
+  }
+
+  data.ck = ck;
+  data.uln = uln;
+  const ratio = (ck / uln).toFixed(1);
+  data.ckRatio = ratio;
+
+  el.style.display = 'block';
+
+  if (ck <= uln) {
+    el.innerHTML = `<div class="ck-result ck-normal">CK ${ck} U/L = ${ratio}x ULN<br>正常範囲内</div>
+      <div class="result-box result-normal">CK値は基準値内です。高CK血症の精査は不要です。</div>`;
+  } else if (ck <= uln * 1.5) {
+    el.innerHTML = `<div class="ck-result ck-elevated">CK ${ck} U/L = ${ratio}x ULN<br>軽度上昇（精査閾値未満）</div>
+      <div class="result-box result-info">ULNは超えていますが精査閾値（1.5xULN = ${Math.round(uln*1.5)} U/L）未満です。経過観察を推奨します。精査を進める場合は次へ。</div>`;
+    setTimeout(nextStep, 100);
+  } else if (ck <= uln * 3) {
+    el.innerHTML = `<div class="ck-result ck-elevated">CK ${ck} U/L = ${ratio}x ULN<br>精査閾値超過</div>
+      <div class="result-box result-abnormal">1.5xULN以上です。系統的な鑑別診断を進めてください。</div>`;
+    setTimeout(nextStep, 100);
+  } else if (ck <= uln * 10) {
+    el.innerHTML = `<div class="ck-result ck-high">CK ${ck} U/L = ${ratio}x ULN<br>中等度上昇（3xULN超）</div>
+      <div class="result-box result-abnormal">3xULN以上 &#8212; 筋生検の適応基準の一つを満たします。系統的な鑑別診断を進めてください。</div>`;
+    setTimeout(nextStep, 100);
+  } else {
+    el.innerHTML = `<div class="ck-result ck-high">CK ${ck} U/L = ${ratio}x ULN<br>高度上昇（10xULN超）</div>
+      <div class="result-box result-abnormal">10xULN以上 &#8212; 積極的な精査が必要です。横紋筋融解症のリスクにも注意してください。</div>`;
+    setTimeout(nextStep, 100);
+  }
+}
+
+function evaluateNeuro() {
+  const checks = document.querySelectorAll('input[name="neuro"]:checked');
+  data.neuroFindings = Array.from(checks).map(c => c.value);
+  const el = document.getElementById('neuroResult');
+  el.style.display = 'block';
+
+  if (data.neuroFindings.length === 0) {
+    el.innerHTML = '<div class="result-box result-normal">神経学的異常所見なし &#8212; 無症候性高CK血症として評価を続行します。</div>';
+  } else {
+    const labels = {
+      weakness: '筋力低下', atrophy: '筋萎縮', myalgia: '筋痛', cramps: '筋けいれん',
+      myotonia: 'ミオトニア', contracture: '拘縮', fatigue: '易疲労性',
+      myoglobinuria: 'ミオグロビン尿', family: '家族歴(+)', mh_family: '悪性高熱症家族歴(+)'
+    };
+    const found = data.neuroFindings.map(f => labels[f]).join('、');
+    el.innerHTML = `<div class="result-box result-warning">所見あり: ${found}<br>乏症候性高CK血症として評価を続行します。症状の程度により鑑別の優先度が変わります。</div>`;
+  }
+  setTimeout(nextStep, 100);
+}
+
+function evaluateAcquired() {
+  const checks = document.querySelectorAll('input[name="acquired"]:checked');
+  data.acquiredCauses = Array.from(checks).map(c => c.value);
+  const el = document.getElementById('acquiredResult');
+  el.style.display = 'block';
+
+  if (data.acquiredCauses.includes('none') && data.acquiredCauses.length === 1) {
+    el.innerHTML = '<div class="result-box result-normal">後天性原因は該当なし &#8212; 神経筋疾患の評価へ進みます。</div>';
+  } else {
+    const labels = {
+      exercise: '過度の運動', trauma: '外傷', statin: 'スタチン', drug: '薬剤性',
+      thyroid: '甲状腺機能異常', cardiac: '心疾患', viral: 'ウイルス感染', malignancy: '悪性腫瘍'
+    };
+    const found = data.acquiredCauses.filter(c => c !== 'none').map(c => labels[c] || c).join('、');
+    if (found) {
+      el.innerHTML = `<div class="result-box result-warning">後天性原因の可能性: ${found}<br>これらの原因を治療・除外した上で、CKが持続的に高値であれば神経筋疾患の評価を続行してください。</div>`;
+    }
+  }
+  setTimeout(nextStep, 100);
+}
+
+function evaluateGAA() {
+  const val = document.querySelector('input[name="gaa"]:checked')?.value;
+  if (!val) return;
+  data.gaa = val;
+  const el = document.getElementById('gaaResult');
+  el.style.display = 'block';
+
+  if (val === 'low') {
+    el.innerHTML = '<div class="result-box result-abnormal"><strong>GAA活性低下</strong> &#8212; 遅発型ポンペ病の可能性。GAA遺伝子の確認検査と専門医への紹介を推奨します。早期の酵素補充療法開始を検討してください。</div>';
+  } else if (val === 'normal') {
+    el.innerHTML = '<div class="result-box result-normal">GAA活性正常 &#8212; ポンペ病は否定的です。</div>';
+  } else {
+    el.innerHTML = '<div class="result-box result-info">結果が出次第、評価してください。ポンペ病は治療可能な疾患であるため、早期検査が重要です。</div>';
+  }
+  setTimeout(nextStep, 100);
+}
+
+function evaluateEMG() {
+  const val = document.querySelector('input[name="emg"]:checked')?.value;
+  if (!val) return;
+  data.emg = val;
+  const el = document.getElementById('emgResult');
+  el.style.display = 'block';
+
+  const messages = {
+    normal: '正常 &#8212; ただし正常EMGはミオパチーを除外しません。引き続き評価を進めてください。',
+    myopathic: '筋原性パターン &#8212; 筋疾患（ジストロフィー、炎症性筋疾患、代謝性ミオパチーなど）を示唆します。',
+    neurogenic: '神経原性パターン &#8212; 運動ニューロン疾患（ALS、Kennedy病、SMAなど）を考慮してください。これらの疾患ではCKは通常5xULN程度まで上昇します。',
+    myotonic: 'ミオトニア放電あり &#8212; 筋強直性ジストロフィーやチャネロパチーを考慮してください。',
+    pending: 'EMG未実施 &#8212; 弱い推奨ですが、鑑別に有用な場合があります。'
+  };
+  const cls = val === 'normal' || val === 'pending' ? 'result-info' : 'result-warning';
+  el.innerHTML = `<div class="result-box ${cls}">${messages[val]}</div>`;
+  setTimeout(nextStep, 100);
+}
+
+function evaluateMetabolic() {
+  const checks = document.querySelectorAll('input[name="metabolic"]:checked');
+  data.metabolic = Array.from(checks).map(c => c.value);
+  const el = document.getElementById('metabolicResult');
+  el.style.display = 'block';
+
+  if (data.metabolic.includes('none') || data.metabolic.length === 0) {
+    el.innerHTML = '<div class="result-box result-normal">代謝異常なし / 未実施</div>';
+  } else {
+    const labels = {
+      lactate: '乳酸上昇', acylcarnitine: 'アシルカルニチン異常', urine_organic: '尿中有機酸異常'
+    };
+    const found = data.metabolic.filter(m => m !== 'none').map(m => labels[m]).join('、');
+    el.innerHTML = `<div class="result-box result-abnormal">代謝異常: ${found}<br>代謝性ミオパチー（McArdle病、脂肪酸酸化異常症、ミトコンドリア病など）の精査を推奨します。</div>`;
+  }
+  setTimeout(nextStep, 100);
+}
+
+function evaluateMRI() {
+  const val = document.querySelector('input[name="mri"]:checked')?.value;
+  if (!val) return;
+  data.mri = val;
+  const el = document.getElementById('mriResult');
+  el.style.display = 'block';
+
+  const messages = {
+    normal: '正常 &#8212; 筋構造の明らかな異常はありません。',
+    fatty: '脂肪変性パターン &#8212; 慢性筋障害（筋ジストロフィーなど）を示唆します。分布パターンからの鑑別が可能です。',
+    edema: '浮腫性変化 &#8212; 活動性の炎症を示唆します。炎症性筋疾患の可能性を考慮してください。',
+    mixed: '混合パターン &#8212; 慢性・急性の筋障害の併存を示唆します。',
+    pending: '未実施 &#8212; 強い推奨の検査です。非侵襲的で診断精度が高いため、実施を推奨します。'
+  };
+  const cls = val === 'normal' || val === 'pending' ? 'result-info' : 'result-warning';
+  el.innerHTML = `<div class="result-box ${cls}">${messages[val]}</div>`;
+  setTimeout(nextStep, 100);
+}
+
+function evaluateNGS() {
+  const val = document.querySelector('input[name="ngs"]:checked')?.value;
+  if (!val) return;
+  data.ngs = val;
+  const el = document.getElementById('ngsResult');
+  el.style.display = 'block';
+
+  if (val === 'pathogenic') {
+    el.innerHTML = '<div class="result-box result-abnormal"><strong>病的バリアント検出</strong> &#8212; 遺伝性筋疾患の診断が確定しました。疾患に応じた管理計画を立案してください。</div>';
+  } else if (val === 'vus') {
+    el.innerHTML = '<div class="result-box result-warning">VUS検出 &#8212; 筋生検による機能的評価で病的意義の判定を支援できます。筋生検を検討してください。</div>';
+    // Auto-check VUS in biopsy criteria
+    setTimeout(() => {
+      const vusBox = document.querySelector('input[name="biopsy"][value="vus"]');
+      if (vusBox) vusBox.checked = true;
+    }, 200);
+  } else if (val === 'negative') {
+    el.innerHTML = '<div class="result-box result-info">NGS陰性 &#8212; リピート伸長疾患、大規模CNV、一部のmtDNA変異はNGSで検出困難です。臨床的疑いが強い場合は筋生検を検討してください。</div>';
+  } else {
+    el.innerHTML = '<div class="result-box result-info">NGSは筋生検より優先される検査です（診断率44% vs 20.5%）。実施を強く推奨します。</div>';
+  }
+  setTimeout(nextStep, 100);
+}
+
+function evaluateBiopsy() {
+  const checks = document.querySelectorAll('input[name="biopsy"]:checked');
+  data.biopsyCriteria = Array.from(checks).map(c => c.value);
+
+  // Auto-populate some based on prior data
+  if (data.ckRatio >= 3) {
+    const box = document.querySelector('input[name="biopsy"][value="ck3x"]');
+    if (box && !box.checked) box.checked = true;
+    if (!data.biopsyCriteria.includes('ck3x')) data.biopsyCriteria.push('ck3x');
+  }
+
+  showSummary();
+}
+
+function showSummary() {
+  goToStep('summary');
+  const el = document.getElementById('summaryContent');
+
+  const neuroLabels = {
+    weakness: '筋力低下', atrophy: '筋萎縮', myalgia: '筋痛', cramps: '筋けいれん',
+    myotonia: 'ミオトニア', contracture: '拘縮', fatigue: '易疲労性',
+    myoglobinuria: 'ミオグロビン尿', family: '家族歴(+)', mh_family: 'MH家族歴(+)'
+  };
+  const emgLabels = {
+    normal: '正常', myopathic: '筋原性', neurogenic: '神経原性', myotonic: 'ミオトニア放電', pending: '未実施'
+  };
+  const mriLabels = {
+    normal: '正常', fatty: '脂肪変性', edema: '浮腫性', mixed: '混合', pending: '未実施'
+  };
+  const ngsLabels = {
+    pathogenic: '病的バリアント(+)', vus: 'VUS', negative: '陰性', pending: '未実施'
+  };
+  const gaaLabels = {
+    normal: '正常', low: '低下（異常）', pending: '未実施'
+  };
+
+  let html = '<div class="summary-section">';
+
+  // CK
+  html += `<div class="summary-item"><span class="summary-label">CK値</span><span class="summary-value ${data.ckRatio > 1.5 ? 'positive' : ''}">${data.ck || '-'} U/L (${data.ckRatio || '-'}x ULN)</span></div>`;
+
+  // Neuro
+  const neuroStr = data.neuroFindings?.length > 0 ? data.neuroFindings.map(f => neuroLabels[f]).join(', ') : 'なし';
+  html += `<div class="summary-item"><span class="summary-label">神経学的所見</span><span class="summary-value ${data.neuroFindings?.length > 0 ? 'positive' : 'negative'}">${neuroStr}</span></div>`;
+
+  // Acquired
+  const acqStr = data.acquiredCauses?.filter(c => c !== 'none').length > 0
+    ? data.acquiredCauses.filter(c => c !== 'none').join(', ')
+    : 'なし';
+  html += `<div class="summary-item"><span class="summary-label">後天性原因</span><span class="summary-value">${acqStr}</span></div>`;
+
+  // GAA
+  html += `<div class="summary-item"><span class="summary-label">GAA-DBS</span><span class="summary-value ${data.gaa === 'low' ? 'positive' : ''}">${gaaLabels[data.gaa] || '-'}</span></div>`;
+
+  // EMG
+  html += `<div class="summary-item"><span class="summary-label">EMG/NCS</span><span class="summary-value">${emgLabels[data.emg] || '-'}</span></div>`;
+
+  // Metabolic
+  const metStr = data.metabolic?.filter(m => m !== 'none').length > 0
+    ? data.metabolic.filter(m => m !== 'none').join(', ')
+    : '異常なし';
+  html += `<div class="summary-item"><span class="summary-label">代謝検査</span><span class="summary-value ${data.metabolic?.filter(m=>m!=='none').length > 0 ? 'positive' : ''}">${metStr}</span></div>`;
+
+  // MRI
+  html += `<div class="summary-item"><span class="summary-label">筋MRI</span><span class="summary-value ${data.mri && data.mri !== 'normal' && data.mri !== 'pending' ? 'positive' : ''}">${mriLabels[data.mri] || '-'}</span></div>`;
+
+  // NGS
+  html += `<div class="summary-item"><span class="summary-label">NGS</span><span class="summary-value ${data.ngs === 'pathogenic' ? 'positive' : ''}">${ngsLabels[data.ngs] || '-'}</span></div>`;
+
+  html += '</div>';
+
+  // Recommendations
+  html += '<h3 style="margin-top:20px; color: var(--primary);">推奨アクション</h3>';
+
+  let recommendations = [];
+
+  if (data.ngs === 'pathogenic') {
+    recommendations.push({
+      type: 'result-abnormal',
+      text: 'NGSで病的バリアントが検出されました。遺伝性筋疾患の診断確定です。疾患特異的な管理・遺伝カウンセリングを進めてください。'
+    });
+  }
+
+  if (data.gaa === 'low') {
+    recommendations.push({
+      type: 'result-abnormal',
+      text: 'GAA活性低下 &#8212; 遅発型ポンペ病の可能性が高いです。GAA遺伝子の確認検査を行い、酵素補充療法の開始を検討してください。'
+    });
+  }
+
+  // Biopsy indication
+  if (data.biopsyCriteria?.length > 0) {
+    const biopsyLabels = {
+      vus: 'VUS検出', metabolic_suspicion: '代謝性ミオパチー疑い',
+      inflammatory: '炎症性筋疾患疑い', mri_abnormal: '筋MRI異常',
+      ck3x: 'CK >=3xULN', family_hx: '家族歴陽性', young: '25歳未満'
+    };
+    const criteria = data.biopsyCriteria.map(c => biopsyLabels[c]).join('、');
+    recommendations.push({
+      type: 'result-warning',
+      text: `筋生検の適応基準を${data.biopsyCriteria.length}項目満たしています: ${criteria}。筋生検の実施を検討してください。筋MRI異常部位があればそこからの生検が推奨されます。`
+    });
+  } else if (data.ngs !== 'pathogenic' && data.gaa !== 'low') {
+    recommendations.push({
+      type: 'result-info',
+      text: '筋生検の明確な適応基準は現時点で満たしていません。経過観察を行い、症状出現時に再評価してください。'
+    });
+  }
+
+  if (data.emg === 'neurogenic') {
+    recommendations.push({
+      type: 'result-warning',
+      text: '神経原性パターン &#8212; 運動ニューロン疾患（ALS、Kennedy病、SMA）の精査を考慮してください。'
+    });
+  }
+
+  if (data.mri === 'edema') {
+    recommendations.push({
+      type: 'result-warning',
+      text: '筋MRIで浮腫性変化 &#8212; 炎症性筋疾患の可能性を考慮し、筋生検を検討してください。'
+    });
+  }
+
+  if (data.metabolic?.some(m => m !== 'none')) {
+    recommendations.push({
+      type: 'result-warning',
+      text: '代謝異常あり &#8212; McArdle病、脂肪酸酸化異常症、ミトコンドリア病等の精査を推奨します。'
+    });
+  }
+
+  // MH warning
+  recommendations.push({
+    type: 'result-warning',
+    text: '全身麻酔時の悪性高熱症リスクに注意してください（発生率3-49%）。麻酔科との事前連携を推奨します。'
+  });
+
+  if (data.ngs === 'pending') {
+    recommendations.push({
+      type: 'result-info',
+      text: 'NGSが未実施です。筋生検より優先される検査（診断率44%）であり、実施を強く推奨します。'
+    });
+  }
+
+  if (data.mri === 'pending') {
+    recommendations.push({
+      type: 'result-info',
+      text: '筋MRIが未実施です。非侵襲的で感度0.79-0.85の検査であり、実施を強く推奨します。'
+    });
+  }
+
+  recommendations.forEach(r => {
+    html += `<div class="result-box ${r.type}" style="margin:8px 0;">${r.text}</div>`;
+  });
+
+  el.innerHTML = html;
+}
+
+function resetAll() {
+  data = {};
+  // Reset all inputs
+  document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+  document.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
+  document.getElementById('ckValue').value = '';
+  // Hide all results
+  document.querySelectorAll('[id$="Result"]').forEach(el => el.style.display = 'none');
+  document.getElementById('summaryContent').innerHTML = '';
+  goToStepIndex(0);
+}
+
+// Init
+initProgress();
+</script>
+
+</body>
+</html>
