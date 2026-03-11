@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>全身浮腫 鑑別診断ツール</title>
+<style>
+  :root {
+    --navy: #1B3A5C;
+    --blue: #2C5AA0;
+    --light-blue: #E8F0FE;
+    --red: #DC3545;
+    --yellow: #F5C518;
+    --green: #28A745;
+    --orange: #E8850C;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(27,58,92,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #E8F0FE 0%, #F4F6F8 100%);
+    color: #222;
+    min-height: 100vh;
+    padding: 0 0 40px;
+  }
+  header {
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    padding: 28px 20px 22px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(27,58,92,0.18);
+  }
+  header h1 { font-size: 1.7em; font-weight: 700; letter-spacing: 0.04em; }
+  header p { font-size: 0.92em; margin-top: 6px; opacity: 0.85; }
+
+  .container { max-width: 820px; margin: 0 auto; padding: 24px 16px; }
+
+  /* ステップカード */
+  .step-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+    overflow: hidden;
+    transition: opacity 0.3s;
+  }
+  .step-card.inactive { opacity: 0.45; pointer-events: none; }
+  .step-card.completed { opacity: 1; }
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    background: var(--light-blue);
+    border-bottom: 2px solid var(--blue);
+    cursor: pointer;
+  }
+  .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--blue);
+    color: var(--white);
+    font-weight: 700;
+    font-size: 0.95em;
+    flex-shrink: 0;
+  }
+  .step-number.done { background: var(--green); }
+  .step-title { font-weight: 700; font-size: 1.05em; color: var(--navy); }
+  .step-body { padding: 18px; }
+
+  /* 選択肢ボタン */
+  .option-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border: 2px solid #D0D8E4;
+    border-radius: 8px;
+    background: var(--white);
+    font-size: 0.97em;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: left;
+    color: #222;
+    font-family: inherit;
+    width: 100%;
+  }
+  .option-btn:hover { border-color: var(--blue); background: var(--light-blue); }
+  .option-btn.selected {
+    border-color: var(--blue);
+    background: var(--light-blue);
+    font-weight: 700;
+  }
+  .option-btn .icon { font-size: 1.2em; flex-shrink: 0; width: 24px; text-align: center; }
+
+  /* チェックリスト */
+  .checklist { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--light-gray);
+    cursor: pointer;
+    transition: background 0.15s;
+    user-select: none;
+    font-size: 0.95em;
+  }
+  .check-item:hover { background: #E0E8F0; }
+  .check-item input[type="checkbox"] {
+    width: 18px; height: 18px;
+    accent-color: var(--blue);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .check-item label { cursor: pointer; flex: 1; }
+
+  /* 結果カード */
+  .result-panel {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(27,58,92,0.15);
+    overflow: hidden;
+    margin-top: 24px;
+    display: none;
+  }
+  .result-panel.show { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  .result-header {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    font-weight: 700;
+    font-size: 1.15em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .result-body { padding: 20px; }
+
+  .dx-card {
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    position: relative;
+    transition: all 0.2s;
+  }
+  .dx-card.high { border-color: var(--red); background: #FFF5F5; }
+  .dx-card.medium { border-color: var(--orange); background: #FFF8F0; }
+  .dx-card.low { border-color: var(--gray); background: var(--light-gray); }
+
+  .dx-card .dx-name {
+    font-weight: 700;
+    font-size: 1.08em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .dx-card .prob-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.78em;
+    font-weight: 700;
+    color: var(--white);
+  }
+  .dx-card.high .prob-badge { background: var(--red); }
+  .dx-card.medium .prob-badge { background: var(--orange); }
+  .dx-card.low .prob-badge { background: var(--gray); }
+
+  .dx-card .dx-detail { font-size: 0.9em; color: #444; line-height: 1.6; }
+  .dx-card .dx-detail strong { color: var(--navy); }
+  .dx-card .dx-workup {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #ccc;
+    font-size: 0.88em;
+    color: var(--blue);
+  }
+
+  .next-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    padding: 10px 22px;
+    background: var(--blue);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: inherit;
+  }
+  .next-btn:hover { background: var(--navy); }
+  .next-btn:disabled { background: #B0BEC5; cursor: not-allowed; }
+
+  .reset-btn {
+    display: block;
+    margin: 24px auto 0;
+    padding: 10px 32px;
+    background: var(--white);
+    color: var(--red);
+    border: 2px solid var(--red);
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .reset-btn:hover { background: var(--red); color: var(--white); }
+
+  .hint {
+    font-size: 0.85em;
+    color: var(--gray);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  .divider { height: 1px; background: #D0D8E4; margin: 14px 0; }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.3em; }
+    .step-body, .result-body { padding: 14px; }
+    .dx-card { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>全身浮腫 鑑別診断ツール</h1>
+  <p>臨床所見・検査所見から全身浮腫の原因を系統的に鑑別</p>
+</header>
+
+<div class="container" id="app"></div>
+
+<script>
+// ===== データ定義 =====
+const DISEASES = {
+  heart_failure: {
+    name: "心不全",
+    emoji: "❤️",
+    category: "心臓",
+    keyFindings: ["頸静脈怒張", "起座呼吸・発作性夜間呼吸困難", "肺うっ血（ラ音）", "下腿浮腫（圧痕性）", "体重増加", "BNP/NT-proBNP上昇"],
+    workup: "BNP/NT-proBNP、心エコー、胸部X線、心電図",
+    detail: "両側下腿の圧痕性浮腫＋頸静脈怒張＋肺うっ血が三徴。BNP≧100pg/mLまたはNT-proBNP≧300pg/mLで疑う。",
+  },
+  liver_cirrhosis: {
+    name: "肝硬変",
+    emoji: "🫁",
+    category: "肝臓",
+    keyFindings: ["腹水", "黄疸", "くも状血管腫・手掌紅斑", "肝腫大/肝萎縮", "脾腫", "低アルブミン血症"],
+    workup: "肝機能（AST/ALT/γ-GTP）、アルブミン、PT-INR、腹部エコー、腹水穿刺（SAAG）",
+    detail: "門脈圧亢進＋低アルブミン血症による。腹水＋黄疸＋くも状血管腫がそろえば強く疑う。SAAG≧1.1g/dLで門脈圧亢進性。",
+  },
+  nephrotic: {
+    name: "ネフローゼ症候群",
+    emoji: "🔬",
+    category: "腎臓",
+    keyFindings: ["高度蛋白尿（≧3.5g/日）", "低アルブミン血症（＜3.0g/dL）", "顔面浮腫（朝方優位）", "脂質異常症", "泡立つ尿"],
+    workup: "尿蛋白定量、血清アルブミン、脂質、腎生検",
+    detail: "大量蛋白尿→低アルブミン血症→膠質浸透圧低下が機序。顔面（特に眼瞼周囲）の浮腫が特徴的。",
+  },
+  renal_failure: {
+    name: "腎不全（体液過剰）",
+    emoji: "💧",
+    category: "腎臓",
+    keyFindings: ["乏尿・無尿", "Cr/BUN上昇", "高K血症", "代謝性アシドーシス", "高血圧"],
+    workup: "Cr、BUN、電解質、血液ガス、腎エコー、尿検査",
+    detail: "GFR低下による Na・水排泄障害で体液貯留。急性・慢性いずれも全身浮腫をきたしうる。",
+  },
+  hypothyroid: {
+    name: "甲状腺機能低下症",
+    emoji: "🦋",
+    category: "内分泌",
+    keyFindings: ["非圧痕性浮腫（粘液水腫）", "寒がり・低体温", "便秘", "体重増加", "嗄声", "徐脈"],
+    workup: "TSH、FT3、FT4（TSH高値＋FT4低値で確定）",
+    detail: "ヒアルロン酸などのムコ多糖蓄積による非圧痕性浮腫（粘液水腫）が特徴。圧痕を残さない点が他疾患と異なる。",
+  },
+  malnutrition: {
+    name: "低栄養・低Alb血症",
+    emoji: "🍽️",
+    category: "栄養",
+    keyFindings: ["るい痩", "低アルブミン血症", "食事摂取不良", "蛋白漏出性胃腸症の既往", "毛髪・爪の異常"],
+    workup: "血清アルブミン、プレアルブミン、総蛋白、栄養評価",
+    detail: "アルブミン低下による膠質浸透圧低下が機序。高齢者のフレイル・サルコペニア、悪性腫瘍、吸収不良症候群などが背景。",
+  },
+  drug_induced: {
+    name: "薬剤性浮腫",
+    emoji: "💊",
+    category: "薬剤",
+    keyFindings: ["Ca拮抗薬（特にジヒドロピリジン系）", "NSAIDs", "ステロイド", "ピオグリタゾン", "プレガバリン/ガバペンチン"],
+    workup: "薬剤歴の確認、被疑薬の中止・変更後の経過観察",
+    detail: "Ca拮抗薬による末梢浮腫が最多。NSAIDsはNa貯留、ステロイドは鉱質コルチコイド作用による。薬剤開始・増量との時間的関連を確認。",
+  },
+  venous_insuff: {
+    name: "慢性静脈不全",
+    emoji: "🦵",
+    category: "血管",
+    keyFindings: ["下肢の色素沈着", "静脈瘤", "皮膚硬化", "夕方に増悪", "立位・座位で増悪"],
+    workup: "下肢静脈エコー（逆流の評価）",
+    detail: "厳密には局所性浮腫だが両側性の場合は全身性と紛らわしい。下肢優位・夕方増悪・色素沈着が手がかり。",
+  },
+  idiopathic: {
+    name: "特発性浮腫",
+    emoji: "❓",
+    category: "その他",
+    keyFindings: ["若年〜中年女性", "月経周期との関連", "起立性増悪", "日内変動あり", "他疾患の除外"],
+    workup: "除外診断（心・肝・腎・甲状腺・薬剤を除外）",
+    detail: "20〜50歳代の女性に多い。立位で増悪し臥位で改善。利尿薬の乱用が悪化因子となることがある。除外診断が前提。",
+  },
+};
+
+// ===== ステップ定義 =====
+const STEPS = [
+  {
+    id: "pitting",
+    title: "浮腫の性状",
+    question: "浮腫は圧痕性（pitting）ですか？",
+    hint: "指で10秒圧迫後、くぼみが残るか確認します",
+    type: "single",
+    options: [
+      { label: "圧痕性（pitting）", value: "pitting", icon: "👆" },
+      { label: "非圧痕性（non-pitting）", value: "non_pitting", icon: "✋" },
+      { label: "判断困難", value: "uncertain", icon: "🤔" },
+    ]
+  },
+  {
+    id: "distribution",
+    title: "浮腫の分布",
+    question: "浮腫の分布はどこですか？",
+    hint: "全身浮腫でも優位な部位があります",
+    type: "single",
+    options: [
+      { label: "下腿優位（両側）", value: "legs", icon: "🦵" },
+      { label: "顔面・眼瞼優位", value: "face", icon: "👤" },
+      { label: "腹部膨満（腹水）優位", value: "abdomen", icon: "🫄" },
+      { label: "全身びまん性", value: "diffuse", icon: "🧍" },
+    ]
+  },
+  {
+    id: "jvd",
+    title: "頸静脈怒張 (JVD)",
+    question: "頸静脈怒張はありますか？",
+    hint: "45度挙上で内頸静脈拍動が胸骨角から4cm以上",
+    type: "single",
+    options: [
+      { label: "あり", value: "yes", icon: "✅" },
+      { label: "なし", value: "no", icon: "❌" },
+      { label: "評価困難", value: "uncertain", icon: "🤔" },
+    ]
+  },
+  {
+    id: "labs",
+    title: "検査所見（該当するものをすべて選択）",
+    question: "以下の検査所見で該当するものは？",
+    hint: "入手可能な検査結果をチェックしてください",
+    type: "multi",
+    options: [
+      { label: "BNP≧100 pg/mL（またはNT-proBNP≧300）", value: "bnp_high", tag: "heart_failure" },
+      { label: "血清アルブミン ＜3.0 g/dL", value: "low_alb", tag: "low_alb" },
+      { label: "尿蛋白 ≧3.5 g/日（または3+以上）", value: "proteinuria", tag: "nephrotic" },
+      { label: "Cr上昇 / eGFR ＜30", value: "renal", tag: "renal_failure" },
+      { label: "AST/ALT上昇 or PT-INR延長", value: "liver", tag: "liver_cirrhosis" },
+      { label: "TSH高値", value: "tsh_high", tag: "hypothyroid" },
+      { label: "脂質異常症（高LDL）", value: "dyslipidemia", tag: "nephrotic" },
+      { label: "検査未施行 / 不明", value: "unknown", tag: "none" },
+    ]
+  },
+  {
+    id: "symptoms",
+    title: "随伴症状（該当するものをすべて選択）",
+    question: "以下の症状で該当するものは？",
+    type: "multi",
+    options: [
+      { label: "起座呼吸 / 労作時呼吸困難", value: "dyspnea", tag: "heart_failure" },
+      { label: "腹水", value: "ascites", tag: "liver_cirrhosis" },
+      { label: "黄疸", value: "jaundice", tag: "liver_cirrhosis" },
+      { label: "泡立つ尿", value: "foamy_urine", tag: "nephrotic" },
+      { label: "乏尿", value: "oliguria", tag: "renal_failure" },
+      { label: "寒がり / 便秘 / 徐脈", value: "hypothyroid_sx", tag: "hypothyroid" },
+      { label: "るい痩 / 食欲不振", value: "malnutrition_sx", tag: "malnutrition" },
+      { label: "下肢の色素沈着 / 静脈瘤", value: "venous_sx", tag: "venous_insuff" },
+      { label: "該当なし", value: "none", tag: "none" },
+    ]
+  },
+  {
+    id: "drugs",
+    title: "薬剤歴",
+    question: "以下の薬剤を使用していますか？",
+    hint: "浮腫をきたしうる薬剤をチェック",
+    type: "multi",
+    options: [
+      { label: "Ca拮抗薬（アムロジピン等）", value: "ccb", tag: "drug_induced" },
+      { label: "NSAIDs（ロキソプロフェン等）", value: "nsaid", tag: "drug_induced" },
+      { label: "ステロイド（プレドニゾロン等）", value: "steroid", tag: "drug_induced" },
+      { label: "ピオグリタゾン", value: "pio", tag: "drug_induced" },
+      { label: "プレガバリン / ガバペンチン", value: "pregabalin", tag: "drug_induced" },
+      { label: "該当薬剤なし", value: "none", tag: "none" },
+    ]
+  },
+];
+
+// ===== スコアリングエンジン =====
+function calcScores(answers) {
+  const scores = {};
+  Object.keys(DISEASES).forEach(k => scores[k] = 0);
+
+  // Step 1: 圧痕性
+  const pitting = answers.pitting;
+  if (pitting === "pitting") {
+    scores.heart_failure += 2;
+    scores.liver_cirrhosis += 2;
+    scores.nephrotic += 2;
+    scores.renal_failure += 2;
+    scores.malnutrition += 2;
+    scores.drug_induced += 2;
+    scores.venous_insuff += 1;
+  } else if (pitting === "non_pitting") {
+    scores.hypothyroid += 5;
+    // 他を下げる
+    scores.heart_failure -= 1;
+    scores.liver_cirrhosis -= 1;
+    scores.nephrotic -= 1;
+  } else {
+    // uncertain: 軽く加点
+    Object.keys(scores).forEach(k => scores[k] += 1);
+  }
+
+  // Step 2: 分布
+  const dist = answers.distribution;
+  if (dist === "legs") {
+    scores.heart_failure += 2;
+    scores.venous_insuff += 3;
+    scores.drug_induced += 2;
+  } else if (dist === "face") {
+    scores.nephrotic += 4;
+    scores.hypothyroid += 2;
+  } else if (dist === "abdomen") {
+    scores.liver_cirrhosis += 4;
+    scores.nephrotic += 1;
+  } else if (dist === "diffuse") {
+    scores.renal_failure += 2;
+    scores.malnutrition += 2;
+    scores.hypothyroid += 1;
+  }
+
+  // Step 3: JVD
+  const jvd = answers.jvd;
+  if (jvd === "yes") {
+    scores.heart_failure += 5;
+    // JVDがあれば肝・腎・ネフローゼは下がる
+    scores.liver_cirrhosis -= 1;
+    scores.nephrotic -= 2;
+  } else if (jvd === "no") {
+    scores.heart_failure -= 2;
+    scores.liver_cirrhosis += 1;
+    scores.nephrotic += 1;
+  }
+
+  // Step 4: 検査所見
+  const labs = answers.labs || [];
+  labs.forEach(v => {
+    if (v === "bnp_high") scores.heart_failure += 5;
+    if (v === "low_alb") {
+      scores.liver_cirrhosis += 3;
+      scores.nephrotic += 3;
+      scores.malnutrition += 4;
+    }
+    if (v === "proteinuria") scores.nephrotic += 5;
+    if (v === "renal") scores.renal_failure += 5;
+    if (v === "liver") scores.liver_cirrhosis += 4;
+    if (v === "tsh_high") scores.hypothyroid += 6;
+    if (v === "dyslipidemia") scores.nephrotic += 2;
+  });
+
+  // Step 5: 随伴症状
+  const sx = answers.symptoms || [];
+  sx.forEach(v => {
+    if (v === "dyspnea") scores.heart_failure += 3;
+    if (v === "ascites") scores.liver_cirrhosis += 3;
+    if (v === "jaundice") scores.liver_cirrhosis += 3;
+    if (v === "foamy_urine") scores.nephrotic += 3;
+    if (v === "oliguria") scores.renal_failure += 3;
+    if (v === "hypothyroid_sx") scores.hypothyroid += 3;
+    if (v === "malnutrition_sx") scores.malnutrition += 3;
+    if (v === "venous_sx") scores.venous_insuff += 3;
+  });
+
+  // Step 6: 薬剤
+  const drugs = answers.drugs || [];
+  const hasDrug = drugs.some(v => v !== "none");
+  if (hasDrug) {
+    scores.drug_induced += 4;
+    drugs.forEach(v => { if (v !== "none") scores.drug_induced += 1; });
+  }
+
+  // 特発性: 他がすべて低い場合に上がる
+  const otherMax = Math.max(
+    scores.heart_failure, scores.liver_cirrhosis, scores.nephrotic,
+    scores.renal_failure, scores.hypothyroid, scores.malnutrition,
+    scores.drug_induced, scores.venous_insuff
+  );
+  if (otherMax < 5) scores.idiopathic += 3;
+
+  return scores;
+}
+
+function rankDiseases(scores) {
+  return Object.entries(scores)
+    .map(([key, score]) => ({ key, score, ...DISEASES[key] }))
+    .filter(d => d.score > 0)
+    .sort((a, b) => b.score - a.score);
+}
+
+function getProbLevel(score, maxScore) {
+  const ratio = score / Math.max(maxScore, 1);
+  if (ratio >= 0.7) return { level: "high", label: "可能性 高" };
+  if (ratio >= 0.35) return { level: "medium", label: "可能性 中" };
+  return { level: "low", label: "可能性 低" };
+}
+
+// ===== UIレンダリング =====
+let currentStep = 0;
+const answers = {};
+
+function render() {
+  const app = document.getElementById("app");
+  let html = "";
+
+  STEPS.forEach((step, i) => {
+    const state = i < currentStep ? "completed" : i === currentStep ? "" : "inactive";
+    const numClass = i < currentStep ? "done" : "";
+    html += `<div class="step-card ${state}" id="step-${i}">`;
+    html += `<div class="step-header">
+      <span class="step-number ${numClass}">${i < currentStep ? "✓" : i + 1}</span>
+      <span class="step-title">${step.title}</span>
+    </div>`;
+
+    if (i <= currentStep) {
+      html += `<div class="step-body">`;
+      html += `<p style="font-weight:600; margin-bottom:4px;">${step.question}</p>`;
+      if (step.hint) html += `<p class="hint">${step.hint}</p>`;
+
+      if (step.type === "single") {
+        html += `<div class="option-group">`;
+        step.options.forEach(opt => {
+          const sel = answers[step.id] === opt.value ? "selected" : "";
+          html += `<button class="option-btn ${sel}" onclick="selectOption('${step.id}', '${opt.value}', ${i})">
+            <span class="icon">${opt.icon}</span> ${opt.label}
+          </button>`;
+        });
+        html += `</div>`;
+      } else {
+        html += `<div class="checklist">`;
+        const checked = answers[step.id] || [];
+        step.options.forEach(opt => {
+          const isChecked = checked.includes(opt.value);
+          html += `<div class="check-item" onclick="toggleCheck('${step.id}', '${opt.value}')">
+            <input type="checkbox" ${isChecked ? "checked" : ""} tabindex="-1">
+            <label>${opt.label}</label>
+          </div>`;
+        });
+        html += `</div>`;
+        if (i === currentStep) {
+          const hasSelection = checked.length > 0;
+          html += `<button class="next-btn" onclick="nextStep(${i})" ${hasSelection ? "" : "disabled"}>
+            次へ ▶
+          </button>`;
+        }
+      }
+      html += `</div>`;
+    }
+    html += `</div>`;
+  });
+
+  // 結果表示
+  if (currentStep >= STEPS.length) {
+    const scores = calcScores(answers);
+    const ranked = rankDiseases(scores);
+    const maxScore = ranked.length > 0 ? ranked[0].score : 1;
+
+    html += `<div class="result-panel show">`;
+    html += `<div class="result-header">📊 鑑別診断結果</div>`;
+    html += `<div class="result-body">`;
+    html += `<p style="margin-bottom:14px; color:#555; font-size:0.9em;">入力された臨床情報に基づく鑑別疾患の優先度です。確定診断には追加検査が必要です。</p>`;
+
+    ranked.forEach((d, idx) => {
+      const prob = getProbLevel(d.score, maxScore);
+      html += `<div class="dx-card ${prob.level}">
+        <div class="dx-name">
+          ${d.emoji} ${d.name}
+          <span class="prob-badge">${prob.label}</span>
+        </div>
+        <div class="dx-detail">${d.detail}</div>
+        <div class="dx-workup">🔍 <strong>追加検査:</strong> ${d.workup}</div>
+      </div>`;
+    });
+
+    html += `<div class="divider"></div>`;
+    html += `<p style="font-size:0.82em; color:#888; line-height:1.6;">
+      ⚠️ 本ツールは臨床判断の補助を目的としており、確定診断を行うものではありません。<br>
+      実臨床では総合的な臨床判断が必要です。
+    </p>`;
+    html += `</div></div>`;
+  }
+
+  html += `<button class="reset-btn" onclick="resetAll()">🔄 最初からやり直す</button>`;
+  app.innerHTML = html;
+
+  // 現在のステップにスクロール
+  if (currentStep < STEPS.length) {
+    const el = document.getElementById(`step-${currentStep}`);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+  } else {
+    const panel = document.querySelector(".result-panel");
+    if (panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+function selectOption(stepId, value, stepIndex) {
+  answers[stepId] = value;
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function toggleCheck(stepId, value) {
+  if (!answers[stepId]) answers[stepId] = [];
+  const arr = answers[stepId];
+  const idx = arr.indexOf(value);
+
+  // 「なし」系と他の選択肢は排他的
+  if (value === "none" || value === "unknown") {
+    answers[stepId] = idx >= 0 ? [] : [value];
+  } else {
+    // 「なし」を外す
+    const noneIdx = arr.indexOf("none");
+    if (noneIdx >= 0) arr.splice(noneIdx, 1);
+    const unkIdx = arr.indexOf("unknown");
+    if (unkIdx >= 0) arr.splice(unkIdx, 1);
+
+    if (idx >= 0) arr.splice(idx, 1);
+    else arr.push(value);
+  }
+  render();
+}
+
+function nextStep(stepIndex) {
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function resetAll() {
+  currentStep = 0;
+  Object.keys(answers).forEach(k => delete answers[k]);
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// 初期描画
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>低ナトリウム血症 鑑別診断ツール</title>
+<style>
+  :root {
+    --navy: #1B3A5C;
+    --blue: #2C5AA0;
+    --light-blue: #E8F0FE;
+    --red: #DC3545;
+    --yellow: #F5C518;
+    --green: #28A745;
+    --orange: #E8850C;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(27,58,92,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #E8F0FE 0%, #F4F6F8 100%);
+    color: #222;
+    min-height: 100vh;
+    padding: 0 0 40px;
+  }
+  header {
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    padding: 28px 20px 22px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(27,58,92,0.18);
+  }
+  header h1 { font-size: 1.7em; font-weight: 700; letter-spacing: 0.04em; }
+  header p { font-size: 0.92em; margin-top: 6px; opacity: 0.85; }
+
+  .container { max-width: 820px; margin: 0 auto; padding: 24px 16px; }
+
+  .step-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+    overflow: hidden;
+    transition: opacity 0.3s;
+  }
+  .step-card.inactive { opacity: 0.45; pointer-events: none; }
+  .step-card.completed { opacity: 1; }
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    background: var(--light-blue);
+    border-bottom: 2px solid var(--blue);
+    cursor: pointer;
+  }
+  .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--blue);
+    color: var(--white);
+    font-weight: 700;
+    font-size: 0.95em;
+    flex-shrink: 0;
+  }
+  .step-number.done { background: var(--green); }
+  .step-title { font-weight: 700; font-size: 1.05em; color: var(--navy); }
+  .step-body { padding: 18px; }
+
+  .option-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border: 2px solid #D0D8E4;
+    border-radius: 8px;
+    background: var(--white);
+    font-size: 0.97em;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: left;
+    color: #222;
+    font-family: inherit;
+    width: 100%;
+  }
+  .option-btn:hover { border-color: var(--blue); background: var(--light-blue); }
+  .option-btn.selected {
+    border-color: var(--blue);
+    background: var(--light-blue);
+    font-weight: 700;
+  }
+  .option-btn .icon { font-size: 1.2em; flex-shrink: 0; width: 24px; text-align: center; }
+
+  .checklist { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--light-gray);
+    cursor: pointer;
+    transition: background 0.15s;
+    user-select: none;
+    font-size: 0.95em;
+  }
+  .check-item:hover { background: #E0E8F0; }
+  .check-item input[type="checkbox"] {
+    width: 18px; height: 18px;
+    accent-color: var(--blue);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .check-item label { cursor: pointer; flex: 1; }
+
+  .result-panel {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(27,58,92,0.15);
+    overflow: hidden;
+    margin-top: 24px;
+    display: none;
+  }
+  .result-panel.show { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  .result-header {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    font-weight: 700;
+    font-size: 1.15em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .result-body { padding: 20px; }
+
+  .dx-card {
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    position: relative;
+    transition: all 0.2s;
+  }
+  .dx-card.high { border-color: var(--red); background: #FFF5F5; }
+  .dx-card.medium { border-color: var(--orange); background: #FFF8F0; }
+  .dx-card.low { border-color: var(--gray); background: var(--light-gray); }
+
+  .dx-card .dx-name {
+    font-weight: 700;
+    font-size: 1.08em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .dx-card .prob-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.78em;
+    font-weight: 700;
+    color: var(--white);
+  }
+  .dx-card.high .prob-badge { background: var(--red); }
+  .dx-card.medium .prob-badge { background: var(--orange); }
+  .dx-card.low .prob-badge { background: var(--gray); }
+
+  .dx-card .dx-detail { font-size: 0.9em; color: #444; line-height: 1.6; }
+  .dx-card .dx-detail strong { color: var(--navy); }
+  .dx-card .dx-workup {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #ccc;
+    font-size: 0.88em;
+    color: var(--blue);
+  }
+
+  .next-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    padding: 10px 22px;
+    background: var(--blue);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: inherit;
+  }
+  .next-btn:hover { background: var(--navy); }
+  .next-btn:disabled { background: #B0BEC5; cursor: not-allowed; }
+
+  .reset-btn {
+    display: block;
+    margin: 24px auto 0;
+    padding: 10px 32px;
+    background: var(--white);
+    color: var(--red);
+    border: 2px solid var(--red);
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .reset-btn:hover { background: var(--red); color: var(--white); }
+
+  .hint {
+    font-size: 0.85em;
+    color: var(--gray);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  .divider { height: 1px; background: #D0D8E4; margin: 14px 0; }
+
+  .algo-note {
+    background: #FFFDE7;
+    border-left: 4px solid var(--yellow);
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 18px;
+    font-size: 0.9em;
+    line-height: 1.6;
+    color: #555;
+  }
+  .algo-note strong { color: var(--navy); }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.3em; }
+    .step-body, .result-body { padding: 14px; }
+    .dx-card { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>低ナトリウム血症 鑑別診断ツール</h1>
+  <p>臨床所見・検査所見から低Na血症の原因を系統的に鑑別</p>
+</header>
+
+<div class="container" id="app"></div>
+
+<script>
+// ===== データ定義 =====
+const DISEASES = {
+  siadh: {
+    name: "SIADH",
+    emoji: "🧠",
+    category: "内分泌",
+    detail: "ADHの不適切な持続分泌により水が貯留し希釈性低Na血症をきたす。体液量は臨床的に正常で、尿は不適切に濃縮（Uosm>100）、尿中Na>30 mmol/L、低尿酸血症（<4 mg/dL）・低BUNが特徴。甲状腺・副腎機能正常が診断の前提条件（除外診断）。",
+    workup: "血清・尿浸透圧、尿中Na、血清尿酸、TSH、コルチゾール、胸部CT/頭部MRI（原因検索）",
+  },
+  hypovolemic_extrarenal: {
+    name: "体液量減少性（腎外性喪失）",
+    emoji: "💧",
+    category: "体液量減少",
+    detail: "嘔吐・下痢・発汗などにより体液とNaが喪失し、水のみ補充された場合に低Na血症となる。循環血液量低下により生理的にADHが分泌され水貯留が起こる。脱水徴候（口渇、ツルゴール低下、頻脈、起立性低血圧）を伴い、尿中Na<20 mmol/Lとなる。",
+    workup: "尿中Na、BUN/Cr比、生食負荷試験（生食投与でNa改善すれば確定的）",
+  },
+  diuretic: {
+    name: "サイアザイド利尿薬性",
+    emoji: "💊",
+    category: "薬剤",
+    detail: "サイアザイド系利尿薬による低Na血症は非常に一般的で、特に高齢女性に多い。遠位尿細管でのNaCl再吸収阻害と水排泄障害が機序。ループ利尿薬より低Na血症リスクが高い。開始後1〜2週間以内の発症が典型的。尿中Naは利尿薬作用により高値となるため判別が困難になりうる。",
+    workup: "薬剤歴確認、利尿薬中止後の血清Na推移、尿中Na（中止後に再評価）",
+  },
+  adrenal: {
+    name: "副腎不全",
+    emoji: "⚡",
+    category: "内分泌",
+    detail: "コルチゾール欠乏によりADH分泌が抑制されず水貯留をきたす。アルドステロン欠乏を伴う原発性では腎からのNa喪失も加わり体液量減少性となる。高K血症、低血糖、色素沈着、倦怠感が手がかり。ACTH欠乏（続発性）では正常容量性でSIADH様となりうるため注意。",
+    workup: "朝コルチゾール、ACTH、必要に応じ迅速ACTH負荷試験、電解質（K）",
+  },
+  hypothyroid: {
+    name: "甲状腺機能低下症",
+    emoji: "🦋",
+    category: "内分泌",
+    detail: "重症の甲状腺機能低下では糸球体濾過低下と水利尿障害により低Na血症が生じる。軽度〜中等度では低Na血症は稀。SIADHと鑑別困難なため、低Na血症の評価ではTSH測定が必須。粘液水腫、寒がり、便秘、嗄声、徐脈が臨床的手がかり。",
+    workup: "TSH、FT3、FT4（TSH高値＋FT4低値で確定）",
+  },
+  heart_failure: {
+    name: "心不全",
+    emoji: "❤️",
+    category: "体液量増加",
+    detail: "有効循環血漿量低下によりRAA系とADHが活性化され、Na保持以上に水分が過剰となり希釈性低Na血症をきたす。浮腫、起座呼吸、頸静脈怒張を伴う。尿中Naは低値（<20 mmol/L）が典型。低Na血症は心不全の予後不良因子でもある。",
+    workup: "BNP/NT-proBNP、心エコー、胸部X線、尿中Na",
+  },
+  liver_cirrhosis: {
+    name: "肝硬変",
+    emoji: "🫁",
+    category: "体液量増加",
+    detail: "門脈圧亢進と内臓血管拡張による有効循環血漿量低下がADH分泌を促進し、水貯留と希釈性低Na血症をきたす。腹水、黄疸、くも状血管腫を伴い、尿中Na<20 mmol/Lが典型。低Na血症の程度は肝硬変の重症度と相関する。",
+    workup: "肝機能、アルブミン、PT-INR、腹部エコー、尿中Na",
+  },
+  nephrotic: {
+    name: "ネフローゼ症候群",
+    emoji: "🔬",
+    category: "体液量増加",
+    detail: "低アルブミン血症による膠質浸透圧低下と有効循環血漿量低下がADH分泌を刺激し水貯留をきたす。高度蛋白尿（≧3.5g/日）、低アルブミン血症、浮腫、脂質異常症が特徴。泡立つ尿が臨床的手がかりとなる。",
+    workup: "尿蛋白定量、血清アルブミン、脂質、腎機能、腎生検",
+  },
+  renal_failure: {
+    name: "腎不全",
+    emoji: "🫘",
+    category: "体液量増加",
+    detail: "高度の腎機能低下（eGFR<30程度）では水排泄能の低下そのものが低Na血症を招く。体液量も増加傾向となる。Cr上昇、高K血症、代謝性アシドーシスを伴う。尿中Naは排泄障害のため高値となりうる。",
+    workup: "Cr、BUN、eGFR、電解質、血液ガス、腎エコー",
+  },
+  polydipsia: {
+    name: "一次性多飲（心因性多飲）",
+    emoji: "🚰",
+    category: "水分過剰",
+    detail: "大量飲水（通常10〜15L/日以上）により腎の最大希釈能を超え、低Na血症をきたす。ADH分泌は適切に抑制されるため尿は最大限に希釈され、尿浸透圧<100 mOsm/kgとなる。精神疾患（統合失調症など）に多い。体液量は臨床的に正常。",
+    workup: "飲水量の病歴聴取、尿浸透圧（<100で確認）、精神科評価",
+  },
+  beer_potomania: {
+    name: "ビールポトマニア / 低溶質摂取",
+    emoji: "🍺",
+    category: "水分過剰",
+    detail: "ビール大量摂取や極度の低蛋白食（お茶とトースト症候群）では、溶質摂取不足のため腎で排泄できる自由水量が制限され低Na血症をきたす。尿浸透圧は低値だが一次性多飲ほどの飲水量は不要。食事歴・飲酒歴が鑑別の鍵。",
+    workup: "食事歴・飲酒歴の詳細聴取、尿浸透圧、尿中Na",
+  },
+  drug_siadh: {
+    name: "薬剤性SIADH",
+    emoji: "💉",
+    category: "薬剤",
+    detail: "多くの薬剤がADH分泌促進または腎での水再吸収増強を介して低Na血症をきたす。SSRI/SNRI、カルバマゼピン、三環系抗うつ薬、抗精神病薬、抗癌剤（シクロホスファミド、ビンクリスチン）、デスモプレシンなどが代表的。薬剤開始・増量との時間的関連の確認が重要。",
+    workup: "薬剤歴の確認、被疑薬の中止・変更後のNa推移",
+  },
+  pseudo: {
+    name: "偽性低Na血症",
+    emoji: "🧪",
+    category: "非低張性",
+    detail: "血清浸透圧は正常範囲（275〜295 mOsm/kg）で、高トリグリセリド血症や多発性骨髄腫などの異常蛋白血症により間接法でNa値が低く測定される。実際の血漿水分中のNa濃度は正常であり治療対象とならない。直接法（イオン選択電極法・ガス分析）で確認する。",
+    workup: "血清浸透圧、脂質、蛋白分画、血液ガスNa（直接法）",
+  },
+  hypertonic: {
+    name: "高張性低Na血症",
+    emoji: "🍬",
+    category: "非低張性",
+    detail: "血清浸透圧が高値（>295 mOsm/kg）で、浸透圧活性物質により細胞内から細胞外へ水が移動し血清Naが希釈される。最も多いのは高血糖（糖尿病性）で、血糖100 mg/dL上昇ごとにNaは約1.6〜2.4 mEq/L低下する。マンニトール大量投与でも生じうる。原因物質の是正が優先。",
+    workup: "血糖、血清浸透圧、補正Na計算（血糖補正後のNa）",
+  },
+};
+
+// ===== ステップ定義 =====
+const STEPS = [
+  {
+    id: "osmolality",
+    title: "血清浸透圧の評価",
+    question: "血清浸透圧はどの範囲ですか？",
+    hint: "まず低張性かどうかを確認します（偽性・高張性の除外）",
+    type: "single",
+    options: [
+      { label: "低張性（< 275 mOsm/kg）", value: "low", icon: "⬇️" },
+      { label: "等張性（275〜295 mOsm/kg）", value: "normal", icon: "➡️" },
+      { label: "高張性（> 295 mOsm/kg）", value: "high", icon: "⬆️" },
+      { label: "未測定 / 不明", value: "unknown", icon: "🤔" },
+    ]
+  },
+  {
+    id: "volume",
+    title: "体液量（細胞外液量）の評価",
+    question: "患者の体液量状態は？",
+    hint: "皮膚ツルゴール、粘膜乾燥、頻脈、浮腫、頸静脈怒張などから評価",
+    type: "single",
+    options: [
+      { label: "減少（脱水徴候あり）", value: "decreased", icon: "🏜️" },
+      { label: "正常（浮腫も脱水もなし）", value: "normal", icon: "🟰" },
+      { label: "増加（浮腫あり）", value: "increased", icon: "🫧" },
+      { label: "評価困難", value: "uncertain", icon: "🤔" },
+    ]
+  },
+  {
+    id: "urine_osm",
+    title: "尿浸透圧",
+    question: "尿浸透圧（Uosm）の結果は？",
+    hint: "<100 mOsm/kgならADH抑制が正常に起きている（希釈尿）",
+    type: "single",
+    options: [
+      { label: "< 100 mOsm/kg（希釈尿）", value: "low", icon: "💧" },
+      { label: "≧ 100 mOsm/kg（濃縮尿）", value: "high", icon: "🟡" },
+      { label: "未測定 / 不明", value: "unknown", icon: "🤔" },
+    ]
+  },
+  {
+    id: "urine_na",
+    title: "尿中ナトリウム",
+    question: "尿中Na濃度の結果は？",
+    hint: "<30 mmol/Lなら有効循環血漿量低下を示唆",
+    type: "single",
+    options: [
+      { label: "< 30 mmol/L（Na保持傾向）", value: "low", icon: "⬇️" },
+      { label: "≧ 30 mmol/L（Na排泄傾向）", value: "high", icon: "⬆️" },
+      { label: "未測定 / 不明", value: "unknown", icon: "🤔" },
+    ]
+  },
+  {
+    id: "labs",
+    title: "検査所見（該当するものをすべて選択）",
+    question: "以下の検査所見で該当するものは？",
+    hint: "入手可能な検査結果をチェックしてください",
+    type: "multi",
+    options: [
+      { label: "BUN < 10 mg/dL（低BUN）", value: "low_bun" },
+      { label: "BUN > 20 mg/dL（高BUN）", value: "high_bun" },
+      { label: "血清尿酸 < 4 mg/dL（低尿酸）", value: "low_uric" },
+      { label: "血清尿酸 > 5 mg/dL（高尿酸）", value: "high_uric" },
+      { label: "TSH 高値", value: "high_tsh" },
+      { label: "血清コルチゾール低値", value: "low_cortisol" },
+      { label: "高K血症", value: "high_k" },
+      { label: "Cr上昇 / eGFR < 30", value: "high_cr" },
+      { label: "高血糖（> 200 mg/dL）", value: "high_glucose" },
+      { label: "低アルブミン血症（< 3.0 g/dL）", value: "low_alb" },
+      { label: "高脂血症 / 異常蛋白血症", value: "dyslipidemia" },
+      { label: "検査未施行 / 不明", value: "unknown" },
+    ]
+  },
+  {
+    id: "symptoms",
+    title: "臨床所見・病歴（該当するものをすべて選択）",
+    question: "以下の臨床所見・病歴で該当するものは？",
+    type: "multi",
+    options: [
+      { label: "嘔吐・下痢・大量発汗", value: "gi_loss" },
+      { label: "大量飲水の習慣", value: "excessive_water" },
+      { label: "ビール多飲 / 極端な低蛋白食", value: "beer_low_protein" },
+      { label: "術後 / 疼痛 / ストレス", value: "post_surgery" },
+      { label: "肺疾患（肺炎・肺癌等）", value: "lung_disease" },
+      { label: "中枢神経疾患（頭部外傷・脳出血等）", value: "cns_disease" },
+      { label: "浮腫 / 胸水 / 腹水", value: "edema_effusion" },
+      { label: "頸静脈怒張 / 起座呼吸", value: "jvd_orthopnea" },
+      { label: "黄疸 / くも状血管腫", value: "jaundice_spider" },
+      { label: "色素沈着 / 倦怠感 / 低血圧", value: "pigmentation" },
+      { label: "寒がり / 便秘 / 嗄声 / 徐脈", value: "cold_intolerance" },
+      { label: "泡立つ尿 / 高度蛋白尿", value: "foamy_urine" },
+      { label: "該当なし", value: "none" },
+    ]
+  },
+  {
+    id: "drugs",
+    title: "薬剤歴（該当するものをすべて選択）",
+    question: "以下の薬剤を使用していますか？",
+    hint: "低Na血症をきたしうる薬剤をチェック",
+    type: "multi",
+    options: [
+      { label: "サイアザイド系利尿薬（ヒドロクロロチアジド等）", value: "thiazide" },
+      { label: "SSRI / SNRI（パロキセチン等）", value: "ssri" },
+      { label: "カルバマゼピン / オキシカルバゼピン", value: "carbamazepine" },
+      { label: "三環系抗うつ薬", value: "tca" },
+      { label: "抗精神病薬", value: "antipsychotic" },
+      { label: "抗癌剤（シクロホスファミド / ビンクリスチン等）", value: "anticancer" },
+      { label: "デスモプレシン", value: "desmopressin" },
+      { label: "オキシトシン", value: "oxytocin" },
+      { label: "該当薬剤なし", value: "none" },
+    ]
+  },
+];
+
+// ===== スコアリングエンジン =====
+function calcScores(answers) {
+  const scores = {};
+  Object.keys(DISEASES).forEach(k => scores[k] = 0);
+
+  // Step 1: 血清浸透圧
+  const osm = answers.osmolality;
+  if (osm === "high") {
+    scores.hypertonic += 10;
+    Object.keys(scores).forEach(k => { if (k !== "hypertonic") scores[k] -= 5; });
+  } else if (osm === "normal") {
+    scores.pseudo += 10;
+    Object.keys(scores).forEach(k => { if (k !== "pseudo") scores[k] -= 5; });
+  } else if (osm === "low") {
+    const realCauses = ["siadh","hypovolemic_extrarenal","diuretic","adrenal","hypothyroid",
+      "heart_failure","liver_cirrhosis","nephrotic","renal_failure","polydipsia","beer_potomania","drug_siadh"];
+    realCauses.forEach(k => scores[k] += 2);
+    scores.hypertonic -= 5;
+    scores.pseudo -= 5;
+  } else {
+    Object.keys(scores).forEach(k => scores[k] += 1);
+  }
+
+  // Step 2: 体液量
+  const vol = answers.volume;
+  if (vol === "decreased") {
+    scores.hypovolemic_extrarenal += 4;
+    scores.diuretic += 3;
+    scores.adrenal += 3;
+    scores.siadh -= 1;
+    scores.drug_siadh -= 1;
+    scores.heart_failure -= 2;
+    scores.liver_cirrhosis -= 2;
+    scores.nephrotic -= 2;
+    scores.polydipsia -= 1;
+  } else if (vol === "normal") {
+    scores.siadh += 4;
+    scores.drug_siadh += 4;
+    scores.hypothyroid += 3;
+    scores.adrenal += 2;
+    scores.polydipsia += 3;
+    scores.beer_potomania += 3;
+    scores.heart_failure -= 2;
+    scores.liver_cirrhosis -= 2;
+    scores.nephrotic -= 2;
+    scores.hypovolemic_extrarenal -= 2;
+  } else if (vol === "increased") {
+    scores.heart_failure += 4;
+    scores.liver_cirrhosis += 4;
+    scores.nephrotic += 4;
+    scores.renal_failure += 3;
+    scores.siadh -= 2;
+    scores.drug_siadh -= 2;
+    scores.hypovolemic_extrarenal -= 3;
+    scores.polydipsia -= 2;
+    scores.beer_potomania -= 2;
+  }
+
+  // Step 3: 尿浸透圧
+  const uosm = answers.urine_osm;
+  if (uosm === "low") {
+    scores.polydipsia += 5;
+    scores.beer_potomania += 5;
+    scores.siadh -= 3;
+    scores.drug_siadh -= 3;
+    scores.hypovolemic_extrarenal -= 2;
+    scores.adrenal -= 1;
+    scores.heart_failure -= 2;
+    scores.liver_cirrhosis -= 2;
+  } else if (uosm === "high") {
+    scores.siadh += 3;
+    scores.drug_siadh += 3;
+    scores.hypovolemic_extrarenal += 2;
+    scores.diuretic += 2;
+    scores.adrenal += 2;
+    scores.heart_failure += 2;
+    scores.liver_cirrhosis += 2;
+    scores.nephrotic += 2;
+    scores.renal_failure += 2;
+    scores.hypothyroid += 2;
+    scores.polydipsia -= 4;
+    scores.beer_potomania -= 3;
+  }
+
+  // Step 4: 尿中Na
+  const una = answers.urine_na;
+  if (una === "low") {
+    scores.hypovolemic_extrarenal += 4;
+    scores.heart_failure += 3;
+    scores.liver_cirrhosis += 3;
+    scores.nephrotic += 2;
+    scores.siadh -= 2;
+    scores.drug_siadh -= 2;
+    scores.adrenal -= 1;
+  } else if (una === "high") {
+    scores.siadh += 4;
+    scores.drug_siadh += 4;
+    scores.diuretic += 3;
+    scores.adrenal += 3;
+    scores.renal_failure += 2;
+    scores.hypovolemic_extrarenal -= 3;
+    scores.heart_failure -= 1;
+    scores.liver_cirrhosis -= 1;
+  }
+
+  // Step 5: 検査所見
+  const labs = answers.labs || [];
+  labs.forEach(v => {
+    if (v === "low_bun") { scores.siadh += 3; scores.drug_siadh += 2; }
+    if (v === "high_bun") { scores.hypovolemic_extrarenal += 3; scores.renal_failure += 2; }
+    if (v === "low_uric") { scores.siadh += 4; scores.drug_siadh += 3; }
+    if (v === "high_uric") { scores.hypovolemic_extrarenal += 3; scores.diuretic += 1; }
+    if (v === "high_tsh") { scores.hypothyroid += 6; }
+    if (v === "low_cortisol") { scores.adrenal += 6; }
+    if (v === "high_k") { scores.adrenal += 4; scores.renal_failure += 2; }
+    if (v === "high_cr") { scores.renal_failure += 5; }
+    if (v === "high_glucose") { scores.hypertonic += 6; }
+    if (v === "low_alb") { scores.nephrotic += 3; scores.liver_cirrhosis += 3; }
+    if (v === "dyslipidemia") { scores.pseudo += 4; }
+  });
+
+  // Step 6: 臨床所見・病歴
+  const sx = answers.symptoms || [];
+  sx.forEach(v => {
+    if (v === "gi_loss") scores.hypovolemic_extrarenal += 4;
+    if (v === "excessive_water") scores.polydipsia += 5;
+    if (v === "beer_low_protein") scores.beer_potomania += 5;
+    if (v === "post_surgery") { scores.siadh += 3; scores.drug_siadh += 1; }
+    if (v === "lung_disease") scores.siadh += 3;
+    if (v === "cns_disease") scores.siadh += 3;
+    if (v === "edema_effusion") {
+      scores.heart_failure += 2; scores.liver_cirrhosis += 2;
+      scores.nephrotic += 2; scores.renal_failure += 2;
+    }
+    if (v === "jvd_orthopnea") scores.heart_failure += 4;
+    if (v === "jaundice_spider") scores.liver_cirrhosis += 4;
+    if (v === "pigmentation") scores.adrenal += 3;
+    if (v === "cold_intolerance") scores.hypothyroid += 3;
+    if (v === "foamy_urine") scores.nephrotic += 3;
+  });
+
+  // Step 7: 薬剤
+  const drugs = answers.drugs || [];
+  drugs.forEach(v => {
+    if (v === "thiazide") scores.diuretic += 6;
+    if (v === "ssri") scores.drug_siadh += 4;
+    if (v === "carbamazepine") scores.drug_siadh += 4;
+    if (v === "tca") scores.drug_siadh += 3;
+    if (v === "antipsychotic") scores.drug_siadh += 3;
+    if (v === "anticancer") scores.drug_siadh += 3;
+    if (v === "desmopressin") scores.drug_siadh += 4;
+    if (v === "oxytocin") scores.drug_siadh += 3;
+  });
+
+  return scores;
+}
+
+function rankDiseases(scores) {
+  return Object.entries(scores)
+    .map(([key, score]) => ({ key, score, ...DISEASES[key] }))
+    .filter(d => d.score > 0)
+    .sort((a, b) => b.score - a.score);
+}
+
+function getProbLevel(score, maxScore) {
+  const ratio = score / Math.max(maxScore, 1);
+  if (ratio >= 0.7) return { level: "high", label: "可能性 高" };
+  if (ratio >= 0.35) return { level: "medium", label: "可能性 中" };
+  return { level: "low", label: "可能性 低" };
+}
+
+// ===== UIレンダリング =====
+let currentStep = 0;
+const answers = {};
+
+function render() {
+  const app = document.getElementById("app");
+  let html = "";
+
+  // アルゴリズムノート
+  html += `<div class="algo-note">
+    <strong>💡 診断アルゴリズム:</strong>
+    血清浸透圧 → 体液量評価 → 尿浸透圧 → 尿中Na → 検査・病歴で系統的に鑑別します
+  </div>`;
+
+  STEPS.forEach((step, i) => {
+    const state = i < currentStep ? "completed" : i === currentStep ? "" : "inactive";
+    const numClass = i < currentStep ? "done" : "";
+    html += `<div class="step-card ${state}" id="step-${i}">`;
+    html += `<div class="step-header">
+      <span class="step-number ${numClass}">${i < currentStep ? "✓" : i + 1}</span>
+      <span class="step-title">${step.title}</span>
+    </div>`;
+
+    if (i <= currentStep) {
+      html += `<div class="step-body">`;
+      html += `<p style="font-weight:600; margin-bottom:4px;">${step.question}</p>`;
+      if (step.hint) html += `<p class="hint">${step.hint}</p>`;
+
+      if (step.type === "single") {
+        html += `<div class="option-group">`;
+        step.options.forEach(opt => {
+          const sel = answers[step.id] === opt.value ? "selected" : "";
+          html += `<button class="option-btn ${sel}" onclick="selectOption('${step.id}', '${opt.value}', ${i})">
+            <span class="icon">${opt.icon}</span> ${opt.label}
+          </button>`;
+        });
+        html += `</div>`;
+      } else {
+        html += `<div class="checklist">`;
+        const checked = answers[step.id] || [];
+        step.options.forEach(opt => {
+          const isChecked = checked.includes(opt.value);
+          html += `<div class="check-item" onclick="toggleCheck('${step.id}', '${opt.value}')">
+            <input type="checkbox" ${isChecked ? "checked" : ""} tabindex="-1">
+            <label>${opt.label}</label>
+          </div>`;
+        });
+        html += `</div>`;
+        if (i === currentStep) {
+          const hasSelection = checked.length > 0;
+          html += `<button class="next-btn" onclick="nextStep(${i})" ${hasSelection ? "" : "disabled"}>
+            次へ ▶
+          </button>`;
+        }
+      }
+      html += `</div>`;
+    }
+    html += `</div>`;
+  });
+
+  // 結果表示
+  if (currentStep >= STEPS.length) {
+    const scores = calcScores(answers);
+    const ranked = rankDiseases(scores);
+    const maxScore = ranked.length > 0 ? ranked[0].score : 1;
+
+    html += `<div class="result-panel show">`;
+    html += `<div class="result-header">📊 鑑別診断結果</div>`;
+    html += `<div class="result-body">`;
+    html += `<p style="margin-bottom:14px; color:#555; font-size:0.9em;">入力された臨床情報に基づく鑑別疾患の優先度です。確定診断には追加検査が必要です。</p>`;
+
+    ranked.forEach(d => {
+      const prob = getProbLevel(d.score, maxScore);
+      html += `<div class="dx-card ${prob.level}">
+        <div class="dx-name">
+          ${d.emoji} ${d.name}
+          <span class="prob-badge">${prob.label}</span>
+        </div>
+        <div class="dx-detail">${d.detail}</div>
+        <div class="dx-workup">🔍 <strong>追加検査:</strong> ${d.workup}</div>
+      </div>`;
+    });
+
+    html += `<div class="divider"></div>`;
+    html += `<p style="font-size:0.82em; color:#888; line-height:1.6;">
+      ⚠️ 本ツールは臨床判断の補助を目的としており、確定診断を行うものではありません。<br>
+      SIADHは除外診断です。甲状腺・副腎機能の評価を必ず行ってください。<br>
+      実臨床では総合的な臨床判断が必要です。
+    </p>`;
+    html += `</div></div>`;
+  }
+
+  html += `<button class="reset-btn" onclick="resetAll()">🔄 最初からやり直す</button>`;
+  app.innerHTML = html;
+
+  if (currentStep < STEPS.length) {
+    const el = document.getElementById(`step-${currentStep}`);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+  } else {
+    const panel = document.querySelector(".result-panel");
+    if (panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+function selectOption(stepId, value, stepIndex) {
+  answers[stepId] = value;
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function toggleCheck(stepId, value) {
+  if (!answers[stepId]) answers[stepId] = [];
+  const arr = answers[stepId];
+  const idx = arr.indexOf(value);
+
+  if (value === "none" || value === "unknown") {
+    answers[stepId] = idx >= 0 ? [] : [value];
+  } else {
+    const noneIdx = arr.indexOf("none");
+    if (noneIdx >= 0) arr.splice(noneIdx, 1);
+    const unkIdx = arr.indexOf("unknown");
+    if (unkIdx >= 0) arr.splice(unkIdx, 1);
+    if (idx >= 0) arr.splice(idx, 1);
+    else arr.push(value);
+  }
+  render();
+}
+
+function nextStep(stepIndex) {
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function resetAll() {
+  currentStep = 0;
+  Object.keys(answers).forEach(k => delete answers[k]);
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+render();
+</script>
+</body>
+</html>
