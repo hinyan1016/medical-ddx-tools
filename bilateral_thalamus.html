@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#3C1874">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>両側視床FLAIR高信号 鑑別診断ツール</title>
+<style>
+  :root {
+    --primary-dark: #3C1874;
+    --primary: #6B3FA0;
+    --primary-light: #F0E8FE;
+    --accent-bg: #E8DEFA;
+    --red: #DC3545;
+    --yellow: #F5C518;
+    --green: #28A745;
+    --orange: #E8850C;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(60,24,116,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #F0E8FE 0%, #F6F4F8 100%);
+    color: #222; min-height: 100vh; padding: 0 0 40px;
+  }
+  header {
+    background: linear-gradient(135deg, #3C1874, #6B3FA0);
+    color: var(--white); padding: 14px 20px 18px; text-align: center;
+    box-shadow: 0 4px 16px rgba(60,24,116,0.18);
+  }
+  .back-bar { display: flex; align-items: center; margin-bottom: 8px; }
+  .back-bar a {
+    color: rgba(255,255,255,0.85); text-decoration: none; font-size: 0.85em;
+    display: flex; align-items: center; gap: 4px; padding: 4px 8px;
+    border-radius: 6px; transition: background 0.2s;
+  }
+  .back-bar a:active { background: rgba(255,255,255,0.15); }
+  header h1 { font-size: 1.55em; font-weight: 700; letter-spacing: 0.04em; }
+  header p { font-size: 0.92em; margin-top: 6px; opacity: 0.85; }
+
+  .container { max-width: 820px; margin: 0 auto; padding: 24px 16px; }
+
+  .step-card {
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: var(--shadow); margin-bottom: 18px; overflow: hidden; transition: opacity 0.3s;
+  }
+  .step-card.inactive { opacity: 0.45; pointer-events: none; }
+  .step-card.completed { opacity: 1; }
+  .step-header {
+    display: flex; align-items: center; gap: 10px; padding: 14px 18px;
+    background: var(--accent-bg); border-bottom: 2px solid var(--primary); cursor: pointer;
+  }
+  .step-number {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 50%; background: var(--primary);
+    color: var(--white); font-weight: 700; font-size: 0.95em; flex-shrink: 0;
+  }
+  .step-number.done { background: var(--green); }
+  .step-title { font-weight: 700; font-size: 1.05em; color: var(--primary-dark); }
+  .step-body { padding: 18px; }
+
+  .option-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .option-btn {
+    display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+    border: 2px solid #D0D8E4; border-radius: 8px; background: var(--white);
+    font-size: 0.97em; cursor: pointer; transition: all 0.18s; text-align: left;
+    color: #222; font-family: inherit; width: 100%;
+  }
+  .option-btn:hover { border-color: var(--primary); background: var(--primary-light); }
+  .option-btn.selected { border-color: var(--primary); background: var(--primary-light); font-weight: 700; }
+  .option-btn .icon { font-size: 1.2em; flex-shrink: 0; width: 24px; text-align: center; }
+
+  .checklist { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .check-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+    border-radius: 8px; background: var(--light-gray); cursor: pointer;
+    transition: background 0.15s; user-select: none; font-size: 0.95em;
+  }
+  .check-item:hover { background: #E0D4F0; }
+  .check-item input[type="checkbox"] {
+    width: 18px; height: 18px; accent-color: var(--primary); flex-shrink: 0; cursor: pointer;
+  }
+  .check-item label { cursor: pointer; flex: 1; }
+
+  .result-panel {
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(60,24,116,0.15); overflow: hidden;
+    margin-top: 24px; display: none;
+  }
+  .result-panel.show { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  .result-header {
+    padding: 16px 20px; background: linear-gradient(135deg, #3C1874, #6B3FA0);
+    color: var(--white); font-weight: 700; font-size: 1.15em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .result-body { padding: 20px; }
+
+  .dx-card {
+    border: 2px solid transparent; border-radius: 8px; padding: 16px;
+    margin-bottom: 12px; position: relative; transition: all 0.2s;
+  }
+  .dx-card.high { border-color: var(--red); background: #FFF5F5; }
+  .dx-card.medium { border-color: var(--orange); background: #FFF8F0; }
+  .dx-card.low { border-color: var(--gray); background: var(--light-gray); }
+
+  .dx-card .dx-name {
+    font-weight: 700; font-size: 1.08em; display: flex; align-items: center;
+    gap: 8px; margin-bottom: 6px; flex-wrap: wrap;
+  }
+  .dx-card .prob-badge {
+    display: inline-block; padding: 2px 10px; border-radius: 12px;
+    font-size: 0.78em; font-weight: 700; color: var(--white);
+  }
+  .dx-card.high .prob-badge { background: var(--red); }
+  .dx-card.medium .prob-badge { background: var(--orange); }
+  .dx-card.low .prob-badge { background: var(--gray); }
+
+  .dx-card .dx-detail { font-size: 0.9em; color: #444; line-height: 1.6; }
+  .dx-card .dx-detail strong { color: var(--primary-dark); }
+  .dx-card .dx-workup {
+    margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ccc;
+    font-size: 0.88em; color: var(--primary);
+  }
+
+  .next-btn {
+    display: inline-flex; align-items: center; gap: 6px; margin-top: 14px;
+    padding: 10px 22px; background: var(--primary); color: var(--white); border: none;
+    border-radius: 8px; font-size: 0.95em; font-weight: 600; cursor: pointer;
+    transition: background 0.15s; font-family: inherit;
+  }
+  .next-btn:hover { background: var(--primary-dark); }
+  .next-btn:disabled { background: #B0BEC5; cursor: not-allowed; }
+
+  .reset-btn {
+    display: block; margin: 24px auto 0; padding: 10px 32px;
+    background: var(--white); color: var(--red); border: 2px solid var(--red);
+    border-radius: 8px; font-size: 0.95em; font-weight: 600; cursor: pointer;
+    font-family: inherit; transition: all 0.15s;
+  }
+  .reset-btn:hover { background: var(--red); color: var(--white); }
+
+  .hint { font-size: 0.85em; color: var(--gray); margin-top: 6px; line-height: 1.5; }
+  .divider { height: 1px; background: #D0D8E4; margin: 14px 0; }
+
+  .algo-note {
+    background: #FFF8E1; border-left: 4px solid var(--yellow);
+    padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 18px;
+    font-size: 0.9em; line-height: 1.6; color: #555;
+  }
+  .algo-note strong { color: var(--primary-dark); }
+
+  .emergency-box {
+    background: #FFF0F0; border: 2px solid var(--red); border-radius: 8px;
+    padding: 14px 16px; margin-bottom: 18px; font-size: 0.9em; line-height: 1.6;
+  }
+  .emergency-box strong { color: var(--red); }
+
+  @media (max-width: 600px) {
+    header { padding: 12px 14px 14px; }
+    header h1 { font-size: 1.2em; }
+    header p { font-size: 0.85em; }
+    .container { padding: 14px 10px; }
+    .step-header { padding: 12px 14px; }
+    .option-btn { min-height: 44px; font-size: 0.92em; -webkit-tap-highlight-color: transparent; }
+    .step-card { margin-bottom: 14px; }
+    .step-body, .result-body { padding: 14px; }
+    .dx-card { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="back-bar"><a href="index.html">← 診断ツール一覧に戻る</a></div>
+  <h1>両側視床FLAIR高信号 鑑別診断ツール</h1>
+  <p>MRI所見・臨床経過・検査結果から両側視床病変の原因を系統的に鑑別</p>
+</header>
+
+<div class="container" id="app"></div>
+
+<script>
+// ===== 疾患データ =====
+const DISEASES = {
+  deep_venous_thrombosis: {
+    name: "脳深部静脈血栓症",
+    emoji: "🔴",
+    category: "血管性【緊急】",
+    detail: "内大脳静脈・Galen大静脈・直静脈洞の血栓により両側視床に静脈性浮腫・梗塞をきたす。意識障害、頭痛、けいれんが主症状。DWIでは梗塞と浮腫が混在し、SWI/T2*で出血成分を認めることが多い。経口避妊薬、妊娠・周産期、凝固異常（抗リン脂質抗体症候群等）がリスク因子。MRV/CTVで確定診断。抗凝固療法が治療の柱。",
+    workup: "MRV/CTV（確定診断）、SWI/T2*（出血評価）、D-dimer、凝固系（プロテインC/S、AT-III、抗リン脂質抗体）",
+  },
+  percheron_infarction: {
+    name: "Percheron動脈梗塞",
+    emoji: "🧠",
+    category: "血管性【緊急】",
+    detail: "Percheron動脈（1本の穿通枝が両側傍正中視床を灌流する解剖学的変異）の閉塞による両側視床梗塞。急性発症の意識障害、垂直注視麻痺、記憶障害が古典的3徴。中脳内側にも病変が及ぶことがある（V字サイン）。DWI高信号＋ADC低下で急性梗塞を確認。若年〜高齢まで幅広い年齢で発症しうる。",
+    workup: "DWI/ADC（急性梗塞確認）、MRA（基底動脈・後大脳動脈評価）、心エコー（塞栓源）、凝固系検査",
+  },
+  dural_avf: {
+    name: "硬膜動静脈瘻（dAVF）/ 静脈うっ滞",
+    emoji: "🌀",
+    category: "血管性【緊急】",
+    detail: "硬膜動静脈瘻による静脈還流障害で両側視床にうっ血性浮腫をきたす。亜急性〜慢性の経過で意識変容、認知機能低下が進行する。画像ではFLAIR高信号に加え、異常な血管拡張やflow voidを認めることがある。テント部dAVFで深部静脈系の還流障害が起こりやすい。DSA（脳血管造影）が確定診断のゴールドスタンダード。",
+    workup: "造影MRA/CTA（シャント検出）、DSA（確定診断・治療計画）、SWI（拡張静脈の検出）",
+  },
+  japanese_encephalitis: {
+    name: "ウイルス性脳炎（日本脳炎等）",
+    emoji: "🦟",
+    category: "感染・脳炎",
+    detail: "日本脳炎ウイルス、West Nileウイルスなどのフラビウイルスは視床親和性が高く、両側視床にFLAIR高信号を呈する。発熱、頭痛、意識障害、けいれんが主症状。髄液では細胞数増多（リンパ球優位）を認める。夏季の流行地域での発症、ワクチン未接種がリスク。その他HSV以外のウイルス脳炎でも視床病変をきたしうる。",
+    workup: "髄液検査（細胞数・蛋白・糖）、髄液PCR/抗体検査、血清ウイルス抗体（IgM）、EEG",
+  },
+  ane: {
+    name: "急性壊死性脳症（ANE）",
+    emoji: "💥",
+    category: "感染・脳炎",
+    detail: "インフルエンザ等のウイルス感染を契機に急速に発症する重症脳症。両側視床を中心に壊死・出血をきたすのが特徴。小児に多いが成人例もある。画像では視床のFLAIR高信号に加え、SWI/T2*で出血成分、同心円状パターン（target sign）を認めることがある。サイトカインストームが病態に関与。RANBP2遺伝子変異による家族性例も報告。",
+    workup: "SWI/T2*（出血評価）、インフルエンザ迅速検査、髄液検査（細胞数正常〜軽度増多）、血清フェリチン・サイトカイン、遺伝子検査（RANBP2）",
+  },
+  wernicke: {
+    name: "Wernicke脳症",
+    emoji: "🍺",
+    category: "代謝・栄養",
+    detail: "ビタミンB1（チアミン）欠乏により内側視床、乳頭体、第三脳室周囲、中脳水道周囲灰白質にセットで病変が出現する。古典的3徴は眼球運動障害（外転神経麻痺等）、失調、意識障害/精神症状だが、全例に揃うのは約16%のみ。アルコール依存が最多だが、悪阻、長期絶食、不適切な輸液管理でも発症する。「内側視床＋セット病変」が画像的手がかり。治療はチアミン大量静注。",
+    workup: "血清ビタミンB1（治療前採血）、MRI（乳頭体・第三脳室周囲・中脳水道周囲の評価）、血中乳酸・ピルビン酸",
+  },
+  osmotic_demyelination: {
+    name: "浸透圧性脱髄症候群（ODS）",
+    emoji: "⚗️",
+    category: "代謝・栄養",
+    detail: "低ナトリウム血症の急速補正（24時間で＞10-12 mEq/L）を契機に橋中心部（CPM）や橋外（EPM：視床、基底核、皮質下白質等）に脱髄をきたす。橋外病変としての両側視床FLAIR高信号を呈しうる。症状は補正後2-6日で出現し、意識障害、構音障害、四肢麻痺、失調などを認める。低Na血症の基礎疾患（アルコール依存、肝疾患、低栄養）がリスク。",
+    workup: "Na補正速度の確認（経時的採血記録）、MRI（橋中心部の評価）、肝機能・栄養状態評価",
+  },
+  hepatic_encephalopathy: {
+    name: "肝性脳症",
+    emoji: "🟡",
+    category: "代謝・栄養",
+    detail: "肝硬変や門脈体循環シャントに伴い、高アンモニア血症による脳機能障害をきたす。慢性例では淡蒼球のT1高信号（マンガン沈着）が特徴的。急性増悪時には大脳皮質や視床にFLAIR高信号を呈しうる。羽ばたき振戦（asterixis）、意識レベルの変動、日内変動が臨床的特徴。West Haven分類で重症度を評価。",
+    workup: "血清アンモニア、肝機能検査、腹部エコー/CT（肝硬変・シャントの評価）、MRI T1WI（淡蒼球高信号）、EEG（三相波）",
+  },
+  adem: {
+    name: "ADEM（急性散在性脳脊髄炎）",
+    emoji: "🛡️",
+    category: "炎症・脱髄",
+    detail: "感染やワクチン接種後1-4週で発症する免疫介在性の中枢神経脱髄疾患。小児に多い。多発性の大脳白質病変が主体だが、視床・基底核・脳幹・脊髄にも病変をきたしうる。意識障害、多巣性神経症状を呈する。単相性の経過（再発しない）が典型。髄液では細胞数増多・蛋白上昇を認める。MOG抗体陽性例が一定数存在。",
+    workup: "MRI（脳＋脊髄：多発病変の評価）、髄液検査、MOG抗体・AQP4抗体、先行感染/ワクチンの聴取",
+  },
+  autoimmune_encephalitis: {
+    name: "自己免疫性脳炎（NMOSD/MOGAD含む）",
+    emoji: "🔬",
+    category: "炎症・脱髄",
+    detail: "抗NMDA受容体抗体、抗LGI1抗体などの自己抗体による脳炎。抗LGI1抗体脳炎では両側内側側頭葉〜視床にFLAIR高信号を呈する。精神症状、けいれん、記憶障害、不随意運動が特徴。NMOSD/MOGADでも視床病変を呈しうる（特に間脳周囲：AQP4高発現部位）。亜急性経過で進行し、免疫療法に反応する。",
+    workup: "血清/髄液自己抗体パネル（NMDA-R、LGI1、CASPR2、AQP4、MOG）、髄液検査、EEG、全身腫瘍検索（傍腫瘍性の除外）",
+  },
+  thalamic_glioma: {
+    name: "両側視床グリオーマ",
+    emoji: "🎯",
+    category: "腫瘍",
+    detail: "びまん性に視床に浸潤するグリオーマで、小児〜若年成人に比較的多い。緩徐進行性の意識障害、人格変化、認知機能低下を呈する。画像では両側視床の腫大・FLAIR高信号を認め、境界不明瞭。造影増強は軽度〜なしのことが多い（低悪性度の場合）。MRSでコリン上昇、NAA低下が示唆的。生検で確定診断。",
+    workup: "造影MRI（腫大・増強パターン）、MRS（コリン/NAA比）、MR perfusion（rCBV）、定位生検",
+  },
+  cns_lymphoma: {
+    name: "中枢神経リンパ腫（PCNSL）",
+    emoji: "🟣",
+    category: "腫瘍",
+    detail: "免疫正常者では脳室周囲・深部白質・基底核・視床に好発する。均一な造影増強とDWI高信号（細胞密度が高いため）が特徴的。免疫不全者（HIV等）ではリング状増強を呈することがある。亜急性経過の認知機能低下、巣症状。ステロイド投与で一時的に縮小する（"vanishing tumor"）ため、生検前のステロイド投与は避ける。",
+    workup: "造影MRI（均一増強）、DWI（高信号）、髄液細胞診・IL-10/IL-6比、全身CT/PET（二次性の除外）、眼科slit-lamp検査、定位生検",
+  },
+  cjd: {
+    name: "プリオン病（CJD）",
+    emoji: "🧬",
+    category: "変性",
+    detail: "Creutzfeldt-Jakob病（CJD）では急速進行性認知症、ミオクローヌス、視覚症状が主症状。sporadic CJDでは皮質リボン状のDWI高信号＋尾状核・被殻のDWI高信号が特徴的で、視床にも及びうる。variant CJDではpulvinar sign（視床枕の対称性高信号）が特異的所見。EEGでの周期性同期性放電（PSD）、髄液14-3-3蛋白・RT-QuICが診断に有用。",
+    workup: "DWI（皮質リボン・基底核・視床）、EEG（PSD）、髄液14-3-3蛋白・τ蛋白・RT-QuIC、PRNP遺伝子検査",
+  },
+  peri_ictal: {
+    name: "けいれん関連（peri-ictal変化）",
+    emoji: "⚡",
+    category: "その他",
+    detail: "てんかん重積後や遷延性発作後に、視床（特に後方〜外側）に一過性のFLAIR高信号を認めることがある。発作に伴う神経細胞の過活動と血液脳関門の破綻が原因と考えられる。経時的に改善・消失するのが特徴で、数日〜数週間でフォローアップMRIにて消退を確認する。他の器質的疾患の除外が重要。",
+    workup: "EEG（発作・発作後変化の確認）、フォローアップMRI（経時的改善の確認）、抗てんかん薬の調整",
+  },
+};
+
+// ===== ステップ定義 =====
+const STEPS = [
+  {
+    id: "onset",
+    title: "発症様式・臨床経過",
+    question: "症状の発症と経過はどのようですか？",
+    hint: "超急性（分〜時間）は血管性を強く示唆。緩徐進行は腫瘍・変性疾患を示唆",
+    type: "single",
+    options: [
+      { label: "超急性（分〜時間単位）", value: "hyperacute", icon: "⚡" },
+      { label: "急性（時間〜数日）", value: "acute", icon: "📈" },
+      { label: "亜急性（数日〜数週間）", value: "subacute", icon: "📊" },
+      { label: "慢性・緩徐進行（数週〜数ヶ月）", value: "chronic", icon: "🐢" },
+    ]
+  },
+  {
+    id: "mri_pattern",
+    title: "MRI画像パターン（該当をすべて選択）",
+    question: "以下のMRI所見で該当するものは？",
+    hint: "画像パターンは鑑別の絞り込みに極めて重要です",
+    type: "multi",
+    options: [
+      { label: "DWI高信号 ＋ ADC低下（拡散制限あり）", value: "dwi_restriction" },
+      { label: "FLAIR高信号 ＋ 静脈系の異常（拡張・flow void）", value: "venous_abnormality" },
+      { label: "SWI/T2*で出血成分あり", value: "hemorrhage" },
+      { label: "内側視床＋乳頭体/第三脳室周囲/中脳水道周囲（セット病変）", value: "set_lesion" },
+      { label: "視床の腫大・腫瘤性病変", value: "mass_effect" },
+      { label: "造影増強あり", value: "enhancement" },
+      { label: "皮質リボン状DWI高信号＋尾状核/被殻DWI高信号", value: "cortical_ribbon" },
+      { label: "Pulvinar sign（視床枕の対称性高信号）", value: "pulvinar" },
+      { label: "対称性・多部位の信号異常", value: "symmetric_multifocal" },
+      { label: "中脳内側にも病変あり（V字サイン）", value: "midbrain" },
+      { label: "該当なし / 不明", value: "unknown" },
+    ]
+  },
+  {
+    id: "symptoms",
+    title: "臨床症状（該当をすべて選択）",
+    question: "以下の臨床症状で該当するものは？",
+    type: "multi",
+    options: [
+      { label: "急性意識障害", value: "consciousness" },
+      { label: "垂直注視麻痺", value: "vertical_gaze" },
+      { label: "記憶障害", value: "memory" },
+      { label: "けいれん", value: "seizure" },
+      { label: "発熱", value: "fever" },
+      { label: "眼球運動障害（外転神経麻痺等）", value: "oculomotor" },
+      { label: "失調", value: "ataxia" },
+      { label: "頭痛", value: "headache" },
+      { label: "精神症状（人格変化・幻覚・異常行動）", value: "psychiatric" },
+      { label: "ミオクローヌス", value: "myoclonus" },
+      { label: "急速進行性認知症", value: "rapid_dementia" },
+      { label: "羽ばたき振戦（asterixis）", value: "asterixis" },
+      { label: "該当なし", value: "none" },
+    ]
+  },
+  {
+    id: "history",
+    title: "背景・既往歴（該当をすべて選択）",
+    question: "以下の背景・既往歴で該当するものは？",
+    type: "multi",
+    options: [
+      { label: "アルコール多飲 / 栄養障害 / 長期絶食", value: "malnutrition" },
+      { label: "低Na血症の急速補正歴", value: "rapid_na_correction" },
+      { label: "肝硬変 / 門脈圧亢進症", value: "liver_disease" },
+      { label: "先行感染（インフルエンザ等）/ ワクチン接種後", value: "preceding_infection" },
+      { label: "妊娠・周産期 / 経口避妊薬", value: "prothrombotic_female" },
+      { label: "凝固異常 / 抗リン脂質抗体症候群", value: "coagulopathy" },
+      { label: "免疫抑制状態（HIV・移植後等）", value: "immunosuppressed" },
+      { label: "小児", value: "pediatric" },
+      { label: "けいれん重積の既往・直近の発作", value: "seizure_history" },
+      { label: "動脈硬化リスク（高血圧・糖尿病・心房細動）", value: "atherosclerosis" },
+      { label: "該当なし", value: "none" },
+    ]
+  },
+  {
+    id: "labs",
+    title: "検査所見（該当をすべて選択）",
+    question: "以下の検査所見で該当するものは？",
+    hint: "入手可能な検査結果をチェックしてください",
+    type: "multi",
+    options: [
+      { label: "髄液細胞数増多", value: "csf_pleocytosis" },
+      { label: "髄液蛋白上昇", value: "csf_protein" },
+      { label: "血清/髄液自己抗体陽性（NMDA-R, LGI1, AQP4, MOG等）", value: "autoantibody" },
+      { label: "血清アンモニア上昇", value: "elevated_ammonia" },
+      { label: "ビタミンB1低値", value: "low_b1" },
+      { label: "D-dimer上昇", value: "elevated_ddimer" },
+      { label: "14-3-3蛋白 / RT-QuIC 陽性", value: "prion_marker" },
+      { label: "EEG：周期性同期性放電（PSD）", value: "eeg_psd" },
+      { label: "EEG：てんかん性放電", value: "eeg_epileptiform" },
+      { label: "インフルエンザ等ウイルス検査陽性", value: "viral_positive" },
+      { label: "髄液細胞診異常 / IL-10上昇", value: "csf_cytology" },
+      { label: "血清乳酸上昇", value: "elevated_lactate" },
+      { label: "検査未施行 / 不明", value: "unknown" },
+    ]
+  },
+  {
+    id: "additional_imaging",
+    title: "追加画像所見（該当をすべて選択）",
+    question: "以下の追加画像所見で該当するものは？",
+    hint: "MRV/CTA等の追加検査で得られた所見をチェック",
+    type: "multi",
+    options: [
+      { label: "MRV/CTVで深部静脈血栓を確認", value: "venous_thrombus" },
+      { label: "造影MRA/CTAで動静脈瘻（シャント）を確認", value: "avf_confirmed" },
+      { label: "DWI：中脳内側にも梗塞巣あり", value: "midbrain_infarct" },
+      { label: "造影：均一増強＋DWI高信号（高細胞密度）", value: "homogeneous_enhance" },
+      { label: "MRS：コリン上昇 / NAA低下", value: "mrs_abnormal" },
+      { label: "T1WI：淡蒼球高信号（Mn沈着）", value: "t1_globus_pallidus" },
+      { label: "脊髄にも病変あり", value: "spinal_lesion" },
+      { label: "フォローアップMRIで病変改善・消退", value: "follow_up_improvement" },
+      { label: "該当なし / 未施行", value: "none" },
+    ]
+  },
+];
+
+// ===== スコアリングエンジン =====
+function calcScores(answers) {
+  const s = {};
+  Object.keys(DISEASES).forEach(k => s[k] = 0);
+
+  // --- Step 1: 発症様式 ---
+  const onset = answers.onset;
+  if (onset === "hyperacute") {
+    s.percheron_infarction += 5; s.deep_venous_thrombosis += 3;
+  } else if (onset === "acute") {
+    s.deep_venous_thrombosis += 4; s.japanese_encephalitis += 3;
+    s.ane += 3; s.peri_ictal += 3; s.percheron_infarction += 2;
+  } else if (onset === "subacute") {
+    s.wernicke += 3; s.autoimmune_encephalitis += 3; s.adem += 3;
+    s.dural_avf += 3; s.cns_lymphoma += 2; s.osmotic_demyelination += 2;
+  } else if (onset === "chronic") {
+    s.thalamic_glioma += 4; s.hepatic_encephalopathy += 3; s.cjd += 3;
+    s.dural_avf += 2; s.cns_lymphoma += 2;
+  }
+
+  // --- Step 2: MRI画像パターン ---
+  const mri = answers.mri_pattern || [];
+  mri.forEach(v => {
+    if (v === "dwi_restriction") {
+      s.percheron_infarction += 5; s.cns_lymphoma += 4; s.cjd += 4;
+    }
+    if (v === "venous_abnormality") {
+      s.deep_venous_thrombosis += 5; s.dural_avf += 5;
+    }
+    if (v === "hemorrhage") {
+      s.deep_venous_thrombosis += 4; s.ane += 5;
+    }
+    if (v === "set_lesion") {
+      s.wernicke += 7;
+    }
+    if (v === "mass_effect") {
+      s.thalamic_glioma += 5; s.cns_lymphoma += 4;
+    }
+    if (v === "enhancement") {
+      s.cns_lymphoma += 4; s.thalamic_glioma += 2; s.autoimmune_encephalitis += 2;
+    }
+    if (v === "cortical_ribbon") {
+      s.cjd += 6;
+    }
+    if (v === "pulvinar") {
+      s.cjd += 4; s.deep_venous_thrombosis += 2;
+    }
+    if (v === "symmetric_multifocal") {
+      s.osmotic_demyelination += 3; s.hepatic_encephalopathy += 3;
+      s.adem += 2; s.ane += 2;
+    }
+    if (v === "midbrain") {
+      s.percheron_infarction += 5; s.wernicke += 2;
+    }
+  });
+
+  // --- Step 3: 臨床症状 ---
+  const sx = answers.symptoms || [];
+  sx.forEach(v => {
+    if (v === "consciousness") {
+      s.percheron_infarction += 4; s.deep_venous_thrombosis += 3; s.ane += 3;
+    }
+    if (v === "vertical_gaze") {
+      s.percheron_infarction += 6;
+    }
+    if (v === "memory") {
+      s.percheron_infarction += 3; s.wernicke += 3; s.autoimmune_encephalitis += 3;
+    }
+    if (v === "seizure") {
+      s.deep_venous_thrombosis += 3; s.japanese_encephalitis += 3;
+      s.autoimmune_encephalitis += 3; s.peri_ictal += 5;
+    }
+    if (v === "fever") {
+      s.japanese_encephalitis += 4; s.ane += 3;
+    }
+    if (v === "oculomotor") {
+      s.wernicke += 4;
+    }
+    if (v === "ataxia") {
+      s.wernicke += 4; s.osmotic_demyelination += 2;
+    }
+    if (v === "headache") {
+      s.deep_venous_thrombosis += 3; s.japanese_encephalitis += 2;
+    }
+    if (v === "psychiatric") {
+      s.autoimmune_encephalitis += 4; s.cjd += 3;
+    }
+    if (v === "myoclonus") {
+      s.cjd += 5;
+    }
+    if (v === "rapid_dementia") {
+      s.cjd += 5; s.thalamic_glioma += 2;
+    }
+    if (v === "asterixis") {
+      s.hepatic_encephalopathy += 5;
+    }
+  });
+
+  // --- Step 4: 背景・既往歴 ---
+  const hx = answers.history || [];
+  hx.forEach(v => {
+    if (v === "malnutrition") { s.wernicke += 5; }
+    if (v === "rapid_na_correction") { s.osmotic_demyelination += 7; }
+    if (v === "liver_disease") { s.hepatic_encephalopathy += 6; }
+    if (v === "preceding_infection") {
+      s.adem += 5; s.ane += 3; s.japanese_encephalitis += 3;
+    }
+    if (v === "prothrombotic_female") { s.deep_venous_thrombosis += 3; }
+    if (v === "coagulopathy") { s.deep_venous_thrombosis += 3; }
+    if (v === "immunosuppressed") { s.cns_lymphoma += 3; s.japanese_encephalitis += 2; }
+    if (v === "pediatric") { s.ane += 3; s.adem += 2; }
+    if (v === "seizure_history") { s.peri_ictal += 6; }
+    if (v === "atherosclerosis") { s.percheron_infarction += 3; }
+  });
+
+  // --- Step 5: 検査所見 ---
+  const labs = answers.labs || [];
+  labs.forEach(v => {
+    if (v === "csf_pleocytosis") {
+      s.japanese_encephalitis += 4; s.autoimmune_encephalitis += 3; s.adem += 2;
+    }
+    if (v === "csf_protein") {
+      s.japanese_encephalitis += 2; s.autoimmune_encephalitis += 2; s.cns_lymphoma += 2;
+    }
+    if (v === "autoantibody") { s.autoimmune_encephalitis += 7; }
+    if (v === "elevated_ammonia") { s.hepatic_encephalopathy += 6; }
+    if (v === "low_b1") { s.wernicke += 6; }
+    if (v === "elevated_ddimer") { s.deep_venous_thrombosis += 3; }
+    if (v === "prion_marker") { s.cjd += 7; }
+    if (v === "eeg_psd") { s.cjd += 5; }
+    if (v === "eeg_epileptiform") { s.peri_ictal += 5; }
+    if (v === "viral_positive") { s.ane += 3; s.japanese_encephalitis += 3; }
+    if (v === "csf_cytology") { s.cns_lymphoma += 5; }
+    if (v === "elevated_lactate") { s.deep_venous_thrombosis += 2; s.ane += 2; }
+  });
+
+  // --- Step 6: 追加画像所見 ---
+  const img = answers.additional_imaging || [];
+  img.forEach(v => {
+    if (v === "venous_thrombus") { s.deep_venous_thrombosis += 7; }
+    if (v === "avf_confirmed") { s.dural_avf += 7; }
+    if (v === "midbrain_infarct") { s.percheron_infarction += 5; }
+    if (v === "homogeneous_enhance") { s.cns_lymphoma += 5; }
+    if (v === "mrs_abnormal") { s.thalamic_glioma += 4; s.cns_lymphoma += 3; }
+    if (v === "t1_globus_pallidus") { s.hepatic_encephalopathy += 5; }
+    if (v === "spinal_lesion") { s.adem += 4; s.autoimmune_encephalitis += 3; }
+    if (v === "follow_up_improvement") { s.peri_ictal += 5; }
+  });
+
+  return s;
+}
+
+function rankDiseases(scores) {
+  return Object.entries(scores)
+    .map(([key, score]) => ({ key, score, ...DISEASES[key] }))
+    .filter(d => d.score > 0)
+    .sort((a, b) => b.score - a.score);
+}
+
+function getProbLevel(score, maxScore) {
+  const ratio = score / Math.max(maxScore, 1);
+  if (ratio >= 0.7) return { level: "high", label: "可能性 高" };
+  if (ratio >= 0.35) return { level: "medium", label: "可能性 中" };
+  return { level: "low", label: "可能性 低" };
+}
+
+// ===== UIレンダリング =====
+let currentStep = 0;
+const answers = {};
+
+function render() {
+  const app = document.getElementById("app");
+  let html = "";
+
+  html += `<div class="emergency-box">
+    <strong>🚨 まず血管性病変を除外：</strong>脳深部静脈血栓症・Percheron動脈梗塞・硬膜動静脈瘻は<strong>見逃すと致命的</strong>です。DWI/ADC、SWI、MRV/CTVを最優先で評価してください。
+  </div>`;
+
+  html += `<div class="algo-note">
+    <strong>💡 診断アルゴリズム:</strong>
+    発症様式 → MRI画像パターン → 臨床症状 → 背景・既往歴 → 検査所見 → 追加画像 で系統的に鑑別します。<br>
+    「<strong>血管性 → 感染・炎症 → 代謝・栄養 → 腫瘍 → 変性</strong>」の順に除外していくのが安全なアプローチです。
+  </div>`;
+
+  STEPS.forEach((step, i) => {
+    const state = i < currentStep ? "completed" : i === currentStep ? "" : "inactive";
+    const numClass = i < currentStep ? "done" : "";
+    html += `<div class="step-card ${state}" id="step-${i}">`;
+    html += `<div class="step-header">
+      <span class="step-number ${numClass}">${i < currentStep ? "✓" : i + 1}</span>
+      <span class="step-title">${step.title}</span>
+    </div>`;
+
+    if (i <= currentStep) {
+      html += `<div class="step-body">`;
+      html += `<p style="font-weight:600; margin-bottom:4px;">${step.question}</p>`;
+      if (step.hint) html += `<p class="hint">${step.hint}</p>`;
+
+      if (step.type === "single") {
+        html += `<div class="option-group">`;
+        step.options.forEach(opt => {
+          const sel = answers[step.id] === opt.value ? "selected" : "";
+          html += `<button class="option-btn ${sel}" onclick="selectOption('${step.id}', '${opt.value}', ${i})">
+            <span class="icon">${opt.icon}</span> ${opt.label}
+          </button>`;
+        });
+        html += `</div>`;
+      } else {
+        html += `<div class="checklist">`;
+        const checked = answers[step.id] || [];
+        step.options.forEach(opt => {
+          const isChecked = checked.includes(opt.value);
+          html += `<div class="check-item" onclick="toggleCheck('${step.id}', '${opt.value}')">
+            <input type="checkbox" ${isChecked ? "checked" : ""} tabindex="-1">
+            <label>${opt.label}</label>
+          </div>`;
+        });
+        html += `</div>`;
+        if (i === currentStep) {
+          const hasSelection = checked.length > 0;
+          html += `<button class="next-btn" onclick="nextStep(${i})" ${hasSelection ? "" : "disabled"}>
+            次へ ▶
+          </button>`;
+        }
+      }
+      html += `</div>`;
+    }
+    html += `</div>`;
+  });
+
+  // 結果表示
+  if (currentStep >= STEPS.length) {
+    const scores = calcScores(answers);
+    const ranked = rankDiseases(scores);
+    const maxScore = ranked.length > 0 ? ranked[0].score : 1;
+
+    html += `<div class="result-panel show">`;
+    html += `<div class="result-header">📊 鑑別診断結果</div>`;
+    html += `<div class="result-body">`;
+    html += `<p style="margin-bottom:14px; color:#555; font-size:0.9em;">入力された臨床・画像情報に基づく鑑別疾患の優先度です。確定診断には追加精査が必要です。</p>`;
+
+    ranked.forEach(d => {
+      const prob = getProbLevel(d.score, maxScore);
+      html += `<div class="dx-card ${prob.level}">
+        <div class="dx-name">
+          ${d.emoji} ${d.name}
+          <span class="prob-badge">${prob.label}</span>
+        </div>
+        <div class="dx-detail">${d.detail}</div>
+        <div class="dx-workup">🔍 <strong>追加検査:</strong> ${d.workup}</div>
+      </div>`;
+    });
+
+    html += `<div class="divider"></div>`;
+    html += `<p style="font-size:0.82em; color:#888; line-height:1.6;">
+      ⚠️ 本ツールは臨床判断の補助を目的としており、確定診断を行うものではありません。<br>
+      血管性病変（深部静脈血栓症・Percheron動脈梗塞・dAVF）は治療が遅れると致命的となるため、最優先で除外してください。<br>
+      Wernicke脳症が疑われる場合は検査結果を待たずにチアミン大量静注を開始してください。<br>
+      PCNSLが鑑別に挙がる場合、生検前のステロイド投与は診断を困難にするため避けてください。
+    </p>`;
+    html += `</div></div>`;
+  }
+
+  html += `<button class="reset-btn" onclick="resetAll()">🔄 最初からやり直す</button>`;
+  app.innerHTML = html;
+
+  if (currentStep < STEPS.length) {
+    const el = document.getElementById(`step-${currentStep}`);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+  } else {
+    const panel = document.querySelector(".result-panel");
+    if (panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+function selectOption(stepId, value, stepIndex) {
+  answers[stepId] = value;
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function toggleCheck(stepId, value) {
+  if (!answers[stepId]) answers[stepId] = [];
+  const arr = answers[stepId];
+  const idx = arr.indexOf(value);
+
+  if (value === "none" || value === "unknown") {
+    answers[stepId] = idx >= 0 ? [] : [value];
+  } else {
+    const noneIdx = arr.indexOf("none");
+    if (noneIdx >= 0) arr.splice(noneIdx, 1);
+    const unkIdx = arr.indexOf("unknown");
+    if (unkIdx >= 0) arr.splice(unkIdx, 1);
+    if (idx >= 0) arr.splice(idx, 1);
+    else arr.push(value);
+  }
+  render();
+}
+
+function nextStep(stepIndex) {
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function resetAll() {
+  currentStep = 0;
+  Object.keys(answers).forEach(k => delete answers[k]);
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+render();
+</script>
+</body>
+</html>
