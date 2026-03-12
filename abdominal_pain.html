@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1B5E4B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>腹痛 鑑別診断ツール</title>
+<style>
+  :root {
+    --primary-dark: #1B5E4B;
+    --primary: #2D8B6F;
+    --primary-light: #E8F5F0;
+    --accent-bg: #DCF0E8;
+    --red: #DC3545;
+    --yellow: #F5C518;
+    --green: #28A745;
+    --orange: #E8850C;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(27,94,75,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #E8F5F0 0%, #F4F8F6 100%);
+    color: #222; min-height: 100vh; padding: 0 0 40px;
+  }
+  header {
+    background: linear-gradient(135deg, #1B5E4B, #2D8B6F);
+    color: var(--white); padding: 14px 20px 18px; text-align: center;
+    box-shadow: 0 4px 16px rgba(27,94,75,0.18);
+  }
+  .back-bar { display: flex; align-items: center; margin-bottom: 8px; }
+  .back-bar a {
+    color: rgba(255,255,255,0.85); text-decoration: none; font-size: 0.85em;
+    display: flex; align-items: center; gap: 4px; padding: 4px 8px;
+    border-radius: 6px; transition: background 0.2s;
+  }
+  .back-bar a:active { background: rgba(255,255,255,0.15); }
+  header h1 { font-size: 1.7em; font-weight: 700; letter-spacing: 0.04em; }
+  header p { font-size: 0.92em; margin-top: 6px; opacity: 0.85; }
+
+  .container { max-width: 820px; margin: 0 auto; padding: 24px 16px; }
+
+  .step-card {
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: var(--shadow); margin-bottom: 18px; overflow: hidden; transition: opacity 0.3s;
+  }
+  .step-card.inactive { opacity: 0.45; pointer-events: none; }
+  .step-card.completed { opacity: 1; }
+  .step-header {
+    display: flex; align-items: center; gap: 10px; padding: 14px 18px;
+    background: var(--accent-bg); border-bottom: 2px solid var(--primary); cursor: pointer;
+  }
+  .step-number {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 50%; background: var(--primary);
+    color: var(--white); font-weight: 700; font-size: 0.95em; flex-shrink: 0;
+  }
+  .step-number.done { background: var(--green); }
+  .step-title { font-weight: 700; font-size: 1.05em; color: var(--primary-dark); }
+  .step-body { padding: 18px; }
+
+  .option-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .option-btn {
+    display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+    border: 2px solid #D0D8E4; border-radius: 8px; background: var(--white);
+    font-size: 0.97em; cursor: pointer; transition: all 0.18s; text-align: left;
+    color: #222; font-family: inherit; width: 100%;
+  }
+  .option-btn:hover { border-color: var(--primary); background: var(--primary-light); }
+  .option-btn.selected { border-color: var(--primary); background: var(--primary-light); font-weight: 700; }
+  .option-btn .icon { font-size: 1.2em; flex-shrink: 0; width: 24px; text-align: center; }
+
+  .checklist { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .check-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+    border-radius: 8px; background: var(--light-gray); cursor: pointer;
+    transition: background 0.15s; user-select: none; font-size: 0.95em;
+  }
+  .check-item:hover { background: #D0E8DD; }
+  .check-item input[type="checkbox"] {
+    width: 18px; height: 18px; accent-color: var(--primary); flex-shrink: 0; cursor: pointer;
+  }
+  .check-item label { cursor: pointer; flex: 1; }
+
+  .result-panel {
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(27,94,75,0.15); overflow: hidden;
+    margin-top: 24px; display: none;
+  }
+  .result-panel.show { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  .result-header {
+    padding: 16px 20px; background: linear-gradient(135deg, #1B5E4B, #2D8B6F);
+    color: var(--white); font-weight: 700; font-size: 1.15em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .result-body { padding: 20px; }
+
+  .dx-card {
+    border: 2px solid transparent; border-radius: 8px; padding: 16px;
+    margin-bottom: 12px; position: relative; transition: all 0.2s;
+  }
+  .dx-card.high { border-color: var(--red); background: #FFF5F5; }
+  .dx-card.medium { border-color: var(--orange); background: #FFF8F0; }
+  .dx-card.low { border-color: var(--gray); background: var(--light-gray); }
+
+  .dx-card .dx-name {
+    font-weight: 700; font-size: 1.08em; display: flex; align-items: center;
+    gap: 8px; margin-bottom: 6px;
+  }
+  .dx-card .prob-badge {
+    display: inline-block; padding: 2px 10px; border-radius: 12px;
+    font-size: 0.78em; font-weight: 700; color: var(--white);
+  }
+  .dx-card.high .prob-badge { background: var(--red); }
+  .dx-card.medium .prob-badge { background: var(--orange); }
+  .dx-card.low .prob-badge { background: var(--gray); }
+
+  .dx-card .dx-detail { font-size: 0.9em; color: #444; line-height: 1.6; }
+  .dx-card .dx-detail strong { color: var(--primary-dark); }
+  .dx-card .dx-workup {
+    margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ccc;
+    font-size: 0.88em; color: var(--primary);
+  }
+
+  .next-btn {
+    display: inline-flex; align-items: center; gap: 6px; margin-top: 14px;
+    padding: 10px 22px; background: var(--primary); color: var(--white); border: none;
+    border-radius: 8px; font-size: 0.95em; font-weight: 600; cursor: pointer;
+    transition: background 0.15s; font-family: inherit;
+  }
+  .next-btn:hover { background: var(--primary-dark); }
+  .next-btn:disabled { background: #B0BEC5; cursor: not-allowed; }
+
+  .reset-btn {
+    display: block; margin: 24px auto 0; padding: 10px 32px;
+    background: var(--white); color: var(--red); border: 2px solid var(--red);
+    border-radius: 8px; font-size: 0.95em; font-weight: 600; cursor: pointer;
+    font-family: inherit; transition: all 0.15s;
+  }
+  .reset-btn:hover { background: var(--red); color: var(--white); }
+
+  .hint { font-size: 0.85em; color: var(--gray); margin-top: 6px; line-height: 1.5; }
+  .divider { height: 1px; background: #D0D8E4; margin: 14px 0; }
+
+  .algo-note {
+    background: #FFF8E1; border-left: 4px solid var(--yellow);
+    padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 18px;
+    font-size: 0.9em; line-height: 1.6; color: #555;
+  }
+  .algo-note strong { color: var(--primary-dark); }
+
+  .emergency-box {
+    background: #FFF0F0; border: 2px solid var(--red); border-radius: 8px;
+    padding: 14px 16px; margin-bottom: 18px; font-size: 0.9em; line-height: 1.6;
+  }
+  .emergency-box strong { color: var(--red); }
+
+  @media (max-width: 600px) {
+    header { padding: 12px 14px 14px; }
+    header h1 { font-size: 1.25em; }
+    header p { font-size: 0.85em; }
+    .container { padding: 14px 10px; }
+    .step-header { padding: 12px 14px; }
+    .option-btn { min-height: 44px; font-size: 0.92em; -webkit-tap-highlight-color: transparent; }
+    .step-card { margin-bottom: 14px; }
+    .step-body, .result-body { padding: 14px; }
+    .dx-card { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="back-bar"><a href="index.html">← 診断ツール一覧に戻る</a></div>
+  <h1>腹痛 鑑別診断ツール</h1>
+  <p>疼痛部位・性状・身体所見・検査結果から急性腹症を系統的に鑑別</p>
+</header>
+
+<div class="container" id="app"></div>
+
+<script>
+// ===== 疾患データ =====
+const DISEASES = {
+  acute_appendicitis: {
+    name: "急性虫垂炎",
+    emoji: "🔴",
+    category: "消化器",
+    detail: "最も頻度の高い外科的急性腹症。心窩部〜臍周囲の痛みが数時間で右下腹部（McBurney点）に移動するのが典型的経過。発熱、食欲不振、嘔気を伴う。穿孔すると腹膜炎に進展し、汎発性腹膜刺激症状を呈する。Alvarado スコア（MANTRELS）が臨床診断に有用。",
+    workup: "腹部造影CT（感度・特異度ともに高い）、WBC・CRP、腹部エコー（小児・妊婦）、Alvaradoスコア評価",
+  },
+  acute_cholecystitis: {
+    name: "急性胆嚢炎",
+    emoji: "💎",
+    category: "肝胆膵",
+    detail: "胆石が胆嚢管に嵌頓し胆嚢壁の炎症を引き起こす。右季肋部〜心窩部の持続痛で、脂肪食後に増悪しやすい。Murphy徴候（右季肋部の圧痛で吸気停止）が特徴的。発熱、WBC上昇を伴う。重症化すると気腫性胆嚢炎や胆嚢穿孔をきたす。東京ガイドライン（TG18）で重症度分類。",
+    workup: "腹部エコー（胆嚢壁肥厚・胆石・sonographic Murphy）、肝胆道系酵素、WBC・CRP、腹部CT",
+  },
+  acute_pancreatitis: {
+    name: "急性膵炎",
+    emoji: "🫘",
+    category: "肝胆膵",
+    detail: "心窩部〜左上腹部の持続的な強い痛みで背部に放散する。前屈位で軽減するのが特徴的。主な原因はアルコールと胆石（全体の約80%）。血清リパーゼが正常上限の3倍以上で診断的。重症例ではSIRS、臓器不全、膵壊死をきたす。造影CTでの膵壊死の評価とCT Grade分類が重要。",
+    workup: "血清リパーゼ（アミラーゼより特異度高い）、造影CT（重症度評価）、肝胆道系酵素（胆石性の評価）、BISAP/Ransonスコア",
+  },
+  peptic_ulcer: {
+    name: "消化性潰瘍・穿孔",
+    emoji: "🕳️",
+    category: "消化器",
+    detail: "心窩部の灼熱痛・鈍痛が典型。胃潰瘍は食後に、十二指腸潰瘍は空腹時・夜間に増悪する傾向。NSAIDs常用、H. pylori感染が主因。穿孔すると突然発症の激痛と板状硬の腹膜刺激症状を呈し、腹部X線・CTでfree airを認める。穿孔は外科的緊急症。",
+    workup: "上部消化管内視鏡（H. pylori検査含む）、腹部X線（free air）、腹部CT（穿孔評価）、Hb（出血評価）",
+  },
+  bowel_obstruction: {
+    name: "腸閉塞（イレウス）",
+    emoji: "🚫",
+    category: "消化器",
+    detail: "腹部手術既往による癒着が最多の原因（小腸閉塞の約60-75%）。間欠的な疝痛、嘔吐、腹部膨満、排ガス・排便停止が4主徴。初期には腸蠕動音亢進（金属音）、進行すると減弱〜消失。絞扼性では持続痛に変化し、腸管壊死・穿孔のリスクがある。",
+    workup: "腹部X線（鏡面像：niveau）、腹部CT（閉塞部位・絞扼所見）、血液ガス・乳酸値（絞扼の評価）、電解質",
+  },
+  gastroenteritis: {
+    name: "急性胃腸炎",
+    emoji: "🦠",
+    category: "消化器",
+    detail: "ウイルス性（ノロ・ロタ）または細菌性（カンピロバクター・サルモネラ等）の感染による。臍周囲〜びまん性の腹痛に嘔吐・下痢を伴い、発熱を認めることがある。腹膜刺激症状は通常なし。多くは自然軽快するが、重症例では脱水・電解質異常に注意。食歴・周囲の感染者の聴取が重要。",
+    workup: "便培養・便中ウイルス抗原、電解質、腎機能（脱水評価）、WBC・CRP（細菌性の評価）",
+  },
+  diverticulitis: {
+    name: "大腸憩室炎",
+    emoji: "🔵",
+    category: "消化器",
+    detail: "大腸憩室に炎症・微小穿孔が生じる。欧米ではS状結腸（左下腹部痛）が多いが、日本人では右側結腸にも好発する。発熱、圧痛、WBC/CRP上昇を認める。「左側の虫垂炎」とも称される。合併症に膿瘍形成、穿孔、瘻孔、狭窄がある。高齢者・便秘の既往がリスク。",
+    workup: "腹部造影CT（壁肥厚・脂肪織濃度上昇・膿瘍の有無）、WBC・CRP、内視鏡は急性期には禁忌（穿孔リスク）",
+  },
+  urolithiasis: {
+    name: "尿路結石",
+    emoji: "💎",
+    category: "泌尿器",
+    detail: "突然発症の激しい側腹部〜鼠径部の疝痛で、七転八倒するほどの痛みが特徴。痛みに波があり、血尿（顕微鏡的を含む）を高率に伴う。嘔気・嘔吐を合併することが多い。CVA（肋骨脊柱角）叩打痛が陽性。男性に多く、夏季に好発。5mm以下の結石は自然排石が期待できる。",
+    workup: "腹部単純CT（最も感度が高い）、尿検査（血尿）、腹部エコー（水腎症の評価）、BUN/Cr",
+  },
+  mesenteric_ischemia: {
+    name: "急性腸間膜虚血",
+    emoji: "🩸",
+    category: "血管",
+    detail: "上腸間膜動脈の塞栓（心房細動が最多原因）または血栓により腸管虚血をきたす。「身体所見に比して不釣り合いに強い腹痛」（pain out of proportion）が重要な臨床的手がかり。初期には腹膜刺激症状を欠くことが多い。進行すると血便、腸管壊死、ショックに至る。早期診断が予後を左右し、死亡率は60-80%と高い。",
+    workup: "造影CT（血管塞栓・腸管壁造影不良）、血液ガス・乳酸値（代謝性アシドーシス）、D-dimer、心電図・心エコー（Af/塞栓源）",
+  },
+  ruptured_aaa: {
+    name: "腹部大動脈瘤破裂",
+    emoji: "💥",
+    category: "血管",
+    detail: "突然発症の腹痛・腰背部痛にショック（低血圧・頻脈）を伴う致死的緊急症。古典的3徴は「腹痛・拍動性腫瘤・ショック」だが、全例に揃うわけではない。後腹膜への限局的破裂（contained rupture）では一時的に血行動態が安定することがある。高齢・男性・喫煙・既知の大動脈瘤がリスク。",
+    workup: "造影CT（確定診断）、腹部エコー（ベッドサイドでの迅速評価）、Hb（貧血進行）、血液型・交差適合試験（手術準備）",
+  },
+  ectopic_pregnancy: {
+    name: "異所性妊娠（子宮外妊娠）",
+    emoji: "🤰",
+    category: "婦人科",
+    detail: "妊娠可能年齢の女性における下腹部痛の重要な鑑別。卵管妊娠が約95%を占める。無月経、不正出血、下腹部痛が3主徴。破裂すると急性腹症・出血性ショックをきたし致命的となりうる。すべての妊娠可能年齢の女性の腹痛では妊娠反応の確認が必須。ダグラス窩穿刺で血性腹水の確認も有用。",
+    workup: "尿中/血中hCG（必須）、経腟エコー（子宮内GS確認）、Hb（出血評価）、血液型・交差適合試験",
+  },
+  ovarian_torsion: {
+    name: "卵巣嚢腫茎捻転",
+    emoji: "🔄",
+    category: "婦人科",
+    detail: "卵巣嚢腫や腫瘍を伴う卵巣が茎部で捻転し、血流障害をきたす。突然発症の下腹部（片側）の激痛で、嘔気・嘔吐を伴うことが多い。間欠的に増悪・寛解を繰り返すこともある。若年女性に多いが、全年齢で起こりうる。早期の診断・手術（捻転解除）により卵巣温存が可能。",
+    workup: "経腟/経腹エコー（カラードプラで血流評価）、腹部造影CT/MRI、妊娠反応（鑑別のため）",
+  },
+  pid: {
+    name: "骨盤炎症性疾患（PID）",
+    emoji: "🔥",
+    category: "婦人科",
+    detail: "クラミジア・淋菌などの性感染症が子宮頸管から上行性に波及し、子宮内膜炎・卵管炎・骨盤腹膜炎をきたす。下腹部（両側性）の鈍痛が亜急性に進行し、発熱、帯下異常、性交時痛を伴う。子宮頸管の可動時痛（cervical motion tenderness）が特徴的所見。不妊症の原因となるため早期治療が重要。",
+    workup: "内診（子宮頸管可動時痛）、子宮頸管培養・PCR（クラミジア・淋菌）、WBC・CRP、経腟エコー（卵管膿瘍の有無）",
+  },
+};
+
+// ===== ステップ定義 =====
+const STEPS = [
+  {
+    id: "location",
+    title: "疼痛部位",
+    question: "腹痛の主な部位はどこですか？",
+    hint: "最も痛みが強い部位を選択。痛みが移動した場合は現在の部位を優先",
+    type: "single",
+    options: [
+      { label: "心窩部（上腹部正中）", value: "epigastric", icon: "⬆️" },
+      { label: "右季肋部", value: "ruq", icon: "↗️" },
+      { label: "左季肋部", value: "luq", icon: "↖️" },
+      { label: "臍周囲", value: "periumbilical", icon: "⏺️" },
+      { label: "右下腹部", value: "rlq", icon: "↘️" },
+      { label: "左下腹部", value: "llq", icon: "↙️" },
+      { label: "下腹部正中", value: "suprapubic", icon: "⬇️" },
+      { label: "側腹部（片側）", value: "flank", icon: "➡️" },
+      { label: "びまん性（腹部全体）", value: "diffuse", icon: "🔲" },
+    ]
+  },
+  {
+    id: "onset",
+    title: "発症様式・経過",
+    question: "痛みの発症はどのようでしたか？",
+    hint: "突然発症は穿孔・血管疾患・捻転を示唆。間欠的な波は管腔臓器の疝痛を示唆",
+    type: "single",
+    options: [
+      { label: "突然発症（秒〜分単位の激痛）", value: "sudden", icon: "⚡" },
+      { label: "急性発症（数時間で増悪）", value: "acute", icon: "📈" },
+      { label: "亜急性〜漸増（数日かけて悪化）", value: "subacute", icon: "📊" },
+      { label: "間欠的（痛みに波がある）", value: "intermittent", icon: "〰️" },
+    ]
+  },
+  {
+    id: "quality",
+    title: "疼痛の性状",
+    question: "痛みの性質は？",
+    hint: "疝痛は管腔臓器（尿管・腸管・胆管）の閉塞を示唆。持続性鈍痛は実質臓器や炎症性を示唆",
+    type: "single",
+    options: [
+      { label: "持続性の鈍痛・重苦しい痛み", value: "constant_dull", icon: "😖" },
+      { label: "疝痛（波のある絞り込む痛み）", value: "colicky", icon: "🌊" },
+      { label: "鋭い刺すような痛み", value: "sharp", icon: "🗡️" },
+      { label: "灼熱感・焼けるような痛み", value: "burning", icon: "🔥" },
+    ]
+  },
+  {
+    id: "exam",
+    title: "バイタルサイン・身体所見（該当をすべて選択）",
+    question: "以下の所見で該当するものは？",
+    hint: "腹膜刺激症状・ショックの有無は緊急度の判断に直結します",
+    type: "multi",
+    options: [
+      { label: "発熱（≧38℃）", value: "fever" },
+      { label: "頻脈（≧100/分）", value: "tachycardia" },
+      { label: "低血圧（収縮期＜90 mmHg）", value: "hypotension" },
+      { label: "腹膜刺激症状（反跳痛・筋性防御・板状硬）", value: "peritonitis" },
+      { label: "Murphy徴候 陽性", value: "murphy" },
+      { label: "McBurney点 圧痛", value: "mcburney" },
+      { label: "腸蠕動音亢進（金属音）", value: "hyperactive_bowel" },
+      { label: "腸蠕動音減弱〜消失", value: "decreased_bowel" },
+      { label: "CVA叩打痛", value: "cva_tenderness" },
+      { label: "腹部拍動性腫瘤", value: "pulsatile_mass" },
+      { label: "腹部膨満", value: "distension" },
+      { label: "該当所見なし", value: "none" },
+    ]
+  },
+  {
+    id: "symptoms",
+    title: "随伴症状（該当をすべて選択）",
+    question: "以下の随伴症状で該当するものは？",
+    type: "multi",
+    options: [
+      { label: "嘔吐", value: "vomiting" },
+      { label: "下痢", value: "diarrhea" },
+      { label: "血便・下血", value: "bloody_stool" },
+      { label: "排尿時痛・頻尿", value: "urinary_sx" },
+      { label: "血尿", value: "hematuria" },
+      { label: "便秘・排ガス停止", value: "constipation" },
+      { label: "黄疸", value: "jaundice" },
+      { label: "無月経・不正出血", value: "amenorrhea" },
+      { label: "帯下異常（おりもの異常）", value: "vaginal_discharge" },
+      { label: "背部への放散痛", value: "back_pain" },
+      { label: "肩への放散痛", value: "shoulder_pain" },
+      { label: "該当なし", value: "none" },
+    ]
+  },
+  {
+    id: "risk",
+    title: "リスク因子・既往歴（該当をすべて選択）",
+    question: "以下のリスク因子・既往歴で該当するものは？",
+    type: "multi",
+    options: [
+      { label: "妊娠可能年齢の女性", value: "reproductive_female" },
+      { label: "過去の腹部手術歴", value: "prior_surgery" },
+      { label: "NSAIDs常用", value: "nsaids" },
+      { label: "大量飲酒歴", value: "alcohol" },
+      { label: "胆石症の既往", value: "gallstone_hx" },
+      { label: "動脈硬化リスク（高齢・糖尿病・喫煙・心房細動）", value: "atherosclerosis" },
+      { label: "既知の腹部大動脈瘤", value: "known_aaa" },
+      { label: "憩室症の既往", value: "diverticula_hx" },
+      { label: "性感染症リスク・IUD使用", value: "std_risk" },
+      { label: "該当なし", value: "none" },
+    ]
+  },
+  {
+    id: "labs",
+    title: "検査所見（該当をすべて選択）",
+    question: "以下の検査所見で該当するものは？",
+    hint: "入手可能な検査結果をチェックしてください",
+    type: "multi",
+    options: [
+      { label: "WBC上昇（＞10,000/μL）", value: "leukocytosis" },
+      { label: "CRP著明上昇（＞10 mg/dL）", value: "high_crp" },
+      { label: "リパーゼ / アミラーゼ上昇", value: "elevated_lipase" },
+      { label: "肝胆道系酵素上昇（AST/ALT/ALP/γ-GTP）", value: "elevated_hepatobiliary" },
+      { label: "尿潜血 陽性", value: "urine_blood" },
+      { label: "妊娠反応（hCG）陽性", value: "positive_hcg" },
+      { label: "乳酸値上昇", value: "elevated_lactate" },
+      { label: "腹部X線で鏡面像（niveau）", value: "air_fluid_levels" },
+      { label: "腹腔内遊離ガス（free air）", value: "free_air" },
+      { label: "Hb低下（貧血進行）", value: "anemia" },
+      { label: "検査未施行 / 不明", value: "unknown" },
+    ]
+  },
+];
+
+// ===== スコアリングエンジン =====
+function calcScores(answers) {
+  const s = {};
+  Object.keys(DISEASES).forEach(k => s[k] = 0);
+
+  // --- Step 1: 疼痛部位 ---
+  const loc = answers.location;
+  if (loc === "epigastric") {
+    s.peptic_ulcer += 5; s.acute_pancreatitis += 4; s.acute_cholecystitis += 2;
+    s.mesenteric_ischemia += 2; s.gastroenteritis += 2; s.ruptured_aaa += 1;
+  } else if (loc === "ruq") {
+    s.acute_cholecystitis += 6; s.peptic_ulcer += 2; s.acute_pancreatitis += 1;
+  } else if (loc === "luq") {
+    s.acute_pancreatitis += 2; s.mesenteric_ischemia += 1;
+  } else if (loc === "periumbilical") {
+    s.acute_appendicitis += 3; s.bowel_obstruction += 4; s.mesenteric_ischemia += 3;
+    s.gastroenteritis += 2; s.ruptured_aaa += 2;
+  } else if (loc === "rlq") {
+    s.acute_appendicitis += 6; s.ectopic_pregnancy += 3; s.ovarian_torsion += 3;
+    s.pid += 2; s.diverticulitis += 1;
+  } else if (loc === "llq") {
+    s.diverticulitis += 6; s.ectopic_pregnancy += 2; s.ovarian_torsion += 2; s.pid += 2;
+  } else if (loc === "suprapubic") {
+    s.pid += 4; s.ectopic_pregnancy += 3; s.ovarian_torsion += 2; s.urolithiasis += 2;
+  } else if (loc === "flank") {
+    s.urolithiasis += 6; s.ruptured_aaa += 2;
+  } else if (loc === "diffuse") {
+    s.gastroenteritis += 3; s.bowel_obstruction += 3; s.mesenteric_ischemia += 3;
+    s.ruptured_aaa += 2; s.peptic_ulcer += 2;
+  }
+
+  // --- Step 2: 発症様式 ---
+  const onset = answers.onset;
+  if (onset === "sudden") {
+    s.ruptured_aaa += 5; s.mesenteric_ischemia += 4; s.peptic_ulcer += 4;
+    s.ovarian_torsion += 4; s.urolithiasis += 4; s.ectopic_pregnancy += 3;
+  } else if (onset === "acute") {
+    s.acute_appendicitis += 3; s.acute_cholecystitis += 3; s.acute_pancreatitis += 3;
+    s.bowel_obstruction += 3; s.ectopic_pregnancy += 2;
+  } else if (onset === "subacute") {
+    s.diverticulitis += 3; s.pid += 3; s.gastroenteritis += 2; s.acute_appendicitis += 1;
+  } else if (onset === "intermittent") {
+    s.urolithiasis += 4; s.bowel_obstruction += 4; s.gastroenteritis += 2;
+    s.acute_cholecystitis += 2;
+  }
+
+  // --- Step 3: 疼痛の性状 ---
+  const qual = answers.quality;
+  if (qual === "constant_dull") {
+    s.acute_pancreatitis += 3; s.acute_appendicitis += 2; s.acute_cholecystitis += 2;
+    s.pid += 2; s.diverticulitis += 2;
+  } else if (qual === "colicky") {
+    s.urolithiasis += 5; s.bowel_obstruction += 5; s.acute_cholecystitis += 3;
+    s.gastroenteritis += 3;
+  } else if (qual === "sharp") {
+    s.peptic_ulcer += 4; s.acute_appendicitis += 3; s.ruptured_aaa += 3;
+    s.ovarian_torsion += 3; s.mesenteric_ischemia += 2;
+  } else if (qual === "burning") {
+    s.peptic_ulcer += 4; s.gastroenteritis += 2;
+  }
+
+  // --- Step 4: 身体所見 ---
+  const exam = answers.exam || [];
+  exam.forEach(v => {
+    if (v === "fever") {
+      s.acute_appendicitis += 3; s.acute_cholecystitis += 3; s.diverticulitis += 3;
+      s.pid += 3; s.gastroenteritis += 2;
+    }
+    if (v === "tachycardia") {
+      s.ruptured_aaa += 3; s.mesenteric_ischemia += 3; s.ectopic_pregnancy += 3;
+      s.acute_pancreatitis += 2;
+    }
+    if (v === "hypotension") {
+      s.ruptured_aaa += 5; s.ectopic_pregnancy += 4; s.mesenteric_ischemia += 3;
+      s.acute_pancreatitis += 2;
+    }
+    if (v === "peritonitis") {
+      s.peptic_ulcer += 5; s.acute_appendicitis += 4; s.mesenteric_ischemia += 3;
+      s.ruptured_aaa += 3; s.diverticulitis += 2;
+    }
+    if (v === "murphy") { s.acute_cholecystitis += 6; }
+    if (v === "mcburney") { s.acute_appendicitis += 6; }
+    if (v === "hyperactive_bowel") { s.bowel_obstruction += 4; s.gastroenteritis += 3; }
+    if (v === "decreased_bowel") { s.bowel_obstruction += 3; s.mesenteric_ischemia += 3; }
+    if (v === "cva_tenderness") { s.urolithiasis += 4; }
+    if (v === "pulsatile_mass") { s.ruptured_aaa += 7; }
+    if (v === "distension") { s.bowel_obstruction += 5; s.mesenteric_ischemia += 2; }
+  });
+
+  // --- Step 5: 随伴症状 ---
+  const sx = answers.symptoms || [];
+  sx.forEach(v => {
+    if (v === "vomiting") {
+      s.bowel_obstruction += 4; s.acute_pancreatitis += 3; s.gastroenteritis += 3;
+      s.acute_appendicitis += 2; s.acute_cholecystitis += 2;
+    }
+    if (v === "diarrhea") { s.gastroenteritis += 5; s.mesenteric_ischemia += 2; }
+    if (v === "bloody_stool") { s.mesenteric_ischemia += 5; s.diverticulitis += 3; }
+    if (v === "urinary_sx") { s.urolithiasis += 4; s.pid += 2; }
+    if (v === "hematuria") { s.urolithiasis += 5; }
+    if (v === "constipation") { s.bowel_obstruction += 5; s.diverticulitis += 2; }
+    if (v === "jaundice") { s.acute_cholecystitis += 3; s.acute_pancreatitis += 2; }
+    if (v === "amenorrhea") { s.ectopic_pregnancy += 6; }
+    if (v === "vaginal_discharge") { s.pid += 4; }
+    if (v === "back_pain") { s.acute_pancreatitis += 4; s.ruptured_aaa += 4; s.urolithiasis += 3; }
+    if (v === "shoulder_pain") { s.ectopic_pregnancy += 3; s.acute_cholecystitis += 2; }
+  });
+
+  // --- Step 6: リスク因子 ---
+  const risk = answers.risk || [];
+  risk.forEach(v => {
+    if (v === "reproductive_female") {
+      s.ectopic_pregnancy += 3; s.ovarian_torsion += 3; s.pid += 3;
+    }
+    if (v === "prior_surgery") { s.bowel_obstruction += 5; }
+    if (v === "nsaids") { s.peptic_ulcer += 4; }
+    if (v === "alcohol") { s.acute_pancreatitis += 5; }
+    if (v === "gallstone_hx") { s.acute_cholecystitis += 4; s.acute_pancreatitis += 3; }
+    if (v === "atherosclerosis") { s.mesenteric_ischemia += 4; s.ruptured_aaa += 4; }
+    if (v === "known_aaa") { s.ruptured_aaa += 6; }
+    if (v === "diverticula_hx") { s.diverticulitis += 4; }
+    if (v === "std_risk") { s.pid += 4; }
+  });
+
+  // --- Step 7: 検査所見 ---
+  const labs = answers.labs || [];
+  labs.forEach(v => {
+    if (v === "leukocytosis") {
+      s.acute_appendicitis += 2; s.acute_cholecystitis += 2;
+      s.diverticulitis += 2; s.pid += 2;
+    }
+    if (v === "high_crp") {
+      s.acute_pancreatitis += 2; s.acute_appendicitis += 2; s.diverticulitis += 2;
+    }
+    if (v === "elevated_lipase") { s.acute_pancreatitis += 7; }
+    if (v === "elevated_hepatobiliary") { s.acute_cholecystitis += 5; s.acute_pancreatitis += 2; }
+    if (v === "urine_blood") { s.urolithiasis += 5; }
+    if (v === "positive_hcg") { s.ectopic_pregnancy += 7; }
+    if (v === "elevated_lactate") { s.mesenteric_ischemia += 5; s.ruptured_aaa += 3; }
+    if (v === "air_fluid_levels") { s.bowel_obstruction += 6; }
+    if (v === "free_air") { s.peptic_ulcer += 7; }
+    if (v === "anemia") { s.ruptured_aaa += 4; s.ectopic_pregnancy += 3; s.mesenteric_ischemia += 2; }
+  });
+
+  return s;
+}
+
+function rankDiseases(scores) {
+  return Object.entries(scores)
+    .map(([key, score]) => ({ key, score, ...DISEASES[key] }))
+    .filter(d => d.score > 0)
+    .sort((a, b) => b.score - a.score);
+}
+
+function getProbLevel(score, maxScore) {
+  const ratio = score / Math.max(maxScore, 1);
+  if (ratio >= 0.7) return { level: "high", label: "可能性 高" };
+  if (ratio >= 0.35) return { level: "medium", label: "可能性 中" };
+  return { level: "low", label: "可能性 低" };
+}
+
+// ===== UIレンダリング =====
+let currentStep = 0;
+const answers = {};
+
+function render() {
+  const app = document.getElementById("app");
+  let html = "";
+
+  html += `<div class="emergency-box">
+    <strong>🚨 緊急徴候を最初に確認：</strong>ショック・腹膜刺激症状（板状硬）・大動脈拍動性腫瘤を認める場合は<strong>外科的緊急症</strong>として直ちに対応してください。
+  </div>`;
+
+  html += `<div class="algo-note">
+    <strong>💡 診断アルゴリズム:</strong>
+    疼痛部位 → 発症様式 → 疼痛性状 → 身体所見 → 随伴症状 → リスク因子 → 検査所見 で系統的に鑑別します。<br>
+    「<strong>部位＋発症様式＋身体所見</strong>」の3要素で鑑別疾患をまず絞り込むのが基本です。
+  </div>`;
+
+  STEPS.forEach((step, i) => {
+    const state = i < currentStep ? "completed" : i === currentStep ? "" : "inactive";
+    const numClass = i < currentStep ? "done" : "";
+    html += `<div class="step-card ${state}" id="step-${i}">`;
+    html += `<div class="step-header">
+      <span class="step-number ${numClass}">${i < currentStep ? "✓" : i + 1}</span>
+      <span class="step-title">${step.title}</span>
+    </div>`;
+
+    if (i <= currentStep) {
+      html += `<div class="step-body">`;
+      html += `<p style="font-weight:600; margin-bottom:4px;">${step.question}</p>`;
+      if (step.hint) html += `<p class="hint">${step.hint}</p>`;
+
+      if (step.type === "single") {
+        html += `<div class="option-group">`;
+        step.options.forEach(opt => {
+          const sel = answers[step.id] === opt.value ? "selected" : "";
+          html += `<button class="option-btn ${sel}" onclick="selectOption('${step.id}', '${opt.value}', ${i})">
+            <span class="icon">${opt.icon}</span> ${opt.label}
+          </button>`;
+        });
+        html += `</div>`;
+      } else {
+        html += `<div class="checklist">`;
+        const checked = answers[step.id] || [];
+        step.options.forEach(opt => {
+          const isChecked = checked.includes(opt.value);
+          html += `<div class="check-item" onclick="toggleCheck('${step.id}', '${opt.value}')">
+            <input type="checkbox" ${isChecked ? "checked" : ""} tabindex="-1">
+            <label>${opt.label}</label>
+          </div>`;
+        });
+        html += `</div>`;
+        if (i === currentStep) {
+          const hasSelection = checked.length > 0;
+          html += `<button class="next-btn" onclick="nextStep(${i})" ${hasSelection ? "" : "disabled"}>
+            次へ ▶
+          </button>`;
+        }
+      }
+      html += `</div>`;
+    }
+    html += `</div>`;
+  });
+
+  // 結果表示
+  if (currentStep >= STEPS.length) {
+    const scores = calcScores(answers);
+    const ranked = rankDiseases(scores);
+    const maxScore = ranked.length > 0 ? ranked[0].score : 1;
+
+    html += `<div class="result-panel show">`;
+    html += `<div class="result-header">📊 鑑別診断結果</div>`;
+    html += `<div class="result-body">`;
+    html += `<p style="margin-bottom:14px; color:#555; font-size:0.9em;">入力された臨床情報に基づく鑑別疾患の優先度です。確定診断には画像検査等の追加精査が必要です。</p>`;
+
+    ranked.forEach(d => {
+      const prob = getProbLevel(d.score, maxScore);
+      html += `<div class="dx-card ${prob.level}">
+        <div class="dx-name">
+          ${d.emoji} ${d.name}
+          <span class="prob-badge">${prob.label}</span>
+        </div>
+        <div class="dx-detail">${d.detail}</div>
+        <div class="dx-workup">🔍 <strong>追加検査:</strong> ${d.workup}</div>
+      </div>`;
+    });
+
+    html += `<div class="divider"></div>`;
+    html += `<p style="font-size:0.82em; color:#888; line-height:1.6;">
+      ⚠️ 本ツールは臨床判断の補助を目的としており、確定診断を行うものではありません。<br>
+      妊娠可能年齢の女性では必ず妊娠反応を確認してください。<br>
+      高齢者の腹痛は症状が非典型的になりやすく、重症化しやすいため低い閾値で画像検査を考慮してください。<br>
+      腹膜刺激症状・ショックを伴う場合は直ちに外科コンサルトを行ってください。
+    </p>`;
+    html += `</div></div>`;
+  }
+
+  html += `<button class="reset-btn" onclick="resetAll()">🔄 最初からやり直す</button>`;
+  app.innerHTML = html;
+
+  if (currentStep < STEPS.length) {
+    const el = document.getElementById(`step-${currentStep}`);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+  } else {
+    const panel = document.querySelector(".result-panel");
+    if (panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+function selectOption(stepId, value, stepIndex) {
+  answers[stepId] = value;
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function toggleCheck(stepId, value) {
+  if (!answers[stepId]) answers[stepId] = [];
+  const arr = answers[stepId];
+  const idx = arr.indexOf(value);
+
+  if (value === "none" || value === "unknown") {
+    answers[stepId] = idx >= 0 ? [] : [value];
+  } else {
+    const noneIdx = arr.indexOf("none");
+    if (noneIdx >= 0) arr.splice(noneIdx, 1);
+    const unkIdx = arr.indexOf("unknown");
+    if (unkIdx >= 0) arr.splice(unkIdx, 1);
+    if (idx >= 0) arr.splice(idx, 1);
+    else arr.push(value);
+  }
+  render();
+}
+
+function nextStep(stepIndex) {
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function resetAll() {
+  currentStep = 0;
+  Object.keys(answers).forEach(k => delete answers[k]);
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+render();
+</script>
+</body>
+</html>
