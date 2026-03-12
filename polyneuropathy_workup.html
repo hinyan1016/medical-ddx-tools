@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#2C6E49">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>ポリニューロパチー 鑑別・検査ツール</title>
+<style>
+  :root {
+    --primary-dark: #2C6E49;
+    --primary: #4C956C;
+    --primary-light: #EDF7F0;
+    --accent-bg: #D8F0E0;
+    --red: #DC3545;
+    --yellow: #F5C518;
+    --green: #28A745;
+    --orange: #E8850C;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(44,110,73,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #EDF7F0 0%, #F4F6F8 100%);
+    color: #222; min-height: 100vh; padding: 0 0 40px;
+  }
+  header {
+    background: linear-gradient(135deg, #2C6E49, #4C956C);
+    color: var(--white); padding: 14px 20px 18px; text-align: center;
+    box-shadow: 0 4px 16px rgba(44,110,73,0.18);
+  }
+  .back-bar { display: flex; align-items: center; margin-bottom: 8px; }
+  .back-bar a {
+    color: rgba(255,255,255,0.85); text-decoration: none; font-size: 0.85em;
+    display: flex; align-items: center; gap: 4px; padding: 4px 8px;
+    border-radius: 6px; transition: background 0.2s;
+  }
+  .back-bar a:active { background: rgba(255,255,255,0.15); }
+  header h1 { font-size: 1.55em; font-weight: 700; letter-spacing: 0.04em; }
+  header p { font-size: 0.92em; margin-top: 6px; opacity: 0.85; }
+
+  .container { max-width: 820px; margin: 0 auto; padding: 24px 16px; }
+
+  .step-card {
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: var(--shadow); margin-bottom: 18px; overflow: hidden; transition: opacity 0.3s;
+  }
+  .step-card.inactive { opacity: 0.45; pointer-events: none; }
+  .step-card.completed { opacity: 1; }
+  .step-header {
+    display: flex; align-items: center; gap: 10px; padding: 14px 18px;
+    background: var(--accent-bg); border-bottom: 2px solid var(--primary); cursor: pointer;
+  }
+  .step-number {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 50%; background: var(--primary);
+    color: var(--white); font-weight: 700; font-size: 0.95em; flex-shrink: 0;
+  }
+  .step-number.done { background: var(--green); }
+  .step-title { font-weight: 700; font-size: 1.05em; color: var(--primary-dark); }
+  .step-body { padding: 18px; }
+
+  .option-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .option-btn {
+    display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+    border: 2px solid #D0D8E4; border-radius: 8px; background: var(--white);
+    font-size: 0.97em; cursor: pointer; transition: all 0.18s; text-align: left;
+    color: #222; font-family: inherit; width: 100%;
+  }
+  .option-btn:hover { border-color: var(--primary); background: var(--primary-light); }
+  .option-btn.selected { border-color: var(--primary); background: var(--primary-light); font-weight: 700; }
+  .option-btn .icon { font-size: 1.2em; flex-shrink: 0; width: 24px; text-align: center; }
+
+  .checklist { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .check-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+    border-radius: 8px; background: var(--light-gray); cursor: pointer;
+    transition: background 0.15s; user-select: none; font-size: 0.95em;
+  }
+  .check-item:hover { background: #D0E8D8; }
+  .check-item input[type="checkbox"] {
+    width: 18px; height: 18px; accent-color: var(--primary); flex-shrink: 0; cursor: pointer;
+  }
+  .check-item label { cursor: pointer; flex: 1; }
+
+  .result-panel {
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(44,110,73,0.15); overflow: hidden;
+    margin-top: 24px; display: none;
+  }
+  .result-panel.show { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  .result-header {
+    padding: 16px 20px; background: linear-gradient(135deg, #2C6E49, #4C956C);
+    color: var(--white); font-weight: 700; font-size: 1.15em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .result-body { padding: 20px; }
+
+  .dx-card {
+    border: 2px solid transparent; border-radius: 8px; padding: 16px;
+    margin-bottom: 12px; position: relative; transition: all 0.2s;
+  }
+  .dx-card.high { border-color: var(--red); background: #FFF5F5; }
+  .dx-card.medium { border-color: var(--orange); background: #FFF8F0; }
+  .dx-card.low { border-color: var(--gray); background: var(--light-gray); }
+
+  .dx-card .dx-name {
+    font-weight: 700; font-size: 1.08em; display: flex; align-items: center;
+    gap: 8px; margin-bottom: 6px; flex-wrap: wrap;
+  }
+  .dx-card .prob-badge {
+    display: inline-block; padding: 2px 10px; border-radius: 12px;
+    font-size: 0.78em; font-weight: 700; color: var(--white);
+  }
+  .dx-card.high .prob-badge { background: var(--red); }
+  .dx-card.medium .prob-badge { background: var(--orange); }
+  .dx-card.low .prob-badge { background: var(--gray); }
+
+  .dx-card .dx-detail { font-size: 0.9em; color: #444; line-height: 1.6; }
+  .dx-card .dx-detail strong { color: var(--primary-dark); }
+  .dx-card .dx-workup {
+    margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ccc;
+    font-size: 0.88em; color: var(--primary);
+  }
+
+  .next-btn {
+    display: inline-flex; align-items: center; gap: 6px; margin-top: 14px;
+    padding: 10px 22px; background: var(--primary); color: var(--white); border: none;
+    border-radius: 8px; font-size: 0.95em; font-weight: 600; cursor: pointer;
+    transition: background 0.15s; font-family: inherit;
+  }
+  .next-btn:hover { background: var(--primary-dark); }
+  .next-btn:disabled { background: #B0BEC5; cursor: not-allowed; }
+
+  .reset-btn {
+    display: block; margin: 24px auto 0; padding: 10px 32px;
+    background: var(--white); color: var(--red); border: 2px solid var(--red);
+    border-radius: 8px; font-size: 0.95em; font-weight: 600; cursor: pointer;
+    font-family: inherit; transition: all 0.15s;
+  }
+  .reset-btn:hover { background: var(--red); color: var(--white); }
+
+  .hint { font-size: 0.85em; color: var(--gray); margin-top: 6px; line-height: 1.5; }
+
+  .algo-note {
+    background: #FFF8E1; border-left: 4px solid var(--yellow);
+    padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 18px;
+    font-size: 0.9em; line-height: 1.6; color: #555;
+  }
+  .algo-note strong { color: var(--primary-dark); }
+
+  .emergency-box {
+    background: #FFF0F0; border: 2px solid var(--red); border-radius: 8px;
+    padding: 14px 16px; margin-bottom: 18px; font-size: 0.9em; line-height: 1.6;
+  }
+  .emergency-box strong { color: var(--red); }
+
+  /* 検査リスト表示 */
+  .workup-section {
+    background: var(--primary-light); border: 2px solid var(--primary);
+    border-radius: 8px; padding: 16px; margin-top: 20px; margin-bottom: 12px;
+  }
+  .workup-section h3 {
+    font-size: 1.05em; color: var(--primary-dark); margin-bottom: 10px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .workup-list { list-style: none; padding: 0; }
+  .workup-list li {
+    padding: 6px 0; border-bottom: 1px dotted #B0D0B8; font-size: 0.92em;
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+  .workup-list li:last-child { border-bottom: none; }
+  .workup-list .wk-icon { flex-shrink: 0; }
+  .workup-list .wk-cat {
+    font-weight: 700; color: var(--primary-dark); font-size: 0.82em;
+    background: var(--accent-bg); padding: 1px 8px; border-radius: 4px; margin-right: 4px;
+  }
+
+  @media (max-width: 600px) {
+    header { padding: 12px 14px 14px; }
+    header h1 { font-size: 1.2em; }
+    header p { font-size: 0.85em; }
+    .container { padding: 14px 10px; }
+    .step-header { padding: 12px 14px; }
+    .option-btn { min-height: 44px; font-size: 0.92em; -webkit-tap-highlight-color: transparent; }
+    .step-card { margin-bottom: 14px; }
+    .step-body, .result-body { padding: 14px; }
+    .dx-card { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="back-bar"><a href="index.html">&larr; 診断ツール一覧に戻る</a></div>
+  <h1>ポリニューロパチー 鑑別・検査ツール</h1>
+  <p>臨床像から原因疾患を鑑別し、必要な検査を系統的に提示</p>
+</header>
+
+<div class="container" id="app"></div>
+
+<script>
+// ===== 疾患データ =====
+var DISEASES = {
+  diabetic: {
+    name: "糖尿病性ニューロパチー",
+    emoji: "🩸",
+    category: "代謝・内分泌性",
+    detail: "ポリニューロパチーの最多原因。長期高血糖による神経障害で、左右対称の手袋靴下型感覚障害が典型。しびれ・疼痛は夜間増悪する。自律神経障害（起立性低血圧・胃排泄遅延・発汗異常）を合併しうる。神経伝導検査では軸索障害パターン。有痛性では小径線維障害が主体のこともある。",
+    workup: "HbA1c・空腹時血糖・75gOGTT、神経伝導検査、自律神経機能検査"
+  },
+  uremic: {
+    name: "尿毒症性ニューロパチー",
+    emoji: "🫘",
+    category: "代謝・内分泌性",
+    detail: "慢性腎不全（特にeGFR 12mL/min以下）で出現。尿毒素の蓄積による神経障害で、左右対称・遠位優位の感覚運動ニューロパチー。下肢のしびれ・灼熱感・restless legsが初発症状。透析導入で改善しうるが不十分な場合もあり、腎移植が最も有効。",
+    workup: "BUN・Cr・eGFR、電解質、神経伝導検査"
+  },
+  thyroid: {
+    name: "甲状腺機能異常",
+    emoji: "🦋",
+    category: "代謝・内分泌性",
+    detail: "甲状腺機能低下症では神経伝導速度低下（脱髄型）や手根管症候群が多い。粘液水腫による神経内膜浮腫が原因。甲状腺機能亢進症では筋力低下が前面に出ることがある。甲状腺ホルモン補充/抗甲状腺薬で改善しうる。",
+    workup: "TSH・FT3・FT4、抗TPO抗体"
+  },
+  alcoholic: {
+    name: "アルコール性ニューロパチー",
+    emoji: "🍶",
+    category: "中毒性",
+    detail: "慢性大量飲酒者に発症。アルコールの直接的な神経毒性とビタミンB1欠乏の両方が関与する。下肢遠位優位の灼熱感・しびれが初発。有痛性が多い。軸索障害パターン。禁酒とビタミン補充が治療の基本。",
+    workup: "飲酒歴の詳細聴取、血清ビタミンB1、肝機能検査（AST/ALT/γGTP）、MCV、神経伝導検査"
+  },
+  drug_chemo: {
+    name: "薬剤性ニューロパチー（抗がん剤）",
+    emoji: "💉",
+    category: "中毒性",
+    detail: "白金製剤（シスプラチン・オキサリプラチン）、タキサン系（パクリタキセル・ドセタキセル）、ビンクリスチン、ボルテゾミブが代表的。感覚優位のしびれ・疼痛が主症状で累積投与量と相関。シスプラチンでは中止後も悪化するcoasting現象が特徴的。オキサリプラチンでは急性の寒冷誘発性異常感覚もある。",
+    workup: "投与薬剤と累積投与量の確認、神経伝導検査、投与スケジュールの見直し"
+  },
+  drug_other: {
+    name: "薬剤性ニューロパチー（その他）",
+    emoji: "💊",
+    category: "中毒性",
+    detail: "イソニアジド（B6欠乏を介する）、メトロニダゾール（長期使用）、リネゾリド、アミオダロン、フェニトイン、抗HIV薬（d4T/ddI等のNRTI）、免疫チェックポイント阻害薬が原因となる。PPI長期使用によるB12欠乏も間接的原因。詳細な薬剤歴聴取が最重要。",
+    workup: "詳細な服薬歴の確認、時間的関連の評価、原因薬剤の中止・変更"
+  },
+  toxic_exposure: {
+    name: "環境曝露・重金属中毒",
+    emoji: "⚠️",
+    category: "中毒性",
+    detail: "鉛・ヒ素・水銀・タリウムなどの重金属、有機溶剤（n-ヘキサン等）への職業曝露が原因。鉛中毒は運動優位（橈骨神経麻痺：下垂手）、ヒ素は感覚優位＋皮膚変化（Mees線）が特徴。職業歴・趣味・生活環境の詳細聴取が必要。",
+    workup: "職業曝露歴の詳細聴取、血中鉛・尿中ヒ素・尿中水銀、血算（鉛中毒では好塩基性斑点赤血球）、神経伝導検査"
+  },
+  b12_deficiency: {
+    name: "ビタミンB12欠乏症",
+    emoji: "🔴",
+    category: "栄養欠乏",
+    detail: "深部覚低下と感覚性失調が特徴で、脊髄後索障害（亜急性連合性脊髄変性症）を合併しうる。MCV上昇・巨赤芽球性貧血が手がかりだが神経症状が先行する場合もある。高齢者の萎縮性胃炎、菜食主義、メトホルミン長期使用、PPI長期使用、胃切除後が主なリスク因子。",
+    workup: "血清ビタミンB12、MCV、ホモシステイン・メチルマロン酸（早期検出）、抗内因子抗体、MRI脊髄（後索病変）"
+  },
+  b1_deficiency: {
+    name: "ビタミンB1欠乏症（脚気）",
+    emoji: "🍺",
+    category: "栄養欠乏",
+    detail: "アルコール多飲・偏食・長期絶食・不適切な輸液管理・胃切除後が原因。下肢遠位優位の感覚障害と筋力低下を呈する。重症例では心不全（湿性脚気）やWernicke脳症を合併。軸索障害パターン。",
+    workup: "血清ビタミンB1（全血チアミン）、血中乳酸・ピルビン酸"
+  },
+  folate_deficiency: {
+    name: "葉酸欠乏",
+    emoji: "🥬",
+    category: "栄養欠乏",
+    detail: "葉酸欠乏は巨赤芽球性貧血を合併する。アルコール多飲、妊娠、メトトレキサート等の薬剤使用がリスク因子。B12欠乏と類似した血液学的異常を呈するが、亜急性連合性脊髄変性症の合併はB12欠乏に特異的。",
+    workup: "血清葉酸、MCV、血清ビタミンB12（同時測定）"
+  },
+  copper_deficiency: {
+    name: "銅欠乏",
+    emoji: "🔶",
+    category: "栄養欠乏",
+    detail: "胃切除後・過剰な亜鉛摂取・長期経管栄養が原因。脊髄後索障害＋末梢神経障害を呈し、B12欠乏に類似した臨床像。汎血球減少を伴うことが鑑別の手がかり。亜鉛含有義歯接着剤の使用も報告されている。",
+    workup: "血清銅・セルロプラスミン、血清亜鉛、CBC（汎血球減少）、MRI脊髄"
+  },
+  cidp: {
+    name: "CIDP（慢性炎症性脱髄性多発根ニューロパチー）",
+    emoji: "🔄",
+    category: "免疫介在性",
+    detail: "2か月以上かけて進行する左右対称の四肢近位・遠位筋力低下と感覚障害。再発寛解型もある。神経伝導検査で脱髄所見（伝導速度低下・伝導ブロック・時間的分散）を認める。髄液蛋白細胞解離。IVIg・ステロイド・血漿交換が有効であり、治療可能な疾患として早期診断が重要。",
+    workup: "神経伝導検査（脱髄所見）、髄液検査（蛋白細胞解離）、MRI神経根（肥厚・造影増強）、抗NF155/CNTN1/Caspr1抗体"
+  },
+  gbs: {
+    name: "ギラン・バレー症候群（GBS）",
+    emoji: "⚡",
+    category: "免疫介在性",
+    detail: "先行感染後1-4週で急性発症する免疫介在性ニューロパチー。四肢の筋力低下が下肢から上行性に進展し、呼吸筋麻痺に至ることも。腱反射低下〜消失が特徴。Fisher症候群（眼筋麻痺・失調・腱反射消失）は亜型。髄液蛋白細胞解離は発症1週以降に出現。単相性経過。",
+    workup: "髄液検査（蛋白細胞解離）、神経伝導検査（脱髄/軸索型判定）、抗ガングリオシド抗体（GM1/GQ1b等）、呼吸機能モニタリング（FVC）"
+  },
+  vasculitic: {
+    name: "血管炎性ニューロパチー",
+    emoji: "🩹",
+    category: "免疫介在性",
+    detail: "多発単ニューロパチーの代表的原因。非対称で激しい神経痛を伴い、数日単位で新たな神経脱落が出現する。ANCA関連血管炎（GPA/MPA/EGPA）、結節性多発動脈炎が主な原因。全身症状（発熱・体重減少・皮疹・腎障害）を伴うことが多い。早期治療で進行防止が可能。",
+    workup: "ANCA（MPO/PR3）、CRP・ESR、補体（C3/C4）、腎機能・尿沈渣、神経生検（血管炎所見）"
+  },
+  poems: {
+    name: "POEMS症候群",
+    emoji: "🟣",
+    category: "腫瘍関連",
+    detail: "Polyneuropathy, Organomegaly, Endocrinopathy, M-protein, Skin changesの頭文字。形質細胞腫瘍に伴う多系統疾患。脱髄性の感覚運動ニューロパチーでCIDPとの鑑別が重要。皮膚変化（色素沈着・多毛）、臓器腫大、浮腫、血小板増多が手がかり。VEGF著増が診断的価値あり。",
+    workup: "血清蛋白分画・免疫電気泳動（M蛋白）、VEGF、全身CT/PET-CT（硬化性骨病変）、ホルモン検査"
+  },
+  amyloidosis: {
+    name: "アミロイドーシス",
+    emoji: "🧬",
+    category: "浸潤・沈着性",
+    detail: "ALアミロイドーシス（免疫グロブリン軽鎖由来）またはATTRアミロイドーシス（トランスサイレチン由来: 遺伝性ATTRv/野生型ATTRwt）。進行性の感覚障害＋早期からの自律神経障害（体位性低血圧・消化管症状・排尿障害）が特徴。心アミロイドーシス（心肥大・不整脈・心不全）の合併は予後を大きく左右するため、心症状＋ニューロパチーでは早期に専門施設紹介が必要。",
+    workup: "血清蛋白分画・遊離軽鎖（AL型）、TTR遺伝子検査（ATTRv）、組織生検（腹壁脂肪・唾液腺等でアミロイド沈着確認）、心エコー・BNP・トロポニン、自律神経機能検査"
+  },
+  paraneoplastic: {
+    name: "傍腫瘍性ニューロパチー",
+    emoji: "🎯",
+    category: "腫瘍関連",
+    detail: "後根神経節（DRG）障害による非長さ依存性の感覚性ニューロパチーが典型。亜急性に進行し重度の感覚性失調をきたす。抗Hu抗体（ANNA-1）・抗CV2抗体が代表的で、小細胞肺癌との関連が強い。原発腫瘍発見前にニューロパチーが先行することがあり、原因不明のニューロパチーでは腫瘍検索が重要。",
+    workup: "傍腫瘍抗体パネル（抗Hu/CV2/amphiphysin等）、全身CT/PET-CT（腫瘍検索）、神経伝導検査"
+  },
+  cmt: {
+    name: "Charcot-Marie-Tooth病（CMT）",
+    emoji: "🧬",
+    category: "遺伝性",
+    detail: "最も頻度の高い遺伝性ニューロパチー。10-20代で発症し緩徐に進行。逆シャンパンボトル型の下腿筋萎縮、鶏歩歩行、凹足（ハイアーチ）・槌趾変形が特徴。CMT1型（脱髄型: 伝導速度が均一に低下）とCMT2型（軸索型: 振幅低下）に大別。家族歴が重要だが孤発例もある。",
+    workup: "家族歴の詳細聴取、神経伝導検査（均一な伝導速度低下 vs 振幅低下）、遺伝子検査（PMP22重複:CMT1A等）"
+  },
+  attrv: {
+    name: "家族性アミロイドポリニューロパチー（ATTRv）",
+    emoji: "🔬",
+    category: "遺伝性",
+    detail: "トランスサイレチン（TTR）遺伝子変異によるアミロイドーシス。30-40代で足先のしびれ・疼痛で発症し、自律神経障害が早期から顕著。心アミロイドーシスを合併しうる。日本では熊本・長野に集積地域。タファミジス・パチシランによる疾患修飾療法が可能であり、早期診断が予後を左右する。",
+    workup: "TTR遺伝子検査、組織生検（アミロイド沈着確認）、心エコー・BNP、自律神経機能検査"
+  },
+  hiv: {
+    name: "HIV関連ニューロパチー",
+    emoji: "🦠",
+    category: "感染性",
+    detail: "HIV感染者の30-60%に末梢神経障害を認める。遠位対称性ポリニューロパチー（DSP）が最多で足底の灼熱感・しびれが主症状。進行期（CD4低値）で頻度増加。抗HIV薬（特にd4T/ddI等のNRTI）による薬剤性との鑑別が重要。",
+    workup: "HIV抗体・RNA、CD4数、抗HIV薬の確認"
+  },
+  hcv: {
+    name: "HCV関連ニューロパチー",
+    emoji: "🟡",
+    category: "感染性",
+    detail: "C型肝炎ウイルス感染に伴うクリオグロブリン血症を介して血管炎性ニューロパチーをきたす。多発単ニューロパチーまたは対称性ポリニューロパチー。紫斑・関節痛・腎障害を伴うことがある。HCV治療が根治につながる。",
+    workup: "HCV抗体・RNA、クリオグロブリン、補体（C4低下）"
+  },
+  sjogren: {
+    name: "Sjogren症候群関連ニューロパチー",
+    emoji: "💧",
+    category: "膠原病関連",
+    detail: "感覚性失調型ニューロパチー（後根神経節障害/ganglionopathy）が特徴的で非長さ依存性パターン。三叉神経障害もSjogren症候群に特異的。乾燥症状（ドライアイ・ドライマウス）が手がかりだが、神経症状先行のsicca-negative例もある。小径線維ニューロパチーの形態もとりうる。",
+    workup: "抗SS-A/SS-B抗体、Schirmer試験、唾液腺生検、抗核抗体、神経伝導検査"
+  },
+  sarcoidosis: {
+    name: "サルコイドーシス",
+    emoji: "🫁",
+    category: "全身性疾患",
+    detail: "非乾酪性肉芽腫による多臓器疾患。末梢神経障害は5-15%に認め、小径線維ニューロパチー（有痛性）が最多。顔面神経麻痺も特徴的。肺門リンパ節腫大・皮膚病変・ぶどう膜炎を伴うことが手がかり。",
+    workup: "ACE・sIL-2R・リゾチーム、胸部CT（BHL）、Gaシンチ/FDG-PET、組織生検"
+  },
+  idiopathic: {
+    name: "特発性ポリニューロパチー（CIAP）",
+    emoji: "❓",
+    category: "特発性",
+    detail: "全検索を行っても原因が特定できないポリニューロパチーで、全体の20-30%を占める。慢性特発性軸索型ポリニューロパチー（CIAP）として分類される。高齢者に多く、緩徐進行性・軸索型・感覚優位が典型。半年〜1年毎の再評価で新規原因の出現を確認することが重要。",
+    workup: "全基本検査陰性を確認後に診断。半年〜1年毎の再評価（新規検査異常・症候変化の確認）"
+  }
+};
+
+// ===== ステップ定義 =====
+var STEPS = [
+  {
+    id: "onset",
+    title: "発症様式・経過",
+    question: "症状の発症と進行速度は？",
+    hint: "急性（4週以内）はGBS、慢性（2か月以上）でCIDP診断基準に合致。緩徐進行は代謝性・遺伝性を示唆",
+    type: "single",
+    options: [
+      { label: "急性（数日〜4週以内に進行）", value: "acute", icon: "⚡" },
+      { label: "亜急性（4週〜2か月で進行）", value: "subacute", icon: "📈" },
+      { label: "慢性（2か月以上かけて緩徐進行）", value: "chronic", icon: "🐢" },
+      { label: "再発寛解型（増悪と改善を繰り返す）", value: "relapsing", icon: "🔄" }
+    ]
+  },
+  {
+    id: "pattern",
+    title: "分布パターン",
+    question: "末梢神経障害の分布パターンは？",
+    hint: "対称性遠位優位（手袋靴下型）が最多。非対称は血管炎を強く示唆。非長さ依存性はganglionopathyや傍腫瘍を考慮",
+    type: "single",
+    options: [
+      { label: "左右対称・遠位優位（手袋靴下型）", value: "symmetric_distal", icon: "🧤" },
+      { label: "左右対称・近位＋遠位（広範性）", value: "symmetric_diffuse", icon: "🔲" },
+      { label: "非対称・多発単ニューロパチー型", value: "asymmetric", icon: "🔀" },
+      { label: "非長さ依存性（近位も障害/上肢優位）", value: "non_length", icon: "📐" },
+      { label: "まだ判断できない", value: "uncertain", icon: "❓" }
+    ]
+  },
+  {
+    id: "ncs",
+    title: "神経伝導検査（NCS）所見",
+    question: "神経伝導検査の所見は？",
+    hint: "軸索障害 vs 脱髄障害の区別が鑑別の根幹。脱髄 → CIDP・GBS・CMT1を優先検索",
+    type: "single",
+    options: [
+      { label: "軸索障害パターン（振幅低下が主体）", value: "axonal", icon: "📉" },
+      { label: "脱髄障害パターン（伝導速度低下・伝導ブロック・時間的分散）", value: "demyelinating", icon: "🧠" },
+      { label: "混合型（軸索＋脱髄）", value: "mixed", icon: "🔀" },
+      { label: "正常（小径線維ニューロパチー疑い）", value: "normal", icon: "✅" },
+      { label: "未施行/不明", value: "unknown", icon: "❓" }
+    ]
+  },
+  {
+    id: "modality",
+    title: "障害様式",
+    question: "主たる障害様式は？",
+    hint: "感覚優位は代謝性・中毒性が多い。運動優位はCIDP・GBS・CMT・鉛中毒を考慮",
+    type: "single",
+    options: [
+      { label: "感覚優位（しびれ・疼痛・感覚低下が主体）", value: "sensory", icon: "✋" },
+      { label: "運動優位（筋力低下・筋萎縮が主体）", value: "motor", icon: "💪" },
+      { label: "感覚運動混合型", value: "sensorimotor", icon: "🔄" },
+      { label: "自律神経障害が顕著", value: "autonomic", icon: "🫀" }
+    ]
+  },
+  {
+    id: "symptoms",
+    title: "随伴症状・特徴（該当をすべて選択）",
+    question: "以下の症状・特徴で該当するものは？",
+    type: "multi",
+    options: [
+      { label: "有痛性（灼熱痛・刺すような痛み）", value: "pain" },
+      { label: "深部覚低下・感覚性失調", value: "sensory_ataxia" },
+      { label: "自律神経障害（起立性低血圧・発汗異常・消化管症状）", value: "autonomic" },
+      { label: "顔面神経麻痺・脳神経障害", value: "cranial" },
+      { label: "足変形（凹足・槌趾）・筋萎縮（逆シャンパンボトル）", value: "deformity" },
+      { label: "皮膚変化（色素沈着・多毛・紫斑・結節性紅斑）", value: "skin" },
+      { label: "臓器腫大（肝脾腫・リンパ節腫大）", value: "organomegaly" },
+      { label: "心症状（心肥大・不整脈・心不全）", value: "cardiac" },
+      { label: "夜間増悪するしびれ・疼痛", value: "nocturnal" },
+      { label: "該当なし", value: "none" }
+    ]
+  },
+  {
+    id: "history",
+    title: "背景・既往歴（該当をすべて選択）",
+    question: "以下の背景で該当するものは？",
+    type: "multi",
+    options: [
+      { label: "糖尿病またはHbA1c高値", value: "diabetes" },
+      { label: "アルコール多飲", value: "alcohol" },
+      { label: "抗がん剤使用中/既往", value: "chemotherapy" },
+      { label: "その他の神経毒性薬剤（イソニアジド・メトロニダゾール・リネゾリド等）", value: "neurotoxic_drug" },
+      { label: "PPI長期使用・メトホルミン長期使用", value: "ppi_metformin" },
+      { label: "先行感染（1-4週前の上気道炎・下痢等）", value: "preceding_infection" },
+      { label: "腎機能障害（透析含む）", value: "renal" },
+      { label: "栄養障害・偏食・胃切除後", value: "malnutrition" },
+      { label: "膠原病・自己免疫疾患", value: "autoimmune" },
+      { label: "悪性腫瘍の既往・合併", value: "malignancy" },
+      { label: "家族歴（ニューロパチー・足変形）", value: "family_history" },
+      { label: "HIV感染/感染リスク", value: "hiv_risk" },
+      { label: "職業曝露（有機溶剤・重金属）", value: "occupational" },
+      { label: "甘草含有漢方薬・亜鉛サプリメント使用", value: "supplement" },
+      { label: "該当なし", value: "none" }
+    ]
+  },
+  {
+    id: "labs",
+    title: "検査所見（該当をすべて選択）",
+    question: "以下の検査所見で該当するものは？（未施行なら最後の選択肢を選択）",
+    type: "multi",
+    options: [
+      { label: "HbA1c高値/耐糖能異常", value: "glucose_abnormal" },
+      { label: "ビタミンB12低値", value: "low_b12" },
+      { label: "ビタミンB1低値", value: "low_b1" },
+      { label: "腎機能障害（Cr上昇/eGFR低下）", value: "renal_impairment" },
+      { label: "TSH異常（甲状腺機能異常）", value: "tsh_abnormal" },
+      { label: "M蛋白陽性（免疫固定電気泳動）", value: "m_protein" },
+      { label: "ANCA陽性/炎症反応高値", value: "anca_inflammation" },
+      { label: "抗SS-A/SS-B抗体陽性", value: "ssa_ssb" },
+      { label: "髄液蛋白細胞解離", value: "csf_protein" },
+      { label: "HIV/HBV/HCV抗体陽性", value: "viral_positive" },
+      { label: "VEGF著増", value: "vegf" },
+      { label: "銅低値/亜鉛高値", value: "copper_low" },
+      { label: "ACE/sIL-2R上昇", value: "sarcoid_marker" },
+      { label: "傍腫瘍抗体（抗Hu/CV2等）陽性", value: "paraneoplastic_ab" },
+      { label: "MCV上昇（大球性貧血）", value: "high_mcv" },
+      { label: "検査未施行/不明", value: "unknown" }
+    ]
+  }
+];
+
+// ===== スコアリングエンジン =====
+function calcScores(answers) {
+  var s = {};
+  Object.keys(DISEASES).forEach(function(k) { s[k] = 0; });
+
+  // --- Step 1: 発症様式 ---
+  var onset = answers.onset;
+  if (onset === "acute") {
+    s.gbs += 7; s.vasculitic += 3;
+  } else if (onset === "subacute") {
+    s.paraneoplastic += 4; s.cidp += 3; s.vasculitic += 3;
+    s.b12_deficiency += 2; s.drug_chemo += 2;
+  } else if (onset === "chronic") {
+    s.diabetic += 4; s.alcoholic += 3; s.cmt += 5; s.attrv += 3;
+    s.cidp += 2; s.uremic += 3; s.thyroid += 2;
+    s.poems += 2; s.amyloidosis += 3; s.idiopathic += 3;
+  } else if (onset === "relapsing") {
+    s.cidp += 6; s.gbs += 2;
+  }
+
+  // --- Step 2: 分布パターン ---
+  var pat = answers.pattern;
+  if (pat === "symmetric_distal") {
+    s.diabetic += 4; s.alcoholic += 3; s.b12_deficiency += 3; s.b1_deficiency += 3;
+    s.uremic += 3; s.drug_chemo += 3; s.drug_other += 3; s.cmt += 3;
+    s.hiv += 2; s.thyroid += 2; s.idiopathic += 3;
+  } else if (pat === "symmetric_diffuse") {
+    s.cidp += 4; s.gbs += 4; s.poems += 3;
+  } else if (pat === "asymmetric") {
+    s.vasculitic += 7; s.hcv += 3; s.toxic_exposure += 2;
+  } else if (pat === "non_length") {
+    s.paraneoplastic += 5; s.sjogren += 4; s.cidp += 3;
+  }
+
+  // --- Step 3: NCS所見 ---
+  var ncs = answers.ncs;
+  if (ncs === "axonal") {
+    s.diabetic += 4; s.alcoholic += 3; s.b12_deficiency += 3; s.b1_deficiency += 3;
+    s.uremic += 3; s.drug_chemo += 3; s.drug_other += 3; s.vasculitic += 3;
+    s.hiv += 2; s.paraneoplastic += 3; s.toxic_exposure += 3;
+    s.idiopathic += 2;
+  } else if (ncs === "demyelinating") {
+    s.cidp += 6; s.gbs += 5; s.cmt += 3; s.poems += 4;
+  } else if (ncs === "mixed") {
+    s.cidp += 3; s.vasculitic += 2; s.amyloidosis += 2; s.attrv += 2;
+  } else if (ncs === "normal") {
+    s.sarcoidosis += 3; s.sjogren += 2; s.attrv += 2; s.amyloidosis += 2;
+  }
+
+  // --- Step 4: 障害様式 ---
+  var mod = answers.modality;
+  if (mod === "sensory") {
+    s.diabetic += 3; s.b12_deficiency += 3; s.drug_chemo += 3;
+    s.paraneoplastic += 3; s.sjogren += 3; s.idiopathic += 2;
+  } else if (mod === "motor") {
+    s.cidp += 4; s.gbs += 4; s.cmt += 3; s.toxic_exposure += 2;
+  } else if (mod === "sensorimotor") {
+    s.cidp += 2; s.alcoholic += 2; s.vasculitic += 2; s.poems += 2;
+    s.cmt += 2; s.amyloidosis += 2;
+  } else if (mod === "autonomic") {
+    s.diabetic += 4; s.amyloidosis += 6; s.attrv += 6; s.gbs += 2;
+  }
+
+  // --- Step 5: 随伴症状 ---
+  var sx = answers.symptoms || [];
+  sx.forEach(function(v) {
+    if (v === "pain") {
+      s.diabetic += 3; s.alcoholic += 3; s.vasculitic += 3;
+      s.amyloidosis += 3; s.sarcoidosis += 2;
+    }
+    if (v === "sensory_ataxia") {
+      s.b12_deficiency += 5; s.paraneoplastic += 5; s.sjogren += 4;
+      s.copper_deficiency += 3; s.cidp += 2;
+    }
+    if (v === "autonomic") {
+      s.diabetic += 4; s.amyloidosis += 5; s.attrv += 5; s.gbs += 2;
+    }
+    if (v === "cranial") {
+      s.gbs += 4; s.sarcoidosis += 4;
+    }
+    if (v === "deformity") {
+      s.cmt += 7;
+    }
+    if (v === "skin") {
+      s.poems += 4; s.vasculitic += 3; s.sarcoidosis += 2;
+    }
+    if (v === "organomegaly") {
+      s.poems += 4; s.amyloidosis += 3; s.sarcoidosis += 2;
+    }
+    if (v === "cardiac") {
+      s.amyloidosis += 6; s.attrv += 5;
+    }
+    if (v === "nocturnal") {
+      s.diabetic += 3;
+    }
+  });
+
+  // --- Step 6: 背景・既往歴 ---
+  var hx = answers.history || [];
+  hx.forEach(function(v) {
+    if (v === "diabetes") { s.diabetic += 6; }
+    if (v === "alcohol") { s.alcoholic += 5; s.b1_deficiency += 3; }
+    if (v === "chemotherapy") { s.drug_chemo += 6; }
+    if (v === "neurotoxic_drug") { s.drug_other += 5; }
+    if (v === "ppi_metformin") { s.b12_deficiency += 3; }
+    if (v === "preceding_infection") { s.gbs += 6; }
+    if (v === "renal") { s.uremic += 6; }
+    if (v === "malnutrition") { s.b12_deficiency += 4; s.b1_deficiency += 4; s.copper_deficiency += 3; s.folate_deficiency += 3; }
+    if (v === "autoimmune") { s.sjogren += 3; s.vasculitic += 3; }
+    if (v === "malignancy") { s.paraneoplastic += 5; s.drug_chemo += 2; }
+    if (v === "family_history") { s.cmt += 6; s.attrv += 4; }
+    if (v === "hiv_risk") { s.hiv += 5; }
+    if (v === "occupational") { s.toxic_exposure += 6; }
+    if (v === "supplement") { s.copper_deficiency += 4; }
+  });
+
+  // --- Step 7: 検査所見 ---
+  var labs = answers.labs || [];
+  labs.forEach(function(v) {
+    if (v === "glucose_abnormal") { s.diabetic += 5; }
+    if (v === "low_b12") { s.b12_deficiency += 7; }
+    if (v === "low_b1") { s.b1_deficiency += 6; s.alcoholic += 3; }
+    if (v === "renal_impairment") { s.uremic += 5; }
+    if (v === "tsh_abnormal") { s.thyroid += 6; }
+    if (v === "m_protein") { s.poems += 5; s.amyloidosis += 4; }
+    if (v === "anca_inflammation") { s.vasculitic += 7; }
+    if (v === "ssa_ssb") { s.sjogren += 6; }
+    if (v === "csf_protein") { s.cidp += 5; s.gbs += 4; s.poems += 3; }
+    if (v === "viral_positive") { s.hiv += 4; s.hcv += 4; }
+    if (v === "vegf") { s.poems += 7; }
+    if (v === "copper_low") { s.copper_deficiency += 7; }
+    if (v === "sarcoid_marker") { s.sarcoidosis += 5; }
+    if (v === "paraneoplastic_ab") { s.paraneoplastic += 8; }
+    if (v === "high_mcv") { s.b12_deficiency += 4; s.folate_deficiency += 4; s.alcoholic += 2; }
+  });
+
+  return s;
+}
+
+function rankDiseases(scores) {
+  return Object.entries(scores)
+    .map(function(e) { return { key: e[0], score: e[1], name: DISEASES[e[0]].name, emoji: DISEASES[e[0]].emoji, category: DISEASES[e[0]].category, detail: DISEASES[e[0]].detail, workup: DISEASES[e[0]].workup }; })
+    .filter(function(d) { return d.score > 0; })
+    .sort(function(a, b) { return b.score - a.score; });
+}
+
+function getProbLevel(score, maxScore) {
+  var ratio = score / Math.max(maxScore, 1);
+  if (ratio >= 0.7) return { level: "high", label: "可能性 高" };
+  if (ratio >= 0.35) return { level: "medium", label: "可能性 中" };
+  return { level: "low", label: "可能性 低" };
+}
+
+// ===== 推奨検査リスト生成 =====
+function generateWorkupList(answers, ranked) {
+  var tests = [];
+  // 全例推奨
+  tests.push({ cat: "全例必須", icon: "🔬", text: "血糖・HbA1c（糖尿病スクリーニング）" });
+  tests.push({ cat: "全例必須", icon: "🔬", text: "BUN・Cr・eGFR（腎機能）" });
+  tests.push({ cat: "全例必須", icon: "🔬", text: "TSH・FT4（甲状腺機能）" });
+  tests.push({ cat: "全例必須", icon: "🔬", text: "ビタミンB1・B12・葉酸" });
+  tests.push({ cat: "全例必須", icon: "🔬", text: "血清免疫固定電気泳動（M蛋白スクリーニング）" });
+  tests.push({ cat: "全例必須", icon: "🔬", text: "HIV・HBV・HCV抗体" });
+  tests.push({ cat: "全例必須", icon: "🔬", text: "CBC・MCV、肝機能、電解質" });
+  tests.push({ cat: "全例必須", icon: "⚡", text: "神経伝導検査（NCS）・針筋電図（EMG）" });
+
+  // 条件に応じた追加検査
+  var topKeys = ranked.slice(0, 5).map(function(d) { return d.key; });
+  var allSx = answers.symptoms || [];
+  var allHx = answers.history || [];
+  var allLabs = answers.labs || [];
+
+  if (topKeys.indexOf("cidp") >= 0 || topKeys.indexOf("gbs") >= 0) {
+    tests.push({ cat: "免疫性疑い", icon: "💉", text: "髄液検査（蛋白細胞解離）" });
+  }
+  if (topKeys.indexOf("cidp") >= 0) {
+    tests.push({ cat: "CIDP疑い", icon: "🖼️", text: "MRI神経根（肥厚・造影増強）" });
+    tests.push({ cat: "CIDP疑い", icon: "🧪", text: "抗NF155/CNTN1/Caspr1抗体" });
+  }
+  if (topKeys.indexOf("gbs") >= 0) {
+    tests.push({ cat: "GBS疑い", icon: "🫁", text: "呼吸機能モニタリング（FVC）" });
+    tests.push({ cat: "GBS疑い", icon: "🧪", text: "抗ガングリオシド抗体（GM1/GQ1b等）" });
+  }
+  if (topKeys.indexOf("vasculitic") >= 0) {
+    tests.push({ cat: "血管炎疑い", icon: "🧪", text: "ANCA（MPO/PR3）、補体（C3/C4）" });
+    tests.push({ cat: "血管炎疑い", icon: "🩹", text: "神経生検（血管炎所見の確認）" });
+    tests.push({ cat: "血管炎疑い", icon: "🔬", text: "腎機能・尿沈渣、CRP・ESR" });
+  }
+  if (topKeys.indexOf("poems") >= 0) {
+    tests.push({ cat: "POEMS疑い", icon: "🧪", text: "VEGF測定" });
+    tests.push({ cat: "POEMS疑い", icon: "🖼️", text: "全身CT/PET-CT（硬化性骨病変）" });
+  }
+  if (topKeys.indexOf("amyloidosis") >= 0 || topKeys.indexOf("attrv") >= 0) {
+    tests.push({ cat: "アミロイドーシス疑い", icon: "🧬", text: "TTR遺伝子検査" });
+    tests.push({ cat: "アミロイドーシス疑い", icon: "🩹", text: "組織生検（腹壁脂肪・唾液腺等）" });
+    tests.push({ cat: "アミロイドーシス疑い", icon: "🫀", text: "心エコー・BNP・トロポニン" });
+    tests.push({ cat: "アミロイドーシス疑い", icon: "🧪", text: "血清遊離軽鎖（AL型鑑別）" });
+  }
+  if (topKeys.indexOf("paraneoplastic") >= 0) {
+    tests.push({ cat: "傍腫瘍疑い", icon: "🧪", text: "傍腫瘍抗体パネル（抗Hu/CV2等）" });
+    tests.push({ cat: "傍腫瘍疑い", icon: "🖼️", text: "全身CT/PET-CT（腫瘍検索）" });
+  }
+  if (topKeys.indexOf("sjogren") >= 0) {
+    tests.push({ cat: "Sjogren疑い", icon: "🧪", text: "抗SS-A/SS-B抗体、抗核抗体" });
+    tests.push({ cat: "Sjogren疑い", icon: "🔬", text: "Schirmer試験、唾液腺生検" });
+  }
+  if (topKeys.indexOf("sarcoidosis") >= 0) {
+    tests.push({ cat: "サルコイドーシス疑い", icon: "🧪", text: "ACE・sIL-2R・リゾチーム" });
+    tests.push({ cat: "サルコイドーシス疑い", icon: "🖼️", text: "胸部CT（BHL）、Gaシンチ/FDG-PET" });
+  }
+  if (topKeys.indexOf("cmt") >= 0) {
+    tests.push({ cat: "遺伝性疑い", icon: "🧬", text: "遺伝子検査（PMP22重複:CMT1A等）" });
+  }
+  if (topKeys.indexOf("copper_deficiency") >= 0) {
+    tests.push({ cat: "銅欠乏疑い", icon: "🧪", text: "血清銅・セルロプラスミン、血清亜鉛" });
+  }
+  if (topKeys.indexOf("toxic_exposure") >= 0 || allHx.indexOf("occupational") >= 0) {
+    tests.push({ cat: "中毒疑い", icon: "⚠️", text: "血中鉛・尿中ヒ素・尿中水銀" });
+  }
+  if (allSx.indexOf("autonomic") >= 0 || answers.modality === "autonomic") {
+    tests.push({ cat: "自律神経評価", icon: "🫀", text: "自律神経機能検査（心電図RR間隔変動・チルト試験・交感神経皮膚反応）" });
+  }
+  if (answers.ncs === "normal") {
+    tests.push({ cat: "小径線維評価", icon: "🔬", text: "皮膚生検（表皮内神経線維密度: IENFD）" });
+  }
+
+  return tests;
+}
+
+// ===== UIレンダリング =====
+var currentStep = 0;
+var answers = {};
+
+function render() {
+  var app = document.getElementById("app");
+  var html = "";
+
+  html += '<div class="emergency-box">';
+  html += '<strong>\u26a0\ufe0f 治療可能な原因を最優先で除外：</strong>';
+  html += 'ビタミン欠乏（B1/B12）→ 補充で改善可。薬剤性 → 中止で改善可。';
+  html += '<strong>CIDP</strong> → 免疫療法反応性。<strong>血管炎</strong> → 早期治療で進行防止。';
+  html += '<strong>アミロイドーシス</strong>（心症状＋自律神経障害＋ニューロパチー）→ 早期専門施設紹介が予後を左右します。';
+  html += '</div>';
+
+  html += '<div class="algo-note">';
+  html += '<strong>\u{1f4a1} 診断アルゴリズム:</strong> ';
+  html += '発症様式 \u2192 分布パターン \u2192 NCS（軸索/脱髄） \u2192 障害様式 \u2192 随伴症状 \u2192 背景・既往歴 \u2192 検査所見 の7ステップで鑑別し、<strong>疾患候補に応じた必要検査リスト</strong>を自動生成します。<br>';
+  html += '全検索で原因不明の場合も20-30%あり（特発性CIAP）、<strong>半年〜1年毎の再評価</strong>が重要です。';
+  html += '</div>';
+
+  STEPS.forEach(function(step, i) {
+    var state = i < currentStep ? "completed" : i === currentStep ? "" : "inactive";
+    var numClass = i < currentStep ? "done" : "";
+    html += '<div class="step-card ' + state + '" id="step-' + i + '">';
+    html += '<div class="step-header">';
+    html += '<span class="step-number ' + numClass + '">' + (i < currentStep ? "\u2713" : i + 1) + '</span>';
+    html += '<span class="step-title">' + step.title + '</span>';
+    html += '</div>';
+
+    if (i <= currentStep) {
+      html += '<div class="step-body">';
+      html += '<p style="font-weight:600; margin-bottom:4px;">' + step.question + '</p>';
+      if (step.hint) html += '<p class="hint">' + step.hint + '</p>';
+
+      if (step.type === "single") {
+        html += '<div class="option-group">';
+        step.options.forEach(function(opt) {
+          var sel = answers[step.id] === opt.value ? "selected" : "";
+          html += '<button class="option-btn ' + sel + '" onclick="selectOption(\'' + step.id + '\', \'' + opt.value + '\', ' + i + ')">';
+          html += '<span class="icon">' + opt.icon + '</span> ' + opt.label;
+          html += '</button>';
+        });
+        html += '</div>';
+      } else {
+        html += '<div class="checklist">';
+        var checked = answers[step.id] || [];
+        step.options.forEach(function(opt) {
+          var isChecked = checked.indexOf(opt.value) >= 0;
+          html += '<div class="check-item" onclick="toggleCheck(\'' + step.id + '\', \'' + opt.value + '\')">';
+          html += '<input type="checkbox" ' + (isChecked ? "checked" : "") + ' tabindex="-1">';
+          html += '<label>' + opt.label + '</label>';
+          html += '</div>';
+        });
+        html += '</div>';
+        if (i === currentStep) {
+          html += '<button class="next-btn" onclick="nextStep(' + i + ')">次へ \u25b6</button>';
+        }
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+  });
+
+  // 結果表示
+  if (currentStep >= STEPS.length) {
+    var scores = calcScores(answers);
+    var ranked = rankDiseases(scores);
+    var maxScore = ranked.length > 0 ? ranked[0].score : 1;
+    var workupList = generateWorkupList(answers, ranked);
+
+    // 推奨検査リスト
+    html += '<div class="workup-section">';
+    html += '<h3>\u{1f4cb} この患者に推奨される検査リスト</h3>';
+    html += '<ul class="workup-list">';
+    workupList.forEach(function(t) {
+      html += '<li><span class="wk-icon">' + t.icon + '</span>';
+      html += '<span><span class="wk-cat">' + t.cat + '</span> ' + t.text + '</span>';
+      html += '</li>';
+    });
+    html += '</ul>';
+    html += '</div>';
+
+    // 鑑別診断結果
+    html += '<div class="result-panel show">';
+    html += '<div class="result-header">\u{1f4cb} 鑑別診断結果</div>';
+    html += '<div class="result-body">';
+
+    if (ranked.length === 0) {
+      html += '<p>該当する疾患が見つかりませんでした。入力内容を確認してください。</p>';
+    } else {
+      ranked.forEach(function(d) {
+        var prob = getProbLevel(d.score, maxScore);
+        html += '<div class="dx-card ' + prob.level + '">';
+        html += '<div class="dx-name">' + d.emoji + ' ' + d.name;
+        html += ' <span class="prob-badge">' + prob.label + '</span>';
+        html += ' <span style="font-size:0.78em; color:var(--gray); font-weight:400;">(' + d.category + ')</span>';
+        html += '</div>';
+        html += '<div class="dx-detail">' + d.detail + '</div>';
+        html += '<div class="dx-workup">\u{1f50d} <strong>推奨検査:</strong> ' + d.workup + '</div>';
+        html += '</div>';
+      });
+    }
+
+    html += '</div></div>';
+    html += '<button class="reset-btn" onclick="resetAll()">最初からやり直す</button>';
+  }
+
+  app.innerHTML = html;
+
+  if (currentStep > 0 && currentStep <= STEPS.length) {
+    var targetId = currentStep < STEPS.length ? "step-" + currentStep : "step-" + (STEPS.length - 1);
+    var el = document.getElementById(targetId);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+function selectOption(stepId, value, stepIndex) {
+  answers[stepId] = value;
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function toggleCheck(stepId, value) {
+  if (!answers[stepId]) answers[stepId] = [];
+  var idx = answers[stepId].indexOf(value);
+  if (value === "none" || value === "unknown") {
+    answers[stepId] = [value];
+  } else {
+    var noneIdx = answers[stepId].indexOf("none");
+    if (noneIdx >= 0) answers[stepId].splice(noneIdx, 1);
+    var unkIdx = answers[stepId].indexOf("unknown");
+    if (unkIdx >= 0) answers[stepId].splice(unkIdx, 1);
+    if (idx >= 0) {
+      answers[stepId].splice(idx, 1);
+    } else {
+      answers[stepId].push(value);
+    }
+  }
+  render();
+}
+
+function nextStep(stepIndex) {
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function resetAll() {
+  currentStep = 0;
+  answers = {};
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+render();
+</script>
+</body>
+</html>
