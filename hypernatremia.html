@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1B3A5C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>高ナトリウム血症 鑑別診断ツール</title>
+<style>
+  :root {
+    --navy: #1B3A5C;
+    --blue: #2C5AA0;
+    --light-blue: #E8F0FE;
+    --red: #DC3545;
+    --yellow: #F5C518;
+    --green: #28A745;
+    --orange: #E8850C;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(27,58,92,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #FEF0E8 0%, #F8F4F4 100%);
+    color: #222;
+    min-height: 100vh;
+    padding: 0 0 40px;
+  }
+  header {
+    background: linear-gradient(135deg, #8B2500, #C04000);
+    color: var(--white);
+    padding: 14px 20px 18px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(139,37,0,0.18);
+  }
+  .back-bar { display: flex; align-items: center; margin-bottom: 8px; }
+  .back-bar a {
+    color: rgba(255,255,255,0.85); text-decoration: none; font-size: 0.85em;
+    display: flex; align-items: center; gap: 4px; padding: 4px 8px;
+    border-radius: 6px; transition: background 0.2s;
+  }
+  .back-bar a:active { background: rgba(255,255,255,0.15); }
+  header h1 { font-size: 1.7em; font-weight: 700; letter-spacing: 0.04em; }
+  header p { font-size: 0.92em; margin-top: 6px; opacity: 0.85; }
+
+  .container { max-width: 820px; margin: 0 auto; padding: 24px 16px; }
+
+  .step-card {
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: var(--shadow); margin-bottom: 18px; overflow: hidden; transition: opacity 0.3s;
+  }
+  .step-card.inactive { opacity: 0.45; pointer-events: none; }
+  .step-card.completed { opacity: 1; }
+  .step-header {
+    display: flex; align-items: center; gap: 10px; padding: 14px 18px;
+    background: #FDE8D8; border-bottom: 2px solid #C04000; cursor: pointer;
+  }
+  .step-number {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 50%; background: #C04000;
+    color: var(--white); font-weight: 700; font-size: 0.95em; flex-shrink: 0;
+  }
+  .step-number.done { background: var(--green); }
+  .step-title { font-weight: 700; font-size: 1.05em; color: #8B2500; }
+  .step-body { padding: 18px; }
+
+  .option-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .option-btn {
+    display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+    border: 2px solid #D0D8E4; border-radius: 8px; background: var(--white);
+    font-size: 0.97em; cursor: pointer; transition: all 0.18s; text-align: left;
+    color: #222; font-family: inherit; width: 100%;
+  }
+  .option-btn:hover { border-color: #C04000; background: #FDE8D8; }
+  .option-btn.selected { border-color: #C04000; background: #FDE8D8; font-weight: 700; }
+  .option-btn .icon { font-size: 1.2em; flex-shrink: 0; width: 24px; text-align: center; }
+
+  .checklist { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .check-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+    border-radius: 8px; background: var(--light-gray); cursor: pointer;
+    transition: background 0.15s; user-select: none; font-size: 0.95em;
+  }
+  .check-item:hover { background: #F0E0D0; }
+  .check-item input[type="checkbox"] {
+    width: 18px; height: 18px; accent-color: #C04000; flex-shrink: 0; cursor: pointer;
+  }
+  .check-item label { cursor: pointer; flex: 1; }
+
+  .result-panel {
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(139,37,0,0.15); overflow: hidden;
+    margin-top: 24px; display: none;
+  }
+  .result-panel.show { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  .result-header {
+    padding: 16px 20px; background: linear-gradient(135deg, #8B2500, #C04000);
+    color: var(--white); font-weight: 700; font-size: 1.15em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .result-body { padding: 20px; }
+
+  .dx-card {
+    border: 2px solid transparent; border-radius: 8px; padding: 16px;
+    margin-bottom: 12px; position: relative; transition: all 0.2s;
+  }
+  .dx-card.high { border-color: var(--red); background: #FFF5F5; }
+  .dx-card.medium { border-color: var(--orange); background: #FFF8F0; }
+  .dx-card.low { border-color: var(--gray); background: var(--light-gray); }
+
+  .dx-card .dx-name {
+    font-weight: 700; font-size: 1.08em; display: flex; align-items: center;
+    gap: 8px; margin-bottom: 6px;
+  }
+  .dx-card .prob-badge {
+    display: inline-block; padding: 2px 10px; border-radius: 12px;
+    font-size: 0.78em; font-weight: 700; color: var(--white);
+  }
+  .dx-card.high .prob-badge { background: var(--red); }
+  .dx-card.medium .prob-badge { background: var(--orange); }
+  .dx-card.low .prob-badge { background: var(--gray); }
+
+  .dx-card .dx-detail { font-size: 0.9em; color: #444; line-height: 1.6; }
+  .dx-card .dx-detail strong { color: #8B2500; }
+  .dx-card .dx-workup {
+    margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ccc;
+    font-size: 0.88em; color: #C04000;
+  }
+
+  .next-btn {
+    display: inline-flex; align-items: center; gap: 6px; margin-top: 14px;
+    padding: 10px 22px; background: #C04000; color: var(--white); border: none;
+    border-radius: 8px; font-size: 0.95em; font-weight: 600; cursor: pointer;
+    transition: background 0.15s; font-family: inherit;
+  }
+  .next-btn:hover { background: #8B2500; }
+  .next-btn:disabled { background: #B0BEC5; cursor: not-allowed; }
+
+  .reset-btn {
+    display: block; margin: 24px auto 0; padding: 10px 32px;
+    background: var(--white); color: var(--red); border: 2px solid var(--red);
+    border-radius: 8px; font-size: 0.95em; font-weight: 600; cursor: pointer;
+    font-family: inherit; transition: all 0.15s;
+  }
+  .reset-btn:hover { background: var(--red); color: var(--white); }
+
+  .hint { font-size: 0.85em; color: var(--gray); margin-top: 6px; line-height: 1.5; }
+  .divider { height: 1px; background: #D0D8E4; margin: 14px 0; }
+
+  .algo-note {
+    background: #FFF8E1; border-left: 4px solid var(--yellow);
+    padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 18px;
+    font-size: 0.9em; line-height: 1.6; color: #555;
+  }
+  .algo-note strong { color: #8B2500; }
+
+  @media (max-width: 600px) {
+    header { padding: 12px 14px 14px; }
+    header h1 { font-size: 1.25em; }
+    header p { font-size: 0.85em; }
+    .container { padding: 14px 10px; }
+    .step-header { padding: 12px 14px; }
+    .option-btn { min-height: 44px; font-size: 0.92em; -webkit-tap-highlight-color: transparent; }
+    .step-card { margin-bottom: 14px; }
+    .step-body, .result-body { padding: 14px; }
+    .dx-card { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="back-bar"><a href="index.html">← 診断ツール一覧に戻る</a></div>
+  <h1>高ナトリウム血症 鑑別診断ツール</h1>
+  <p>臨床所見・検査所見から高Na血症の原因を系統的に鑑別</p>
+</header>
+
+<div class="container" id="app"></div>
+
+<script>
+// ===== 疾患データ定義 =====
+const DISEASES = {
+  central_di: {
+    name: "中枢性尿崩症",
+    emoji: "🧠",
+    category: "尿崩症",
+    detail: "視床下部・下垂体後葉の障害によりADH（バソプレシン）分泌が不足し、大量の希釈尿（低張性多尿）をきたす。頭部外傷、脳外科術後、下垂体腫瘍、サルコイドーシスなどが原因。多尿（3L/日以上）・多飲が特徴で、飲水が追いつかないと高Na血症となる。尿浸透圧＜300 mOsm/kgが典型。デスモプレシン（DDAVP）投与で尿が濃縮されれば中枢性と確認できる。",
+    workup: "尿浸透圧、水制限試験、DDAVP負荷試験、頭部MRI（下垂体・視床下部）、血中バソプレシン/コペプチン",
+  },
+  nephrogenic_di: {
+    name: "腎性尿崩症",
+    emoji: "🫘",
+    category: "尿崩症",
+    detail: "腎集合管がADHに反応しないため低張性多尿をきたす。リチウム長期内服が最多の原因で、高Ca血症、低K血症、腎疾患（閉塞性腎症、鎌状赤血球症など）でも生じる。先天性は稀。DDAVP投与に反応しない（尿濃縮が改善しない）ことで中枢性と鑑別できる。原因除去が治療の基本。",
+    workup: "尿浸透圧、DDAVP負荷試験（反応なし）、リチウム濃度、血清Ca・K、腎機能、腎エコー",
+  },
+  osmotic_diuresis: {
+    name: "浸透圧利尿（高血糖・HHS等）",
+    emoji: "🍬",
+    category: "水分喪失",
+    detail: "高血糖（特にHHS：高浸透圧高血糖状態）、マンニトール投与、高蛋白経腸栄養による尿素負荷などで、尿中の浸透圧活性物質が多量の水を引き込み多尿をきたす。尿浸透圧は300〜600 mOsm/kg程度と中間域を示す。高血糖の場合は補正Na値の算出が重要（血糖100 mg/dL上昇ごとにNa約1.6〜2.4 mEq/L低下）。",
+    workup: "血糖、HbA1c、血清浸透圧、尿糖、尿浸透圧、BUN（高蛋白栄養の場合）",
+  },
+  extrarenal_loss: {
+    name: "腎外性水分喪失（不感蒸泄増加）",
+    emoji: "🌡️",
+    category: "水分喪失",
+    detail: "発熱、大量発汗、熱傷、過換気などにより低張性の水分が体外に喪失し高Na血症をきたす。汗や不感蒸泄は低張性（Na濃度が低い）のため、水分喪失がNa喪失を上回る。腎は適切にADHを分泌し尿を濃縮する（尿浸透圧＞800 mOsm/kg）ため、腎機能は正常に保たれる。脱水徴候を伴う。",
+    workup: "体温、尿浸透圧（＞800で腎の水節約を確認）、BUN/Cr比、体重変化の推移",
+  },
+  gi_loss: {
+    name: "消化管からの水分喪失",
+    emoji: "💧",
+    category: "水分喪失",
+    detail: "下痢（特に浸透圧性下痢：ラクツロース、ソルビトール含有製剤など）により低張性の消化管液が喪失し高Na血症をきたす。嘔吐では通常低Na血症になるが、水分補充が不十分なら高Na血症にもなりうる。尿は適切に濃縮される（Uosm＞800）。脱水徴候を伴い、BUN/Cr比上昇を認める。",
+    workup: "便性状・回数の確認、尿浸透圧、BUN/Cr比、電解質推移",
+  },
+  loop_diuretic: {
+    name: "ループ利尿薬",
+    emoji: "💊",
+    category: "薬剤",
+    detail: "フロセミドなどのループ利尿薬はヘンレ係蹄上行脚でのNaCl再吸収を阻害し、尿濃縮能を低下させる。等張〜やや低張の多尿をきたし、水分補充が不十分だと高Na血症となる。尿浸透圧は中間域（300〜600 mOsm/kg）となりやすい。尿中Naは利尿薬の作用により高値。",
+    workup: "薬剤歴確認、尿浸透圧、尿中Na、尿量モニタリング",
+  },
+  inadequate_intake: {
+    name: "飲水不足（口渇機構障害を含む）",
+    emoji: "🧓",
+    category: "水分摂取不足",
+    detail: "高齢者での口渇感低下、認知症、要介護状態、嚥下障害、意識障害などにより水分摂取が不十分となり高Na血症をきたす。入院患者では輸液管理の不備でも生じる。腎は適切にADHを分泌し最大限に尿を濃縮する（Uosm＞800 mOsm/kg）。入院時高Na血症患者の死亡率は約30〜40%と高い。",
+    workup: "飲水量・輸液量の評価、意識レベル、嚥下機能評価、尿浸透圧（＞800で腎機能正常を確認）",
+  },
+  hypodipsia: {
+    name: "渇感低下症（原発性渇感障害）",
+    emoji: "🧠",
+    category: "水分摂取不足",
+    detail: "視床下部の渇中枢障害により口渇を感じないため水分摂取が著減し高Na血症をきたす。脳腫瘍、脳血管障害、頭部外傷後、水頭症などが原因。ADH分泌は正常に保たれる場合が多く、尿は適切に濃縮される。中枢性尿崩症を合併することもある（adipsic diabetes insipidus）。",
+    workup: "飲水量の詳細聴取、頭部MRI（視床下部病変の検索）、尿浸透圧、血中バソプレシン/コペプチン",
+  },
+  na_overload: {
+    name: "ナトリウム過剰負荷（医原性）",
+    emoji: "🏥",
+    category: "Na過剰",
+    detail: "3%食塩水、重炭酸Na（メイロン®）大量投与、高張透析液などにより医原性にNaが過剰負荷される。体液量過剰を伴い、浮腫・頸静脈怒張・肺うっ血を認めることがある。ICU患者や心肺蘇生後に起こりやすい。尿中Naは高値となる。原因の除去と自由水補充が治療の基本。",
+    workup: "輸液内容・Na投与量の確認、体液量評価（浮腫・肺うっ血の有無）、尿中Na",
+  },
+  mineralocorticoid: {
+    name: "鉱質コルチコイド過剰（原発性アルドステロン症等）",
+    emoji: "⚡",
+    category: "Na過剰",
+    detail: "原発性アルドステロン症やCushing症候群では鉱質コルチコイド作用によりNa再吸収が亢進し軽度の高Na血症をきたしうる（通常は軽度）。高血圧、低K血症が臨床的手がかり。アルドステロンによる「エスケープ現象」のため、高度な高Na血症は稀。",
+    workup: "血漿レニン活性（PRA）、血漿アルドステロン濃度（PAC）、ARR、血清K、24時間蓄尿Na・K、副腎CT",
+  },
+};
+
+// ===== ステップ定義 =====
+const STEPS = [
+  {
+    id: "volume",
+    title: "体液量（細胞外液量）の評価",
+    question: "患者の体液量状態は？",
+    hint: "脱水徴候（口渇、ツルゴール低下、頻脈、起立性低血圧）、浮腫・頸静脈怒張の有無を評価",
+    type: "single",
+    options: [
+      { label: "減少（脱水徴候あり）", value: "decreased", icon: "🏜️" },
+      { label: "正常（浮腫も脱水もなし）", value: "normal", icon: "🟰" },
+      { label: "増加（浮腫あり）", value: "increased", icon: "🫧" },
+      { label: "評価困難", value: "uncertain", icon: "🤔" },
+    ]
+  },
+  {
+    id: "urine_osm",
+    title: "尿浸透圧",
+    question: "尿浸透圧（Uosm）の結果は？",
+    hint: "＞800 mOsm/kg：腎は適切に水を節約（ADH正常応答）。300〜800：部分的尿崩症or浸透圧利尿。＜300：尿崩症を疑う",
+    type: "single",
+    options: [
+      { label: "＞ 800 mOsm/kg（適切な濃縮尿）", value: "high", icon: "🟡" },
+      { label: "300〜800 mOsm/kg（中間域）", value: "mid", icon: "🟠" },
+      { label: "＜ 300 mOsm/kg（希釈尿）", value: "low", icon: "💧" },
+      { label: "未測定 / 不明", value: "unknown", icon: "🤔" },
+    ]
+  },
+  {
+    id: "urine_volume",
+    title: "尿量の評価",
+    question: "1日尿量はどの程度ですか？",
+    hint: "多尿（＞3L/日）は尿崩症・浸透圧利尿を示唆。乏尿は腎外性喪失・飲水不足を示唆",
+    type: "single",
+    options: [
+      { label: "多尿（＞3 L/日）", value: "polyuria", icon: "🚿" },
+      { label: "正常（1〜3 L/日）", value: "normal", icon: "💧" },
+      { label: "乏尿（＜500 mL/日）", value: "oliguria", icon: "🔻" },
+      { label: "未測定 / 不明", value: "unknown", icon: "🤔" },
+    ]
+  },
+  {
+    id: "labs",
+    title: "検査所見（該当するものをすべて選択）",
+    question: "以下の検査所見で該当するものは？",
+    hint: "入手可能な検査結果をチェックしてください",
+    type: "multi",
+    options: [
+      { label: "高血糖（＞250 mg/dL）", value: "high_glucose" },
+      { label: "BUN/Cr比 ＞ 20（腎前性パターン）", value: "high_bun_cr" },
+      { label: "血清Ca高値（＞10.5 mg/dL）", value: "high_ca" },
+      { label: "血清K低値（＜3.5 mEq/L）", value: "low_k" },
+      { label: "尿中Na＞ 20 mEq/L", value: "high_urine_na" },
+      { label: "尿中Na＜ 20 mEq/L", value: "low_urine_na" },
+      { label: "尿糖陽性", value: "glycosuria" },
+      { label: "高BUN（経管栄養・高蛋白食）", value: "high_bun_nutrition" },
+      { label: "検査未施行 / 不明", value: "unknown" },
+    ]
+  },
+  {
+    id: "symptoms",
+    title: "臨床所見・病歴（該当するものをすべて選択）",
+    question: "以下の臨床所見・病歴で該当するものは？",
+    type: "multi",
+    options: [
+      { label: "発熱 / 大量発汗 / 熱傷", value: "fever_burn" },
+      { label: "下痢（特に水様性）", value: "diarrhea" },
+      { label: "多尿＋多飲の既往", value: "polyuria_polydipsia" },
+      { label: "頭部外傷 / 脳外科手術後", value: "head_trauma" },
+      { label: "脳腫瘍 / 脳血管障害", value: "cns_tumor" },
+      { label: "認知症 / 意識障害 / 嚥下困難", value: "impaired_intake" },
+      { label: "要介護状態 / 高齢者の独居", value: "elderly_care" },
+      { label: "ICU / 心肺蘇生後", value: "icu" },
+      { label: "高血圧（治療抵抗性）", value: "hypertension" },
+      { label: "浮腫 / 頸静脈怒張 / 肺うっ血", value: "volume_overload" },
+      { label: "該当なし", value: "none" },
+    ]
+  },
+  {
+    id: "drugs",
+    title: "薬剤歴（該当するものをすべて選択）",
+    question: "以下の薬剤を使用していますか？",
+    hint: "高Na血症をきたしうる薬剤をチェック",
+    type: "multi",
+    options: [
+      { label: "リチウム", value: "lithium" },
+      { label: "ループ利尿薬（フロセミド等）", value: "loop_diuretic" },
+      { label: "浸透圧利尿薬（マンニトール等）", value: "mannitol" },
+      { label: "重炭酸Na（メイロン®）投与歴", value: "nahco3" },
+      { label: "3%食塩水投与歴", value: "hypertonic_saline" },
+      { label: "高蛋白経腸栄養", value: "high_protein_feed" },
+      { label: "アムホテリシンB", value: "amphotericin" },
+      { label: "デメクロサイクリン", value: "demeclocycline" },
+      { label: "該当薬剤なし", value: "none" },
+    ]
+  },
+  {
+    id: "ddavp",
+    title: "DDAVP（デスモプレシン）負荷試験",
+    question: "DDAVP投与後の尿浸透圧の反応は？",
+    hint: "尿崩症が疑われる場合に実施。中枢性では尿浸透圧が上昇（＞50%増加）、腎性では反応なし",
+    type: "single",
+    options: [
+      { label: "尿浸透圧が＞50%上昇（反応あり）", value: "responsive", icon: "✅" },
+      { label: "尿浸透圧の変化なし（反応なし）", value: "unresponsive", icon: "❌" },
+      { label: "未施行 / 不明", value: "unknown", icon: "🤔" },
+    ]
+  },
+];
+
+// ===== スコアリングエンジン =====
+function calcScores(answers) {
+  const scores = {};
+  Object.keys(DISEASES).forEach(k => scores[k] = 0);
+
+  // Step 1: 体液量
+  const vol = answers.volume;
+  if (vol === "decreased") {
+    scores.extrarenal_loss += 4;
+    scores.gi_loss += 4;
+    scores.osmotic_diuresis += 3;
+    scores.loop_diuretic += 3;
+    scores.central_di += 2;
+    scores.nephrogenic_di += 2;
+    scores.inadequate_intake += 3;
+    scores.na_overload -= 3;
+    scores.mineralocorticoid -= 1;
+  } else if (vol === "normal") {
+    scores.central_di += 3;
+    scores.nephrogenic_di += 3;
+    scores.inadequate_intake += 3;
+    scores.hypodipsia += 4;
+    scores.extrarenal_loss += 1;
+    scores.na_overload -= 2;
+  } else if (vol === "increased") {
+    scores.na_overload += 6;
+    scores.mineralocorticoid += 4;
+    scores.central_di -= 2;
+    scores.nephrogenic_di -= 2;
+    scores.extrarenal_loss -= 3;
+    scores.gi_loss -= 3;
+    scores.inadequate_intake -= 2;
+  }
+
+  // Step 2: 尿浸透圧
+  const uosm = answers.urine_osm;
+  if (uosm === "high") { // >800
+    scores.extrarenal_loss += 4;
+    scores.gi_loss += 4;
+    scores.inadequate_intake += 4;
+    scores.hypodipsia += 3;
+    scores.na_overload += 2;
+    scores.central_di -= 3;
+    scores.nephrogenic_di -= 3;
+    scores.osmotic_diuresis -= 2;
+  } else if (uosm === "mid") { // 300-800
+    scores.osmotic_diuresis += 4;
+    scores.loop_diuretic += 4;
+    scores.central_di += 2; // 部分型
+    scores.nephrogenic_di += 2;
+    scores.extrarenal_loss -= 1;
+  } else if (uosm === "low") { // <300
+    scores.central_di += 5;
+    scores.nephrogenic_di += 5;
+    scores.extrarenal_loss -= 3;
+    scores.gi_loss -= 3;
+    scores.inadequate_intake -= 2;
+    scores.na_overload -= 2;
+    scores.osmotic_diuresis -= 2;
+  }
+
+  // Step 3: 尿量
+  const uvol = answers.urine_volume;
+  if (uvol === "polyuria") {
+    scores.central_di += 4;
+    scores.nephrogenic_di += 4;
+    scores.osmotic_diuresis += 4;
+    scores.loop_diuretic += 3;
+    scores.inadequate_intake -= 2;
+    scores.extrarenal_loss -= 1;
+  } else if (uvol === "normal") {
+    scores.inadequate_intake += 2;
+    scores.hypodipsia += 2;
+    scores.extrarenal_loss += 1;
+  } else if (uvol === "oliguria") {
+    scores.extrarenal_loss += 3;
+    scores.gi_loss += 2;
+    scores.inadequate_intake += 3;
+    scores.central_di -= 3;
+    scores.nephrogenic_di -= 3;
+    scores.osmotic_diuresis -= 3;
+  }
+
+  // Step 4: 検査所見
+  const labs = answers.labs || [];
+  labs.forEach(v => {
+    if (v === "high_glucose") { scores.osmotic_diuresis += 6; }
+    if (v === "high_bun_cr") { scores.extrarenal_loss += 3; scores.gi_loss += 3; scores.inadequate_intake += 3; }
+    if (v === "high_ca") { scores.nephrogenic_di += 4; }
+    if (v === "low_k") { scores.nephrogenic_di += 3; scores.mineralocorticoid += 3; scores.loop_diuretic += 2; }
+    if (v === "high_urine_na") { scores.na_overload += 3; scores.loop_diuretic += 2; scores.mineralocorticoid += 2; }
+    if (v === "low_urine_na") { scores.extrarenal_loss += 3; scores.gi_loss += 2; scores.inadequate_intake += 2; }
+    if (v === "glycosuria") { scores.osmotic_diuresis += 5; }
+    if (v === "high_bun_nutrition") { scores.osmotic_diuresis += 4; }
+  });
+
+  // Step 5: 臨床所見
+  const sx = answers.symptoms || [];
+  sx.forEach(v => {
+    if (v === "fever_burn") scores.extrarenal_loss += 5;
+    if (v === "diarrhea") scores.gi_loss += 5;
+    if (v === "polyuria_polydipsia") { scores.central_di += 4; scores.nephrogenic_di += 4; }
+    if (v === "head_trauma") { scores.central_di += 4; scores.hypodipsia += 3; }
+    if (v === "cns_tumor") { scores.central_di += 4; scores.hypodipsia += 3; }
+    if (v === "impaired_intake") { scores.inadequate_intake += 5; }
+    if (v === "elderly_care") { scores.inadequate_intake += 4; }
+    if (v === "icu") { scores.na_overload += 4; scores.osmotic_diuresis += 2; }
+    if (v === "hypertension") { scores.mineralocorticoid += 4; }
+    if (v === "volume_overload") { scores.na_overload += 4; }
+  });
+
+  // Step 6: 薬剤
+  const drugs = answers.drugs || [];
+  drugs.forEach(v => {
+    if (v === "lithium") scores.nephrogenic_di += 6;
+    if (v === "loop_diuretic") scores.loop_diuretic += 5;
+    if (v === "mannitol") scores.osmotic_diuresis += 5;
+    if (v === "nahco3") scores.na_overload += 5;
+    if (v === "hypertonic_saline") scores.na_overload += 5;
+    if (v === "high_protein_feed") scores.osmotic_diuresis += 4;
+    if (v === "amphotericin") scores.nephrogenic_di += 4;
+    if (v === "demeclocycline") scores.nephrogenic_di += 4;
+  });
+
+  // Step 7: DDAVP反応
+  const ddavp = answers.ddavp;
+  if (ddavp === "responsive") {
+    scores.central_di += 6;
+    scores.nephrogenic_di -= 4;
+  } else if (ddavp === "unresponsive") {
+    scores.nephrogenic_di += 6;
+    scores.central_di -= 4;
+  }
+
+  return scores;
+}
+
+function rankDiseases(scores) {
+  return Object.entries(scores)
+    .map(([key, score]) => ({ key, score, ...DISEASES[key] }))
+    .filter(d => d.score > 0)
+    .sort((a, b) => b.score - a.score);
+}
+
+function getProbLevel(score, maxScore) {
+  const ratio = score / Math.max(maxScore, 1);
+  if (ratio >= 0.7) return { level: "high", label: "可能性 高" };
+  if (ratio >= 0.35) return { level: "medium", label: "可能性 中" };
+  return { level: "low", label: "可能性 低" };
+}
+
+// ===== UIレンダリング =====
+let currentStep = 0;
+const answers = {};
+
+function render() {
+  const app = document.getElementById("app");
+  let html = "";
+
+  html += `<div class="algo-note">
+    <strong>💡 診断アルゴリズム:</strong>
+    体液量評価 → 尿浸透圧 → 尿量 → 検査所見 → 病歴・薬剤 → DDAVP試験で系統的に鑑別します。<br>
+    高Na血症は本質的に<strong>「水欠乏」</strong>の状態です。水分喪失（腎性 or 腎外性）か、水分摂取不足か、Na過剰負荷かを判別します。
+  </div>`;
+
+  STEPS.forEach((step, i) => {
+    const state = i < currentStep ? "completed" : i === currentStep ? "" : "inactive";
+    const numClass = i < currentStep ? "done" : "";
+    html += `<div class="step-card ${state}" id="step-${i}">`;
+    html += `<div class="step-header">
+      <span class="step-number ${numClass}">${i < currentStep ? "✓" : i + 1}</span>
+      <span class="step-title">${step.title}</span>
+    </div>`;
+
+    if (i <= currentStep) {
+      html += `<div class="step-body">`;
+      html += `<p style="font-weight:600; margin-bottom:4px;">${step.question}</p>`;
+      if (step.hint) html += `<p class="hint">${step.hint}</p>`;
+
+      if (step.type === "single") {
+        html += `<div class="option-group">`;
+        step.options.forEach(opt => {
+          const sel = answers[step.id] === opt.value ? "selected" : "";
+          html += `<button class="option-btn ${sel}" onclick="selectOption('${step.id}', '${opt.value}', ${i})">
+            <span class="icon">${opt.icon}</span> ${opt.label}
+          </button>`;
+        });
+        html += `</div>`;
+      } else {
+        html += `<div class="checklist">`;
+        const checked = answers[step.id] || [];
+        step.options.forEach(opt => {
+          const isChecked = checked.includes(opt.value);
+          html += `<div class="check-item" onclick="toggleCheck('${step.id}', '${opt.value}')">
+            <input type="checkbox" ${isChecked ? "checked" : ""} tabindex="-1">
+            <label>${opt.label}</label>
+          </div>`;
+        });
+        html += `</div>`;
+        if (i === currentStep) {
+          const hasSelection = checked.length > 0;
+          html += `<button class="next-btn" onclick="nextStep(${i})" ${hasSelection ? "" : "disabled"}>
+            次へ ▶
+          </button>`;
+        }
+      }
+      html += `</div>`;
+    }
+    html += `</div>`;
+  });
+
+  // 結果表示
+  if (currentStep >= STEPS.length) {
+    const scores = calcScores(answers);
+    const ranked = rankDiseases(scores);
+    const maxScore = ranked.length > 0 ? ranked[0].score : 1;
+
+    html += `<div class="result-panel show">`;
+    html += `<div class="result-header">📊 鑑別診断結果</div>`;
+    html += `<div class="result-body">`;
+    html += `<p style="margin-bottom:14px; color:#555; font-size:0.9em;">入力された臨床情報に基づく鑑別疾患の優先度です。確定診断には追加検査が必要です。</p>`;
+
+    ranked.forEach(d => {
+      const prob = getProbLevel(d.score, maxScore);
+      html += `<div class="dx-card ${prob.level}">
+        <div class="dx-name">
+          ${d.emoji} ${d.name}
+          <span class="prob-badge">${prob.label}</span>
+        </div>
+        <div class="dx-detail">${d.detail}</div>
+        <div class="dx-workup">🔍 <strong>追加検査:</strong> ${d.workup}</div>
+      </div>`;
+    });
+
+    html += `<div class="divider"></div>`;
+    html += `<p style="font-size:0.82em; color:#888; line-height:1.6;">
+      ⚠️ 本ツールは臨床判断の補助を目的としており、確定診断を行うものではありません。<br>
+      補正速度：急性（＜48h）では1〜2 mEq/L/時、慢性（≧48h）では0.5 mEq/L/時以下が目安です。<br>
+      急速な補正は脳浮腫のリスクがあるため、頻回なNa再検と慎重なモニタリングが必要です。
+    </p>`;
+    html += `</div></div>`;
+  }
+
+  html += `<button class="reset-btn" onclick="resetAll()">🔄 最初からやり直す</button>`;
+  app.innerHTML = html;
+
+  if (currentStep < STEPS.length) {
+    const el = document.getElementById(`step-${currentStep}`);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+  } else {
+    const panel = document.querySelector(".result-panel");
+    if (panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+function selectOption(stepId, value, stepIndex) {
+  answers[stepId] = value;
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function toggleCheck(stepId, value) {
+  if (!answers[stepId]) answers[stepId] = [];
+  const arr = answers[stepId];
+  const idx = arr.indexOf(value);
+
+  if (value === "none" || value === "unknown") {
+    answers[stepId] = idx >= 0 ? [] : [value];
+  } else {
+    const noneIdx = arr.indexOf("none");
+    if (noneIdx >= 0) arr.splice(noneIdx, 1);
+    const unkIdx = arr.indexOf("unknown");
+    if (unkIdx >= 0) arr.splice(unkIdx, 1);
+    if (idx >= 0) arr.splice(idx, 1);
+    else arr.push(value);
+  }
+  render();
+}
+
+function nextStep(stepIndex) {
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function resetAll() {
+  currentStep = 0;
+  Object.keys(answers).forEach(k => delete answers[k]);
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+render();
+</script>
+</body>
+</html>
