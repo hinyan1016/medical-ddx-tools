@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#8B1A1A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>二次性高血圧 鑑別診断ツール</title>
+<style>
+  :root {
+    --primary-dark: #8B1A1A;
+    --primary: #C0392B;
+    --primary-light: #FDEDEC;
+    --accent-bg: #F5D0CC;
+    --red: #DC3545;
+    --yellow: #F5C518;
+    --green: #28A745;
+    --orange: #E8850C;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(139,26,26,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #FDEDEC 0%, #F4F6F8 100%);
+    color: #222; min-height: 100vh; padding: 0 0 40px;
+  }
+  header {
+    background: linear-gradient(135deg, #8B1A1A, #C0392B);
+    color: var(--white); padding: 14px 20px 18px; text-align: center;
+    box-shadow: 0 4px 16px rgba(139,26,26,0.18);
+  }
+  .back-bar { display: flex; align-items: center; margin-bottom: 8px; }
+  .back-bar a {
+    color: rgba(255,255,255,0.85); text-decoration: none; font-size: 0.85em;
+    display: flex; align-items: center; gap: 4px; padding: 4px 8px;
+    border-radius: 6px; transition: background 0.2s;
+  }
+  .back-bar a:active { background: rgba(255,255,255,0.15); }
+  header h1 { font-size: 1.55em; font-weight: 700; letter-spacing: 0.04em; }
+  header p { font-size: 0.92em; margin-top: 6px; opacity: 0.85; }
+
+  .container { max-width: 820px; margin: 0 auto; padding: 24px 16px; }
+
+  .step-card {
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: var(--shadow); margin-bottom: 18px; overflow: hidden; transition: opacity 0.3s;
+  }
+  .step-card.inactive { opacity: 0.45; pointer-events: none; }
+  .step-card.completed { opacity: 1; }
+  .step-header {
+    display: flex; align-items: center; gap: 10px; padding: 14px 18px;
+    background: var(--accent-bg); border-bottom: 2px solid var(--primary); cursor: pointer;
+  }
+  .step-number {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 50%; background: var(--primary);
+    color: var(--white); font-weight: 700; font-size: 0.95em; flex-shrink: 0;
+  }
+  .step-number.done { background: var(--green); }
+  .step-title { font-weight: 700; font-size: 1.05em; color: var(--primary-dark); }
+  .step-body { padding: 18px; }
+
+  .option-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .option-btn {
+    display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+    border: 2px solid #D0D8E4; border-radius: 8px; background: var(--white);
+    font-size: 0.97em; cursor: pointer; transition: all 0.18s; text-align: left;
+    color: #222; font-family: inherit; width: 100%;
+  }
+  .option-btn:hover { border-color: var(--primary); background: var(--primary-light); }
+  .option-btn.selected { border-color: var(--primary); background: var(--primary-light); font-weight: 700; }
+  .option-btn .icon { font-size: 1.2em; flex-shrink: 0; width: 24px; text-align: center; }
+
+  .checklist { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .check-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+    border-radius: 8px; background: var(--light-gray); cursor: pointer;
+    transition: background 0.15s; user-select: none; font-size: 0.95em;
+  }
+  .check-item:hover { background: #F0D0D0; }
+  .check-item input[type="checkbox"] {
+    width: 18px; height: 18px; accent-color: var(--primary); flex-shrink: 0; cursor: pointer;
+  }
+  .check-item label { cursor: pointer; flex: 1; }
+
+  .result-panel {
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(139,26,26,0.15); overflow: hidden;
+    margin-top: 24px; display: none;
+  }
+  .result-panel.show { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  .result-header {
+    padding: 16px 20px; background: linear-gradient(135deg, #8B1A1A, #C0392B);
+    color: var(--white); font-weight: 700; font-size: 1.15em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .result-body { padding: 20px; }
+
+  .dx-card {
+    border: 2px solid transparent; border-radius: 8px; padding: 16px;
+    margin-bottom: 12px; position: relative; transition: all 0.2s;
+  }
+  .dx-card.high { border-color: var(--red); background: #FFF5F5; }
+  .dx-card.medium { border-color: var(--orange); background: #FFF8F0; }
+  .dx-card.low { border-color: var(--gray); background: var(--light-gray); }
+
+  .dx-card .dx-name {
+    font-weight: 700; font-size: 1.08em; display: flex; align-items: center;
+    gap: 8px; margin-bottom: 6px; flex-wrap: wrap;
+  }
+  .dx-card .prob-badge {
+    display: inline-block; padding: 2px 10px; border-radius: 12px;
+    font-size: 0.78em; font-weight: 700; color: var(--white);
+  }
+  .dx-card.high .prob-badge { background: var(--red); }
+  .dx-card.medium .prob-badge { background: var(--orange); }
+  .dx-card.low .prob-badge { background: var(--gray); }
+
+  .dx-card .dx-detail { font-size: 0.9em; color: #444; line-height: 1.6; }
+  .dx-card .dx-detail strong { color: var(--primary-dark); }
+  .dx-card .dx-workup {
+    margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ccc;
+    font-size: 0.88em; color: var(--primary);
+  }
+
+  .next-btn {
+    display: inline-flex; align-items: center; gap: 6px; margin-top: 14px;
+    padding: 10px 22px; background: var(--primary); color: var(--white); border: none;
+    border-radius: 8px; font-size: 0.95em; font-weight: 600; cursor: pointer;
+    transition: background 0.15s; font-family: inherit;
+  }
+  .next-btn:hover { background: var(--primary-dark); }
+  .next-btn:disabled { background: #B0BEC5; cursor: not-allowed; }
+
+  .reset-btn {
+    display: block; margin: 24px auto 0; padding: 10px 32px;
+    background: var(--white); color: var(--red); border: 2px solid var(--red);
+    border-radius: 8px; font-size: 0.95em; font-weight: 600; cursor: pointer;
+    font-family: inherit; transition: all 0.15s;
+  }
+  .reset-btn:hover { background: var(--red); color: var(--white); }
+
+  .hint { font-size: 0.85em; color: var(--gray); margin-top: 6px; line-height: 1.5; }
+  .divider { height: 1px; background: #D0D8E4; margin: 14px 0; }
+
+  .algo-note {
+    background: #FFF8E1; border-left: 4px solid var(--yellow);
+    padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 18px;
+    font-size: 0.9em; line-height: 1.6; color: #555;
+  }
+  .algo-note strong { color: var(--primary-dark); }
+
+  .emergency-box {
+    background: #FFF0F0; border: 2px solid var(--red); border-radius: 8px;
+    padding: 14px 16px; margin-bottom: 18px; font-size: 0.9em; line-height: 1.6;
+  }
+  .emergency-box strong { color: var(--red); }
+
+  @media (max-width: 600px) {
+    header { padding: 12px 14px 14px; }
+    header h1 { font-size: 1.2em; }
+    header p { font-size: 0.85em; }
+    .container { padding: 14px 10px; }
+    .step-header { padding: 12px 14px; }
+    .option-btn { min-height: 44px; font-size: 0.92em; -webkit-tap-highlight-color: transparent; }
+    .step-card { margin-bottom: 14px; }
+    .step-body, .result-body { padding: 14px; }
+    .dx-card { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="back-bar"><a href="index.html">&larr; 診断ツール一覧に戻る</a></div>
+  <h1>二次性高血圧 鑑別診断ツール</h1>
+  <p>初診高血圧患者における二次性高血圧の原因を系統的にスクリーニング</p>
+</header>
+
+<div class="container" id="app"></div>
+
+<script>
+// ===== 疾患データ =====
+var DISEASES = {
+  pa: {
+    name: "原発性アルドステロン症（PA）",
+    emoji: "🧂",
+    category: "内分泌性",
+    detail: "高血圧患者の約10%を占め、二次性高血圧の最多原因の一つ。治療抵抗性高血圧では約20%に認める。副腎からのアルドステロン自律的過剰分泌により、Na貯留・K排泄が亢進する。低K血症は約75%にしか認めず、正K血症でも否定できない。本態性高血圧と比較し心血管合併症リスクが有意に高い。片側性腺腫であれば手術で根治可能。",
+    workup: "スクリーニング: PAC/PRA比（ARR）≧200かつPAC≧120pg/mL → 確定診断: カプトプリル負荷試験/生食負荷試験/フロセミド立位負荷試験 → 局在診断: 副腎CT＋副腎静脈サンプリング（AVS）"
+  },
+  pheochromocytoma: {
+    name: "褐色細胞腫/パラガングリオーマ",
+    emoji: "⚡",
+    category: "内分泌性",
+    detail: "副腎髄質（褐色細胞腫）または傍神経節（パラガングリオーマ）のカテコールアミン産生腫瘍。高血圧患者の約0.1%だが、見逃すと致死的な高血圧クリーゼをきたしうる。発作性の頭痛・動悸・発汗（3主徴）と顔面蒼白が特徴的。発作時に血圧200mmHg以上に達することがある。約10%は悪性、約10%は両側性、約10%は副腎外（10%ルール）。遺伝性（MEN2型・VHL病・SDH変異）の場合もある。術前にα遮断薬による十分な降圧が必須。",
+    workup: "スクリーニング: 血漿遊離メタネフリン分画（感度最高）、24時間蓄尿カテコールアミン・メタネフリン → 画像: 腹部CT/MRI（副腎腫瘤）、MIBGシンチグラフィー（副腎外・転移検索） → 遺伝子検査（若年・両側・家族歴）"
+  },
+  cushing: {
+    name: "クッシング症候群",
+    emoji: "🌙",
+    category: "内分泌性",
+    detail: "慢性的なコルチゾール過剰による症候群。高血圧はクッシング症候群の約80%に認める。満月様顔貌・中心性肥満・野牛肩（水牛様脂肪沈着）・赤色皮膚線条・多毛・月経異常が特徴的。耐糖能障害・骨粗鬆症・易感染性・精神症状も合併する。下垂体腺腫（Cushing病）、副腎腺腫、異所性ACTH産生腫瘍が主因。外因性（ステロイド薬長期使用）の除外が最初のステップ。",
+    workup: "スクリーニング: 1mgデキサメタゾン抑制試験（翌朝コルチゾール≧5μg/dLで陽性）、コルチゾール日内変動消失、24時間尿中遊離コルチゾール → 鑑別: ACTH測定（ACTH依存性 vs 非依存性）→ 局在診断: 下垂体MRI、副腎CT、胸腹部CT（異所性ACTH検索）"
+  },
+  renovascular: {
+    name: "腎血管性高血圧",
+    emoji: "🔀",
+    category: "血管性",
+    detail: "腎動脈の狭窄によりレニン-アンジオテンシン-アルドステロン系（RAAS）が活性化し高血圧をきたす。高血圧患者の約1%。動脈硬化性（中高年・男性）と線維筋性異形成（FMD: 若年女性）の2型がある。腹部の血管雑音、ACE阻害薬/ARB投与後の急性腎機能低下、腎サイズ左右差が手がかり。FMDはPTRA（経皮的腎動脈形成術）で根治が期待できる。動脈硬化性は薬物療法が主体。",
+    workup: "スクリーニング: 腎動脈超音波ドプラ、造影CT/MRA → 確定: 腎動脈造影（カテーテル検査）→ 治療: FMD→PTRA、動脈硬化性→薬物療法（ACE-I/ARBは両側狭窄に注意）"
+  },
+  renal_parenchymal: {
+    name: "腎実質性高血圧",
+    emoji: "🫘",
+    category: "腎性",
+    detail: "二次性高血圧の最多原因。慢性腎臓病（CKD）・糖尿病性腎症・慢性糸球体腎炎・多発性嚢胞腎（ADPKD）などの腎実質疾患に伴う高血圧。Na・水貯留とRAAS活性化が機序。蛋白尿・血尿・eGFR低下が手がかり。基礎疾患の治療と厳格な血圧管理が重要。CKDステージに応じた降圧目標設定が必要。",
+    workup: "血清Cr・eGFR・電解質、尿検査（蛋白尿・血尿・円柱）、腎エコー（腎サイズ・実質評価・嚢胞）、必要時腎生検"
+  },
+  osa: {
+    name: "閉塞性睡眠時無呼吸症候群（OSA）",
+    emoji: "😴",
+    category: "睡眠関連",
+    detail: "治療抵抗性高血圧の60-80%に合併し、高血圧全体でも約30%に認めるとされる。上気道閉塞による間欠的低酸素血症が交感神経活性化・RAAS活性化・酸化ストレスを介して高血圧をきたす。夜間血圧非降下型（non-dipper）や早朝高血圧が特徴的。肥満・いびき・日中傾眠・起床時頭痛が手がかり。CPAP療法で収縮期血圧2-10mmHg程度の降圧が期待できる。",
+    workup: "スクリーニング: STOP-Bangスコア、Epworth眠気尺度（ESS）→ 確定: 終夜ポリソムノグラフィー（PSG）またはType3簡易モニター → 治療: CPAP、口腔内装置、体重管理"
+  },
+  thyroid_hyper: {
+    name: "甲状腺機能亢進症（バセドウ病等）",
+    emoji: "🦋",
+    category: "内分泌性",
+    detail: "甲状腺ホルモン過剰により心拍出量増加・末梢血管抵抗低下がおこり、収縮期高血圧（脈圧増大）を呈する。動悸・体重減少・発汗過多・手指振戦・眼球突出が特徴。頻脈（安静時脈拍>100/分）が目立つ。バセドウ病が最多原因。",
+    workup: "TSH（低値）・FT3・FT4（高値）、TRAb/TSAb、甲状腺エコー"
+  },
+  thyroid_hypo: {
+    name: "甲状腺機能低下症",
+    emoji: "❄️",
+    category: "内分泌性",
+    detail: "甲状腺ホルモン低下により末梢血管抵抗が増加し、主に拡張期高血圧を呈する。橋本病が最多原因。倦怠感・寒がり・体重増加・便秘・皮膚乾燥・浮腫・徐脈が手がかり。甲状腺ホルモン補充で血圧も改善しうる。",
+    workup: "TSH（高値）・FT4（低値）、抗TPO抗体・抗サイログロブリン抗体"
+  },
+  hyperparathyroid: {
+    name: "原発性副甲状腺機能亢進症",
+    emoji: "🦴",
+    category: "内分泌性",
+    detail: "副甲状腺からのPTH過剰分泌により高カルシウム血症をきたし、高血圧の原因となる。高Ca血症による血管平滑筋収縮・動脈硬化促進が機序。倦怠感・口渇・多尿・便秘・腎結石・骨粗鬆症が随伴症状。血清Ca高値がスクリーニングの手がかり。",
+    workup: "血清Ca・P・intact PTH、24時間尿中Ca、頸部エコー（副甲状腺腫大）、必要時MIBIシンチグラフィー"
+  },
+  coarctation: {
+    name: "大動脈縮窄症",
+    emoji: "🫀",
+    category: "血管性",
+    detail: "大動脈の先天的狭窄により上肢高血圧・下肢低血圧をきたす。若年者の高血圧で四肢血圧左右差（上下肢差>20mmHg）がある場合に疑う。大腿動脈の拍動減弱・遅延、肋骨下面の圧痕（胸部X線のrib notching）が手がかり。小児期に発見されることが多いが、成人で初めて診断される例もある。",
+    workup: "四肢血圧測定（上下肢差）、心エコー、胸部CT/MRA（大動脈全体の評価）、必要時心臓カテーテル検査"
+  },
+  drug_induced: {
+    name: "薬剤性高血圧",
+    emoji: "💊",
+    category: "薬剤性",
+    detail: "NSAIDs（Na貯留・プロスタグランジン抑制）、副腎皮質ステロイド、経口避妊薬（OCP）、エリスロポエチン、甘草含有漢方薬（偽性アルドステロン症）、交感神経刺激薬（充血除去薬）、シクロスポリン/タクロリムスなどが高血圧の原因となる。甘草による偽性アルドステロン症では低K血症を伴う。薬剤歴の詳細聴取が最も重要で、原因薬剤の中止・変更で血圧改善が期待できる。",
+    workup: "詳細な薬剤歴・サプリメント歴・漢方薬歴の聴取、時間的関連の評価、可能であれば原因薬剤の中止・変更"
+  },
+  intracranial: {
+    name: "頭蓋内病変（脳腫瘍・頭蓋内圧亢進）",
+    emoji: "🧠",
+    category: "中枢神経性",
+    detail: "頭蓋内圧亢進はCushing反応（高血圧＋徐脈＋不整呼吸）を介して重度の高血圧をきたしうる。脳腫瘍・水頭症・脳出血などが原因。頭痛・嘔吐・視力障害・意識障害を伴う場合に想起する。高血圧緊急症として対応が必要な場合がある。",
+    workup: "頭部CT/MRI、眼底検査（うっ血乳頭）、神経学的診察"
+  }
+};
+
+// ===== ステップ定義 =====
+var STEPS = [
+  {
+    id: "severity",
+    title: "高血圧の重症度・特徴",
+    question: "高血圧の重症度・臨床的特徴は？",
+    hint: "収縮期180mmHg以上や治療抵抗性（利尿薬含む3剤でも降圧不十分）は二次性高血圧の可能性が高い",
+    type: "single",
+    options: [
+      { label: "軽症〜中等症（140-179/90-109mmHg）", value: "mild_moderate", icon: "📊" },
+      { label: "重症（180/110mmHg以上）", value: "severe", icon: "🔴" },
+      { label: "治療抵抗性（3剤以上で不十分）", value: "resistant", icon: "💪" },
+      { label: "悪性高血圧/高血圧緊急症（臓器障害あり）", value: "malignant", icon: "🚨" },
+      { label: "以前正常→急激な血圧上昇", value: "acute_rise", icon: "📈" }
+    ]
+  },
+  {
+    id: "age_onset",
+    title: "発症年齢",
+    question: "高血圧の発症年齢は？",
+    hint: "30歳未満は約30%が二次性。若年者や小児の高血圧は積極的なスクリーニングが必要",
+    type: "single",
+    options: [
+      { label: "小児〜10代", value: "pediatric", icon: "👶" },
+      { label: "20〜30代（若年）", value: "young", icon: "🧑" },
+      { label: "40〜50代（中年）", value: "middle", icon: "👤" },
+      { label: "60歳以上（高齢）", value: "elderly", icon: "👴" }
+    ]
+  },
+  {
+    id: "symptoms",
+    title: "随伴症状（該当をすべて選択）",
+    question: "以下の症状で該当するものは？",
+    type: "multi",
+    options: [
+      { label: "発作性の頭痛・動悸・発汗・顔面蒼白", value: "paroxysmal_triad" },
+      { label: "満月様顔貌・中心性肥満・赤色皮膚線条", value: "cushingoid" },
+      { label: "筋力低下・倦怠感", value: "weakness" },
+      { label: "肥満・いびき・日中の眠気・起床時頭痛", value: "osa_symptoms" },
+      { label: "動悸・体重減少・発汗過多・手指振戦", value: "hyperthyroid" },
+      { label: "倦怠感・寒がり・体重増加・便秘・浮腫", value: "hypothyroid" },
+      { label: "口渇・多尿・腎結石の既往", value: "hypercalcemia" },
+      { label: "浮腫・泡立ち尿・尿量変化", value: "renal_symptoms" },
+      { label: "頭痛・嘔吐・視力障害", value: "icp_symptoms" },
+      { label: "該当なし", value: "none" }
+    ]
+  },
+  {
+    id: "exam_findings",
+    title: "身体所見（該当をすべて選択）",
+    question: "以下の身体所見で該当するものは？",
+    type: "multi",
+    options: [
+      { label: "腹部血管雑音", value: "abdominal_bruit" },
+      { label: "四肢血圧の左右差/上下肢差（>20mmHg）", value: "bp_difference" },
+      { label: "大腿動脈拍動の減弱・遅延", value: "femoral_delay" },
+      { label: "甲状腺腫大", value: "goiter" },
+      { label: "眼球突出", value: "exophthalmos" },
+      { label: "頻脈（安静時脈拍>100/分）", value: "tachycardia" },
+      { label: "徐脈", value: "bradycardia" },
+      { label: "浮腫（下腿・顔面）", value: "edema" },
+      { label: "該当なし", value: "none" }
+    ]
+  },
+  {
+    id: "basic_labs",
+    title: "基本検査所見（該当をすべて選択）",
+    question: "以下の検査所見で該当するものは？",
+    hint: "初診時の基本検査（血液・尿・心電図）からの所見をチェック",
+    type: "multi",
+    options: [
+      { label: "低カリウム血症（K<3.5mEq/L）", value: "hypokalemia" },
+      { label: "高カルシウム血症", value: "hypercalcemia" },
+      { label: "血清Cr上昇/eGFR低下", value: "renal_impairment" },
+      { label: "蛋白尿/血尿", value: "proteinuria_hematuria" },
+      { label: "HbA1c高値/耐糖能異常", value: "glucose_abnormal" },
+      { label: "TSH異常", value: "tsh_abnormal" },
+      { label: "腎サイズ左右差（エコー）", value: "renal_asymmetry" },
+      { label: "腎嚢胞多発（エコー）", value: "polycystic" },
+      { label: "検査未施行/不明", value: "unknown" }
+    ]
+  },
+  {
+    id: "risk_history",
+    title: "背景・リスク因子（該当をすべて選択）",
+    question: "以下の背景で該当するものは？",
+    type: "multi",
+    options: [
+      { label: "NSAIDs常用", value: "nsaids" },
+      { label: "副腎皮質ステロイド使用", value: "steroids" },
+      { label: "経口避妊薬（OCP）使用", value: "ocp" },
+      { label: "甘草含有漢方薬・サプリメント使用", value: "licorice" },
+      { label: "その他の血圧上昇薬剤（エリスロポエチン・シクロスポリン等）", value: "other_drugs" },
+      { label: "ACE-I/ARB開始後の腎機能悪化歴", value: "acei_renal" },
+      { label: "若年女性", value: "young_female" },
+      { label: "高血圧の家族歴が乏しい", value: "no_family_hx" },
+      { label: "副腎偶発腫の指摘歴", value: "adrenal_incidentaloma" },
+      { label: "該当なし", value: "none" }
+    ]
+  },
+  {
+    id: "advanced_labs",
+    title: "精密検査所見（該当をすべて選択）",
+    question: "以下の精密検査で該当するものは？（未施行なら最後の選択肢を選択）",
+    hint: "スクリーニング検査の結果が判明している場合にチェック",
+    type: "multi",
+    options: [
+      { label: "PAC/PRA比（ARR）高値", value: "arr_high" },
+      { label: "血漿遊離メタネフリン/蓄尿カテコールアミン高値", value: "catecholamine_high" },
+      { label: "1mgデキサメタゾン抑制試験で抑制不十分", value: "dex_unsuppressed" },
+      { label: "腎動脈超音波/MRA/CTAで腎動脈狭窄", value: "ras_found" },
+      { label: "副腎CTで腫瘤あり", value: "adrenal_mass" },
+      { label: "PSGでAHI高値（OSA確定）", value: "osa_confirmed" },
+      { label: "コルチゾール日内変動消失", value: "cortisol_rhythm_lost" },
+      { label: "検査未施行/不明", value: "unknown" }
+    ]
+  }
+];
+
+// ===== スコアリングエンジン =====
+function calcScores(answers) {
+  var s = {};
+  Object.keys(DISEASES).forEach(function(k) { s[k] = 0; });
+
+  // --- Step 1: 重症度 ---
+  var sev = answers.severity;
+  if (sev === "mild_moderate") {
+    s.renal_parenchymal += 2; s.thyroid_hypo += 2; s.drug_induced += 2;
+  } else if (sev === "severe") {
+    s.pa += 3; s.pheochromocytoma += 3; s.renovascular += 3;
+    s.renal_parenchymal += 2; s.cushing += 2;
+  } else if (sev === "resistant") {
+    s.pa += 5; s.osa += 5; s.renal_parenchymal += 3;
+    s.renovascular += 3; s.pheochromocytoma += 2;
+  } else if (sev === "malignant") {
+    s.pheochromocytoma += 5; s.renovascular += 4; s.pa += 3;
+    s.intracranial += 3; s.renal_parenchymal += 3;
+  } else if (sev === "acute_rise") {
+    s.pheochromocytoma += 4; s.renovascular += 3; s.thyroid_hyper += 2;
+  }
+
+  // --- Step 2: 年齢 ---
+  var age = answers.age_onset;
+  if (age === "pediatric") {
+    s.coarctation += 6; s.renal_parenchymal += 4; s.renovascular += 3;
+  } else if (age === "young") {
+    s.renovascular += 3; s.coarctation += 3; s.pa += 2;
+    s.pheochromocytoma += 2; s.thyroid_hyper += 2;
+  } else if (age === "middle") {
+    s.pa += 3; s.osa += 3; s.cushing += 2;
+    s.renovascular += 2; s.pheochromocytoma += 2;
+  } else if (age === "elderly") {
+    s.renovascular += 3; s.renal_parenchymal += 3;
+    s.osa += 2; s.pa += 2;
+  }
+
+  // --- Step 3: 随伴症状 ---
+  var sx = answers.symptoms || [];
+  sx.forEach(function(v) {
+    if (v === "paroxysmal_triad") {
+      s.pheochromocytoma += 8;
+    }
+    if (v === "cushingoid") {
+      s.cushing += 7;
+    }
+    if (v === "weakness") {
+      s.pa += 3; s.cushing += 3; s.thyroid_hyper += 2;
+      s.hyperparathyroid += 2;
+    }
+    if (v === "osa_symptoms") {
+      s.osa += 6;
+    }
+    if (v === "hyperthyroid") {
+      s.thyroid_hyper += 7;
+    }
+    if (v === "hypothyroid") {
+      s.thyroid_hypo += 7;
+    }
+    if (v === "hypercalcemia") {
+      s.hyperparathyroid += 6;
+    }
+    if (v === "renal_symptoms") {
+      s.renal_parenchymal += 5;
+    }
+    if (v === "icp_symptoms") {
+      s.intracranial += 6;
+    }
+  });
+
+  // --- Step 4: 身体所見 ---
+  var ex = answers.exam_findings || [];
+  ex.forEach(function(v) {
+    if (v === "abdominal_bruit") {
+      s.renovascular += 7;
+    }
+    if (v === "bp_difference") {
+      s.coarctation += 7; s.renovascular += 2;
+    }
+    if (v === "femoral_delay") {
+      s.coarctation += 7;
+    }
+    if (v === "goiter") {
+      s.thyroid_hyper += 4; s.thyroid_hypo += 4;
+    }
+    if (v === "exophthalmos") {
+      s.thyroid_hyper += 5;
+    }
+    if (v === "tachycardia") {
+      s.thyroid_hyper += 4; s.pheochromocytoma += 3;
+    }
+    if (v === "bradycardia") {
+      s.thyroid_hypo += 4; s.intracranial += 2;
+    }
+    if (v === "edema") {
+      s.renal_parenchymal += 3; s.thyroid_hypo += 2;
+    }
+  });
+
+  // --- Step 5: 基本検査所見 ---
+  var labs = answers.basic_labs || [];
+  labs.forEach(function(v) {
+    if (v === "hypokalemia") {
+      s.pa += 6; s.renovascular += 3; s.cushing += 3;
+      s.drug_induced += 3;
+    }
+    if (v === "hypercalcemia") {
+      s.hyperparathyroid += 7;
+    }
+    if (v === "renal_impairment") {
+      s.renal_parenchymal += 6; s.renovascular += 3;
+    }
+    if (v === "proteinuria_hematuria") {
+      s.renal_parenchymal += 6;
+    }
+    if (v === "glucose_abnormal") {
+      s.cushing += 3; s.pa += 2;
+    }
+    if (v === "tsh_abnormal") {
+      s.thyroid_hyper += 5; s.thyroid_hypo += 5;
+    }
+    if (v === "renal_asymmetry") {
+      s.renovascular += 6;
+    }
+    if (v === "polycystic") {
+      s.renal_parenchymal += 5;
+    }
+  });
+
+  // --- Step 6: 背景・リスク ---
+  var risk = answers.risk_history || [];
+  risk.forEach(function(v) {
+    if (v === "nsaids") { s.drug_induced += 5; }
+    if (v === "steroids") { s.drug_induced += 5; s.cushing += 3; }
+    if (v === "ocp") { s.drug_induced += 5; }
+    if (v === "licorice") { s.drug_induced += 6; }
+    if (v === "other_drugs") { s.drug_induced += 5; }
+    if (v === "acei_renal") { s.renovascular += 6; }
+    if (v === "young_female") { s.renovascular += 3; }
+    if (v === "no_family_hx") {
+      s.pa += 2; s.pheochromocytoma += 2; s.renovascular += 2;
+      s.cushing += 2;
+    }
+    if (v === "adrenal_incidentaloma") {
+      s.pa += 4; s.pheochromocytoma += 4; s.cushing += 3;
+    }
+  });
+
+  // --- Step 7: 精密検査 ---
+  var adv = answers.advanced_labs || [];
+  adv.forEach(function(v) {
+    if (v === "arr_high") { s.pa += 8; }
+    if (v === "catecholamine_high") { s.pheochromocytoma += 9; }
+    if (v === "dex_unsuppressed") { s.cushing += 8; }
+    if (v === "ras_found") { s.renovascular += 9; }
+    if (v === "adrenal_mass") {
+      s.pa += 4; s.pheochromocytoma += 5; s.cushing += 4;
+    }
+    if (v === "osa_confirmed") { s.osa += 8; }
+    if (v === "cortisol_rhythm_lost") { s.cushing += 6; }
+  });
+
+  return s;
+}
+
+function rankDiseases(scores) {
+  return Object.entries(scores)
+    .map(function(e) { return { key: e[0], score: e[1], name: DISEASES[e[0]].name, emoji: DISEASES[e[0]].emoji, category: DISEASES[e[0]].category, detail: DISEASES[e[0]].detail, workup: DISEASES[e[0]].workup }; })
+    .filter(function(d) { return d.score > 0; })
+    .sort(function(a, b) { return b.score - a.score; });
+}
+
+function getProbLevel(score, maxScore) {
+  var ratio = score / Math.max(maxScore, 1);
+  if (ratio >= 0.7) return { level: "high", label: "可能性 高" };
+  if (ratio >= 0.35) return { level: "medium", label: "可能性 中" };
+  return { level: "low", label: "可能性 低" };
+}
+
+// ===== UIレンダリング =====
+var currentStep = 0;
+var answers = {};
+
+function render() {
+  var app = document.getElementById("app");
+  var html = "";
+
+  html += '<div class="emergency-box">';
+  html += '<strong>\u26a0\ufe0f 緊急対応が必要な場合：</strong>';
+  html += '発作性の著明な血圧上昇（200mmHg超）＋頭痛・動悸・発汗 → <strong>褐色細胞腫クリーゼ疑い</strong>。';
+  html += '悪性高血圧（眼底出血・乳頭浮腫・腎機能急速悪化）→ <strong>緊急降圧と二次性原因検索を同時進行</strong>。';
+  html += '若年者の高血圧は約30%が二次性であり、積極的スクリーニングが必要です。';
+  html += '</div>';
+
+  html += '<div class="algo-note">';
+  html += '<strong>\U0001f4a1 診断アルゴリズム:</strong> ';
+  html += '高血圧の重症度 \u2192 発症年齢 \u2192 随伴症状 \u2192 身体所見 \u2192 基本検査 \u2192 背景・リスク因子 \u2192 精密検査 の7ステップで系統的にスクリーニングします。<br>';
+  html += '<strong>高血圧患者の約10%以上に二次性原因</strong>が存在します。原発性アルドステロン症は最も見逃されやすく、<strong>低K血症がなくても否定できません</strong>（約25%は正K血症）。';
+  html += '</div>';
+
+  STEPS.forEach(function(step, i) {
+    var state = i < currentStep ? "completed" : i === currentStep ? "" : "inactive";
+    var numClass = i < currentStep ? "done" : "";
+    html += '<div class="step-card ' + state + '" id="step-' + i + '">';
+    html += '<div class="step-header">';
+    html += '<span class="step-number ' + numClass + '">' + (i < currentStep ? "\u2713" : i + 1) + '</span>';
+    html += '<span class="step-title">' + step.title + '</span>';
+    html += '</div>';
+
+    if (i <= currentStep) {
+      html += '<div class="step-body">';
+      html += '<p style="font-weight:600; margin-bottom:4px;">' + step.question + '</p>';
+      if (step.hint) html += '<p class="hint">' + step.hint + '</p>';
+
+      if (step.type === "single") {
+        html += '<div class="option-group">';
+        step.options.forEach(function(opt) {
+          var sel = answers[step.id] === opt.value ? "selected" : "";
+          html += '<button class="option-btn ' + sel + '" onclick="selectOption(\'' + step.id + '\', \'' + opt.value + '\', ' + i + ')">';
+          html += '<span class="icon">' + opt.icon + '</span> ' + opt.label;
+          html += '</button>';
+        });
+        html += '</div>';
+      } else {
+        html += '<div class="checklist">';
+        var checked = answers[step.id] || [];
+        step.options.forEach(function(opt) {
+          var isChecked = checked.indexOf(opt.value) >= 0;
+          html += '<div class="check-item" onclick="toggleCheck(\'' + step.id + '\', \'' + opt.value + '\')">';
+          html += '<input type="checkbox" ' + (isChecked ? "checked" : "") + ' tabindex="-1">';
+          html += '<label>' + opt.label + '</label>';
+          html += '</div>';
+        });
+        html += '</div>';
+        if (i === currentStep) {
+          html += '<button class="next-btn" onclick="nextStep(' + i + ')">次へ \u25b6</button>';
+        }
+      }
+
+      html += '</div>';
+    }
+    html += '</div>';
+  });
+
+  // 結果表示
+  if (currentStep >= STEPS.length) {
+    var scores = calcScores(answers);
+    var ranked = rankDiseases(scores);
+    var maxScore = ranked.length > 0 ? ranked[0].score : 1;
+
+    html += '<div class="result-panel show">';
+    html += '<div class="result-header">\U0001f4cb 鑑別診断結果</div>';
+    html += '<div class="result-body">';
+
+    if (ranked.length === 0) {
+      html += '<p>該当する疾患が見つかりませんでした。入力内容を確認してください。</p>';
+    } else {
+      ranked.forEach(function(d) {
+        var prob = getProbLevel(d.score, maxScore);
+        html += '<div class="dx-card ' + prob.level + '">';
+        html += '<div class="dx-name">' + d.emoji + ' ' + d.name;
+        html += ' <span class="prob-badge">' + prob.label + '</span>';
+        html += ' <span style="font-size:0.78em; color:var(--gray); font-weight:400;">(' + d.category + ')</span>';
+        html += '</div>';
+        html += '<div class="dx-detail">' + d.detail + '</div>';
+        html += '<div class="dx-workup">\U0001f50d <strong>推奨検査:</strong> ' + d.workup + '</div>';
+        html += '</div>';
+      });
+    }
+
+    html += '</div></div>';
+    html += '<button class="reset-btn" onclick="resetAll()">最初からやり直す</button>';
+  }
+
+  app.innerHTML = html;
+
+  if (currentStep > 0 && currentStep <= STEPS.length) {
+    var targetId = currentStep < STEPS.length ? "step-" + currentStep : "step-" + (STEPS.length - 1);
+    var el = document.getElementById(targetId);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+function selectOption(stepId, value, stepIndex) {
+  answers[stepId] = value;
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function toggleCheck(stepId, value) {
+  if (!answers[stepId]) answers[stepId] = [];
+  var idx = answers[stepId].indexOf(value);
+  if (value === "none" || value === "unknown") {
+    answers[stepId] = [value];
+  } else {
+    var noneIdx = answers[stepId].indexOf("none");
+    if (noneIdx >= 0) answers[stepId].splice(noneIdx, 1);
+    var unkIdx = answers[stepId].indexOf("unknown");
+    if (unkIdx >= 0) answers[stepId].splice(unkIdx, 1);
+    if (idx >= 0) {
+      answers[stepId].splice(idx, 1);
+    } else {
+      answers[stepId].push(value);
+    }
+  }
+  render();
+}
+
+function nextStep(stepIndex) {
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function resetAll() {
+  currentStep = 0;
+  answers = {};
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+render();
+</script>
+</body>
+</html>
