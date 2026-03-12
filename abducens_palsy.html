@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A5276">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>外転神経麻痺 鑑別診断ツール</title>
+<style>
+  :root {
+    --primary-dark: #1A5276;
+    --primary: #2E86C1;
+    --primary-light: #EBF5FB;
+    --accent-bg: #D6EAF8;
+    --red: #DC3545;
+    --yellow: #F5C518;
+    --green: #28A745;
+    --orange: #E8850C;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(26,82,118,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #EBF5FB 0%, #F4F6F8 100%);
+    color: #222; min-height: 100vh; padding: 0 0 40px;
+  }
+  header {
+    background: linear-gradient(135deg, #1A5276, #2E86C1);
+    color: var(--white); padding: 14px 20px 18px; text-align: center;
+    box-shadow: 0 4px 16px rgba(26,82,118,0.18);
+  }
+  .back-bar { display: flex; align-items: center; margin-bottom: 8px; }
+  .back-bar a {
+    color: rgba(255,255,255,0.85); text-decoration: none; font-size: 0.85em;
+    display: flex; align-items: center; gap: 4px; padding: 4px 8px;
+    border-radius: 6px; transition: background 0.2s;
+  }
+  .back-bar a:active { background: rgba(255,255,255,0.15); }
+  header h1 { font-size: 1.55em; font-weight: 700; letter-spacing: 0.04em; }
+  header p { font-size: 0.92em; margin-top: 6px; opacity: 0.85; }
+
+  .container { max-width: 820px; margin: 0 auto; padding: 24px 16px; }
+
+  .step-card {
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: var(--shadow); margin-bottom: 18px; overflow: hidden; transition: opacity 0.3s;
+  }
+  .step-card.inactive { opacity: 0.45; pointer-events: none; }
+  .step-card.completed { opacity: 1; }
+  .step-header {
+    display: flex; align-items: center; gap: 10px; padding: 14px 18px;
+    background: var(--accent-bg); border-bottom: 2px solid var(--primary); cursor: pointer;
+  }
+  .step-number {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 50%; background: var(--primary);
+    color: var(--white); font-weight: 700; font-size: 0.95em; flex-shrink: 0;
+  }
+  .step-number.done { background: var(--green); }
+  .step-title { font-weight: 700; font-size: 1.05em; color: var(--primary-dark); }
+  .step-body { padding: 18px; }
+
+  .option-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .option-btn {
+    display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+    border: 2px solid #D0D8E4; border-radius: 8px; background: var(--white);
+    font-size: 0.97em; cursor: pointer; transition: all 0.18s; text-align: left;
+    color: #222; font-family: inherit; width: 100%;
+  }
+  .option-btn:hover { border-color: var(--primary); background: var(--primary-light); }
+  .option-btn.selected { border-color: var(--primary); background: var(--primary-light); font-weight: 700; }
+  .option-btn .icon { font-size: 1.2em; flex-shrink: 0; width: 24px; text-align: center; }
+
+  .checklist { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .check-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+    border-radius: 8px; background: var(--light-gray); cursor: pointer;
+    transition: background 0.15s; user-select: none; font-size: 0.95em;
+  }
+  .check-item:hover { background: #D0E8F5; }
+  .check-item input[type="checkbox"] {
+    width: 18px; height: 18px; accent-color: var(--primary); flex-shrink: 0; cursor: pointer;
+  }
+  .check-item label { cursor: pointer; flex: 1; }
+
+  .result-panel {
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(26,82,118,0.15); overflow: hidden;
+    margin-top: 24px; display: none;
+  }
+  .result-panel.show { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  .result-header {
+    padding: 16px 20px; background: linear-gradient(135deg, #1A5276, #2E86C1);
+    color: var(--white); font-weight: 700; font-size: 1.15em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .result-body { padding: 20px; }
+
+  .dx-card {
+    border: 2px solid transparent; border-radius: 8px; padding: 16px;
+    margin-bottom: 12px; position: relative; transition: all 0.2s;
+  }
+  .dx-card.high { border-color: var(--red); background: #FFF5F5; }
+  .dx-card.medium { border-color: var(--orange); background: #FFF8F0; }
+  .dx-card.low { border-color: var(--gray); background: var(--light-gray); }
+
+  .dx-card .dx-name {
+    font-weight: 700; font-size: 1.08em; display: flex; align-items: center;
+    gap: 8px; margin-bottom: 6px; flex-wrap: wrap;
+  }
+  .dx-card .prob-badge {
+    display: inline-block; padding: 2px 10px; border-radius: 12px;
+    font-size: 0.78em; font-weight: 700; color: var(--white);
+  }
+  .dx-card.high .prob-badge { background: var(--red); }
+  .dx-card.medium .prob-badge { background: var(--orange); }
+  .dx-card.low .prob-badge { background: var(--gray); }
+
+  .dx-card .dx-detail { font-size: 0.9em; color: #444; line-height: 1.6; }
+  .dx-card .dx-detail strong { color: var(--primary-dark); }
+  .dx-card .dx-workup {
+    margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ccc;
+    font-size: 0.88em; color: var(--primary);
+  }
+
+  .next-btn {
+    display: inline-flex; align-items: center; gap: 6px; margin-top: 14px;
+    padding: 10px 22px; background: var(--primary); color: var(--white); border: none;
+    border-radius: 8px; font-size: 0.95em; font-weight: 600; cursor: pointer;
+    transition: background 0.15s; font-family: inherit;
+  }
+  .next-btn:hover { background: var(--primary-dark); }
+  .next-btn:disabled { background: #B0BEC5; cursor: not-allowed; }
+
+  .reset-btn {
+    display: block; margin: 24px auto 0; padding: 10px 32px;
+    background: var(--white); color: var(--red); border: 2px solid var(--red);
+    border-radius: 8px; font-size: 0.95em; font-weight: 600; cursor: pointer;
+    font-family: inherit; transition: all 0.15s;
+  }
+  .reset-btn:hover { background: var(--red); color: var(--white); }
+
+  .hint { font-size: 0.85em; color: var(--gray); margin-top: 6px; line-height: 1.5; }
+  .divider { height: 1px; background: #D0D8E4; margin: 14px 0; }
+
+  .algo-note {
+    background: #FFF8E1; border-left: 4px solid var(--yellow);
+    padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 18px;
+    font-size: 0.9em; line-height: 1.6; color: #555;
+  }
+  .algo-note strong { color: var(--primary-dark); }
+
+  .emergency-box {
+    background: #FFF0F0; border: 2px solid var(--red); border-radius: 8px;
+    padding: 14px 16px; margin-bottom: 18px; font-size: 0.9em; line-height: 1.6;
+  }
+  .emergency-box strong { color: var(--red); }
+
+  .anatomy-box {
+    background: #F0F7FF; border: 2px solid var(--primary); border-radius: 8px;
+    padding: 14px 16px; margin-bottom: 18px; font-size: 0.88em; line-height: 1.7;
+  }
+  .anatomy-box strong { color: var(--primary-dark); }
+
+  @media (max-width: 600px) {
+    header { padding: 12px 14px 14px; }
+    header h1 { font-size: 1.2em; }
+    header p { font-size: 0.85em; }
+    .container { padding: 14px 10px; }
+    .step-header { padding: 12px 14px; }
+    .option-btn { min-height: 44px; font-size: 0.92em; -webkit-tap-highlight-color: transparent; }
+    .step-card { margin-bottom: 14px; }
+    .step-body, .result-body { padding: 14px; }
+    .dx-card { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="back-bar"><a href="index.html">&larr; 診断ツール一覧に戻る</a></div>
+  <h1>外転神経麻痺 鑑別診断ツール</h1>
+  <p>病歴・神経所見・画像・検査から外転神経(CN VI)麻痺の原因を系統的に鑑別</p>
+</header>
+
+<div class="container" id="app"></div>
+
+<script>
+// ===== 疾患データ =====
+var DISEASES = {
+  microvascular: {
+    name: "微小血管障害（虚血性）",
+    emoji: "🩸",
+    category: "虚血性",
+    detail: "糖尿病・高血圧・脂質異常症などの血管危険因子を背景に、外転神経の栄養血管の虚血により急性発症する。中高年に最も頻度が高い原因。軽度の眼痛を伴うことがあるが、他の脳神経障害は合併しない。多くは3-6か月で自然軽快する良性経過をとる。",
+    workup: "血糖・HbA1c、血圧測定、脂質プロファイル、3か月改善なければ造影MRI"
+  },
+  clival_meningioma: {
+    name: "斜台髄膜腫・傍鞍部腫瘍",
+    emoji: "🧠",
+    category: "腫瘍性",
+    detail: "斜台部や鞍傍部の髄膜腫は外転神経のくも膜下腔走行部を圧迫する。緩徐進行性の複視に加え、三叉神経（V）領域の感覚低下や視野障害を伴うことがある。造影MRIで斜台部〜海綿静脈洞の腫瘤として描出される。",
+    workup: "造影MRI（頭蓋底〜海綿静脈洞）、神経外科コンサルト"
+  },
+  cavernous_sinus_tumor: {
+    name: "海綿静脈洞腫瘍",
+    emoji: "🔴",
+    category: "腫瘍性",
+    detail: "海綿静脈洞に原発または浸潤する腫瘍（髄膜腫・下垂体腺腫側方進展・転移性腫瘍など）。外転神経は海綿静脈洞内で内頚動脈に最も近接して走行するため圧迫されやすい。III・IV・V1の障害やHorner症候群を合併しうる。",
+    workup: "造影MRI（海綿静脈洞詳細評価）、下垂体機能検査、原発巣検索"
+  },
+  nasopharyngeal_ca: {
+    name: "上咽頭癌浸潤",
+    emoji: "👃",
+    category: "腫瘍性",
+    detail: "上咽頭癌は頭蓋底を浸潤して外転神経を障害する。東南アジア・中国南部でEBウイルス関連として頻度が高い。鼻閉・血性鼻漏・伝音性難聴（滲出性中耳炎）を伴うことがある。頸部リンパ節腫大が初発症状のこともある。",
+    workup: "造影MRI/CT（上咽頭〜頭蓋底）、上咽頭内視鏡・生検、EBウイルス抗体"
+  },
+  metastatic_tumor: {
+    name: "転移性腫瘍",
+    emoji: "🎯",
+    category: "腫瘍性",
+    detail: "肺癌・乳癌などの頭蓋底転移（髄膜癌腫症含む）が外転神経を障害する。悪性腫瘍の既往がある患者では常に鑑別に挙げる。髄膜癌腫症では多発脳神経障害や頭痛を呈する。急速進行性の場合は高い緊急性がある。",
+    workup: "造影MRI（頭蓋底・軟膜）、全身CT/PET-CT、髄液細胞診"
+  },
+  tolosa_hunt: {
+    name: "Tolosa-Hunt症候群",
+    emoji: "🔥",
+    category: "炎症性",
+    detail: "海綿静脈洞〜上眼窩裂の非特異的肉芽腫性炎症。片側の眼窩深部の激痛で発症し、数日〜2週間でIII・IV・VI神経麻痺が出現する。Horner症候群を合併することもある。ステロイド治療に著効（72時間以内の疼痛軽減）するが、再発することがある。除外診断であり、腫瘍・感染の除外が必要。",
+    workup: "造影MRI（海綿静脈洞の肉芽腫性変化）、CRP・ESR、腫瘍・感染の除外"
+  },
+  gca: {
+    name: "巨細胞性動脈炎（側頭動脈炎）",
+    emoji: "🏥",
+    category: "炎症性",
+    detail: "50歳以上の高齢者に好発する大型血管炎。側頭部痛・顎跛行（咀嚼時の下顎痛）・視力低下が3主徴。外転神経麻痺の原因となることがある。前部虚血性視神経症（AION）による不可逆的視力喪失のリスクがあり、疑ったら直ちに高用量ステロイド開始が必要。ESR・CRP著明高値が特徴的。",
+    workup: "ESR・CRP（著明高値）、側頭動脈生検、側頭動脈エコー、高用量ステロイド（疑い段階で開始）"
+  },
+  brainstem_stroke: {
+    name: "脳幹血管障害（橋梗塞/出血）",
+    emoji: "⚡",
+    category: "血管性",
+    detail: "橋背側の外転神経核または走行線維の梗塞・出血による急性発症。多くの場合、長経路徴候（対側片麻痺・感覚障害）や他の脳神経核障害を合併する。核病変では同側顔面神経麻痺（顔面神経丘の関係）を伴う。Foville症候群（同側顔面神経麻痺＋外転障害＋対側片麻痺）が代表的。",
+    workup: "頭部MRI/DWI（急性期梗塞評価）、MRA/CTA（血管評価）、脳卒中リスク因子評価"
+  },
+  aneurysm: {
+    name: "脳動脈瘤（内頚動脈海綿静脈洞部/椎骨脳底動脈）",
+    emoji: "💣",
+    category: "血管性",
+    detail: "内頚動脈の海綿静脈洞部の動脈瘤が外転神経を圧迫する。外転神経は海綿静脈洞内で内頚動脈に最も近接するため、III・IVより圧迫されやすい。突然の激しい頭痛を伴う場合はくも膜下出血の警告症状であり、緊急対応が必要。椎骨動脈解離性動脈瘤も原因となる。",
+    workup: "MRA/CTA（動脈瘤検索）、激しい頭痛時は緊急CT/腰椎穿刺（SAH除外）"
+  },
+  neurosyphilis: {
+    name: "中枢神経梅毒（髄膜血管梅毒）",
+    emoji: "🦠",
+    category: "感染性",
+    detail: "梅毒トレポネーマの中枢神経系感染により外転神経を含む脳神経障害をきたす。髄膜血管梅毒では亜急性の進行を示す。Argyll Robertson瞳孔（対光反射消失・近見反応保持）が特徴的。HIV合併例では進行が早い。ペニシリン大量静注が治療の基本。",
+    workup: "RPR/VDRL、TPHA/FTA-ABS、髄液検査（VDRL・細胞数・蛋白）、HIV検査"
+  },
+  tb_meningitis: {
+    name: "結核性髄膜炎",
+    emoji: "🫁",
+    category: "感染性",
+    detail: "結核菌による慢性髄膜炎で、頭蓋底髄膜の炎症により外転神経を障害する。亜急性の頭痛・発熱・意識障害に加え、多発脳神経障害を呈する。髄液ではリンパ球優位の細胞増多・蛋白上昇・糖低下がみられる。免疫不全者やBCG未接種者でリスクが高い。",
+    workup: "髄液検査（細胞数・蛋白・糖・ADA）、髄液結核PCR/培養、胸部CT、IGRA/ツ反"
+  },
+  gradenigo: {
+    name: "Gradenigo症候群",
+    emoji: "👂",
+    category: "感染性",
+    detail: "中耳炎・乳突洞炎が錐体尖部に波及し、外転神経とGasser神経節（三叉神経）を障害する。外転神経麻痺＋三叉神経V1領域の疼痛＋中耳炎の3徴。抗菌薬治療の進歩で頻度は減少したが、難治性中耳炎では常に想起すべき病態。",
+    workup: "側頭骨CT（錐体尖部病変）、培養・感受性試験、耳鼻科コンサルト"
+  },
+  fungal_meningitis: {
+    name: "真菌性髄膜炎",
+    emoji: "🍄",
+    category: "感染性",
+    detail: "クリプトコッカス・アスペルギルスなどの真菌による慢性髄膜炎。免疫不全者（HIV/AIDS、臓器移植後、長期ステロイド使用）でリスクが高い。亜急性〜慢性の頭痛・発熱・脳神経障害を呈する。髄液クリプトコッカス抗原やインク染色が有用。",
+    workup: "髄液検査（墨汁染色・クリプトコッカス抗原・真菌培養）、血清クリプトコッカス抗原、HIV検査"
+  },
+  ms: {
+    name: "多発性硬化症（MS）",
+    emoji: "🔵",
+    category: "脱髄性",
+    detail: "中枢神経系の多発性脱髄病変による。外転神経核または橋内走行線維の脱髄により外転障害をきたす。若年〜中年女性に多い。核間性眼筋麻痺（INO）など他の眼球運動障害を合併することがある。空間的・時間的多発が診断の鍵。再発寛解の経過が特徴的。",
+    workup: "頭部・脊髄MRI（脱髄斑）、髄液検査（OCB・IgG index）、視覚誘発電位"
+  },
+  iih: {
+    name: "特発性頭蓋内圧亢進症（偽性脳腫瘍）",
+    emoji: "🧊",
+    category: "頭蓋内圧亢進",
+    detail: "頭蓋内圧亢進による偽局所徴候として外転神経麻痺をきたす。両側性のVI麻痺が特徴的。若年肥満女性に好発。頭痛・拍動性耳鳴・一過性視力障害（起立時の暗転）を伴う。眼底検査でうっ血乳頭を認める。MRIで占拠性病変がないことを確認した上で腰椎穿刺で開放圧高値（>250mmH2O）を証明する。",
+    workup: "眼底検査（うっ血乳頭）、頭部MRI/MRV（静脈洞血栓除外）、腰椎穿刺（開放圧測定）、視野検査"
+  },
+  hydrocephalus: {
+    name: "脳腫瘍/水頭症による頭蓋内圧亢進",
+    emoji: "⬆️",
+    category: "頭蓋内圧亢進",
+    detail: "脳腫瘍や水頭症による頭蓋内圧亢進の偽局所徴候として外転神経麻痺をきたす。外転神経は頭蓋内走行距離が最も長い脳神経であり、頭蓋内圧亢進で牽引・圧迫されやすい。頭痛・嘔吐・うっ血乳頭の古典的3徴に注目。一時的改善は体位変化による頭蓋内圧変動の可能性があり、安心できない。",
+    workup: "頭部造影MRI（腫瘍・水頭症評価）、眼底検査、緊急時は脳圧低下処置"
+  },
+  mg: {
+    name: "重症筋無力症（MG）",
+    emoji: "🔄",
+    category: "神経筋接合部",
+    detail: "神経筋接合部の自己免疫疾患。外眼筋麻痺は外転神経麻痺と紛らわしいが、MGでは日内変動（午後・疲労で悪化、休息で改善）が特徴的。眼瞼下垂を伴うことが多い。症状の増減が大きく、複数の外眼筋に波及する場合はMGを再考すべき。アイスパック試験が簡便なスクリーニング。",
+    workup: "アイスパック試験、抗AChR抗体・抗MuSK抗体、反復神経刺激試験、テンシロン試験、胸部CT（胸腺腫）"
+  },
+  thyroid_eye: {
+    name: "甲状腺眼症（バセドウ眼症）",
+    emoji: "🦋",
+    category: "その他",
+    detail: "甲状腺関連抗体による外眼筋の炎症・線維化。外直筋の拘縮により外転制限をきたし外転神経麻痺に類似する。眼球突出・結膜充血・眼瞼腫脹を伴うことが鑑別の手がかり。両側性のことが多い。強制牽引試験で外直筋の拘縮を証明できる。内直筋（内転筋）が最も罹患しやすいが外直筋障害もある。",
+    workup: "TSH・FT3・FT4、TRAb・TSAb、眼窩MRI/CT（外眼筋肥厚）、甲状腺エコー"
+  },
+  ophthalmoplegic_migraine: {
+    name: "眼筋麻痺性片頭痛（RPON）",
+    emoji: "💫",
+    category: "その他",
+    detail: "反復性有痛性眼筋神経障害（RPON）。片頭痛様頭痛に随伴して外眼筋麻痺が出現する。小児〜若年に多い。III神経が最多だがVI神経も障害されうる。発作は自然寛解するが反復する。MRIで神経の造影増強を認めることがある。再発パターンが診断の手がかり。",
+    workup: "造影MRI（神経増強の確認）、他の器質的疾患の除外、片頭痛の病歴確認"
+  }
+};
+
+// ===== ステップ定義 =====
+var STEPS = [
+  {
+    id: "laterality",
+    title: "麻痺の特徴",
+    question: "外転神経麻痺の特徴は？",
+    hint: "両側性はICP亢進（偽局所徴候）を強く示唆。他の脳神経障害合併は海綿静脈洞・脳幹病変を示唆。",
+    type: "single",
+    options: [
+      { label: "片側性・単独のVI麻痺", value: "unilateral_isolated", icon: "👁️" },
+      { label: "片側性・他の脳神経障害を合併（III/IV/V等）", value: "unilateral_combined", icon: "🔗" },
+      { label: "両側性のVI麻痺", value: "bilateral", icon: "👀" },
+      { label: "まだ判断できない", value: "uncertain", icon: "❓" }
+    ]
+  },
+  {
+    id: "onset",
+    title: "発症様式・経過",
+    question: "症状の発症と進行速度は？",
+    hint: "急性は虚血性・脳血管障害、緩徐進行性は腫瘍性、日内変動はMGを示唆",
+    type: "single",
+    options: [
+      { label: "突然〜急性発症（数時間〜数日）", value: "acute", icon: "⚡" },
+      { label: "亜急性（数日〜数週で進行）", value: "subacute", icon: "📈" },
+      { label: "緩徐進行性（数週〜数か月）", value: "chronic", icon: "🐢" },
+      { label: "日内変動あり（疲労で悪化、休息で改善）", value: "fluctuating", icon: "🔄" },
+      { label: "反復性（寛解後に再発）", value: "recurrent", icon: "🔁" }
+    ]
+  },
+  {
+    id: "pain",
+    title: "疼痛の評価",
+    question: "疼痛の有無と性質は？",
+    hint: "激しい眼窩痛はTolosa-Hunt、側頭部痛＋顎跛行はGCA、突然の激しい頭痛は動脈瘤破裂を示唆",
+    type: "single",
+    options: [
+      { label: "疼痛なし/軽度の眼痛のみ", value: "no_pain", icon: "✅" },
+      { label: "激しい眼窩深部痛", value: "orbital_pain", icon: "🔥" },
+      { label: "側頭部痛/顎跛行（咀嚼時痛）", value: "temporal_pain", icon: "🏥" },
+      { label: "突然の激しい頭痛（雷鳴頭痛）", value: "thunderclap", icon: "💣" },
+      { label: "慢性頭痛・嘔吐", value: "chronic_headache", icon: "🤢" },
+      { label: "耳痛/耳漏を伴う", value: "ear_pain", icon: "👂" }
+    ]
+  },
+  {
+    id: "exam",
+    title: "神経学的検査（該当をすべて選択）",
+    question: "以下の神経学的所見で該当するものは？",
+    type: "multi",
+    options: [
+      { label: "うっ血乳頭（眼底所見）", value: "papilledema" },
+      { label: "眼瞼下垂（III麻痺示唆）", value: "ptosis" },
+      { label: "瞳孔異常（散瞳・対光反射異常）", value: "pupil_abnormal" },
+      { label: "顔面神経麻痺（同側）", value: "facial_palsy" },
+      { label: "三叉神経感覚障害", value: "trigeminal" },
+      { label: "Horner症候群（縮瞳・眼瞼下垂・無汗症）", value: "horner" },
+      { label: "長経路徴候（対側片麻痺・感覚障害）", value: "long_tract" },
+      { label: "眼球突出・結膜充血", value: "proptosis" },
+      { label: "日内変動する眼瞼下垂/複視", value: "fatigable" },
+      { label: "該当なし", value: "none" }
+    ]
+  },
+  {
+    id: "background",
+    title: "背景・リスク因子（該当をすべて選択）",
+    question: "以下の背景で該当するものは？",
+    type: "multi",
+    options: [
+      { label: "糖尿病・高血圧・脂質異常症", value: "vascular_risk" },
+      { label: "50歳以上", value: "age_over50" },
+      { label: "50歳未満", value: "age_under50" },
+      { label: "悪性腫瘍の既往・合併", value: "malignancy" },
+      { label: "免疫不全（HIV・臓器移植・ステロイド長期）", value: "immunocompromised" },
+      { label: "中耳炎・副鼻腔炎の既往/現症", value: "otitis" },
+      { label: "甲状腺疾患（バセドウ病等）", value: "thyroid" },
+      { label: "片頭痛の既往", value: "migraine" },
+      { label: "若年肥満女性", value: "young_obese_female" },
+      { label: "梅毒感染リスク/性感染症歴", value: "syphilis_risk" },
+      { label: "該当なし", value: "none" }
+    ]
+  },
+  {
+    id: "imaging",
+    title: "画像・検査所見（該当をすべて選択）",
+    question: "以下の検査所見で該当するものは？",
+    hint: "入手可能な検査結果をチェックしてください",
+    type: "multi",
+    options: [
+      { label: "MRI：脳幹に梗塞/出血巣あり", value: "brainstem_lesion" },
+      { label: "MRI：海綿静脈洞/頭蓋底に腫瘤あり", value: "skull_base_mass" },
+      { label: "MRI：脱髄斑（多発性）あり", value: "demyelinating_lesion" },
+      { label: "MRA/CTA：動脈瘤あり", value: "aneurysm_found" },
+      { label: "MRI/CT：上咽頭腫瘤/頭蓋底骨破壊", value: "nasopharyngeal_mass" },
+      { label: "MRV：静脈洞血栓疑い", value: "venous_sinus" },
+      { label: "ESR/CRP著明高値", value: "high_esr_crp" },
+      { label: "髄液異常（蛋白上昇・細胞増多・糖低下）", value: "csf_abnormal" },
+      { label: "梅毒血清反応陽性", value: "syphilis_positive" },
+      { label: "腰椎穿刺開放圧高値（>250mmH2O）", value: "high_opening_pressure" },
+      { label: "抗AChR抗体/抗MuSK抗体陽性", value: "mg_antibody" },
+      { label: "甲状腺機能異常/TRAb陽性", value: "thyroid_abnormal" },
+      { label: "検査未施行/不明", value: "unknown" }
+    ]
+  }
+];
+
+// ===== スコアリングエンジン =====
+function calcScores(answers) {
+  var s = {};
+  Object.keys(DISEASES).forEach(function(k) { s[k] = 0; });
+
+  // --- Step 1: 麻痺の特徴 ---
+  var lat = answers.laterality;
+  if (lat === "unilateral_isolated") {
+    s.microvascular += 5; s.ms += 2; s.ophthalmoplegic_migraine += 2;
+    s.aneurysm += 2;
+  } else if (lat === "unilateral_combined") {
+    s.tolosa_hunt += 5; s.cavernous_sinus_tumor += 5; s.aneurysm += 3;
+    s.nasopharyngeal_ca += 3; s.brainstem_stroke += 3; s.gradenigo += 3;
+    s.metastatic_tumor += 3; s.neurosyphilis += 2;
+  } else if (lat === "bilateral") {
+    s.iih += 6; s.hydrocephalus += 6; s.tb_meningitis += 3;
+    s.metastatic_tumor += 3; s.neurosyphilis += 2;
+  }
+
+  // --- Step 2: 発症様式 ---
+  var onset = answers.onset;
+  if (onset === "acute") {
+    s.microvascular += 5; s.brainstem_stroke += 5; s.aneurysm += 4;
+  } else if (onset === "subacute") {
+    s.tolosa_hunt += 4; s.tb_meningitis += 3; s.neurosyphilis += 3;
+    s.fungal_meningitis += 3; s.gca += 3; s.metastatic_tumor += 2;
+    s.ms += 2;
+  } else if (onset === "chronic") {
+    s.clival_meningioma += 5; s.cavernous_sinus_tumor += 5; s.nasopharyngeal_ca += 4;
+    s.metastatic_tumor += 3; s.iih += 3; s.hydrocephalus += 3;
+    s.thyroid_eye += 3;
+  } else if (onset === "fluctuating") {
+    s.mg += 8;
+  } else if (onset === "recurrent") {
+    s.ophthalmoplegic_migraine += 5; s.ms += 4; s.tolosa_hunt += 3;
+    s.mg += 3;
+  }
+
+  // --- Step 3: 疼痛 ---
+  var pain = answers.pain;
+  if (pain === "no_pain") {
+    s.microvascular += 3; s.mg += 2; s.thyroid_eye += 2;
+    s.clival_meningioma += 1;
+  } else if (pain === "orbital_pain") {
+    s.tolosa_hunt += 6; s.aneurysm += 3; s.cavernous_sinus_tumor += 2;
+  } else if (pain === "temporal_pain") {
+    s.gca += 7;
+  } else if (pain === "thunderclap") {
+    s.aneurysm += 8;
+  } else if (pain === "chronic_headache") {
+    s.iih += 5; s.hydrocephalus += 5; s.metastatic_tumor += 3;
+  } else if (pain === "ear_pain") {
+    s.gradenigo += 7;
+  }
+
+  // --- Step 4: 神経学的検査 ---
+  var exam = answers.exam || [];
+  exam.forEach(function(v) {
+    if (v === "papilledema") {
+      s.iih += 7; s.hydrocephalus += 6;
+    }
+    if (v === "ptosis") {
+      s.tolosa_hunt += 3; s.cavernous_sinus_tumor += 3;
+      s.aneurysm += 3; s.mg += 4;
+    }
+    if (v === "pupil_abnormal") {
+      s.aneurysm += 4; s.tolosa_hunt += 2;
+      s.neurosyphilis += 3;
+    }
+    if (v === "facial_palsy") {
+      s.brainstem_stroke += 5; s.tb_meningitis += 2;
+      s.neurosyphilis += 2;
+    }
+    if (v === "trigeminal") {
+      s.cavernous_sinus_tumor += 4; s.nasopharyngeal_ca += 3;
+      s.gradenigo += 4; s.tolosa_hunt += 2;
+      s.clival_meningioma += 2;
+    }
+    if (v === "horner") {
+      s.tolosa_hunt += 3; s.cavernous_sinus_tumor += 3;
+      s.nasopharyngeal_ca += 2;
+    }
+    if (v === "long_tract") {
+      s.brainstem_stroke += 6; s.ms += 2;
+    }
+    if (v === "proptosis") {
+      s.thyroid_eye += 7; s.cavernous_sinus_tumor += 2;
+    }
+    if (v === "fatigable") {
+      s.mg += 7;
+    }
+  });
+
+  // --- Step 5: 背景・リスク因子 ---
+  var bg = answers.background || [];
+  bg.forEach(function(v) {
+    if (v === "vascular_risk") {
+      s.microvascular += 5; s.brainstem_stroke += 3;
+    }
+    if (v === "age_over50") {
+      s.microvascular += 3; s.gca += 4;
+      s.clival_meningioma += 2; s.metastatic_tumor += 2;
+    }
+    if (v === "age_under50") {
+      s.ms += 3; s.iih += 2;
+      s.ophthalmoplegic_migraine += 2;
+    }
+    if (v === "malignancy") {
+      s.metastatic_tumor += 7; s.nasopharyngeal_ca += 2;
+    }
+    if (v === "immunocompromised") {
+      s.fungal_meningitis += 5; s.tb_meningitis += 3;
+      s.neurosyphilis += 2;
+    }
+    if (v === "otitis") {
+      s.gradenigo += 6;
+    }
+    if (v === "thyroid") {
+      s.thyroid_eye += 6;
+    }
+    if (v === "migraine") {
+      s.ophthalmoplegic_migraine += 4;
+    }
+    if (v === "young_obese_female") {
+      s.iih += 6;
+    }
+    if (v === "syphilis_risk") {
+      s.neurosyphilis += 5;
+    }
+  });
+
+  // --- Step 6: 画像・検査所見 ---
+  var img = answers.imaging || [];
+  img.forEach(function(v) {
+    if (v === "brainstem_lesion") {
+      s.brainstem_stroke += 8; s.ms += 3;
+    }
+    if (v === "skull_base_mass") {
+      s.clival_meningioma += 7; s.cavernous_sinus_tumor += 7;
+      s.metastatic_tumor += 5;
+    }
+    if (v === "demyelinating_lesion") {
+      s.ms += 8;
+    }
+    if (v === "aneurysm_found") {
+      s.aneurysm += 9;
+    }
+    if (v === "nasopharyngeal_mass") {
+      s.nasopharyngeal_ca += 9;
+    }
+    if (v === "venous_sinus") {
+      s.iih += 4;
+    }
+    if (v === "high_esr_crp") {
+      s.gca += 6; s.tb_meningitis += 3;
+      s.tolosa_hunt += 2;
+    }
+    if (v === "csf_abnormal") {
+      s.tb_meningitis += 6; s.neurosyphilis += 5;
+      s.fungal_meningitis += 5; s.metastatic_tumor += 3;
+    }
+    if (v === "syphilis_positive") {
+      s.neurosyphilis += 8;
+    }
+    if (v === "high_opening_pressure") {
+      s.iih += 7; s.hydrocephalus += 5;
+    }
+    if (v === "mg_antibody") {
+      s.mg += 9;
+    }
+    if (v === "thyroid_abnormal") {
+      s.thyroid_eye += 6;
+    }
+  });
+
+  return s;
+}
+
+function rankDiseases(scores) {
+  return Object.entries(scores)
+    .map(function(e) { return { key: e[0], score: e[1], name: DISEASES[e[0]].name, emoji: DISEASES[e[0]].emoji, category: DISEASES[e[0]].category, detail: DISEASES[e[0]].detail, workup: DISEASES[e[0]].workup }; })
+    .filter(function(d) { return d.score > 0; })
+    .sort(function(a, b) { return b.score - a.score; });
+}
+
+function getProbLevel(score, maxScore) {
+  var ratio = score / Math.max(maxScore, 1);
+  if (ratio >= 0.7) return { level: "high", label: "可能性 高" };
+  if (ratio >= 0.35) return { level: "medium", label: "可能性 中" };
+  return { level: "low", label: "可能性 低" };
+}
+
+// ===== UIレンダリング =====
+var currentStep = 0;
+var answers = {};
+
+function render() {
+  var app = document.getElementById("app");
+  var html = "";
+
+  html += '<div class="emergency-box">';
+  html += '<strong>\u26a0\ufe0f 緊急警告サイン：</strong>';
+  html += '突然の激しい頭痛（雷鳴頭痛）はくも膜下出血の警告症状 → <strong>緊急MRA/CTA</strong>。';
+  html += 'うっ血乳頭は頭蓋内圧亢進の証拠 → <strong>緊急脳圧評価</strong>。';
+  html += '高齢者の側頭部痛＋顎跛行＋視力低下 → <strong>巨細胞性動脈炎疑い：直ちにステロイド開始</strong>。';
+  html += '</div>';
+
+  html += '<div class="anatomy-box">';
+  html += '<strong>\U0001f9ec 解剖学的ポイント：</strong>';
+  html += '外転神経は<strong>頭蓋内走行距離が最も長い脳神経</strong>で、橋 → くも膜下腔 → Dorello管 → 海綿静脈洞 → 上眼窩裂 → 外直筋と走行します。';
+  html += '海綿静脈洞内では内頚動脈に最も近接し、III/IVより動脈瘤圧迫を受けやすいのが特徴です。';
+  html += '核病変では<strong>同側顔面神経麻痺</strong>を合併します（顔面神経丘の関係）。';
+  html += '</div>';
+
+  html += '<div class="algo-note">';
+  html += '<strong>\U0001f4a1 診断アルゴリズム:</strong> ';
+  html += '麻痺の特徴（片側/両側/合併症状） → 発症様式 → 疼痛評価 → 神経学的検査 → 背景・リスク因子 → 画像・検査所見 の6ステップで系統的に鑑別します。<br>';
+  html += '50歳未満、リスク因子なし、進行性、3か月以上改善なし → <strong>造影MRI必須</strong>';
+  html += '</div>';
+
+  STEPS.forEach(function(step, i) {
+    var state = i < currentStep ? "completed" : i === currentStep ? "" : "inactive";
+    var numClass = i < currentStep ? "done" : "";
+    html += '<div class="step-card ' + state + '" id="step-' + i + '">';
+    html += '<div class="step-header">';
+    html += '<span class="step-number ' + numClass + '">' + (i < currentStep ? "\u2713" : i + 1) + '</span>';
+    html += '<span class="step-title">' + step.title + '</span>';
+    html += '</div>';
+
+    if (i <= currentStep) {
+      html += '<div class="step-body">';
+      html += '<p style="font-weight:600; margin-bottom:4px;">' + step.question + '</p>';
+      if (step.hint) html += '<p class="hint">' + step.hint + '</p>';
+
+      if (step.type === "single") {
+        html += '<div class="option-group">';
+        step.options.forEach(function(opt) {
+          var sel = answers[step.id] === opt.value ? "selected" : "";
+          html += '<button class="option-btn ' + sel + '" onclick="selectOption(\'' + step.id + '\', \'' + opt.value + '\', ' + i + ')">';
+          html += '<span class="icon">' + opt.icon + '</span> ' + opt.label;
+          html += '</button>';
+        });
+        html += '</div>';
+      } else {
+        html += '<div class="checklist">';
+        var checked = answers[step.id] || [];
+        step.options.forEach(function(opt) {
+          var isChecked = checked.indexOf(opt.value) >= 0;
+          html += '<div class="check-item" onclick="toggleCheck(\'' + step.id + '\', \'' + opt.value + '\')">';
+          html += '<input type="checkbox" ' + (isChecked ? "checked" : "") + ' tabindex="-1">';
+          html += '<label>' + opt.label + '</label>';
+          html += '</div>';
+        });
+        html += '</div>';
+        if (i === currentStep) {
+          html += '<button class="next-btn" onclick="nextStep(' + i + ')">次へ ▶</button>';
+        }
+      }
+
+      html += '</div>';
+    }
+    html += '</div>';
+  });
+
+  // 結果表示
+  if (currentStep >= STEPS.length) {
+    var scores = calcScores(answers);
+    var ranked = rankDiseases(scores);
+    var maxScore = ranked.length > 0 ? ranked[0].score : 1;
+
+    html += '<div class="result-panel show">';
+    html += '<div class="result-header">\U0001f4cb 鑑別診断結果</div>';
+    html += '<div class="result-body">';
+
+    if (ranked.length === 0) {
+      html += '<p>該当する疾患が見つかりませんでした。入力内容を確認してください。</p>';
+    } else {
+      ranked.forEach(function(d) {
+        var prob = getProbLevel(d.score, maxScore);
+        html += '<div class="dx-card ' + prob.level + '">';
+        html += '<div class="dx-name">' + d.emoji + ' ' + d.name;
+        html += ' <span class="prob-badge">' + prob.label + '</span>';
+        html += ' <span style="font-size:0.78em; color:var(--gray); font-weight:400;">(' + d.category + ')</span>';
+        html += '</div>';
+        html += '<div class="dx-detail">' + d.detail + '</div>';
+        html += '<div class="dx-workup">\U0001f50d <strong>推奨検査:</strong> ' + d.workup + '</div>';
+        html += '</div>';
+      });
+    }
+
+    html += '</div></div>';
+    html += '<button class="reset-btn" onclick="resetAll()">最初からやり直す</button>';
+  }
+
+  app.innerHTML = html;
+
+  // 現在のステップにスクロール
+  if (currentStep > 0 && currentStep <= STEPS.length) {
+    var targetId = currentStep < STEPS.length ? "step-" + currentStep : "step-" + (STEPS.length - 1);
+    var el = document.getElementById(targetId);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+function selectOption(stepId, value, stepIndex) {
+  answers[stepId] = value;
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function toggleCheck(stepId, value) {
+  if (!answers[stepId]) answers[stepId] = [];
+  var idx = answers[stepId].indexOf(value);
+  if (value === "none" || value === "unknown") {
+    answers[stepId] = [value];
+  } else {
+    // noneやunknownを除去
+    var noneIdx = answers[stepId].indexOf("none");
+    if (noneIdx >= 0) answers[stepId].splice(noneIdx, 1);
+    var unkIdx = answers[stepId].indexOf("unknown");
+    if (unkIdx >= 0) answers[stepId].splice(unkIdx, 1);
+
+    if (idx >= 0) {
+      answers[stepId].splice(idx, 1);
+    } else {
+      answers[stepId].push(value);
+    }
+  }
+  render();
+}
+
+function nextStep(stepIndex) {
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function resetAll() {
+  currentStep = 0;
+  answers = {};
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// 初期描画
+render();
+</script>
+</body>
+</html>

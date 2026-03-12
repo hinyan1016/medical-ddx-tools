@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v5';
+const CACHE_NAME = 'ddx-tools-v6';
 const ASSETS = [
   './',
   './index.html',
@@ -12,6 +12,7 @@ const ASSETS = [
   './abdominal_pain.html',
   './bilateral_thalamus.html',
   './sensory_polyneuropathy.html',
+  './abducens_palsy.html',
   './nerve_localization.html',
   './neurodiagnosis.html',
   './manifest.json',
