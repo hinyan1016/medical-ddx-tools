@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>低カリウム血症 鑑別診断ツール</title>
+<style>
+  :root {
+    --navy: #1B3A5C;
+    --blue: #2C5AA0;
+    --light-blue: #E8F0FE;
+    --red: #DC3545;
+    --yellow: #F5C518;
+    --green: #28A745;
+    --orange: #E8850C;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(27,58,92,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #E8F0FE 0%, #F4F6F8 100%);
+    color: #222;
+    min-height: 100vh;
+    padding: 0 0 40px;
+  }
+  header {
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    padding: 28px 20px 22px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(27,58,92,0.18);
+  }
+  header h1 { font-size: 1.7em; font-weight: 700; letter-spacing: 0.04em; }
+  header p { font-size: 0.92em; margin-top: 6px; opacity: 0.85; }
+
+  .container { max-width: 820px; margin: 0 auto; padding: 24px 16px; }
+
+  .step-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+    overflow: hidden;
+    transition: opacity 0.3s;
+  }
+  .step-card.inactive { opacity: 0.45; pointer-events: none; }
+  .step-card.hidden { display: none !important; }
+  .step-card.completed { opacity: 1; }
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    background: var(--light-blue);
+    border-bottom: 2px solid var(--blue);
+  }
+  .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--blue);
+    color: var(--white);
+    font-weight: 700;
+    font-size: 0.95em;
+    flex-shrink: 0;
+  }
+  .step-number.done { background: var(--green); }
+  .step-title { font-weight: 700; font-size: 1.05em; color: var(--navy); }
+  .step-body { padding: 18px; }
+
+  .option-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border: 2px solid #D0D8E4;
+    border-radius: 8px;
+    background: var(--white);
+    font-size: 0.97em;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: left;
+    color: #222;
+    font-family: inherit;
+    width: 100%;
+  }
+  .option-btn:hover { border-color: var(--blue); background: var(--light-blue); }
+  .option-btn.selected {
+    border-color: var(--blue);
+    background: var(--light-blue);
+    font-weight: 700;
+  }
+  .option-btn .icon { font-size: 1.2em; flex-shrink: 0; width: 24px; text-align: center; }
+
+  .checklist { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--light-gray);
+    cursor: pointer;
+    transition: background 0.15s;
+    user-select: none;
+    font-size: 0.95em;
+  }
+  .check-item:hover { background: #E0E8F0; }
+  .check-item input[type="checkbox"] {
+    width: 18px; height: 18px;
+    accent-color: var(--blue);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .check-item label { cursor: pointer; flex: 1; }
+
+  .result-panel {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(27,58,92,0.15);
+    overflow: hidden;
+    margin-top: 24px;
+    display: none;
+  }
+  .result-panel.show { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  .result-header {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    font-weight: 700;
+    font-size: 1.15em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .result-body { padding: 20px; }
+
+  .dx-card {
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    position: relative;
+    transition: all 0.2s;
+  }
+  .dx-card.high { border-color: var(--red); background: #FFF5F5; }
+  .dx-card.medium { border-color: var(--orange); background: #FFF8F0; }
+  .dx-card.low { border-color: var(--gray); background: var(--light-gray); }
+
+  .dx-card .dx-name {
+    font-weight: 700;
+    font-size: 1.08em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .dx-card .prob-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.78em;
+    font-weight: 700;
+    color: var(--white);
+  }
+  .dx-card.high .prob-badge { background: var(--red); }
+  .dx-card.medium .prob-badge { background: var(--orange); }
+  .dx-card.low .prob-badge { background: var(--gray); }
+
+  .dx-card .dx-detail { font-size: 0.9em; color: #444; line-height: 1.6; }
+  .dx-card .dx-detail strong { color: var(--navy); }
+  .dx-card .dx-workup {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #ccc;
+    font-size: 0.88em;
+    color: var(--blue);
+  }
+
+  .next-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    padding: 10px 22px;
+    background: var(--blue);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: inherit;
+  }
+  .next-btn:hover { background: var(--navy); }
+  .next-btn:disabled { background: #B0BEC5; cursor: not-allowed; }
+
+  .reset-btn {
+    display: block;
+    margin: 24px auto 0;
+    padding: 10px 32px;
+    background: var(--white);
+    color: var(--red);
+    border: 2px solid var(--red);
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .reset-btn:hover { background: var(--red); color: var(--white); }
+
+  .hint {
+    font-size: 0.85em;
+    color: var(--gray);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  .divider { height: 1px; background: #D0D8E4; margin: 14px 0; }
+
+  .algo-note {
+    background: #FFFDE7;
+    border-left: 4px solid var(--yellow);
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 18px;
+    font-size: 0.9em;
+    line-height: 1.6;
+    color: #555;
+  }
+  .algo-note strong { color: var(--navy); }
+
+  .emergency-box {
+    background: #FFF5F5;
+    border-left: 4px solid var(--red);
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 18px;
+    font-size: 0.9em;
+    line-height: 1.6;
+  }
+  .emergency-box strong { color: var(--red); }
+
+  .severity-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.9em;
+    margin-bottom: 12px;
+  }
+  .severity-mild { background: #E8F5E9; color: var(--green); border: 1px solid var(--green); }
+  .severity-moderate { background: #FFF3E0; color: var(--orange); border: 1px solid var(--orange); }
+  .severity-severe { background: #FFEBEE; color: var(--red); border: 1px solid var(--red); }
+
+  .summary-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .summary-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    background: var(--light-blue);
+    border-radius: 16px;
+    font-size: 0.85em;
+    color: var(--navy);
+    font-weight: 600;
+  }
+
+  .section-label {
+    font-size: 0.82em;
+    font-weight: 700;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+
+  .workup-list {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0;
+  }
+  .workup-list li {
+    padding: 6px 0;
+    font-size: 0.9em;
+    border-bottom: 1px dotted #e0e0e0;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .workup-list li:last-child { border-bottom: none; }
+  .workup-list li::before { content: ""; flex-shrink: 0; }
+
+  footer {
+    text-align: center;
+    padding: 24px 16px;
+    font-size: 0.8em;
+    color: var(--gray);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.3em; }
+    .step-body, .result-body { padding: 14px; }
+    .dx-card { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>低カリウム血症 鑑別診断ツール</h1>
+  <p>Hypokalemia Differential Diagnosis Tool</p>
+</header>
+
+<div class="container">
+  <div class="algo-note">
+    <strong>使い方：</strong>血清K &lt; 3.5 mEq/L の患者について、Step 1 から順に選択してください。臨床所見・検査値に基づいて鑑別診断を絞り込みます。
+  </div>
+
+  <!-- Step 1: 重症度 -->
+  <div class="step-card" id="step1">
+    <div class="step-header">
+      <span class="step-number" id="sn1">1</span>
+      <span class="step-title">血清カリウム値（重症度評価）</span>
+    </div>
+    <div class="step-body">
+      <p class="hint">血清K値を選択してください。重症度により緊急性が変わります。</p>
+      <div class="option-group" id="og-severity">
+        <button class="option-btn" onclick="selectSeverity('mild')">
+          <span class="icon">🟢</span>軽度：K 3.0〜3.4 mEq/L（多くは無症状）
+        </button>
+        <button class="option-btn" onclick="selectSeverity('moderate')">
+          <span class="icon">🟡</span>中等度：K 2.5〜2.9 mEq/L（症状出現）
+        </button>
+        <button class="option-btn" onclick="selectSeverity('severe')">
+          <span class="icon">🔴</span>重度：K &lt; 2.5 mEq/L（致死的不整脈リスク）
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: 偽性低K除外 -->
+  <div class="step-card inactive" id="step2">
+    <div class="step-header">
+      <span class="step-number" id="sn2">2</span>
+      <span class="step-title">偽性低カリウム血症の除外</span>
+    </div>
+    <div class="step-body">
+      <p class="hint">高度白血球増多（白血病等）がある場合、採血後に試料内で細胞がKを取り込み偽性低値を呈することがあります。</p>
+      <div class="option-group" id="og-pseudo">
+        <button class="option-btn" onclick="selectPseudo('no')">
+          <span class="icon">✅</span>偽性低Kの可能性は低い（通常の患者）
+        </button>
+        <button class="option-btn" onclick="selectPseudo('yes')">
+          <span class="icon">⚠️</span>高度白血球増多あり（偽性低Kの可能性）
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3: 細胞内シフト -->
+  <div class="step-card inactive" id="step3">
+    <div class="step-header">
+      <span class="step-number" id="sn3">3</span>
+      <span class="step-title">細胞内シフトの評価</span>
+    </div>
+    <div class="step-body">
+      <p class="hint">Kが細胞内へ移動する原因がないか確認してください（該当するものをすべて選択）。</p>
+      <div class="checklist" id="cl-shift">
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="insulin"> <label>インスリン投与中 / 再栄養症候群</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="beta2"> <label>β2刺激薬使用（気管支拡張薬など）</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="alkalosis"> <label>アルカローシス（pH上昇）</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="thyroid"> <label>甲状腺機能亢進症の所見あり</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="periodic"> <label>間欠的な四肢麻痺（周期性四肢麻痺の疑い）</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="hypothermia"> <label>低体温</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="none_shift"> <label>いずれも該当しない</label>
+        </div>
+      </div>
+      <button class="next-btn" onclick="submitShift()">次へ →</button>
+    </div>
+  </div>
+
+  <!-- Step 4: 尿中K排泄 -->
+  <div class="step-card inactive" id="step4">
+    <div class="step-header">
+      <span class="step-number" id="sn4">4</span>
+      <span class="step-title">尿中カリウム排泄の評価</span>
+    </div>
+    <div class="step-body">
+      <p class="hint">腎性喪失 vs 腎外性喪失を判断します。24時間蓄尿K &gt; 20 mEq/日、または随時尿K/Cr比 &gt; 13 mEq/gCr なら腎性喪失。</p>
+      <div class="option-group" id="og-urine">
+        <button class="option-btn" onclick="selectUrineK('extrarenal')">
+          <span class="icon">⬇️</span>尿中K低値（腎外性喪失）：24h尿K &lt; 20 mEq/日 or 尿K/Cr比 ≤ 13
+        </button>
+        <button class="option-btn" onclick="selectUrineK('renal')">
+          <span class="icon">⬆️</span>尿中K高値（腎性喪失）：24h尿K ≥ 20 mEq/日 or 尿K/Cr比 &gt; 13
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 5A: 腎外性 → 原因 -->
+  <div class="step-card inactive" id="step5a">
+    <div class="step-header">
+      <span class="step-number" id="sn5a">5</span>
+      <span class="step-title">腎外性喪失の原因評価</span>
+    </div>
+    <div class="step-body">
+      <p class="hint">消化管からのK喪失が最多です。該当するものを選択してください。</p>
+      <div class="checklist" id="cl-extrarenal">
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="diarrhea"> <label>下痢（急性 or 慢性）</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="vomiting"> <label>嘔吐 / 胃液ドレナージ</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="laxative"> <label>下剤乱用</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="poor_intake"> <label>食事摂取不足 / 低栄養</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="sweat"> <label>大量発汗 / 熱傷</label>
+        </div>
+      </div>
+      <button class="next-btn" onclick="submitExtrarenal()">鑑別結果を表示 →</button>
+    </div>
+  </div>
+
+  <!-- Step 5B: 腎性 → 血圧 -->
+  <div class="step-card inactive" id="step5b">
+    <div class="step-header">
+      <span class="step-number" id="sn5b">5</span>
+      <span class="step-title">血圧の評価</span>
+    </div>
+    <div class="step-body">
+      <p class="hint">腎性K喪失を伴う場合、血圧で鑑別が大きく分岐します。</p>
+      <div class="option-group" id="og-bp">
+        <button class="option-btn" onclick="selectBP('normal')">
+          <span class="icon">🔵</span>正常血圧 or 低血圧
+        </button>
+        <button class="option-btn" onclick="selectBP('high')">
+          <span class="icon">🔴</span>高血圧
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 6A: 腎性+正常BP → 酸塩基 -->
+  <div class="step-card inactive" id="step6a">
+    <div class="step-header">
+      <span class="step-number" id="sn6a">6</span>
+      <span class="step-title">酸塩基平衡の評価</span>
+    </div>
+    <div class="step-body">
+      <p class="hint">血液ガスまたは血清HCO3-で判断してください。</p>
+      <div class="option-group" id="og-acidbase">
+        <button class="option-btn" onclick="selectAcidBase('alkalosis')">
+          <span class="icon">🔼</span>代謝性アルカローシス（HCO3- 上昇 / pH上昇）
+        </button>
+        <button class="option-btn" onclick="selectAcidBase('acidosis')">
+          <span class="icon">🔽</span>代謝性アシドーシス（HCO3- 低下 / pH低下）
+        </button>
+        <button class="option-btn" onclick="selectAcidBase('normal')">
+          <span class="icon">➖</span>正常酸塩基平衡
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 6B: 腎性+高BP → 追加 -->
+  <div class="step-card inactive" id="step6b">
+    <div class="step-header">
+      <span class="step-number" id="sn6b">6</span>
+      <span class="step-title">追加情報（高血圧+腎性K喪失）</span>
+    </div>
+    <div class="step-body">
+      <p class="hint">該当するものをすべて選択してください。</p>
+      <div class="checklist" id="cl-htn">
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="licorice"> <label>甘草（グリチルリチン）含有薬・食品の摂取歴</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="cushingoid"> <label>満月様顔貌・中心性肥満（クッシング様所見）</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="young"> <label>若年発症（&lt; 40歳）</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="family"> <label>家族歴あり（高血圧 / 低K血症）</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="renal_artery"> <label>腎血管性雑音 / 腎動脈狭窄の疑い</label>
+        </div>
+      </div>
+      <button class="next-btn" onclick="submitHTN()">鑑別結果を表示 →</button>
+    </div>
+  </div>
+
+  <!-- Step 7: 利尿薬確認（正常BP+アルカローシス） -->
+  <div class="step-card inactive" id="step7">
+    <div class="step-header">
+      <span class="step-number" id="sn7">7</span>
+      <span class="step-title">利尿薬の使用 / 追加情報</span>
+    </div>
+    <div class="step-body">
+      <p class="hint">該当するものを選択してください。</p>
+      <div class="checklist" id="cl-diuretic">
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="diuretic"> <label>利尿薬使用中（サイアザイド / ループ利尿薬）</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="young_onset"> <label>若年発症（小児〜青年期）</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="low_mg"> <label>低マグネシウム血症の合併</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="low_uca"> <label>低尿カルシウム</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="high_uca"> <label>高尿カルシウム</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="aminoglycoside"> <label>アミノグリコシド / アムホテリシンB使用</label>
+        </div>
+      </div>
+      <button class="next-btn" onclick="submitDiuretic()">鑑別結果を表示 →</button>
+    </div>
+  </div>
+
+  <!-- 結果パネル -->
+  <div class="result-panel" id="resultPanel">
+    <div class="result-header">📋 鑑別診断結果</div>
+    <div class="result-body" id="resultBody"></div>
+  </div>
+
+  <button class="reset-btn" id="resetBtn" style="display:none;" onclick="resetAll()">🔄 最初からやり直す</button>
+</div>
+
+<footer>
+  <div>本ツールは臨床判断の補助を目的としており、最終的な診断・治療は担当医の判断に委ねられます。</div>
+  <div style="margin-top:4px;">参考：Kardalas E, et al. Endocr Connect. 2018; Castro D, et al. StatPearls. 2025; Viera AJ, et al. Am Fam Physician. 2015</div>
+</footer>
+
+<script>
+// State
+let state = {
+  severity: null,
+  pseudo: null,
+  shifts: [],
+  urineK: null,
+  bp: null,
+  acidBase: null,
+  extrarenal: [],
+  htnClues: [],
+  diureticClues: []
+};
+
+function selectOption(groupId, btn) {
+  document.querySelectorAll(`#${groupId} .option-btn`).forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function toggleCheck(item, ev) {
+  // Prevent double-toggle when clicking directly on the checkbox
+  if (ev && ev.target.tagName === 'INPUT') return;
+  const cb = item.querySelector('input[type="checkbox"]');
+  const val = cb.value;
+  const parent = item.closest('.checklist');
+  if (val.startsWith('none')) {
+    if (!cb.checked) {
+      parent.querySelectorAll('input[type="checkbox"]').forEach(c => { c.checked = false; });
+      cb.checked = true;
+    } else {
+      cb.checked = false;
+    }
+  } else {
+    cb.checked = !cb.checked;
+    const noneBox = parent.querySelector('input[value^="none"]');
+    if (noneBox) noneBox.checked = false;
+  }
+}
+
+function getChecked(clId) {
+  return Array.from(document.querySelectorAll(`#${clId} input:checked`)).map(c => c.value);
+}
+
+function activateStep(id) {
+  const el = document.getElementById(id);
+  el.classList.remove('inactive', 'hidden');
+  setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+}
+function hideStep(id) { document.getElementById(id).classList.add('hidden'); }
+function markDone(snId) { document.getElementById(snId).classList.add('done'); document.getElementById(snId).textContent = '✓'; }
+
+// Step 1
+function selectSeverity(val) {
+  state.severity = val;
+  selectOption('og-severity', event.currentTarget);
+  markDone('sn1');
+  activateStep('step2');
+}
+
+// Step 2
+function selectPseudo(val) {
+  state.pseudo = val;
+  selectOption('og-pseudo', event.currentTarget);
+  markDone('sn2');
+  if (val === 'yes') {
+    showPseudoResult();
+  } else {
+    activateStep('step3');
+  }
+}
+
+function showPseudoResult() {
+  const html = `
+    <div class="severity-indicator severity-mild">偽性低カリウム血症の可能性</div>
+    <div class="dx-card high">
+      <div class="dx-name">偽性低カリウム血症 <span class="prob-badge">要確認</span></div>
+      <div class="dx-detail">
+        <strong>高度白血球増多</strong>（白血病など WBC &gt; 100,000/μL）がある場合、採血後に試料中で白血球がKを取り込み、見かけ上の低K値を呈する。<br>
+        <strong>対応：</strong>速やかに血漿を分離（採血後30分以内）し再検。ヘパリン採血も有用。
+      </div>
+      <div class="dx-workup">確認検査：採血後速やかな血漿分離で再測定 / 血液ガス分析でKを確認</div>
+    </div>
+    <p style="font-size:0.9em; color:#555; margin-top:12px;">偽性低Kが否定された場合は、Step 3以降の評価に進んでください。</p>
+  `;
+  showResult(html);
+}
+
+// Step 3
+function submitShift() {
+  state.shifts = getChecked('cl-shift');
+  if (state.shifts.length === 0) return;
+  markDone('sn3');
+
+  const hasShift = !state.shifts.includes('none_shift') && state.shifts.length > 0;
+  if (hasShift && state.shifts.every(s => s !== 'none_shift')) {
+    showShiftResult();
+  }
+  // 常にStep4も表示（シフト+喪失の併存を考慮）
+  activateStep('step4');
+}
+
+function showShiftResult() {
+  // シフト関連の結果を先に表示しつつ、Step4以降も進められるようにする
+}
+
+// Step 4
+function selectUrineK(val) {
+  state.urineK = val;
+  selectOption('og-urine', event.currentTarget);
+  markDone('sn4');
+  if (val === 'extrarenal') {
+    activateStep('step5a');
+    hideStep('step5b');
+    hideStep('step6a');
+    hideStep('step6b');
+    hideStep('step7');
+  } else {
+    activateStep('step5b');
+    hideStep('step5a');
+  }
+}
+
+// Step 5A: 腎外性
+function submitExtrarenal() {
+  state.extrarenal = getChecked('cl-extrarenal');
+  markDone('sn5a');
+  showExtrarenalResult();
+}
+
+// Step 5B: 血圧
+function selectBP(val) {
+  state.bp = val;
+  selectOption('og-bp', event.currentTarget);
+  markDone('sn5b');
+  if (val === 'normal') {
+    activateStep('step6a');
+    hideStep('step6b');
+  } else {
+    activateStep('step6b');
+    hideStep('step6a');
+    hideStep('step7');
+  }
+}
+
+// Step 6A: 酸塩基
+function selectAcidBase(val) {
+  state.acidBase = val;
+  selectOption('og-acidbase', event.currentTarget);
+  markDone('sn6a');
+  if (val === 'alkalosis') {
+    activateStep('step7');
+  } else {
+    hideStep('step7');
+    if (val === 'acidosis') {
+      showAcidosisResult();
+    } else {
+      showNormalABResult();
+    }
+  }
+}
+
+// Step 6B: 高血圧追加
+function submitHTN() {
+  state.htnClues = getChecked('cl-htn');
+  markDone('sn6b');
+  showHTNResult();
+}
+
+// Step 7: 利尿薬
+function submitDiuretic() {
+  state.diureticClues = getChecked('cl-diuretic');
+  markDone('sn7');
+  showAlkalosisResult();
+}
+
+// ===== 結果表示関数 =====
+function showResult(html) {
+  const panel = document.getElementById('resultPanel');
+  document.getElementById('resultBody').innerHTML = getSeverityBanner() + getSummaryTags() + html + getTreatmentNote();
+  panel.classList.add('show');
+  document.getElementById('resetBtn').style.display = 'block';
+  setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+}
+
+function getSeverityBanner() {
+  const map = {
+    mild: ['severity-mild', '軽度低K血症（3.0〜3.4 mEq/L）'],
+    moderate: ['severity-moderate', '中等度低K血症（2.5〜2.9 mEq/L）'],
+    severe: ['severity-severe', '重度低K血症（< 2.5 mEq/L）— 緊急補正要']
+  };
+  const [cls, txt] = map[state.severity] || ['', ''];
+  let banner = `<div class="severity-indicator ${cls}">${txt}</div>`;
+  if (state.severity === 'severe') {
+    banner += `<div class="emergency-box"><strong>🚨 緊急対応：</strong>K &lt; 2.5 mEq/Lは致死的不整脈のリスクが高く、心電図モニター下での静脈的K補正を直ちに開始する。原因検索と並行して治療を優先すること。</div>`;
+  }
+  return banner;
+}
+
+function getSummaryTags() {
+  let tags = [];
+  if (state.urineK === 'extrarenal') tags.push('腎外性喪失');
+  if (state.urineK === 'renal') tags.push('腎性喪失');
+  if (state.bp === 'high') tags.push('高血圧');
+  if (state.bp === 'normal') tags.push('正常〜低血圧');
+  if (state.acidBase === 'alkalosis') tags.push('代謝性アルカローシス');
+  if (state.acidBase === 'acidosis') tags.push('代謝性アシドーシス');
+  if (state.shifts.length > 0 && !state.shifts.includes('none_shift')) tags.push('細胞内シフト');
+  if (tags.length === 0) return '';
+  return '<div class="summary-row">' + tags.map(t => `<span class="summary-tag">${t}</span>`).join('') + '</div>';
+}
+
+function getTreatmentNote() {
+  let note = '<div class="divider"></div><div class="section-label">治療の基本方針</div>';
+  if (state.severity === 'severe') {
+    note += `<ul class="workup-list">
+      <li>💉 静脈的K補正（KCl + 生食、10〜20 mEq/時、心電図モニター下）</li>
+      <li>⚠️ ブドウ糖液での希釈は禁忌（インスリン分泌でK↓）</li>
+      <li>🔬 血清Mg測定：低Mg合併時はMg補正も必須</li>
+      <li>📊 2〜4時間毎に血清K再検、反跳性高K血症に注意</li>
+      <li>🏥 原因治療と並行して進める</li>
+    </ul>`;
+  } else if (state.severity === 'moderate') {
+    note += `<ul class="workup-list">
+      <li>💊 経口KCl補充が第一選択（症状あれば静注も検討）</li>
+      <li>🔬 血清Mg測定：低Mg合併時はMg補正も必須</li>
+      <li>📊 1〜2日おきに血清K再検</li>
+      <li>🏥 原因治療が重要</li>
+    </ul>`;
+  } else {
+    note += `<ul class="workup-list">
+      <li>💊 経口KCl補充（40〜60 mEq/日を分割投与）</li>
+      <li>🔬 低Mg合併がないか確認</li>
+      <li>🏥 原因治療で改善するか経過観察</li>
+      <li>❤️ 心疾患合併時はK ≥ 4.0を目標に積極補充</li>
+    </ul>`;
+  }
+  return note;
+}
+
+// 腎外性喪失の結果
+function showExtrarenalResult() {
+  let cards = [];
+  const has = v => state.extrarenal.includes(v);
+
+  if (has('diarrhea')) {
+    cards.push(dxCard('high', '下痢によるK喪失', '消化管からの直接的K喪失。慢性下痢では代謝性アシドーシスを伴うことが多い。感染性・IBD・VIPoma等の原因検索を行う。', '便培養 / 大腸内視鏡 / VIP測定（慢性時）'));
+  }
+  if (has('vomiting')) {
+    cards.push(dxCard('high', '嘔吐によるK喪失', '直接のK喪失は少量だが、代謝性アルカローシス + 循環血漿量低下 → 二次性アルドステロン増加で腎からのK排泄が促進。低Cl血症性アルカローシスを呈する。', '血液ガス / 尿中Cl（< 20 mEq/Lが典型）'));
+  }
+  if (has('laxative')) {
+    cards.push(dxCard('high', '下剤乱用', '慢性的下痢と同様の機序。摂食障害（特に神経性過食症）に伴うことがあり、病歴聴取が重要。尿中下剤スクリーニングが有用な場合あり。', '尿中下剤スクリーニング / 摂食障害の評価'));
+  }
+  if (has('poor_intake')) {
+    cards.push(dxCard('medium', '摂取不足', '単独で重篤な低Kを起こすことは稀だが、他の原因（利尿薬・嘔吐等）と重なると重症化しやすい。', '栄養評価 / 他の原因の併存を検索'));
+  }
+  if (has('sweat')) {
+    cards.push(dxCard('low', '大量発汗 / 熱傷', '通常は軽度にとどまるが、熱傷では大量の体液喪失に伴い著明な低Kを呈しうる。', '体液バランスの評価'));
+  }
+
+  // シフトの追加
+  cards = cards.concat(getShiftCards());
+
+  if (cards.length === 0) {
+    cards.push(dxCard('medium', '腎外性K喪失（原因不明）', '下痢・嘔吐・下剤など消化管からのK喪失が最多。詳細な病歴再聴取を行う。', '消化管精査 / 病歴の再確認'));
+  }
+
+  showResult(cards.join(''));
+}
+
+// 腎性+正常BP+アシドーシス
+function showAcidosisResult() {
+  let cards = [];
+  cards.push(dxCard('high', '尿細管性アシドーシス（RTA）', '<strong>遠位RTA（I型）：</strong>尿pH > 5.5、腎石灰化を伴うことあり。<strong>近位RTA（II型）：</strong>Fanconi症候群の一部として現れることがある。低K血症 + 代謝性アシドーシス + 腎性K喪失の組み合わせはRTAを強く示唆する。', '尿pH / 尿中アニオンギャップ / 重炭酸負荷試験'));
+  cards.push(dxCard('medium', '糖尿病性ケトアシドーシス（DKA）治療中', 'DKA自体では初期に高Kのこともあるが、インスリン治療開始後に急速にKが細胞内に移行し著明な低Kに転じる。DKA治療時のK補正は鉄則。', 'DKA治療中のK管理プロトコル確認'));
+  cards.push(dxCard('low', 'アムホテリシンB使用', '腎毒性によりRTA様の病態を惹起し、低K + 代謝性アシドーシスを呈しうる。', '薬剤歴の確認 / 腎機能評価'));
+
+  cards = cards.concat(getShiftCards());
+  showResult(cards.join(''));
+}
+
+// 腎性+正常BP+正常酸塩基
+function showNormalABResult() {
+  let cards = [];
+  cards.push(dxCard('medium', '利尿薬の遅延効果', '利尿薬中止後も数日間影響が残ることがある。現在は使用していなくても最近の使用歴を確認。', '詳細な薬剤歴'));
+  cards.push(dxCard('medium', '低マグネシウム血症', 'Mg欠乏単独で腎からのK排泄亢進を招く。低K血症の50%以上でMg欠乏が合併。Mg補正なしにはK補正が困難。', '血清Mg測定 → 低値ならMg補充を優先'));
+  cards.push(dxCard('low', 'Gitelman症候群（軽症型）', '軽症例では酸塩基異常が目立たないこともある。低Mg・低尿Caが手がかり。', '尿Ca / 血清Mg / 遺伝子検査'));
+
+  cards = cards.concat(getShiftCards());
+  showResult(cards.join(''));
+}
+
+// 腎性+正常BP+アルカローシス → 利尿薬確認後
+function showAlkalosisResult() {
+  let cards = [];
+  const has = v => state.diureticClues.includes(v);
+
+  if (has('diuretic')) {
+    cards.push(dxCard('high', '利尿薬による低K血症', '臨床的に最も頻度の高い腎性K喪失の原因。サイアザイド系・ループ利尿薬ともに低K + 代謝性アルカローシスを呈する。可能なら減量・中止、またはK保持性利尿薬の併用を検討。', '利尿薬の減量・中止検討 / K保持性利尿薬の併用'));
+  }
+
+  if (has('aminoglycoside')) {
+    cards.push(dxCard('medium', '薬剤性（アミノグリコシド / アムホテリシンB）', 'アミノグリコシドはBartter症候群様の低Kを呈しうる。アムホテリシンBは腎毒性によるRTA惹起。', '薬剤の変更・中止検討'));
+  }
+
+  if (has('young_onset') || has('low_uca') || has('high_uca')) {
+    if (has('low_uca') || has('low_mg')) {
+      cards.push(dxCard('high', 'Gitelman症候群', '遠位尿細管のNa-Cl共輸送体異常。サイアザイド様の病態。<strong>特徴：</strong>低Mg血症 + 低尿Ca + 代謝性アルカローシス + 正常血圧。思春期〜成人期に筋力低下やテタニーで発見。', '血清Mg / 24h尿Ca / 遺伝子検査'));
+    }
+    if (has('high_uca')) {
+      cards.push(dxCard('high', 'Bartter症候群', 'ヘンレ係蹄上行脚の異常。ループ利尿薬様の病態。<strong>特徴：</strong>高Ca尿症 + 代謝性アルカローシス + 正常血圧。小児期発症が多い。', '24h尿Ca / 遺伝子検査 / NSAIDs試験的投与'));
+    }
+  }
+
+  if (!has('diuretic') && !has('young_onset') && !has('low_uca') && !has('high_uca') && !has('aminoglycoside')) {
+    cards.push(dxCard('medium', 'Gitelman症候群 or Bartter症候群', '利尿薬を使用していないのに利尿薬様の電解質異常（低K + 代謝性アルカローシス + 正常BP）がある場合、遺伝性尿細管異常を疑う。尿中Caで鑑別。', '24h尿Ca → 低値ならGitelman、高値ならBartter / 遺伝子検査'));
+    cards.push(dxCard('medium', '慢性嘔吐（隠れた嘔吐）', '自己誘発性嘔吐（摂食障害）では尿Cl < 20 mEq/L + 代謝性アルカローシスが特徴。病歴に出てこないことがある。', '尿Cl / 摂食障害の評価'));
+  }
+
+  if (has('low_mg')) {
+    cards.push(dxCard('medium', '低マグネシウム血症', 'Mg欠乏が腎からのK排泄を亢進させる。Mg補正なしにはK補正が困難。', '血清Mg → 低値ならMg補充を優先'));
+  }
+
+  cards = cards.concat(getShiftCards());
+  showResult(cards.join(''));
+}
+
+// 腎性+高血圧
+function showHTNResult() {
+  let cards = [];
+  const has = v => state.htnClues.includes(v);
+
+  cards.push(dxCard('high', '原発性アルドステロン症（PA）', '低K + 高血圧の最も重要な鑑別。副腎アルドステロン産生腺腫（Conn症候群）or 特発性両側副腎過形成。<strong>低レニン・高アルドステロン</strong>が特徴。スクリーニングはARR（アルドステロン/レニン比）。', 'ARR測定 → 高値なら食塩負荷試験等の確認検査 → 副腎CT / 副腎静脈サンプリング'));
+
+  if (has('renal_artery')) {
+    cards.push(dxCard('high', '腎血管性高血圧', '腎動脈狭窄によるレニン分泌亢進 → 二次性アルドステロン症。<strong>高レニン・高アルドステロン</strong>。腹部血管雑音が手がかり。', '腎動脈エコー / MRA / CT血管造影'));
+  } else {
+    cards.push(dxCard('medium', '腎血管性高血圧 / レニン産生腫瘍', '高レニン・高アルドステロン。レニン分泌亢進に見合ったアルドステロン高値。若年重症高血圧、腹部血管雑音で疑う。', '血漿レニン活性 / 腎動脈エコー / MRA'));
+  }
+
+  if (has('cushingoid')) {
+    cards.push(dxCard('high', 'クッシング症候群', '糖質コルチコイド過剰による鉱質コルチコイド様作用。<strong>低レニン・低アルドステロン</strong>。満月様顔貌・中心性肥満・皮膚線条などの身体所見が手がかり。', '24h尿中遊離コルチゾール / デキサメタゾン抑制試験 / 深夜唾液コルチゾール'));
+  } else {
+    cards.push(dxCard('low', 'クッシング症候群', '糖質コルチコイド過剰。低レニン・低アルドステロン。特徴的身体所見がなくても、難治性高血圧 + 低Kでは検討。', '24h尿中コルチゾール / デキサメタゾン抑制試験'));
+  }
+
+  if (has('licorice')) {
+    cards.push(dxCard('high', '偽性アルドステロン症（甘草中毒）', 'グリチルリチンが11β-HSD2を阻害 → コルチゾールによるMR刺激。<strong>低レニン・低アルドステロン</strong>。漢方薬・甘草含有菓子の摂取歴が重要。中止で改善。', '甘草含有薬・食品の摂取歴確認 → 中止指導'));
+  } else {
+    cards.push(dxCard('low', '偽性アルドステロン症（甘草 / AME症候群）', '甘草過剰摂取 or 先天性11β-HSD2欠損症。低レニン・低アルドステロン。漢方薬の成分にも注意。', '甘草摂取歴 / 尿中コルチゾール代謝産物比'));
+  }
+
+  if (has('young') || has('family')) {
+    cards.push(dxCard('medium', 'Liddle症候群', 'ENaC活性亢進の遺伝性疾患。若年重篤高血圧 + 低K。<strong>低レニン・低アルドステロン</strong>。アルドステロン拮抗薬無効、アミロライド著効が鑑別の手がかり。', 'アミロライド試験的投与 / 遺伝子検査'));
+    cards.push(dxCard('medium', '家族性アルドステロン症（GRA）', 'ACTH依存性アルドステロン産生。若年発症・家族歴あり。グルココルチコイド投与で改善。', 'デキサメタゾン投与試験 / 遺伝子検査'));
+  } else {
+    cards.push(dxCard('low', 'Liddle症候群', 'ENaC活性亢進。若年重篤高血圧 + 低K + 低レニン・低アルドステロン。', '遺伝子検査 / アミロライド試験'));
+  }
+
+  cards.push(dxCard('low', '先天性副腎過形成（11β-OHD / 17α-OHD欠損症）', 'DOC過剰による鉱質コルチコイド作用。低レニン・低アルドステロン + 性腺異常。', '副腎ステロイドプロファイル / 遺伝子検査'));
+
+  cards = cards.concat(getShiftCards());
+  showResult(cards.join(''));
+}
+
+// シフト関連カード
+function getShiftCards() {
+  if (state.shifts.includes('none_shift') || state.shifts.length === 0) return [];
+  let cards = [];
+  const has = v => state.shifts.includes(v);
+
+  if (has('insulin')) {
+    cards.push(dxCard('medium', '細胞内シフト：インスリン / 再栄養症候群', 'インスリン投与や再栄養でK↓。再栄養症候群ではリン・Mgも低下。DKA治療時のK補正は必須。', 'インスリン投与量の確認 / リン・Mg測定'));
+  }
+  if (has('beta2')) {
+    cards.push(dxCard('medium', '細胞内シフト：β2刺激薬', 'β2作動薬（サルブタモール等）の吸入・静注で一過性にK↓。通常は軽度。', '薬剤使用歴の確認'));
+  }
+  if (has('alkalosis')) {
+    cards.push(dxCard('low', '細胞内シフト：アルカローシス', '血中H+低下に伴いK+が細胞内に移行。アルカローシスの原因治療が重要。', '血液ガス分析 / アルカローシスの原因検索'));
+  }
+  if (has('thyroid') || has('periodic')) {
+    cards.push(dxCard('high', '甲状腺中毒性周期性四肢麻痺', '甲状腺機能亢進症（特にアジア人男性に多い）に伴う周期性の四肢麻痺発作。発作間歇期はK正常。β遮断薬が急性期に有効。甲状腺機能正常化で発作消失。', 'TSH / FT3 / FT4 → 甲状腺機能亢進があれば抗甲状腺薬 + β遮断薬'));
+  }
+  if (has('hypothermia')) {
+    cards.push(dxCard('low', '細胞内シフト：低体温', '低体温でKが細胞内に移行。復温時に高Kとなりうるため注意。', '体温管理中のK頻回モニタリング'));
+  }
+  return cards;
+}
+
+function dxCard(level, name, detail, workup) {
+  const labels = { high: '可能性高', medium: '要考慮', low: '鑑別に含む' };
+  return `<div class="dx-card ${level}">
+    <div class="dx-name">${name} <span class="prob-badge">${labels[level]}</span></div>
+    <div class="dx-detail">${detail}</div>
+    <div class="dx-workup">🔍 ${workup}</div>
+  </div>`;
+}
+
+function resetAll() {
+  state = { severity: null, pseudo: null, shifts: [], urineK: null, bp: null, acidBase: null, extrarenal: [], htnClues: [], diureticClues: [] };
+  document.querySelectorAll('.step-card').forEach(c => { c.classList.add('inactive'); c.classList.remove('hidden'); });
+  document.getElementById('step1').classList.remove('inactive');
+  document.querySelectorAll('.step-number').forEach(s => { s.classList.remove('done'); s.textContent = s.id.replace('sn','').replace('a','').replace('b',''); });
+  document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
+  document.getElementById('resultPanel').classList.remove('show');
+  document.getElementById('resetBtn').style.display = 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
