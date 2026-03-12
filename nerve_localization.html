@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>神経障害部位推測ツール — MMTから脊髄レベル・神経を推定</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI','游ゴシック','Yu Gothic',sans-serif;background:#f0f4f8;color:#1a1a2e;line-height:1.6}
+  .header{background:linear-gradient(135deg,#1B3A5C 0%,#2C5AA0 100%);color:#fff;padding:24px 20px;text-align:center}
+  .header h1{font-size:1.5rem;margin-bottom:4px}
+  .header p{font-size:.85rem;opacity:.85}
+  .container{max-width:960px;margin:0 auto;padding:16px}
+
+  /* Tab */
+  .tab-bar{display:flex;gap:4px;margin-bottom:16px}
+  .tab-btn{flex:1;padding:12px 8px;border:none;border-radius:8px 8px 0 0;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;background:#d0d8e4;color:#4a5568}
+  .tab-btn.active{background:#fff;color:#1B3A5C;box-shadow:0 -2px 8px rgba(0,0,0,.08)}
+  .tab-content{display:none;background:#fff;border-radius:0 0 12px 12px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+  .tab-content.active{display:block}
+
+  /* Muscle table */
+  .muscle-table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:.9rem}
+  .muscle-table th{background:#1B3A5C;color:#fff;padding:8px 6px;text-align:center;font-size:.8rem;position:sticky;top:0;z-index:2}
+  .muscle-table th:first-child,.muscle-table th:nth-child(2){text-align:left}
+  .muscle-table td{padding:6px;border-bottom:1px solid #e8ecf1;text-align:center;vertical-align:middle}
+  .muscle-table td:first-child{text-align:left;font-weight:600;font-size:.85rem;white-space:nowrap}
+  .muscle-table td:nth-child(2){text-align:left;font-size:.78rem;color:#5a6a7e}
+  .muscle-table tr:hover{background:#f0f5ff}
+  .nerve-badge{display:inline-block;padding:2px 6px;border-radius:4px;font-size:.72rem;line-height:1.2}
+
+  /* Weight cell coloring */
+  .w0{color:#ccc;font-size:.75rem}
+  .w1{background:#e8f4fd;color:#2C5AA0;font-weight:600}
+  .w2{background:#c8e0f8;color:#1B3A5C;font-weight:700}
+  .w3{background:#93c5f8;color:#0d2b4d;font-weight:700}
+  .w4{background:#2C5AA0;color:#fff;font-weight:800}
+
+  /* MMT select */
+  .mmt-select{width:56px;padding:4px 2px;border:2px solid #d0d8e4;border-radius:6px;font-size:.9rem;text-align:center;font-weight:700;cursor:pointer;transition:border-color .2s}
+  .mmt-select:focus{border-color:#2C5AA0;outline:none}
+  .mmt-select.mmt-reduced{border-color:#DC3545;background:#fff5f5;color:#DC3545}
+
+  /* Action buttons */
+  .action-row{display:flex;gap:12px;margin:16px 0;flex-wrap:wrap}
+  .btn{padding:10px 24px;border:none;border-radius:8px;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .2s}
+  .btn-primary{background:#2C5AA0;color:#fff}
+  .btn-primary:hover{background:#1B3A5C}
+  .btn-reset{background:#e8ecf1;color:#4a5568}
+  .btn-reset:hover{background:#d0d8e4}
+  .btn-all{background:#28A745;color:#fff}
+  .btn-all:hover{background:#1e8035}
+
+  /* Result panel */
+  .result-panel{margin-top:20px;display:none}
+  .result-panel.show{display:block}
+  .result-section{margin-bottom:20px}
+  .result-section h3{font-size:1rem;color:#1B3A5C;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid #2C5AA0}
+
+  /* Bar chart */
+  .bar-chart{display:flex;flex-direction:column;gap:6px}
+  .bar-row{display:flex;align-items:center;gap:8px}
+  .bar-label{min-width:100px;font-weight:600;font-size:.85rem;text-align:right}
+  .bar-track{flex:1;height:28px;background:#e8ecf1;border-radius:6px;position:relative;overflow:hidden}
+  .bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;padding:0 8px;font-size:.78rem;font-weight:700;color:#fff;transition:width .5s ease;min-width:fit-content}
+  .bar-fill.spinal{background:linear-gradient(90deg,#2C5AA0,#4a7ec7)}
+  .bar-fill.nerve{background:linear-gradient(90deg,#E8850C,#f0a848)}
+  .bar-value{min-width:48px;font-size:.82rem;font-weight:700;color:#1a1a2e}
+
+  /* Affected muscles list */
+  .affected-list{margin-top:8px;padding:8px 12px;background:#f8f9fb;border-radius:8px;font-size:.82rem;color:#4a5568}
+  .affected-list strong{color:#1B3A5C}
+
+  /* Interpretation */
+  .interpretation{background:#f0f8ff;border-left:4px solid #2C5AA0;padding:16px;border-radius:0 8px 8px 0;margin-top:16px}
+  .interpretation h4{color:#1B3A5C;margin-bottom:8px}
+  .interpretation ul{padding-left:18px}
+  .interpretation li{margin-bottom:4px;font-size:.88rem}
+  .highlight{color:#DC3545;font-weight:700}
+  .note-box{background:#fff8e1;border-left:4px solid #F5C518;padding:12px;border-radius:0 8px 8px 0;margin-top:12px;font-size:.84rem}
+
+  /* Nerve detail cards */
+  .nerve-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-top:12px}
+  .nerve-card{background:#fff;border:1px solid #e0e6ed;border-radius:10px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+  .nerve-card h4{font-size:.9rem;color:#1B3A5C;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+  .nerve-card .count-badge{background:#E8850C;color:#fff;border-radius:12px;padding:2px 8px;font-size:.75rem}
+  .nerve-card .muscle-list{font-size:.82rem;color:#4a5568}
+  .nerve-card .muscle-item{display:flex;justify-content:space-between;padding:2px 0;border-bottom:1px solid #f0f2f5}
+  .nerve-card .muscle-item:last-child{border:none}
+  .mmt-val{font-weight:700}
+  .mmt-val.reduced{color:#DC3545}
+
+  /* Responsive */
+  @media(max-width:640px){
+    .muscle-table{font-size:.78rem}
+    .muscle-table th,.muscle-table td{padding:4px 3px}
+    .bar-label{min-width:70px;font-size:.78rem}
+    .mmt-select{width:48px;font-size:.82rem}
+    .nerve-cards{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🔍 神経障害部位推測ツール</h1>
+  <p>MMT（徒手筋力検査）の結果から、障害されている脊髄レベル・末梢神経を推測します</p>
+</div>
+
+<div class="container">
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('upper')">🦾 上肢</button>
+    <button class="tab-btn" onclick="switchTab('lower')">🦿 下肢</button>
+    <button class="tab-btn" onclick="switchTab('both')">🔄 上下肢統合</button>
+  </div>
+
+  <!-- ===== 上肢タブ ===== -->
+  <div id="tab-upper" class="tab-content active">
+    <table class="muscle-table">
+      <thead>
+        <tr><th>筋肉</th><th>支配神経</th><th>C5</th><th>C6</th><th>C7</th><th>C8</th><th>T1</th><th>MMT</th></tr>
+      </thead>
+      <tbody id="tbody-upper"></tbody>
+    </table>
+    <div class="action-row">
+      <button class="btn btn-primary" onclick="analyze('upper')">📊 解析する</button>
+      <button class="btn btn-all" onclick="setAllNormal('upper')">全て5（正常）</button>
+      <button class="btn btn-reset" onclick="resetMMT('upper')">リセット</button>
+    </div>
+    <div id="result-upper" class="result-panel"></div>
+  </div>
+
+  <!-- ===== 下肢タブ ===== -->
+  <div id="tab-lower" class="tab-content">
+    <table class="muscle-table">
+      <thead>
+        <tr><th>筋肉</th><th>支配神経</th><th>L1</th><th>L2</th><th>L3</th><th>L4</th><th>L5</th><th>S1</th><th>S2</th><th>MMT</th></tr>
+      </thead>
+      <tbody id="tbody-lower"></tbody>
+    </table>
+    <div class="action-row">
+      <button class="btn btn-primary" onclick="analyze('lower')">📊 解析する</button>
+      <button class="btn btn-all" onclick="setAllNormal('lower')">全て5（正常）</button>
+      <button class="btn btn-reset" onclick="resetMMT('lower')">リセット</button>
+    </div>
+    <div id="result-lower" class="result-panel"></div>
+  </div>
+
+  <!-- ===== 統合タブ ===== -->
+  <div id="tab-both" class="tab-content">
+    <p style="margin-bottom:12px;font-size:.9rem;color:#5a6a7e">上肢・下肢の両方の入力結果を統合して解析します。先に各タブでMMTを入力してください。</p>
+    <div class="action-row">
+      <button class="btn btn-primary" onclick="analyzeBoth()">📊 統合解析する</button>
+    </div>
+    <div id="result-both" class="result-panel"></div>
+  </div>
+</div>
+
+<script>
+// ===== データ定義 =====
+const DATA = {
+  upper: {
+    levels: ['C5','C6','C7','C8','T1'],
+    muscles: [
+      {name:'前鋸筋', nerve:'長胸神経', weights:[2,1,1,0,0]},
+      {name:'棘下筋', nerve:'肩甲上神経', weights:[4,3,0,0,0]},
+      {name:'広背筋', nerve:'胸背神経', weights:[0,1,4,1,0]},
+      {name:'三角筋', nerve:'腋窩神経', weights:[4,1,0,0,0]},
+      {name:'上腕二頭筋', nerve:'筋皮神経', weights:[4,3,0,0,0]},
+      {name:'上腕三頭筋', nerve:'橈骨神経', weights:[0,1,4,3,0]},
+      {name:'腕橈骨筋', nerve:'橈骨神経', weights:[4,1,0,0,0]},
+      {name:'総指伸筋', nerve:'橈骨神経', weights:[0,0,3,4,0]},
+      {name:'尺側手根伸筋', nerve:'橈骨神経', weights:[0,1,4,0,0]},
+      {name:'長母指伸筋', nerve:'橈骨神経', weights:[0,0,1,4,1]},
+      {name:'短母指伸筋', nerve:'橈骨神経', weights:[0,0,1,4,1]},
+      {name:'円回内筋', nerve:'正中神経', weights:[0,4,1,0,0]},
+      {name:'浅指屈筋', nerve:'正中神経', weights:[0,0,0,0,4]},
+      {name:'深指屈筋(示)', nerve:'正中神経', weights:[0,0,0,1,4]},
+      {name:'長母指屈筋', nerve:'正中神経', weights:[0,0,0,3,4]},
+      {name:'方形回内筋', nerve:'正中神経', weights:[0,0,0,1,4]},
+      {name:'短母指外転筋', nerve:'正中神経', weights:[0,0,0,1,4]},
+      {name:'深指屈筋(小)', nerve:'尺骨神経', weights:[0,0,0,4,0]},
+      {name:'小指外転筋', nerve:'尺骨神経', weights:[0,0,0,4,4]},
+      {name:'橈側手根伸筋', nerve:'橈骨神経', weights:[0,4,0,0,0]},
+      {name:'尺側手根屈筋', nerve:'尺骨神経', weights:[0,0,4,3,1]},
+      {name:'第一背側骨間筋', nerve:'尺骨神経', weights:[0,0,0,4,2]},
+      {name:'第一掌側骨間筋', nerve:'尺骨神経', weights:[0,0,0,3,2]}
+    ]
+  },
+  lower: {
+    levels: ['L1','L2','L3','L4','L5','S1','S2'],
+    muscles: [
+      {name:'腸腰筋', nerve:'大腿神経/腰神経叢', weights:[0,1,1,0,0,0,0]},
+      {name:'中殿筋', nerve:'上殿神経', weights:[0,0,0,0,4,1,0]},
+      {name:'大殿筋', nerve:'下殿神経', weights:[0,0,0,0,1,2,1]},
+      {name:'前脛骨筋', nerve:'深腓骨神経', weights:[0,0,0,2,4,0,0]},
+      {name:'後脛骨筋', nerve:'脛骨神経', weights:[0,0,0,0,4,0,0]},
+      {name:'長趾屈筋', nerve:'脛骨神経', weights:[0,0,0,0,4,2,0]},
+      {name:'内転筋群', nerve:'閉鎖神経', weights:[0,2,2,2,0,0,0]},
+      {name:'大腿四頭筋', nerve:'大腿神経', weights:[0,0,3,3,0,0,0]},
+      {name:'大腿屈筋群', nerve:'脛骨神経/総腓骨神経', weights:[0,0,0,0,1,1,0]},
+      {name:'足趾背屈', nerve:'深腓骨神経', weights:[0,0,0,0,4,0,0]},
+      {name:'母趾背屈', nerve:'深腓骨神経', weights:[0,0,0,0,4,0,0]},
+      {name:'腓骨筋群', nerve:'浅腓骨神経', weights:[0,0,0,0,4,0,0]},
+      {name:'下腿三頭筋', nerve:'脛骨神経', weights:[0,0,0,0,2,4,0]},
+      {name:'短趾屈筋', nerve:'脛骨神経', weights:[0,0,0,0,0,4,2]},
+      {name:'長母趾屈筋', nerve:'脛骨神経', weights:[0,0,0,0,4,2,0]},
+      {name:'短母趾屈筋', nerve:'脛骨神経', weights:[0,0,0,0,0,4,2]}
+    ]
+  }
+};
+
+// 神経ごとの色分け
+const NERVE_COLORS = {
+  '長胸神経':'#6b7280','肩甲上神経':'#8b5cf6','胸背神経':'#06b6d4','腋窩神経':'#f59e0b',
+  '筋皮神経':'#10b981','橈骨神経':'#ef4444','正中神経':'#3b82f6','尺骨神経':'#ec4899',
+  '大腿神経/腰神経叢':'#6b7280','上殿神経':'#8b5cf6','下殿神経':'#06b6d4',
+  '深腓骨神経':'#ef4444','脛骨神経':'#3b82f6','閉鎖神経':'#f59e0b',
+  '大腿神経':'#10b981','脛骨神経/総腓骨神経':'#ec4899','浅腓骨神経':'#f97316'
+};
+
+// ===== テーブル生成 =====
+function buildTable(region) {
+  const d = DATA[region];
+  const tbody = document.getElementById('tbody-' + region);
+  tbody.innerHTML = '';
+  d.muscles.forEach((m, i) => {
+    const tr = document.createElement('tr');
+    let cells = `<td>${m.name}</td>`;
+    const nc = NERVE_COLORS[m.nerve] || '#6b7280';
+    cells += `<td><span class="nerve-badge" style="background:${nc}20;color:${nc};border:1px solid ${nc}60">${m.nerve}</span></td>`;
+    m.weights.forEach(w => {
+      cells += `<td class="w${w}">${w}</td>`;
+    });
+    cells += `<td><select class="mmt-select" id="mmt-${region}-${i}" onchange="onMMTChange(this)">
+      <option value="">-</option>
+      <option value="5">5</option><option value="4">4</option><option value="3">3</option>
+      <option value="2">2</option><option value="1">1</option><option value="0">0</option>
+    </select></td>`;
+    tr.innerHTML = cells;
+    tbody.appendChild(tr);
+  });
+}
+
+function onMMTChange(sel) {
+  const v = parseInt(sel.value);
+  if (!isNaN(v) && v < 5) {
+    sel.classList.add('mmt-reduced');
+  } else {
+    sel.classList.remove('mmt-reduced');
+  }
+}
+
+function setAllNormal(region) {
+  const d = DATA[region];
+  d.muscles.forEach((_, i) => {
+    const sel = document.getElementById(`mmt-${region}-${i}`);
+    sel.value = '5';
+    sel.classList.remove('mmt-reduced');
+  });
+}
+
+function resetMMT(region) {
+  const d = DATA[region];
+  d.muscles.forEach((_, i) => {
+    const sel = document.getElementById(`mmt-${region}-${i}`);
+    sel.value = '';
+    sel.classList.remove('mmt-reduced');
+  });
+  document.getElementById('result-' + region).classList.remove('show');
+  document.getElementById('result-' + region).innerHTML = '';
+}
+
+// ===== タブ切替 =====
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    b.classList.toggle('active', ['upper','lower','both'][i] === tab);
+  });
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+
+// ===== 解析ロジック =====
+function getMMTValues(region) {
+  const d = DATA[region];
+  const vals = [];
+  d.muscles.forEach((m, i) => {
+    const sel = document.getElementById(`mmt-${region}-${i}`);
+    const v = sel.value === '' ? null : parseInt(sel.value);
+    vals.push({ ...m, mmt: v, index: i });
+  });
+  return vals;
+}
+
+function computeScores(region, mmtData) {
+  const d = DATA[region];
+  const levelScores = {};
+  d.levels.forEach(l => levelScores[l] = 0);
+  const nerveImpaired = {};
+
+  mmtData.forEach(m => {
+    if (m.mmt === null || m.mmt >= 5) return;
+    const deficit = 5 - m.mmt; // 低下度
+    m.weights.forEach((w, li) => {
+      if (w > 0) {
+        levelScores[d.levels[li]] += w * deficit;
+      }
+    });
+    if (!nerveImpaired[m.nerve]) nerveImpaired[m.nerve] = [];
+    nerveImpaired[m.nerve].push({ name: m.name, mmt: m.mmt });
+  });
+
+  return { levelScores, nerveImpaired };
+}
+
+function analyze(region) {
+  const mmtData = getMMTValues(region);
+  const hasInput = mmtData.some(m => m.mmt !== null);
+  if (!hasInput) {
+    alert('MMTの値を少なくとも1つ入力してください。');
+    return;
+  }
+  const { levelScores, nerveImpaired } = computeScores(region, mmtData);
+  renderResult(region, levelScores, nerveImpaired, mmtData);
+}
+
+function analyzeBoth() {
+  const upperMMT = getMMTValues('upper');
+  const lowerMMT = getMMTValues('lower');
+  const hasU = upperMMT.some(m => m.mmt !== null);
+  const hasL = lowerMMT.some(m => m.mmt !== null);
+  if (!hasU && !hasL) {
+    alert('上肢または下肢のMMTを入力してください。');
+    return;
+  }
+
+  const allLevels = ['C5','C6','C7','C8','T1','L1','L2','L3','L4','L5','S1','S2'];
+  const combinedLevelScores = {};
+  allLevels.forEach(l => combinedLevelScores[l] = 0);
+  const combinedNerve = {};
+
+  if (hasU) {
+    const u = computeScores('upper', upperMMT);
+    Object.entries(u.levelScores).forEach(([k, v]) => combinedLevelScores[k] += v);
+    Object.entries(u.nerveImpaired).forEach(([k, v]) => {
+      if (!combinedNerve[k]) combinedNerve[k] = [];
+      combinedNerve[k].push(...v);
+    });
+  }
+  if (hasL) {
+    const l = computeScores('lower', lowerMMT);
+    Object.entries(l.levelScores).forEach(([k, v]) => combinedLevelScores[k] += v);
+    Object.entries(l.nerveImpaired).forEach(([k, v]) => {
+      if (!combinedNerve[k]) combinedNerve[k] = [];
+      combinedNerve[k].push(...v);
+    });
+  }
+
+  const allMMT = [...upperMMT.map(m=>({...m, region:'上肢'})), ...lowerMMT.map(m=>({...m, region:'下肢'}))];
+  renderResult('both', combinedLevelScores, combinedNerve, allMMT);
+}
+
+// ===== 結果表示 =====
+function renderResult(region, levelScores, nerveImpaired, mmtData) {
+  const panel = document.getElementById('result-' + region);
+  const maxLevel = Math.max(...Object.values(levelScores), 1);
+  const sortedLevels = Object.entries(levelScores).sort((a, b) => b[1] - a[1]);
+  const topLevel = sortedLevels.find(([_, v]) => v > 0);
+  const nerveEntries = Object.entries(nerveImpaired).sort((a, b) => b[1].length - a[1].length);
+  const maxNerve = nerveEntries.length > 0 ? nerveEntries[0][1].length : 0;
+
+  const hasImpairment = Object.values(levelScores).some(v => v > 0);
+
+  let html = '';
+
+  if (!hasImpairment) {
+    html += `<div class="interpretation"><h4>✅ 筋力低下なし</h4><p>全てMMT 5（正常）のため、神経障害は示唆されません。</p></div>`;
+    panel.innerHTML = html;
+    panel.classList.add('show');
+    panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return;
+  }
+
+  // 脊髄レベルスコア
+  html += `<div class="result-section"><h3>🔷 脊髄レベル別スコア（重み付け加重合計）</h3>
+    <div class="bar-chart">`;
+  sortedLevels.forEach(([lv, score]) => {
+    const pct = (score / maxLevel * 100).toFixed(0);
+    html += `<div class="bar-row">
+      <span class="bar-label">${lv}</span>
+      <div class="bar-track"><div class="bar-fill spinal" style="width:${Math.max(pct, score > 0 ? 8 : 0)}%">${score > 0 ? score : ''}</div></div>
+      <span class="bar-value">${score > 0 ? score + ' pt' : '-'}</span>
+    </div>`;
+  });
+  html += '</div></div>';
+
+  // 末梢神経別
+  html += `<div class="result-section"><h3>🔶 末梢神経別 — 障害筋数</h3>`;
+  if (nerveEntries.length === 0) {
+    html += '<p style="color:#888">筋力低下なし</p>';
+  } else {
+    html += '<div class="bar-chart">';
+    const maxN = Math.max(...nerveEntries.map(([_, v]) => v.length), 1);
+    nerveEntries.forEach(([nv, muscles]) => {
+      const pct = (muscles.length / maxN * 100).toFixed(0);
+      html += `<div class="bar-row">
+        <span class="bar-label">${nv}</span>
+        <div class="bar-track"><div class="bar-fill nerve" style="width:${Math.max(pct, 8)}%">${muscles.length}</div></div>
+        <span class="bar-value">${muscles.length} 筋</span>
+      </div>`;
+    });
+    html += '</div>';
+
+    // 神経カード
+    html += '<div class="nerve-cards">';
+    nerveEntries.forEach(([nv, muscles]) => {
+      const nc = NERVE_COLORS[nv] || '#6b7280';
+      html += `<div class="nerve-card" style="border-left:4px solid ${nc}">
+        <h4>${nv} <span class="count-badge">${muscles.length}筋低下</span></h4>
+        <div class="muscle-list">`;
+      muscles.forEach(m => {
+        const cls = m.mmt < 3 ? 'reduced' : '';
+        html += `<div class="muscle-item"><span>${m.name}</span><span class="mmt-val ${cls}">MMT ${m.mmt}</span></div>`;
+      });
+      html += '</div></div>';
+    });
+    html += '</div>';
+  }
+  html += '</div>';
+
+  // 解釈
+  html += '<div class="interpretation"><h4>💡 解釈の手引き</h4><ul>';
+  if (topLevel) {
+    const top3 = sortedLevels.filter(([_, v]) => v > 0).slice(0, 3);
+    html += `<li><strong>最もスコアが高い脊髄レベル:</strong> <span class="highlight">${top3.map(([l, v]) => `${l}(${v}pt)`).join(' > ')}</span></li>`;
+
+    // 連続性チェック
+    const allLevels = Object.keys(levelScores);
+    const impaired = sortedLevels.filter(([_, v]) => v > 0).map(([l]) => l);
+    const indices = impaired.map(l => allLevels.indexOf(l)).sort((a, b) => a - b);
+    if (indices.length >= 2) {
+      const isContiguous = indices.every((v, i) => i === 0 || v === indices[i - 1] + 1);
+      if (isContiguous) {
+        html += `<li>障害レベルが <strong>${impaired[0]}〜${impaired[impaired.length-1]}</strong> と連続 → <strong>脊髄症/神経根障害</strong>を示唆</li>`;
+      } else {
+        html += `<li>障害レベルが非連続 → <strong>多発性神経根障害</strong>や<strong>末梢神経障害の組み合わせ</strong>を考慮</li>`;
+      }
+    }
+  }
+  if (nerveEntries.length > 0) {
+    const topNerve = nerveEntries[0];
+    html += `<li><strong>最も障害筋が多い神経:</strong> <span class="highlight">${topNerve[0]}（${topNerve[1].length}筋）</span></li>`;
+    if (nerveEntries.length === 1) {
+      html += `<li>単一神経の支配筋のみ低下 → <strong>末梢神経単独障害</strong>の可能性が高い</li>`;
+    } else if (nerveEntries.length >= 3) {
+      html += `<li>複数の神経に跨る筋力低下 → <strong>脊髄レベル障害</strong>（神経根・脊髄症）の可能性も考慮</li>`;
+    }
+  }
+  html += '</ul></div>';
+
+  html += `<div class="note-box">⚠️ 本ツールはあくまで補助的な推測です。臨床所見・画像検査・電気生理学的検査と合わせて総合的に判断してください。</div>`;
+
+  panel.innerHTML = html;
+  panel.classList.add('show');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ===== 初期化 =====
+buildTable('upper');
+buildTable('lower');
+</script>
+</body>
+</html>
