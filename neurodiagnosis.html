@@ -2,7 +2,9 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>多発脳神経障害 局在診断ツール</title>
     <style>
         :root {
@@ -10,423 +12,719 @@
             --blue: #2C5AA0;
             --light-blue: #E8F0FE;
             --white: #FFFFFF;
-            --shadow: 0 2px 12px rgba(27,58,92,0.12);
-            --radius: 12px;
             --red: #DC3545;
             --green: #28A745;
             --orange: #E8850C;
-            --yellow: #F5C518;
+            --bg: #F0F2F5;
+            --radius: 14px;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { height: 100%; -webkit-text-size-adjust: 100%; }
         body {
-            font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
-            background: linear-gradient(135deg, #E8F0FE 0%, #F4F6F8 100%);
+            font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "游ゴシック", "Yu Gothic", sans-serif;
+            background: var(--bg);
             color: #222;
-            min-height: 100vh;
-            padding: 0 0 60px;
+            min-height: 100%;
+            padding-bottom: calc(72px + var(--safe-bottom));
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior-y: contain;
         }
-        header {
+
+        /* ===== App Header ===== */
+        .app-header {
             background: linear-gradient(135deg, var(--navy), var(--blue));
             color: var(--white);
-            padding: 36px 20px 30px;
-            text-align: center;
-            box-shadow: 0 4px 16px rgba(27,58,92,0.18);
+            padding: 16px 16px 14px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(27,58,92,0.25);
         }
-        header h1 { font-size: 1.8em; font-weight: 700; letter-spacing: 0.04em; }
-        header p { font-size: 0.95em; margin-top: 8px; opacity: 0.85; }
-        .back-link {
-            display: inline-block;
-            margin: 16px 0 0;
-            color: rgba(255,255,255,0.8);
+        .app-header .top-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .app-header .back-btn {
+            color: rgba(255,255,255,0.85);
             text-decoration: none;
-            font-size: 0.9em;
+            font-size: 1.5em;
+            line-height: 1;
+            padding: 4px;
         }
-        .back-link:hover { color: #fff; }
-
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 28px 16px;
-            display: grid;
-            grid-template-columns: 1fr 1.4fr;
-            gap: 24px;
-        }
-        @media (max-width: 768px) {
-            .container { grid-template-columns: 1fr; }
-            header h1 { font-size: 1.4em; }
-        }
-
-        /* Card */
-        .card {
-            background: var(--white);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 24px;
-        }
-        .card h2 {
-            color: var(--navy);
+        .app-header h1 {
             font-size: 1.15em;
-            margin-bottom: 16px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid var(--light-blue);
+            font-weight: 700;
+            flex: 1;
         }
-
-        /* Symptom groups */
-        .symptom-group { margin-bottom: 14px; }
-        .symptom-group h3 {
-            font-size: 0.92em;
-            color: var(--white);
-            background: linear-gradient(135deg, var(--navy), var(--blue));
-            padding: 6px 12px;
-            border-radius: 6px;
-            margin-bottom: 6px;
-        }
-        label {
-            display: block;
-            margin: 0;
-            padding: 7px 10px;
-            cursor: pointer;
-            border-radius: 6px;
-            font-size: 0.93em;
-            transition: background 0.15s;
-        }
-        label:hover { background: var(--light-blue); }
-        input[type="checkbox"] {
-            transform: scale(1.15);
-            margin-right: 8px;
-            accent-color: var(--blue);
-        }
-
-        /* Reset button */
-        .btn-reset {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            margin-top: 16px;
-            background: #6c757d;
-            color: white;
+        .app-header .reset-btn {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
             border: none;
             border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.95em;
-            font-weight: 600;
-            transition: background 0.2s;
-        }
-        .btn-reset:hover { background: #5a6268; }
-
-        /* Result section */
-        .result-section { position: sticky; top: 20px; }
-
-        /* Nerve tags */
-        .nerves-tag {
-            display: inline-block;
-            background: var(--blue);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 0.88em;
-            margin: 2px;
-        }
-
-        /* Diagnosis cards */
-        .diagnosis-card {
-            border: 1px solid #e0e0e0;
-            padding: 16px;
-            margin-bottom: 12px;
-            border-radius: 10px;
-            background: #fff;
-            transition: all 0.25s;
-        }
-        .diagnosis-card.high-match {
-            border-left: 6px solid var(--red);
-            background: linear-gradient(135deg, #fff5f5, #fff);
-            box-shadow: 0 2px 8px rgba(220,53,69,0.1);
-        }
-        .diagnosis-card.medium-match {
-            border-left: 6px solid var(--blue);
-        }
-        .diagnosis-card h3 {
-            color: var(--navy);
-            font-size: 1.05em;
-            margin: 0 0 6px;
-        }
-        .diagnosis-score {
-            float: right;
-            font-weight: 700;
-            color: var(--blue);
-            font-size: 0.92em;
-            background: var(--light-blue);
-            padding: 2px 10px;
-            border-radius: 12px;
-        }
-        .diagnosis-card p { font-size: 0.9em; color: #555; line-height: 1.5; }
-
-        /* Warning box */
-        .warning-box {
-            background: linear-gradient(135deg, #fff8e1, #fff3cd);
-            border: 1px solid #ffeeba;
-            color: #7a5d00;
-            padding: 18px;
-            border-radius: 10px;
-            margin-top: 16px;
-            font-size: 0.92em;
-        }
-        .warning-box strong { color: var(--red); }
-        .warning-box ul { margin: 8px 0 0 20px; }
-        .warning-box li { margin-bottom: 4px; }
-
-        /* Empty state */
-        .empty-state {
-            text-align: center;
-            padding: 30px 10px;
-            color: #aaa;
-        }
-        .empty-state .icon { font-size: 2.5em; margin-bottom: 8px; }
-
-        /* Footer */
-        footer {
-            max-width: 1100px;
-            margin: 32px auto 0;
-            padding: 0 16px;
-            text-align: center;
+            padding: 6px 14px;
             font-size: 0.82em;
-            color: #999;
-            line-height: 1.6;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
         }
+        .app-header .reset-btn:active { background: rgba(255,255,255,0.35); }
+
+        /* ===== Floating nerve badges ===== */
+        .nerve-bar {
+            background: var(--navy);
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s, padding 0.3s;
+        }
+        .nerve-bar.visible {
+            padding: 8px 16px 10px;
+            max-height: 80px;
+        }
+        .nerve-bar .label { color: rgba(255,255,255,0.7); font-size: 0.75em; margin-bottom: 4px; }
+        .nerve-badges { display: flex; flex-wrap: wrap; gap: 5px; }
+        .nerve-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.82em;
+            font-weight: 700;
+        }
+
+        /* ===== Main content ===== */
+        .main { padding: 12px 12px 20px; max-width: 600px; margin: 0 auto; }
+
+        /* ===== Accordion groups ===== */
+        .group {
+            background: var(--white);
+            border-radius: var(--radius);
+            margin-bottom: 10px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            overflow: hidden;
+        }
+        .group-header {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            gap: 10px;
+            transition: background 0.15s;
+        }
+        .group-header:active { background: #f0f0f0; }
+        .group-header .emoji { font-size: 1.3em; }
+        .group-header .title { flex: 1; font-weight: 700; font-size: 0.95em; color: var(--navy); }
+        .group-header .count {
+            background: var(--red);
+            color: #fff;
+            font-size: 0.72em;
+            font-weight: 700;
+            min-width: 22px;
+            height: 22px;
+            line-height: 22px;
+            text-align: center;
+            border-radius: 11px;
+            display: none;
+        }
+        .group-header .count.visible { display: inline-block; }
+        .group-header .chevron {
+            color: #bbb;
+            font-size: 0.9em;
+            transition: transform 0.25s;
+        }
+        .group.open .group-header .chevron { transform: rotate(180deg); }
+        .group-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .group.open .group-body { max-height: 500px; }
+        .group-body-inner { padding: 0 8px 10px; }
+
+        /* ===== Checkbox items ===== */
+        .item {
+            display: flex;
+            align-items: center;
+            padding: 12px 10px;
+            border-radius: 10px;
+            margin-bottom: 2px;
+            cursor: pointer;
+            transition: background 0.12s;
+            gap: 12px;
+        }
+        .item:active { background: var(--light-blue); }
+        .item.checked { background: #E3F0FF; }
+        .item .toggle {
+            width: 26px;
+            height: 26px;
+            border: 2.5px solid #ccc;
+            border-radius: 7px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+            background: #fff;
+        }
+        .item.checked .toggle {
+            background: var(--blue);
+            border-color: var(--blue);
+        }
+        .item .toggle svg { opacity: 0; transition: opacity 0.15s; }
+        .item.checked .toggle svg { opacity: 1; }
+        .item .text { flex: 1; font-size: 0.92em; line-height: 1.4; }
+        .item .nerve-num { color: var(--blue); font-weight: 700; font-size: 0.82em; white-space: nowrap; }
+        .item input { display: none; }
+
+        /* ===== Results panel ===== */
+        .section-title {
+            font-size: 0.82em;
+            font-weight: 700;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 18px 4px 8px;
+        }
+        .result-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            position: relative;
+            overflow: hidden;
+        }
+        .result-card.high {
+            border-left: 5px solid var(--red);
+        }
+        .result-card.mid {
+            border-left: 5px solid var(--blue);
+        }
+        .result-card.low {
+            border-left: 5px solid #ddd;
+            opacity: 0.7;
+        }
+        .result-card .loc-name {
+            font-weight: 700;
+            font-size: 1em;
+            color: var(--navy);
+            margin-bottom: 4px;
+            padding-right: 80px;
+        }
+        .result-card .score-pill {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            background: var(--light-blue);
+            color: var(--blue);
+            font-size: 0.75em;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 10px;
+        }
+        .result-card .score-pill.high-score {
+            background: #FDEAEA;
+            color: var(--red);
+        }
+        .result-card .nerves-line {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 6px;
+        }
+        .result-card .nerves-line b { color: var(--navy); }
+        .result-card .desc-line {
+            font-size: 0.82em;
+            color: #888;
+            line-height: 1.5;
+        }
+        .result-card .coverage-bar {
+            height: 4px;
+            background: #eee;
+            border-radius: 2px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        .result-card .coverage-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.4s;
+        }
+
+        /* ===== Warning ===== */
+        .warning-card {
+            background: #FFF8E1;
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 10px;
+            border-left: 5px solid var(--orange);
+            display: none;
+        }
+        .warning-card.visible { display: block; }
+        .warning-card .title { font-weight: 700; color: var(--red); font-size: 0.92em; margin-bottom: 6px; }
+        .warning-card ul { margin: 6px 0 0 18px; font-size: 0.85em; color: #6B5900; }
+        .warning-card li { margin-bottom: 3px; }
+        .warning-card li strong { color: #333; }
+
+        /* ===== Empty state ===== */
+        .empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: #bbb;
+        }
+        .empty .icon { font-size: 3em; margin-bottom: 10px; }
+        .empty p { font-size: 0.95em; }
+
+        /* ===== Footer ===== */
+        .app-footer {
+            text-align: center;
+            padding: 20px 16px 10px;
+            font-size: 0.75em;
+            color: #bbb;
+            line-height: 1.5;
+        }
+
+        /* ===== Bottom Tab Bar ===== */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: calc(56px + var(--safe-bottom));
+            padding-bottom: var(--safe-bottom);
+            background: var(--white);
+            box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
+            display: flex;
+            z-index: 200;
+        }
+        .tab-btn {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: #aaa;
+            font-size: 0.68em;
+            font-weight: 600;
+            padding: 6px 0;
+            transition: color 0.2s;
+            position: relative;
+        }
+        .tab-btn .icon { font-size: 1.8em; }
+        .tab-btn.active { color: var(--blue); }
+        .tab-btn .badge {
+            position: absolute;
+            top: 4px;
+            right: 50%;
+            margin-right: -20px;
+            background: var(--red);
+            color: #fff;
+            font-size: 0.85em;
+            min-width: 18px;
+            height: 18px;
+            line-height: 18px;
+            text-align: center;
+            border-radius: 9px;
+            display: none;
+        }
+        .tab-btn .badge.visible { display: block; }
+
+        /* ===== Tab pages ===== */
+        .tab-page { display: none; }
+        .tab-page.active { display: block; }
+
+        /* ===== Desktop adaptation ===== */
+        @media (min-width: 768px) {
+            .main { max-width: 500px; }
+            body { padding-bottom: 0; }
+            .bottom-bar { display: none; }
+            .desktop-tab-bar {
+                display: flex !important;
+                max-width: 500px;
+                margin: 0 auto;
+                padding: 12px 12px 0;
+                gap: 6px;
+            }
+            .desktop-tab {
+                flex: 1;
+                padding: 10px;
+                text-align: center;
+                border-radius: 10px 10px 0 0;
+                font-size: 0.88em;
+                font-weight: 700;
+                cursor: pointer;
+                background: rgba(255,255,255,0.5);
+                color: #999;
+                border: none;
+            }
+            .desktop-tab.active {
+                background: var(--white);
+                color: var(--navy);
+                box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+            }
+        }
+        .desktop-tab-bar { display: none; }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>🧠 多発脳神経障害 局在診断ツール</h1>
-    <p>症状を選択すると、障害神経と病変の解剖学的局在（症候群）を推測します</p>
-    <a class="back-link" href="index.html">← ツール一覧に戻る</a>
-</header>
+<!-- App Header -->
+<div class="app-header">
+    <div class="top-row">
+        <a href="index.html" class="back-btn">‹</a>
+        <h1>🧠 脳神経障害 局在診断</h1>
+        <button class="reset-btn" onclick="resetAll()">リセット</button>
+    </div>
+</div>
 
-<div class="container">
-    <!-- Input Section -->
-    <div class="input-section">
-        <div class="card">
-            <h2>🩺 症状チェックリスト</h2>
+<!-- Nerve badge bar (shows selected nerves) -->
+<div class="nerve-bar" id="nerveBar">
+    <div class="label">障害神経</div>
+    <div class="nerve-badges" id="nerveBadges"></div>
+</div>
 
-            <div class="symptom-group">
-                <h3>👁️ 眼・視覚</h3>
-                <label><input type="checkbox" class="symptom-cb" data-nerves="II" value="視力低下・視野欠損"> 視力低下・視野欠損 (II)</label>
-                <label><input type="checkbox" class="symptom-cb" data-nerves="VI" value="複視: 外転障害"> 複視: 外側を見れない (VI)</label>
-                <label><input type="checkbox" class="symptom-cb" data-nerves="III" value="複視: 内転・上下・眼瞼下垂"> 複視: 内・上・下障害 / 眼瞼下垂 (III)</label>
-                <label><input type="checkbox" class="symptom-cb" data-nerves="IV" value="複視: 内下方で悪化"> 複視: 内下方で悪化 (IV)</label>
-                <label><input type="checkbox" class="symptom-cb" data-nerves="Sympathetic" value="瞳孔不同・縮瞳(Horner)"> 瞳孔不同・縮瞳 (Horner)</label>
+<!-- Desktop tab bar -->
+<div class="desktop-tab-bar" id="desktopTabs">
+    <button class="desktop-tab active" onclick="switchTab('input')">🩺 症状入力</button>
+    <button class="desktop-tab" onclick="switchTab('result')">📊 結果</button>
+</div>
+
+<div class="main">
+    <!-- Tab: Input -->
+    <div class="tab-page active" id="page-input">
+
+        <div class="group open" data-group="eye">
+            <div class="group-header" onclick="toggleGroup(this)">
+                <span class="emoji">👁️</span>
+                <span class="title">眼・視覚</span>
+                <span class="count" id="count-eye">0</span>
+                <span class="chevron">▼</span>
             </div>
-
-            <div class="symptom-group">
-                <h3>😊 顔面・聴覚</h3>
-                <label><input type="checkbox" class="symptom-cb" data-nerves="V1" value="感覚障害: 額・眼周囲"> 感覚障害: 額・眼周囲 (V1)</label>
-                <label><input type="checkbox" class="symptom-cb" data-nerves="V2" value="感覚障害: 頬・上顎"> 感覚障害: 頬・上顎 (V2)</label>
-                <label><input type="checkbox" class="symptom-cb" data-nerves="V3" value="感覚障害: 下顎/咀嚼筋脱力"> 感覚障害: 下顎 / 咀嚼筋脱力 (V3)</label>
-                <label><input type="checkbox" class="symptom-cb" data-nerves="VII" value="顔面神経麻痺"> 顔面麻痺・閉眼困難 (VII)</label>
-                <label><input type="checkbox" class="symptom-cb" data-nerves="VIII" value="難聴・耳鳴・めまい"> 難聴・耳鳴・めまい (VIII)</label>
+            <div class="group-body">
+                <div class="group-body-inner">
+                    <label class="item" onclick="toggleItem(this)">
+                        <input type="checkbox" class="symptom-cb" data-nerves="II" data-group="eye">
+                        <div class="toggle"><svg width="14" height="14" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+                        <span class="text">視力低下・視野欠損</span>
+                        <span class="nerve-num">II</span>
+                    </label>
+                    <label class="item" onclick="toggleItem(this)">
+                        <input type="checkbox" class="symptom-cb" data-nerves="VI" data-group="eye">
+                        <div class="toggle"><svg width="14" height="14" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+                        <span class="text">複視: 外側を見れない</span>
+                        <span class="nerve-num">VI</span>
+                    </label>
+                    <label class="item" onclick="toggleItem(this)">
+                        <input type="checkbox" class="symptom-cb" data-nerves="III" data-group="eye">
+                        <div class="toggle"><svg width="14" height="14" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+                        <span class="text">内・上・下障害 / 眼瞼下垂</span>
+                        <span class="nerve-num">III</span>
+                    </label>
+                    <label class="item" onclick="toggleItem(this)">
+                        <input type="checkbox" class="symptom-cb" data-nerves="IV" data-group="eye">
+                        <div class="toggle"><svg width="14" height="14" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+                        <span class="text">複視: 内下方で悪化</span>
+                        <span class="nerve-num">IV</span>
+                    </label>
+                    <label class="item" onclick="toggleItem(this)">
+                        <input type="checkbox" class="symptom-cb" data-nerves="Sympathetic" data-group="eye">
+                        <div class="toggle"><svg width="14" height="14" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+                        <span class="text">瞳孔不同・縮瞳 (Horner)</span>
+                        <span class="nerve-num">交感</span>
+                    </label>
+                </div>
             </div>
+        </div>
 
-            <div class="symptom-group">
-                <h3>🗣️ 喉・頸部</h3>
-                <label><input type="checkbox" class="symptom-cb" data-nerves="IX,X" value="嚥下障害・カーテン徴候"> 嚥下障害・カーテン徴候 (IX, X)</label>
-                <label><input type="checkbox" class="symptom-cb" data-nerves="X" value="嗄声"> 嗄声・声枯れ (X)</label>
-                <label><input type="checkbox" class="symptom-cb" data-nerves="XI" value="肩挙上・首回旋困難"> 肩挙上・首回旋困難 (XI)</label>
-                <label><input type="checkbox" class="symptom-cb" data-nerves="XII" value="舌の萎縮・偏位"> 舌の萎縮・偏位 (XII)</label>
+        <div class="group" data-group="face">
+            <div class="group-header" onclick="toggleGroup(this)">
+                <span class="emoji">😊</span>
+                <span class="title">顔面・聴覚</span>
+                <span class="count" id="count-face">0</span>
+                <span class="chevron">▼</span>
             </div>
+            <div class="group-body">
+                <div class="group-body-inner">
+                    <label class="item" onclick="toggleItem(this)">
+                        <input type="checkbox" class="symptom-cb" data-nerves="V1" data-group="face">
+                        <div class="toggle"><svg width="14" height="14" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+                        <span class="text">感覚障害: 額・眼周囲</span>
+                        <span class="nerve-num">V1</span>
+                    </label>
+                    <label class="item" onclick="toggleItem(this)">
+                        <input type="checkbox" class="symptom-cb" data-nerves="V2" data-group="face">
+                        <div class="toggle"><svg width="14" height="14" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+                        <span class="text">感覚障害: 頬・上顎</span>
+                        <span class="nerve-num">V2</span>
+                    </label>
+                    <label class="item" onclick="toggleItem(this)">
+                        <input type="checkbox" class="symptom-cb" data-nerves="V3" data-group="face">
+                        <div class="toggle"><svg width="14" height="14" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+                        <span class="text">感覚障害: 下顎 / 咀嚼筋脱力</span>
+                        <span class="nerve-num">V3</span>
+                    </label>
+                    <label class="item" onclick="toggleItem(this)">
+                        <input type="checkbox" class="symptom-cb" data-nerves="VII" data-group="face">
+                        <div class="toggle"><svg width="14" height="14" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+                        <span class="text">顔面麻痺・閉眼困難</span>
+                        <span class="nerve-num">VII</span>
+                    </label>
+                    <label class="item" onclick="toggleItem(this)">
+                        <input type="checkbox" class="symptom-cb" data-nerves="VIII" data-group="face">
+                        <div class="toggle"><svg width="14" height="14" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+                        <span class="text">難聴・耳鳴・めまい</span>
+                        <span class="nerve-num">VIII</span>
+                    </label>
+                </div>
+            </div>
+        </div>
 
-            <button class="btn-reset" onclick="resetAll()">🔄 リセット</button>
+        <div class="group" data-group="throat">
+            <div class="group-header" onclick="toggleGroup(this)">
+                <span class="emoji">🗣️</span>
+                <span class="title">喉・頸部</span>
+                <span class="count" id="count-throat">0</span>
+                <span class="chevron">▼</span>
+            </div>
+            <div class="group-body">
+                <div class="group-body-inner">
+                    <label class="item" onclick="toggleItem(this)">
+                        <input type="checkbox" class="symptom-cb" data-nerves="IX,X" data-group="throat">
+                        <div class="toggle"><svg width="14" height="14" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+                        <span class="text">嚥下障害・カーテン徴候</span>
+                        <span class="nerve-num">IX,X</span>
+                    </label>
+                    <label class="item" onclick="toggleItem(this)">
+                        <input type="checkbox" class="symptom-cb" data-nerves="X" data-group="throat">
+                        <div class="toggle"><svg width="14" height="14" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+                        <span class="text">嗄声・声枯れ</span>
+                        <span class="nerve-num">X</span>
+                    </label>
+                    <label class="item" onclick="toggleItem(this)">
+                        <input type="checkbox" class="symptom-cb" data-nerves="XI" data-group="throat">
+                        <div class="toggle"><svg width="14" height="14" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+                        <span class="text">肩挙上・首回旋困難</span>
+                        <span class="nerve-num">XI</span>
+                    </label>
+                    <label class="item" onclick="toggleItem(this)">
+                        <input type="checkbox" class="symptom-cb" data-nerves="XII" data-group="throat">
+                        <div class="toggle"><svg width="14" height="14" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+                        <span class="text">舌の萎縮・偏位</span>
+                        <span class="nerve-num">XII</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="app-footer">
+            本ツールは臨床判断の補助を目的としており<br>確定診断を行うものではありません。
         </div>
     </div>
 
-    <!-- Result Section -->
-    <div class="result-section">
-        <div class="card">
-            <h2>📊 推定結果</h2>
+    <!-- Tab: Result -->
+    <div class="tab-page" id="page-result">
+        <div id="resultEmpty" class="empty">
+            <div class="icon">🔍</div>
+            <p>症状を選択すると<br>ここに結果が表示されます</p>
+        </div>
 
-            <div id="nerves-display" style="margin-bottom: 20px;">
-                <div class="empty-state">
-                    <div class="icon">🔍</div>
-                    <p>左側の症状を選択してください</p>
-                </div>
-            </div>
+        <div id="resultContent" style="display:none;">
+            <div class="section-title">疑われる解剖学的局在</div>
+            <div id="diagnosisList"></div>
 
-            <h3 style="color: var(--navy); margin-bottom: 10px;">疑われる解剖学的局在</h3>
-            <div id="diagnosis-list"></div>
-
-            <div id="warning-section" class="warning-box" style="display:none;">
-                <strong>⚠️ Red Flag: 散在的・非連続的な障害パターン</strong><br>
-                単一の解剖学的局在では説明が困難です。以下を強く疑ってください：
+            <div class="warning-card" id="warningCard">
+                <div class="title">⚠️ Red Flag: 散在的な障害パターン</div>
+                <p style="font-size:0.85em;color:#6B5900;margin-bottom:6px;">単一局在では説明困難。以下を疑う：</p>
                 <ul>
                     <li><strong>髄膜癌腫症</strong>（髄液細胞診×3回）</li>
                     <li><strong>多発単ニューロパチー</strong>（血管炎、糖尿病）</li>
-                    <li><strong>ギラン・バレー / Fisher症候群</strong>（抗ガングリオシド抗体）</li>
-                    <li><strong>サルコイドーシス</strong>（ACE、胸部CT、Gaシンチ）</li>
+                    <li><strong>GBS / Fisher症候群</strong>（抗GQ1b抗体）</li>
+                    <li><strong>サルコイドーシス</strong>（ACE、胸部CT）</li>
                 </ul>
             </div>
+        </div>
+
+        <div class="app-footer">
+            実臨床では総合的な臨床判断が必要です。
         </div>
     </div>
 </div>
 
-<footer>
-    本ツールは臨床判断の補助を目的としており、確定診断を行うものではありません。<br>
-    実臨床では総合的な臨床判断が必要です。
-</footer>
+<!-- Bottom Tab Bar (mobile) -->
+<div class="bottom-bar">
+    <button class="tab-btn active" id="tabInput" onclick="switchTab('input')">
+        <span class="icon">🩺</span>
+        症状入力
+    </button>
+    <button class="tab-btn" id="tabResult" onclick="switchTab('result')">
+        <span class="icon">📊</span>
+        結果
+        <span class="badge" id="resultBadge">0</span>
+    </button>
+</div>
 
 <script>
-    // 解剖学的局在データ
+    // ===== Data =====
     const locations = [
-        {
-            name: "海綿静脈洞 (Cavernous Sinus)",
-            nerves: ["III", "IV", "VI", "V1", "V2", "Sympathetic"],
-            desc: "有痛性眼筋麻痺、Horner症候群。Tolosa-Hunt症候群、内頸動脈瘤、海綿静脈洞血栓症。",
-            urgent: true
-        },
-        {
-            name: "眼窩先端 (Orbital Apex)",
-            nerves: ["II", "III", "IV", "VI", "V1"],
-            desc: "視力障害(II)を伴う点が海綿静脈洞との鑑別点。炎症性偽腫瘍、腫瘍、真菌感染。",
-            urgent: true
-        },
-        {
-            name: "上眼窩裂 (Superior Orbital Fissure)",
-            nerves: ["III", "IV", "VI", "V1"],
-            desc: "視神経(II)は保たれる。眼窩先端症候群の亜型。外傷、腫瘍。",
-            urgent: false
-        },
-        {
-            name: "小脳橋角部 (CPA)",
-            nerves: ["V1", "V2", "V3", "VI", "VII", "VIII"],
-            desc: "角膜反射消失(V)、難聴(VIII)、顔面麻痺(VII)。大型病変ではVI障害も。聴神経腫瘍、髄膜腫。",
-            urgent: false
-        },
-        {
-            name: "頸静脈孔 (Jugular Foramen) — Vernet症候群",
-            nerves: ["IX", "X", "XI"],
-            desc: "嚥下障害、嗄声、僧帽筋・胸鎖乳突筋の萎縮。グロムス腫瘍、転移性腫瘍。",
-            urgent: false
-        },
-        {
-            name: "後頭窩・顆部 — Collet-Sicard症候群",
-            nerves: ["IX", "X", "XI", "XII"],
-            desc: "Vernet + 舌下神経麻痺（舌萎縮・偏位）。頭蓋底転移、骨折。",
-            urgent: true
-        },
-        {
-            name: "後咽頭隙 — Villaret症候群",
-            nerves: ["IX", "X", "XI", "XII", "Sympathetic"],
-            desc: "Collet-Sicard + Horner症候群。リンパ節転移、頸部外傷、膿瘍。",
-            urgent: true
-        },
-        {
-            name: "脳幹 (Brainstem)",
-            nerves: ["III", "IV", "V1", "V2", "V3", "VI", "VII", "VIII", "IX", "X", "XII"],
-            desc: "通常、対側の片麻痺や感覚障害（長経路徴候）を伴う。交代性麻痺のパターンに注意。",
-            urgent: true
-        }
+        { name:"海綿静脈洞", en:"Cavernous Sinus", nerves:["III","IV","VI","V1","V2","Sympathetic"],
+          desc:"有痛性眼筋麻痺、Horner症候群。Tolosa-Hunt、動脈瘤、血栓症。", urgent:true },
+        { name:"眼窩先端", en:"Orbital Apex", nerves:["II","III","IV","VI","V1"],
+          desc:"視力障害(II)を伴う点が海綿静脈洞との鑑別点。炎症、腫瘍、真菌感染。", urgent:true },
+        { name:"上眼窩裂", en:"Superior Orbital Fissure", nerves:["III","IV","VI","V1"],
+          desc:"視神経(II)は保たれる。眼窩先端症候群の亜型。", urgent:false },
+        { name:"小脳橋角部", en:"CPA", nerves:["V1","V2","V3","VI","VII","VIII"],
+          desc:"角膜反射消失(V)、難聴(VIII)、顔面麻痺(VII)。聴神経腫瘍、髄膜腫。", urgent:false },
+        { name:"頸静脈孔", en:"Vernet症候群", nerves:["IX","X","XI"],
+          desc:"嚥下障害、嗄声、僧帽筋・胸鎖乳突筋萎縮。グロムス腫瘍。", urgent:false },
+        { name:"後頭窩・顆部", en:"Collet-Sicard", nerves:["IX","X","XI","XII"],
+          desc:"Vernet＋舌下神経麻痺。頭蓋底転移、骨折。", urgent:true },
+        { name:"後咽頭隙", en:"Villaret", nerves:["IX","X","XI","XII","Sympathetic"],
+          desc:"Collet-Sicard＋Horner症候群。リンパ節転移、膿瘍。", urgent:true },
+        { name:"脳幹", en:"Brainstem", nerves:["III","IV","V1","V2","V3","VI","VII","VIII","IX","X","XII"],
+          desc:"通常、対側片麻痺や感覚障害（長経路徴候）を伴う。", urgent:true }
     ];
 
     const checkboxes = document.querySelectorAll('.symptom-cb');
-    const nervesDisplay = document.getElementById('nerves-display');
-    const diagnosisList = document.getElementById('diagnosis-list');
-    const warningSection = document.getElementById('warning-section');
 
-    checkboxes.forEach(cb => {
-        cb.addEventListener('change', analyze);
-    });
+    // ===== Toggle item =====
+    function toggleItem(label) {
+        const cb = label.querySelector('input');
+        cb.checked = !cb.checked;
+        label.classList.toggle('checked', cb.checked);
+        updateGroupCounts();
+        analyze();
+    }
 
+    // ===== Toggle accordion =====
+    function toggleGroup(header) {
+        header.parentElement.classList.toggle('open');
+    }
+
+    // ===== Tab switching =====
+    function switchTab(name) {
+        document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+        document.getElementById('page-' + name).classList.add('active');
+        // Mobile tabs
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(name === 'input' ? 'tabInput' : 'tabResult').classList.add('active');
+        // Desktop tabs
+        document.querySelectorAll('.desktop-tab').forEach((b, i) => {
+            b.classList.toggle('active', (name === 'input' && i === 0) || (name === 'result' && i === 1));
+        });
+        window.scrollTo(0, 0);
+    }
+
+    // ===== Update group badge counts =====
+    function updateGroupCounts() {
+        ['eye','face','throat'].forEach(g => {
+            const cnt = document.querySelectorAll('.symptom-cb[data-group="'+g+'"]:checked').length;
+            const badge = document.getElementById('count-' + g);
+            badge.textContent = cnt;
+            badge.classList.toggle('visible', cnt > 0);
+        });
+    }
+
+    // ===== Main analyze =====
     function analyze() {
-        // 1. 選択された神経を収集
-        let detectedNerves = new Set();
+        let detected = new Set();
         let checkedCount = 0;
 
         checkboxes.forEach(cb => {
             if (cb.checked) {
                 checkedCount++;
-                const ns = cb.getAttribute('data-nerves').split(',');
-                ns.forEach(n => detectedNerves.add(n));
+                cb.getAttribute('data-nerves').split(',').forEach(n => detected.add(n));
             }
         });
 
-        // 表示更新
+        // Nerve bar
+        const nerveBar = document.getElementById('nerveBar');
+        const nerveBadges = document.getElementById('nerveBadges');
+        if (checkedCount > 0) {
+            nerveBar.classList.add('visible');
+            nerveBadges.innerHTML = Array.from(detected).sort()
+                .map(n => '<span class="nerve-badge">' + n + '</span>').join('');
+        } else {
+            nerveBar.classList.remove('visible');
+        }
+
+        // Result badge
+        const resultBadge = document.getElementById('resultBadge');
+
         if (checkedCount === 0) {
-            nervesDisplay.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><p>左側の症状を選択してください</p></div>';
-            diagnosisList.innerHTML = '';
-            warningSection.style.display = 'none';
+            document.getElementById('resultEmpty').style.display = '';
+            document.getElementById('resultContent').style.display = 'none';
+            resultBadge.classList.remove('visible');
             return;
         }
 
-        const nervesArray = Array.from(detectedNerves).sort();
-        nervesDisplay.innerHTML = '<strong style="color:var(--navy);">障害神経:</strong><br>' +
-            nervesArray.map(n => '<span class="nerves-tag">' + n + '</span>').join(' ');
-
-        // 2. 局在のマッチング計算
+        // Score
         let scores = locations.map(loc => {
-            const matchNerves = loc.nerves.filter(n => detectedNerves.has(n));
-            const matchCount = matchNerves.length;
-            // カバレッジ率：検出された神経のうち、その局在で説明できる割合
-            const coverage = detectedNerves.size > 0 ? (matchCount / detectedNerves.size) : 0;
+            const matched = loc.nerves.filter(n => detected.has(n));
+            const coverage = detected.size > 0 ? matched.length / detected.size : 0;
+            return { ...loc, matchCount: matched.length, matchNerves: matched, coverage };
+        });
+        scores.sort((a, b) => b.matchCount !== a.matchCount ? b.matchCount - a.matchCount : b.coverage - a.coverage);
 
-            return {
-                ...loc,
-                matchCount: matchCount,
-                matchNerves: matchNerves,
-                coverage: coverage
-            };
+        // Render
+        const list = document.getElementById('diagnosisList');
+        list.innerHTML = '';
+        let highCount = 0;
+
+        scores.forEach(s => {
+            if (s.matchCount < 1) return;
+            const isHigh = (s.matchCount >= 2 && s.coverage >= 0.6) || (checkedCount === 1 && s.matchCount === 1);
+            if (isHigh) highCount++;
+
+            const level = isHigh ? 'high' : (s.matchCount >= 2 ? 'mid' : 'low');
+            const pct = Math.round(s.coverage * 100);
+
+            const nerveStr = s.nerves.map(n =>
+                s.matchNerves.includes(n) ? '<b>' + n + '</b>' : '<span style="color:#ccc;">' + n + '</span>'
+            ).join(' ');
+
+            const barColor = isHigh ? 'var(--red)' : (s.matchCount >= 2 ? 'var(--blue)' : '#ccc');
+
+            const card = document.createElement('div');
+            card.className = 'result-card ' + level;
+            card.innerHTML =
+                '<div class="score-pill' + (isHigh ? ' high-score' : '') + '">' + pct + '%</div>' +
+                '<div class="loc-name">' + (s.urgent ? '🔴 ' : '') + s.name + '</div>' +
+                '<div style="font-size:0.75em;color:#999;margin-bottom:6px;">' + s.en + '</div>' +
+                '<div class="nerves-line">' + nerveStr + '</div>' +
+                '<div class="desc-line">' + s.desc + '</div>' +
+                '<div class="coverage-bar"><div class="coverage-fill" style="width:' + pct + '%;background:' + barColor + ';"></div></div>';
+            list.appendChild(card);
         });
 
-        // ソート：一致数が多い順 > カバレッジが高い順
-        scores.sort((a, b) => {
-            if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
-            return b.coverage - a.coverage;
-        });
+        // Warning
+        const top = scores[0];
+        const warn = document.getElementById('warningCard');
+        warn.classList.toggle('visible', checkedCount >= 2 && top.coverage < 0.7);
 
-        // 3. 結果のレンダリング
-        diagnosisList.innerHTML = '';
+        // Show result
+        document.getElementById('resultEmpty').style.display = 'none';
+        document.getElementById('resultContent').style.display = '';
 
-        scores.forEach(score => {
-            if (score.matchCount > 0) {
-                const isHighMatch = (score.matchCount >= 2 && score.coverage >= 0.6) || (checkedCount === 1 && score.matchCount === 1);
-
-                if (score.matchCount >= 1) {
-                    const card = document.createElement('div');
-                    card.className = 'diagnosis-card ' + (isHighMatch ? 'high-match' : 'medium-match');
-
-                    const nerveStr = score.nerves.map(n => {
-                        return score.matchNerves.includes(n)
-                            ? '<b style="color:var(--navy);">' + n + '</b>'
-                            : '<span style="color:#ccc;">' + n + '</span>';
-                    }).join(', ');
-
-                    const coveragePct = Math.round(score.coverage * 100);
-
-                    card.innerHTML =
-                        '<div class="diagnosis-score">一致 ' + score.matchCount + ' / カバー率 ' + coveragePct + '%</div>' +
-                        '<h3>' + (score.urgent ? '🔴 ' : '') + score.name + '</h3>' +
-                        '<p>構成神経: [' + nerveStr + ']</p>' +
-                        '<p>' + score.desc + '</p>';
-                    diagnosisList.appendChild(card);
-                }
-            }
-        });
-
-        if (diagnosisList.innerHTML === '') {
-            diagnosisList.innerHTML = '<div class="empty-state"><p>該当する典型的な解剖学的局在が見つかりません。</p></div>';
-        }
-
-        // 4. 警告ロジック
-        const topScore = scores[0];
-        if (checkedCount >= 2 && topScore.coverage < 0.7) {
-            warningSection.style.display = 'block';
-        } else {
-            warningSection.style.display = 'none';
-        }
+        // Badge
+        resultBadge.textContent = highCount || scores.filter(s => s.matchCount >= 1).length;
+        resultBadge.classList.add('visible');
     }
 
+    // ===== Reset =====
     function resetAll() {
-        checkboxes.forEach(cb => cb.checked = false);
+        checkboxes.forEach(cb => { cb.checked = false; });
+        document.querySelectorAll('.item').forEach(i => i.classList.remove('checked'));
+        updateGroupCounts();
         analyze();
+        switchTab('input');
     }
 </script>
 
