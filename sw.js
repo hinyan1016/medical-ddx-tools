@@ -27,12 +27,15 @@ self.addEventListener('install', e => {
   );
 });
 
-// Activate: clean ALL old caches, claim clients immediately
+// Activate: clean ALL old caches, claim clients, notify for reload
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys =>
       Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
     ).then(() => self.clients.claim())
+     .then(() => self.clients.matchAll().then(cls => {
+       cls.forEach(c => c.postMessage({ type: 'SW_UPDATED' }));
+     }))
   );
 });
 
