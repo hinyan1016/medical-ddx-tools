@@ -7,9 +7,12 @@
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Segoe UI','游ゴシック','Yu Gothic',sans-serif;background:#f0f4f8;color:#1a1a2e;line-height:1.6}
-  .header{background:linear-gradient(135deg,#1B3A5C 0%,#2C5AA0 100%);color:#fff;padding:24px 20px;text-align:center}
+  .header{background:linear-gradient(135deg,#1B3A5C 0%,#2C5AA0 100%);color:#fff;padding:14px 20px 18px;text-align:center}
   .header h1{font-size:1.5rem;margin-bottom:4px}
   .header p{font-size:.85rem;opacity:.85}
+  .back-bar{display:flex;align-items:center;margin-bottom:8px}
+  .back-bar a{color:rgba(255,255,255,0.85);text-decoration:none;font-size:.85em;display:flex;align-items:center;gap:4px;padding:4px 8px;border-radius:6px;transition:background .2s}
+  .back-bar a:active{background:rgba(255,255,255,0.15)}
   .container{max-width:960px;margin:0 auto;padding:16px}
 
   /* Tab */
@@ -92,17 +95,23 @@
 
   /* Responsive */
   @media(max-width:640px){
+    .header{padding:12px 14px 14px}
+    .header h1{font-size:1.2rem}
+    .container{padding:10px}
+    .tab-btn{padding:10px 6px;font-size:.9rem}
     .muscle-table{font-size:.78rem}
     .muscle-table th,.muscle-table td{padding:4px 3px}
     .bar-label{min-width:70px;font-size:.78rem}
-    .mmt-select{width:48px;font-size:.82rem}
+    .mmt-select{width:48px;font-size:16px;min-height:36px;-webkit-tap-highlight-color:transparent}
     .nerve-cards{grid-template-columns:1fr}
+    .btn{padding:10px 16px;font-size:.88rem;min-height:44px}
   }
 </style>
 </head>
 <body>
 
 <div class="header">
+  <div class="back-bar"><a href="index.html">‹ ツール一覧</a></div>
   <h1>🔍 神経障害部位推測ツール</h1>
   <p>MMT（徒手筋力検査）の結果から、障害されている脊髄レベル・末梢神経を推測します</p>
 </div>
