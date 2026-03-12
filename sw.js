@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v3';
+const CACHE_NAME = 'ddx-tools-v4';
 const ASSETS = [
   './',
   './index.html',
@@ -18,7 +18,7 @@ const ASSETS = [
   './icons/icon-512.png'
 ];
 
-// Install: cache all assets
+// Install: cache all assets, skip waiting to activate immediately
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE_NAME)
@@ -27,7 +27,7 @@ self.addEventListener('install', e => {
   );
 });
 
-// Activate: clean old caches
+// Activate: clean ALL old caches, claim clients immediately
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys =>
@@ -36,28 +36,37 @@ self.addEventListener('activate', e => {
   );
 });
 
-// Fetch: cache-first, fallback to network
+// Fetch: network-first for HTML, cache-first for other assets
 self.addEventListener('fetch', e => {
-  e.respondWith(
-    caches.match(e.request).then(cached => {
-      if (cached) {
-        // Return cache, update in background
-        const fetchPromise = fetch(e.request).then(response => {
-          if (response && response.status === 200) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
-          }
-          return response;
-        }).catch(() => {});
-        return cached;
-      }
-      return fetch(e.request).then(response => {
+  const url = new URL(e.request.url);
+  const isHTML = e.request.mode === 'navigate' ||
+                 url.pathname.endsWith('.html') ||
+                 url.pathname.endsWith('/');
+
+  if (isHTML) {
+    // Network-first for HTML pages
+    e.respondWith(
+      fetch(e.request).then(response => {
         if (response && response.status === 200) {
           const clone = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
         }
         return response;
-      });
-    })
-  );
+      }).catch(() => caches.match(e.request))
+    );
+  } else {
+    // Cache-first for static assets (icons, manifest, etc.)
+    e.respondWith(
+      caches.match(e.request).then(cached => {
+        if (cached) return cached;
+        return fetch(e.request).then(response => {
+          if (response && response.status === 200) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+          }
+          return response;
+        });
+      })
+    );
+  }
 });
