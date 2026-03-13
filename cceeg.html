@@ -745,16 +745,16 @@ var riskColors = {
 };
 
 var currentStep = "start";
-var history = [];
+var stepHistory = [];
 var currentResult = null;
 
 function updateProgress() {
-  var pct = currentResult ? 100 : Math.min(95, ((history.length + 1) / 6) * 100);
+  var pct = currentResult ? 100 : Math.min(95, ((stepHistory.length + 1) / 6) * 100);
   document.getElementById("progressFill").style.width = pct + "%";
 }
 
 function handleOption(option) {
-  history.push(currentStep);
+  stepHistory.push(currentStep);
   if (option.next.indexOf("result_") === 0) {
     currentResult = RESULTS[option.next];
     currentStep = null;
@@ -767,18 +767,18 @@ function handleOption(option) {
 function handleBack() {
   if (currentResult) {
     currentResult = null;
-    currentStep = history[history.length - 1];
-    history = history.slice(0, -1);
-  } else if (history.length > 0) {
-    currentStep = history[history.length - 1];
-    history = history.slice(0, -1);
+    currentStep = stepHistory[stepHistory.length - 1];
+    stepHistory = stepHistory.slice(0, -1);
+  } else if (stepHistory.length > 0) {
+    currentStep = stepHistory[stepHistory.length - 1];
+    stepHistory = stepHistory.slice(0, -1);
   }
   render();
 }
 
 function handleReset() {
   currentStep = "start";
-  history = [];
+  stepHistory = [];
   currentResult = null;
   render();
 }
@@ -796,7 +796,7 @@ function render() {
     html += '<div class="step-card">';
     html += '<div class="step-meta">';
     html += '<span class="step-icon">' + step.icon + '</span>';
-    html += '<span class="step-label">STEP ' + (history.length + 1) + '</span>';
+    html += '<span class="step-label">STEP ' + (stepHistory.length + 1) + '</span>';
     html += '</div>';
     html += '<h2 class="step-title">' + step.title + '</h2>';
     html += '<p class="step-question">' + step.question + '</p>';
@@ -838,10 +838,10 @@ function render() {
 
   main.innerHTML = html;
 
-  if (history.length > 0 || currentResult) {
+  if (stepHistory.length > 0 || currentResult) {
     navHtml += '<button class="nav-btn nav-btn-back" onclick="handleBack()">\u2190 \u623B\u308B</button>';
   }
-  navHtml += '<button class="nav-btn nav-btn-reset" onclick="handleReset()" style="background:' + (history.length > 0 || currentResult ? "#F1F5F9" : "transparent") + '">\uD83D\uDD04 \u6700\u521D\u304B\u3089</button>';
+  navHtml += '<button class="nav-btn nav-btn-reset" onclick="handleReset()" style="background:' + (stepHistory.length > 0 || currentResult ? "#F1F5F9" : "transparent") + '">\uD83D\uDD04 \u6700\u521D\u304B\u3089</button>';
   nav.innerHTML = navHtml;
 }
 
