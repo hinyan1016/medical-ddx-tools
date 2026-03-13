@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#8B1A1A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>意識障害鑑別診断ツール</title>
+<style>
+  :root {
+    --navy: #8B1A1A;
+    --blue: #C0392B;
+    --light-blue: #FDF2F2;
+    --red: #DC3545;
+    --yellow: #F5C518;
+    --green: #28A745;
+    --orange: #E8850C;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(139,26,26,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #FDF2F2 0%, #F4F6F8 100%);
+    color: #23272B;
+    min-height: 100vh;
+    padding-bottom: 32px;
+  }
+  .header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+    color: #fff;
+    padding: 20px 16px 14px;
+    text-align: center;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(139,26,26,0.18);
+  }
+  .header h1 { font-size: 1.25rem; letter-spacing: 0.04em; }
+  .header p { font-size: 0.82rem; opacity: 0.88; margin-top: 4px; }
+  .back-link {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    color: #fff; text-decoration: none; font-size: 0.92rem; opacity: 0.85;
+  }
+  .back-link:hover { opacity: 1; }
+  .container { max-width: 720px; margin: 0 auto; padding: 16px 10px; }
+  .algo-note {
+    background: var(--light-blue);
+    border-left: 4px solid var(--blue);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .step-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 14px;
+    overflow: hidden;
+    border-left: 4px solid var(--blue);
+    transition: opacity 0.2s;
+  }
+  .step-card.completed { opacity: 0.7; border-left-color: var(--green); }
+  .step-card.inactive { opacity: 0.45; pointer-events: none; }
+  .step-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px;
+    font-weight: 700; font-size: 0.97rem;
+    cursor: default;
+  }
+  .step-number {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--blue); color: #fff;
+    font-size: 0.92rem; font-weight: 700; flex-shrink: 0;
+  }
+  .step-number.done { background: var(--green); }
+  .step-title { flex: 1; }
+  .step-body { padding: 0 14px 14px; }
+  .hint {
+    font-size: 0.82rem; color: var(--gray);
+    margin-bottom: 8px; line-height: 1.5;
+  }
+  .option-group { display: flex; flex-direction: column; gap: 8px; }
+  .option-btn {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--light-gray); border: 2px solid transparent;
+    border-radius: 8px; padding: 10px 12px;
+    font-size: 0.92rem; cursor: pointer; text-align: left;
+    transition: border-color 0.15s, background 0.15s;
+    font-family: inherit; width: 100%;
+  }
+  .option-btn:hover { border-color: var(--blue); }
+  .option-btn.selected { border-color: var(--blue); background: var(--light-blue); font-weight: 600; }
+  .option-btn .icon { font-size: 1.15rem; }
+  .checklist { display: flex; flex-direction: column; gap: 6px; }
+  .check-item {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--light-gray); border-radius: 8px;
+    padding: 9px 12px; cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.15s;
+  }
+  .check-item:hover { background: #ebeef1; }
+  .check-item input[type="checkbox"] { accent-color: var(--blue); width: 18px; height: 18px; flex-shrink: 0; cursor: pointer; }
+  .check-item label { cursor: pointer; }
+  .next-btn {
+    margin-top: 10px; padding: 10px 28px;
+    background: var(--blue); color: #fff; border: none;
+    border-radius: 8px; font-size: 0.95rem; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+  }
+  .next-btn:hover { opacity: 0.88; }
+  .result-panel {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: 0 2px 16px rgba(139,26,26,0.13);
+    padding: 18px 14px;
+    margin-top: 18px;
+    border-top: 5px solid var(--blue);
+  }
+  .result-panel h2 {
+    font-size: 1.1rem; color: var(--navy);
+    margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+  }
+  .disease-card {
+    border-radius: 8px; padding: 14px;
+    margin-bottom: 12px;
+    border-left: 5px solid var(--gray);
+  }
+  .disease-card.high { border-left-color: var(--red); background: #FFF5F5; }
+  .disease-card.medium { border-left-color: var(--orange); background: #FFF9F0; }
+  .disease-card.low { border-left-color: var(--gray); background: var(--light-gray); }
+  .disease-header {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 6px;
+  }
+  .disease-name { font-weight: 700; font-size: 1.02rem; }
+  .badge {
+    display: inline-block; padding: 2px 10px; border-radius: 12px;
+    font-size: 0.78rem; font-weight: 600; color: #fff;
+  }
+  .badge.high { background: var(--red); }
+  .badge.medium { background: var(--orange); }
+  .badge.low { background: var(--gray); }
+  .cat-tag {
+    display: inline-block; padding: 2px 8px; border-radius: 10px;
+    font-size: 0.73rem; font-weight: 600;
+  }
+  .cat-structural { background: #FDECEA; color: #C0392B; }
+  .cat-seizure { background: #EDE7F6; color: #6A1B9A; }
+  .cat-metabolic { background: #E8F5E9; color: #2E7D32; }
+  .cat-infection { background: #FFF3E0; color: #E65100; }
+  .cat-psychiatric { background: #E3F2FD; color: #1565C0; }
+  .disease-detail {
+    font-size: 0.88rem; line-height: 1.65;
+    margin-bottom: 6px;
+  }
+  .workup-line {
+    font-size: 0.84rem; color: var(--blue);
+    font-weight: 600;
+  }
+  .alert-box {
+    border-radius: 8px; padding: 14px;
+    margin-bottom: 14px; font-size: 0.9rem; line-height: 1.6;
+  }
+  .alert-red { background: #FDECEA; border: 1.5px solid #E74C3C; }
+  .alert-yellow { background: #FEF9E7; border: 1.5px solid #F1C40F; }
+  .alert-blue { background: #EBF5FB; border: 1.5px solid #2980B9; }
+  .ref-table {
+    width: 100%; border-collapse: collapse;
+    font-size: 0.8rem; margin-top: 12px;
+  }
+  .ref-table th, .ref-table td {
+    border: 1px solid #ddd; padding: 7px 8px; text-align: left;
+  }
+  .ref-table th { background: var(--navy); color: #fff; font-size: 0.78rem; }
+  .ref-table tr:nth-child(even) { background: #f9f9f9; }
+  .reset-btn {
+    display: block; margin: 24px auto 0; padding: 12px 32px;
+    background: #fff; color: var(--blue); border: 2px solid var(--blue);
+    border-radius: 8px; font-size: 1rem; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+  }
+  .reset-btn:hover { background: var(--light-blue); }
+  .pitfall-box {
+    background: #FDF2F2; border: 1.5px solid #E8D5D5;
+    border-radius: 8px; padding: 14px;
+    margin-top: 14px; font-size: 0.88rem; line-height: 1.65;
+  }
+  .section-title {
+    font-size: 0.95rem; font-weight: 700; color: var(--navy);
+    margin: 16px 0 8px; display: flex; align-items: center; gap: 6px;
+  }
+</style>
+</head>
+<body>
+<div class="header">
+  <a class="back-link" href="index.html">‹ ツール一覧</a>
+  <h1>意識障害鑑別診断ツール</h1>
+  <p>4本柱で考える：真の意識障害か → 可逆的全身要因 → 構造性vsびまん性 → 発作見落とし</p>
+</div>
+
+<div class="container" id="app"></div>
+
+<script>
+// ===== 疾患データ =====
+var DISEASES = {
+  ich: {
+    name: "脳出血",
+    category: "structural",
+    emoji: "🩸",
+    detail: "高血圧性の被殻・視床出血が最多。<strong>急性発症の意識障害＋局在徴候（片麻痺・共同偏視）</strong>が典型的。大きな血腫では脳ヘルニアに進展し、瞳孔不同・除脳姿勢・呼吸異常が出現する。血腫拡大は発症6時間以内に多く、経時的な神経所見の悪化に注意（Hemphill, Stroke 2015）。",
+    workup: "頭部CT（出血部位・血腫量）、CTA（血管奇形除外）、凝固検査"
+  },
+  large_infarct: {
+    name: "広範脳梗塞（悪性MCA梗塞）",
+    category: "structural",
+    emoji: "🧠",
+    detail: "MCA領域の大梗塞では<strong>浮腫による正中偏位・ヘルニア</strong>で意識障害が進行する。発症24-72時間後が浮腫のピーク。early CT signや片麻痺＋共同偏視＋失語で疑い、malignant MCA infarctionでは減圧開頭術の適応を早期に検討する（Vahedi, Lancet Neurol 2007）。",
+    workup: "頭部CT/CTA/MRI-DWI、血管評価、脳浮腫モニタリング"
+  },
+  sah: {
+    name: "くも膜下出血（SAH）",
+    category: "structural",
+    emoji: "💥",
+    detail: "<strong>突然発症の頭痛＋意識障害</strong>が典型。重症例（WFNS grade IV-V）では昏睡で搬送される。瞳孔不同があれば後交通動脈瘤によるテント切痕ヘルニアを考える。再破裂、水頭症、脳血管攣縮に注意（Connolly, Stroke 2012）。",
+    workup: "頭部CT（感度発症6h以内で98%以上）、CT陰性なら腰椎穿刺、CTA"
+  },
+  sdh_edh: {
+    name: "急性硬膜下/硬膜外血腫",
+    category: "structural",
+    emoji: "🔨",
+    detail: "硬膜外血腫では<strong>lucid interval（一時的清明期）後の急速悪化</strong>が古典的。硬膜下血腫は外傷・抗凝固薬・高齢者で多い。いずれもmass effectが進行すると瞳孔不同・片麻痺・除脳姿勢を呈する。<strong>外傷歴の確認が最重要</strong>（Bullock, Neurosurgery 2006）。",
+    workup: "頭部CT（三日月状/レンズ状高吸収域）、凝固検査、脳外科コンサルト"
+  },
+  bao: {
+    name: "脳底動脈閉塞（BAO）",
+    category: "structural",
+    emoji: "🔴",
+    detail: "意識障害の鑑別で<strong>最も見逃してはいけない血管性疾患</strong>の一つ。めまい、構音障害、四肢脱力、複視など非特異的症状で始まり、急速に昏睡に進展し得る。<strong>単純CTでは見逃される</strong>ため、疑えばCTAを低閾値で施行する。急性期血栓回収術の適応がある（Mattle, Lancet Neurol 2011）。",
+    workup: "CTA/MRA（脳底動脈閉塞確認）、MRI-DWI（脳幹梗塞）、血管内治療の適応評価"
+  },
+  dcvt: {
+    name: "深部静脈血栓症（脳静脈血栓症）",
+    category: "structural",
+    emoji: "🔵",
+    detail: "<strong>両側視床病変＋意識障害</strong>が特徴的パターン。若年女性、経口避妊薬、妊産褥婦、凝固異常が背景因子。頭痛、けいれん、非典型的な意識障害の組み合わせで疑う。深部静脈（Galen大静脈・直静脈洞）の血栓では間脳障害として昏睡に至る（van den Bergh, Neurology 2005）。",
+    workup: "CT/CTV またはMRI/MRV（静脈洞血栓確認）、D-dimer、凝固系精査"
+  },
+  hydrocephalus: {
+    name: "急性水頭症",
+    category: "structural",
+    emoji: "💧",
+    detail: "脳室拡大による<strong>頭蓋内圧亢進</strong>で意識障害が進行する。後頭蓋窩腫瘍、脳室内出血、髄膜炎後、シャント機能不全が原因。頭痛、嘔吐、外転神経麻痺、上方注視障害（Parinaud徴候）が手がかり。緊急脳室ドレナージが必要になることがある。",
+    workup: "頭部CT（脳室拡大・側脳室周囲低吸収域）、原因検索"
+  },
+  ncse: {
+    name: "非けいれん性てんかん重積（NCSE）",
+    category: "seizure",
+    emoji: "⚡",
+    detail: "<strong>説明のつかない持続性意識障害</strong>で最も見逃されやすい原因の一つ。明らかなけいれんがなく、眼瞼・顔面の微細なミオクローヌス、眼球偏倚、自律神経症状が唯一の手がかりのことがある。けいれん後（postictal）の回復が予想以上に遅い場合にも疑う。<strong>EEGでのみ診断可能</strong>（Salzburg基準、Leitinger 2015）。",
+    workup: "EEG（spot EEG→必要時continuous EEG）、抗てんかん薬の試験的投与"
+  },
+  postictal: {
+    name: "けいれん後状態（postictal state）",
+    category: "seizure",
+    emoji: "🌀",
+    detail: "けいれん後の意識障害は通常<strong>30分〜数時間で改善</strong>する。Todd麻痺（一過性片麻痺）を伴うことがある。ただし、<strong>改善が乏しい、途中で増悪する、局在徴候が強い場合はNCSEや新規脳病変を考え直す</strong>べきである。発作の再発や背景疾患（電解質異常、感染、薬剤変更）の検索も必要。",
+    workup: "経時的な意識レベル評価、改善なければEEG、背景因子の検索"
+  },
+  hypoglycemia: {
+    name: "低血糖",
+    category: "metabolic",
+    emoji: "📉",
+    detail: "<strong>最も早く除外すべき可逆的原因</strong>。インスリン・SU薬使用中の糖尿病患者、飲酒後、低栄養、敗血症、肝不全、副腎不全が背景。片麻痺など<strong>局在性神経徴候を呈することがある</strong>（脳卒中類似）。ベッドサイド血糖測定で即座に判定し、ブドウ糖投与で速やかに意識が改善するなら確定的。",
+    workup: "ベッドサイド血糖測定（最優先）、原因検索（薬剤、肝機能、副腎機能）"
+  },
+  hhs_dka: {
+    name: "高浸透圧高血糖状態/DKA",
+    category: "metabolic",
+    emoji: "🔥",
+    detail: "HHS（高浸透圧高血糖状態）では<strong>血清浸透圧上昇に伴い意識障害が進行</strong>し、昏睡に至る。DKA（糖尿病性ケトアシドーシス）ではアシドーシスと脱水が主因。Kussmaul呼吸、アセトン臭が手がかり。高齢2型糖尿病でHHS、若年1型でDKAが多いが重複もある（Kitabchi, Diabetes Care 2009）。",
+    workup: "血糖、血液ガス、電解質、浸透圧、ケトン体、HbA1c"
+  },
+  dysnatrem: {
+    name: "低Na血症/高Na血症",
+    category: "metabolic",
+    emoji: "🧪",
+    detail: "低Na血症では<strong>Na < 120 mEq/Lまたは急速低下</strong>で脳浮腫による意識障害が生じる。高Na血症では脳の脱水で昏睡に至る。いずれも変化の<strong>速度</strong>が重症度を左右する。補正速度も重要で、急速な低Na補正では浸透圧性脱髄症候群（ODS）のリスクがある。",
+    workup: "血清Na、浸透圧、尿Na・浸透圧、体液量評価"
+  },
+  hepatic_enceph: {
+    name: "肝性脳症",
+    category: "metabolic",
+    emoji: "🫀",
+    detail: "肝硬変・門脈体循環シャントを背景に、<strong>羽ばたき振戦（asterixis）、注意障害、見当識障害</strong>で発症し昏睡に至る。誘因は消化管出血、感染、便秘、利尿薬、蛋白過剰摂取、脱水。アンモニア値は参考になるが、値と重症度は必ずしも相関しない（Vilstrup, Hepatology 2014）。",
+    workup: "アンモニア、肝機能、凝固検査、誘因検索（感染・消化管出血）"
+  },
+  wernicke: {
+    name: "Wernicke脳症",
+    category: "metabolic",
+    emoji: "🍶",
+    detail: "典型三徴は<strong>意識混濁、眼球運動障害（外転神経麻痺・注視麻痺）、失調</strong>だが、<strong>三徴がそろうのは少数</strong>。アルコール関連に限らず、低栄養、悪性腫瘍、妊娠悪阻、消化器手術後でも起こる。<strong>疑えば検査結果を待たず静注チアミン200-500mgを先行</strong>させる（Galvin, BMJ 2010）。",
+    workup: "臨床診断優先（治療先行）、MRI（視床内側・乳頭体・中脳水道周囲の信号異常）、血中チアミン"
+  },
+  drug_intox: {
+    name: "薬物中毒・離脱",
+    category: "metabolic",
+    emoji: "💊",
+    detail: "ベンゾジアゼピン、オピオイド、抗精神病薬、抗うつ薬、抗コリン薬、リチウム、バルプロ酸、バクロフェン、アルコールなど。<strong>瞳孔所見が鑑別の手がかり</strong>：縮瞳→オピオイド、散瞳→抗コリン薬・交感神経刺激薬。オピオイド中毒にはナロキソン、ベンゾジアゼピン中毒にはフルマゼニル（禁忌に注意）。アルコール離脱では振戦せん妄に注意。",
+    workup: "薬物スクリーニング、血中薬物濃度、トキシドローム評価、ECG（QT延長）"
+  },
+  septic_enceph: {
+    name: "敗血症関連脳症",
+    category: "metabolic",
+    emoji: "🦠",
+    detail: "全身感染による<strong>びまん性脳機能障害</strong>で、直接の中枢神経感染はない。ICUでの意識障害の最も多い原因の一つ。<strong>左右対称性の所見、瞳孔反射保持</strong>が典型的。せん妄として現れることが多いが、重症では昏睡に至る。感染源の同定と全身管理が基本（Gofton, Semin Respir Crit Care Med 2012）。",
+    workup: "感染源検索、血液培養、炎症マーカー、血液ガス、乳酸値"
+  },
+  co2_narcosis: {
+    name: "CO2ナルコーシス/低酸素脳症",
+    category: "metabolic",
+    emoji: "🫁",
+    detail: "COPD急性増悪や神経筋疾患で<strong>高CO2血症</strong>が進行すると意識障害が生じる。頭痛、傾眠から昏睡に進行。低酸素脳症は心停止後、窒息、重症呼吸不全で生じ、<strong>びまん性皮質DWI高信号</strong>がMRIの特徴。ただし同所見は発作や代謝異常でも出現し得る。",
+    workup: "血液ガス（PaCO2, PaO2）、胸部X線、原因疾患の評価"
+  },
+  meningitis: {
+    name: "髄膜炎・脳炎",
+    category: "infection",
+    emoji: "🔬",
+    detail: "発熱、頭痛、項部硬直、意識障害の組み合わせで疑う。細菌性髄膜炎は<strong>数時間で急速に悪化</strong>し得るため、疑えば<strong>血液培養後に抗菌薬を即座に開始</strong>し、安全確認後にLPを行う。HSV脳炎では<strong>側頭葉の信号異常、人格変化、けいれん</strong>が手がかりで、アシクロビルを経験的に開始する（McGill, J Infect 2016）。",
+    workup: "血液培養→抗菌薬開始→LP（細胞数・蛋白・糖・Gram染色・培養・HSV/VZV PCR）、MRI"
+  },
+  autoimmune_enceph: {
+    name: "自己免疫性脳炎",
+    category: "infection",
+    emoji: "🛡️",
+    detail: "<strong>数日〜数週の亜急性経過</strong>で、精神症状、記憶障害、けいれん、不随意運動、自律神経不安定、意識障害が組み合わさる。初期にはMRIや髄液が非特異的でも否定できない。ICUでは<strong>原因不明のrefractory seizureや自律神経嵐</strong>として現れることがある。抗NMDA受容体脳炎では若年女性・卵巣奇形腫との関連（Graus, Lancet Neurol 2016）。",
+    workup: "髄液検査、MRI、EEG、自己抗体パネル（抗NMDA-R、LGI1、CASPR2等）、腫瘍検索"
+  },
+  catatonia: {
+    name: "緊張病（カタトニア）",
+    category: "psychiatric",
+    emoji: "🗿",
+    detail: "不動、無言、蝋屈症（waxy flexibility）、姿勢保持、反響言語/動作が特徴。精神疾患だけでなく、<strong>脳炎、代謝異常、薬剤（NMS含む）でも生じる</strong>。Bush-Francis Catatonia Rating Scaleで評価。<strong>ロラゼパムへの反応</strong>（1-2mg IV後の改善）が診断的・治療的。ベンゾジアゼピン無効時はECTを考慮する。",
+    workup: "Bush-Francis CRS評価、ロラゼパムチャレンジ、器質的原因の除外（血液検査・画像・EEG）"
+  },
+  functional_coma: {
+    name: "機能性昏睡（心因性無反応）",
+    category: "psychiatric",
+    emoji: "🎭",
+    detail: "強い閉眼（<strong>開眼への抵抗</strong>）、arm dropで顔を避ける、Bell現象（閉眼時の上転）、<strong>脳幹反射保全、検査正常</strong>が手がかり。ただし<strong>あくまで除外診断</strong>であり、脳幹梗塞、NCSE、薬物、代謝障害を十分に除外する前に「心因性」と決めてはいけない（Ryznar, Psychosomatics 2019）。",
+    workup: "神経学的除外診断（CT/MRI、EEG、代謝・薬物検査）がすべて正常であること"
+  }
+};
+
+// ===== ステップ =====
+var STEPS = [
+  {
+    id: "onset",
+    title: "発症様式",
+    type: "single",
+    question: "意識障害の発症パターンはどれに最も近いですか？",
+    hint: "発症様式は構造性vs代謝性の最重要鑑別ポイント。突然発症は血管性を、進行性はびまん性を示唆する。",
+    options: [
+      { value: "sudden", label: "突然発症（数秒〜数分で最悪に達した）", icon: "⚡" },
+      { value: "acute", label: "急性発症（数時間で進行した）", icon: "🔺" },
+      { value: "subacute", label: "亜急性（数日〜数週で進行している）", icon: "📈" },
+      { value: "fluctuating", label: "変動性（良くなったり悪くなったりする）", icon: "🔄" },
+      { value: "unknown", label: "不明（発見時に既に意識障害）", icon: "❓" }
+    ]
+  },
+  {
+    id: "vitals",
+    title: "初期バイタル・全身所見の異常",
+    type: "multi",
+    question: "以下の初期評価で異常があるものを選んでください（複数選択可）",
+    hint: "致死的で可逆的な全身要因を最優先で是正する。ABC（気道・呼吸・循環）＋血糖＋体温。",
+    options: [
+      { value: "hypoglycemia", label: "低血糖（血糖 < 60 mg/dL）" },
+      { value: "hyperglycemia", label: "著明な高血糖（> 400 mg/dL）" },
+      { value: "hypoxia", label: "低酸素（SpO2 < 90%）" },
+      { value: "hypotension", label: "低血圧・ショック" },
+      { value: "hypertension", label: "著明な高血圧（> 180/120）" },
+      { value: "fever", label: "発熱（> 38.0℃）" },
+      { value: "hypothermia", label: "低体温（< 35℃）" },
+      { value: "tachypnea_kussmaul", label: "頻呼吸・Kussmaul呼吸" },
+      { value: "bradypnea", label: "徐呼吸・呼吸抑制" },
+      { value: "arrhythmia", label: "不整脈" },
+      { value: "none_vitals", label: "特になし / バイタル安定" }
+    ]
+  },
+  {
+    id: "focal_signs",
+    title: "構造性Red Flags（局在徴候）",
+    type: "multi",
+    question: "以下の局在徴候がありますか？（複数選択可）",
+    hint: "局在性の赤信号があれば構造性病変やヘルニアを優先。なければ代謝・毒性・発作を考える。",
+    options: [
+      { value: "anisocoria", label: "瞳孔不同（新規の一側散瞳）" },
+      { value: "hemiplegia", label: "片麻痺・一側の運動障害" },
+      { value: "gaze_deviation", label: "共同偏視（病側を見る）" },
+      { value: "aphasia", label: "失語（発語の障害）" },
+      { value: "neck_stiffness", label: "項部硬直" },
+      { value: "papilledema", label: "うっ血乳頭" },
+      { value: "rapid_decline", label: "急速な意識レベル低下（進行性）" },
+      { value: "none_focal", label: "局在徴候なし（左右対称）" }
+    ]
+  },
+  {
+    id: "pupils",
+    title: "瞳孔・眼球所見",
+    type: "multi",
+    question: "瞳孔・眼球の所見を選んでください（複数選択可）",
+    hint: "瞳孔所見は意識障害診療の軸。構造性vs代謝性、薬物の鑑別に直結する。",
+    options: [
+      { value: "bilateral_miosis", label: "両側縮瞳（ピンポイント瞳孔）" },
+      { value: "bilateral_mydriasis", label: "両側散瞳" },
+      { value: "unilateral_mydriasis", label: "一側散瞳（対光反射消失）" },
+      { value: "preserved_plr", label: "対光反射保持（両側）" },
+      { value: "vertical_gaze", label: "垂直注視障害・上方注視障害" },
+      { value: "roving_eyes", label: "自発的眼球運動（roving eye movements）" },
+      { value: "ocular_bobbing", label: "ocular bobbing" },
+      { value: "nystagmus", label: "眼振" },
+      { value: "sixth_nerve", label: "外転神経麻痺" },
+      { value: "vertical_preserved", label: "垂直眼球運動・瞬目は保持（四肢は動かない）" },
+      { value: "none_pupils", label: "特記所見なし" }
+    ]
+  },
+  {
+    id: "motor",
+    title: "運動所見・不随意運動",
+    type: "multi",
+    question: "運動反応や不随意運動の所見を選んでください（複数選択可）",
+    hint: "病的姿勢はヘルニアの進行度を反映。左右差は構造性、対称性は代謝性を示唆。",
+    options: [
+      { value: "decorticate", label: "除皮質姿勢（上肢屈曲・下肢伸展）" },
+      { value: "decerebrate", label: "除脳姿勢（四肢伸展）" },
+      { value: "motor_asymmetry", label: "運動反応の左右差" },
+      { value: "asterixis", label: "羽ばたき振戦（asterixis）" },
+      { value: "myoclonus", label: "ミオクローヌス（多巣性）" },
+      { value: "subtle_motor", label: "微細な運動兆候（眼瞼・顔面のぴくつき）" },
+      { value: "tremor", label: "振戦" },
+      { value: "rigidity", label: "筋強剛・固縮" },
+      { value: "waxy_flex", label: "蝋屈症（waxy flexibility）・姿勢保持" },
+      { value: "resistance_open", label: "開眼への抵抗・arm dropで顔を避ける" },
+      { value: "quadriplegia", label: "四肢麻痺" },
+      { value: "none_motor", label: "特記所見なし" }
+    ]
+  },
+  {
+    id: "associated",
+    title: "随伴症状・全身所見",
+    type: "multi",
+    question: "以下の随伴症状・全身所見がありますか？（複数選択可）",
+    hint: "全身状態は意識障害の背景因子を示唆する重要な手がかり。",
+    options: [
+      { value: "headache", label: "頭痛（発症前〜同時）" },
+      { value: "seizure_witnessed", label: "けいれんの目撃" },
+      { value: "vomiting", label: "嘔吐" },
+      { value: "rash", label: "皮疹・紫斑" },
+      { value: "jaundice", label: "黄疸" },
+      { value: "acetone_breath", label: "アセトン臭（フルーツ様の呼気）" },
+      { value: "psychiatric_sx", label: "精神症状（幻覚・妄想・興奮が先行）" },
+      { value: "involuntary_mvt", label: "不随意運動（舞踏様・ジストニア）" },
+      { value: "autonomic", label: "自律神経不安定（高血圧・頻脈・発汗）" },
+      { value: "trauma_signs", label: "外傷の痕跡（頭部打撲痕・Battle sign・raccoon eyes）" },
+      { value: "none_assoc", label: "特になし" }
+    ]
+  },
+  {
+    id: "background",
+    title: "背景因子・病歴",
+    type: "multi",
+    question: "該当する背景因子を選んでください（複数選択可）",
+    hint: "病歴は事前確率を大きく動かす。薬剤・基礎疾患・社会歴を必ず確認。",
+    options: [
+      { value: "alcohol", label: "アルコール多飲歴・離脱リスク" },
+      { value: "diabetes", label: "糖尿病（インスリン・SU薬使用）" },
+      { value: "liver_disease", label: "肝硬変・慢性肝疾患" },
+      { value: "renal_disease", label: "慢性腎臓病・透析歴" },
+      { value: "cancer", label: "悪性腫瘍" },
+      { value: "immunosuppressed", label: "免疫不全（HIV、免疫抑制薬）" },
+      { value: "anticoagulant", label: "抗凝固薬/抗血小板薬使用" },
+      { value: "sedatives", label: "鎮静薬・オピオイド・向精神薬使用" },
+      { value: "epilepsy", label: "てんかんの既往" },
+      { value: "young_female", label: "若年女性（経口避妊薬・妊産褥婦）" },
+      { value: "malnutrition", label: "低栄養・長期絶食・妊娠悪阻" },
+      { value: "hypertension_hx", label: "高血圧の既往" },
+      { value: "psychiatric_hx", label: "精神科既往歴" },
+      { value: "none_bg", label: "特になし" }
+    ]
+  },
+  {
+    id: "course",
+    title: "臨床経過と追加情報",
+    type: "multi",
+    question: "臨床経過について該当するものを選んでください（複数選択可）",
+    hint: "原因がひとつ見つかっても探索を止めず、時間を追って再診察する。33%で複数原因が併存。",
+    options: [
+      { value: "post_seizure_slow", label: "けいれん後の覚醒が予想以上に遅い" },
+      { value: "wax_wane", label: "症状が変動する（良くなったり悪くなったり）" },
+      { value: "progressive", label: "進行性に悪化している" },
+      { value: "improve_glucose", label: "ブドウ糖投与で改善した" },
+      { value: "improve_naloxone", label: "ナロキソン投与で改善した" },
+      { value: "ct_normal", label: "頭部CTは正常だった" },
+      { value: "bilateral_thalamus", label: "画像で両側視床病変あり" },
+      { value: "brainstem_lesion", label: "画像で脳幹病変あり" },
+      { value: "none_course", label: "特になし / 未評価" }
+    ]
+  }
+];
+
+// ===== スコアリング =====
+function calcScores(ans) {
+  var scores = {};
+  var keys = Object.keys(DISEASES);
+  for (var i = 0; i < keys.length; i++) { scores[keys[i]] = 0; }
+
+  // --- Step 1: 発症様式 ---
+  var onset = ans.onset || "";
+  if (onset === "sudden") {
+    scores.ich += 5; scores.sah += 6; scores.bao += 4;
+    scores.sdh_edh += 3; scores.large_infarct += 3;
+    scores.ncse += 1; scores.postictal += 2;
+    scores.hypoglycemia += 1;
+  }
+  if (onset === "acute") {
+    scores.ich += 3; scores.large_infarct += 4; scores.sah += 3;
+    scores.sdh_edh += 3; scores.bao += 3; scores.hydrocephalus += 2;
+    scores.hypoglycemia += 2; scores.hhs_dka += 2;
+    scores.drug_intox += 2; scores.meningitis += 2;
+    scores.ncse += 2; scores.postictal += 3;
+  }
+  if (onset === "subacute") {
+    scores.autoimmune_enceph += 5; scores.meningitis += 3;
+    scores.hydrocephalus += 2; scores.dcvt += 3;
+    scores.hepatic_enceph += 2; scores.hhs_dka += 2;
+    scores.septic_enceph += 2; scores.large_infarct += 1;
+    scores.catatonia += 2;
+  }
+  if (onset === "fluctuating") {
+    scores.ncse += 4; scores.hepatic_enceph += 3;
+    scores.septic_enceph += 2; scores.autoimmune_enceph += 2;
+    scores.postictal += 1; scores.catatonia += 2;
+    scores.functional_coma += 1;
+  }
+  if (onset === "unknown") {
+    scores.drug_intox += 2; scores.hypoglycemia += 2;
+    scores.ich += 1; scores.sah += 1; scores.postictal += 2;
+    scores.co2_narcosis += 1;
+  }
+
+  // --- Step 2: バイタル異常 ---
+  var vitals = ans.vitals || [];
+  if (vitals.indexOf("hypoglycemia") >= 0) {
+    scores.hypoglycemia += 8;
+  }
+  if (vitals.indexOf("hyperglycemia") >= 0) {
+    scores.hhs_dka += 6;
+  }
+  if (vitals.indexOf("hypoxia") >= 0) {
+    scores.co2_narcosis += 5; scores.septic_enceph += 2;
+  }
+  if (vitals.indexOf("hypotension") >= 0) {
+    scores.septic_enceph += 4; scores.drug_intox += 2;
+    scores.hypoglycemia += 1;
+  }
+  if (vitals.indexOf("hypertension") >= 0) {
+    scores.ich += 4; scores.sah += 2; scores.large_infarct += 1;
+    scores.autoimmune_enceph += 1;
+  }
+  if (vitals.indexOf("fever") >= 0) {
+    scores.meningitis += 5; scores.septic_enceph += 4;
+    scores.autoimmune_enceph += 2;
+  }
+  if (vitals.indexOf("hypothermia") >= 0) {
+    scores.drug_intox += 3; scores.septic_enceph += 2;
+    scores.hypoglycemia += 1;
+  }
+  if (vitals.indexOf("tachypnea_kussmaul") >= 0) {
+    scores.hhs_dka += 4; scores.septic_enceph += 2;
+  }
+  if (vitals.indexOf("bradypnea") >= 0) {
+    scores.drug_intox += 4; scores.co2_narcosis += 3;
+  }
+  if (vitals.indexOf("arrhythmia") >= 0) {
+    scores.drug_intox += 2; scores.dysnatrem += 1;
+  }
+
+  // --- Step 3: 局在徴候 ---
+  var focal = ans.focal_signs || [];
+  if (focal.indexOf("anisocoria") >= 0) {
+    scores.ich += 5; scores.sdh_edh += 5; scores.sah += 3;
+    scores.large_infarct += 3; scores.hydrocephalus += 2;
+    scores.bao += 2;
+    // 代謝性を下げる
+    scores.hypoglycemia -= 1; scores.hhs_dka -= 1;
+    scores.hepatic_enceph -= 1; scores.septic_enceph -= 1;
+  }
+  if (focal.indexOf("hemiplegia") >= 0) {
+    scores.ich += 4; scores.large_infarct += 5; scores.sdh_edh += 3;
+    scores.bao += 2; scores.sah += 1;
+    scores.hypoglycemia += 1; // 低血糖も局在徴候を呈しうる
+  }
+  if (focal.indexOf("gaze_deviation") >= 0) {
+    scores.ich += 4; scores.large_infarct += 4;
+    scores.ncse += 3; scores.sdh_edh += 2;
+  }
+  if (focal.indexOf("aphasia") >= 0) {
+    scores.large_infarct += 4; scores.ich += 2;
+    scores.ncse += 2;
+  }
+  if (focal.indexOf("neck_stiffness") >= 0) {
+    scores.meningitis += 6; scores.sah += 4;
+  }
+  if (focal.indexOf("papilledema") >= 0) {
+    scores.hydrocephalus += 4; scores.dcvt += 3;
+    scores.meningitis += 1;
+  }
+  if (focal.indexOf("rapid_decline") >= 0) {
+    scores.ich += 3; scores.sdh_edh += 4; scores.large_infarct += 3;
+    scores.hydrocephalus += 3; scores.bao += 3;
+    scores.meningitis += 2;
+  }
+  if (focal.indexOf("none_focal") >= 0) {
+    scores.drug_intox += 2; scores.septic_enceph += 2;
+    scores.hepatic_enceph += 2; scores.hhs_dka += 2;
+    scores.dysnatrem += 2; scores.co2_narcosis += 2;
+    scores.ncse += 1; scores.wernicke += 1;
+    scores.catatonia += 1; scores.functional_coma += 1;
+  }
+
+  // --- Step 4: 瞳孔・眼球所見 ---
+  var pupils = ans.pupils || [];
+  if (pupils.indexOf("bilateral_miosis") >= 0) {
+    scores.drug_intox += 5; // オピオイド
+    scores.bao += 3; // 橋病変
+  }
+  if (pupils.indexOf("bilateral_mydriasis") >= 0) {
+    scores.drug_intox += 3; // 抗コリン、交感神経刺激
+    scores.co2_narcosis += 2;
+  }
+  if (pupils.indexOf("unilateral_mydriasis") >= 0) {
+    scores.ich += 4; scores.sdh_edh += 5;
+    scores.large_infarct += 3; scores.sah += 3;
+  }
+  if (pupils.indexOf("preserved_plr") >= 0) {
+    scores.drug_intox += 2; scores.septic_enceph += 2;
+    scores.hepatic_enceph += 2; scores.hhs_dka += 1;
+    scores.dysnatrem += 1; scores.ncse += 1;
+    scores.functional_coma += 2;
+  }
+  if (pupils.indexOf("vertical_gaze") >= 0) {
+    scores.hydrocephalus += 3; scores.dcvt += 3;
+    scores.bao += 2;
+  }
+  if (pupils.indexOf("roving_eyes") >= 0) {
+    scores.drug_intox += 1; scores.hepatic_enceph += 1;
+  }
+  if (pupils.indexOf("ocular_bobbing") >= 0) {
+    scores.bao += 5;
+  }
+  if (pupils.indexOf("nystagmus") >= 0) {
+    scores.wernicke += 3; scores.drug_intox += 2;
+    scores.bao += 1;
+  }
+  if (pupils.indexOf("sixth_nerve") >= 0) {
+    scores.hydrocephalus += 3; scores.wernicke += 3;
+  }
+  if (pupils.indexOf("vertical_preserved") >= 0) {
+    // locked-in syndrome の示唆 → BAOスコアに反映
+    scores.bao += 4;
+  }
+
+  // --- Step 5: 運動所見 ---
+  var motor = ans.motor || [];
+  if (motor.indexOf("decorticate") >= 0) {
+    scores.ich += 2; scores.large_infarct += 2;
+    scores.sdh_edh += 2; scores.hydrocephalus += 1;
+  }
+  if (motor.indexOf("decerebrate") >= 0) {
+    scores.ich += 3; scores.bao += 3;
+    scores.sdh_edh += 2; scores.hydrocephalus += 2;
+  }
+  if (motor.indexOf("motor_asymmetry") >= 0) {
+    scores.ich += 3; scores.large_infarct += 3;
+    scores.sdh_edh += 2; scores.bao += 1;
+  }
+  if (motor.indexOf("asterixis") >= 0) {
+    scores.hepatic_enceph += 6; scores.dysnatrem += 2;
+    scores.co2_narcosis += 2;
+  }
+  if (motor.indexOf("myoclonus") >= 0) {
+    scores.co2_narcosis += 3; scores.dysnatrem += 2;
+    scores.ncse += 3; scores.drug_intox += 1;
+  }
+  if (motor.indexOf("subtle_motor") >= 0) {
+    scores.ncse += 5;
+  }
+  if (motor.indexOf("tremor") >= 0) {
+    scores.drug_intox += 2; scores.hepatic_enceph += 1;
+    scores.wernicke += 1;
+  }
+  if (motor.indexOf("rigidity") >= 0) {
+    scores.drug_intox += 2; scores.catatonia += 2;
+    scores.autoimmune_enceph += 1;
+  }
+  if (motor.indexOf("waxy_flex") >= 0) {
+    scores.catatonia += 6;
+  }
+  if (motor.indexOf("resistance_open") >= 0) {
+    scores.functional_coma += 6; scores.catatonia += 2;
+  }
+  if (motor.indexOf("quadriplegia") >= 0) {
+    scores.bao += 4; scores.dcvt += 1;
+  }
+
+  // --- Step 6: 随伴症状 ---
+  var assoc = ans.associated || [];
+  if (assoc.indexOf("headache") >= 0) {
+    scores.sah += 4; scores.ich += 2; scores.meningitis += 3;
+    scores.dcvt += 3; scores.hydrocephalus += 2;
+  }
+  if (assoc.indexOf("seizure_witnessed") >= 0) {
+    scores.postictal += 5; scores.ncse += 3;
+    scores.meningitis += 2; scores.autoimmune_enceph += 3;
+    scores.dcvt += 2; scores.dysnatrem += 2;
+    scores.drug_intox += 1;
+  }
+  if (assoc.indexOf("vomiting") >= 0) {
+    scores.hydrocephalus += 2; scores.ich += 1;
+    scores.meningitis += 1; scores.hhs_dka += 1;
+  }
+  if (assoc.indexOf("rash") >= 0) {
+    scores.meningitis += 4;
+  }
+  if (assoc.indexOf("jaundice") >= 0) {
+    scores.hepatic_enceph += 5;
+  }
+  if (assoc.indexOf("acetone_breath") >= 0) {
+    scores.hhs_dka += 5;
+  }
+  if (assoc.indexOf("psychiatric_sx") >= 0) {
+    scores.autoimmune_enceph += 4; scores.catatonia += 3;
+    scores.functional_coma += 2; scores.drug_intox += 1;
+  }
+  if (assoc.indexOf("involuntary_mvt") >= 0) {
+    scores.autoimmune_enceph += 4;
+  }
+  if (assoc.indexOf("autonomic") >= 0) {
+    scores.autoimmune_enceph += 3; scores.drug_intox += 2;
+    scores.catatonia += 1;
+  }
+  if (assoc.indexOf("trauma_signs") >= 0) {
+    scores.sdh_edh += 6;
+  }
+
+  // --- Step 7: 背景因子 ---
+  var bg = ans.background || [];
+  if (bg.indexOf("alcohol") >= 0) {
+    scores.wernicke += 4; scores.drug_intox += 2;
+    scores.hepatic_enceph += 2; scores.postictal += 1;
+  }
+  if (bg.indexOf("diabetes") >= 0) {
+    scores.hypoglycemia += 3; scores.hhs_dka += 3;
+  }
+  if (bg.indexOf("liver_disease") >= 0) {
+    scores.hepatic_enceph += 5;
+  }
+  if (bg.indexOf("renal_disease") >= 0) {
+    scores.dysnatrem += 2; scores.septic_enceph += 1;
+  }
+  if (bg.indexOf("cancer") >= 0) {
+    scores.hydrocephalus += 1; scores.meningitis += 1;
+    scores.autoimmune_enceph += 2;
+  }
+  if (bg.indexOf("immunosuppressed") >= 0) {
+    scores.meningitis += 3; scores.septic_enceph += 1;
+  }
+  if (bg.indexOf("anticoagulant") >= 0) {
+    scores.ich += 3; scores.sdh_edh += 3;
+  }
+  if (bg.indexOf("sedatives") >= 0) {
+    scores.drug_intox += 4;
+  }
+  if (bg.indexOf("epilepsy") >= 0) {
+    scores.ncse += 3; scores.postictal += 4;
+  }
+  if (bg.indexOf("young_female") >= 0) {
+    scores.dcvt += 4; scores.autoimmune_enceph += 2;
+  }
+  if (bg.indexOf("malnutrition") >= 0) {
+    scores.wernicke += 4;
+  }
+  if (bg.indexOf("hypertension_hx") >= 0) {
+    scores.ich += 2; scores.large_infarct += 1;
+  }
+  if (bg.indexOf("psychiatric_hx") >= 0) {
+    scores.catatonia += 2; scores.functional_coma += 2;
+  }
+
+  // --- Step 8: 臨床経過 ---
+  var course = ans.course || [];
+  if (course.indexOf("post_seizure_slow") >= 0) {
+    scores.ncse += 5; scores.postictal += 2;
+  }
+  if (course.indexOf("wax_wane") >= 0) {
+    scores.ncse += 3; scores.hepatic_enceph += 2;
+    scores.septic_enceph += 1;
+  }
+  if (course.indexOf("progressive") >= 0) {
+    scores.ich += 2; scores.large_infarct += 2;
+    scores.hydrocephalus += 3; scores.sdh_edh += 2;
+    scores.meningitis += 2;
+  }
+  if (course.indexOf("improve_glucose") >= 0) {
+    scores.hypoglycemia += 8;
+  }
+  if (course.indexOf("improve_naloxone") >= 0) {
+    scores.drug_intox += 8;
+  }
+  if (course.indexOf("ct_normal") >= 0) {
+    scores.ich -= 4; scores.sdh_edh -= 4; scores.sah -= 2;
+    scores.large_infarct -= 2; scores.hydrocephalus -= 3;
+    scores.ncse += 2; scores.drug_intox += 1;
+    scores.septic_enceph += 1; scores.dysnatrem += 1;
+    scores.wernicke += 1; scores.autoimmune_enceph += 1;
+    scores.functional_coma += 1;
+  }
+  if (course.indexOf("bilateral_thalamus") >= 0) {
+    scores.dcvt += 6; scores.bao += 2;
+  }
+  if (course.indexOf("brainstem_lesion") >= 0) {
+    scores.bao += 5; scores.ich += 2;
+  }
+
+  return scores;
+}
+
+// ===== UI描画 =====
+var appEl = document.getElementById("app");
+var currentStep = 0;
+var answers = {};
+
+function render() {
+  var html = "";
+
+  // アルゴリズム説明
+  html += '<div class="algo-note">';
+  html += '<strong>使い方：</strong>各ステップの質問に順番に回答してください。すべてのステップ完了後に鑑別診断の候補が優先順位付きで表示されます。<br>';
+  html += '<strong>4本柱：</strong>①真の意識障害か ②すぐ是正すべき可逆的要因 ③構造性かびまん性か ④発作（NCSE）を見落としていないか';
+  html += '<br><small>（Edlow, Lancet 2014; Schmidt, Scand J Trauma 2019; FOUR score: Wijdicks 2005準拠）</small>';
+  html += '</div>';
+
+  // 各ステップ
+  for (var i = 0; i < STEPS.length; i++) {
+    var step = STEPS[i];
+    var isActive = i === currentStep;
+    var isDone = i < currentStep;
+    var cls = isDone ? "completed" : (isActive ? "" : "inactive");
+
+    html += '<div class="step-card ' + cls + '" id="step-' + i + '">';
+    html += '<div class="step-header">';
+    html += '<span class="step-number ' + (isDone ? 'done' : '') + '">' + (isDone ? '✓' : (i + 1)) + '</span>';
+    html += '<span class="step-title">' + step.title + '</span>';
+    html += '</div>';
+
+    if (isActive || isDone) {
+      html += '<div class="step-body">';
+      html += '<p style="font-weight:600;margin-bottom:4px;">' + step.question + '</p>';
+      if (step.hint) html += '<p class="hint">' + step.hint + '</p>';
+
+      if (step.type === "single") {
+        html += '<div class="option-group">';
+        for (var j = 0; j < step.options.length; j++) {
+          var opt = step.options[j];
+          var selected = answers[step.id] === opt.value;
+          html += '<button class="option-btn ' + (selected ? 'selected' : '') + '"';
+          html += ' onclick="selectSingle(\'' + step.id + '\', \'' + opt.value + '\', ' + i + ')"';
+          if (isDone && !isActive) html += ' disabled';
+          html += '>';
+          html += '<span class="icon">' + (opt.icon || '') + '</span>' + opt.label;
+          html += '</button>';
+        }
+        html += '</div>';
+      } else {
+        html += '<div class="checklist">';
+        var currentAnswers = answers[step.id] || [];
+        for (var j = 0; j < step.options.length; j++) {
+          var opt = step.options[j];
+          var checked = currentAnswers.indexOf(opt.value) >= 0;
+          html += '<div class="check-item" onclick="toggleCheck(\'' + step.id + '\', \'' + opt.value + '\', this)">';
+          html += '<input type="checkbox" ' + (checked ? 'checked' : '') + (isDone && !isActive ? ' disabled' : '') + '>';
+          html += '<label>' + opt.label + '</label>';
+          html += '</div>';
+        }
+        html += '</div>';
+        if (isActive) {
+          html += '<button class="next-btn" onclick="nextStep(' + i + ')">次へ ▶</button>';
+        }
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+
+  // 結果パネル
+  if (currentStep >= STEPS.length) {
+    html += renderResults();
+  }
+
+  // リセットボタン
+  if (currentStep > 0) {
+    html += '<button class="reset-btn" onclick="resetAll()">🔄 最初からやり直す</button>';
+  }
+
+  appEl.innerHTML = html;
+
+  // 結果表示後スクロール
+  if (currentStep >= STEPS.length) {
+    setTimeout(function() {
+      var panel = document.querySelector('.result-panel');
+      if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+}
+
+function selectSingle(stepId, value, stepIndex) {
+  answers[stepId] = value;
+  currentStep = stepIndex + 1;
+  render();
+  scrollToStep(currentStep);
+}
+
+function toggleCheck(stepId, value, el) {
+  if (!answers[stepId]) answers[stepId] = [];
+  var arr = answers[stepId];
+  var idx = arr.indexOf(value);
+  if (idx >= 0) { arr.splice(idx, 1); } else { arr.push(value); }
+  var cb = el.querySelector('input[type="checkbox"]');
+  if (cb) cb.checked = idx < 0;
+}
+
+function nextStep(stepIndex) {
+  currentStep = stepIndex + 1;
+  render();
+  scrollToStep(currentStep);
+}
+
+function scrollToStep(idx) {
+  setTimeout(function() {
+    var el = document.getElementById("step-" + idx) || document.querySelector('.result-panel');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+function resetAll() {
+  var keys = Object.keys(answers);
+  for (var i = 0; i < keys.length; i++) { delete answers[keys[i]]; }
+  currentStep = 0;
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===== 結果描画 =====
+function renderResults() {
+  var scores = calcScores(answers);
+  var entries = [];
+  var keys = Object.keys(scores);
+  for (var i = 0; i < keys.length; i++) {
+    entries.push([keys[i], scores[keys[i]]]);
+  }
+  entries.sort(function(a, b) { return b[1] - a[1]; });
+
+  var maxScore = entries.length > 0 ? entries[0][1] : 1;
+  if (maxScore < 1) maxScore = 1;
+
+  var html = '<div class="result-panel">';
+  html += '<h2>📋 鑑別診断の結果</h2>';
+
+  // --- 突然発症アラート ---
+  if (answers.onset === "sudden") {
+    html += '<div class="alert-box alert-red">';
+    html += '<strong>🚨 突然発症の意識障害 — 緊急評価が必要</strong><br>';
+    html += '血管性病変（脳出血、SAH、BAO）を最優先で除外してください。<br>';
+    html += '初期評価：頭部CT → CTA（後方循環評価）。SAH疑いでCT陰性なら腰椎穿刺。';
+    html += '</div>';
+  }
+
+  // --- 局在徴候アラート ---
+  var focal = answers.focal_signs || [];
+  var hasFocal = false;
+  for (var i = 0; i < focal.length; i++) {
+    if (focal[i] !== "none_focal") { hasFocal = true; break; }
+  }
+  if (hasFocal) {
+    html += '<div class="alert-box alert-red">';
+    html += '<strong>▶ 構造性Red Flags検出 — CT/CTAを急ぐ</strong><br>';
+    if (focal.indexOf("anisocoria") >= 0) {
+      html += '・瞳孔不同 → ヘルニア・局在性脳幹障害を最優先で評価<br>';
+    }
+    if (focal.indexOf("neck_stiffness") >= 0) {
+      html += '・項部硬直 → 髄膜炎・SAHを考慮。血液培養後に抗菌薬開始を遅らせない<br>';
+    }
+    if (focal.indexOf("rapid_decline") >= 0) {
+      html += '・急速な悪化 → 脳ヘルニア・血腫拡大・急性水頭症を考慮<br>';
+    }
+    html += '</div>';
+  }
+
+  // --- NCSE警告 ---
+  var vitals = answers.vitals || [];
+  var motor = ans_motor_check();
+  var course = answers.course || [];
+  if (scores.ncse >= 5 || course.indexOf("post_seizure_slow") >= 0) {
+    html += '<div class="alert-box alert-yellow">';
+    html += '<strong>⚡ 非けいれん性てんかん重積（NCSE）の可能性</strong><br>';
+    html += '説明のつかない持続性意識障害ではEEGを前倒しで検討してください。<br>';
+    html += 'けいれん後の覚醒遅延、微細な運動兆候、変動する意識はNCSEの手がかりです。';
+    html += '</div>';
+  }
+
+  // --- Locked-in syndrome 警告 ---
+  var pupils_ans = answers.pupils || [];
+  if (pupils_ans.indexOf("vertical_preserved") >= 0) {
+    html += '<div class="alert-box alert-blue">';
+    html += '<strong>👁️ Locked-in syndrome の可能性</strong><br>';
+    html += '垂直眼球運動・瞬目が保持されているなら、<strong>意識は保たれている可能性</strong>があります。<br>';
+    html += '瞬目や上下視によるコマンド追従を必ず確認してください。腹側橋病変（BAO）を疑います。';
+    html += '</div>';
+  }
+
+  // --- 4本柱チェックリスト ---
+  html += '<div class="section-title">🏛️ 4本柱チェックリスト</div>';
+  html += '<div class="alert-box" style="background:#F5F5F5;border:1px solid #ddd;">';
+  html += '① <strong>真の意識障害か？</strong> — 失語、聴覚障害、locked-in syndrome、機能性無反応を除外<br>';
+  html += '② <strong>すぐ是正すべき可逆的要因</strong> — 低血糖、低酸素、ショック、不整脈、体温異常<br>';
+  html += '③ <strong>構造性かびまん性か？</strong> — 局在徴候あり→CT/CTA、なし→代謝・毒性・感染<br>';
+  html += '④ <strong>発作を見落としていないか？</strong> — 説明困難な意識障害→EEGの閾値を下げる';
+  html += '</div>';
+
+  // --- 疾患カード ---
+  html += '<div class="section-title">🔍 鑑別候補（スコア順）</div>';
+  var shown = 0;
+  for (var i = 0; i < entries.length; i++) {
+    var id = entries[i][0];
+    var score = entries[i][1];
+    if (score <= 0) continue;
+
+    var d = DISEASES[id];
+    var level = getProbLevel(score, maxScore);
+    var catLabel = getCatLabel(d.category);
+    var catClass = "cat-" + d.category;
+
+    html += '<div class="disease-card ' + level + '">';
+    html += '<div class="disease-header">';
+    html += '<span class="disease-name">' + d.emoji + ' ' + d.name + '</span>';
+    html += '<span class="badge ' + level + '">';
+    html += level === "high" ? "可能性 高" : (level === "medium" ? "可能性 中" : "可能性 低");
+    html += '</span>';
+    html += '</div>';
+    html += '<span class="cat-tag ' + catClass + '">' + catLabel + '</span>';
+    html += '<div class="disease-detail">' + d.detail + '</div>';
+    html += '<div class="workup-line">🔍 追加検査: ' + d.workup + '</div>';
+    html += '</div>';
+    shown++;
+  }
+
+  if (shown === 0) {
+    html += '<p style="color:var(--gray);text-align:center;padding:16px;">スコアが0以上の疾患はありませんでした。入力を見直してください。</p>';
+  }
+
+  // --- GCS vs FOUR score 比較表 ---
+  html += '<div class="section-title">📊 GCS vs FOUR score 比較</div>';
+  html += '<table class="ref-table">';
+  html += '<tr><th>項目</th><th>GCS (Teasdale 1974)</th><th>FOUR score (Wijdicks 2005)</th></tr>';
+  html += '<tr><td>構成</td><td>E(1-4) + V(1-5) + M(1-6) = 3-15</td><td>Eye(0-4) + Motor(0-4) + Brainstem(0-4) + Respiration(0-4) = 0-16</td></tr>';
+  html += '<tr><td>挿管患者</td><td>V評価不能（VTと記載）</td><td>評価可能（Vの代わりにBrainstem・Respiration）</td></tr>';
+  html += '<tr><td>脳幹反射</td><td>含まれない</td><td>瞳孔反射・角膜反射を評価</td></tr>';
+  html += '<tr><td>Locked-in検出</td><td>困難</td><td>Eye responseで瞬目追従を評価可能</td></tr>';
+  html += '<tr><td>最低点</td><td>3（死亡でも3）</td><td>0（より精密な重症度評価）</td></tr>';
+  html += '</table>';
+
+  // --- 落とし穴 ---
+  html += '<div class="pitfall-box">';
+  html += '<strong>⚠️ よくある落とし穴</strong><br>';
+  html += '・最初に見つかった異常に固定しない — 33%で複数原因が併存（Schmidt 2019, n=1027）<br>';
+  html += '・Postictal stateを長く信じすぎない — 改善なければNCSE・新規脳病変を再考<br>';
+  html += '・「局在徴候なし＝代謝性」と短絡しない — 脳幹梗塞、両側視床病変は局在徴候が乏しい<br>';
+  html += '・低血糖は脳卒中に似た局在徴候を呈しうる — 必ず血糖測定を先行<br>';
+  html += '・鎮静薬・低体温の影響を差し引いてから神経所見を解釈する<br>';
+  html += '・「心因性」のラベルは十分な除外診断の後に — 脳幹梗塞、NCSE、薬物を否定してから<br>';
+  html += '・画像待ちで治療を遅らせない — 髄膜炎・脳炎では抗菌薬/アシクロビルを先行';
+  html += '</div>';
+
+  html += '</div>';
+  return html;
+}
+
+function ans_motor_check() {
+  return answers.motor || [];
+}
+
+function getProbLevel(score, maxScore) {
+  if (score >= maxScore * 0.7 && score >= 4) return "high";
+  if (score >= maxScore * 0.4 && score >= 2) return "medium";
+  return "low";
+}
+
+function getCatLabel(cat) {
+  if (cat === "structural") return "構造性脳病変";
+  if (cat === "seizure") return "発作関連";
+  if (cat === "metabolic") return "代謝・中毒性";
+  if (cat === "infection") return "感染・炎症性";
+  if (cat === "psychiatric") return "精神科的病態";
+  return cat;
+}
+
+// 初期描画
+render();
+</script>
+</body>
+</html>
