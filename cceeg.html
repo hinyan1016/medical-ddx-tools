@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1E3A5F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>CCEEG 薬剤調整判断サポートツール</title>
+<style>
+  :root {
+    --navy: #1E3A5F;
+    --blue: #2563EB;
+    --light-blue: #EFF6FF;
+    --red: #DC2626;
+    --orange: #EA580C;
+    --yellow: #CA8A04;
+    --green: #16A34A;
+    --cyan: #0891B2;
+    --gray: #64748B;
+    --light-gray: #F1F5F9;
+    --white: #FFFFFF;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04);
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(145deg, #F8FAFC 0%, #EFF6FF 50%, #F0F9FF 100%);
+    color: #1E293B;
+    min-height: 100vh;
+    padding-bottom: 32px;
+  }
+  .header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+    color: #fff;
+    padding: 20px 16px 14px;
+    text-align: center;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(30,58,95,0.18);
+    overflow: hidden;
+  }
+  .header-bg-icon {
+    position: absolute; top: -20px; right: -20px;
+    font-size: 80px; opacity: 0.08; pointer-events: none;
+  }
+  .header-sub {
+    font-size: 0.7rem; font-weight: 500; opacity: 0.8;
+    letter-spacing: 2px; margin-bottom: 4px;
+  }
+  .header h1 { font-size: 1.15rem; font-weight: 700; line-height: 1.4; position: relative; }
+  .header p { font-size: 0.75rem; opacity: 0.75; margin-top: 6px; line-height: 1.5; position: relative; }
+  .back-link {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    color: #fff; text-decoration: none; font-size: 0.92rem; opacity: 0.85;
+  }
+  .back-link:hover { opacity: 1; }
+  .progress-bar {
+    margin-top: 12px; height: 4px;
+    background: rgba(255,255,255,0.2); border-radius: 2px;
+    position: relative;
+  }
+  .progress-fill {
+    height: 100%; background: rgba(255,255,255,0.8);
+    border-radius: 2px; transition: width 0.5s ease;
+  }
+  .container { max-width: 640px; margin: 0 auto; padding: 16px 10px; }
+  .disclaimer {
+    background: #FFFBEB;
+    border: 1px solid #FDE68A;
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    font-size: 0.78rem;
+    color: #92400E;
+    line-height: 1.6;
+  }
+  .step-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 22px;
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+    animation: fadeIn 0.35s ease-out;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .step-meta {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 4px;
+  }
+  .step-icon { font-size: 1.5rem; }
+  .step-label {
+    font-size: 0.7rem; font-weight: 600; color: #6B7280;
+    letter-spacing: 1px;
+  }
+  .step-title {
+    margin: 8px 0 12px; font-size: 1.05rem;
+    font-weight: 700; color: #1E293B; line-height: 1.4;
+  }
+  .step-question {
+    margin: 0 0 6px; font-size: 0.9rem;
+    color: #334155; line-height: 1.7;
+  }
+  .step-info {
+    background: #F0F9FF;
+    border: 1px solid #BAE6FD;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-top: 10px; margin-bottom: 4px;
+    font-size: 0.8rem;
+    color: #0369A1;
+    line-height: 1.6;
+  }
+  .option-group {
+    display: flex; flex-direction: column; gap: 10px;
+    margin-top: 16px;
+  }
+  .option-btn {
+    width: 100%; text-align: left;
+    padding: 14px 18px;
+    border: 2px solid #E2E8F0;
+    border-radius: 12px;
+    background: white;
+    cursor: pointer;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    color: #1E293B;
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+  }
+  .option-btn:hover {
+    border-color: var(--blue);
+    background: var(--light-blue);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59,130,246,0.12);
+  }
+  .option-btn:active { transform: translateY(0); }
+  .risk-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: 10px;
+    flex-shrink: 0;
+    margin-top: 6px;
+  }
+  .result-panel {
+    border-radius: var(--radius);
+    padding: 22px;
+    margin-bottom: 16px;
+    animation: fadeIn 0.35s ease-out;
+  }
+  .result-header {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+  }
+  .result-icon { font-size: 1.4rem; }
+  .result-badge {
+    font-size: 0.75rem; font-weight: 700;
+    padding: 3px 10px; border-radius: 6px;
+    background: white;
+  }
+  .result-title {
+    margin: 0 0 8px;
+    font-size: 1.12rem; font-weight: 700; line-height: 1.4;
+  }
+  .result-action-box {
+    background: white;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+  }
+  .result-action-label {
+    font-size: 0.82rem; font-weight: 700; margin-bottom: 6px;
+  }
+  .result-action-text {
+    font-size: 0.95rem; font-weight: 600; color: #1E293B; line-height: 1.5;
+  }
+  .result-detail {
+    font-size: 0.85rem; color: #475569;
+    line-height: 1.8; margin: 0 0 14px;
+  }
+  .result-points-label {
+    font-size: 0.8rem; font-weight: 600; color: #64748B; margin-bottom: 8px;
+  }
+  .point-item {
+    padding: 10px 14px;
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+    line-height: 1.7;
+    border-left: 3px solid var(--blue);
+    color: #334155;
+  }
+  .nav-row {
+    display: flex; gap: 10px; margin-top: 8px;
+  }
+  .nav-btn {
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-family: inherit;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+  .nav-btn:hover { transform: translateY(-1px); }
+  .nav-btn-back { background: #E2E8F0; color: #475569; }
+  .nav-btn-reset { color: #64748B; margin-left: auto; }
+  .legend {
+    margin-top: 20px;
+    padding: 14px 18px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .legend-title {
+    font-size: 0.7rem; font-weight: 600; color: #94A3B8; margin-bottom: 8px;
+  }
+  .legend-items {
+    display: flex; gap: 16px; flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 0.73rem; color: #64748B;
+  }
+  .legend-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .tool-footer {
+    margin-top: 16px;
+    text-align: center;
+    font-size: 0.68rem;
+    color: #94A3B8;
+    line-height: 1.6;
+    padding-bottom: 20px;
+  }
+  @media (max-width: 600px) {
+    .header { padding: 16px 12px 12px; }
+    .header h1 { font-size: 1.05rem; }
+    .container { padding: 12px 8px; }
+    .step-card { padding: 16px; }
+    .result-panel { padding: 16px; }
+    .option-btn { padding: 12px 14px; font-size: 0.85rem; }
+    .legend-items { gap: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a class="back-link" href="index.html">← 戻る</a>
+  <div class="header-bg-icon">&#x1F9E0;</div>
+  <div class="header-sub">CCEEG DECISION SUPPORT</div>
+  <h1>脳波に基づく抗てんかん発作薬<br>調整判断サポートツール</h1>
+  <p>ACNS Standardized Critical Care EEG Terminology 2021 準拠</p>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="disclaimer">
+    &#x26A0;&#xFE0F; 本ツールは臨床判断の補助を目的としています。最終的な治療判断は臨床所見・患者背景を総合的に考慮し、可能な限り専門医にご相談ください。
+  </div>
+  <div id="mainContent"></div>
+  <div id="navRow" class="nav-row"></div>
+  <div class="legend">
+    <div class="legend-title">選択肢のリスク表示</div>
+    <div class="legend-items">
+      <div class="legend-item"><span class="legend-dot" style="background:#DC2626"></span>高リスク（発作の可能性高）</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#EA580C"></span>中等度（要評価）</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#16A34A"></span>低リスク</div>
+    </div>
+  </div>
+  <div class="tool-footer">
+    参考：日本臨床神経生理学会 Critical Care EEGの測定記録・判読指針<br>
+    ACNS Standardized Critical Care EEG Terminology 2021
+  </div>
+</div>
+
+<script>
+var STEPS = {
+  start: {
+    id: "start",
+    title: "脳波パターンの確認",
+    question: "持続脳波モニタリング（CCEEG）で観察されている主なパターンはどれですか？",
+    icon: "\uD83E\uDDE0",
+    options: [
+      { label: "明らかな律動性の発作パターン（evolution あり）", next: "esz_evolution", risk: "high" },
+      { label: "周期性放電（PDs）が繰り返し出現", next: "pd_type", risk: "mid" },
+      { label: "律動性デルタ活動（RDA）", next: "rda_type", risk: "mid" },
+      { label: "棘徐波・鋭徐波（SW）の反復", next: "sw_freq", risk: "mid" },
+      { label: "背景活動の徐波化のみ（周期性・律動性パターンなし）", next: "bg_only", risk: "low" }
+    ]
+  },
+  esz_evolution: {
+    id: "esz_evolution",
+    title: "Evolution（進展）の確認",
+    question: "波形の進展（evolution）パターンを確認してください。周波数・形態・出現部位のいずれかが2段階以上連続的に変化していますか？",
+    icon: "\uD83D\uDCC8",
+    info: "Evolution = 周波数\u2191\u2191 or \u2193\u2193、形態の段階的変化、出現部位の移動 が2段階以上",
+    options: [
+      { label: "はい \u2014 明確なevolutionあり、10秒以上持続", next: "esz_confirmed", risk: "high" },
+      { label: "変化はあるが1段階のみ、またはfluctuation程度", next: "fluctuation_check", risk: "mid" },
+      { label: "よくわからない", next: "freq_check_general", risk: "mid" }
+    ]
+  },
+  esz_confirmed: {
+    id: "esz_confirmed",
+    title: "電気的発作（ESz）と判定",
+    question: "発作の持続時間を確認してください。",
+    icon: "\u26A1",
+    options: [
+      { label: "10分以上連続、または60分中20%以上出現", next: "result_ese", risk: "high" },
+      { label: "10秒以上だが10分未満、60分中20%未満", next: "result_esz", risk: "high" }
+    ]
+  },
+  pd_type: {
+    id: "pd_type",
+    title: "周期性放電の分布",
+    question: "周期性放電（PDs）の分布はどのパターンですか？",
+    icon: "\uD83D\uDCCA",
+    info: "PDs = 同一形態の波形が明確な間隔で規則的に6回以上出現",
+    options: [
+      { label: "片側性 \u2014 LPDs（一側に優位）", next: "lpd_assess", risk: "high" },
+      { label: "全般性 \u2014 GPDs（両側対称性）", next: "gpd_assess", risk: "mid" },
+      { label: "両側独立性 \u2014 BIPDs（左右独立に出現）", next: "bipd_assess", risk: "high" }
+    ]
+  },
+  lpd_assess: {
+    id: "lpd_assess",
+    title: "LPDs の評価",
+    question: "LPDs は周波数やplusの有無に関わらず発作リスクが高いパターンです。以下を確認してください。",
+    icon: "\uD83D\uDD34",
+    info: "LPDs は最も発作リスクが高い周期性パターンです",
+    options: [
+      { label: "平均 >2.5 Hz で10秒以上持続（10秒で25個超）", next: "result_ese_or_esz", risk: "high" },
+      { label: "平均 1.0\u301C2.5 Hz で10秒以上持続", next: "result_iic_high", risk: "high" },
+      { label: "平均 0.5\u301C1.0 Hz で plus or fluctuation あり", next: "result_iic_high", risk: "high" },
+      { label: "平均 <1.0 Hz で plus/fluctuation なし", next: "lpd_clinical", risk: "mid" }
+    ]
+  },
+  lpd_clinical: {
+    id: "lpd_clinical",
+    title: "LPDs \u2014 臨床症状との相関",
+    question: "脳波パターンに同期した臨床症状はありますか？",
+    icon: "\uD83D\uDC41\uFE0F",
+    info: "微妙な症状（顔面のピクつき、眼振、眼球偏倚など）も含めて確認",
+    options: [
+      { label: "はい \u2014 波形と同期する臨床症状あり", next: "result_ecsz", risk: "high" },
+      { label: "いいえ \u2014 明らかな臨床症状なし", next: "result_lpd_monitor", risk: "mid" }
+    ]
+  },
+  gpd_assess: {
+    id: "gpd_assess",
+    title: "GPDs の評価",
+    question: "GPDsの特徴を確認してください。",
+    icon: "\uD83D\uDFE1",
+    info: "GPDs は周波数 >1.5Hz または plus がある場合に発作リスクが上昇",
+    options: [
+      { label: "平均 >2.5 Hz で10秒以上持続", next: "result_ese_or_esz", risk: "high" },
+      { label: "平均 >1.5 Hz、または plus（+F/+R/+S）あり", next: "result_iic_moderate", risk: "mid" },
+      { label: "平均 \u22661.5 Hz で plus なし（三相波様を含む）", next: "gpd_etiology", risk: "low" }
+    ]
+  },
+  gpd_etiology: {
+    id: "gpd_etiology",
+    title: "GPDs \u2014 原因疾患の確認",
+    question: "GPDs（三相波を含む）の背景にある病態は？",
+    icon: "\uD83D\uDD0D",
+    info: "三相波様GPDsは代謝性脳症で多いが、NCSEとの鑑別が重要",
+    options: [
+      { label: "肝性脳症・腎不全・電解質異常などの代謝性脳症", next: "result_metabolic", risk: "low" },
+      { label: "CJD疑い", next: "result_cjd", risk: "low" },
+      { label: "原因不明・上記に該当しない", next: "result_gpd_trial", risk: "mid" }
+    ]
+  },
+  bipd_assess: {
+    id: "bipd_assess",
+    title: "BIPDs の評価",
+    question: "BIPDsが確認されました。BIPDsを有する患者はNCSzやNCSEを発症するリスクが高いです。",
+    icon: "\uD83D\uDD34",
+    options: [
+      { label: "臨床症状（意識変容など）を伴う", next: "result_iic_high", risk: "high" },
+      { label: "臨床症状は明らかでない", next: "result_bipd_monitor", risk: "mid" }
+    ]
+  },
+  rda_type: {
+    id: "rda_type",
+    title: "律動性デルタ活動の分布",
+    question: "RDAの分布パターンはどちらですか？",
+    icon: "\uD83C\uDF0A",
+    info: "RDA = 同一形態の波形が間隔なく6回以上連続",
+    options: [
+      { label: "片側性 \u2014 LRDA", next: "lrda_assess", risk: "mid" },
+      { label: "全般性 \u2014 GRDA", next: "grda_assess", risk: "low" }
+    ]
+  },
+  lrda_assess: {
+    id: "lrda_assess",
+    title: "LRDA の評価",
+    question: "LRDAの特徴を確認してください。",
+    icon: "\uD83D\uDFE0",
+    info: "LRDA は周波数 >1.5Hz または plus がある場合に発作リスクが上昇",
+    options: [
+      { label: "周波数 >1.5 Hz、または plus（+S）あり", next: "result_iic_moderate", risk: "mid" },
+      { label: "周波数 \u22661.5 Hz で plus なし", next: "result_lrda_low", risk: "low" }
+    ]
+  },
+  grda_assess: {
+    id: "grda_assess",
+    title: "GRDA の評価",
+    question: "GRDAは発作との関連が低いパターンです。",
+    icon: "\uD83D\uDFE2",
+    info: "GRDA は4つのRPPsの中で最も発作リスクが低い",
+    options: [
+      { label: "臨床的に意識障害の原因が他にない", next: "result_grda_investigate", risk: "low" },
+      { label: "代謝性・中毒性など他の原因あり", next: "result_grda_treat_cause", risk: "low" }
+    ]
+  },
+  sw_freq: {
+    id: "sw_freq",
+    title: "棘徐波/鋭徐波（SW）の評価",
+    question: "SW パターンの周波数を確認してください。",
+    icon: "\u26A1",
+    options: [
+      { label: "平均 >2.5 Hz で10秒以上持続", next: "result_ese_or_esz", risk: "high" },
+      { label: "平均 1.0\u301C2.5 Hz で10秒以上持続", next: "result_iic_moderate", risk: "mid" },
+      { label: "平均 0.5\u301C1.0 Hz で plus or fluctuation あり", next: "result_iic_moderate", risk: "mid" },
+      { label: "散発的（上記に該当しない）", next: "result_interictal", risk: "low" }
+    ]
+  },
+  fluctuation_check: {
+    id: "fluctuation_check",
+    title: "Fluctuation の確認",
+    question: "波形の周波数・形態・出現部位のいずれかが、1分以内の間隔で3回以上変化していますか？（evolution の定義は満たさない）",
+    icon: "\uD83D\uDD04",
+    options: [
+      { label: "はい \u2014 fluctuation あり", next: "result_iic_moderate", risk: "mid" },
+      { label: "いいえ \u2014 変化なし or 判断困難", next: "freq_check_general", risk: "mid" }
+    ]
+  },
+  freq_check_general: {
+    id: "freq_check_general",
+    title: "周波数の確認",
+    question: "主要な波形パターンの平均周波数はどのくらいですか？",
+    icon: "\uD83D\uDCCF",
+    options: [
+      { label: "平均 >2.5 Hz", next: "result_likely_esz", risk: "high" },
+      { label: "平均 1.0\u301C2.5 Hz", next: "result_iic_moderate", risk: "mid" },
+      { label: "平均 <1.0 Hz", next: "result_low_freq", risk: "low" }
+    ]
+  },
+  bg_only: {
+    id: "bg_only",
+    title: "背景活動のみの評価",
+    question: "背景活動の状態を確認してください。",
+    icon: "\uD83D\uDCCB",
+    options: [
+      { label: "連続性の徐波（意識障害に比して脳波は比較的保たれている）", next: "result_bg_continuous", risk: "low" },
+      { label: "バーストサプレッション", next: "result_bs", risk: "high" },
+      { label: "平坦脳波（ECI）", next: "result_eci", risk: "high" },
+      { label: "刺激反応性あり、睡眠パターンあり", next: "result_bg_favorable", risk: "low" }
+    ]
+  }
+};
+
+var RESULTS = {
+  result_ese: {
+    title: "電気的てんかん重積状態（ESE）",
+    severity: "critical",
+    action: "薬剤増量・変更を強く推奨",
+    detail: "ESzが10分以上連続、または60分中20%以上出現 \u2192 ESEと判定。直ちに抗てんかん発作薬の増量・追加を行い、発作抑制を図ってください。",
+    points: [
+      "第一選択：ベンゾジアゼピン系（ミダゾラム、ジアゼパム）の静注",
+      "効果不十分なら第二選択薬（ホスフェニトイン、レベチラセタム等）を追加",
+      "発作抑制後も最低24時間はCCEEGを継続",
+      "専門医（てんかん専門医・神経内科医）へのコンサルトを推奨"
+    ]
+  },
+  result_esz: {
+    title: "電気的発作（ESz）",
+    severity: "high",
+    action: "薬剤投与・増量を推奨",
+    detail: "ESzの基準を満たす脳波発作が確認されました。抗てんかん発作薬による治療介入が必要です。",
+    points: [
+      "発作の頻度・持続時間を評価",
+      "抗てんかん発作薬の投与を開始または増量",
+      "ESE（10分以上 or 60分中20%以上）への進展に注意",
+      "24時間以上のCCEEG継続を推奨"
+    ]
+  },
+  result_ese_or_esz: {
+    title: "電気的発作（ESz）/ 重積の可能性",
+    severity: "critical",
+    action: "薬剤投与・増量を強く推奨",
+    detail: "平均2.5Hz超の周期性放電が10秒以上持続しており、ESzの基準を満たします。持続時間によりESEの可能性もあります。",
+    points: [
+      "持続時間を確認（10分以上 or 60分中20%以上 \u2192 ESE）",
+      "直ちに抗てんかん発作薬の投与・増量を検討",
+      "臨床症状（微妙な顔面のピクつき等）の有無も確認",
+      "専門医へのコンサルトを推奨"
+    ]
+  },
+  result_ecsz: {
+    title: "電気臨床的発作（ECSz）",
+    severity: "critical",
+    action: "薬剤投与・増量を強く推奨",
+    detail: "脳波パターンに同期した臨床症状があり、ECSzと判定されます。抗てんかん発作薬による即座の治療介入が必要です。",
+    points: [
+      "ビデオ記録による臨床症状の客観的記録を推奨",
+      "抗てんかん発作薬の静注投与を検討",
+      "脳波と臨床症状の両方の改善を確認",
+      "改善が確認されれば診断確定、継続治療へ"
+    ]
+  },
+  result_iic_high: {
+    title: "Ictal-Interictal Continuum（IIC）\u2014 高リスク",
+    severity: "high",
+    action: "抗てんかん発作薬の試験的投与を推奨",
+    detail: "発作の基準は満たしませんが、発作リスクの高いパターンです。意識障害の原因となっている可能性があり、治療的試験（抗てんかん発作薬の試験的投与）が推奨されます。",
+    points: [
+      "抗てんかん発作薬（ベンゾジアゼピン等）の試験的静注投与を検討",
+      "脳波所見と臨床症状の両方が改善すれば発作と判断 \u2192 治療継続",
+      "脳波のみ改善し臨床症状不変 \u2192 薬剤増量は慎重に",
+      "専門医へのコンサルトを強く推奨"
+    ]
+  },
+  result_iic_moderate: {
+    title: "Ictal-Interictal Continuum（IIC）\u2014 中等度リスク",
+    severity: "moderate",
+    action: "治療的試験を考慮",
+    detail: "IICに該当するパターンです。発作との関連は否定できず、臨床症状との相関を慎重に評価してください。",
+    points: [
+      "臨床症状（意識レベルの変動等）と脳波変化の時間的相関を確認",
+      "相関がある場合 \u2192 抗てんかん発作薬の試験的投与を検討",
+      "原因疾患（代謝異常、感染等）の治療も並行して行う",
+      "CCEEGの継続と6\u301C24時間ごとの判読を推奨"
+    ]
+  },
+  result_lpd_monitor: {
+    title: "LPDs \u2014 要注意・継続監視",
+    severity: "moderate",
+    action: "CCEEG継続、薬剤投与を検討",
+    detail: "LPDsは周波数やplusに関わらず発作リスクが有意に高いパターンです。現時点で発作基準は満たしませんが、発作への移行に十分注意が必要です。",
+    points: [
+      "24時間以上のCCEEG継続を強く推奨",
+      "発作への移行を監視（頻回の判読が必要）",
+      "抗てんかん発作薬の予防的投与も考慮",
+      "原因疾患の特定と治療を並行"
+    ]
+  },
+  result_bipd_monitor: {
+    title: "BIPDs \u2014 要注意・継続監視",
+    severity: "moderate",
+    action: "CCEEG継続、専門医コンサルト推奨",
+    detail: "BIPDsはNCSzやNCSEへの移行リスクが高いパターンです。",
+    points: [
+      "24時間以上のCCEEG継続を推奨",
+      "発作への移行に注意して頻回に判読",
+      "原因疾患（ヘルペス脳炎等）の鑑別を進める",
+      "専門医へのコンサルトを推奨"
+    ]
+  },
+  result_metabolic: {
+    title: "代謝性脳症に伴うGPDs（三相波を含む）",
+    severity: "low",
+    action: "原因疾患の治療を優先、安易な薬剤増量は避ける",
+    detail: "代謝性脳症（肝性脳症、腎不全、電解質異常等）に伴うGPDs/三相波と考えられます。原因疾患の治療が最優先です。",
+    points: [
+      "抗てんかん発作薬の増量よりも原因疾患の治療を優先",
+      "ただしNCSEとの鑑別が困難な場合 \u2192 試験的投与も考慮",
+      "試験的投与で臨床症状が改善しなければ薬剤増量は不要",
+      "代謝異常の補正とともに脳波の改善を経時的に確認"
+    ]
+  },
+  result_cjd: {
+    title: "CJD疑いのGPDs",
+    severity: "low",
+    action: "抗てんかん発作薬の増量は通常不要",
+    detail: "CJDに伴う典型的GPDs（両側対称性・同期性、2\u301C3相性鋭波、0.5\u301C1.6秒周期）と考えられる場合、これは疾患そのものの脳波所見であり、発作治療の対象とは異なります。",
+    points: [
+      "CJDの確定診断に向けた検査を進める",
+      "GPDs自体は抗てんかん発作薬の適応ではない",
+      "ミオクローヌスに対しては対症療法を検討",
+      "神経内科専門医へのコンサルト"
+    ]
+  },
+  result_gpd_trial: {
+    title: "原因不明のGPDs \u2014 治療的試験を考慮",
+    severity: "moderate",
+    action: "原因検索と治療的試験の検討",
+    detail: "原因が特定できないGPDsでは、NCSEの可能性を考慮し、治療的試験を検討してください。",
+    points: [
+      "原因疾患の検索を継続（血液検査、髄液検査、画像検査）",
+      "NCSEの可能性 \u2192 抗てんかん発作薬の試験的投与を検討",
+      "脳波\uFF0B臨床の両方が改善すれば発作と判断",
+      "24時間以上のCCEEG継続を推奨"
+    ]
+  },
+  result_lrda_low: {
+    title: "LRDA（低リスク）",
+    severity: "low",
+    action: "経過観察、原因疾患の治療",
+    detail: "周波数1.5Hz以下でplusを伴わないLRDAは、比較的発作リスクが低いですが、経過観察は必要です。",
+    points: [
+      "原因疾患の治療を優先",
+      "CCEEGの継続で発作パターンへの移行を監視",
+      "臨床症状との相関が出現すれば再評価",
+      "安易な薬剤増量は避ける"
+    ]
+  },
+  result_grda_investigate: {
+    title: "GRDA \u2014 原因検索を優先",
+    severity: "low",
+    action: "薬剤増量は推奨しない、原因検索を優先",
+    detail: "GRDAは4つの主要RPPsの中で最も発作との関連が低いパターンです。意識障害の原因として他の病態を検索してください。",
+    points: [
+      "抗てんかん発作薬の増量は通常不要",
+      "代謝異常、感染、薬剤性など他の原因を検索",
+      "臨床症状との相関を経時的に評価",
+      "脳波の経時的変化をフォロー"
+    ]
+  },
+  result_grda_treat_cause: {
+    title: "GRDA \u2014 原因疾患の治療を継続",
+    severity: "low",
+    action: "原因疾患の治療を継続、薬剤増量は不要",
+    detail: "GRDAは発作リスクが低く、原因疾患（代謝性・中毒性等）の治療が最優先です。",
+    points: [
+      "抗てんかん発作薬の増量は不要",
+      "原因疾患の治療を継続",
+      "治療効果に伴う脳波の改善を確認",
+      "新たなパターン出現時は再評価"
+    ]
+  },
+  result_interictal: {
+    title: "発作間欠期パターン",
+    severity: "low",
+    action: "経過観察、原因疾患の治療",
+    detail: "散発的なてんかん性放電は、ただちに薬剤増量の適応とはなりません。",
+    points: [
+      "発作への移行を監視するためCCEEG継続を検討",
+      "臨床症状との相関を評価",
+      "原因疾患の治療を優先",
+      "てんかんの既往がある場合は既存薬の血中濃度を確認"
+    ]
+  },
+  result_likely_esz: {
+    title: "発作の可能性が高い",
+    severity: "high",
+    action: "薬剤投与を推奨、専門医コンサルト",
+    detail: "2.5Hz超のパターンがESzの定義に近い状態です。専門医による脳波判読を強く推奨します。",
+    points: [
+      "10秒以上の持続を確認 \u2192 ESzの基準を満たすか判定",
+      "抗てんかん発作薬の投与を開始・増量",
+      "ビデオ記録で臨床症状も確認",
+      "てんかん専門医・脳波専門医へのコンサルト"
+    ]
+  },
+  result_low_freq: {
+    title: "低頻度パターン \u2014 慎重な経過観察",
+    severity: "low",
+    action: "原因疾患の治療を優先、安易な薬剤増量は避ける",
+    detail: "1Hz未満の低頻度パターンで、plus/fluctuationも伴わない場合は、発作リスクは比較的低いです。",
+    points: [
+      "原因疾患の治療を最優先",
+      "CCEEGで経時的変化を監視",
+      "パターンの悪化（周波数上昇、plus出現等）時は再評価",
+      "不明な場合は専門医にコンサルト"
+    ]
+  },
+  result_bg_continuous: {
+    title: "背景活動の徐波化",
+    severity: "low",
+    action: "原因疾患の治療を優先",
+    detail: "周期性・律動性パターンを伴わない背景活動の徐波化は、脳機能低下を示しますが、発作治療の対象ではありません。",
+    points: [
+      "抗てんかん発作薬の増量は不要",
+      "意識障害の原因疾患の検索と治療を優先",
+      "脳波の経時的変化をフォロー",
+      "新たな周期性/律動性パターン出現時は再評価"
+    ]
+  },
+  result_bs: {
+    title: "バーストサプレッション",
+    severity: "high",
+    action: "予後評価の指標として重要",
+    detail: "バーストサプレッションは重度の脳機能障害を示唆し、予後不良因子です。発作治療とは別の文脈で評価します。",
+    points: [
+      "鎮静薬による医原性BSか、病態によるBSかを鑑別",
+      "鎮静薬の場合 \u2192 減量・中止後の脳波変化を評価",
+      "病態による場合 \u2192 予後不良の可能性を考慮",
+      "バースト部分に発作パターンが含まれていないか確認",
+      "集中治療チームおよび専門医と予後について協議"
+    ]
+  },
+  result_eci: {
+    title: "平坦脳波（ECI）",
+    severity: "high",
+    action: "予後評価として極めて重要",
+    detail: "平坦脳波は最も重度の脳機能障害を示し、予後不良因子です。ただし、薬剤性（鎮静薬、麻酔薬）や低体温の影響を除外する必要があります。",
+    points: [
+      "鎮静薬・低体温の影響を除外",
+      "抗てんかん発作薬の増量は通常不要",
+      "技術的問題（電極接触不良等）を除外",
+      "他の予後評価指標と組み合わせて総合判断",
+      "集中治療チームと予後について協議"
+    ]
+  },
+  result_bg_favorable: {
+    title: "比較的良好な脳波所見",
+    severity: "favorable",
+    action: "薬剤増量は不要",
+    detail: "刺激に対する反応性があり、睡眠パターンが保たれている脳波は、予後良好因子です。",
+    points: [
+      "抗てんかん発作薬の増量は不要",
+      "連続性背景脳波、自発性変化、刺激反応性、正常睡眠パターンは良好な予後指標",
+      "意識障害の他の原因（代謝異常、薬剤性等）を検索",
+      "臨床的改善を期待しつつ経過観察"
+    ]
+  }
+};
+
+var severityConfig = {
+  critical: { color: "#DC2626", bg: "#FEF2F2", border: "#FECACA", label: "\u7DCA\u6025", icon: "\uD83D\uDEA8" },
+  high:     { color: "#EA580C", bg: "#FFF7ED", border: "#FED7AA", label: "\u9AD8\u30EA\u30B9\u30AF", icon: "\u26A0\uFE0F" },
+  moderate: { color: "#CA8A04", bg: "#FEFCE8", border: "#FEF08A", label: "\u4E2D\u7B49\u5EA6", icon: "\uD83D\uDD36" },
+  low:      { color: "#16A34A", bg: "#F0FDF4", border: "#BBF7D0", label: "\u4F4E\u30EA\u30B9\u30AF", icon: "\u2705" },
+  favorable:{ color: "#0891B2", bg: "#ECFEFF", border: "#A5F3FC", label: "\u826F\u597D", icon: "\uD83D\uDC9A" }
+};
+
+var riskColors = {
+  high: "#DC2626",
+  mid: "#EA580C",
+  low: "#16A34A"
+};
+
+var currentStep = "start";
+var history = [];
+var currentResult = null;
+
+function updateProgress() {
+  var pct = currentResult ? 100 : Math.min(95, ((history.length + 1) / 6) * 100);
+  document.getElementById("progressFill").style.width = pct + "%";
+}
+
+function handleOption(option) {
+  history.push(currentStep);
+  if (option.next.indexOf("result_") === 0) {
+    currentResult = RESULTS[option.next];
+    currentStep = null;
+  } else {
+    currentStep = option.next;
+  }
+  render();
+}
+
+function handleBack() {
+  if (currentResult) {
+    currentResult = null;
+    currentStep = history[history.length - 1];
+    history = history.slice(0, -1);
+  } else if (history.length > 0) {
+    currentStep = history[history.length - 1];
+    history = history.slice(0, -1);
+  }
+  render();
+}
+
+function handleReset() {
+  currentStep = "start";
+  history = [];
+  currentResult = null;
+  render();
+}
+
+function render() {
+  var main = document.getElementById("mainContent");
+  var nav = document.getElementById("navRow");
+  var html = "";
+  var navHtml = "";
+
+  updateProgress();
+
+  if (currentStep && !currentResult) {
+    var step = STEPS[currentStep];
+    html += '<div class="step-card">';
+    html += '<div class="step-meta">';
+    html += '<span class="step-icon">' + step.icon + '</span>';
+    html += '<span class="step-label">STEP ' + (history.length + 1) + '</span>';
+    html += '</div>';
+    html += '<h2 class="step-title">' + step.title + '</h2>';
+    html += '<p class="step-question">' + step.question + '</p>';
+    if (step.info) {
+      html += '<div class="step-info">\uD83D\uDCA1 ' + step.info + '</div>';
+    }
+    html += '</div>';
+    html += '<div class="option-group">';
+    for (var i = 0; i < step.options.length; i++) {
+      var opt = step.options[i];
+      var dotColor = riskColors[opt.risk] || "#94A3B8";
+      html += '<button class="option-btn" onclick="handleOption(STEPS[\'' + currentStep + '\'].options[' + i + '])">';
+      html += '<span class="risk-dot" style="background:' + dotColor + '"></span>';
+      html += '<span>' + opt.label + '</span>';
+      html += '</button>';
+    }
+    html += '</div>';
+  }
+
+  if (currentResult) {
+    var sev = severityConfig[currentResult.severity];
+    html += '<div class="result-panel" style="background:' + sev.bg + ';border:2px solid ' + sev.border + '">';
+    html += '<div class="result-header">';
+    html += '<span class="result-icon">' + sev.icon + '</span>';
+    html += '<span class="result-badge" style="color:' + sev.color + ';border:1px solid ' + sev.border + '">' + sev.label + '</span>';
+    html += '</div>';
+    html += '<h2 class="result-title" style="color:' + sev.color + '">' + currentResult.title + '</h2>';
+    html += '<div class="result-action-box" style="border:1px solid ' + sev.border + '">';
+    html += '<div class="result-action-label" style="color:' + sev.color + '">\u25B6 \u63A8\u5968\u30A2\u30AF\u30B7\u30E7\u30F3</div>';
+    html += '<div class="result-action-text">' + currentResult.action + '</div>';
+    html += '</div>';
+    html += '<p class="result-detail">' + currentResult.detail + '</p>';
+    html += '<div class="result-points-label">\u5177\u4F53\u7684\u306A\u30DD\u30A4\u30F3\u30C8</div>';
+    for (var j = 0; j < currentResult.points.length; j++) {
+      html += '<div class="point-item">' + currentResult.points[j] + '</div>';
+    }
+    html += '</div>';
+  }
+
+  main.innerHTML = html;
+
+  if (history.length > 0 || currentResult) {
+    navHtml += '<button class="nav-btn nav-btn-back" onclick="handleBack()">\u2190 \u623B\u308B</button>';
+  }
+  navHtml += '<button class="nav-btn nav-btn-reset" onclick="handleReset()" style="background:' + (history.length > 0 || currentResult ? "#F1F5F9" : "transparent") + '">\uD83D\uDD04 \u6700\u521D\u304B\u3089</button>';
+  nav.innerHTML = navHtml;
+}
+
+render();
+</script>
+</body>
+</html>
