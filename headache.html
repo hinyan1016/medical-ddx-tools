@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#6B1D5E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>頭痛鑑別診断ツール</title>
+<style>
+  :root {
+    --navy: #6B1D5E;
+    --blue: #9B3D8E;
+    --light-blue: #F5E8F3;
+    --red: #DC3545;
+    --yellow: #F5C518;
+    --green: #28A745;
+    --orange: #E8850C;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(107,29,94,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #F5E8F3 0%, #F4F6F8 100%);
+    color: #222;
+    min-height: 100vh;
+    padding: 0 0 40px;
+  }
+  header {
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    padding: 14px 20px 18px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(107,29,94,0.18);
+  }
+  .back-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .back-bar a {
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    font-size: 0.85em;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background 0.2s;
+  }
+  .back-bar a:active { background: rgba(255,255,255,0.15); }
+  header h1 { font-size: 1.7em; font-weight: 700; letter-spacing: 0.04em; }
+  header p { font-size: 0.92em; margin-top: 6px; opacity: 0.85; }
+
+  .container { max-width: 820px; margin: 0 auto; padding: 24px 16px; }
+
+  .step-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+    overflow: hidden;
+    transition: opacity 0.3s;
+  }
+  .step-card.inactive { opacity: 0.45; pointer-events: none; }
+  .step-card.completed { opacity: 1; }
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    background: var(--light-blue);
+    border-bottom: 2px solid var(--blue);
+    cursor: pointer;
+  }
+  .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--blue);
+    color: var(--white);
+    font-weight: 700;
+    font-size: 0.95em;
+    flex-shrink: 0;
+  }
+  .step-number.done { background: var(--green); }
+  .step-title { font-weight: 700; font-size: 1.05em; color: var(--navy); }
+  .step-body { padding: 18px; }
+
+  .option-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border: 2px solid #D0D8E4;
+    border-radius: 8px;
+    background: var(--white);
+    font-size: 0.97em;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: left;
+    color: #222;
+    font-family: inherit;
+    width: 100%;
+  }
+  .option-btn:hover { border-color: var(--blue); background: var(--light-blue); }
+  .option-btn.selected {
+    border-color: var(--blue);
+    background: var(--light-blue);
+    font-weight: 700;
+  }
+  .option-btn .icon { font-size: 1.2em; flex-shrink: 0; width: 24px; text-align: center; }
+
+  .checklist { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--light-gray);
+    cursor: pointer;
+    transition: background 0.15s;
+    user-select: none;
+    font-size: 0.95em;
+  }
+  .check-item:hover { background: #E8DDE6; }
+  .check-item input[type="checkbox"] {
+    width: 18px; height: 18px;
+    accent-color: var(--blue);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .check-item label { cursor: pointer; flex: 1; }
+
+  .result-panel {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(107,29,94,0.15);
+    overflow: hidden;
+    margin-top: 24px;
+    display: none;
+  }
+  .result-panel.show { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  .result-header {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    font-weight: 700;
+    font-size: 1.15em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .result-body { padding: 20px; }
+
+  .dx-card {
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    position: relative;
+    transition: all 0.2s;
+  }
+  .dx-card.high { border-color: var(--red); background: #FFF5F5; }
+  .dx-card.medium { border-color: var(--orange); background: #FFF8F0; }
+  .dx-card.low { border-color: var(--gray); background: var(--light-gray); }
+
+  .dx-card .dx-name {
+    font-weight: 700;
+    font-size: 1.08em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+  }
+  .dx-card .prob-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.78em;
+    font-weight: 700;
+    color: var(--white);
+  }
+  .dx-card.high .prob-badge { background: var(--red); }
+  .dx-card.medium .prob-badge { background: var(--orange); }
+  .dx-card.low .prob-badge { background: var(--gray); }
+
+  .dx-card .dx-detail { font-size: 0.9em; color: #444; line-height: 1.6; }
+  .dx-card .dx-detail strong { color: var(--navy); }
+  .dx-card .dx-workup {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #ccc;
+    font-size: 0.88em;
+    color: var(--blue);
+  }
+
+  .next-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    padding: 10px 22px;
+    background: var(--blue);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: inherit;
+  }
+  .next-btn:hover { background: var(--navy); }
+  .next-btn:disabled { background: #B0BEC5; cursor: not-allowed; }
+
+  .reset-btn {
+    display: block;
+    margin: 24px auto 0;
+    padding: 10px 32px;
+    background: var(--white);
+    color: var(--red);
+    border: 2px solid var(--red);
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .reset-btn:hover { background: var(--red); color: var(--white); }
+
+  .hint {
+    font-size: 0.85em;
+    color: var(--gray);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  .divider { height: 1px; background: #D0D8E4; margin: 14px 0; }
+
+  .algo-note {
+    background: #FFFDE7;
+    border-left: 4px solid var(--yellow);
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 18px;
+    font-size: 0.9em;
+    line-height: 1.6;
+    color: #555;
+  }
+  .algo-note strong { color: var(--navy); }
+
+  .alert-box {
+    background: #FFF3CD;
+    border: 2px solid var(--orange);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    font-size: 0.92em;
+    line-height: 1.6;
+  }
+  .alert-box.danger {
+    background: #F8D7DA;
+    border-color: var(--red);
+  }
+  .alert-box .alert-title {
+    font-weight: 700;
+    color: var(--red);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .category-label {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.78em;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .cat-primary { background: #E8F5E9; color: #2E7D32; }
+  .cat-secondary { background: #FCE4EC; color: #C62828; }
+  .cat-tac { background: #E3F2FD; color: #1565C0; }
+
+  .summary-box {
+    background: var(--light-blue);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    font-size: 0.92em;
+    line-height: 1.6;
+  }
+  .summary-box .summary-title {
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .red-flag-box {
+    background: #F8D7DA;
+    border: 2px solid var(--red);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 16px;
+    font-size: 0.9em;
+    line-height: 1.6;
+  }
+  .red-flag-box .rf-title {
+    font-weight: 700;
+    color: var(--red);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .red-flag-box ul { padding-left: 20px; margin-top: 4px; }
+  .red-flag-box li { margin-bottom: 4px; }
+
+  .ref-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88em;
+    margin: 12px 0;
+  }
+  .ref-table th, .ref-table td {
+    border: 1px solid #D0D8E4;
+    padding: 8px 10px;
+    text-align: left;
+  }
+  .ref-table th {
+    background: var(--light-blue);
+    color: var(--navy);
+    font-weight: 700;
+  }
+  .ref-table tr:nth-child(even) td { background: var(--light-gray); }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.3em; }
+    .step-body, .result-body { padding: 14px; }
+    .dx-card { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="back-bar"><a href="index.html">‹ ツール一覧</a></div>
+  <h1>頭痛鑑別診断ツール</h1>
+  <p>二次性頭痛を先に拾い、一次性頭痛を積極的に診断する</p>
+</header>
+
+<div class="container" id="app"></div>
+
+<script>
+// ===== 疾患データ =====
+var DISEASES = {
+  // === 一次性頭痛 ===
+  migraine_wo_aura: {
+    name: "前兆のない片頭痛",
+    emoji: "🌀",
+    category: "一次性頭痛",
+    catClass: "cat-primary",
+    detail: "反復する<strong>4〜72時間</strong>の発作で、片側性・拍動性・中等度〜重度・日常動作で悪化の4つのうち2つ以上を満たし、悪心/嘔吐または光過敏+音過敏を伴う。両側性や非拍動性のこともある。<strong>「似た発作を繰り返す」「動くとつらい」「悪心や感覚過敏が乗る」</strong>というパターン認識が重要（ICHD-3）。",
+    workup: "臨床診断が基本。Red flagsがなければ画像は不要（NICE CG150）。典型的でない場合はMRI考慮"
+  },
+  migraine_w_aura: {
+    name: "前兆のある片頭痛",
+    emoji: "✨",
+    category: "一次性頭痛",
+    catClass: "cat-primary",
+    detail: "視覚症状（閃輝暗点・ギザギザの光）、感覚症状、言語症状などの前兆が<strong>5分以上かけて徐々に広がり</strong>、各症状は<strong>5〜60分</strong>持続する。少なくとも1つは陽性症状（キラキラ、チクチク）を含む。TIA/脳梗塞との違いは「突然・陰性症状が完成」vs「徐々に・陽性症状が広がる」という時間軸（ICHD-3）。",
+    workup: "臨床診断。初回発作や非典型的な場合はTIA除外のためMRI/MRA考慮"
+  },
+  chronic_migraine: {
+    name: "慢性片頭痛",
+    emoji: "📅",
+    category: "一次性頭痛",
+    catClass: "cat-primary",
+    detail: "3か月を超えて<strong>月15日以上</strong>の頭痛があり、そのうち<strong>月8日以上</strong>が片頭痛の特徴を持つ状態。薬剤使用過多による頭痛（MOH）との合併が非常に多い。慢性連日性頭痛を見たらまず慢性片頭痛+MOHの重なりを考える（ICHD-3）。",
+    workup: "頭痛ダイアリーで頻度・薬剤使用日数を評価。二次性頭痛の除外が済んでいない場合はMRI"
+  },
+  tension_type: {
+    name: "緊張型頭痛",
+    emoji: "🔩",
+    category: "一次性頭痛",
+    catClass: "cat-primary",
+    detail: "<strong>両側性</strong>の締め付けるような痛み、<strong>軽度〜中等度</strong>、日常動作で悪化しにくい、悪心・嘔吐は通常ない。頭痛鑑別で最も大事なのは「何でも緊張型頭痛にしない」こと。新規発症・進行性・神経症状・50歳以降・体位依存があれば、痛みが鈍く両側性でも二次性頭痛を優先する（ICHD-3）。",
+    workup: "臨床診断。Red flagsがなければ画像不要。慢性化した場合はMOH合併の評価"
+  },
+  cluster: {
+    name: "群発頭痛",
+    emoji: "🔥",
+    category: "TACs",
+    catClass: "cat-tac",
+    detail: "片側の眼窩部〜側頭部の<strong>非常に強い痛み</strong>が<strong>15〜180分</strong>持続し、同側の<strong>流涙・結膜充血・鼻閉・鼻漏・縮瞳・眼瞼下垂</strong>を伴う。発作頻度は隔日〜1日8回。患者は<strong>じっとしていられず動き回る</strong>（片頭痛の「静かにしていたい」と対照的）。群発期（数週〜数か月）と寛解期を繰り返す（ICHD-3）。",
+    workup: "臨床診断。初回発作や非典型的な場合はMRI（下垂体・海綿静脈洞病変の除外）"
+  },
+  paroxysmal_hemicrania: {
+    name: "発作性片側頭痛",
+    emoji: "⚡",
+    category: "TACs",
+    catClass: "cat-tac",
+    detail: "群発頭痛に似た片側の激しい頭痛だが、発作が<strong>2〜30分</strong>と短く、1日<strong>5回以上</strong>と高頻度。同側の自律神経症状を伴う。<strong>インドメタシンへの完全反応</strong>が診断上きわめて重要で、反応がなければ診断を見直す（ICHD-3）。",
+    workup: "インドメタシン試験的投与（診断的治療）、MRI（二次性の除外）"
+  },
+  sunct_suna: {
+    name: "SUNCT/SUNA",
+    emoji: "💥",
+    category: "TACs",
+    catClass: "cat-tac",
+    detail: "片側の眼窩部〜側頭部の中等度〜高度の痛みが<strong>1〜600秒</strong>と非常に短く、1日<strong>数十〜数百回</strong>の高頻度で生じる。<strong>顕著な結膜充血と流涙</strong>を伴う。SUNCTは結膜充血+流涙の両方、SUNAは一方のみ。下垂体腫瘍などの二次性原因の除外が必要（ICHD-3）。",
+    workup: "MRI（下垂体・後頭蓋窩病変の除外が必須）"
+  },
+  hemicrania_continua: {
+    name: "持続性片側頭痛",
+    emoji: "♾️",
+    category: "TACs",
+    catClass: "cat-tac",
+    detail: "3か月以上持続する片側の頭痛で、<strong>寛解期がない（常に痛い）</strong>。中等度の持続痛に増悪発作が重なるパターン。増悪時に同側の自律神経症状を伴う。<strong>インドメタシンへの完全反応</strong>が診断の鍵（ICHD-3）。",
+    workup: "インドメタシン試験的投与、MRI（二次性の除外）"
+  },
+  moh: {
+    name: "薬剤使用過多による頭痛（MOH）",
+    emoji: "💊",
+    category: "一次性頭痛",
+    catClass: "cat-primary",
+    detail: "既存の頭痛疾患がある患者で月15日以上の頭痛があり、3か月を超えて鎮痛薬を過量に使用。<strong>単純鎮痛薬は月15日以上</strong>、<strong>トリプタン・エルゴタミン・オピオイド・配合鎮痛薬は月10日以上</strong>が目安。慢性片頭痛としばしば共存し「どちらか一方」ではなく「両方ある」と考える方が実臨床に合う（ICHD-3）。",
+    workup: "頭痛ダイアリー（月の薬剤使用日数を正確に記録）。被疑薬の段階的減量・中止"
+  },
+  ndph: {
+    name: "新規発症持続性連日性頭痛（NDPH）",
+    emoji: "📌",
+    category: "一次性頭痛",
+    catClass: "cat-primary",
+    detail: "患者が<strong>「この日から始まった」と発症日をはっきり覚えている</strong>。24時間以内に持続性となり、<strong>3か月以上</strong>途切れなく続く。慢性連日性頭痛の中でも発症の境目が異常に明瞭。診断前に髄液圧異常・感染後・二次性原因の除外が必要（ICHD-3）。",
+    workup: "MRI、髄液検査（開放圧含む）で二次性原因を除外した上で診断"
+  },
+  // === 二次性頭痛 ===
+  sah: {
+    name: "くも膜下出血（SAH）",
+    emoji: "🚨",
+    category: "二次性頭痛",
+    catClass: "cat-secondary",
+    detail: "<strong>雷鳴頭痛（1分以内に最大強度）</strong>の最優先鑑別。「人生最悪の頭痛」「突然殴られたような痛み」と表現されることが多い。意識障害、嘔吐、項部硬直を伴いうるが、軽症では頭痛のみのこともある。<strong>発症6時間以内の非造影CTの感度は約98%</strong>だが、時間経過で感度低下。CT陰性でも臨床的に疑えば腰椎穿刺（キサントクロミー）が必要（AHA/ASA 2023）。",
+    workup: "非造影頭部CT（最優先）→ CT陰性なら腰椎穿刺 → CTA（動脈瘤検索）"
+  },
+  rcvs: {
+    name: "可逆性脳血管攣縮症候群（RCVS）",
+    emoji: "🌊",
+    category: "二次性頭痛",
+    catClass: "cat-secondary",
+    detail: "雷鳴頭痛を<strong>数日〜数週にわたり反復</strong>する。入浴、運動、性行為、Valsalva、怒責が誘因になりやすい。<strong>産褥</strong>や<strong>血管作動性・セロトニン作動性薬剤</strong>（SSRI、トリプタン、充血除去薬等）が背景にあることが多い。脳血管攣縮は通常12週以内に可逆的に改善する（Ducros, Lancet Neurol 2012）。",
+    workup: "MRI/MRA（血管攣縮の確認）、CTA、経時的な血管画像フォロー"
+  },
+  cvt: {
+    name: "脳静脈血栓症（CVT）",
+    emoji: "🩸",
+    category: "二次性頭痛",
+    catClass: "cat-secondary",
+    detail: "頭痛のみで始まることも多く、けいれん、局在症状、意識障害を伴うこともある。<strong>若年者、妊娠・産褥、経口避妊薬使用、血栓傾向</strong>を持つ患者で特に考える。うっ血乳頭を伴うことがある。通常のCT/MRIでは見逃されやすく、<strong>CTV/MRV</strong>による静脈系評価が重要（AHA 2024）。",
+    workup: "MRI + MRV（またはCT + CTV）、D-dimer、凝固系検査"
+  },
+  dissection: {
+    name: "頸動脈・椎骨動脈解離",
+    emoji: "🔪",
+    category: "二次性頭痛",
+    catClass: "cat-secondary",
+    detail: "頭頸部痛に<strong>Horner症候群</strong>（縮瞳・眼瞼下垂・無汗）、TIA、脳梗塞症状が重なるときに疑う。比較的<strong>若い脳卒中の重要な原因</strong>。頭痛や頸部痛は高頻度にみられ、「いつもの片頭痛では説明しにくい片側頸部痛」は見逃しやすい（Keser, VHRM 2022）。",
+    workup: "MRI/MRA（脂肪抑制T1で壁内血腫）、CTA、頸部血管エコー"
+  },
+  pituitary_apoplexy: {
+    name: "下垂体卒中",
+    emoji: "🧠",
+    category: "二次性頭痛",
+    catClass: "cat-secondary",
+    detail: "下垂体腺腫内の出血または梗塞により突然の激しい頭痛をきたす。<strong>視力障害（視交叉の圧迫）</strong>、<strong>眼球運動障害（海綿静脈洞への伸展）</strong>、意識障害が重なると典型的。嘔吐、髄膜刺激徴候を伴いSAHと紛らわしいことがある（Boellis, Insights Imaging 2014）。",
+    workup: "MRI（トルコ鞍部の評価）、下垂体ホルモン検査、眼科評価、脳外科相談"
+  },
+  meningitis: {
+    name: "髄膜炎・脳炎",
+    emoji: "🦠",
+    category: "二次性頭痛",
+    catClass: "cat-secondary",
+    detail: "<strong>発熱 + 頭痛 + 項部硬直</strong>の古典的3徴。意識変容、けいれん、精神症状を伴うことがある。細菌性髄膜炎では時間単位で進行し、<strong>治療開始の遅れが直接予後を悪化</strong>させる。ウイルス性は比較的緩徐で予後良好なことが多いが、単純ヘルペス脳炎は例外（SNNOOP10）。",
+    workup: "血液培養 → 頭部CT（禁忌確認）→ 腰椎穿刺（細胞数・蛋白・糖・培養・PCR）。抗菌薬は検査結果を待たず開始"
+  },
+  gca: {
+    name: "巨細胞性動脈炎（GCA/側頭動脈炎）",
+    emoji: "👴",
+    category: "二次性頭痛",
+    catClass: "cat-secondary",
+    detail: "<strong>50歳以降の新規頭痛</strong>で最重要の鑑別。こめかみの痛み、<strong>頭皮圧痛</strong>、<strong>咀嚼時痛（顎跛行）</strong>、視力低下・一過性視覚障害が手がかり。視機能障害を伴う可能性があり、「頭痛疾患」ではなく<strong>「視力を失いうる血管炎」</strong>として捉える。診断前でもステロイド投与を遅らせない（BSR 2020、Farina EJIM 2023）。",
+    workup: "ESR・CRP、側頭動脈超音波（halo sign）、側頭動脈生検、眼科評価"
+  },
+  iih: {
+    name: "特発性頭蓋内圧亢進症（IIH）",
+    emoji: "📈",
+    category: "二次性頭痛",
+    catClass: "cat-secondary",
+    detail: "新規頭痛に<strong>うっ血乳頭</strong>、<strong>一過性視力障害</strong>、<strong>拍動性耳鳴</strong>、<strong>外転神経麻痺（複視）</strong>を伴う。<strong>若年肥満女性</strong>に多い。画像で構造病変とCVTを除外した後に<strong>髄液開放圧（>25 cmH2O）</strong>を確認する。視機能の定期的モニタリングが重要（Mollan, JNNP 2018）。",
+    workup: "MRI + MRV（構造病変・CVT除外）→ 腰椎穿刺（開放圧測定）、視野検査"
+  },
+  sih: {
+    name: "特発性低髄液圧症（SIH）",
+    emoji: "⬇️",
+    category: "二次性頭痛",
+    catClass: "cat-secondary",
+    detail: "典型例では<strong>立位で悪化し、臥位で軽くなる起立性頭痛</strong>。硬膜の髄液漏出が原因。MRI造影で<strong>硬膜のびまん性増強</strong>、脳の下垂（brain sagging）が特徴的。ただし起立性でないこともあり、「若い人の肩こり頭痛」として見逃されることがある（SIH consensus guideline, JNNP 2023）。",
+    workup: "造影MRI（硬膜増強・脳下垂）、脊椎MRI（漏出部位検索）、硬膜外血液パッチ"
+  },
+  preeclampsia: {
+    name: "子癇前症・子癇",
+    emoji: "🤰",
+    category: "二次性頭痛",
+    catClass: "cat-secondary",
+    detail: "<strong>妊娠20週以降〜産褥</strong>の新規頭痛で、<strong>高血圧</strong>と<strong>蛋白尿</strong>を伴う場合に疑う。視覚症状（閃輝暗点・視力低下）、上腹部痛、浮腫が随伴する。けいれんを伴えば子癇。産褥頭痛は「片頭痛の増悪」と決め打ちせず、RCVS・CVT・子癇前症を必ず鑑別する（ACOG、SNNOOP10）。",
+    workup: "血圧測定、尿蛋白、血液検査（血小板・肝機能・LDH）、産科相談"
+  },
+  glaucoma: {
+    name: "急性閉塞隅角緑内障",
+    emoji: "👁️",
+    category: "二次性頭痛",
+    catClass: "cat-secondary",
+    detail: "頭痛に<strong>眼痛・充血・視力低下・霧視・悪心/嘔吐</strong>を伴う場合に除外する。<strong>瞳孔散大（中等度散瞳で固定）</strong>、角膜混濁、虹視症が特徴的。群発頭痛でも流涙や結膜充血は起こるが、視力低下・角膜混濁・散瞳があれば緑内障側に傾く。<strong>同日の眼科評価が必要な眼科救急</strong>（Nüssle, Dtsch Arztebl Int 2021）。",
+    workup: "眼圧測定、細隙灯検査、前房深度評価 → 眼科緊急コンサルト"
+  },
+  brain_tumor: {
+    name: "頭蓋内腫瘍・膿瘍",
+    emoji: "🎯",
+    category: "二次性頭痛",
+    catClass: "cat-secondary",
+    detail: "<strong>悪性腫瘍や免疫不全</strong>を背景に持つ患者の新規頭痛、あるいは<strong>週単位で悪化していく進行性頭痛</strong>で考える。局在神経症状、うっ血乳頭、朝方に強い頭痛、嘔吐、けいれんが手がかり。既往歴は「参考情報」ではなく、頭痛の事前確率を大きく動かす因子（SNNOOP10、ACR 2023）。",
+    workup: "造影MRI（最優先）、造影CT（MRI不可の場合）、全身検索"
+  }
+};
+
+// ===== ステップ定義 =====
+var STEPS = [
+  {
+    id: "onset",
+    title: "発症様式",
+    question: "頭痛の発症パターンはどれに最も近いですか？",
+    hint: "時間経過は頭痛鑑別の最重要ポイント。特に雷鳴頭痛（1分以内に最大強度）は緊急評価が必要",
+    type: "single",
+    options: [
+      { label: "雷鳴頭痛（1分以内に最大強度に達した）", value: "thunderclap", icon: "⚡" },
+      { label: "急性発症（数時間で立ち上がった）", value: "acute", icon: "🔺" },
+      { label: "亜急性〜進行性（数日〜数週で悪くなっている）", value: "subacute", icon: "📈" },
+      { label: "反復性の発作（同様の発作を繰り返す）", value: "recurrent", icon: "🔄" },
+      { label: "慢性・持続性（毎日〜ほぼ毎日続いている）", value: "chronic", icon: "📅" }
+    ]
+  },
+  {
+    id: "red_flags",
+    title: "Red Flags（SNNOOP10）",
+    question: "以下のred flagsで該当するものをすべて選択してください",
+    hint: "Red flagsは「二次性頭痛の事前確率を上げ、検査の閾値を下げる所見」",
+    type: "multi",
+    options: [
+      { label: "50歳以降の新規頭痛", value: "age_over50" },
+      { label: "発熱・全身症状（倦怠感、体重減少、夜間盗汗）", value: "systemic" },
+      { label: "神経脱落症候（麻痺、感覚障害、失語、痙攣）", value: "neuro_deficit" },
+      { label: "悪性腫瘍の既往", value: "cancer" },
+      { label: "免疫不全（HIV、免疫抑制薬）", value: "immunocompromised" },
+      { label: "妊娠中または産褥（産後6週以内）", value: "pregnancy" },
+      { label: "人生初の頭痛 / いつもと違う頭痛", value: "new_or_changed" },
+      { label: "意識障害・意識変容", value: "altered_consciousness" },
+      { label: "外傷後の頭痛", value: "trauma" },
+      { label: "該当なし", value: "none" }
+    ]
+  },
+  {
+    id: "duration",
+    title: "持続時間と頻度",
+    question: "頭痛の1回の発作の持続時間は？",
+    hint: "持続時間は一次性頭痛の分類で特に重要（TACs vs 片頭痛 vs 緊張型頭痛）",
+    type: "single",
+    options: [
+      { label: "秒〜数分（1〜600秒程度）", value: "seconds", icon: "⏱️" },
+      { label: "15〜180分", value: "short_hours", icon: "⏰" },
+      { label: "4〜72時間", value: "medium_hours", icon: "🕐" },
+      { label: "72時間以上〜数日", value: "long_hours", icon: "📆" },
+      { label: "持続性（常に痛い、途切れない）", value: "continuous", icon: "♾️" },
+      { label: "不明・一定しない", value: "variable", icon: "🤔" }
+    ]
+  },
+  {
+    id: "character",
+    title: "頭痛の性状と部位",
+    question: "頭痛の特徴を選択してください（該当するものすべて）",
+    hint: "片頭痛＝拍動性＋片側ではなく、パターン全体で判断",
+    type: "multi",
+    options: [
+      { label: "片側性（いつも同じ側）", value: "unilateral" },
+      { label: "両側性", value: "bilateral" },
+      { label: "拍動性（ズキズキ）", value: "pulsating" },
+      { label: "圧迫感・締め付け", value: "pressing" },
+      { label: "刺すような・えぐるような激痛", value: "stabbing" },
+      { label: "中等度〜重度（日常動作で悪化）", value: "moderate_severe" },
+      { label: "軽度〜中等度（日常動作で悪化しにくい）", value: "mild_moderate" },
+      { label: "眼窩部・眼窩周囲の痛み", value: "orbital" },
+      { label: "後頭部〜頸部の痛み", value: "occipital_neck" },
+      { label: "側頭部（こめかみ）の痛み", value: "temporal" }
+    ]
+  },
+  {
+    id: "associated",
+    title: "随伴症状",
+    question: "頭痛に伴う症状で該当するものを選択してください",
+    hint: "悪心/光過敏＝片頭痛、自律神経症状＝TACs、発熱＋項部硬直＝感染症",
+    type: "multi",
+    options: [
+      { label: "悪心・嘔吐", value: "nausea" },
+      { label: "光過敏（まぶしい）", value: "photophobia" },
+      { label: "音過敏", value: "phonophobia" },
+      { label: "前兆（閃輝暗点・視覚異常・チクチク感が5分以上かけて広がる）", value: "aura" },
+      { label: "流涙・結膜充血・鼻閉・鼻漏（頭痛と同側）", value: "autonomic" },
+      { label: "縮瞳・眼瞼下垂（頭痛と同側）", value: "horner_partial" },
+      { label: "発熱", value: "fever" },
+      { label: "項部硬直・髄膜刺激徴候", value: "meningism" },
+      { label: "けいれん", value: "seizure" },
+      { label: "頭皮圧痛・咀嚼時痛（顎跛行）", value: "scalp_jaw" },
+      { label: "落ち着きなく動き回る（じっとしていられない）", value: "restlessness" },
+      { label: "該当なし", value: "none" }
+    ]
+  },
+  {
+    id: "eye_findings",
+    title: "眼症状・眼底所見",
+    question: "眼に関連する所見で該当するものを選択してください",
+    hint: "頭痛診療では眼底・視症状の評価が診断の分岐点になる",
+    type: "multi",
+    options: [
+      { label: "うっ血乳頭", value: "papilledema" },
+      { label: "視力低下", value: "vision_loss" },
+      { label: "一過性黒内障・視野欠損", value: "transient_visual" },
+      { label: "複視（物が二重に見える）", value: "diplopia" },
+      { label: "痛い赤い眼（充血＋眼痛＋視力低下）", value: "red_eye" },
+      { label: "瞳孔異常（散瞳固定・瞳孔不同）", value: "pupil_abnormal" },
+      { label: "拍動性耳鳴", value: "pulsatile_tinnitus" },
+      { label: "Horner症候群（縮瞳＋眼瞼下垂＋無汗）", value: "horner" },
+      { label: "霧視・虹視症", value: "blurred_halos" },
+      { label: "該当なし / 未評価", value: "none" }
+    ]
+  },
+  {
+    id: "modifiers",
+    title: "増悪・緩和因子と背景",
+    question: "頭痛の増悪・緩和因子や背景で該当するものを選択してください",
+    hint: "体位依存、誘発因子、薬剤使用歴は鑑別に直結する",
+    type: "multi",
+    options: [
+      { label: "起立で悪化・臥位で軽快", value: "orthostatic" },
+      { label: "臥位・前屈で悪化", value: "worse_supine" },
+      { label: "咳・怒責・運動・性行為で誘発", value: "valsalva_trigger" },
+      { label: "入浴で誘発", value: "bath_trigger" },
+      { label: "朝方に強い", value: "morning_worse" },
+      { label: "鎮痛薬を月10日以上使用している", value: "analgesic_overuse" },
+      { label: "血管作動性・セロトニン作動性薬剤の使用（SSRI, トリプタン等）", value: "vasoactive_drugs" },
+      { label: "経口避妊薬・ホルモン療法中", value: "ocp" },
+      { label: "高血圧を伴う", value: "hypertension" },
+      { label: "肥満（BMI≧30）", value: "obesity" },
+      { label: "該当なし", value: "none" }
+    ]
+  }
+];
+
+// ===== スコアリングロジック =====
+function calcScores(answers) {
+  var scores = {};
+  var keys = Object.keys(DISEASES);
+  for (var i = 0; i < keys.length; i++) { scores[keys[i]] = 0; }
+
+  var onset = answers.onset || "";
+  var red = answers.red_flags || [];
+  var dur = answers.duration || "";
+  var char_ = answers.character || [];
+  var assoc = answers.associated || [];
+  var eye = answers.eye_findings || [];
+  var mod = answers.modifiers || [];
+
+  // --- 発症様式 ---
+  if (onset === "thunderclap") {
+    scores.sah += 6;
+    scores.rcvs += 5;
+    scores.cvt += 3;
+    scores.dissection += 3;
+    scores.pituitary_apoplexy += 4;
+  }
+  if (onset === "acute") {
+    scores.migraine_wo_aura += 2;
+    scores.migraine_w_aura += 2;
+    scores.cluster += 2;
+    scores.meningitis += 3;
+    scores.glaucoma += 2;
+    scores.dissection += 2;
+    scores.sah += 1;
+  }
+  if (onset === "subacute") {
+    scores.brain_tumor += 4;
+    scores.iih += 3;
+    scores.cvt += 3;
+    scores.gca += 3;
+    scores.meningitis += 2;
+  }
+  if (onset === "recurrent") {
+    scores.migraine_wo_aura += 4;
+    scores.migraine_w_aura += 3;
+    scores.cluster += 4;
+    scores.tension_type += 3;
+    scores.paroxysmal_hemicrania += 3;
+    scores.sunct_suna += 3;
+  }
+  if (onset === "chronic") {
+    scores.chronic_migraine += 4;
+    scores.moh += 4;
+    scores.tension_type += 3;
+    scores.ndph += 3;
+    scores.hemicrania_continua += 3;
+    scores.iih += 2;
+    scores.sih += 2;
+  }
+
+  // --- Red Flags ---
+  if (red.indexOf("age_over50") >= 0) {
+    scores.gca += 5;
+    scores.brain_tumor += 2;
+    // 一次性頭痛の確率を相対的に下げる
+    scores.migraine_wo_aura -= 1;
+    scores.tension_type -= 1;
+  }
+  if (red.indexOf("systemic") >= 0) {
+    scores.meningitis += 3;
+    scores.gca += 3;
+    scores.brain_tumor += 2;
+  }
+  if (red.indexOf("neuro_deficit") >= 0) {
+    scores.brain_tumor += 3;
+    scores.cvt += 2;
+    scores.dissection += 2;
+    scores.sah += 2;
+  }
+  if (red.indexOf("cancer") >= 0) {
+    scores.brain_tumor += 5;
+  }
+  if (red.indexOf("immunocompromised") >= 0) {
+    scores.meningitis += 3;
+    scores.brain_tumor += 3;
+  }
+  if (red.indexOf("pregnancy") >= 0) {
+    scores.preeclampsia += 5;
+    scores.cvt += 3;
+    scores.rcvs += 3;
+    scores.pituitary_apoplexy += 1;
+  }
+  if (red.indexOf("new_or_changed") >= 0) {
+    // 二次性全般を少し上げる
+    scores.sah += 1; scores.cvt += 1; scores.dissection += 1;
+    scores.iih += 1; scores.sih += 1; scores.brain_tumor += 1;
+    scores.gca += 1; scores.meningitis += 1;
+  }
+  if (red.indexOf("altered_consciousness") >= 0) {
+    scores.meningitis += 3;
+    scores.sah += 3;
+    scores.cvt += 2;
+    scores.preeclampsia += 2;
+    scores.pituitary_apoplexy += 2;
+  }
+
+  // --- 持続時間 ---
+  if (dur === "seconds") {
+    scores.sunct_suna += 5;
+    scores.paroxysmal_hemicrania += 2;
+  }
+  if (dur === "short_hours") {
+    scores.cluster += 4;
+    scores.paroxysmal_hemicrania += 4;
+    scores.sunct_suna += 2;
+  }
+  if (dur === "medium_hours") {
+    scores.migraine_wo_aura += 4;
+    scores.migraine_w_aura += 4;
+    scores.tension_type += 3;
+  }
+  if (dur === "long_hours") {
+    scores.tension_type += 2;
+    scores.migraine_wo_aura += 1;
+    scores.meningitis += 2;
+    scores.cvt += 2;
+  }
+  if (dur === "continuous") {
+    scores.chronic_migraine += 3;
+    scores.hemicrania_continua += 4;
+    scores.ndph += 4;
+    scores.moh += 3;
+    scores.iih += 2;
+    scores.sih += 2;
+    scores.brain_tumor += 2;
+  }
+
+  // --- 性状・部位 ---
+  if (char_.indexOf("unilateral") >= 0) {
+    scores.migraine_wo_aura += 2;
+    scores.migraine_w_aura += 2;
+    scores.cluster += 3;
+    scores.paroxysmal_hemicrania += 3;
+    scores.sunct_suna += 3;
+    scores.hemicrania_continua += 3;
+    scores.dissection += 2;
+  }
+  if (char_.indexOf("bilateral") >= 0) {
+    scores.tension_type += 3;
+    scores.meningitis += 2;
+    scores.iih += 1;
+    scores.sih += 1;
+  }
+  if (char_.indexOf("pulsating") >= 0) {
+    scores.migraine_wo_aura += 2;
+    scores.migraine_w_aura += 2;
+    scores.gca += 1;
+  }
+  if (char_.indexOf("pressing") >= 0) {
+    scores.tension_type += 3;
+    scores.iih += 1;
+    scores.chronic_migraine += 1;
+  }
+  if (char_.indexOf("stabbing") >= 0) {
+    scores.cluster += 3;
+    scores.paroxysmal_hemicrania += 3;
+    scores.sunct_suna += 3;
+    scores.glaucoma += 1;
+  }
+  if (char_.indexOf("moderate_severe") >= 0) {
+    scores.migraine_wo_aura += 2;
+    scores.migraine_w_aura += 2;
+    scores.cluster += 2;
+    scores.sah += 1;
+  }
+  if (char_.indexOf("mild_moderate") >= 0) {
+    scores.tension_type += 3;
+  }
+  if (char_.indexOf("orbital") >= 0) {
+    scores.cluster += 3;
+    scores.paroxysmal_hemicrania += 2;
+    scores.sunct_suna += 2;
+    scores.glaucoma += 2;
+  }
+  if (char_.indexOf("occipital_neck") >= 0) {
+    scores.dissection += 2;
+    scores.sah += 1;
+    scores.sih += 1;
+    scores.tension_type += 1;
+  }
+  if (char_.indexOf("temporal") >= 0) {
+    scores.gca += 3;
+    scores.migraine_wo_aura += 1;
+  }
+
+  // --- 随伴症状 ---
+  if (assoc.indexOf("nausea") >= 0) {
+    scores.migraine_wo_aura += 2;
+    scores.migraine_w_aura += 2;
+    scores.sah += 1;
+    scores.glaucoma += 2;
+    scores.iih += 1;
+  }
+  if (assoc.indexOf("photophobia") >= 0) {
+    scores.migraine_wo_aura += 2;
+    scores.migraine_w_aura += 2;
+    scores.meningitis += 1;
+  }
+  if (assoc.indexOf("phonophobia") >= 0) {
+    scores.migraine_wo_aura += 2;
+    scores.migraine_w_aura += 2;
+  }
+  if (assoc.indexOf("aura") >= 0) {
+    scores.migraine_w_aura += 5;
+  }
+  if (assoc.indexOf("autonomic") >= 0) {
+    scores.cluster += 4;
+    scores.paroxysmal_hemicrania += 4;
+    scores.sunct_suna += 4;
+    scores.hemicrania_continua += 2;
+  }
+  if (assoc.indexOf("horner_partial") >= 0) {
+    scores.cluster += 3;
+    scores.dissection += 3;
+  }
+  if (assoc.indexOf("fever") >= 0) {
+    scores.meningitis += 4;
+    scores.gca += 2;
+    scores.brain_tumor += 1;
+  }
+  if (assoc.indexOf("meningism") >= 0) {
+    scores.meningitis += 5;
+    scores.sah += 3;
+    scores.pituitary_apoplexy += 1;
+  }
+  if (assoc.indexOf("seizure") >= 0) {
+    scores.meningitis += 2;
+    scores.cvt += 3;
+    scores.preeclampsia += 4;
+    scores.brain_tumor += 2;
+  }
+  if (assoc.indexOf("scalp_jaw") >= 0) {
+    scores.gca += 5;
+  }
+  if (assoc.indexOf("restlessness") >= 0) {
+    scores.cluster += 3;
+    scores.paroxysmal_hemicrania += 2;
+  }
+
+  // --- 眼症状・眼底 ---
+  if (eye.indexOf("papilledema") >= 0) {
+    scores.iih += 5;
+    scores.brain_tumor += 3;
+    scores.cvt += 3;
+  }
+  if (eye.indexOf("vision_loss") >= 0) {
+    scores.gca += 4;
+    scores.glaucoma += 3;
+    scores.pituitary_apoplexy += 3;
+    scores.iih += 2;
+  }
+  if (eye.indexOf("transient_visual") >= 0) {
+    scores.gca += 3;
+    scores.iih += 3;
+  }
+  if (eye.indexOf("diplopia") >= 0) {
+    scores.iih += 3;
+    scores.pituitary_apoplexy += 2;
+    scores.brain_tumor += 2;
+  }
+  if (eye.indexOf("red_eye") >= 0) {
+    scores.glaucoma += 5;
+    scores.cluster += 1;
+  }
+  if (eye.indexOf("pupil_abnormal") >= 0) {
+    scores.glaucoma += 3;
+    scores.sah += 2;
+    scores.pituitary_apoplexy += 2;
+  }
+  if (eye.indexOf("pulsatile_tinnitus") >= 0) {
+    scores.iih += 4;
+  }
+  if (eye.indexOf("horner") >= 0) {
+    scores.dissection += 5;
+    scores.cluster += 2;
+  }
+  if (eye.indexOf("blurred_halos") >= 0) {
+    scores.glaucoma += 4;
+  }
+
+  // --- 増悪・緩和因子 ---
+  if (mod.indexOf("orthostatic") >= 0) {
+    scores.sih += 6;
+  }
+  if (mod.indexOf("worse_supine") >= 0) {
+    scores.iih += 3;
+    scores.brain_tumor += 2;
+  }
+  if (mod.indexOf("valsalva_trigger") >= 0) {
+    scores.rcvs += 3;
+    scores.sah += 1;
+    scores.iih += 1;
+  }
+  if (mod.indexOf("bath_trigger") >= 0) {
+    scores.rcvs += 4;
+  }
+  if (mod.indexOf("morning_worse") >= 0) {
+    scores.brain_tumor += 3;
+    scores.iih += 2;
+  }
+  if (mod.indexOf("analgesic_overuse") >= 0) {
+    scores.moh += 6;
+    scores.chronic_migraine += 2;
+  }
+  if (mod.indexOf("vasoactive_drugs") >= 0) {
+    scores.rcvs += 3;
+  }
+  if (mod.indexOf("ocp") >= 0) {
+    scores.cvt += 2;
+  }
+  if (mod.indexOf("hypertension") >= 0) {
+    scores.preeclampsia += 2;
+    scores.sah += 1;
+  }
+  if (mod.indexOf("obesity") >= 0) {
+    scores.iih += 3;
+  }
+
+  return scores;
+}
+
+// ===== UI描画 =====
+var appEl = document.getElementById("app");
+var currentStep = 0;
+var answers = {};
+
+function render() {
+  var html = "";
+
+  // アルゴリズム説明
+  html += '<div class="algo-note">';
+  html += '<strong>使い方：</strong>各ステップの質問に順番に回答してください。すべてのステップ完了後に鑑別診断の候補が優先順位付きで表示されます。<br>';
+  html += '<strong>基本方針：</strong>「危険な二次性頭痛を先に除外する」→「red flagsがなければ一次性頭痛を積極的に診断する」（ICHD-3, SNNOOP10, NICE CG150, ACR 2023準拠）';
+  html += '</div>';
+
+  // 各ステップ
+  for (var i = 0; i < STEPS.length; i++) {
+    var step = STEPS[i];
+    var isActive = i === currentStep;
+    var isDone = i < currentStep;
+    var cls = isDone ? "completed" : (isActive ? "" : "inactive");
+
+    html += '<div class="step-card ' + cls + '" id="step-' + i + '">';
+    html += '<div class="step-header">';
+    html += '<span class="step-number ' + (isDone ? 'done' : '') + '">' + (isDone ? '✓' : (i + 1)) + '</span>';
+    html += '<span class="step-title">' + step.title + '</span>';
+    html += '</div>';
+
+    if (isActive || isDone) {
+      html += '<div class="step-body">';
+      html += '<p style="font-weight:600;margin-bottom:4px;">' + step.question + '</p>';
+      if (step.hint) html += '<p class="hint">' + step.hint + '</p>';
+
+      if (step.type === "single") {
+        html += '<div class="option-group">';
+        for (var j = 0; j < step.options.length; j++) {
+          var opt = step.options[j];
+          var selected = answers[step.id] === opt.value;
+          html += '<button class="option-btn ' + (selected ? 'selected' : '') + '"';
+          html += ' onclick="selectSingle(\'' + step.id + '\', \'' + opt.value + '\', ' + i + ')"';
+          if (isDone && !isActive) html += ' disabled';
+          html += '>';
+          html += '<span class="icon">' + (opt.icon || '') + '</span>' + opt.label;
+          html += '</button>';
+        }
+        html += '</div>';
+      } else {
+        html += '<div class="checklist">';
+        var currentAnswers = answers[step.id] || [];
+        for (var j = 0; j < step.options.length; j++) {
+          var opt = step.options[j];
+          var checked = currentAnswers.indexOf(opt.value) >= 0;
+          html += '<div class="check-item" onclick="toggleCheck(\'' + step.id + '\', \'' + opt.value + '\', this)">';
+          html += '<input type="checkbox" ' + (checked ? 'checked' : '') + (isDone && !isActive ? ' disabled' : '') + '>';
+          html += '<label>' + opt.label + '</label>';
+          html += '</div>';
+        }
+        html += '</div>';
+        if (isActive) {
+          html += '<button class="next-btn" onclick="nextStep(' + i + ')">次へ ▶</button>';
+        }
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+
+  // 結果パネル
+  if (currentStep >= STEPS.length) {
+    html += renderResults();
+  }
+
+  // リセットボタン
+  if (currentStep > 0) {
+    html += '<button class="reset-btn" onclick="resetAll()">🔄 最初からやり直す</button>';
+  }
+
+  appEl.innerHTML = html;
+
+  // 結果表示後スクロール
+  if (currentStep >= STEPS.length) {
+    setTimeout(function() {
+      var panel = document.querySelector('.result-panel');
+      if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+}
+
+function selectSingle(stepId, value, stepIndex) {
+  answers[stepId] = value;
+  currentStep = stepIndex + 1;
+  render();
+  scrollToStep(currentStep);
+}
+
+function toggleCheck(stepId, value, el) {
+  if (!answers[stepId]) answers[stepId] = [];
+  var idx = answers[stepId].indexOf(value);
+  if (idx >= 0) answers[stepId].splice(idx, 1);
+  else answers[stepId].push(value);
+
+  // 排他処理: "none"と他の選択肢
+  if (value === "none" && answers[stepId].indexOf("none") >= 0) {
+    answers[stepId] = ["none"];
+  } else if (value !== "none" && answers[stepId].indexOf("none") >= 0) {
+    var filtered = [];
+    for (var i = 0; i < answers[stepId].length; i++) {
+      if (answers[stepId][i] !== "none") filtered.push(answers[stepId][i]);
+    }
+    answers[stepId] = filtered;
+  }
+
+  render();
+}
+
+function nextStep(stepIndex) {
+  currentStep = stepIndex + 1;
+  render();
+  scrollToStep(currentStep);
+}
+
+function scrollToStep(idx) {
+  setTimeout(function() {
+    var el = document.getElementById("step-" + idx) || document.querySelector('.result-panel');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+function resetAll() {
+  var keys = Object.keys(answers);
+  for (var i = 0; i < keys.length; i++) { delete answers[keys[i]]; }
+  currentStep = 0;
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderResults() {
+  var scores = calcScores(answers);
+  var entries = [];
+  var keys = Object.keys(scores);
+  for (var i = 0; i < keys.length; i++) {
+    if (scores[keys[i]] > 0) entries.push([keys[i], scores[keys[i]]]);
+  }
+  entries.sort(function(a, b) { return b[1] - a[1]; });
+
+  var maxScore = entries.length > 0 ? entries[0][1] : 0;
+
+  var html = '<div class="result-panel show">';
+  html += '<div class="result-header">📋 鑑別診断の結果</div>';
+  html += '<div class="result-body">';
+
+  // 雷鳴頭痛アラート
+  if (answers.onset === "thunderclap") {
+    html += '<div class="alert-box danger">';
+    html += '<div class="alert-title">🚨 雷鳴頭痛 — 緊急評価が必要</div>';
+    html += '<div>1分以内に最大強度に達する頭痛は、<strong>くも膜下出血を最優先に除外</strong>してください。<br>';
+    html += '初期評価：非造影頭部CT → CT陰性でも臨床的に疑えば腰椎穿刺（キサントクロミー）→ CTA<br>';
+    html += 'RCVS、CVT、動脈解離、下垂体卒中も重要な鑑別です。</div>';
+    html += '</div>';
+  }
+
+  // Red flags警告
+  var redFlags = answers.red_flags || [];
+  var hasRedFlags = redFlags.length > 0 && redFlags.indexOf("none") < 0;
+  if (hasRedFlags) {
+    html += '<div class="alert-box danger">';
+    html += '<div class="alert-title">🚩 Red Flags検出 — 二次性頭痛の除外が必要</div>';
+    html += '<div>';
+    if (redFlags.indexOf("age_over50") >= 0) html += '・50歳以降の新規頭痛 → GCA、腫瘍の除外<br>';
+    if (redFlags.indexOf("systemic") >= 0) html += '・発熱・全身症状 → 感染症、GCAの評価<br>';
+    if (redFlags.indexOf("neuro_deficit") >= 0) html += '・神経脱落症候 → 画像検査（CT/MRI）<br>';
+    if (redFlags.indexOf("cancer") >= 0) html += '・悪性腫瘍の既往 → 転移・髄膜癌腫症の除外<br>';
+    if (redFlags.indexOf("immunocompromised") >= 0) html += '・免疫不全 → 日和見感染症の評価<br>';
+    if (redFlags.indexOf("pregnancy") >= 0) html += '・妊娠・産褥 → 子癇前症、CVT、RCVSの除外<br>';
+    if (redFlags.indexOf("new_or_changed") >= 0) html += '・新規/パターン変化 → 二次性頭痛の評価<br>';
+    if (redFlags.indexOf("altered_consciousness") >= 0) html += '・意識障害 → 緊急画像・髄液検査<br>';
+    if (redFlags.indexOf("trauma") >= 0) html += '・外傷後 → 硬膜下/硬膜外血腫の除外<br>';
+    html += '</div></div>';
+  }
+
+  // 診断アプローチサマリー
+  html += '<div class="summary-box">';
+  html += '<div class="summary-title">🎯 頭痛鑑別の基本アプローチ</div>';
+  html += '<strong>①</strong> 時間経過を見る（雷鳴 vs 急性 vs 亜急性進行 vs 反復 vs 慢性）<br>';
+  html += '<strong>②</strong> 新しい頭痛か、いつもと違う頭痛かを見る<br>';
+  html += '<strong>③</strong> 眼底・神経所見・全身背景を含むred flagsを拾う<br>';
+  html += '<strong>④</strong> Red flagsがなければ一次性頭痛を積極的に診断する';
+  html += '</div>';
+
+  // 鑑別診断リスト
+  if (entries.length === 0) {
+    html += '<p style="color:var(--gray);text-align:center;padding:20px;">入力された情報からは特定の鑑別が示唆されませんでした。追加の情報を入力してください。</p>';
+  } else {
+    for (var i = 0; i < entries.length; i++) {
+      var key = entries[i][0];
+      var score = entries[i][1];
+      var d = DISEASES[key];
+      var level, levelLabel;
+      if (score >= maxScore * 0.7 && score >= 4) { level = "high"; levelLabel = "可能性 高"; }
+      else if (score >= maxScore * 0.4 && score >= 2) { level = "medium"; levelLabel = "可能性 中"; }
+      else { level = "low"; levelLabel = "可能性 低"; }
+
+      html += '<div class="dx-card ' + level + '">';
+      html += '<div class="dx-name">';
+      html += '<span>' + d.emoji + '</span>';
+      html += '<span>' + d.name + '</span>';
+      html += '<span class="prob-badge">' + levelLabel + '</span>';
+      html += '</div>';
+      html += '<span class="category-label ' + d.catClass + '">' + d.category + '</span>';
+      html += '<div class="dx-detail">' + d.detail + '</div>';
+      html += '<div class="dx-workup">🔍 追加検査: ' + d.workup + '</div>';
+      html += '</div>';
+    }
+  }
+
+  // 一次性頭痛鑑別の参考テーブル
+  html += '<div style="margin-top:20px;">';
+  html += '<p style="font-weight:700;color:var(--navy);margin-bottom:8px;">📊 一次性頭痛の鑑別ポイント（ICHD-3準拠）</p>';
+  html += '<table class="ref-table">';
+  html += '<thead><tr><th>疾患</th><th>持続時間</th><th>部位</th><th>特徴的所見</th></tr></thead>';
+  html += '<tbody>';
+  html += '<tr><td><strong>片頭痛</strong></td><td>4〜72時間</td><td>片側性（両側もあり）</td><td>拍動性、悪心、光/音過敏、動くと悪化</td></tr>';
+  html += '<tr><td><strong>緊張型頭痛</strong></td><td>30分〜7日</td><td>両側性</td><td>圧迫感、軽〜中等度、動作で悪化しない</td></tr>';
+  html += '<tr><td><strong>群発頭痛</strong></td><td>15〜180分</td><td>片側眼窩部</td><td>激痛、流涙/鼻閉、じっとしていられない</td></tr>';
+  html += '<tr><td><strong>発作性片側頭痛</strong></td><td>2〜30分</td><td>片側</td><td>日5回以上、インドメタシン反応性</td></tr>';
+  html += '<tr><td><strong>SUNCT/SUNA</strong></td><td>1〜600秒</td><td>片側眼窩部</td><td>結膜充血+流涙、多数回/日</td></tr>';
+  html += '</tbody></table>';
+  html += '</div>';
+
+  // Red Flagsまとめ（SNNOOP10）
+  html += '<div class="red-flag-box">';
+  html += '<div class="rf-title">🚩 SNNOOP10 — 二次性頭痛を疑うred flags</div>';
+  html += '<ul>';
+  html += '<li><strong>S</strong>ystemic symptoms（発熱、体重減少）/ Secondary risk factors（悪性腫瘍、免疫不全）</li>';
+  html += '<li><strong>N</strong>eurologic signs（神経脱落症候）</li>';
+  html += '<li><strong>N</strong>ew onset / <strong>O</strong>nset sudden（突然発症 = 雷鳴頭痛）</li>';
+  html += '<li><strong>O</strong>lder age > 50（50歳以降の新規頭痛）</li>';
+  html += '<li><strong>P</strong>attern change（頭痛パターンの変化）/ Progressive（進行性）</li>';
+  html += '<li><strong>P</strong>ositional（体位依存）/ Precipitated by Valsalva</li>';
+  html += '<li><strong>P</strong>apilledema（うっ血乳頭）</li>';
+  html += '<li><strong>P</strong>regnancy / Puerperium（妊娠・産褥）</li>';
+  html += '<li><strong>P</strong>ainful eye（痛い赤い眼）+ autonomic features</li>';
+  html += '<li><strong>P</strong>ost-traumatic（外傷後）</li>';
+  html += '<li>薬剤使用過多 / 新規薬剤の開始</li>';
+  html += '</ul>';
+  html += '</div>';
+
+  // 注意事項
+  html += '<div class="summary-box" style="margin-top:16px;">';
+  html += '<div class="summary-title">⚠️ よくあるピットフォール</div>';
+  html += '<strong>・</strong>「両側の鈍い痛みだから緊張型頭痛」と決めつけない — red flagsがあれば二次性を優先<br>';
+  html += '<strong>・</strong>片頭痛既往のある患者の頭痛を全部片頭痛にしない — 「今回もいつも通りか」を毎回確認<br>';
+  html += '<strong>・</strong>慢性頭痛で鎮痛薬の使用日数を数えていない — MOHは日数を聞かないと見逃す<br>';
+  html += '<strong>・</strong>眼底を見ない、視症状を聞かない — うっ血乳頭はIIH・CVT・腫瘍の入口<br>';
+  html += '<strong>・</strong>産褥頭痛を軽く見る — RCVS、CVT、子癇前症の頻度が上がる時期<br>';
+  html += '<strong>・</strong>典型的な一次性頭痛に安心目的だけで画像を重ねない — red flagsで画像の適応を上げる';
+  html += '</div>';
+
+  html += '</div></div>';
+  return html;
+}
+
+// 初期描画
+render();
+</script>
+
+</body>
+</html>

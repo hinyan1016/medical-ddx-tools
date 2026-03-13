@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v8';
+const CACHE_NAME = 'ddx-tools-v9';
 const ASSETS = [
   './',
   './index.html',
@@ -17,6 +17,7 @@ const ASSETS = [
   './secondary_hypertension.html',
   './nerve_localization.html',
   './neurodiagnosis.html',
+  './headache.html',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png'
