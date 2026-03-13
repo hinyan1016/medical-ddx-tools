@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A5276">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>めまい鑑別診断ツール</title>
+<style>
+  :root {
+    --navy: #1A5276;
+    --blue: #2E86C1;
+    --light-blue: #EAF2F8;
+    --red: #DC3545;
+    --yellow: #F5C518;
+    --green: #28A745;
+    --orange: #E8850C;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(26,82,118,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #EAF2F8 0%, #F4F6F8 100%);
+    color: #222;
+    min-height: 100vh;
+    padding: 0 0 40px;
+  }
+  header {
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    padding: 14px 20px 18px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(26,82,118,0.18);
+  }
+  .back-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .back-bar a {
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    font-size: 0.85em;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background 0.2s;
+  }
+  .back-bar a:active { background: rgba(255,255,255,0.15); }
+  header h1 { font-size: 1.7em; font-weight: 700; letter-spacing: 0.04em; }
+  header p { font-size: 0.92em; margin-top: 6px; opacity: 0.85; }
+
+  .container { max-width: 820px; margin: 0 auto; padding: 24px 16px; }
+
+  .step-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+    overflow: hidden;
+    transition: opacity 0.3s;
+  }
+  .step-card.inactive { opacity: 0.45; pointer-events: none; }
+  .step-card.completed { opacity: 1; }
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    background: var(--light-blue);
+    border-bottom: 2px solid var(--blue);
+    cursor: pointer;
+  }
+  .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--blue);
+    color: var(--white);
+    font-weight: 700;
+    font-size: 0.95em;
+    flex-shrink: 0;
+  }
+  .step-number.done { background: var(--green); }
+  .step-title { font-weight: 700; font-size: 1.05em; color: var(--navy); }
+  .step-body { padding: 18px; }
+
+  .option-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border: 2px solid #D0D8E4;
+    border-radius: 8px;
+    background: var(--white);
+    font-size: 0.97em;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: left;
+    color: #222;
+    font-family: inherit;
+    width: 100%;
+  }
+  .option-btn:hover { border-color: var(--blue); background: var(--light-blue); }
+  .option-btn.selected {
+    border-color: var(--blue);
+    background: var(--light-blue);
+    font-weight: 700;
+  }
+  .option-btn .icon { font-size: 1.2em; flex-shrink: 0; width: 24px; text-align: center; }
+
+  .checklist { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--light-gray);
+    cursor: pointer;
+    transition: background 0.15s;
+    user-select: none;
+    font-size: 0.95em;
+  }
+  .check-item:hover { background: #DAE8F5; }
+  .check-item input[type="checkbox"] {
+    width: 18px; height: 18px;
+    accent-color: var(--blue);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .check-item label { cursor: pointer; flex: 1; }
+
+  .result-panel {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(26,82,118,0.15);
+    overflow: hidden;
+    margin-top: 24px;
+    display: none;
+  }
+  .result-panel.show { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  .result-header {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    font-weight: 700;
+    font-size: 1.15em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .result-body { padding: 20px; }
+
+  .dx-card {
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    position: relative;
+    transition: all 0.2s;
+  }
+  .dx-card.high { border-color: var(--red); background: #FFF5F5; }
+  .dx-card.medium { border-color: var(--orange); background: #FFF8F0; }
+  .dx-card.low { border-color: var(--gray); background: var(--light-gray); }
+
+  .dx-card .dx-name {
+    font-weight: 700;
+    font-size: 1.08em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+  }
+  .dx-card .prob-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.78em;
+    font-weight: 700;
+    color: var(--white);
+  }
+  .dx-card.high .prob-badge { background: var(--red); }
+  .dx-card.medium .prob-badge { background: var(--orange); }
+  .dx-card.low .prob-badge { background: var(--gray); }
+
+  .dx-card .dx-detail { font-size: 0.9em; color: #444; line-height: 1.6; }
+  .dx-card .dx-detail strong { color: var(--navy); }
+  .dx-card .dx-workup {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #ccc;
+    font-size: 0.88em;
+    color: var(--blue);
+  }
+
+  .next-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    padding: 10px 22px;
+    background: var(--blue);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: inherit;
+  }
+  .next-btn:hover { background: var(--navy); }
+  .next-btn:disabled { background: #B0BEC5; cursor: not-allowed; }
+
+  .reset-btn {
+    display: block;
+    margin: 24px auto 0;
+    padding: 10px 32px;
+    background: var(--white);
+    color: var(--red);
+    border: 2px solid var(--red);
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .reset-btn:hover { background: var(--red); color: var(--white); }
+
+  .hint {
+    font-size: 0.85em;
+    color: var(--gray);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  .divider { height: 1px; background: #D0D8E4; margin: 14px 0; }
+
+  .algo-note {
+    background: #FFFDE7;
+    border-left: 4px solid var(--yellow);
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 18px;
+    font-size: 0.9em;
+    line-height: 1.6;
+    color: #555;
+  }
+  .algo-note strong { color: var(--navy); }
+
+  .alert-box {
+    background: #FFF3CD;
+    border: 2px solid var(--orange);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    font-size: 0.92em;
+    line-height: 1.6;
+  }
+  .alert-box.danger {
+    background: #F8D7DA;
+    border-color: var(--red);
+  }
+  .alert-box .alert-title {
+    font-weight: 700;
+    color: var(--red);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .category-label {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.78em;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .cat-avs { background: #FCE4EC; color: #C62828; }
+  .cat-tevs { background: #E8F5E9; color: #2E7D32; }
+  .cat-sevs { background: #E3F2FD; color: #1565C0; }
+  .cat-chronic { background: #FFF3E0; color: #E65100; }
+  .cat-other { background: #F3E5F5; color: #6A1B9A; }
+
+  .summary-box {
+    background: var(--light-blue);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    font-size: 0.92em;
+    line-height: 1.6;
+  }
+  .summary-box .summary-title {
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .red-flag-box {
+    background: #F8D7DA;
+    border: 2px solid var(--red);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 16px;
+    font-size: 0.9em;
+    line-height: 1.6;
+  }
+  .red-flag-box .rf-title {
+    font-weight: 700;
+    color: var(--red);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .red-flag-box ul { padding-left: 20px; margin-top: 4px; }
+  .red-flag-box li { margin-bottom: 4px; }
+
+  .ref-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88em;
+    margin: 12px 0;
+  }
+  .ref-table th, .ref-table td {
+    border: 1px solid #D0D8E4;
+    padding: 8px 10px;
+    text-align: left;
+  }
+  .ref-table th {
+    background: var(--light-blue);
+    color: var(--navy);
+    font-weight: 700;
+  }
+  .ref-table tr:nth-child(even) td { background: var(--light-gray); }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.3em; }
+    .step-body, .result-body { padding: 14px; }
+    .dx-card { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="back-bar"><a href="index.html">&#8249; ツール一覧</a></div>
+  <h1>めまい鑑別診断ツール</h1>
+  <p>症候群分類で整理し、危険なめまいを見逃さない</p>
+</header>
+
+<div class="container" id="app"></div>
+
+<script>
+// ===== 疾患データ =====
+var DISEASES = {
+  // === 急性前庭症候群（AVS） ===
+  vestibular_neuritis: {
+    name: "前庭神経炎（急性一側前庭障害）",
+    emoji: "🌀",
+    category: "急性前庭症候群（AVS）",
+    catClass: "cat-avs",
+    detail: "急性発症の持続性めまいで最も多い末梢性原因。<strong>24時間以上持続する回転性または非回転性めまい</strong>、<strong>方向固定性の水平回旋混合性自発眼振</strong>、<strong>患側のVOR低下（head impulse testで補正サッカード陽性）</strong>が三徴。新しい難聴は伴わない。ただし除外診断であり、中枢性病変の除外が不可欠。",
+    workup: "HINTSによるベッドサイド評価（AVS＋自発眼振ありが前提）。非典型的ならMRI-DWI。温度刺激検査・vHIT"
+  },
+  posterior_stroke: {
+    name: "後方循環脳卒中（脳幹・小脳梗塞/出血）",
+    emoji: "🚨",
+    category: "急性前庭症候群（AVS）",
+    catClass: "cat-avs",
+    detail: "AVSの中で<strong>最も見逃してはいけない疾患</strong>。めまい単独で発症することがあり、「麻痺も構音障害もないから脳卒中ではない」は危険。一般神経診察の感度は約47%に過ぎない。<strong>HINTSで中枢性パターン</strong>（正常HIT、方向交代性眼振、skew deviation）があれば強く示唆。頭部CTの感度は約29%と低く、<strong>脳卒中除外目的のCTは推奨されない</strong>（GRACE-3）。早期MRI-DWIでも感度約80%で偽陰性がありうる。",
+    workup: "HINTS（訓練された診察者が実施）。中枢性が疑われればMRI-DWI/MRA。頭部CTは脳卒中除外には不適"
+  },
+  // === 誘発性発作性前庭症候群（t-EVS） ===
+  bppv_posterior: {
+    name: "BPPV（後半規管型）",
+    emoji: "💫",
+    category: "誘発性発作性前庭症候群（t-EVS）",
+    catClass: "cat-tevs",
+    detail: "末梢性めまいで<strong>最も頻度が高い</strong>。寝返り、起き上がり、上を向く、下を向くなどの<strong>頭位変換で短い回転性めまい（秒〜1分）が反復</strong>する。<strong>Dix-Hallpike試験で回旋成分を伴う上向き眼振</strong>が典型。眼振は潜時（数秒）があり、反復で減衰する。「頭位でめまいがする」だけでは不十分で、<strong>対応する頭位眼振の確認が必須</strong>。",
+    workup: "Dix-Hallpike試験で診断。典型的ならルーチン画像・前庭機能検査は不要。Epley法で治療"
+  },
+  bppv_lateral: {
+    name: "BPPV（外側半規管型）",
+    emoji: "💫",
+    category: "誘発性発作性前庭症候群（t-EVS）",
+    catClass: "cat-tevs",
+    detail: "外側半規管のBPPVでは<strong>supine roll testで水平性眼振</strong>が観察される。向地性（患側向き）か背地性かで病型（管結石症 vs クプラ結石症）が分かれる。後半規管型に次いで多い。Epley法ではなくLempert法（BBQ roll）やGufoni法が用いられる。",
+    workup: "supine roll testで診断。向地性/背地性の判定。画像は通常不要"
+  },
+  central_positional: {
+    name: "中枢性頭位めまい",
+    emoji: "⚠️",
+    category: "誘発性発作性前庭症候群（t-EVS）",
+    catClass: "cat-tevs",
+    detail: "頭位変換で誘発されるがBPPVではない。<strong>下眼瞼向き眼振、純回旋性眼振、非典型的な水平性眼振</strong>などBPPVらしくないパターンが出現。眼振が疲労現象を示さない（何度やっても同じ）、潜時がない、持続する、なども中枢性を示唆。小脳・脳幹の機能障害を反映。<strong>耳石置換法に反応しない頭位めまいも中枢性を疑う根拠</strong>となる。",
+    workup: "MRI（小脳・脳幹の評価）。神経学的精査"
+  },
+  // === 自発性発作性前庭症候群（s-EVS） ===
+  vestibular_migraine: {
+    name: "前庭性片頭痛",
+    emoji: "🌊",
+    category: "自発性発作性前庭症候群（s-EVS）",
+    catClass: "cat-sevs",
+    detail: "<strong>中等度以上の前庭症状を少なくとも5回</strong>反復し、<strong>現在または過去の片頭痛歴</strong>があり、発作の少なくとも50%で<strong>片頭痛様頭痛、光過敏・音過敏、視覚性前兆</strong>のいずれかを伴う場合に診断（Barany Society/IHS基準）。前庭症状は自発性・頭位性・視覚誘発性・頭部運動誘発性と多彩。発作時間は5分〜72時間。<strong>めまい発作のたびに頭痛が必要という理解は正確ではない</strong>。",
+    workup: "臨床診断。片頭痛の既往、発作時の光過敏・音過敏・視覚性前兆を系統的に聴取。メニエール病との鑑別に聴力検査"
+  },
+  meniere: {
+    name: "メニエール病",
+    emoji: "👂",
+    category: "自発性発作性前庭症候群（s-EVS）",
+    catClass: "cat-sevs",
+    detail: "<strong>20分〜12時間持続する反復性めまい発作</strong>に、<strong>患側の変動する低〜中音域感音難聴</strong>を伴う。耳閉感、耳鳴も重要な随伴症状。前庭性片頭痛と違い<strong>聴覚症状の比重が高い</strong>。耳症状のない反復めまいを機械的にメニエール病とするのは不適切。確実例の診断には聴力検査で文書化された難聴が必要（Barany Society基準 2015）。",
+    workup: "純音聴力検査（低〜中音域の感音難聴）、発作の記録。電気蝸牛電図（ECoG）、MRI（聴神経腫瘍の除外）"
+  },
+  vascular_vertigo: {
+    name: "血管性めまい・TIA",
+    emoji: "🩸",
+    category: "自発性発作性前庭症候群（s-EVS）",
+    catClass: "cat-sevs",
+    detail: "反復する一過性めまい発作は良性とは限らない。<strong>血管危険因子</strong>（高血圧、糖尿病、脂質異常症、心房細動、喫煙）を持つ患者の数分〜数時間のめまい発作。複視、構音障害、嚥下障害、片側の脱力・しびれなど<strong>他の後方循環症状</strong>を伴えば確度が上がる。発作間欠期にはHINTSは使えず、<strong>発作パターン・血管危険因子・TIA随伴症状の評価</strong>が中心（GRACE-3）。",
+    workup: "MRI-DWI/MRA（脳虚血の確認、血管評価）。血管危険因子の精査。頸部血管エコー"
+  },
+  vestibular_paroxysmia: {
+    name: "前庭性発作症",
+    emoji: "⚡",
+    category: "自発性発作性前庭症候群（s-EVS）",
+    catClass: "cat-sevs",
+    detail: "<strong>1分未満の短いめまい発作を自発的に反復</strong>する。1日に10回以上生じることもあり、同じパターンの常同的な発作が特徴。第8脳神経の血管圧迫（neurovascular compression）が原因とされる。BPPVより短く、頭位変換だけでは説明しきれない。<strong>カルバマゼピンやオクスカルバゼピンへの反応</strong>が診断的にも重要（Barany Society基準）。",
+    workup: "MRI（CISS/FIESTAで第8脳神経と血管の接触を評価）。カルバマゼピン試験的投与"
+  },
+  // === 慢性持続性めまい ===
+  pppd: {
+    name: "持続性知覚性姿勢誘発めまい（PPPD）",
+    emoji: "🌫️",
+    category: "慢性持続性めまい",
+    catClass: "cat-chronic",
+    detail: "<strong>3か月以上</strong>持続する浮動感・ふらつき・不安定感・非回転性めまいで、<strong>立位・歩行</strong>、<strong>能動的または受動的な身体の動き</strong>、<strong>視覚刺激</strong>（人混み、スーパーの陳列棚、スクロール画面など）で悪化する。前庭障害・片頭痛・内科疾患・心理的ストレスを契機に発症することが多い。<strong>除外診断ではなく陽性所見で診断する病態</strong>。慢性めまいを安易に不安障害と片づけるのは不適切（Barany Society基準 2017）。",
+    workup: "臨床診断（陽性基準で判定）。他の前庭疾患の合併評価。認知行動療法・前庭リハビリテーション・SSRI/SNRIが治療選択肢"
+  },
+  bilateral_vestibulopathy: {
+    name: "両側前庭障害",
+    emoji: "🚶",
+    category: "慢性持続性めまい",
+    catClass: "cat-chronic",
+    detail: "両側の前庭機能が低下した状態。<strong>歩行時・頭部運動時の動揺視（oscillopsia）</strong>と<strong>体幹動揺・歩行不安定</strong>が主症状で、暗所・不整地で顕著に悪化する。頭を動かすと文字が読めなくなる。PPPDとの鑑別で重要なのは、PPPDの視覚過敏は人混みなどの「視覚的に複雑な環境」で出るのに対し、両側前庭障害は<strong>暗所で悪化</strong>する点。ゲンタマイシンなど<strong>耳毒性薬剤</strong>が主要な原因（Barany Society基準）。",
+    workup: "両側のVOR評価（vHIT、温度刺激検査、回転検査）。原因検索（耳毒性薬剤、自己免疫、遺伝性など）"
+  },
+  orthostatic_dizziness: {
+    name: "起立性循環障害によるめまい",
+    emoji: "🔻",
+    category: "慢性持続性めまい",
+    catClass: "cat-chronic",
+    detail: "<strong>起立時・立位保持時</strong>に生じるめまい・ふらつき・眼前暗黒感・失神前症状。起立性低血圧（起立後3分以内に収縮期20mmHg以上または拡張期10mmHg以上の低下）、POTS（起立後10分以内に心拍30bpm以上の上昇）、失神傾向などが背景。<strong>高齢者、脱水、薬剤性（降圧薬、利尿薬）、自律神経障害、若年女性のPOTS</strong>で特に重要。前庭疾患だけに視野を狭めないこと。",
+    workup: "起立試験（臥位→立位の血圧・脈拍を3分間測定）。Schellong試験。薬剤歴の確認。自律神経機能検査"
+  },
+  // === その他 ===
+  superior_canal_dehiscence: {
+    name: "上半規管裂隙症候群（SCDS）",
+    emoji: "🔊",
+    category: "その他",
+    catClass: "cat-other",
+    detail: "上半規管の骨が菲薄化・欠損し、<strong>音刺激や圧変化でめまいが誘発される（Tullio現象・Hennebert徴候）</strong>。自声強聴、拍動性耳鳴、骨導聴力亢進による見かけ上の伝音難聴も特徴的。慢性的なふらつきを呈することもある。",
+    workup: "高分解能CT（側頭骨、上半規管の骨欠損）。cVEMP（閾値低下・振幅増大）。聴力検査（骨導聴力亢進）"
+  },
+  acoustic_neuroma: {
+    name: "前庭神経鞘腫（聴神経腫瘍）",
+    emoji: "🎯",
+    category: "その他",
+    catClass: "cat-other",
+    detail: "緩徐に進行する<strong>一側性感音難聴</strong>が最多の初発症状。ふらつき・平衡障害を伴うことがあるが、急性の回転性めまいは比較的少ない（緩徐な成長のため代償が効くため）。<strong>一側性の耳鳴、進行性の聴力低下</strong>を見たら必ず鑑別に挙げる。",
+    workup: "造影MRI（内耳道・小脳橋角部）。聴力検査（一側性感音難聴）。ABR"
+  }
+};
+
+// ===== ステップ定義 =====
+var STEPS = [
+  {
+    id: "syndrome",
+    title: "症候群分類（最重要）",
+    question: "めまいの発症様式・持続時間・誘因から、どのパターンに最も近いですか？",
+    hint: "症候群分類が鑑別の出発点。「ぐるぐる」「ふわふわ」の言葉ではなく、時間経過・誘因・持続で判断する",
+    type: "single",
+    options: [
+      { label: "急性持続性：突然始まり、数時間〜数日以上ずっと続いている", value: "avs", icon: "🔴" },
+      { label: "短い発作の反復（頭位変換で誘発）：寝返り・起き上がりで秒〜1分のめまい", value: "tevs", icon: "🟢" },
+      { label: "発作の反復（誘因なし）：分〜時間の発作を繰り返し、間欠期は落ち着く", value: "sevs", icon: "🔵" },
+      { label: "慢性持続性：週〜月単位でふらつき・浮動感が続いている", value: "chronic", icon: "🟠" },
+      { label: "分類が難しい / 複数に当てはまる", value: "unclear", icon: "🤔" }
+    ]
+  },
+  {
+    id: "danger_signs",
+    title: "危険徴候の評価",
+    question: "以下の危険徴候で該当するものをすべて選択してください",
+    hint: "「めまい＋何か」が重要。随伴症状で末梢だけでは説明できない要素があれば中枢性を疑う",
+    type: "multi",
+    options: [
+      { label: "複視", value: "diplopia" },
+      { label: "構音障害", value: "dysarthria" },
+      { label: "嚥下障害", value: "dysphagia" },
+      { label: "片麻痺・感覚障害", value: "focal_neuro" },
+      { label: "強い体幹失調（座位保持困難・歩行不能）", value: "truncal_ataxia" },
+      { label: "激しい頭痛・頸部痛", value: "headache" },
+      { label: "新しい難聴（急性発症）", value: "new_hearing_loss" },
+      { label: "意識障害", value: "consciousness" },
+      { label: "失神・失神前症状", value: "syncope" },
+      { label: "発熱", value: "fever" },
+      { label: "該当なし", value: "none" }
+    ]
+  },
+  {
+    id: "nystagmus",
+    title: "眼振・眼球運動所見",
+    question: "観察された眼振・眼球運動所見を選択してください",
+    hint: "HINTSはAVS＋自発眼振がある患者に、訓練された診察者が行う場合に有用（GRACE-3）",
+    type: "multi",
+    options: [
+      { label: "方向固定性の水平（回旋混合）眼振（末梢性パターン）", value: "peripheral_nystagmus" },
+      { label: "方向交代性注視眼振（右を見ると右向き、左を見ると左向き）", value: "gaze_evoked" },
+      { label: "垂直性眼振（上向きまたは下向き）", value: "vertical" },
+      { label: "純回旋性眼振", value: "pure_torsional" },
+      { label: "Head impulse test正常（補正サッカードなし）", value: "hit_normal" },
+      { label: "Head impulse test異常（補正サッカードあり）", value: "hit_abnormal" },
+      { label: "Skew deviation陽性", value: "skew" },
+      { label: "Dix-Hallpikeで回旋+上向き眼振（潜時あり・減衰あり）", value: "dh_typical" },
+      { label: "Dix-Hallpikeで非典型的眼振（下向き・純回旋・減衰なし）", value: "dh_atypical" },
+      { label: "Supine roll testで水平性眼振", value: "supine_roll" },
+      { label: "自発眼振なし", value: "no_nystagmus" },
+      { label: "未評価 / 不明", value: "not_assessed" }
+    ]
+  },
+  {
+    id: "hearing",
+    title: "聴覚症状",
+    question: "めまいに伴う聴覚症状を選択してください",
+    hint: "聴覚症状の有無はメニエール病と前庭性片頭痛の鑑別で特に重要",
+    type: "multi",
+    options: [
+      { label: "変動する難聴（発作時に悪化、間欠期に改善）", value: "fluctuating_hearing" },
+      { label: "進行性の一側性難聴", value: "progressive_hearing" },
+      { label: "耳閉感", value: "aural_fullness" },
+      { label: "耳鳴", value: "tinnitus" },
+      { label: "自声強聴（自分の声が響く）", value: "autophony" },
+      { label: "音刺激でめまい誘発（Tullio現象）", value: "tullio" },
+      { label: "該当なし", value: "none" }
+    ]
+  },
+  {
+    id: "migraine",
+    title: "片頭痛関連症状",
+    question: "以下の片頭痛関連の所見で該当するものを選択してください",
+    hint: "前庭性片頭痛では発作のたびに頭痛がなくてもよい。光過敏・音過敏・前兆を系統的に聴取",
+    type: "multi",
+    options: [
+      { label: "片頭痛の既往（現在または過去）", value: "migraine_history" },
+      { label: "めまい発作時の頭痛（片側性・拍動性）", value: "headache_with_vertigo" },
+      { label: "めまい発作時の光過敏", value: "photophobia" },
+      { label: "めまい発作時の音過敏", value: "phonophobia" },
+      { label: "視覚性前兆（閃輝暗点など）", value: "visual_aura" },
+      { label: "該当なし", value: "none" }
+    ]
+  },
+  {
+    id: "chronic_features",
+    title: "慢性めまいの特徴",
+    question: "慢性的なめまい・ふらつきの特徴で該当するものを選択してください",
+    hint: "PPPD・両側前庭障害・起立性の鑑別ポイント。複数合併もありうる",
+    type: "multi",
+    options: [
+      { label: "立位・歩行で悪化", value: "upright_worse" },
+      { label: "視覚刺激で悪化（人混み、スーパー、スクロール画面）", value: "visual_stim" },
+      { label: "頭部運動で悪化", value: "head_movement" },
+      { label: "暗所・不整地で悪化", value: "dark_worse" },
+      { label: "動揺視（歩行中に文字がぶれる）", value: "oscillopsia" },
+      { label: "起立時にふらつき・眼前暗黒感", value: "orthostatic_sx" },
+      { label: "前庭障害のエピソードが先行（前庭神経炎・BPPVなど）", value: "prior_vestibular" },
+      { label: "耳毒性薬剤の使用歴（ゲンタマイシンなど）", value: "ototoxic" },
+      { label: "該当なし / 急性で慢性でない", value: "none" }
+    ]
+  },
+  {
+    id: "risk_factors",
+    title: "背景因子・リスク",
+    question: "背景にある因子やリスクで該当するものを選択してください",
+    hint: "血管危険因子は後方循環TIA/脳卒中の事前確率を大きく動かす",
+    type: "multi",
+    options: [
+      { label: "高血圧", value: "hypertension" },
+      { label: "糖尿病", value: "diabetes" },
+      { label: "脂質異常症", value: "dyslipidemia" },
+      { label: "心房細動", value: "af" },
+      { label: "喫煙", value: "smoking" },
+      { label: "高齢（65歳以上）", value: "elderly" },
+      { label: "降圧薬・利尿薬・向精神薬の使用", value: "hypotensive_drugs" },
+      { label: "不安障害・うつ病の既往", value: "anxiety_depression" },
+      { label: "該当なし", value: "none" }
+    ]
+  }
+];
+
+// ===== スコアリングロジック =====
+function calcScores(answers) {
+  var scores = {};
+  var keys = Object.keys(DISEASES);
+  for (var i = 0; i < keys.length; i++) { scores[keys[i]] = 0; }
+
+  var synd = answers.syndrome || "";
+  var danger = answers.danger_signs || [];
+  var nyst = answers.nystagmus || [];
+  var hear = answers.hearing || [];
+  var mig = answers.migraine || [];
+  var chron = answers.chronic_features || [];
+  var risk = answers.risk_factors || [];
+
+  // --- 症候群分類 ---
+  if (synd === "avs") {
+    scores.vestibular_neuritis += 5;
+    scores.posterior_stroke += 5;
+  }
+  if (synd === "tevs") {
+    scores.bppv_posterior += 5;
+    scores.bppv_lateral += 4;
+    scores.central_positional += 3;
+  }
+  if (synd === "sevs") {
+    scores.vestibular_migraine += 4;
+    scores.meniere += 4;
+    scores.vascular_vertigo += 3;
+    scores.vestibular_paroxysmia += 3;
+  }
+  if (synd === "chronic") {
+    scores.pppd += 5;
+    scores.bilateral_vestibulopathy += 4;
+    scores.orthostatic_dizziness += 4;
+  }
+  if (synd === "unclear") {
+    // すべてに軽度のスコアを付与
+    scores.vestibular_neuritis += 2;
+    scores.posterior_stroke += 2;
+    scores.bppv_posterior += 2;
+    scores.vestibular_migraine += 2;
+    scores.meniere += 2;
+    scores.pppd += 2;
+    scores.orthostatic_dizziness += 2;
+    scores.vascular_vertigo += 2;
+  }
+
+  // --- 危険徴候 ---
+  if (danger.indexOf("diplopia") >= 0) {
+    scores.posterior_stroke += 4;
+    scores.central_positional += 2;
+  }
+  if (danger.indexOf("dysarthria") >= 0) {
+    scores.posterior_stroke += 4;
+    scores.vascular_vertigo += 2;
+  }
+  if (danger.indexOf("dysphagia") >= 0) {
+    scores.posterior_stroke += 4;
+  }
+  if (danger.indexOf("focal_neuro") >= 0) {
+    scores.posterior_stroke += 5;
+    scores.vascular_vertigo += 3;
+    scores.central_positional += 2;
+  }
+  if (danger.indexOf("truncal_ataxia") >= 0) {
+    scores.posterior_stroke += 4;
+    scores.vestibular_neuritis += 1;
+  }
+  if (danger.indexOf("headache") >= 0) {
+    scores.posterior_stroke += 3;
+    scores.vestibular_migraine += 2;
+    scores.vascular_vertigo += 2;
+  }
+  if (danger.indexOf("new_hearing_loss") >= 0) {
+    scores.meniere += 3;
+    scores.posterior_stroke += 2; // AICA梗塞
+    scores.acoustic_neuroma += 2;
+    scores.vestibular_neuritis -= 1; // 前庭神経炎では通常なし
+  }
+  if (danger.indexOf("consciousness") >= 0) {
+    scores.posterior_stroke += 4;
+  }
+  if (danger.indexOf("syncope") >= 0) {
+    scores.orthostatic_dizziness += 4;
+    scores.vascular_vertigo += 2;
+  }
+  if (danger.indexOf("fever") >= 0) {
+    scores.posterior_stroke += 1;
+    // 感染後前庭神経炎の可能性
+    scores.vestibular_neuritis += 1;
+  }
+
+  // --- 眼振・眼球運動所見 ---
+  if (nyst.indexOf("peripheral_nystagmus") >= 0) {
+    scores.vestibular_neuritis += 4;
+    scores.posterior_stroke -= 1;
+  }
+  if (nyst.indexOf("gaze_evoked") >= 0) {
+    scores.posterior_stroke += 5;
+    scores.central_positional += 3;
+    scores.vestibular_neuritis -= 2;
+  }
+  if (nyst.indexOf("vertical") >= 0) {
+    scores.posterior_stroke += 5;
+    scores.central_positional += 4;
+    scores.vestibular_neuritis -= 2;
+  }
+  if (nyst.indexOf("pure_torsional") >= 0) {
+    scores.posterior_stroke += 4;
+    scores.central_positional += 3;
+  }
+  if (nyst.indexOf("hit_normal") >= 0) {
+    // AVS文脈でのHIT正常は中枢性を示唆
+    if (synd === "avs") {
+      scores.posterior_stroke += 4;
+      scores.vestibular_neuritis -= 2;
+    }
+  }
+  if (nyst.indexOf("hit_abnormal") >= 0) {
+    scores.vestibular_neuritis += 4;
+    // ただしAICA梗塞でもHIT異常がありうる
+    if (danger.indexOf("new_hearing_loss") >= 0) {
+      scores.posterior_stroke += 2;
+    }
+  }
+  if (nyst.indexOf("skew") >= 0) {
+    scores.posterior_stroke += 4;
+    scores.vestibular_neuritis -= 2;
+  }
+  if (nyst.indexOf("dh_typical") >= 0) {
+    scores.bppv_posterior += 6;
+    scores.central_positional -= 2;
+  }
+  if (nyst.indexOf("dh_atypical") >= 0) {
+    scores.central_positional += 5;
+    scores.bppv_posterior -= 2;
+  }
+  if (nyst.indexOf("supine_roll") >= 0) {
+    scores.bppv_lateral += 5;
+  }
+  if (nyst.indexOf("no_nystagmus") >= 0) {
+    // 自発眼振なしのAVSは要注意
+    if (synd === "avs") {
+      scores.posterior_stroke += 2;
+      scores.vestibular_neuritis -= 1;
+    }
+    scores.pppd += 2;
+    scores.orthostatic_dizziness += 2;
+  }
+
+  // --- 聴覚症状 ---
+  if (hear.indexOf("fluctuating_hearing") >= 0) {
+    scores.meniere += 5;
+    scores.vestibular_migraine += 1;
+  }
+  if (hear.indexOf("progressive_hearing") >= 0) {
+    scores.acoustic_neuroma += 5;
+    scores.meniere += 1;
+  }
+  if (hear.indexOf("aural_fullness") >= 0) {
+    scores.meniere += 3;
+    scores.vestibular_migraine += 1;
+    scores.superior_canal_dehiscence += 1;
+  }
+  if (hear.indexOf("tinnitus") >= 0) {
+    scores.meniere += 2;
+    scores.acoustic_neuroma += 2;
+    scores.superior_canal_dehiscence += 1;
+  }
+  if (hear.indexOf("autophony") >= 0) {
+    scores.superior_canal_dehiscence += 5;
+  }
+  if (hear.indexOf("tullio") >= 0) {
+    scores.superior_canal_dehiscence += 6;
+  }
+
+  // --- 片頭痛関連 ---
+  if (mig.indexOf("migraine_history") >= 0) {
+    scores.vestibular_migraine += 4;
+    scores.pppd += 1; // 片頭痛はPPPDの契機にもなる
+  }
+  if (mig.indexOf("headache_with_vertigo") >= 0) {
+    scores.vestibular_migraine += 3;
+  }
+  if (mig.indexOf("photophobia") >= 0) {
+    scores.vestibular_migraine += 3;
+  }
+  if (mig.indexOf("phonophobia") >= 0) {
+    scores.vestibular_migraine += 3;
+  }
+  if (mig.indexOf("visual_aura") >= 0) {
+    scores.vestibular_migraine += 3;
+  }
+
+  // --- 慢性めまいの特徴 ---
+  if (chron.indexOf("upright_worse") >= 0) {
+    scores.pppd += 3;
+    scores.orthostatic_dizziness += 3;
+    scores.bilateral_vestibulopathy += 2;
+  }
+  if (chron.indexOf("visual_stim") >= 0) {
+    scores.pppd += 4;
+  }
+  if (chron.indexOf("head_movement") >= 0) {
+    scores.pppd += 2;
+    scores.bilateral_vestibulopathy += 2;
+  }
+  if (chron.indexOf("dark_worse") >= 0) {
+    scores.bilateral_vestibulopathy += 5;
+    scores.pppd -= 1;
+  }
+  if (chron.indexOf("oscillopsia") >= 0) {
+    scores.bilateral_vestibulopathy += 5;
+  }
+  if (chron.indexOf("orthostatic_sx") >= 0) {
+    scores.orthostatic_dizziness += 5;
+  }
+  if (chron.indexOf("prior_vestibular") >= 0) {
+    scores.pppd += 3;
+  }
+  if (chron.indexOf("ototoxic") >= 0) {
+    scores.bilateral_vestibulopathy += 5;
+  }
+
+  // --- 背景因子 ---
+  var vascRisk = 0;
+  if (risk.indexOf("hypertension") >= 0) vascRisk++;
+  if (risk.indexOf("diabetes") >= 0) vascRisk++;
+  if (risk.indexOf("dyslipidemia") >= 0) vascRisk++;
+  if (risk.indexOf("af") >= 0) vascRisk += 2;
+  if (risk.indexOf("smoking") >= 0) vascRisk++;
+  if (risk.indexOf("elderly") >= 0) vascRisk++;
+
+  if (vascRisk >= 2) {
+    scores.posterior_stroke += Math.min(vascRisk, 4);
+    scores.vascular_vertigo += Math.min(vascRisk, 4);
+  }
+  if (risk.indexOf("elderly") >= 0) {
+    scores.orthostatic_dizziness += 2;
+    scores.bilateral_vestibulopathy += 1;
+  }
+  if (risk.indexOf("hypotensive_drugs") >= 0) {
+    scores.orthostatic_dizziness += 3;
+  }
+  if (risk.indexOf("anxiety_depression") >= 0) {
+    scores.pppd += 2;
+  }
+
+  return scores;
+}
+
+function rankDiseases(scores) {
+  var arr = [];
+  var keys = Object.keys(scores);
+  for (var i = 0; i < keys.length; i++) {
+    if (scores[keys[i]] > 0) {
+      arr.push({ id: keys[i], score: scores[keys[i]], data: DISEASES[keys[i]] });
+    }
+  }
+  arr.sort(function(a, b) { return b.score - a.score; });
+  return arr;
+}
+
+function getProbLevel(score, maxScore) {
+  var ratio = maxScore > 0 ? score / maxScore : 0;
+  if (ratio >= 0.7) return "high";
+  if (ratio >= 0.4) return "medium";
+  return "low";
+}
+
+function getProbLabel(level) {
+  if (level === "high") return "可能性高";
+  if (level === "medium") return "可能性中";
+  return "可能性低";
+}
+
+// ===== UI =====
+var answers = {};
+var currentStep = 0;
+
+function render() {
+  var app = document.getElementById("app");
+  var html = "";
+
+  // アルゴリズム解説
+  html += '<div class="algo-note">';
+  html += '<strong>使い方：</strong>症候群分類（AVS/t-EVS/s-EVS/慢性）を入口に、眼振所見・聴覚症状・片頭痛関連・慢性特徴・危険因子を組み合わせて鑑別候補を絞り込みます。<br>';
+  html += '<strong>注意：</strong>HINTSは<strong>AVS＋自発眼振あり＋訓練された診察者</strong>が条件です（GRACE-3）。適応外での使用は精度が低下します。';
+  html += '</div>';
+
+  // ステップカード
+  for (var i = 0; i < STEPS.length; i++) {
+    var s = STEPS[i];
+    var state = i < currentStep ? "completed" : (i === currentStep ? "" : "inactive");
+    var numClass = i < currentStep ? "done" : "";
+
+    html += '<div class="step-card ' + state + '" id="step-' + i + '">';
+    html += '<div class="step-header">';
+    html += '<span class="step-number ' + numClass + '">' + (i < currentStep ? "&#10003;" : (i + 1)) + '</span>';
+    html += '<span class="step-title">' + s.title + '</span>';
+    html += '</div>';
+
+    if (i <= currentStep) {
+      html += '<div class="step-body">';
+      html += '<div style="font-size:0.97em;font-weight:600;color:#333;">' + s.question + '</div>';
+      if (s.hint) {
+        html += '<div class="hint">' + s.hint + '</div>';
+      }
+
+      if (s.type === "single") {
+        html += '<div class="option-group">';
+        for (var j = 0; j < s.options.length; j++) {
+          var o = s.options[j];
+          var sel = answers[s.id] === o.value ? " selected" : "";
+          html += '<button class="option-btn' + sel + '" onclick="selectSingle(\'' + s.id + '\',\'' + o.value + '\',' + i + ')">';
+          if (o.icon) html += '<span class="icon">' + o.icon + '</span>';
+          html += o.label;
+          html += '</button>';
+        }
+        html += '</div>';
+      } else {
+        html += '<div class="checklist">';
+        var vals = answers[s.id] || [];
+        for (var j = 0; j < s.options.length; j++) {
+          var o = s.options[j];
+          var chk = vals.indexOf(o.value) >= 0 ? ' checked' : '';
+          html += '<div class="check-item" onclick="toggleCheck(\'' + s.id + '\',\'' + o.value + '\',' + i + ')">';
+          html += '<input type="checkbox"' + chk + ' tabindex="-1">';
+          html += '<label>' + o.label + '</label>';
+          html += '</div>';
+        }
+        html += '</div>';
+        if (i === currentStep) {
+          var hasAny = vals.length > 0;
+          html += '<button class="next-btn" onclick="nextStep(' + i + ')"' + (hasAny ? '' : ' disabled') + '>次へ &#8250;</button>';
+        }
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+
+  // 結果パネル
+  if (currentStep >= STEPS.length) {
+    var scores = calcScores(answers);
+    var ranked = rankDiseases(scores);
+    var maxScore = ranked.length > 0 ? ranked[0].score : 1;
+
+    html += '<div class="result-panel show">';
+    html += '<div class="result-header">&#128202; 鑑別診断リスト</div>';
+    html += '<div class="result-body">';
+
+    // サマリー
+    var syndLabel = "";
+    if (answers.syndrome === "avs") syndLabel = "急性前庭症候群（AVS）";
+    else if (answers.syndrome === "tevs") syndLabel = "誘発性発作性前庭症候群（t-EVS）";
+    else if (answers.syndrome === "sevs") syndLabel = "自発性発作性前庭症候群（s-EVS）";
+    else if (answers.syndrome === "chronic") syndLabel = "慢性持続性めまい";
+    else syndLabel = "分類未確定";
+
+    html += '<div class="summary-box">';
+    html += '<div class="summary-title">&#128204; 臨床パターン</div>';
+    html += '<strong>症候群分類：</strong>' + syndLabel;
+    html += '</div>';
+
+    // 危険徴候アラート
+    var dangerItems = answers.danger_signs || [];
+    var hasDanger = false;
+    for (var d = 0; d < dangerItems.length; d++) {
+      if (dangerItems[d] !== "none") { hasDanger = true; break; }
+    }
+    if (hasDanger) {
+      html += '<div class="alert-box danger">';
+      html += '<div class="alert-title">&#9888;&#65039; 危険徴候あり</div>';
+      html += '中枢性病変の除外が優先されます。特にAVSでは後方循環脳卒中を常に念頭に置いてください。<br>';
+      html += '<strong>頭部CTは脳卒中除外目的には推奨されません</strong>（感度約29%）。訓練された診察者によるHINTS、または確認検査としてのMRI-DWIを検討してください。';
+      html += '</div>';
+    }
+
+    // 各疾患カード
+    for (var k = 0; k < ranked.length; k++) {
+      var r = ranked[k];
+      var lvl = getProbLevel(r.score, maxScore);
+      html += '<div class="dx-card ' + lvl + '">';
+      html += '<span class="category-label ' + r.data.catClass + '">' + r.data.category + '</span>';
+      html += '<div class="dx-name">';
+      html += r.data.emoji + ' ' + r.data.name;
+      html += ' <span class="prob-badge">' + getProbLabel(lvl) + '</span>';
+      html += '</div>';
+      html += '<div class="dx-detail">' + r.data.detail + '</div>';
+      html += '<div class="dx-workup">&#128269; ' + r.data.workup + '</div>';
+      html += '</div>';
+    }
+
+    // Red flags / 注意事項
+    html += '<div class="red-flag-box">';
+    html += '<div class="rf-title">&#9888;&#65039; めまい診療の落とし穴</div>';
+    html += '<ul>';
+    html += '<li><strong>「回転性だから末梢」「浮動性だから中枢」は不正確</strong> ─ 症状の質ではなく時間経過・誘因・持続で分類する</li>';
+    html += '<li><strong>HINTSを適応外の患者に使わない</strong> ─ AVS＋自発眼振あり＋訓練された診察者が条件（GRACE-3）</li>';
+    html += '<li><strong>頭位めまいをすべてBPPVとしない</strong> ─ 典型的眼振の確認が必須。減衰しない・下眼瞼向きは中枢性を疑う</li>';
+    html += '<li><strong>起立性バイタルを測る</strong> ─ 前庭疾患に視野を狭めず、特に高齢者・薬剤性では必ず評価</li>';
+    html += '<li><strong>頭部CTで脳卒中は除外できない</strong> ─ 急性めまいにおけるCTの感度は約29%</li>';
+    html += '<li><strong>早期MRI-DWIにも限界</strong> ─ 感度約80%で、約5人に1人の脳卒中を見逃しうる</li>';
+    html += '</ul>';
+    html += '</div>';
+
+    html += '</div></div>';
+  }
+
+  // リセットボタン
+  if (currentStep > 0) {
+    html += '<button class="reset-btn" onclick="resetAll()">&#8635; 最初からやり直す</button>';
+  }
+
+  app.innerHTML = html;
+
+  // 現在のステップまでスクロール
+  if (currentStep < STEPS.length) {
+    var el = document.getElementById("step-" + currentStep);
+    if (el) {
+      setTimeout(function() {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 100);
+    }
+  } else {
+    var rp = document.querySelector(".result-panel");
+    if (rp) {
+      setTimeout(function() {
+        rp.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+    }
+  }
+}
+
+function selectSingle(stepId, value, stepIndex) {
+  answers[stepId] = value;
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function toggleCheck(stepId, value, stepIndex) {
+  if (!answers[stepId]) answers[stepId] = [];
+  var arr = answers[stepId];
+  var idx = arr.indexOf(value);
+
+  // 「該当なし」排他処理
+  if (value === "none") {
+    answers[stepId] = ["none"];
+  } else {
+    var noneIdx = arr.indexOf("none");
+    if (noneIdx >= 0) arr.splice(noneIdx, 1);
+    if (idx >= 0) {
+      arr.splice(idx, 1);
+    } else {
+      arr.push(value);
+    }
+  }
+  render();
+}
+
+function nextStep(stepIndex) {
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function resetAll() {
+  answers = {};
+  currentStep = 0;
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// 初期描画
+render();
+</script>
+</body>
+</html>
