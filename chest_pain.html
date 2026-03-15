@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#8B1A1A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>胸痛鑑別診断ツール</title>
+<style>
+  :root {
+    --primary-dark: #8B1A1A;
+    --primary: #C0392B;
+    --light-primary: #FDECEA;
+    --red: #DC3545;
+    --yellow: #F5C518;
+    --green: #28A745;
+    --orange: #E8850C;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(139,26,26,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, var(--light-primary) 0%, var(--light-gray) 100%);
+    color: #23272B;
+    min-height: 100vh;
+    padding-bottom: 32px;
+  }
+  .header {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+    color: #fff;
+    padding: 20px 16px 14px;
+    text-align: center;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(139,26,26,0.18);
+  }
+  .header h1 { font-size: 1.25rem; letter-spacing: 0.04em; }
+  .header p { font-size: 0.82rem; opacity: 0.88; margin-top: 4px; }
+  .back-link {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    color: #fff; text-decoration: none; font-size: 0.92rem; opacity: 0.85;
+    z-index: 101;
+  }
+  .back-link:hover { opacity: 1; }
+  .container { max-width: 720px; margin: 0 auto; padding: 16px 10px; }
+  .algo-note {
+    background: var(--light-primary);
+    border-left: 4px solid var(--primary);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .step-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 14px;
+    overflow: hidden;
+    border-left: 4px solid var(--primary);
+    transition: opacity 0.2s;
+  }
+  .step-card.completed { opacity: 0.7; border-left-color: var(--green); }
+  .step-card.inactive { opacity: 0.45; pointer-events: none; }
+  .step-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px;
+    font-weight: 700; font-size: 0.97rem;
+    cursor: default;
+  }
+  .step-number {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--primary); color: #fff;
+    font-size: 0.92rem; font-weight: 700; flex-shrink: 0;
+  }
+  .step-number.done { background: var(--green); }
+  .step-title { flex: 1; }
+  .step-body { padding: 0 14px 14px; }
+  .hint {
+    font-size: 0.82rem; color: var(--gray);
+    margin-bottom: 8px; line-height: 1.5;
+  }
+  .option-group { display: flex; flex-direction: column; gap: 8px; }
+  .option-btn {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--light-gray); border: 2px solid transparent;
+    border-radius: 8px; padding: 10px 12px;
+    font-size: 0.92rem; cursor: pointer; text-align: left;
+    transition: border-color 0.15s, background 0.15s;
+    font-family: inherit; width: 100%;
+  }
+  .option-btn:hover { border-color: var(--primary); }
+  .option-btn.selected { border-color: var(--primary); background: var(--light-primary); font-weight: 600; }
+  .option-btn .icon { font-size: 1.15rem; }
+  .checklist { display: flex; flex-direction: column; gap: 6px; }
+  .check-item {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--light-gray); border-radius: 8px;
+    padding: 9px 12px; cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.15s;
+  }
+  .check-item:hover { background: #ebeef1; }
+  .check-item input[type="checkbox"] { accent-color: var(--primary); width: 18px; height: 18px; flex-shrink: 0; cursor: pointer; }
+  .check-item label { cursor: pointer; }
+  .next-btn {
+    margin-top: 10px; padding: 10px 28px;
+    background: var(--primary); color: #fff; border: none;
+    border-radius: 8px; font-size: 0.95rem; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+  }
+  .next-btn:hover { opacity: 0.88; }
+  .result-panel {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: 0 2px 16px rgba(139,26,26,0.13);
+    padding: 18px 14px;
+    margin-top: 18px;
+    border-top: 5px solid var(--primary);
+  }
+  .result-panel h2 {
+    font-size: 1.1rem; color: var(--primary-dark);
+    margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+  }
+  .disease-card {
+    border-radius: 8px; padding: 14px;
+    margin-bottom: 12px;
+    border-left: 5px solid var(--gray);
+  }
+  .disease-card.high { border-left-color: var(--red); background: #FFF5F5; }
+  .disease-card.medium { border-left-color: var(--orange); background: #FFF9F0; }
+  .disease-card.low { border-left-color: var(--gray); background: var(--light-gray); }
+  .disease-header {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 6px;
+  }
+  .disease-name { font-weight: 700; font-size: 1.02rem; }
+  .badge {
+    display: inline-block; padding: 2px 10px; border-radius: 12px;
+    font-size: 0.78rem; font-weight: 600; color: #fff;
+  }
+  .badge.high { background: var(--red); }
+  .badge.medium { background: var(--orange); }
+  .badge.low { background: var(--gray); }
+  .cat-tag {
+    display: inline-block; padding: 2px 8px; border-radius: 10px;
+    font-size: 0.73rem; font-weight: 600;
+  }
+  .cat-cardiac { background: #FDECEA; color: #C0392B; }
+  .cat-vascular { background: #F3E5F5; color: #7B1FA2; }
+  .cat-pulm { background: #E8F8F5; color: #0E6655; }
+  .cat-gi { background: #FFF3E0; color: #E65100; }
+  .cat-msk { background: #E3F2FD; color: #1565C0; }
+  .cat-other { background: #F5F5F5; color: #616161; }
+  .disease-detail {
+    font-size: 0.88rem; line-height: 1.65;
+    margin-bottom: 6px;
+  }
+  .workup-line {
+    font-size: 0.84rem; color: var(--primary);
+    font-weight: 600;
+  }
+  .alert-box {
+    border-radius: 8px; padding: 14px;
+    margin-bottom: 14px; font-size: 0.9rem; line-height: 1.6;
+  }
+  .alert-red { background: #FDECEA; border: 1.5px solid #E74C3C; }
+  .alert-yellow { background: #FEF9E7; border: 1.5px solid #F1C40F; }
+  .alert-blue { background: #EBF5FB; border: 1.5px solid #2980B9; }
+  .ref-table {
+    width: 100%; border-collapse: collapse;
+    font-size: 0.8rem; margin-top: 12px;
+  }
+  .ref-table th, .ref-table td {
+    border: 1px solid #ddd; padding: 7px 8px; text-align: left;
+  }
+  .ref-table th { background: var(--primary-dark); color: #fff; font-size: 0.78rem; }
+  .ref-table tr:nth-child(even) { background: #f9f9f9; }
+  .reset-btn {
+    display: block; margin: 24px auto 0; padding: 12px 32px;
+    background: #fff; color: var(--primary); border: 2px solid var(--primary);
+    border-radius: 8px; font-size: 1rem; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+  }
+  .reset-btn:hover { background: var(--light-primary); }
+  .pitfall-box {
+    background: #FDF6E3; border: 1.5px solid #E8D5A0;
+    border-radius: 8px; padding: 14px;
+    margin-top: 14px; font-size: 0.88rem; line-height: 1.65;
+  }
+  .section-title {
+    font-size: 0.95rem; font-weight: 700; color: var(--primary-dark);
+    margin: 16px 0 8px; display: flex; align-items: center; gap: 6px;
+  }
+</style>
+</head>
+<body>
+<div class="header">
+  <a class="back-link" href="index.html">&#x2039; ツール一覧</a>
+  <h1>胸痛 鑑別診断ツール</h1>
+  <p>6つの緊急疾患を並列除外する実践的アプローチ</p>
+</div>
+
+<div class="container" id="app"></div>
+
+<script>
+// ===== 疾患データ =====
+var DISEASES = {
+  acs: {
+    name: "急性冠症候群（ACS）",
+    category: "cardiac",
+    emoji: "💔",
+    detail: "圧迫感・締め付け感、左肩〜顎への放散痛、冷汗・嘔気が典型だが、<strong>鋭い痛み・呼吸で変動する痛み・圧痛があってもACSは否定できない</strong>。高齢者・糖尿病では息切れが唯一の症状のことがある（anginal equivalent）。<strong>ECG＋高感度トロポニン再検</strong>が鍵。痛みの質だけで切らない。",
+    workup: "ECG（10分以内）、高感度トロポニン（0h/1-2h再検）、胸部X線、心エコー"
+  },
+  pe: {
+    name: "肺塞栓症（PE）",
+    category: "vascular",
+    emoji: "🫁",
+    detail: "<strong>胸膜性痛＋呼吸困難＋頻脈</strong>の組み合わせが典型。片脚腫脹、喀血、VTEリスク因子があれば疑いを強める。胸膜性痛で最も頻度の高い重篤原因で、救急受診例の<strong>5〜21%</strong>に見られる。<strong>前確率評価（Wells/PERC）→年齢補正D-dimer→CTPA</strong>の段階的アプローチが重要。",
+    workup: "Wells/PERCで前確率評価、D-dimer（年齢補正）、CTPA、下肢エコー"
+  },
+  aas: {
+    name: "急性大動脈症候群（AAS）",
+    category: "vascular",
+    emoji: "🔴",
+    detail: "<strong>突然発症・最大時の激痛</strong>が最大の手がかり。胸背部の引き裂かれるような痛み、失神、血圧/脈拍左右差、神経脱落症候を伴う。<strong>ADD-RS</strong>（高リスク素因・高リスク疼痛・高リスク診察所見）で整理し、高疑いなら大動脈造影CTへ。D-dimerは低疑い例でのみ補助的に使用可。",
+    workup: "ADD-RSで評価、大動脈造影CT、ECG（ACS鑑別）、D-dimer（ADD-RS≤1なら補助）"
+  },
+  pericarditis: {
+    name: "急性心膜炎/心タンポナーデ",
+    category: "cardiac",
+    emoji: "💜",
+    detail: "鋭い胸痛で、<strong>前屈で軽快・臥位で悪化</strong>が特徴的。心膜摩擦音、<strong>びまん性ST上昇/PR低下</strong>がECG所見。4項目中2項目以上（胸膜性胸痛・摩擦音・ECG変化・心嚢液）で診断。心タンポナーデでは低血圧、頸静脈怒張、心音減弱（Beck三徴）に注意。胸部X線正常でもあり得る。",
+    workup: "ECG（びまん性ST上昇/PR低下）、心エコー（心嚢液）、CRP/ESR、トロポニン"
+  },
+  pneumothorax: {
+    name: "気胸",
+    category: "pulm",
+    emoji: "💨",
+    detail: "<strong>突然の片側胸膜性痛＋呼吸困難</strong>が典型。片側呼吸音低下、打診で過共鳴が手がかり。緊張性気胸では低血圧、頸静脈怒張、気管偏位を伴い、即座の脱気が必要。若年痩身男性の自然気胸が多いが、外傷・医原性・基礎肺疾患も原因となる。",
+    workup: "胸部X線（立位吸気）、肺エコー（sliding sign消失）、CT（再発・原因検索時）"
+  },
+  pneumonia: {
+    name: "肺炎",
+    category: "pulm",
+    emoji: "🦠",
+    detail: "<strong>発熱、咳・痰、胸膜性痛</strong>の組み合わせ。聴診でcracklesやラ音を聴取。画像上の<strong>新規浸潤影が鍵</strong>で、症状だけでは確定しない。高齢者では発熱が乏しいことがある。随伴性胸膜炎や膿胸を合併することがある。",
+    workup: "胸部X線、CBC、CRP/PCT、血液培養、喀痰培養・Gram染色、重症度評価（A-DROP）"
+  },
+  gerd: {
+    name: "胃食道逆流症（GERD）/食道痙攣",
+    category: "gi",
+    emoji: "🔥",
+    detail: "<strong>胸骨後方の灼熱感</strong>が典型。食後・臥位で悪化、制酸薬で改善する。食道痙攣では胸骨後方の締め付け感がACSに類似し、ニトログリセリンでも軽快することがある。<strong>ACSを除外した上で</strong>診断する。長期の逆流症状があれば事前確率が上がる。",
+    workup: "ACS除外が先決、PPI試験投与、上部消化管内視鏡、食道内圧検査（痙攣疑い）"
+  },
+  msk: {
+    name: "筋骨格系胸痛（肋軟骨炎含む）",
+    category: "msk",
+    emoji: "🦴",
+    detail: "胸壁の<strong>圧痛で再現される痛み</strong>が特徴。肋軟骨炎（Tietze症候群）では肋軟骨接合部の腫脹・圧痛を伴う。体動・特定の姿勢で誘発/増悪する。ただし、<strong>圧痛があってもACSは否定できない</strong>ため、リスク因子がある場合はECG・トロポニンを確認する。",
+    workup: "ACS除外後の臨床診断、必要に応じて胸部X線（肋骨骨折除外）、NSAIDs試験投与"
+  },
+  herpes_zoster: {
+    name: "帯状疱疹",
+    category: "other",
+    emoji: "🔶",
+    detail: "<strong>片側性・デルマトーム分布の痛み</strong>が特徴。皮疹出現の数日前から痛みが先行するため、初期はACSやPEと紛らわしい。皮疹（水疱・紅斑）が出現すれば診断は容易。<strong>皮疹出現前の胸痛は診断が難しい</strong>ため、経過観察が重要。",
+    workup: "臨床診断（水疱性皮疹）、VZV抗体（IgM）、PCR（水疱内容液）"
+  },
+  pleuritis: {
+    name: "胸膜炎",
+    category: "pulm",
+    emoji: "📎",
+    detail: "<strong>呼吸や咳で増悪する鋭い胸痛</strong>が特徴。原因はウイルス性、細菌性（肺炎随伴）、膠原病関連、悪性腫瘍など多岐。胸膜摩擦音を聴取することがある。ただし、<strong>胸膜性痛＝良性ではない</strong>。PEが胸膜性痛の最も重要な原因である。",
+    workup: "胸部X線、PEの除外（前確率評価）、胸部CT、胸水検査（貯留あれば）"
+  },
+  panic: {
+    name: "不安障害/過換気症候群",
+    category: "other",
+    emoji: "😰",
+    detail: "パニック発作に伴う<strong>胸痛、動悸、息苦しさ、四肢しびれ</strong>。呼吸性アルカローシスによる症状。ただし、<strong>PEやACSでも不安感は伴う</strong>ため、器質的疾患を除外した上で評価する。「不安だから過換気」と安易に判断しない。",
+    workup: "器質的疾患の除外（ECG、胸部X線、トロポニン、SpO2）が先決"
+  },
+  myocarditis: {
+    name: "心筋炎",
+    category: "cardiac",
+    emoji: "🫀",
+    detail: "<strong>先行感染（1〜3週前の感冒様症状）の後の胸痛・心不全症状</strong>が手がかり。若年者に多い。トロポニン上昇＋ST変化でACSとの鑑別が重要。冠動脈に有意狭窄がないのにトロポニンが上昇する場合に考慮。確定診断は心臓MRIが有用。",
+    workup: "ECG、トロポニン、BNP、心エコー、心臓MRI（確定診断）、冠動脈評価（ACS除外）"
+  },
+  esophageal_rupture: {
+    name: "食道破裂（Boerhaave症候群）",
+    category: "gi",
+    emoji: "⚠️",
+    detail: "<strong>激しい嘔吐後の突然の胸痛・背部痛</strong>が典型的（Mackler三徴：嘔吐＋胸痛＋皮下気腫）。縦隔気腫、胸水を伴う。早期診断・治療が必須の致死的疾患。造影CT/消化管造影で確認。",
+    workup: "胸部CT（縦隔気腫、胸水）、消化管造影（水溶性→バリウム）、胸部X線"
+  },
+  arrhythmia: {
+    name: "不整脈",
+    category: "cardiac",
+    emoji: "⚡",
+    detail: "<strong>動悸＋胸部不快感</strong>の組み合わせ。頻脈性不整脈（心房細動、SVT、VT）では胸部圧迫感や息苦しさを伴う。脈拍の不整やレートの異常が手がかり。WPW症候群や心室頻拍では突然死のリスクがある。",
+    workup: "ECG（12誘導）、心電図モニター、心エコー、電解質"
+  }
+};
+
+// ===== ステップ =====
+var STEPS = [
+  {
+    id: "stability",
+    title: "安定性・緊急度",
+    type: "single",
+    question: "いまの状態はどれに最も近いですか？",
+    hint: "ショック・重度低酸素・持続する虚血性ECG変化があれば、安定化しながらACS/PE/AAS/緊張性気胸/心タンポナーデを同時進行で除外する。",
+    options: [
+      { value: "unstable", label: "不安定（ショック、重度低酸素、持続ST変化、失神）", icon: "🚨" },
+      { value: "moderate", label: "安定だが持続する強い痛み", icon: "⚠️" },
+      { value: "stable", label: "軽度〜中等度の痛み、バイタル安定", icon: "📋" }
+    ]
+  },
+  {
+    id: "onset",
+    title: "発症様式",
+    type: "single",
+    question: "胸痛の発症パターンはどれですか？",
+    hint: "「突然発症・最大時到達」はAAS、PE、気胸を最も強く示唆。労作関連はACSを考慮。",
+    options: [
+      { value: "sudden_max", label: "突然発症し瞬時に最大の痛みに達した", icon: "⚡" },
+      { value: "sudden", label: "突然発症したが徐々に増悪", icon: "🔺" },
+      { value: "gradual", label: "数時間〜数日かけて出現・増悪", icon: "📈" },
+      { value: "exertional", label: "労作（運動・歩行）に伴い出現", icon: "🏃" },
+      { value: "recurrent", label: "繰り返す胸痛（慢性・反復性）", icon: "🔄" }
+    ]
+  },
+  {
+    id: "pain_character",
+    title: "痛みの性質・部位",
+    type: "multi",
+    question: "痛みの性質と部位を選んでください（複数選択可）",
+    hint: "圧迫感→ACS、引き裂かれる痛み→AAS、前屈軽快→心膜炎、胸壁圧痛→筋骨格系。ただし、痛みの質だけでACSは否定できない。",
+    options: [
+      { value: "pressure", label: "圧迫感・締め付け感" },
+      { value: "sharp", label: "鋭い・刺すような痛み" },
+      { value: "tearing", label: "引き裂かれるような激痛" },
+      { value: "burning", label: "灼熱感・焼けるような痛み" },
+      { value: "pleuritic", label: "呼吸や咳で増悪する痛み（胸膜性）" },
+      { value: "positional", label: "体位で変動する（前屈で軽快など）" },
+      { value: "retrosternal", label: "胸骨後方の痛み" },
+      { value: "radiation_arm", label: "左肩・腕・顎への放散" },
+      { value: "radiation_back", label: "背部への放散" },
+      { value: "unilateral", label: "片側性の痛み" },
+      { value: "chest_wall_tender", label: "胸壁圧痛あり" },
+      { value: "dermatome", label: "デルマトーム分布の痛み" }
+    ]
+  },
+  {
+    id: "vitals",
+    title: "バイタルサイン",
+    type: "multi",
+    question: "バイタルサインの異常を選んでください（複数選択可）",
+    hint: "胸痛患者では来院10分以内のECGが必須。バイタル＋ECG＋胸部X線が初期評価の三本柱。",
+    options: [
+      { value: "hypotension", label: "低血圧（sBP < 90）" },
+      { value: "hypertension", label: "高血圧（> 180/110）" },
+      { value: "bp_diff", label: "血圧左右差（> 20mmHg）" },
+      { value: "tachycardia", label: "頻脈（> 100/分）" },
+      { value: "bradycardia", label: "徐脈（< 50/分）" },
+      { value: "irregular_pulse", label: "脈不整" },
+      { value: "pulse_diff", label: "脈拍左右差" },
+      { value: "hypoxia", label: "低酸素血症（SpO2 < 94%）" },
+      { value: "fever", label: "発熱（> 38.0℃）" },
+      { value: "tachypnea", label: "頻呼吸（> 24/分）" },
+      { value: "none_vitals", label: "バイタル安定" }
+    ]
+  },
+  {
+    id: "physical_exam",
+    title: "身体所見",
+    type: "multi",
+    question: "身体所見を選んでください（複数選択可）",
+    hint: "心膜摩擦音、片側呼吸音低下、脈拍差、新規心雑音など特異度の高い所見に注目。",
+    options: [
+      { value: "friction_rub", label: "心膜摩擦音" },
+      { value: "unilateral_breath", label: "片側呼吸音低下" },
+      { value: "hyperresonance", label: "打診で過共鳴" },
+      { value: "crackles", label: "crackles（ラ音）" },
+      { value: "jvd", label: "頸静脈怒張（JVD）" },
+      { value: "muffled_heart", label: "心音減弱" },
+      { value: "new_murmur", label: "新規心雑音" },
+      { value: "leg_swelling", label: "片脚腫脹" },
+      { value: "subcutaneous_emphysema", label: "皮下気腫" },
+      { value: "neuro_deficit", label: "神経脱落症候" },
+      { value: "vesicular_rash", label: "水疱性皮疹（片側性）" },
+      { value: "none_exam", label: "特記所見なし" }
+    ]
+  },
+  {
+    id: "associated",
+    title: "随伴症状",
+    type: "multi",
+    question: "以下の随伴症状がありますか？（複数選択可）",
+    hint: "冷汗＋嘔気はACS、喀血はPE、嘔吐後の激痛はBoerhaave、先行感染は心膜炎/心筋炎を示唆。",
+    options: [
+      { value: "cold_sweat", label: "冷汗" },
+      { value: "nausea_vomit", label: "嘔気・嘔吐" },
+      { value: "dyspnea", label: "呼吸困難" },
+      { value: "syncope", label: "失神・前失神" },
+      { value: "palpitation", label: "動悸" },
+      { value: "hemoptysis", label: "血痰" },
+      { value: "cough_sputum", label: "咳・痰" },
+      { value: "fever_symptom", label: "発熱" },
+      { value: "prior_infection", label: "先行感染（1〜3週前の感冒様症状）" },
+      { value: "post_vomiting", label: "激しい嘔吐後に発症" },
+      { value: "heartburn", label: "胸焼け・酸逆流" },
+      { value: "numbness", label: "四肢しびれ" },
+      { value: "anxiety", label: "強い不安・パニック感" },
+      { value: "none_assoc", label: "特になし" }
+    ]
+  },
+  {
+    id: "background",
+    title: "背景・リスク因子",
+    type: "multi",
+    question: "該当する背景因子を選んでください（複数選択可）",
+    hint: "冠危険因子、VTEリスク、結合組織病/大動脈疾患歴は事前確率を大きく変える。",
+    options: [
+      { value: "cad_risk", label: "冠危険因子（高血圧、脂質異常、糖尿病、喫煙、家族歴）" },
+      { value: "known_cad", label: "冠動脈疾患の既往" },
+      { value: "vte_risk", label: "VTEリスク（長期臥床、手術後、悪性腫瘍、経口避妊薬）" },
+      { value: "dvt_pe_hx", label: "DVT/PE既往" },
+      { value: "aortic_disease", label: "大動脈疾患既往/既知の大動脈瘤" },
+      { value: "connective_tissue", label: "結合組織病（Marfan等）/大動脈弁疾患" },
+      { value: "recent_aortic_proc", label: "最近の大動脈操作" },
+      { value: "immunosuppressed", label: "免疫抑制状態" },
+      { value: "gerd_history", label: "GERD/逆流性食道炎の既往" },
+      { value: "psychiatric_hx", label: "不安障害・パニック障害の既往" },
+      { value: "young_thin_male", label: "若年痩身男性" },
+      { value: "lung_disease", label: "基礎肺疾患（COPD等）" },
+      { value: "cocaine_stimulant", label: "コカイン/刺激薬使用" },
+      { value: "none_bg", label: "特になし" }
+    ]
+  }
+];
+
+// ===== スコアリング =====
+function calcScores(ans) {
+  var scores = {};
+  var keys = Object.keys(DISEASES);
+  for (var i = 0; i < keys.length; i++) { scores[keys[i]] = 0; }
+
+  // --- Step 1: 安定性 ---
+  var stab = ans.stability || "";
+  if (stab === "unstable") {
+    scores.acs += 4; scores.pe += 4; scores.aas += 4;
+    scores.pneumothorax += 3; scores.pericarditis += 3;
+    scores.arrhythmia += 2; scores.esophageal_rupture += 2;
+  }
+  if (stab === "moderate") {
+    scores.acs += 2; scores.pe += 2; scores.aas += 2;
+    scores.pericarditis += 2; scores.pneumothorax += 2;
+    scores.pneumonia += 2; scores.pleuritis += 1;
+  }
+  if (stab === "stable") {
+    scores.msk += 2; scores.gerd += 2; scores.panic += 2;
+    scores.herpes_zoster += 1; scores.pleuritis += 1;
+  }
+
+  // --- Step 2: 発症様式 ---
+  var onset = ans.onset || "";
+  if (onset === "sudden_max") {
+    scores.aas += 6; scores.pneumothorax += 4; scores.pe += 3;
+    scores.esophageal_rupture += 2; scores.arrhythmia += 2;
+  }
+  if (onset === "sudden") {
+    scores.pe += 4; scores.pneumothorax += 4; scores.acs += 2;
+    scores.aas += 2; scores.arrhythmia += 2;
+  }
+  if (onset === "gradual") {
+    scores.pneumonia += 4; scores.pericarditis += 3;
+    scores.myocarditis += 3; scores.pleuritis += 3;
+    scores.herpes_zoster += 2; scores.gerd += 2;
+  }
+  if (onset === "exertional") {
+    scores.acs += 5; scores.arrhythmia += 2;
+  }
+  if (onset === "recurrent") {
+    scores.gerd += 4; scores.msk += 4; scores.panic += 3;
+    scores.acs += 2; scores.herpes_zoster += 1;
+  }
+
+  // --- Step 3: 痛みの性質 ---
+  var pain = ans.pain_character || [];
+  if (pain.indexOf("pressure") >= 0) {
+    scores.acs += 4; scores.arrhythmia += 1;
+  }
+  if (pain.indexOf("sharp") >= 0) {
+    scores.pericarditis += 3; scores.pleuritis += 3;
+    scores.pneumothorax += 2; scores.msk += 2;
+  }
+  if (pain.indexOf("tearing") >= 0) {
+    scores.aas += 7;
+  }
+  if (pain.indexOf("burning") >= 0) {
+    scores.gerd += 5; scores.herpes_zoster += 2;
+  }
+  if (pain.indexOf("pleuritic") >= 0) {
+    scores.pe += 4; scores.pleuritis += 4; scores.pneumonia += 3;
+    scores.pericarditis += 3; scores.pneumothorax += 3;
+  }
+  if (pain.indexOf("positional") >= 0) {
+    scores.pericarditis += 5; scores.msk += 2; scores.gerd += 1;
+  }
+  if (pain.indexOf("retrosternal") >= 0) {
+    scores.acs += 3; scores.gerd += 3; scores.esophageal_rupture += 2;
+  }
+  if (pain.indexOf("radiation_arm") >= 0) {
+    scores.acs += 5;
+  }
+  if (pain.indexOf("radiation_back") >= 0) {
+    scores.aas += 5; scores.pericarditis += 1;
+    scores.esophageal_rupture += 2;
+  }
+  if (pain.indexOf("unilateral") >= 0) {
+    scores.pneumothorax += 3; scores.pleuritis += 2;
+    scores.herpes_zoster += 3;
+  }
+  if (pain.indexOf("chest_wall_tender") >= 0) {
+    scores.msk += 5; scores.herpes_zoster += 2;
+  }
+  if (pain.indexOf("dermatome") >= 0) {
+    scores.herpes_zoster += 7;
+  }
+
+  // --- Step 4: バイタル ---
+  var vit = ans.vitals || [];
+  if (vit.indexOf("hypotension") >= 0) {
+    scores.acs += 3; scores.pe += 3; scores.aas += 3;
+    scores.pneumothorax += 3; scores.pericarditis += 3;
+    scores.arrhythmia += 2; scores.esophageal_rupture += 2;
+  }
+  if (vit.indexOf("hypertension") >= 0) {
+    scores.aas += 3; scores.acs += 1;
+  }
+  if (vit.indexOf("bp_diff") >= 0) {
+    scores.aas += 7;
+  }
+  if (vit.indexOf("tachycardia") >= 0) {
+    scores.pe += 3; scores.acs += 1; scores.arrhythmia += 3;
+    scores.panic += 1;
+  }
+  if (vit.indexOf("bradycardia") >= 0) {
+    scores.arrhythmia += 4; scores.acs += 1;
+  }
+  if (vit.indexOf("irregular_pulse") >= 0) {
+    scores.arrhythmia += 5;
+  }
+  if (vit.indexOf("pulse_diff") >= 0) {
+    scores.aas += 6;
+  }
+  if (vit.indexOf("hypoxia") >= 0) {
+    scores.pe += 3; scores.pneumonia += 2; scores.pneumothorax += 2;
+    scores.pericarditis += 1;
+  }
+  if (vit.indexOf("fever") >= 0) {
+    scores.pneumonia += 5; scores.pericarditis += 2;
+    scores.myocarditis += 2; scores.pleuritis += 2;
+  }
+  if (vit.indexOf("tachypnea") >= 0) {
+    scores.pe += 2; scores.pneumonia += 1; scores.pneumothorax += 1;
+  }
+
+  // --- Step 5: 身体所見 ---
+  var exam = ans.physical_exam || [];
+  if (exam.indexOf("friction_rub") >= 0) {
+    scores.pericarditis += 7;
+  }
+  if (exam.indexOf("unilateral_breath") >= 0) {
+    scores.pneumothorax += 5; scores.pneumonia += 2;
+    scores.pleuritis += 2;
+  }
+  if (exam.indexOf("hyperresonance") >= 0) {
+    scores.pneumothorax += 5;
+  }
+  if (exam.indexOf("crackles") >= 0) {
+    scores.pneumonia += 4; scores.acs += 1;
+  }
+  if (exam.indexOf("jvd") >= 0) {
+    scores.pericarditis += 3; scores.pneumothorax += 2;
+    scores.pe += 2; scores.acs += 1;
+  }
+  if (exam.indexOf("muffled_heart") >= 0) {
+    scores.pericarditis += 5;
+  }
+  if (exam.indexOf("new_murmur") >= 0) {
+    scores.acs += 3; scores.aas += 2;
+  }
+  if (exam.indexOf("leg_swelling") >= 0) {
+    scores.pe += 5;
+  }
+  if (exam.indexOf("subcutaneous_emphysema") >= 0) {
+    scores.esophageal_rupture += 7; scores.pneumothorax += 3;
+  }
+  if (exam.indexOf("neuro_deficit") >= 0) {
+    scores.aas += 5;
+  }
+  if (exam.indexOf("vesicular_rash") >= 0) {
+    scores.herpes_zoster += 8;
+  }
+  if (exam.indexOf("none_exam") >= 0) {
+    scores.msk += 1; scores.gerd += 1;
+    scores.panic += 1;
+  }
+
+  // --- Step 6: 随伴症状 ---
+  var assoc = ans.associated || [];
+  if (assoc.indexOf("cold_sweat") >= 0) {
+    scores.acs += 4; scores.aas += 2;
+  }
+  if (assoc.indexOf("nausea_vomit") >= 0) {
+    scores.acs += 2; scores.aas += 1;
+    scores.esophageal_rupture += 1;
+  }
+  if (assoc.indexOf("dyspnea") >= 0) {
+    scores.pe += 3; scores.acs += 2; scores.pneumothorax += 2;
+    scores.pneumonia += 2; scores.pericarditis += 1;
+  }
+  if (assoc.indexOf("syncope") >= 0) {
+    scores.pe += 3; scores.aas += 3; scores.arrhythmia += 3;
+    scores.acs += 2; scores.pericarditis += 1;
+  }
+  if (assoc.indexOf("palpitation") >= 0) {
+    scores.arrhythmia += 5; scores.panic += 2;
+  }
+  if (assoc.indexOf("hemoptysis") >= 0) {
+    scores.pe += 4;
+  }
+  if (assoc.indexOf("cough_sputum") >= 0) {
+    scores.pneumonia += 4; scores.pleuritis += 1;
+  }
+  if (assoc.indexOf("fever_symptom") >= 0) {
+    scores.pneumonia += 3; scores.pericarditis += 2;
+    scores.myocarditis += 2; scores.pleuritis += 2;
+  }
+  if (assoc.indexOf("prior_infection") >= 0) {
+    scores.pericarditis += 4; scores.myocarditis += 5;
+  }
+  if (assoc.indexOf("post_vomiting") >= 0) {
+    scores.esophageal_rupture += 8;
+  }
+  if (assoc.indexOf("heartburn") >= 0) {
+    scores.gerd += 5;
+  }
+  if (assoc.indexOf("numbness") >= 0) {
+    scores.panic += 3;
+  }
+  if (assoc.indexOf("anxiety") >= 0) {
+    scores.panic += 3;
+  }
+
+  // --- Step 7: 背景因子 ---
+  var bg = ans.background || [];
+  if (bg.indexOf("cad_risk") >= 0) {
+    scores.acs += 3; scores.aas += 1;
+  }
+  if (bg.indexOf("known_cad") >= 0) {
+    scores.acs += 5;
+  }
+  if (bg.indexOf("vte_risk") >= 0) {
+    scores.pe += 4;
+  }
+  if (bg.indexOf("dvt_pe_hx") >= 0) {
+    scores.pe += 5;
+  }
+  if (bg.indexOf("aortic_disease") >= 0) {
+    scores.aas += 5;
+  }
+  if (bg.indexOf("connective_tissue") >= 0) {
+    scores.aas += 4;
+  }
+  if (bg.indexOf("recent_aortic_proc") >= 0) {
+    scores.aas += 4;
+  }
+  if (bg.indexOf("immunosuppressed") >= 0) {
+    scores.pneumonia += 2; scores.herpes_zoster += 2;
+  }
+  if (bg.indexOf("gerd_history") >= 0) {
+    scores.gerd += 5;
+  }
+  if (bg.indexOf("psychiatric_hx") >= 0) {
+    scores.panic += 4;
+  }
+  if (bg.indexOf("young_thin_male") >= 0) {
+    scores.pneumothorax += 3;
+  }
+  if (bg.indexOf("lung_disease") >= 0) {
+    scores.pneumothorax += 2; scores.pneumonia += 1;
+  }
+  if (bg.indexOf("cocaine_stimulant") >= 0) {
+    scores.acs += 4; scores.aas += 2;
+  }
+
+  return scores;
+}
+
+// ===== UI描画 =====
+var appEl = document.getElementById("app");
+var currentStep = 0;
+var answers = {};
+
+function render() {
+  var html = "";
+
+  // アルゴリズム説明
+  html += '<div class="algo-note">';
+  html += '<strong>使い方：</strong>各ステップの質問に順番に回答してください。すべてのステップ完了後に鑑別診断の候補が優先順位付きで表示されます。<br>';
+  html += '<strong>原則：</strong>どの分岐に見えても、<strong>ACSの評価はECGとトロポニンで並走</strong>させる。痛みの質だけでACSを否定しない。';
+  html += '<br><small>（AHA/ACC Chest Pain GL 2021; AHA/ACC PE GL 2026; ACC/AHA Aortic GL 2022; ESC Pericardial GL 2015 準拠）</small>';
+  html += '</div>';
+
+  // 各ステップ
+  for (var i = 0; i < STEPS.length; i++) {
+    var step = STEPS[i];
+    var isActive = i === currentStep;
+    var isDone = i < currentStep;
+    var cls = isDone ? "completed" : (isActive ? "" : "inactive");
+
+    html += '<div class="step-card ' + cls + '" id="step-' + i + '">';
+    html += '<div class="step-header">';
+    html += '<span class="step-number ' + (isDone ? 'done' : '') + '">' + (isDone ? '✓' : (i + 1)) + '</span>';
+    html += '<span class="step-title">' + step.title + '</span>';
+    html += '</div>';
+
+    if (isActive || isDone) {
+      html += '<div class="step-body">';
+      html += '<p style="font-weight:600;margin-bottom:4px;">' + step.question + '</p>';
+      if (step.hint) html += '<p class="hint">' + step.hint + '</p>';
+
+      if (step.type === "single") {
+        html += '<div class="option-group">';
+        for (var j = 0; j < step.options.length; j++) {
+          var opt = step.options[j];
+          var selected = answers[step.id] === opt.value;
+          html += '<button class="option-btn ' + (selected ? 'selected' : '') + '"';
+          html += ' onclick="selectSingle(\'' + step.id + '\', \'' + opt.value + '\', ' + i + ')"';
+          if (isDone && !isActive) html += ' disabled';
+          html += '>';
+          html += '<span class="icon">' + (opt.icon || '') + '</span>' + opt.label;
+          html += '</button>';
+        }
+        html += '</div>';
+      } else {
+        html += '<div class="checklist">';
+        var currentAnswers = answers[step.id] || [];
+        for (var j = 0; j < step.options.length; j++) {
+          var opt = step.options[j];
+          var checked = currentAnswers.indexOf(opt.value) >= 0;
+          html += '<div class="check-item" onclick="toggleCheck(\'' + step.id + '\', \'' + opt.value + '\', this)">';
+          html += '<input type="checkbox" ' + (checked ? 'checked' : '') + (isDone && !isActive ? ' disabled' : '') + '>';
+          html += '<label>' + opt.label + '</label>';
+          html += '</div>';
+        }
+        html += '</div>';
+        if (isActive) {
+          html += '<button class="next-btn" onclick="nextStep(' + i + ')">次へ ▶</button>';
+        }
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+
+  // 結果パネル
+  if (currentStep >= STEPS.length) {
+    html += renderResults();
+  }
+
+  // リセットボタン
+  if (currentStep > 0) {
+    html += '<button class="reset-btn" onclick="resetAll()">🔄 最初からやり直す</button>';
+  }
+
+  appEl.innerHTML = html;
+
+  // 結果表示後スクロール
+  if (currentStep >= STEPS.length) {
+    setTimeout(function() {
+      var panel = document.querySelector('.result-panel');
+      if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+}
+
+function selectSingle(stepId, value, stepIndex) {
+  answers[stepId] = value;
+  currentStep = stepIndex + 1;
+  render();
+  scrollToStep(currentStep);
+}
+
+function toggleCheck(stepId, value, el) {
+  if (!answers[stepId]) answers[stepId] = [];
+  var arr = answers[stepId];
+  var idx = arr.indexOf(value);
+  if (idx >= 0) { arr.splice(idx, 1); } else { arr.push(value); }
+  var cb = el.querySelector('input[type="checkbox"]');
+  if (cb) cb.checked = idx < 0;
+}
+
+function nextStep(stepIndex) {
+  currentStep = stepIndex + 1;
+  render();
+  scrollToStep(currentStep);
+}
+
+function scrollToStep(idx) {
+  setTimeout(function() {
+    var el = document.getElementById("step-" + idx) || document.querySelector('.result-panel');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+function resetAll() {
+  var keys = Object.keys(answers);
+  for (var i = 0; i < keys.length; i++) { delete answers[keys[i]]; }
+  currentStep = 0;
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===== 結果描画 =====
+function renderResults() {
+  var scores = calcScores(answers);
+  var entries = [];
+  var keys = Object.keys(scores);
+  for (var i = 0; i < keys.length; i++) {
+    entries.push([keys[i], scores[keys[i]]]);
+  }
+  entries.sort(function(a, b) { return b[1] - a[1]; });
+
+  var maxScore = entries.length > 0 ? entries[0][1] : 1;
+  if (maxScore < 1) maxScore = 1;
+
+  var html = '<div class="result-panel">';
+  html += '<h2>📋 鑑別診断の結果</h2>';
+
+  // --- 不安定アラート ---
+  if (answers.stability === "unstable") {
+    html += '<div class="alert-box alert-red">';
+    html += '<strong>🚨 不安定：安定化しながら並列除外を進める</strong><br>';
+    html += '・<strong>ACS / 高リスクPE / AAS / 緊張性気胸 / 心タンポナーデ</strong>を同時進行で考える<br>';
+    html += '・ECG + 高感度トロポニン + 胸部X線 + ベッドサイドPOCUSを並行<br>';
+    html += '・ショック＋JVD → PE/気胸/タンポナーデ、ショック＋ST変化 → ACS';
+    html += '</div>';
+  }
+
+  // --- AAS高疑いアラート ---
+  if (scores.aas >= 10) {
+    html += '<div class="alert-box alert-red">';
+    html += '<strong>🔴 急性大動脈症候群 高疑い</strong><br>';
+    html += '突然発症の最大時激痛＋血圧/脈拍左右差＋神経脱落 → <strong>大動脈造影CTを最優先</strong><br>';
+    html += 'D-dimerは低疑い例でのみ補助的に使用可（ADD-RS ≤1 かつ D-dimer &lt;500 → failure rate 0.3%）';
+    html += '</div>';
+  }
+
+  // --- PE検査戦略 ---
+  if (scores.pe >= 8) {
+    html += '<div class="alert-box alert-yellow">';
+    html += '<strong>⚠️ 肺塞栓の検査戦略</strong><br>';
+    html += '前確率評価を先に行う：<br>';
+    html += '・<strong>PERC 8項目全陰性</strong>（低疑い＋他の診断も十分あり得る場合のみ）→ PE検査省略可<br>';
+    html += '・<strong>Wells ≤4（PE unlikely）</strong> → 年齢補正D-dimer → 陰性ならPE後退<br>';
+    html += '・<strong>Wells &gt;4（PE likely）</strong> → CTPAへ直接進む';
+    html += '</div>';
+  }
+
+  // --- 心膜炎診断基準 ---
+  if (scores.pericarditis >= 8) {
+    html += '<div class="alert-box alert-blue">';
+    html += '<strong>📋 急性心膜炎の診断基準</strong><br>';
+    html += '以下の<strong>4項目中2項目以上</strong>で診断：<br>';
+    html += '① 典型的な胸膜性胸痛（前屈で軽快、臥位で悪化）<br>';
+    html += '② 心膜摩擦音<br>';
+    html += '③ ECG変化（びまん性ST上昇 and/or PR低下）<br>';
+    html += '④ 新規または増悪する心嚢液貯留';
+    html += '</div>';
+  }
+
+  // --- 並列除外6疾患 ---
+  html += '<div class="section-title">🚨 並列除外すべき6疾患</div>';
+  html += '<div class="alert-box" style="background:#FFF5F5;border:1px solid #E74C3C;">';
+  html += '<strong>急性胸痛で常に除外を意識する6疾患</strong>：<br>';
+  html += '① <strong>ACS</strong> — ECG + トロポニン再検で並走<br>';
+  html += '② <strong>PE</strong> — 前確率評価 → D-dimer / CTPA<br>';
+  html += '③ <strong>AAS</strong> — ADD-RS → 高疑いなら大動脈CT<br>';
+  html += '④ <strong>急性心膜炎</strong> — 4項目中2項目以上<br>';
+  html += '⑤ <strong>気胸</strong> — 胸部X線 / エコー<br>';
+  html += '⑥ <strong>肺炎</strong> — 画像上の浸潤影が鍵';
+  html += '</div>';
+
+  // --- 疾患カード ---
+  html += '<div class="section-title">🔍 鑑別候補（スコア順）</div>';
+  var shown = 0;
+  for (var i = 0; i < entries.length; i++) {
+    var id = entries[i][0];
+    var score = entries[i][1];
+    if (score <= 0) continue;
+
+    var d = DISEASES[id];
+    var level = getProbLevel(score, maxScore);
+    var catLabel = getCatLabel(d.category);
+    var catClass = "cat-" + d.category;
+
+    html += '<div class="disease-card ' + level + '">';
+    html += '<div class="disease-header">';
+    html += '<span class="disease-name">' + d.emoji + ' ' + d.name + '</span>';
+    html += '<span class="badge ' + level + '">';
+    html += level === "high" ? "可能性 高" : (level === "medium" ? "可能性 中" : "可能性 低");
+    html += '</span>';
+    html += '</div>';
+    html += '<span class="cat-tag ' + catClass + '">' + catLabel + '</span>';
+    html += '<div class="disease-detail">' + d.detail + '</div>';
+    html += '<div class="workup-line">🔍 追加検査: ' + d.workup + '</div>';
+    html += '</div>';
+    shown++;
+  }
+
+  if (shown === 0) {
+    html += '<p style="color:var(--gray);text-align:center;padding:16px;">スコアが0以上の疾患はありませんでした。入力を見直してください。</p>';
+  }
+
+  // --- 判断ルール早見表 ---
+  html += '<div class="section-title">📊 すぐ使う判断ルール</div>';
+
+  // Wells PE
+  html += '<table class="ref-table">';
+  html += '<tr><th colspan="2">Wells PE Score（2-level）</th></tr>';
+  html += '<tr><td>DVTを示唆する所見</td><td><strong>3点</strong></td></tr>';
+  html += '<tr><td>PE以外の診断が考えにくい</td><td><strong>3点</strong></td></tr>';
+  html += '<tr><td>心拍数 &gt;100/分</td><td><strong>1.5点</strong></td></tr>';
+  html += '<tr><td>3日超の不動化 or 4週以内の手術</td><td><strong>1.5点</strong></td></tr>';
+  html += '<tr><td>DVT/PE既往</td><td><strong>1.5点</strong></td></tr>';
+  html += '<tr><td>喀血</td><td><strong>1点</strong></td></tr>';
+  html += '<tr><td>悪性腫瘍</td><td><strong>1点</strong></td></tr>';
+  html += '<tr><td colspan="2"><strong>&gt;4点：PE likely → CTPA</strong> / <strong>≤4点：unlikely → D-dimer</strong></td></tr>';
+  html += '</table>';
+
+  // ADD-RS
+  html += '<table class="ref-table" style="margin-top:12px;">';
+  html += '<tr><th colspan="2">ADD-RS（大動脈解離）</th></tr>';
+  html += '<tr><td>高リスク素因（Marfan/大動脈弁疾患/既知の瘤/家族歴/最近の大動脈操作）</td><td><strong>1点</strong></td></tr>';
+  html += '<tr><td>高リスク疼痛（突然発症、強い痛み、ripping/tearing）</td><td><strong>1点</strong></td></tr>';
+  html += '<tr><td>高リスク所見（脈拍/血圧左右差、灌流障害、神経脱落、新規AR雑音、低血圧）</td><td><strong>1点</strong></td></tr>';
+  html += '<tr><td colspan="2"><strong>≥2点 → 大動脈CT</strong> / <strong>≤1 かつ D-dimer &lt;500 → failure rate 0.3%</strong></td></tr>';
+  html += '</table>';
+
+  // --- 落とし穴 ---
+  html += '<div class="pitfall-box">';
+  html += '<strong>⚠️ 見逃しやすいポイント</strong><br>';
+  html += '・<strong>「胸膜性痛 ＝ 良性」ではない</strong> — まずPEを考え、同時にACSも切らない<br>';
+  html += '・<strong>痛みの質だけでACSを否定しない</strong> — 鋭い痛み、圧痛、呼吸で変動する痛みでもACSは除外不可<br>';
+  html += '・<strong>神経症状＋胸背部痛＋血圧差</strong> → AASを強く考える<br>';
+  html += '・<strong>心膜炎で胸部X線が正常</strong>はあり得る → ECGと心エコーが重要<br>';
+  html += '・<strong>発熱＋胸膜性痛 ≠ 肺炎確定</strong> — 画像上の浸潤影が鍵<br>';
+  html += '・<strong>「不安だから過換気」と安易に判断しない</strong> — PEやACSでも不安感は伴う';
+  html += '</div>';
+
+  html += '</div>';
+  return html;
+}
+
+function getProbLevel(score, maxScore) {
+  if (score >= maxScore * 0.7 && score >= 4) return "high";
+  if (score >= maxScore * 0.4 && score >= 2) return "medium";
+  return "low";
+}
+
+function getCatLabel(cat) {
+  if (cat === "cardiac") return "心臓";
+  if (cat === "vascular") return "血管";
+  if (cat === "pulm") return "肺・胸膜";
+  if (cat === "gi") return "消化器";
+  if (cat === "msk") return "筋骨格";
+  if (cat === "other") return "その他";
+  return cat;
+}
+
+// 初期描画
+render();
+</script>
+</body>
+</html>
