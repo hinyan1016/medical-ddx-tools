@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#BF360C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>不明熱(FUO)鑑別診断ツール</title>
+<style>
+  :root {
+    --primary-dark: #BF360C;
+    --primary: #E65100;
+    --light-primary: #FFF3E0;
+    --red: #DC3545;
+    --yellow: #F5C518;
+    --green: #28A745;
+    --orange: #E8850C;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(191,54,12,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, var(--light-primary) 0%, var(--light-gray) 100%);
+    color: #23272B;
+    min-height: 100vh;
+    padding-bottom: 32px;
+  }
+  .header {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+    color: #fff;
+    padding: 20px 16px 14px;
+    text-align: center;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(191,54,12,0.18);
+  }
+  .header h1 { font-size: 1.25rem; letter-spacing: 0.04em; }
+  .header p { font-size: 0.82rem; opacity: 0.88; margin-top: 4px; }
+  .back-link {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    color: #fff; text-decoration: none; font-size: 0.92rem; opacity: 0.85;
+    z-index: 101;
+  }
+  .back-link:hover { opacity: 1; }
+  .container { max-width: 720px; margin: 0 auto; padding: 16px 10px; }
+  .algo-note {
+    background: var(--light-primary);
+    border-left: 4px solid var(--primary);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .step-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 14px;
+    overflow: hidden;
+    border-left: 4px solid var(--primary);
+    transition: opacity 0.2s;
+  }
+  .step-card.completed { opacity: 0.7; border-left-color: var(--green); }
+  .step-card.inactive { opacity: 0.45; pointer-events: none; }
+  .step-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px;
+    font-weight: 700; font-size: 0.97rem;
+    cursor: default;
+  }
+  .step-number {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--primary); color: #fff;
+    font-size: 0.92rem; font-weight: 700; flex-shrink: 0;
+  }
+  .step-number.done { background: var(--green); }
+  .step-title { flex: 1; }
+  .step-body { padding: 0 14px 14px; }
+  .hint {
+    font-size: 0.82rem; color: var(--gray);
+    margin-bottom: 8px; line-height: 1.5;
+  }
+  .option-group { display: flex; flex-direction: column; gap: 8px; }
+  .option-btn {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--light-gray); border: 2px solid transparent;
+    border-radius: 8px; padding: 10px 12px;
+    font-size: 0.92rem; cursor: pointer; text-align: left;
+    transition: border-color 0.15s, background 0.15s;
+    font-family: inherit; width: 100%;
+  }
+  .option-btn:hover { border-color: var(--primary); }
+  .option-btn.selected { border-color: var(--primary); background: var(--light-primary); font-weight: 600; }
+  .option-btn .icon { font-size: 1.15rem; }
+  .checklist { display: flex; flex-direction: column; gap: 6px; }
+  .check-item {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--light-gray); border-radius: 8px;
+    padding: 9px 12px; cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.15s;
+  }
+  .check-item:hover { background: #ebeef1; }
+  .check-item input[type="checkbox"] { accent-color: var(--primary); width: 18px; height: 18px; flex-shrink: 0; cursor: pointer; }
+  .check-item label { cursor: pointer; }
+  .next-btn {
+    margin-top: 10px; padding: 10px 28px;
+    background: var(--primary); color: #fff; border: none;
+    border-radius: 8px; font-size: 0.95rem; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+  }
+  .next-btn:hover { opacity: 0.88; }
+  .result-panel {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: 0 2px 16px rgba(191,54,12,0.13);
+    padding: 18px 14px;
+    margin-top: 18px;
+    border-top: 5px solid var(--primary);
+  }
+  .result-panel h2 {
+    font-size: 1.1rem; color: var(--primary-dark);
+    margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+  }
+  .disease-card {
+    border-radius: 8px; padding: 14px;
+    margin-bottom: 12px;
+    border-left: 5px solid var(--gray);
+  }
+  .disease-card.high { border-left-color: var(--red); background: #FFF5F5; }
+  .disease-card.medium { border-left-color: var(--orange); background: #FFF9F0; }
+  .disease-card.low { border-left-color: var(--gray); background: var(--light-gray); }
+  .disease-header {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 6px;
+  }
+  .disease-name { font-weight: 700; font-size: 1.02rem; }
+  .badge {
+    display: inline-block; padding: 2px 10px; border-radius: 12px;
+    font-size: 0.78rem; font-weight: 600; color: #fff;
+  }
+  .badge.high { background: var(--red); }
+  .badge.medium { background: var(--orange); }
+  .badge.low { background: var(--gray); }
+  .cat-tag {
+    display: inline-block; padding: 2px 8px; border-radius: 10px;
+    font-size: 0.73rem; font-weight: 600;
+  }
+  .cat-infection { background: #FDECEA; color: #C62828; }
+  .cat-malignancy { background: #F3E5F5; color: #7B1FA2; }
+  .cat-inflammatory { background: #E3F2FD; color: #1565C0; }
+  .cat-other { background: #F5F5F5; color: #616161; }
+  .disease-detail {
+    font-size: 0.88rem; line-height: 1.65;
+    margin-bottom: 6px;
+  }
+  .workup-line {
+    font-size: 0.84rem; color: var(--primary);
+    font-weight: 600;
+  }
+  .alert-box {
+    border-radius: 8px; padding: 14px;
+    margin-bottom: 14px; font-size: 0.9rem; line-height: 1.6;
+  }
+  .alert-red { background: #FDECEA; border: 1.5px solid #E74C3C; }
+  .alert-yellow { background: #FEF9E7; border: 1.5px solid #F1C40F; }
+  .alert-blue { background: #EBF5FB; border: 1.5px solid #2980B9; }
+  .ref-table {
+    width: 100%; border-collapse: collapse;
+    font-size: 0.8rem; margin-top: 12px;
+  }
+  .ref-table th, .ref-table td {
+    border: 1px solid #ddd; padding: 7px 8px; text-align: left;
+  }
+  .ref-table th { background: var(--primary-dark); color: #fff; font-size: 0.78rem; }
+  .ref-table tr:nth-child(even) { background: #f9f9f9; }
+  .reset-btn {
+    display: block; margin: 24px auto 0; padding: 12px 32px;
+    background: #fff; color: var(--primary); border: 2px solid var(--primary);
+    border-radius: 8px; font-size: 1rem; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+  }
+  .reset-btn:hover { background: var(--light-primary); }
+  .pitfall-box {
+    background: #FDF6E3; border: 1.5px solid #E8D5A0;
+    border-radius: 8px; padding: 14px;
+    margin-top: 14px; font-size: 0.88rem; line-height: 1.65;
+  }
+  .section-title {
+    font-size: 0.95rem; font-weight: 700; color: var(--primary-dark);
+    margin: 16px 0 8px; display: flex; align-items: center; gap: 6px;
+  }
+</style>
+</head>
+<body>
+<div class="header">
+  <a class="back-link" href="index.html">&#x2039; ツール一覧</a>
+  <h1>不明熱（FUO）鑑別診断ツール</h1>
+  <p>病型・病因群・PDCで進める実践的アプローチ</p>
+</div>
+
+<div class="container" id="app"></div>
+
+<script>
+// ===== 疾患データ =====
+var DISEASES = {
+  tb: {
+    name: "結核（肺外・播種性含む）",
+    category: "infection",
+    emoji: "🦠",
+    detail: "FUOの感染症で<strong>最も重要な鑑別</strong>。肺外結核（リンパ節、骨、腹膜、髄膜）や播種性結核は画像・培養が陰性になりやすく、FUOとして遷延する。TST/IGRAが陰性でも播種性では否定できない。HIV合併で頻度が著増する。",
+    workup: "TST/IGRA、喀痰抗酸菌（3回）、胸部CT、体液培養・PCR、骨髄検査（播種性疑い）、PET/CT"
+  },
+  ie: {
+    name: "感染性心内膜炎（培養陰性含む）",
+    category: "infection",
+    emoji: "💔",
+    detail: "FUO精査で見逃されやすい重要原因。血液培養陰性（BCNE）は心内膜炎全体の約<strong>20%</strong>を占める。原因は<strong>Coxiella（Q熱、37-48%）</strong>と<strong>Bartonella（12-28%）</strong>が多い。弁膜症の既往、人工弁、歯科治療歴、新規雑音が手がかり。",
+    workup: "血液培養3セット、心エコー（経食道含む）、Coxiella/Bartonella血清学、HACEK培養延長"
+  },
+  abscess: {
+    name: "深部膿瘍",
+    category: "infection",
+    emoji: "🔴",
+    detail: "<strong>肝膿瘍、脾膿瘍、腸腰筋膿瘍、腎周囲膿瘍</strong>などが代表。手術・処置歴、糖尿病、免疫抑制が背景因子。通常の画像検査で見逃されることがあり、<strong>造影CT</strong>が診断の鍵。PET/CTで局所集積として検出されることも多い。",
+    workup: "造影CT（胸腹骨盤）、PET/CT、血液培養、穿刺ドレナージ・培養"
+  },
+  lymphoma: {
+    name: "リンパ腫",
+    category: "malignancy",
+    emoji: "🟣",
+    detail: "FUOの悪性腫瘍原因で<strong>最も重要</strong>。特にホジキンリンパ腫のPel-Ebstein型発熱や、血管内リンパ腫（IVL）は画像で腫瘤を形成しにくくFUOとして長期化しやすい。<strong>LDH高値、肝脾腫、リンパ節腫脹、盗汗、体重減少</strong>が手がかり。",
+    workup: "LDH、可溶性IL-2R、CT、PET/CT、リンパ節/骨髄生検、末梢血フローサイトメトリー"
+  },
+  still: {
+    name: "成人Still病（AOSD）",
+    category: "inflammatory",
+    emoji: "🔥",
+    detail: "FUO症例の<strong>5〜10%</strong>を占める。<strong>弛張熱（≥39℃）、サーモンピンク疹、関節痛、咽頭痛</strong>が特徴。Yamaguchi基準（大項目2＋計5項目以上）で診断。<strong>フェリチン著明高値</strong>（>1,000、時に>10,000 ng/mL）が非常に強い手がかり。除外診断が前提。",
+    workup: "フェリチン（糖鎖フェリチン含む）、CBC（好中球増多）、肝機能、RF・ANA（通常陰性）、皮疹の確認"
+  },
+  gca_pmr: {
+    name: "巨細胞性動脈炎（GCA）/PMR",
+    category: "inflammatory",
+    emoji: "🧓",
+    detail: "<strong>50歳以上</strong>のFUOで特に重要。PMRは<strong>肩・腰帯の痛みとこわばり、著明なESR高値</strong>が手がかり。GCAでは<strong>頭痛、顎跛行、視力障害</strong>が加わる。ESRが非常に高い（>100mm/h）FUOでは必ず鑑別に入れる。PET/CTで大血管炎として検出されることもあるが、孤立性側頭動脈病変は見逃し得る。",
+    workup: "ESR/CRP、側頭動脈生検（GCA）、PET/CT（大血管炎）、側頭動脈エコー"
+  },
+  sle: {
+    name: "全身性エリテマトーデス（SLE）",
+    category: "inflammatory",
+    emoji: "🦋",
+    detail: "<strong>若年女性</strong>のFUOで重要な鑑別。発熱に加え<strong>皮疹、関節痛、血球減少、蛋白尿</strong>が手がかり。漿膜炎（胸膜炎・心膜炎）を伴うことがある。ANA陽性が感度は高いが特異度は低く、抗dsDNA抗体・補体低下で確認する。",
+    workup: "ANA、抗dsDNA抗体、補体（C3/C4/CH50）、CBC、尿検査、腎機能"
+  },
+  vasculitis: {
+    name: "血管炎（GPA/PAN等）",
+    category: "inflammatory",
+    emoji: "🔶",
+    detail: "<strong>多臓器障害パターン</strong>（腎・肺・皮膚・神経の同時病変）がFUOの手がかり。GPA（多発血管炎性肉芽腫症）では副鼻腔炎、肺結節、糸球体腎炎の三徴。PANでは皮膚結節、筋痛、腎動脈瘤。<strong>ANCA</strong>が鍵となる検査。",
+    workup: "ANCA（PR3/MPO）、尿沈渣、腎機能、CT（副鼻腔・肺）、皮膚/腎生検"
+  },
+  drug_fever: {
+    name: "薬剤熱",
+    category: "other",
+    emoji: "💊",
+    detail: "FUOの「その他」原因で<strong>最も重要</strong>。原因薬：抗菌薬、NSAIDs、アロプリノール、抗不整脈薬、抗てんかん薬、抗うつ薬など。除外診断ではなく、<strong>薬剤歴の系統的確認</strong>が最も重要。相対的徐脈、好酸球増多が手がかりとなることがあるが、必ずしも伴わない。被疑薬中止後48〜72時間で解熱すれば支持的。",
+    workup: "薬剤歴の系統的レビュー、被疑薬中止と経過観察、好酸球数"
+  },
+  hlh: {
+    name: "HLH/MAS（血球貪食症候群）",
+    category: "other",
+    emoji: "⚡",
+    detail: "FUO精査中に鑑別として浮上する重要な病態。<strong>HScore ≥168</strong>で感度100%・特異度94%。<strong>著明なフェリチン上昇（≥2,000で強く示唆）、血球減少（2-3系統）、肝脾腫、高トリグリセリド血症、低フィブリノゲン</strong>が手がかり。背景にリンパ腫、感染症（EBV等）、自己免疫疾患がある。",
+    workup: "フェリチン、TG、フィブリノゲン、CBC、肝機能、可溶性IL-2R、骨髄（貪食像）"
+  },
+  sarcoidosis: {
+    name: "サルコイドーシス",
+    category: "inflammatory",
+    emoji: "🫧",
+    detail: "<strong>両側肺門リンパ節腫脹（BHL）</strong>が最も多い所見。<strong>ACE高値、皮膚/眼病変（ぶどう膜炎）、高Ca血症</strong>が手がかり。Lofgren症候群（BHL＋結節性紅斑＋関節炎＋発熱）は急性型として知られる。確定には非乾酪性肉芽腫の組織学的証明が必要。",
+    workup: "胸部CT（BHL）、ACE、Ca、眼科診察、ツベルクリン反応（陰性化）、組織生検"
+  },
+  ibd: {
+    name: "炎症性腸疾患（IBD）",
+    category: "inflammatory",
+    emoji: "🔵",
+    detail: "Crohn病はFUOの原因となり得る。<strong>腹痛、下痢、血便、体重減少</strong>が典型だが、腸管外症状（関節炎、結節性紅斑、ぶどう膜炎）が前景のこともある。小腸病変は通常の内視鏡で見逃されやすく、小腸造影やカプセル内視鏡が必要となることがある。",
+    workup: "下部消化管内視鏡、小腸造影/カプセル内視鏡、CRP/ESR、便カルプロテクチン"
+  },
+  malignancy_other: {
+    name: "その他の悪性腫瘍",
+    category: "malignancy",
+    emoji: "🟤",
+    detail: "リンパ腫以外では<strong>白血病、骨髄異形成症候群、腎細胞癌、多発性骨髄腫、Castleman病</strong>が代表。明確な腫瘤よりも<strong>炎症反応上昇、LDH高値、肝脾腫、血球異常</strong>で気づくことが少なくない。高齢者では悪性腫瘍の比率が増す。",
+    workup: "CBC分画、末梢血塗抹、LDH、蛋白分画、CT、PET/CT、骨髄検査"
+  },
+  thyroiditis: {
+    name: "亜急性甲状腺炎",
+    category: "other",
+    emoji: "🦋",
+    detail: "<strong>前頸部痛（耳介への放散）</strong>が最大の手がかり。上気道感染後に発症することが多い。初期は甲状腺中毒症（動悸、発汗）を伴う。ESR著明高値。甲状腺の圧痛と硬結を触知する。FUOでは頸部の触診を忘れないことが重要。",
+    workup: "TSH/FT3/FT4、ESR/CRP、甲状腺エコー、甲状腺シンチ（取り込み低下）"
+  },
+  pe_dvt: {
+    name: "肺塞栓症/DVT",
+    category: "other",
+    emoji: "🫁",
+    detail: "FUOの「その他」原因として忘れやすい疾患。PEは<strong>微熱の原因</strong>となることがある。反復性PEや小さなPEは呼吸困難が目立たず発熱のみのことがある。入院中の発熱（院内FUO）では特に考慮する。片脚腫脹、呼吸困難、頻脈が手がかり。",
+    workup: "D-dimer、下肢エコー、造影CT（CTPA）、Wells score"
+  },
+  uti_complex: {
+    name: "複雑性尿路感染/腎盂腎炎",
+    category: "infection",
+    emoji: "💛",
+    detail: "<strong>尿路閉塞や尿路結石</strong>に伴う複雑性尿路感染は遷延する発熱の原因となる。通常の尿検査・培養が陰性でも、腎周囲膿瘍や閉塞性腎盂腎炎が隠れていることがある。高齢者や糖尿病患者で見逃しやすい。",
+    workup: "尿検査/尿培養、腹部CT（尿路閉塞・膿瘍除外）、血液培養"
+  },
+  kikuchi: {
+    name: "菊池病（壊死性リンパ節炎）",
+    category: "other",
+    emoji: "🟡",
+    detail: "<strong>若年女性の有痛性頸部リンパ節腫脹＋発熱</strong>が典型。白血球減少、LDH上昇を伴うことがある。自然軽快することが多いが、SLEとの鑑別・合併に注意。確定診断にはリンパ節生検が必要。リンパ腫との鑑別が重要。",
+    workup: "リンパ節生検（確定診断）、ANA（SLE鑑別）、CBC、LDH、EBV抗体"
+  }
+};
+
+// ===== ステップ =====
+var STEPS = [
+  {
+    id: "fuo_type",
+    title: "FUOの病型",
+    type: "single",
+    question: "どの臨床カテゴリに該当しますか？",
+    hint: "病型によって鑑別の重み付けが大きく変わる。古典型は感染症・炎症性疾患・悪性腫瘍を同じ重みで並べる。",
+    options: [
+      { value: "classic", label: "古典型FUO（免疫能がおおむね保たれた患者）", icon: "🌡️" },
+      { value: "nosocomial", label: "院内発熱（入院後に出現した発熱）", icon: "🏥" },
+      { value: "neutropenic", label: "好中球減少時の発熱", icon: "⚠️" },
+      { value: "hiv", label: "HIV関連の発熱", icon: "🔬" }
+    ]
+  },
+  {
+    id: "fever_pattern",
+    title: "発熱パターン",
+    type: "single",
+    question: "発熱のパターンはどれに近いですか？",
+    hint: "弛張熱（≥39℃で日内変動大）→Still病/膿瘍/リンパ腫、間欠熱→マラリア/膿瘍、持続熱→結核/腸チフス。相対的徐脈は薬剤熱の手がかり。",
+    options: [
+      { value: "remittent", label: "弛張熱（≥39℃で日差1℃以上、解熱しない）", icon: "📈" },
+      { value: "intermittent", label: "間欠熱（高熱と無熱期が交互）", icon: "📊" },
+      { value: "continuous", label: "持続熱（38〜39℃台で大きな変動なし）", icon: "➡️" },
+      { value: "low_grade", label: "微熱（37.5〜38.3℃が遷延）", icon: "🔸" },
+      { value: "periodic", label: "周期性発熱（数日〜数週間の無熱期を挟む）", icon: "🔄" }
+    ]
+  },
+  {
+    id: "physical_findings",
+    title: "身体所見（PDC）",
+    type: "multi",
+    question: "身体診察で得られた所見を選んでください（複数選択可）",
+    hint: "FUOの診察は繰り返し行うことでPDC（potential diagnostic clues）が拾える。皮疹、リンパ節、肝脾腫、心雑音が特に重要。",
+    options: [
+      { value: "rash", label: "皮疹（紅斑、サーモンピンク疹など）" },
+      { value: "lymphadenopathy", label: "リンパ節腫脹" },
+      { value: "hepatosplenomegaly", label: "肝脾腫" },
+      { value: "heart_murmur", label: "心雑音（新規または既存）" },
+      { value: "arthritis", label: "関節炎・関節痛" },
+      { value: "oral_ulcer", label: "口腔内潰瘍・咽頭痛" },
+      { value: "temporal_artery", label: "側頭動脈の異常（圧痛、拍動減弱）" },
+      { value: "neck_pain", label: "前頸部痛・甲状腺圧痛" },
+      { value: "fundus_abnormal", label: "眼底異常（Roth斑など）" },
+      { value: "skin_nodule", label: "皮膚結節・紫斑" },
+      { value: "proximal_pain", label: "肩・腰帯の痛み・こわばり" },
+      { value: "leg_swelling", label: "片脚腫脹" },
+      { value: "abdominal_pain", label: "腹痛・腹部圧痛" },
+      { value: "none_physical", label: "PDC乏しい（特記所見なし）" }
+    ]
+  },
+  {
+    id: "lab_findings",
+    title: "検査所見",
+    type: "multi",
+    question: "現時点で得られている検査異常を選んでください（複数選択可）",
+    hint: "フェリチン著明高値（>1,000）はStill病/HLH、LDH高値はリンパ腫、ESR>100は結核/GCA/悪性腫瘍/膿瘍を示唆。",
+    options: [
+      { value: "very_high_esr", label: "ESR著明高値（≥100 mm/h）" },
+      { value: "high_ferritin", label: "フェリチン著明高値（≥1,000 ng/mL）" },
+      { value: "high_ldh", label: "LDH高値" },
+      { value: "cytopenia", label: "血球減少（1系統以上）" },
+      { value: "leukocytosis", label: "白血球増多/好中球増多" },
+      { value: "eosinophilia", label: "好酸球増多" },
+      { value: "liver_dysfunction", label: "肝機能異常" },
+      { value: "renal_dysfunction", label: "腎機能異常/尿蛋白/血尿" },
+      { value: "high_tg", label: "高トリグリセリド血症" },
+      { value: "low_fibrinogen", label: "低フィブリノゲン" },
+      { value: "high_calcium", label: "高Ca血症" },
+      { value: "ana_positive", label: "ANA陽性" },
+      { value: "abnormal_protein", label: "蛋白分画異常（M蛋白など）" },
+      { value: "none_lab", label: "特記異常なし" }
+    ]
+  },
+  {
+    id: "exposure",
+    title: "曝露歴・背景",
+    type: "multi",
+    question: "該当する曝露歴・背景因子を選んでください（複数選択可）",
+    hint: "曝露歴は鑑別の事前確率を大きく変える。渡航歴・動物接触・性行動・薬剤歴を系統的に確認。",
+    options: [
+      { value: "animal_contact", label: "動物接触（猫、家畜、野生動物）" },
+      { value: "travel", label: "渡航歴（熱帯・亜熱帯地域）" },
+      { value: "sexual_risk", label: "性行動リスク" },
+      { value: "iv_drug", label: "静脈薬物使用" },
+      { value: "dental_procedure", label: "歯科治療歴" },
+      { value: "prosthetic_valve", label: "人工弁・心臓デバイス" },
+      { value: "implant_device", label: "インプラント・人工関節" },
+      { value: "recent_surgery", label: "最近の手術・処置" },
+      { value: "immunosuppressed", label: "免疫抑制状態（ステロイド、免疫抑制薬）" },
+      { value: "medications", label: "多剤服用中（発熱開始前後に新規薬あり）" },
+      { value: "malignancy_hx", label: "悪性腫瘍の既往" },
+      { value: "autoimmune_hx", label: "自己免疫疾患の既往" },
+      { value: "elderly", label: "高齢者（≥65歳）" },
+      { value: "young_female", label: "若年女性" },
+      { value: "none_exposure", label: "特になし" }
+    ]
+  },
+  {
+    id: "organ_symptoms",
+    title: "臓器症状",
+    type: "multi",
+    question: "発熱以外の臓器症状がありますか？（複数選択可）",
+    hint: "臓器症状はPDCの重要な源泉。多臓器にまたがるパターンは血管炎やSLEを示唆。",
+    options: [
+      { value: "weight_loss", label: "体重減少" },
+      { value: "night_sweats", label: "盗汗" },
+      { value: "diarrhea_bloody", label: "下痢・血便" },
+      { value: "cough", label: "咳・呼吸器症状" },
+      { value: "headache", label: "頭痛" },
+      { value: "jaw_claudication", label: "顎跛行" },
+      { value: "visual_change", label: "視力変化" },
+      { value: "sinus_symptoms", label: "副鼻腔症状（鼻出血、膿性鼻漏）" },
+      { value: "back_pain", label: "腰背部痛" },
+      { value: "urinary_symptoms", label: "排尿症状" },
+      { value: "dysphagia", label: "嚥下困難" },
+      { value: "numbness_weakness", label: "しびれ・筋力低下" },
+      { value: "none_organ", label: "発熱以外の症状に乏しい" }
+    ]
+  },
+  {
+    id: "workup_result",
+    title: "既施行検査の結果",
+    type: "multi",
+    question: "すでに行った検査の結果を選んでください（複数選択可）",
+    hint: "血液培養陰性でも心内膜炎は否定できない（BCNE約20%）。CT正常でもPET/CTで異常が見つかることがある。",
+    options: [
+      { value: "blood_culture_neg", label: "血液培養陰性" },
+      { value: "blood_culture_pos", label: "血液培養陽性" },
+      { value: "tb_test_pos", label: "結核検査（TST/IGRA）陽性" },
+      { value: "ct_lymphnode", label: "CTでリンパ節腫脹" },
+      { value: "ct_abscess", label: "CTで膿瘍・液体貯留疑い" },
+      { value: "ct_bhl", label: "CTで両側肺門リンパ節腫脹" },
+      { value: "echo_vegetation", label: "心エコーで疣贅疑い" },
+      { value: "pet_positive", label: "PET/CTで異常集積" },
+      { value: "ct_normal", label: "CT正常" },
+      { value: "hiv_positive", label: "HIV検査陽性" },
+      { value: "none_workup", label: "まだ精査が進んでいない" }
+    ]
+  }
+];
+
+// ===== スコアリング =====
+function calcScores(ans) {
+  var scores = {};
+  var keys = Object.keys(DISEASES);
+  for (var i = 0; i < keys.length; i++) { scores[keys[i]] = 0; }
+
+  // --- Step 1: FUO病型 ---
+  var ftype = ans.fuo_type || "";
+  if (ftype === "classic") {
+    scores.tb += 3; scores.ie += 3; scores.lymphoma += 3;
+    scores.still += 3; scores.gca_pmr += 3; scores.abscess += 2;
+    scores.drug_fever += 2; scores.sle += 2; scores.vasculitis += 2;
+    scores.sarcoidosis += 1; scores.ibd += 1;
+  }
+  if (ftype === "nosocomial") {
+    scores.drug_fever += 5; scores.abscess += 4;
+    scores.pe_dvt += 4; scores.uti_complex += 3;
+    scores.ie += 2;
+  }
+  if (ftype === "neutropenic") {
+    scores.abscess += 4; scores.uti_complex += 2;
+    scores.ie += 2;
+  }
+  if (ftype === "hiv") {
+    scores.tb += 6; scores.lymphoma += 4;
+    scores.abscess += 2; scores.ie += 2;
+  }
+
+  // --- Step 2: 発熱パターン ---
+  var fp = ans.fever_pattern || "";
+  if (fp === "remittent") {
+    scores.still += 5; scores.abscess += 3;
+    scores.lymphoma += 2; scores.ie += 1;
+  }
+  if (fp === "intermittent") {
+    scores.abscess += 4; scores.lymphoma += 2;
+    scores.malignancy_other += 1;
+  }
+  if (fp === "continuous") {
+    scores.tb += 3; scores.ie += 2;
+    scores.lymphoma += 1; scores.sle += 1;
+  }
+  if (fp === "low_grade") {
+    scores.pe_dvt += 3; scores.thyroiditis += 2;
+    scores.ibd += 2; scores.sle += 2;
+    scores.gca_pmr += 1; scores.malignancy_other += 1;
+  }
+  if (fp === "periodic") {
+    scores.lymphoma += 3; scores.still += 2;
+    scores.ibd += 1;
+  }
+
+  // --- Step 3: 身体所見 ---
+  var pf = ans.physical_findings || [];
+  if (pf.indexOf("rash") >= 0) {
+    scores.still += 5; scores.sle += 4;
+    scores.vasculitis += 3; scores.drug_fever += 2;
+  }
+  if (pf.indexOf("lymphadenopathy") >= 0) {
+    scores.lymphoma += 5; scores.tb += 3;
+    scores.sarcoidosis += 3; scores.kikuchi += 4;
+    scores.sle += 1; scores.malignancy_other += 2;
+  }
+  if (pf.indexOf("hepatosplenomegaly") >= 0) {
+    scores.lymphoma += 4; scores.hlh += 4;
+    scores.ie += 2; scores.malignancy_other += 3;
+    scores.tb += 1;
+  }
+  if (pf.indexOf("heart_murmur") >= 0) {
+    scores.ie += 7;
+  }
+  if (pf.indexOf("arthritis") >= 0) {
+    scores.still += 4; scores.sle += 4;
+    scores.vasculitis += 2; scores.ibd += 2;
+    scores.sarcoidosis += 1;
+  }
+  if (pf.indexOf("oral_ulcer") >= 0) {
+    scores.sle += 3; scores.still += 2;
+    scores.ibd += 2;
+  }
+  if (pf.indexOf("temporal_artery") >= 0) {
+    scores.gca_pmr += 7;
+  }
+  if (pf.indexOf("neck_pain") >= 0) {
+    scores.thyroiditis += 7;
+  }
+  if (pf.indexOf("fundus_abnormal") >= 0) {
+    scores.ie += 4; scores.sarcoidosis += 2;
+    scores.vasculitis += 2;
+  }
+  if (pf.indexOf("skin_nodule") >= 0) {
+    scores.vasculitis += 4; scores.sarcoidosis += 3;
+    scores.ie += 2;
+  }
+  if (pf.indexOf("proximal_pain") >= 0) {
+    scores.gca_pmr += 6;
+  }
+  if (pf.indexOf("leg_swelling") >= 0) {
+    scores.pe_dvt += 5;
+  }
+  if (pf.indexOf("abdominal_pain") >= 0) {
+    scores.abscess += 3; scores.ibd += 3;
+    scores.uti_complex += 1;
+  }
+  if (pf.indexOf("none_physical") >= 0) {
+    scores.drug_fever += 2; scores.pe_dvt += 1;
+    scores.lymphoma += 1;
+  }
+
+  // --- Step 4: 検査所見 ---
+  var lab = ans.lab_findings || [];
+  if (lab.indexOf("very_high_esr") >= 0) {
+    scores.gca_pmr += 5; scores.tb += 3;
+    scores.abscess += 2; scores.lymphoma += 2;
+    scores.malignancy_other += 2; scores.ie += 1;
+  }
+  if (lab.indexOf("high_ferritin") >= 0) {
+    scores.still += 7; scores.hlh += 6;
+    scores.lymphoma += 1;
+  }
+  if (lab.indexOf("high_ldh") >= 0) {
+    scores.lymphoma += 5; scores.hlh += 2;
+    scores.malignancy_other += 2; scores.pe_dvt += 1;
+  }
+  if (lab.indexOf("cytopenia") >= 0) {
+    scores.hlh += 5; scores.sle += 3;
+    scores.lymphoma += 3; scores.malignancy_other += 2;
+    scores.kikuchi += 2; scores.tb += 1;
+  }
+  if (lab.indexOf("leukocytosis") >= 0) {
+    scores.still += 4; scores.abscess += 3;
+    scores.ie += 1;
+  }
+  if (lab.indexOf("eosinophilia") >= 0) {
+    scores.drug_fever += 5; scores.vasculitis += 2;
+  }
+  if (lab.indexOf("liver_dysfunction") >= 0) {
+    scores.still += 2; scores.hlh += 2;
+    scores.lymphoma += 1; scores.abscess += 1;
+    scores.drug_fever += 1;
+  }
+  if (lab.indexOf("renal_dysfunction") >= 0) {
+    scores.vasculitis += 4; scores.sle += 3;
+    scores.ie += 1;
+  }
+  if (lab.indexOf("high_tg") >= 0) {
+    scores.hlh += 4;
+  }
+  if (lab.indexOf("low_fibrinogen") >= 0) {
+    scores.hlh += 4;
+  }
+  if (lab.indexOf("high_calcium") >= 0) {
+    scores.sarcoidosis += 5; scores.lymphoma += 2;
+    scores.malignancy_other += 2;
+  }
+  if (lab.indexOf("ana_positive") >= 0) {
+    scores.sle += 4; scores.still += -1;
+  }
+  if (lab.indexOf("abnormal_protein") >= 0) {
+    scores.malignancy_other += 5;
+  }
+
+  // --- Step 5: 曝露歴 ---
+  var exp = ans.exposure || [];
+  if (exp.indexOf("animal_contact") >= 0) {
+    scores.ie += 3; scores.tb += 1;
+  }
+  if (exp.indexOf("travel") >= 0) {
+    scores.tb += 3;
+  }
+  if (exp.indexOf("sexual_risk") >= 0) {
+    scores.ie += 1; scores.tb += 1;
+  }
+  if (exp.indexOf("iv_drug") >= 0) {
+    scores.ie += 4; scores.abscess += 2;
+  }
+  if (exp.indexOf("dental_procedure") >= 0) {
+    scores.ie += 3;
+  }
+  if (exp.indexOf("prosthetic_valve") >= 0) {
+    scores.ie += 5;
+  }
+  if (exp.indexOf("implant_device") >= 0) {
+    scores.abscess += 3; scores.ie += 1;
+  }
+  if (exp.indexOf("recent_surgery") >= 0) {
+    scores.abscess += 4; scores.pe_dvt += 2;
+    scores.uti_complex += 1;
+  }
+  if (exp.indexOf("immunosuppressed") >= 0) {
+    scores.tb += 3; scores.abscess += 2;
+  }
+  if (exp.indexOf("medications") >= 0) {
+    scores.drug_fever += 5;
+  }
+  if (exp.indexOf("malignancy_hx") >= 0) {
+    scores.malignancy_other += 3; scores.lymphoma += 2;
+    scores.pe_dvt += 1;
+  }
+  if (exp.indexOf("autoimmune_hx") >= 0) {
+    scores.sle += 3; scores.vasculitis += 2;
+    scores.hlh += 1;
+  }
+  if (exp.indexOf("elderly") >= 0) {
+    scores.gca_pmr += 4; scores.malignancy_other += 2;
+    scores.tb += 1; scores.lymphoma += 1;
+  }
+  if (exp.indexOf("young_female") >= 0) {
+    scores.sle += 3; scores.kikuchi += 3;
+    scores.still += 1;
+  }
+
+  // --- Step 6: 臓器症状 ---
+  var org = ans.organ_symptoms || [];
+  if (org.indexOf("weight_loss") >= 0) {
+    scores.lymphoma += 3; scores.tb += 3;
+    scores.malignancy_other += 3; scores.ibd += 2;
+  }
+  if (org.indexOf("night_sweats") >= 0) {
+    scores.lymphoma += 4; scores.tb += 3;
+  }
+  if (org.indexOf("diarrhea_bloody") >= 0) {
+    scores.ibd += 6;
+  }
+  if (org.indexOf("cough") >= 0) {
+    scores.tb += 3; scores.vasculitis += 1;
+    scores.sarcoidosis += 1;
+  }
+  if (org.indexOf("headache") >= 0) {
+    scores.gca_pmr += 3;
+  }
+  if (org.indexOf("jaw_claudication") >= 0) {
+    scores.gca_pmr += 6;
+  }
+  if (org.indexOf("visual_change") >= 0) {
+    scores.gca_pmr += 4; scores.sarcoidosis += 2;
+  }
+  if (org.indexOf("sinus_symptoms") >= 0) {
+    scores.vasculitis += 5;
+  }
+  if (org.indexOf("back_pain") >= 0) {
+    scores.abscess += 3; scores.tb += 2;
+  }
+  if (org.indexOf("urinary_symptoms") >= 0) {
+    scores.uti_complex += 5;
+  }
+  if (org.indexOf("numbness_weakness") >= 0) {
+    scores.vasculitis += 3; scores.sle += 1;
+  }
+  if (org.indexOf("none_organ") >= 0) {
+    scores.drug_fever += 2; scores.pe_dvt += 1;
+  }
+
+  // --- Step 7: 既施行検査 ---
+  var wu = ans.workup_result || [];
+  if (wu.indexOf("blood_culture_neg") >= 0) {
+    scores.ie += 1;
+    scores.abscess += -1;
+  }
+  if (wu.indexOf("blood_culture_pos") >= 0) {
+    scores.ie += 4; scores.abscess += 3;
+  }
+  if (wu.indexOf("tb_test_pos") >= 0) {
+    scores.tb += 5;
+  }
+  if (wu.indexOf("ct_lymphnode") >= 0) {
+    scores.lymphoma += 4; scores.tb += 3;
+    scores.sarcoidosis += 3; scores.kikuchi += 2;
+    scores.malignancy_other += 2;
+  }
+  if (wu.indexOf("ct_abscess") >= 0) {
+    scores.abscess += 6;
+  }
+  if (wu.indexOf("ct_bhl") >= 0) {
+    scores.sarcoidosis += 6; scores.lymphoma += 2;
+    scores.tb += 1;
+  }
+  if (wu.indexOf("echo_vegetation") >= 0) {
+    scores.ie += 7;
+  }
+  if (wu.indexOf("pet_positive") >= 0) {
+    scores.lymphoma += 3; scores.gca_pmr += 3;
+    scores.abscess += 3; scores.tb += 2;
+    scores.sarcoidosis += 2;
+  }
+  if (wu.indexOf("hiv_positive") >= 0) {
+    scores.tb += 4; scores.lymphoma += 3;
+  }
+
+  return scores;
+}
+
+// ===== UI描画 =====
+var appEl = document.getElementById("app");
+var currentStep = 0;
+var answers = {};
+
+function render() {
+  var html = "";
+
+  html += '<div class="algo-note">';
+  html += '<strong>使い方：</strong>各ステップの質問に順番に回答してください。すべてのステップ完了後に鑑別診断の候補が優先順位付きで表示されます。<br>';
+  html += '<strong>3段階の原則：</strong>①病型を決める → ②病因群で整理 → ③<strong>PDC（potential diagnostic clues）が次の検査を決める</strong>';
+  html += '<br><small>（Wright & Auwaerter Open Forum Infect Dis 2020; JAMA Netw Open 2022; Naito et al BMJ Open 2019 準拠）</small>';
+  html += '</div>';
+
+  for (var i = 0; i < STEPS.length; i++) {
+    var step = STEPS[i];
+    var isActive = i === currentStep;
+    var isDone = i < currentStep;
+    var cls = isDone ? "completed" : (isActive ? "" : "inactive");
+
+    html += '<div class="step-card ' + cls + '" id="step-' + i + '">';
+    html += '<div class="step-header">';
+    html += '<span class="step-number ' + (isDone ? 'done' : '') + '">' + (isDone ? '✓' : (i + 1)) + '</span>';
+    html += '<span class="step-title">' + step.title + '</span>';
+    html += '</div>';
+
+    if (isActive || isDone) {
+      html += '<div class="step-body">';
+      html += '<p style="font-weight:600;margin-bottom:4px;">' + step.question + '</p>';
+      if (step.hint) html += '<p class="hint">' + step.hint + '</p>';
+
+      if (step.type === "single") {
+        html += '<div class="option-group">';
+        for (var j = 0; j < step.options.length; j++) {
+          var opt = step.options[j];
+          var selected = answers[step.id] === opt.value;
+          html += '<button class="option-btn ' + (selected ? 'selected' : '') + '"';
+          html += ' onclick="selectSingle(\'' + step.id + '\', \'' + opt.value + '\', ' + i + ')"';
+          if (isDone && !isActive) html += ' disabled';
+          html += '>';
+          html += '<span class="icon">' + (opt.icon || '') + '</span>' + opt.label;
+          html += '</button>';
+        }
+        html += '</div>';
+      } else {
+        html += '<div class="checklist">';
+        var currentAnswers = answers[step.id] || [];
+        for (var j = 0; j < step.options.length; j++) {
+          var opt = step.options[j];
+          var checked = currentAnswers.indexOf(opt.value) >= 0;
+          html += '<div class="check-item" onclick="toggleCheck(\'' + step.id + '\', \'' + opt.value + '\', this)">';
+          html += '<input type="checkbox" ' + (checked ? 'checked' : '') + (isDone && !isActive ? ' disabled' : '') + '>';
+          html += '<label>' + opt.label + '</label>';
+          html += '</div>';
+        }
+        html += '</div>';
+        if (isActive) {
+          html += '<button class="next-btn" onclick="nextStep(' + i + ')">次へ ▶</button>';
+        }
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+
+  if (currentStep >= STEPS.length) {
+    html += renderResults();
+  }
+
+  if (currentStep > 0) {
+    html += '<button class="reset-btn" onclick="resetAll()">🔄 最初からやり直す</button>';
+  }
+
+  appEl.innerHTML = html;
+
+  if (currentStep >= STEPS.length) {
+    setTimeout(function() {
+      var panel = document.querySelector('.result-panel');
+      if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+}
+
+function selectSingle(stepId, value, stepIndex) {
+  answers[stepId] = value;
+  currentStep = stepIndex + 1;
+  render();
+  scrollToStep(currentStep);
+}
+
+function toggleCheck(stepId, value, el) {
+  if (!answers[stepId]) answers[stepId] = [];
+  var arr = answers[stepId];
+  var idx = arr.indexOf(value);
+  if (idx >= 0) { arr.splice(idx, 1); } else { arr.push(value); }
+  var cb = el.querySelector('input[type="checkbox"]');
+  if (cb) cb.checked = idx < 0;
+}
+
+function nextStep(stepIndex) {
+  currentStep = stepIndex + 1;
+  render();
+  scrollToStep(currentStep);
+}
+
+function scrollToStep(idx) {
+  setTimeout(function() {
+    var el = document.getElementById("step-" + idx) || document.querySelector('.result-panel');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+function resetAll() {
+  var keys = Object.keys(answers);
+  for (var i = 0; i < keys.length; i++) { delete answers[keys[i]]; }
+  currentStep = 0;
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===== 結果描画 =====
+function renderResults() {
+  var scores = calcScores(answers);
+  var entries = [];
+  var keys = Object.keys(scores);
+  for (var i = 0; i < keys.length; i++) {
+    entries.push([keys[i], scores[keys[i]]]);
+  }
+  entries.sort(function(a, b) { return b[1] - a[1]; });
+
+  var maxScore = entries.length > 0 ? entries[0][1] : 1;
+  if (maxScore < 1) maxScore = 1;
+
+  var html = '<div class="result-panel">';
+  html += '<h2>📋 鑑別診断の結果</h2>';
+
+  // --- 病型別アラート ---
+  if (answers.fuo_type === "nosocomial") {
+    html += '<div class="alert-box alert-yellow">';
+    html += '<strong>🏥 院内発熱の優先鑑別</strong><br>';
+    html += '・<strong>薬剤熱</strong> — 系統的な薬剤歴確認が最優先<br>';
+    html += '・<strong>深部膿瘍</strong> — 術後/処置後の造影CTを検討<br>';
+    html += '・<strong>C. difficile感染</strong> — 抗菌薬使用後の下痢<br>';
+    html += '・<strong>PE/DVT</strong> — 不動化、術後の微熱<br>';
+    html += '・<strong>カテーテル関連感染</strong> — ライン刺入部の確認';
+    html += '</div>';
+  }
+  if (answers.fuo_type === "neutropenic") {
+    html += '<div class="alert-box alert-red">';
+    html += '<strong>⚠️ 好中球減少時：感染症最優先の緊急病態</strong><br>';
+    html += '・経験的広域抗菌薬を<strong>診断確定前に開始</strong>（好中球減少の例外）<br>';
+    html += '・72-96時間以上の持続発熱 → <strong>侵襲性真菌症</strong>を考慮<br>';
+    html += '・カテーテル感染の評価';
+    html += '</div>';
+  }
+  if (answers.fuo_type === "hiv") {
+    html += '<div class="alert-box alert-red">';
+    html += '<strong>🔬 HIV関連FUO：結核を最優先で評価</strong><br>';
+    html += '・<strong>結核</strong>が個別疾患として最も重要（肺外・播種性を含む）<br>';
+    html += '・CD4 &lt;200：PCP、クリプトコックス、CMV、NTMも考慮<br>';
+    html += '・リンパ腫（特に非ホジキンリンパ腫）の比率も高い';
+    html += '</div>';
+  }
+
+  // --- HLHアラート ---
+  if (scores.hlh >= 8) {
+    html += '<div class="alert-box alert-red">';
+    html += '<strong>⚡ HLH/MAS を積極的に疑う所見あり</strong><br>';
+    html += '<strong>HScore ≥168</strong>で感度100%・特異度94%<br>';
+    html += '確認項目：フェリチン（≥2,000で強く示唆）、TG、フィブリノゲン、血球減少、肝脾腫、骨髄検査';
+    html += '</div>';
+  }
+
+  // --- Still病アラート ---
+  if (scores.still >= 10) {
+    html += '<div class="alert-box alert-yellow">';
+    html += '<strong>🔥 成人Still病（AOSD）の可能性</strong><br>';
+    html += '<strong>Yamaguchi基準</strong>：大項目2つ以上を含む計5項目以上で診断（感度93%）<br>';
+    html += '<strong>大：</strong>①弛張熱≥39℃×1週 ②関節痛≥2週 ③サーモンピンク疹 ④好中球≥10,000<br>';
+    html += '<strong>小：</strong>咽頭痛、リンパ節腫脹、肝脾腫、肝機能異常、RF/ANA陰性<br>';
+    html += '※除外診断が前提（感染症・悪性腫瘍・他の膠原病を除外）';
+    html += '</div>';
+  }
+
+  // --- 4本柱＋未診断 ---
+  html += '<div class="section-title">🗂️ 4病因群＋未診断で整理</div>';
+  html += '<div class="alert-box" style="background:#FFF8E1;border:1px solid #FFB300;">';
+  html += '① <strong>感染症</strong> — 結核、心内膜炎（BCNE含む）、深部膿瘍、複雑性UTI<br>';
+  html += '② <strong>悪性腫瘍</strong> — リンパ腫（最重要）、白血病、MDS、腎細胞癌<br>';
+  html += '③ <strong>非感染性炎症性疾患</strong> — Still病、GCA/PMR、SLE、血管炎、サルコイドーシス<br>';
+  html += '④ <strong>その他</strong> — 薬剤熱、PE/DVT、亜急性甲状腺炎、HLH/MAS<br>';
+  html += '⑤ <strong>未診断</strong> — 日本の前向き研究では6か月時点で21.3%が未診断';
+  html += '</div>';
+
+  // --- 疾患カード ---
+  html += '<div class="section-title">🔍 鑑別候補（スコア順）</div>';
+  var shown = 0;
+  for (var i = 0; i < entries.length; i++) {
+    var id = entries[i][0];
+    var score = entries[i][1];
+    if (score <= 0) continue;
+
+    var d = DISEASES[id];
+    var level = getProbLevel(score, maxScore);
+    var catLabel = getCatLabel(d.category);
+    var catClass = "cat-" + d.category;
+
+    html += '<div class="disease-card ' + level + '">';
+    html += '<div class="disease-header">';
+    html += '<span class="disease-name">' + d.emoji + ' ' + d.name + '</span>';
+    html += '<span class="badge ' + level + '">';
+    html += level === "high" ? "可能性 高" : (level === "medium" ? "可能性 中" : "可能性 低");
+    html += '</span>';
+    html += '</div>';
+    html += '<span class="cat-tag ' + catClass + '">' + catLabel + '</span>';
+    html += '<div class="disease-detail">' + d.detail + '</div>';
+    html += '<div class="workup-line">🔍 追加検査: ' + d.workup + '</div>';
+    html += '</div>';
+    shown++;
+  }
+
+  if (shown === 0) {
+    html += '<p style="color:var(--gray);text-align:center;padding:16px;">スコアが0以上の疾患はありませんでした。入力を見直してください。</p>';
+  }
+
+  // --- 検査進め方ガイド ---
+  html += '<div class="section-title">📊 検査の進め方</div>';
+  html += '<table class="ref-table">';
+  html += '<tr><th>段階</th><th>検査</th></tr>';
+  html += '<tr><td><strong>最小セット</strong></td><td>CBC分画、生化学（Ca含む）、ESR/CRP/フェリチン、血培3セット、尿検/尿培、TST/IGRA、HIV、胸腹骨盤CT</td></tr>';
+  html += '<tr><td><strong>PDCあり</strong></td><td>PDCに応じた標的検査（心エコー、自己抗体、血清学、培養延長など）</td></tr>';
+  html += '<tr><td><strong>PDC乏しい</strong></td><td><strong>18F-FDG PET/CT</strong>（感度84-86%、診断寄与55-75%、CTより30%以上高い診断yield）</td></tr>';
+  html += '<tr><td><strong>標的あり</strong></td><td><strong>狙い撃ち生検</strong>（骨髄、リンパ節、肝、肺、皮膚、側頭動脈など）</td></tr>';
+  html += '</table>';
+
+  // --- 落とし穴 ---
+  html += '<div class="pitfall-box">';
+  html += '<strong>⚠️ 見逃しやすいポイント</strong><br>';
+  html += '・<strong>CRPだけで切らない</strong> — 日本の前向き研究ではCRPに有意差なし、ESRが診断に寄与<br>';
+  html += '・<strong>PDCなしに血清検査を闇雲に増やさない</strong> — 最小検査＋標的検査の方が実用的<br>';
+  html += '・<strong>安定した古典型FUOで早すぎる経験的治療をしない</strong> — 経験的抗菌薬/ステロイドは診断の糸口を消す<br>';
+  html += '・<strong>薬剤歴を系統的に確認する</strong> — 薬剤熱はFUOの重要原因、除外診断ではない<br>';
+  html += '・<strong>身体診察は繰り返す</strong> — 1回の診察で見つからなかったPDCが後から拾えることがある<br>';
+  html += '・<strong>培養陰性＝心内膜炎否定ではない</strong> — BCNEは心内膜炎の約20%';
+  html += '</div>';
+
+  html += '</div>';
+  return html;
+}
+
+function getProbLevel(score, maxScore) {
+  if (score >= maxScore * 0.7 && score >= 4) return "high";
+  if (score >= maxScore * 0.4 && score >= 2) return "medium";
+  return "low";
+}
+
+function getCatLabel(cat) {
+  if (cat === "infection") return "感染症";
+  if (cat === "malignancy") return "悪性腫瘍";
+  if (cat === "inflammatory") return "炎症性疾患";
+  if (cat === "other") return "その他";
+  return cat;
+}
+
+render();
+</script>
+</body>
+</html>
