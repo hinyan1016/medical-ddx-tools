@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A5276">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>呼吸困難鑑別診断ツール</title>
+<style>
+  :root {
+    --navy: #1A5276;
+    --blue: #2E86C1;
+    --light-blue: #EBF5FB;
+    --red: #DC3545;
+    --yellow: #F5C518;
+    --green: #28A745;
+    --orange: #E8850C;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(26,82,118,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #EBF5FB 0%, #F4F6F8 100%);
+    color: #23272B;
+    min-height: 100vh;
+    padding-bottom: 32px;
+  }
+  .header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+    color: #fff;
+    padding: 20px 16px 14px;
+    text-align: center;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(26,82,118,0.18);
+  }
+  .header h1 { font-size: 1.25rem; letter-spacing: 0.04em; }
+  .header p { font-size: 0.82rem; opacity: 0.88; margin-top: 4px; }
+  .back-link {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    color: #fff; text-decoration: none; font-size: 0.92rem; opacity: 0.85;
+  }
+  .back-link:hover { opacity: 1; }
+  .container { max-width: 720px; margin: 0 auto; padding: 16px 10px; }
+  .algo-note {
+    background: var(--light-blue);
+    border-left: 4px solid var(--blue);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .step-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 14px;
+    overflow: hidden;
+    border-left: 4px solid var(--blue);
+    transition: opacity 0.2s;
+  }
+  .step-card.completed { opacity: 0.7; border-left-color: var(--green); }
+  .step-card.inactive { opacity: 0.45; pointer-events: none; }
+  .step-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px;
+    font-weight: 700; font-size: 0.97rem;
+    cursor: default;
+  }
+  .step-number {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--blue); color: #fff;
+    font-size: 0.92rem; font-weight: 700; flex-shrink: 0;
+  }
+  .step-number.done { background: var(--green); }
+  .step-title { flex: 1; }
+  .step-body { padding: 0 14px 14px; }
+  .hint {
+    font-size: 0.82rem; color: var(--gray);
+    margin-bottom: 8px; line-height: 1.5;
+  }
+  .option-group { display: flex; flex-direction: column; gap: 8px; }
+  .option-btn {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--light-gray); border: 2px solid transparent;
+    border-radius: 8px; padding: 10px 12px;
+    font-size: 0.92rem; cursor: pointer; text-align: left;
+    transition: border-color 0.15s, background 0.15s;
+    font-family: inherit; width: 100%;
+  }
+  .option-btn:hover { border-color: var(--blue); }
+  .option-btn.selected { border-color: var(--blue); background: var(--light-blue); font-weight: 600; }
+  .option-btn .icon { font-size: 1.15rem; }
+  .checklist { display: flex; flex-direction: column; gap: 6px; }
+  .check-item {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--light-gray); border-radius: 8px;
+    padding: 9px 12px; cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.15s;
+  }
+  .check-item:hover { background: #ebeef1; }
+  .check-item input[type="checkbox"] { accent-color: var(--blue); width: 18px; height: 18px; flex-shrink: 0; cursor: pointer; }
+  .check-item label { cursor: pointer; }
+  .next-btn {
+    margin-top: 10px; padding: 10px 28px;
+    background: var(--blue); color: #fff; border: none;
+    border-radius: 8px; font-size: 0.95rem; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+  }
+  .next-btn:hover { opacity: 0.88; }
+  .result-panel {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: 0 2px 16px rgba(26,82,118,0.13);
+    padding: 18px 14px;
+    margin-top: 18px;
+    border-top: 5px solid var(--blue);
+  }
+  .result-panel h2 {
+    font-size: 1.1rem; color: var(--navy);
+    margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+  }
+  .disease-card {
+    border-radius: 8px; padding: 14px;
+    margin-bottom: 12px;
+    border-left: 5px solid var(--gray);
+  }
+  .disease-card.high { border-left-color: var(--red); background: #FFF5F5; }
+  .disease-card.medium { border-left-color: var(--orange); background: #FFF9F0; }
+  .disease-card.low { border-left-color: var(--gray); background: var(--light-gray); }
+  .disease-header {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 6px;
+  }
+  .disease-name { font-weight: 700; font-size: 1.02rem; }
+  .badge {
+    display: inline-block; padding: 2px 10px; border-radius: 12px;
+    font-size: 0.78rem; font-weight: 600; color: #fff;
+  }
+  .badge.high { background: var(--red); }
+  .badge.medium { background: var(--orange); }
+  .badge.low { background: var(--gray); }
+  .cat-tag {
+    display: inline-block; padding: 2px 8px; border-radius: 10px;
+    font-size: 0.73rem; font-weight: 600;
+  }
+  .cat-pulm { background: #E8F8F5; color: #0E6655; }
+  .cat-cardio { background: #FDECEA; color: #C0392B; }
+  .cat-heme { background: #FFF3E0; color: #E65100; }
+  .cat-neuro { background: #EDE7F6; color: #6A1B9A; }
+  .cat-other { background: #E3F2FD; color: #1565C0; }
+  .disease-detail {
+    font-size: 0.88rem; line-height: 1.65;
+    margin-bottom: 6px;
+  }
+  .workup-line {
+    font-size: 0.84rem; color: var(--blue);
+    font-weight: 600;
+  }
+  .alert-box {
+    border-radius: 8px; padding: 14px;
+    margin-bottom: 14px; font-size: 0.9rem; line-height: 1.6;
+  }
+  .alert-red { background: #FDECEA; border: 1.5px solid #E74C3C; }
+  .alert-yellow { background: #FEF9E7; border: 1.5px solid #F1C40F; }
+  .alert-blue { background: #EBF5FB; border: 1.5px solid #2980B9; }
+  .ref-table {
+    width: 100%; border-collapse: collapse;
+    font-size: 0.8rem; margin-top: 12px;
+  }
+  .ref-table th, .ref-table td {
+    border: 1px solid #ddd; padding: 7px 8px; text-align: left;
+  }
+  .ref-table th { background: var(--navy); color: #fff; font-size: 0.78rem; }
+  .ref-table tr:nth-child(even) { background: #f9f9f9; }
+  .reset-btn {
+    display: block; margin: 24px auto 0; padding: 12px 32px;
+    background: #fff; color: var(--blue); border: 2px solid var(--blue);
+    border-radius: 8px; font-size: 1rem; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+  }
+  .reset-btn:hover { background: var(--light-blue); }
+  .pitfall-box {
+    background: #FDF6E3; border: 1.5px solid #E8D5A0;
+    border-radius: 8px; padding: 14px;
+    margin-top: 14px; font-size: 0.88rem; line-height: 1.65;
+  }
+  .section-title {
+    font-size: 0.95rem; font-weight: 700; color: var(--navy);
+    margin: 16px 0 8px; display: flex; align-items: center; gap: 6px;
+  }
+</style>
+</head>
+<body>
+<div class="header">
+  <a class="back-link" href="index.html">&#x2039; ツール一覧</a>
+  <h1>呼吸困難 鑑別診断ツール</h1>
+  <p>重症度・時間経過・5病態群で組み立てる実践的アプローチ</p>
+</div>
+
+<div class="container" id="app"></div>
+
+<script>
+// ===== 疾患データ =====
+var DISEASES = {
+  pe: {
+    name: "肺塞栓症（PE）",
+    category: "pulm",
+    emoji: "🫁",
+    detail: "胸膜痛、失神、片脚腫脹の三徴が有名だが、<strong>非特異的な呼吸困難のみ</strong>で発症することが多い。突然発症〜急性の息切れではPEを常に鑑別に含める。<strong>前確率評価（Wells/PERC）→年齢補正D-dimer→CTPA</strong>の段階的アプローチが重要（AHA/ACC 2026 PE GL準拠）。",
+    workup: "前確率評価（Wells/PERC）、D-dimer（年齢補正）、CTPA、下肢エコー"
+  },
+  pneumothorax: {
+    name: "気胸",
+    category: "pulm",
+    emoji: "💨",
+    detail: "<strong>突然発症の胸膜痛＋呼吸困難</strong>が典型。片側呼吸音低下、過共鳴が診察の手がかり。緊張性気胸では<strong>低血圧、頸静脈怒張、気管偏位</strong>を伴い、即座の脱気が必要。若年痩身男性の自然気胸、外傷性、医原性を区別する。",
+    workup: "胸部X線（立位吸気）、肺エコー（sliding sign消失）、CT（再発・原因検索時）"
+  },
+  pneumonia: {
+    name: "肺炎",
+    category: "pulm",
+    emoji: "🦠",
+    detail: "<strong>発熱、咳・痰、呼吸困難</strong>の組み合わせが典型。聴診でcracklesや気管支呼吸音を聴取する。高齢者では発熱が乏しく、意識変容のみのことがある。敗血症への進展に注意し、qSOFAや血中乳酸で重症度を評価する。",
+    workup: "胸部X線、CBC、CRP/PCT、血液培養、喀痰培養・Gram染色、重症度評価（A-DROP/CURB-65）"
+  },
+  asthma_copd: {
+    name: "喘息/COPD増悪",
+    category: "pulm",
+    emoji: "🌬️",
+    detail: "<strong>喘鳴（wheezing）</strong>が最大の手がかり。喘息では誘因（アレルゲン、感染、運動）、COPDでは感染・大気汚染が増悪因子。重症発作では<strong>silent chest</strong>（気流制限が高度で喘鳴が消失）に注意。SpO2低下、呼吸補助筋使用、会話困難は重症のサイン。",
+    workup: "SpO2、ピークフロー/スパイロメトリー（安定後）、胸部X線（合併症除外）、血液ガス（重症時）"
+  },
+  acute_hf: {
+    name: "急性心不全",
+    category: "cardio",
+    emoji: "❤️",
+    detail: "<strong>起座呼吸、夜間発作性呼吸困難、下腿浮腫、頸静脈怒張</strong>が古典的所見。BNP/NT-proBNPは心不全の除外に高い陰性的中率を持つ（急性：BNP<100, NT-proBNP<300で除外）。胸部X線でうっ血所見、心エコーで壁運動異常・EF低下を評価。",
+    workup: "BNP/NT-proBNP、胸部X線、ECG、心エコー、トロポニン（ACS合併除外）"
+  },
+  acs: {
+    name: "急性冠症候群（ACS）",
+    category: "cardio",
+    emoji: "💔",
+    detail: "典型的には<strong>胸痛</strong>を伴うが、高齢者・糖尿病患者では<strong>呼吸困難が唯一の症状</strong>（anginal equivalent）のことがある。労作時の息切れが安静時にも出現するようになった場合はACSを考慮。ECGでST変化、トロポニン上昇で診断する。",
+    workup: "ECG（12誘導）、トロポニン（経時的）、胸部X線、心エコー"
+  },
+  arrhythmia: {
+    name: "不整脈",
+    category: "cardio",
+    emoji: "⚡",
+    detail: "<strong>動悸＋息切れ</strong>の組み合わせで疑う。頻脈性不整脈（心房細動、SVT、VT）では心拍出量低下で呼吸困難が生じる。徐脈性不整脈（完全房室ブロック、洞不全症候群）でも労作時息切れの原因となる。<strong>脈拍の不整やレートの異常</strong>が身体診察の手がかり。",
+    workup: "ECG（12誘導）、心電図モニター、ホルター心電図（間欠性の場合）、心エコー"
+  },
+  pleural_effusion: {
+    name: "胸水",
+    category: "pulm",
+    emoji: "💧",
+    detail: "体位で変動する呼吸困難が特徴的。<strong>片側の呼吸音低下＋打診で濁音</strong>が診察の手がかり。原因は漏出性（心不全、肝硬変、ネフローゼ）と滲出性（肺炎随伴、悪性、結核）に大別される。大量胸水では緊急ドレナージが必要。",
+    workup: "胸部X線（臥位で300mL以上で検出）、胸部エコー、胸腔穿刺（Light基準で漏出/滲出鑑別）"
+  },
+  ild: {
+    name: "間質性肺疾患（ILD）",
+    category: "pulm",
+    emoji: "🫧",
+    detail: "<strong>労作時呼吸困難の進行＋乾性咳嗽</strong>が典型。聴診で<strong>fine crackles（捻髪音）</strong>、特に両側下肺野に聴取。ばち指の有無を確認する。特発性肺線維症（IPF）、過敏性肺炎、膠原病関連ILDなど多岐にわたる。HRCTでのパターン分類が診断の鍵。",
+    workup: "胸部HRCT、スパイロメトリー（拘束性パターン）、DLCO（低下）、KL-6/SP-D、自己抗体、必要時BAL/生検"
+  },
+  pulm_htn: {
+    name: "肺高血圧症",
+    category: "cardio",
+    emoji: "🔺",
+    detail: "<strong>進行性の労作時呼吸困難</strong>で、初期には安静時症状がないため見逃されやすい。失神、胸痛を伴うこともある。<strong>心エコーでTR-PGの上昇、右室拡大</strong>が手がかり。確定診断は右心カテーテル（mPAP>20mmHg）。CTEPHは治療可能な原因として重要。",
+    workup: "心エコー（TR-PG、右室評価）、胸部X線、BNP、肺機能検査、V/Qシンチ（CTEPH除外）、右心カテーテル"
+  },
+  anemia: {
+    name: "貧血",
+    category: "heme",
+    emoji: "🩸",
+    detail: "<strong>心肺所見が乏しいのに息切れ</strong>がある場合に考慮。慢性貧血では代償が働くため、Hb 7-8 g/dL以下で症状が出ることが多い。急性出血では頻脈、低血圧を伴う。顔色不良、結膜蒼白、頻脈が身体診察の手がかり。",
+    workup: "CBC（Hb/MCV/網状赤血球）、鉄・フェリチン・TIBC、便潜血（消化管出血）"
+  },
+  metabolic_acidosis: {
+    name: "代謝性アシドーシス",
+    category: "heme",
+    emoji: "🧪",
+    detail: "DKA、乳酸アシドーシス、尿毒症、中毒などで<strong>代償性の過換気（Kussmaul呼吸）</strong>が呼吸困難として現れる。深く速い呼吸が特徴。原因疾患の治療が本質的治療。<strong>AG計算</strong>で原因を絞り込む。",
+    workup: "血液ガス、電解質（AG計算）、血糖、乳酸、BUN/Cr、ケトン体、浸透圧"
+  },
+  neuromuscular: {
+    name: "神経筋性呼吸障害",
+    category: "neuro",
+    emoji: "🧠",
+    detail: "ALS、重症筋無力症、GBS、筋疾患、横隔膜機能低下が原因。<strong>仰臥位での増悪、朝の頭痛、日中傾眠、構音障害、嚥下障害、弱い咳、頸部屈筋力低下</strong>が手がかり。<strong>SpO2が正常でもCO2貯留は否定できない</strong>。FVC/SVC、MIP/MEP、ピーク咳流量で評価する（ACCP GL 2023準拠）。",
+    workup: "呼吸筋評価（FVC/SVC、MIP/MEP、SNIP、PCF）、血液ガス（CO2）、NCS/EMG、筋画像"
+  },
+  upper_airway: {
+    name: "上気道閉塞/アナフィラキシー",
+    category: "pulm",
+    emoji: "🚨",
+    detail: "<strong>吸気性喘鳴（stridor）</strong>が最大の手がかり。異物、喉頭浮腫（アナフィラキシー、遺伝性血管浮腫）、腫瘍、声帯機能不全が原因。アナフィラキシーでは蕁麻疹、低血圧、消化器症状を伴う。<strong>アドレナリン筋注が最優先</strong>の治療。",
+    workup: "直接喉頭鏡/ファイバー、頸部X線/CT、トリプターゼ（アナフィラキシー後）"
+  },
+  anxiety_hv: {
+    name: "不安障害/過換気症候群",
+    category: "other",
+    emoji: "😰",
+    detail: "不安、パニック発作に伴う過換気で<strong>呼吸困難感、四肢しびれ、胸部絞扼感</strong>が出現。呼吸性アルカローシスによる症状。ただし、<strong>重篤な器質的疾患を除外した後に評価</strong>する。PEやACSでも不安感は伴うため、症状だけで判断しない。",
+    workup: "器質的疾患の除外（ECG、胸部X線、SpO2、D-dimer検討）が先決"
+  },
+  obesity_decond: {
+    name: "肥満/廃用性呼吸困難",
+    category: "other",
+    emoji: "🏋️",
+    detail: "肥満低換気症候群（OHS）やデコンディショニングは<strong>慢性の労作時呼吸困難</strong>の原因となる。BMI>30で呼吸機能低下のリスクが高まる。他の原因を十分に除外した上で診断する。OHSではCO2貯留を伴う。",
+    workup: "BMI、スパイロメトリー、血液ガス（CO2評価）、睡眠時無呼吸検査"
+  },
+  thyroid: {
+    name: "甲状腺機能異常",
+    category: "heme",
+    emoji: "🦋",
+    detail: "甲状腺機能亢進症では<strong>代謝亢進による酸素需要増大＋心房細動</strong>で呼吸困難が生じる。甲状腺機能低下症では<strong>胸水貯留、心嚢液貯留、呼吸筋力低下</strong>が原因となる。体重変化、発汗異常、頻脈/徐脈が手がかり。",
+    workup: "TSH、FT3/FT4、心エコー（心嚢液）"
+  }
+};
+
+// ===== ステップ =====
+var STEPS = [
+  {
+    id: "severity",
+    title: "重症度・緊急度",
+    type: "single",
+    question: "いまの呼吸困難の重症度はどれに最も近いですか？",
+    hint: "原因検索より先に安定化を優先すべきかを判断する最初のステップ。会話困難・努力呼吸・低血圧があれば緊急。",
+    options: [
+      { value: "critical", label: "会話困難・努力呼吸・低血圧・著明な低酸素", icon: "🚨" },
+      { value: "moderate", label: "安静時にも息切れがあるが会話可能", icon: "⚠️" },
+      { value: "mild", label: "労作時のみ息切れ（安静時は落ち着いている）", icon: "📋" }
+    ]
+  },
+  {
+    id: "timeline",
+    title: "時間経過",
+    type: "single",
+    question: "呼吸困難の発症パターンはどれですか？",
+    hint: "突然発症は肺塞栓・気胸・上気道閉塞を、数時間〜数日は肺炎・心不全・喘息増悪を、慢性はCOPD・ILD・貧血を示唆。",
+    options: [
+      { value: "sudden", label: "突然発症（数分以内に最悪に達した）", icon: "⚡" },
+      { value: "acute", label: "急性（数時間〜数日で増悪）", icon: "🔺" },
+      { value: "chronic", label: "慢性（数週〜数か月で進行）", icon: "📈" },
+      { value: "chronic_acute", label: "慢性疾患の急性増悪", icon: "🔄" }
+    ]
+  },
+  {
+    id: "vitals",
+    title: "バイタルサイン・SpO2",
+    type: "multi",
+    question: "バイタルサインの異常を選んでください（複数選択可）",
+    hint: "SpO2 + ECG + 胸部X線が急性呼吸困難の初期評価の三本柱。",
+    options: [
+      { value: "hypoxia", label: "低酸素血症（SpO2 < 94%）" },
+      { value: "severe_hypoxia", label: "著明な低酸素（SpO2 < 88%）" },
+      { value: "tachycardia", label: "頻脈（> 100/分）" },
+      { value: "bradycardia", label: "徐脈（< 50/分）" },
+      { value: "hypertension", label: "高血圧（> 160/100）" },
+      { value: "hypotension", label: "低血圧（sBP < 90）" },
+      { value: "fever", label: "発熱（> 38.0℃）" },
+      { value: "tachypnea", label: "頻呼吸（> 24/分）" },
+      { value: "irregular_pulse", label: "脈不整" },
+      { value: "none_vitals", label: "バイタル安定" }
+    ]
+  },
+  {
+    id: "resp_exam",
+    title: "呼吸器所見",
+    type: "multi",
+    question: "聴診・視診でみられる呼吸器所見を選んでください（複数選択可）",
+    hint: "喘鳴→閉塞性、捻髪音→間質性/肺炎/肺水腫、片側呼吸音低下→気胸/胸水、stridor→上気道閉塞。",
+    options: [
+      { value: "wheezing", label: "喘鳴（wheezing）" },
+      { value: "fine_crackles", label: "捻髪音（fine crackles）" },
+      { value: "coarse_crackles", label: "水泡音（coarse crackles）" },
+      { value: "unilateral_decreased", label: "片側呼吸音低下" },
+      { value: "stridor", label: "吸気性喘鳴（stridor）" },
+      { value: "accessory_muscle", label: "呼吸補助筋使用" },
+      { value: "hyperresonance", label: "打診で過共鳴" },
+      { value: "dullness", label: "打診で濁音" },
+      { value: "clubbing", label: "ばち指" },
+      { value: "none_resp", label: "特記所見なし" }
+    ]
+  },
+  {
+    id: "cardio_exam",
+    title: "循環器所見",
+    type: "multi",
+    question: "循環器系の所見を選んでください（複数選択可）",
+    hint: "起座呼吸・JVD・浮腫は心不全を強く示唆。動悸・脈不整は不整脈を疑う手がかり。",
+    options: [
+      { value: "orthopnea", label: "起座呼吸（臥位で悪化）" },
+      { value: "pnd", label: "夜間発作性呼吸困難" },
+      { value: "jvd", label: "頸静脈怒張（JVD）" },
+      { value: "leg_edema", label: "下腿浮腫（両側）" },
+      { value: "unilateral_leg", label: "片脚腫脹" },
+      { value: "chest_pain", label: "胸痛" },
+      { value: "palpitation", label: "動悸" },
+      { value: "syncope", label: "失神・前失神" },
+      { value: "murmur", label: "心雑音" },
+      { value: "none_cardio", label: "特記所見なし" }
+    ]
+  },
+  {
+    id: "associated",
+    title: "随伴症状・全身所見",
+    type: "multi",
+    question: "以下の随伴症状がありますか？（複数選択可）",
+    hint: "心肺所見が乏しいのに息切れがある場合、貧血・代謝異常・神経筋疾患・甲状腺を考える。",
+    options: [
+      { value: "cough_sputum", label: "咳・痰" },
+      { value: "hemoptysis", label: "血痰" },
+      { value: "pleuritic_pain", label: "胸膜痛（吸気時に増悪する胸痛）" },
+      { value: "pallor", label: "顔色不良・結膜蒼白" },
+      { value: "kussmaul", label: "深大呼吸（Kussmaul呼吸）" },
+      { value: "dysphagia", label: "嚥下障害・構音障害" },
+      { value: "weak_cough", label: "弱い咳・頸部屈筋力低下" },
+      { value: "morning_headache", label: "朝の頭痛・日中傾眠" },
+      { value: "supine_worse", label: "仰臥位での悪化（神経筋性）" },
+      { value: "urticaria", label: "蕁麻疹・皮疹" },
+      { value: "weight_change", label: "体重変化（増減）" },
+      { value: "numbness_limbs", label: "四肢のしびれ" },
+      { value: "anxiety", label: "不安・パニック感" },
+      { value: "none_assoc", label: "特になし" }
+    ]
+  },
+  {
+    id: "background",
+    title: "背景・リスク因子",
+    type: "multi",
+    question: "該当する背景因子を選んでください（複数選択可）",
+    hint: "既往歴・薬剤歴・喫煙歴は事前確率を大きく変える。",
+    options: [
+      { value: "smoking", label: "喫煙歴あり" },
+      { value: "copd_asthma_hx", label: "COPD/喘息の既往" },
+      { value: "hf_history", label: "心不全の既往" },
+      { value: "dvt_pe_hx", label: "DVT/PE既往、VTEリスク（長期臥床、手術後、経口避妊薬、悪性腫瘍）" },
+      { value: "diabetes", label: "糖尿病" },
+      { value: "neuromuscular_hx", label: "神経筋疾患の既往（ALS、MG、筋疾患など）" },
+      { value: "obesity", label: "肥満（BMI > 30）" },
+      { value: "renal_disease", label: "慢性腎臓病" },
+      { value: "connective_tissue", label: "膠原病" },
+      { value: "malignancy", label: "悪性腫瘍" },
+      { value: "allergy_hx", label: "アレルギー歴（アナフィラキシーリスク）" },
+      { value: "deconditioning", label: "長期臥床・廃用" },
+      { value: "psychiatric_hx", label: "不安障害・パニック障害の既往" },
+      { value: "none_bg", label: "特になし" }
+    ]
+  }
+];
+
+// ===== スコアリング =====
+function calcScores(ans) {
+  var scores = {};
+  var keys = Object.keys(DISEASES);
+  for (var i = 0; i < keys.length; i++) { scores[keys[i]] = 0; }
+
+  // --- Step 1: 重症度 ---
+  var sev = ans.severity || "";
+  if (sev === "critical") {
+    scores.pe += 3; scores.pneumothorax += 3; scores.acute_hf += 3;
+    scores.acs += 2; scores.upper_airway += 4; scores.pneumonia += 2;
+    scores.asthma_copd += 2; scores.arrhythmia += 1;
+  }
+  if (sev === "moderate") {
+    scores.pe += 2; scores.acute_hf += 2; scores.pneumonia += 2;
+    scores.asthma_copd += 2; scores.acs += 1; scores.pleural_effusion += 1;
+    scores.arrhythmia += 1; scores.anemia += 1;
+  }
+  if (sev === "mild") {
+    scores.ild += 2; scores.pulm_htn += 2; scores.anemia += 2;
+    scores.obesity_decond += 2; scores.anxiety_hv += 1;
+    scores.thyroid += 1; scores.neuromuscular += 1;
+  }
+
+  // --- Step 2: 時間経過 ---
+  var tl = ans.timeline || "";
+  if (tl === "sudden") {
+    scores.pe += 5; scores.pneumothorax += 5; scores.upper_airway += 4;
+    scores.acs += 3; scores.arrhythmia += 3;
+    scores.anxiety_hv += 1;
+  }
+  if (tl === "acute") {
+    scores.pneumonia += 4; scores.acute_hf += 4; scores.asthma_copd += 3;
+    scores.acs += 2; scores.pe += 2; scores.metabolic_acidosis += 2;
+    scores.anemia += 1;
+  }
+  if (tl === "chronic") {
+    scores.ild += 5; scores.pulm_htn += 4; scores.anemia += 4;
+    scores.obesity_decond += 4; scores.neuromuscular += 3;
+    scores.asthma_copd += 2; scores.acute_hf += 1;
+    scores.thyroid += 2; scores.anxiety_hv += 2;
+    scores.pleural_effusion += 1;
+  }
+  if (tl === "chronic_acute") {
+    scores.asthma_copd += 5; scores.acute_hf += 4;
+    scores.pneumonia += 2; scores.pe += 1;
+  }
+
+  // --- Step 3: バイタル ---
+  var vit = ans.vitals || [];
+  if (vit.indexOf("hypoxia") >= 0) {
+    scores.pneumonia += 2; scores.pe += 2; scores.acute_hf += 2;
+    scores.asthma_copd += 2; scores.pneumothorax += 2;
+    scores.ild += 1; scores.pleural_effusion += 1;
+  }
+  if (vit.indexOf("severe_hypoxia") >= 0) {
+    scores.pneumonia += 2; scores.pe += 3; scores.acute_hf += 2;
+    scores.pneumothorax += 2; scores.asthma_copd += 2;
+    scores.ild += 2; scores.neuromuscular += 2;
+  }
+  if (vit.indexOf("tachycardia") >= 0) {
+    scores.pe += 3; scores.anemia += 3; scores.arrhythmia += 2;
+    scores.acute_hf += 1; scores.pneumonia += 1; scores.thyroid += 2;
+    scores.anxiety_hv += 1; scores.metabolic_acidosis += 1;
+  }
+  if (vit.indexOf("bradycardia") >= 0) {
+    scores.arrhythmia += 4;
+  }
+  if (vit.indexOf("hypertension") >= 0) {
+    scores.acute_hf += 3; scores.thyroid += 1;
+  }
+  if (vit.indexOf("hypotension") >= 0) {
+    scores.pe += 3; scores.pneumothorax += 3; scores.acs += 2;
+    scores.upper_airway += 2; scores.anemia += 2;
+  }
+  if (vit.indexOf("fever") >= 0) {
+    scores.pneumonia += 5; scores.upper_airway += 1;
+  }
+  if (vit.indexOf("tachypnea") >= 0) {
+    scores.pe += 2; scores.pneumonia += 1; scores.metabolic_acidosis += 2;
+    scores.acute_hf += 1;
+  }
+  if (vit.indexOf("irregular_pulse") >= 0) {
+    scores.arrhythmia += 5; scores.acute_hf += 1;
+  }
+
+  // --- Step 4: 呼吸器所見 ---
+  var resp = ans.resp_exam || [];
+  if (resp.indexOf("wheezing") >= 0) {
+    scores.asthma_copd += 6; scores.acute_hf += 2;
+  }
+  if (resp.indexOf("fine_crackles") >= 0) {
+    scores.ild += 5; scores.pneumonia += 3; scores.acute_hf += 2;
+  }
+  if (resp.indexOf("coarse_crackles") >= 0) {
+    scores.acute_hf += 4; scores.pneumonia += 3;
+  }
+  if (resp.indexOf("unilateral_decreased") >= 0) {
+    scores.pneumothorax += 5; scores.pleural_effusion += 5;
+    scores.pneumonia += 1;
+  }
+  if (resp.indexOf("stridor") >= 0) {
+    scores.upper_airway += 8;
+  }
+  if (resp.indexOf("accessory_muscle") >= 0) {
+    scores.asthma_copd += 2; scores.pneumonia += 1;
+    scores.acute_hf += 1; scores.neuromuscular += 2;
+  }
+  if (resp.indexOf("hyperresonance") >= 0) {
+    scores.pneumothorax += 5;
+  }
+  if (resp.indexOf("dullness") >= 0) {
+    scores.pleural_effusion += 5; scores.pneumonia += 2;
+  }
+  if (resp.indexOf("clubbing") >= 0) {
+    scores.ild += 4; scores.pulm_htn += 1;
+  }
+  if (resp.indexOf("none_resp") >= 0) {
+    scores.anemia += 2; scores.metabolic_acidosis += 2;
+    scores.neuromuscular += 1; scores.thyroid += 1;
+    scores.anxiety_hv += 2; scores.obesity_decond += 1;
+    scores.arrhythmia += 1;
+  }
+
+  // --- Step 5: 循環器所見 ---
+  var card = ans.cardio_exam || [];
+  if (card.indexOf("orthopnea") >= 0) {
+    scores.acute_hf += 5; scores.asthma_copd += 1;
+    scores.neuromuscular += 2;
+  }
+  if (card.indexOf("pnd") >= 0) {
+    scores.acute_hf += 5;
+  }
+  if (card.indexOf("jvd") >= 0) {
+    scores.acute_hf += 4; scores.pneumothorax += 2;
+    scores.pe += 2; scores.pulm_htn += 2;
+  }
+  if (card.indexOf("leg_edema") >= 0) {
+    scores.acute_hf += 4; scores.pulm_htn += 2;
+  }
+  if (card.indexOf("unilateral_leg") >= 0) {
+    scores.pe += 5;
+  }
+  if (card.indexOf("chest_pain") >= 0) {
+    scores.acs += 5; scores.pe += 3; scores.pneumothorax += 3;
+    scores.pneumonia += 1;
+  }
+  if (card.indexOf("palpitation") >= 0) {
+    scores.arrhythmia += 5; scores.thyroid += 2;
+    scores.anxiety_hv += 2;
+  }
+  if (card.indexOf("syncope") >= 0) {
+    scores.pe += 3; scores.arrhythmia += 3; scores.pulm_htn += 2;
+    scores.acs += 1;
+  }
+  if (card.indexOf("murmur") >= 0) {
+    scores.acute_hf += 2; scores.pulm_htn += 1;
+  }
+  if (card.indexOf("none_cardio") >= 0) {
+    scores.ild += 1; scores.anemia += 1;
+    scores.neuromuscular += 1; scores.obesity_decond += 1;
+  }
+
+  // --- Step 6: 随伴症状 ---
+  var assoc = ans.associated || [];
+  if (assoc.indexOf("cough_sputum") >= 0) {
+    scores.pneumonia += 3; scores.asthma_copd += 2;
+    scores.acute_hf += 1;
+  }
+  if (assoc.indexOf("hemoptysis") >= 0) {
+    scores.pe += 3; scores.pneumonia += 2;
+  }
+  if (assoc.indexOf("pleuritic_pain") >= 0) {
+    scores.pe += 4; scores.pneumothorax += 3; scores.pneumonia += 2;
+    scores.pleural_effusion += 2;
+  }
+  if (assoc.indexOf("pallor") >= 0) {
+    scores.anemia += 6;
+  }
+  if (assoc.indexOf("kussmaul") >= 0) {
+    scores.metabolic_acidosis += 7;
+  }
+  if (assoc.indexOf("dysphagia") >= 0) {
+    scores.neuromuscular += 5;
+  }
+  if (assoc.indexOf("weak_cough") >= 0) {
+    scores.neuromuscular += 5;
+  }
+  if (assoc.indexOf("morning_headache") >= 0) {
+    scores.neuromuscular += 4; scores.obesity_decond += 2;
+  }
+  if (assoc.indexOf("supine_worse") >= 0) {
+    scores.neuromuscular += 5; scores.acute_hf += 2;
+  }
+  if (assoc.indexOf("urticaria") >= 0) {
+    scores.upper_airway += 6;
+  }
+  if (assoc.indexOf("weight_change") >= 0) {
+    scores.thyroid += 3; scores.acute_hf += 1;
+    scores.anemia += 1;
+  }
+  if (assoc.indexOf("numbness_limbs") >= 0) {
+    scores.anxiety_hv += 3; scores.neuromuscular += 1;
+  }
+  if (assoc.indexOf("anxiety") >= 0) {
+    scores.anxiety_hv += 3;
+  }
+
+  // --- Step 7: 背景因子 ---
+  var bg = ans.background || [];
+  if (bg.indexOf("smoking") >= 0) {
+    scores.asthma_copd += 3; scores.ild += 1;
+    scores.acs += 1; scores.pneumonia += 1;
+  }
+  if (bg.indexOf("copd_asthma_hx") >= 0) {
+    scores.asthma_copd += 5;
+  }
+  if (bg.indexOf("hf_history") >= 0) {
+    scores.acute_hf += 5;
+  }
+  if (bg.indexOf("dvt_pe_hx") >= 0) {
+    scores.pe += 5;
+  }
+  if (bg.indexOf("diabetes") >= 0) {
+    scores.metabolic_acidosis += 2; scores.acs += 1;
+  }
+  if (bg.indexOf("neuromuscular_hx") >= 0) {
+    scores.neuromuscular += 6;
+  }
+  if (bg.indexOf("obesity") >= 0) {
+    scores.obesity_decond += 4; scores.pe += 1;
+  }
+  if (bg.indexOf("renal_disease") >= 0) {
+    scores.metabolic_acidosis += 2; scores.pleural_effusion += 1;
+    scores.acute_hf += 1; scores.anemia += 2;
+  }
+  if (bg.indexOf("connective_tissue") >= 0) {
+    scores.ild += 3; scores.pulm_htn += 2;
+    scores.pleural_effusion += 1;
+  }
+  if (bg.indexOf("malignancy") >= 0) {
+    scores.pleural_effusion += 3; scores.pe += 2;
+    scores.anemia += 1;
+  }
+  if (bg.indexOf("allergy_hx") >= 0) {
+    scores.upper_airway += 3; scores.asthma_copd += 1;
+  }
+  if (bg.indexOf("deconditioning") >= 0) {
+    scores.obesity_decond += 4; scores.pe += 1;
+  }
+  if (bg.indexOf("psychiatric_hx") >= 0) {
+    scores.anxiety_hv += 4;
+  }
+
+  return scores;
+}
+
+// ===== UI描画 =====
+var appEl = document.getElementById("app");
+var currentStep = 0;
+var answers = {};
+
+function render() {
+  var html = "";
+
+  // アルゴリズム説明
+  html += '<div class="algo-note">';
+  html += '<strong>使い方：</strong>各ステップの質問に順番に回答してください。すべてのステップ完了後に鑑別診断の候補が優先順位付きで表示されます。<br>';
+  html += '<strong>3つの問い：</strong>①いますぐ危ないか ②急性か慢性か ③主座はどこか（肺・心・血液代謝・神経筋・精神）';
+  html += '<br><small>（ATS Dyspnea Statement 2012; ESC HF GL 2021; AHA/ACC PE GL 2026; ACCP NM-GL 2023 準拠）</small>';
+  html += '</div>';
+
+  // 各ステップ
+  for (var i = 0; i < STEPS.length; i++) {
+    var step = STEPS[i];
+    var isActive = i === currentStep;
+    var isDone = i < currentStep;
+    var cls = isDone ? "completed" : (isActive ? "" : "inactive");
+
+    html += '<div class="step-card ' + cls + '" id="step-' + i + '">';
+    html += '<div class="step-header">';
+    html += '<span class="step-number ' + (isDone ? 'done' : '') + '">' + (isDone ? '✓' : (i + 1)) + '</span>';
+    html += '<span class="step-title">' + step.title + '</span>';
+    html += '</div>';
+
+    if (isActive || isDone) {
+      html += '<div class="step-body">';
+      html += '<p style="font-weight:600;margin-bottom:4px;">' + step.question + '</p>';
+      if (step.hint) html += '<p class="hint">' + step.hint + '</p>';
+
+      if (step.type === "single") {
+        html += '<div class="option-group">';
+        for (var j = 0; j < step.options.length; j++) {
+          var opt = step.options[j];
+          var selected = answers[step.id] === opt.value;
+          html += '<button class="option-btn ' + (selected ? 'selected' : '') + '"';
+          html += ' onclick="selectSingle(\'' + step.id + '\', \'' + opt.value + '\', ' + i + ')"';
+          if (isDone && !isActive) html += ' disabled';
+          html += '>';
+          html += '<span class="icon">' + (opt.icon || '') + '</span>' + opt.label;
+          html += '</button>';
+        }
+        html += '</div>';
+      } else {
+        html += '<div class="checklist">';
+        var currentAnswers = answers[step.id] || [];
+        for (var j = 0; j < step.options.length; j++) {
+          var opt = step.options[j];
+          var checked = currentAnswers.indexOf(opt.value) >= 0;
+          html += '<div class="check-item" onclick="toggleCheck(\'' + step.id + '\', \'' + opt.value + '\', this)">';
+          html += '<input type="checkbox" ' + (checked ? 'checked' : '') + (isDone && !isActive ? ' disabled' : '') + '>';
+          html += '<label>' + opt.label + '</label>';
+          html += '</div>';
+        }
+        html += '</div>';
+        if (isActive) {
+          html += '<button class="next-btn" onclick="nextStep(' + i + ')">次へ ▶</button>';
+        }
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+
+  // 結果パネル
+  if (currentStep >= STEPS.length) {
+    html += renderResults();
+  }
+
+  // リセットボタン
+  if (currentStep > 0) {
+    html += '<button class="reset-btn" onclick="resetAll()">🔄 最初からやり直す</button>';
+  }
+
+  appEl.innerHTML = html;
+
+  // 結果表示後スクロール
+  if (currentStep >= STEPS.length) {
+    setTimeout(function() {
+      var panel = document.querySelector('.result-panel');
+      if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+}
+
+function selectSingle(stepId, value, stepIndex) {
+  answers[stepId] = value;
+  currentStep = stepIndex + 1;
+  render();
+  scrollToStep(currentStep);
+}
+
+function toggleCheck(stepId, value, el) {
+  if (!answers[stepId]) answers[stepId] = [];
+  var arr = answers[stepId];
+  var idx = arr.indexOf(value);
+  if (idx >= 0) { arr.splice(idx, 1); } else { arr.push(value); }
+  var cb = el.querySelector('input[type="checkbox"]');
+  if (cb) cb.checked = idx < 0;
+}
+
+function nextStep(stepIndex) {
+  currentStep = stepIndex + 1;
+  render();
+  scrollToStep(currentStep);
+}
+
+function scrollToStep(idx) {
+  setTimeout(function() {
+    var el = document.getElementById("step-" + idx) || document.querySelector('.result-panel');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+function resetAll() {
+  var keys = Object.keys(answers);
+  for (var i = 0; i < keys.length; i++) { delete answers[keys[i]]; }
+  currentStep = 0;
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===== 結果描画 =====
+function renderResults() {
+  var scores = calcScores(answers);
+  var entries = [];
+  var keys = Object.keys(scores);
+  for (var i = 0; i < keys.length; i++) {
+    entries.push([keys[i], scores[keys[i]]]);
+  }
+  entries.sort(function(a, b) { return b[1] - a[1]; });
+
+  var maxScore = entries.length > 0 ? entries[0][1] : 1;
+  if (maxScore < 1) maxScore = 1;
+
+  var html = '<div class="result-panel">';
+  html += '<h2>📋 鑑別診断の結果</h2>';
+
+  // --- 重症アラート ---
+  if (answers.severity === "critical") {
+    html += '<div class="alert-box alert-red">';
+    html += '<strong>🚨 緊急：原因検索より先に安定化を優先</strong><br>';
+    html += '・気道・換気・循環の安定化を最優先<br>';
+    html += '・<strong>SpO2 + ECG + 胸部X線</strong>を同時に進める<br>';
+    html += '・換気障害/意識障害 → 血液ガスを急ぐ<br>';
+    html += '・ベッドサイドPOCUS → 急性心不全、肺炎、胸水、気胸の初期分岐に有用';
+    html += '</div>';
+  }
+
+  // --- 突然発症アラート ---
+  if (answers.timeline === "sudden") {
+    html += '<div class="alert-box alert-red">';
+    html += '<strong>⚡ 突然発症の呼吸困難 — 致死的疾患を先に除外</strong><br>';
+    html += '<strong>肺塞栓、気胸、上気道閉塞/アナフィラキシー、ACS、不整脈</strong>を最優先で鑑別<br>';
+    html += '重要な手がかり：胸膜痛、失神、片脚腫脹、片側呼吸音低下、stridor';
+    html += '</div>';
+  }
+
+  // --- PE戦略 ---
+  var card = answers.cardio_exam || [];
+  var assoc = answers.associated || [];
+  if (scores.pe >= 6) {
+    html += '<div class="alert-box alert-yellow">';
+    html += '<strong>⚠️ 肺塞栓の検査戦略</strong><br>';
+    html += '「息切れがあるからとりあえずD-dimer」ではなく、<strong>前確率を見積もったうえで</strong>検査を進める：<br>';
+    html += '・低〜中等度前確率 → <strong>年齢補正D-dimer</strong>（50歳超：年齢 × 10 μg/L FEU）<br>';
+    html += '・高前確率 → CTPAへ直接進む';
+    html += '</div>';
+  }
+
+  // --- BNP解釈ガイド ---
+  if (scores.acute_hf >= 6) {
+    html += '<div class="alert-box alert-blue">';
+    html += '<strong>📊 BNP/NT-proBNP 解釈ガイド</strong><br>';
+    html += '<table class="ref-table" style="margin-top:8px;">';
+    html += '<tr><th>状況</th><th>BNP</th><th>NT-proBNP</th><th>解釈</th></tr>';
+    html += '<tr><td>急性HF除外</td><td>&lt; 100 pg/mL</td><td>&lt; 300 pg/mL</td><td>急性心不全の可能性低い</td></tr>';
+    html += '<tr><td>慢性HF除外</td><td>&lt; 35 pg/mL</td><td>&lt; 125 pg/mL</td><td>未治療心不全は考えにくい</td></tr>';
+    html += '</table>';
+    html += '</div>';
+  }
+
+  // --- 神経筋警告 ---
+  if (scores.neuromuscular >= 6) {
+    html += '<div class="alert-box alert-yellow">';
+    html += '<strong>⚠️ 神経筋性呼吸障害 — 見落としやすいが重要</strong><br>';
+    html += '<strong>SpO2だけではCO2貯留は否定できない</strong><br>';
+    html += '呼吸筋評価：FVC/SVC、MIP/MEP（またはSNIP）、ピーク咳流量<br>';
+    html += '必要に応じてCO2評価（血液ガスまたはEtCO2/TcCO2）を行う';
+    html += '</div>';
+  }
+
+  // --- 5群分類ガイド ---
+  html += '<div class="section-title">🗂️ 5病態群チェックリスト</div>';
+  html += '<div class="alert-box" style="background:#F5F5F5;border:1px solid #ddd;">';
+  html += '① <strong>肺・気道</strong> — 喘鳴、crackles、胸膜痛、呼吸音異常、stridor<br>';
+  html += '② <strong>心血管</strong> — 起座呼吸、JVD、浮腫、胸痛、動悸、心雑音<br>';
+  html += '③ <strong>血液・代謝</strong> — 顔色不良、頻脈、深大呼吸、体重変化<br>';
+  html += '④ <strong>神経・筋</strong> — 嚥下障害、弱い咳、仰臥位悪化、朝の頭痛<br>';
+  html += '⑤ <strong>精神・機能性・その他</strong> — 不安、過換気、肥満、廃用';
+  html += '</div>';
+
+  // --- 疾患カード ---
+  html += '<div class="section-title">🔍 鑑別候補（スコア順）</div>';
+  var shown = 0;
+  for (var i = 0; i < entries.length; i++) {
+    var id = entries[i][0];
+    var score = entries[i][1];
+    if (score <= 0) continue;
+
+    var d = DISEASES[id];
+    var level = getProbLevel(score, maxScore);
+    var catLabel = getCatLabel(d.category);
+    var catClass = "cat-" + d.category;
+
+    html += '<div class="disease-card ' + level + '">';
+    html += '<div class="disease-header">';
+    html += '<span class="disease-name">' + d.emoji + ' ' + d.name + '</span>';
+    html += '<span class="badge ' + level + '">';
+    html += level === "high" ? "可能性 高" : (level === "medium" ? "可能性 中" : "可能性 低");
+    html += '</span>';
+    html += '</div>';
+    html += '<span class="cat-tag ' + catClass + '">' + catLabel + '</span>';
+    html += '<div class="disease-detail">' + d.detail + '</div>';
+    html += '<div class="workup-line">🔍 追加検査: ' + d.workup + '</div>';
+    html += '</div>';
+    shown++;
+  }
+
+  if (shown === 0) {
+    html += '<p style="color:var(--gray);text-align:center;padding:16px;">スコアが0以上の疾患はありませんでした。入力を見直してください。</p>';
+  }
+
+  // --- 急性 vs 慢性 検査比較 ---
+  html += '<div class="section-title">📊 急性 vs 慢性 — 検査の優先順位</div>';
+  html += '<table class="ref-table">';
+  html += '<tr><th>検査</th><th>急性</th><th>慢性</th></tr>';
+  html += '<tr><td>SpO2</td><td>必須（初期から）</td><td>必須</td></tr>';
+  html += '<tr><td>ECG</td><td>必須</td><td>必須</td></tr>';
+  html += '<tr><td>胸部X線</td><td>必須</td><td>必須</td></tr>';
+  html += '<tr><td>血液ガス</td><td>重症/換気障害疑いで</td><td>必要に応じて</td></tr>';
+  html += '<tr><td>POCUS</td><td>初期分岐に有用</td><td>心エコーとして</td></tr>';
+  html += '<tr><td>BNP/NT-proBNP</td><td>心不全鑑別時</td><td>心不全鑑別時</td></tr>';
+  html += '<tr><td>トロポニン</td><td>ACS鑑別時</td><td>通常不要</td></tr>';
+  html += '<tr><td>D-dimer</td><td>PE前確率に応じて</td><td>通常不要</td></tr>';
+  html += '<tr><td>CBC</td><td>並行して</td><td>必須</td></tr>';
+  html += '<tr><td>スパイロメトリー</td><td>安定後に</td><td>必須</td></tr>';
+  html += '<tr><td>呼吸筋評価</td><td>GBS疑いなど</td><td>神経筋疾患疑いで</td></tr>';
+  html += '</table>';
+
+  // --- 落とし穴 ---
+  html += '<div class="pitfall-box">';
+  html += '<strong>⚠️ 見落としやすいポイント</strong><br>';
+  html += '・<strong>慢性例の多因子性</strong>：「心臓か肺か」だけでなく、貧血・代謝異常・神経筋疾患まで含めて整理する<br>';
+  html += '・<strong>神経筋性呼吸障害</strong>：SpO2が保たれていてもCO2貯留は否定できない → 呼吸筋評価を忘れない<br>';
+  html += '・<strong>ACSの非典型的プレゼンテーション</strong>：高齢者・糖尿病では息切れが唯一の症状のことがある<br>';
+  html += '・「説明できる異常が1つ見つかったら終了」としない — 慢性呼吸困難では複数原因が併存しうる<br>';
+  html += '・「不安だから過換気」と決めつけない — PEやACSでも不安感は伴う';
+  html += '</div>';
+
+  html += '</div>';
+  return html;
+}
+
+function getProbLevel(score, maxScore) {
+  if (score >= maxScore * 0.7 && score >= 4) return "high";
+  if (score >= maxScore * 0.4 && score >= 2) return "medium";
+  return "low";
+}
+
+function getCatLabel(cat) {
+  if (cat === "pulm") return "肺・気道";
+  if (cat === "cardio") return "心血管";
+  if (cat === "heme") return "血液・代謝";
+  if (cat === "neuro") return "神経・筋";
+  if (cat === "other") return "精神・機能性";
+  return cat;
+}
+
+// 初期描画
+render();
+</script>
+</body>
+</html>
