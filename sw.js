@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v16';
+const CACHE_NAME = 'ddx-tools-v17';
 const ASSETS = [
   './',
   './index.html',
@@ -24,6 +24,7 @@ const ASSETS = [
   './dyspnea.html',
   './chest_pain.html',
   './fuo.html',
+  './hypercalcemia.html',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png'

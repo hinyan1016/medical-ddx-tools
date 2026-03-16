@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1B3A5C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>高カルシウム血症 鑑別診断ツール</title>
+<style>
+  :root {
+    --navy: #1B3A5C;
+    --blue: #2C5AA0;
+    --light-blue: #E8F0FE;
+    --red: #DC3545;
+    --yellow: #F5C518;
+    --green: #28A745;
+    --orange: #E8850C;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(27,58,92,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #E8F0FE 0%, #F4F6F8 100%);
+    color: #222;
+    min-height: 100vh;
+    padding: 0 0 40px;
+  }
+  header {
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    padding: 14px 20px 18px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(27,58,92,0.18);
+  }
+  .back-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .back-bar a {
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    font-size: 0.85em;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background 0.2s;
+  }
+  .back-bar a:active { background: rgba(255,255,255,0.15); }
+  header h1 { font-size: 1.7em; font-weight: 700; letter-spacing: 0.04em; }
+  header p { font-size: 0.92em; margin-top: 6px; opacity: 0.85; }
+
+  .container { max-width: 820px; margin: 0 auto; padding: 24px 16px; }
+
+  .step-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+    overflow: hidden;
+    transition: opacity 0.3s;
+  }
+  .step-card.inactive { opacity: 0.45; pointer-events: none; }
+  .step-card.completed { opacity: 1; }
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    background: var(--light-blue);
+    border-bottom: 2px solid var(--blue);
+    cursor: pointer;
+  }
+  .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--blue);
+    color: var(--white);
+    font-weight: 700;
+    font-size: 0.95em;
+    flex-shrink: 0;
+  }
+  .step-number.done { background: var(--green); }
+  .step-title { font-weight: 700; font-size: 1.05em; color: var(--navy); }
+  .step-body { padding: 18px; }
+
+  .option-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border: 2px solid #D0D8E4;
+    border-radius: 8px;
+    background: var(--white);
+    font-size: 0.97em;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: left;
+    color: #222;
+    font-family: inherit;
+    width: 100%;
+  }
+  .option-btn:hover { border-color: var(--blue); background: var(--light-blue); }
+  .option-btn.selected {
+    border-color: var(--blue);
+    background: var(--light-blue);
+    font-weight: 700;
+  }
+  .option-btn .icon { font-size: 1.2em; flex-shrink: 0; width: 24px; text-align: center; }
+
+  .checklist { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--light-gray);
+    cursor: pointer;
+    transition: background 0.15s;
+    user-select: none;
+    font-size: 0.95em;
+  }
+  .check-item:hover { background: #E0E8F0; }
+  .check-item input[type="checkbox"] {
+    width: 18px; height: 18px;
+    accent-color: var(--blue);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .check-item label { cursor: pointer; flex: 1; }
+
+  .result-panel {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(27,58,92,0.15);
+    overflow: hidden;
+    margin-top: 24px;
+    display: none;
+  }
+  .result-panel.show { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  .result-header {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    font-weight: 700;
+    font-size: 1.15em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .result-body { padding: 20px; }
+
+  .dx-card {
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    position: relative;
+    transition: all 0.2s;
+  }
+  .dx-card.high { border-color: var(--red); background: #FFF5F5; }
+  .dx-card.medium { border-color: var(--orange); background: #FFF8F0; }
+  .dx-card.low { border-color: var(--gray); background: var(--light-gray); }
+
+  .dx-card .dx-name {
+    font-weight: 700;
+    font-size: 1.08em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .dx-card .prob-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.78em;
+    font-weight: 700;
+    color: var(--white);
+  }
+  .dx-card.high .prob-badge { background: var(--red); }
+  .dx-card.medium .prob-badge { background: var(--orange); }
+  .dx-card.low .prob-badge { background: var(--gray); }
+
+  .dx-card .dx-detail { font-size: 0.9em; color: #444; line-height: 1.6; }
+  .dx-card .dx-detail strong { color: var(--navy); }
+  .dx-card .dx-workup {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #ccc;
+    font-size: 0.88em;
+    color: var(--blue);
+  }
+
+  .next-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    padding: 10px 22px;
+    background: var(--blue);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: inherit;
+  }
+  .next-btn:hover { background: var(--navy); }
+  .next-btn:disabled { background: #B0BEC5; cursor: not-allowed; }
+
+  .reset-btn {
+    display: block;
+    margin: 24px auto 0;
+    padding: 10px 32px;
+    background: var(--white);
+    color: var(--red);
+    border: 2px solid var(--red);
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .reset-btn:hover { background: var(--red); color: var(--white); }
+
+  .hint {
+    font-size: 0.85em;
+    color: var(--gray);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  .divider { height: 1px; background: #D0D8E4; margin: 14px 0; }
+
+  .algo-note {
+    background: #FFFDE7;
+    border-left: 4px solid var(--yellow);
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 18px;
+    font-size: 0.9em;
+    line-height: 1.6;
+    color: #555;
+  }
+  .algo-note strong { color: var(--navy); }
+
+  @media (max-width: 600px) {
+    header { padding: 12px 14px 14px; }
+    header h1 { font-size: 1.25em; }
+    header p { font-size: 0.85em; }
+    .container { padding: 14px 10px; }
+    .step-header { padding: 12px 14px; }
+    .option-btn { min-height: 44px; font-size: 0.92em; -webkit-tap-highlight-color: transparent; }
+    .step-card { margin-bottom: 14px; }
+    .step-body, .result-body { padding: 14px; }
+    .dx-card { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="back-bar"><a href="index.html">‹ ツール一覧</a></div>
+  <h1>高カルシウム血症 鑑別診断ツール</h1>
+  <p>PTHを軸にした系統的鑑別アプローチ</p>
+</header>
+
+<div class="container" id="app"></div>
+
+<script>
+// ===== データ定義 =====
+var DISEASES = {
+  phpt: {
+    name: "原発性副甲状腺機能亢進症（PHPT）",
+    emoji: "🦴",
+    category: "PTH依存性",
+    detail: "外来で発見される高Ca血症の最多原因。偶発的に見つかる軽度持続性高Ca血症が典型。PTHが高値または「不適切に正常」であることが診断の本体。副甲状腺画像は診断ではなく手術計画のための局在診断。無症候でも手術適応基準（Ca>基準+1mg/dL、骨粗鬆症、eGFR<60、腎結石、50歳未満）を満たせば手術推奨。",
+    workup: "intact PTH（2回以上）、24時間尿Ca・Cr（CCCR算出）、eGFR、リン、25(OH)D、骨密度（DXA）、腎画像（結石評価）"
+  },
+  fhh: {
+    name: "家族性低カルシウム尿性高カルシウム血症（FHH）",
+    emoji: "🧬",
+    category: "PTH依存性",
+    detail: "CaSR遺伝子変異によりカルシウムのセットポイントが上昇。若年から持続する軽度高Ca血症、PTH正常〜軽度高値、尿中Ca排泄が少ない。PHPTと誤診し手術すると不必要な手術になる。CCCR<0.01で強く示唆されるが、CKD・VitD不足・サイアザイド・リチウムは偽低値の原因となる。",
+    workup: "24時間尿Ca・Cr（CCCR算出）、家族歴の詳細聴取、必要ならCASR遺伝子検査"
+  },
+  tertiary_hpt: {
+    name: "三級性副甲状腺機能亢進症",
+    emoji: "🔄",
+    category: "PTH依存性",
+    detail: "長期の二次性副甲状腺機能亢進症（CKD・透析）の後に副甲状腺が自律化し、高Ca血症を呈する。腎移植後にもみられる。病歴（長期CKD・透析・腎移植後）で絞り込みやすい。PTHは著明高値のことが多い。",
+    workup: "intact PTH、腎機能、Ca・P推移の確認、副甲状腺エコー（手術検討時）"
+  },
+  lithium: {
+    name: "リチウム関連高カルシウム血症",
+    emoji: "💊",
+    category: "PTH依存性・薬剤性",
+    detail: "リチウムはCaSRのセットポイントを変え、PTHとCaの双方を上昇させる。PTH依存性高Ca血症を呈し、PHPTとの鑑別が難しい。リチウム中止後も持続することがある（潜在的PHPTの顕在化の可能性）。",
+    workup: "リチウム血中濃度、intact PTH、リチウム使用歴の確認、精神科との連携"
+  },
+  malignancy_pthrp: {
+    name: "悪性腫瘍関連（PTHrP産生）",
+    emoji: "🔬",
+    category: "PTH非依存性",
+    detail: "PTHrPによる液性因子性高Ca血症（humoral hypercalcemia of malignancy）。扁平上皮癌（肺・頭頸部）、腎癌、乳癌、膀胱癌などで多い。経過が急速で臨床的毒性が強いのがPHPTとの大きな違い。PTHは抑制され、PTHrP高値が診断の鍵。",
+    workup: "PTHrP、全身CT、腫瘍マーカー、原発巣検索"
+  },
+  malignancy_bone: {
+    name: "悪性腫瘍関連（骨転移・骨髄腫）",
+    emoji: "🦴",
+    category: "PTH非依存性",
+    detail: "骨転移による局所骨融解や、多発性骨髄腫での破骨細胞活性化により高Ca血症を生じる。骨痛・病的骨折を伴うことが多い。多発性骨髄腫ではSPEP/UPEPでM蛋白を検出。PTHは抑制、PTHrPは通常正常。",
+    workup: "CBC、SPEP/UPEP、免疫固定法、遊離軽鎖比、骨X線/PET-CT、骨髄検査"
+  },
+  malignancy_calcitriol: {
+    name: "悪性腫瘍関連（calcitriol産生・リンパ腫）",
+    emoji: "🩸",
+    category: "PTH非依存性",
+    detail: "一部のリンパ腫（とくにホジキンリンパ腫）では腫瘍細胞が1α-水酸化酵素を発現し、1,25(OH)2Dが上昇する。機序は肉芽腫性疾患と同様。PTH抑制、1,25(OH)2D高値が手がかり。グルココルチコイドが有効。",
+    workup: "1,25(OH)2D、25(OH)D、LDH、可溶性IL-2R、全身CT/PET-CT、リンパ節生検"
+  },
+  vitd_intox: {
+    name: "ビタミンD中毒",
+    emoji: "☀️",
+    category: "PTH非依存性",
+    detail: "ビタミンD製剤やサプリメントの過剰摂取により25(OH)Dが著明高値となり、腸管からのCa吸収が増加。PTHは抑制、25(OH)D高値（通常>150 ng/mL）が診断的。サプリメントの詳細な聴取が重要。",
+    workup: "25(OH)D、1,25(OH)2D、サプリメント・市販薬の詳細聴取"
+  },
+  granulomatous: {
+    name: "肉芽腫性疾患",
+    emoji: "🫁",
+    category: "PTH非依存性",
+    detail: "サルコイドーシス、結核、真菌症、ベリリウム症などでマクロファージが1α-水酸化酵素を発現し、1,25(OH)2Dが上昇する。PTH抑制、1,25(OH)2D高値。グルココルチコイドが機序に合った治療。サルコイドーシスでは両側肺門リンパ節腫脹やACE高値が手がかり。",
+    workup: "1,25(OH)2D、ACE、胸部CT、ツベルクリン/IGRA、β-Dグルカン、生検（必要時）"
+  },
+  thiazide: {
+    name: "サイアザイド関連",
+    emoji: "💧",
+    category: "PTH非依存性・薬剤性",
+    detail: "サイアザイド系利尿薬は遠位尿細管でのCa再吸収を増加させる。ただし、正常なCa恒常性がある人に持続的な高Ca血症を起こすことは少なく、むしろ潜在的なPHPTを顕在化させることがある。サイアザイド中止後にCaが正常化するか確認することが重要。",
+    workup: "サイアザイド中止後のCa・PTH再検（2〜4週後）、中止後も高Ca持続ならPHPTの精査"
+  },
+  milk_alkali: {
+    name: "ミルクアルカリ症候群",
+    emoji: "🥛",
+    category: "PTH非依存性・薬剤性",
+    detail: "カルシウム製剤や炭酸カルシウム（制酸薬）の大量摂取により、高Ca血症・代謝性アルカローシス・腎機能障害の三徴を呈する。近年はビタミンD併用のCaサプリメントによる症例も増加。PTHは抑制される。",
+    workup: "Ca製剤・制酸薬の使用量確認、血液ガス（代謝性アルカローシス）、腎機能"
+  },
+  thyrotoxicosis: {
+    name: "甲状腺機能亢進症",
+    emoji: "🦋",
+    category: "PTH非依存性・内分泌",
+    detail: "甲状腺ホルモン過剰により骨吸収が亢進し、高Ca血症を生じうる。通常は軽度。バセドウ病や甲状腺クリーゼで顕在化しやすい。頻脈、体重減少、振戦、発汗過多などの甲状腺中毒症状を伴う。",
+    workup: "TSH、FT3、FT4、甲状腺自己抗体（TRAb）"
+  },
+  adrenal_insufficiency: {
+    name: "副腎不全",
+    emoji: "⚡",
+    category: "PTH非依存性・内分泌",
+    detail: "副腎不全では糸球体濾過量低下と腎でのCa再吸収増加により高Ca血症を生じうる。通常は軽度で、副腎クリーゼでより顕著。低血圧、倦怠感、色素沈着、低Na・高K血症を伴うことが多い。グルココルチコイド補充で速やかに改善。",
+    workup: "早朝コルチゾール、ACTH、ACTH負荷試験、電解質（Na・K）"
+  },
+  immobilization: {
+    name: "長期臥床・不動化",
+    emoji: "🛏️",
+    category: "PTH非依存性",
+    detail: "長期の不動化では骨形成が抑制される一方で骨吸収が持続し、高Ca血症を生じる。脊髄損傷、重症脳卒中後、股関節骨折後などでみられる。骨代謝回転が高い若年者や、Paget病の背景があると高度になりやすい。PTH抑制。原因不明の高Ca血症で見落としやすい。",
+    workup: "臥床期間の確認、骨代謝マーカー（ALP、P1NP、TRACP-5b）、離床計画の検討"
+  }
+};
+
+var STEPS = [
+  {
+    id: "severity",
+    title: "症状・重症度",
+    question: "高カルシウム血症の症状・重症度は？",
+    hint: "Ca値の重症度目安：軽度<12、中等度12-14、高度>14 mg/dL",
+    type: "single",
+    options: [
+      { label: "無症候（健診・偶然発見）", value: "asymptomatic", icon: "🔍" },
+      { label: "軽度症状（便秘、口渇、多尿、倦怠感）", value: "mild", icon: "😐" },
+      { label: "中等度（悪心・嘔吐、筋力低下、脱水）", value: "moderate", icon: "😣" },
+      { label: "重度（意識障害、せん妄、腎障害、不整脈）", value: "severe", icon: "🚨" }
+    ]
+  },
+  {
+    id: "onset",
+    title: "発症経過",
+    question: "高カルシウム血症の発症経過は？",
+    hint: "慢性はPHPT/FHH、急性は悪性腫瘍を示唆",
+    type: "single",
+    options: [
+      { label: "慢性・緩徐（数ヶ月〜年単位で持続）", value: "chronic", icon: "📅" },
+      { label: "亜急性（数週間で進行）", value: "subacute", icon: "📆" },
+      { label: "急性（数日以内に発症・増悪）", value: "acute", icon: "⚡" },
+      { label: "不明", value: "unknown", icon: "🤔" }
+    ]
+  },
+  {
+    id: "pth",
+    title: "intact PTH 値",
+    question: "intact PTH の結果は？",
+    hint: "高Ca血症でPTHが正常は\u300C異常に正常\u300D＝PTH依存性を示唆",
+    type: "single",
+    options: [
+      { label: "高値（基準上限を超える）", value: "high", icon: "⬆️" },
+      { label: "正常範囲内（抑制されていない）", value: "normal_unsuppressed", icon: "➡️" },
+      { label: "低値（しっかり抑制されている）", value: "suppressed", icon: "⬇️" },
+      { label: "未測定", value: "unknown", icon: "🤔" }
+    ]
+  },
+  {
+    id: "urine_ca",
+    title: "尿中カルシウム・CCCR",
+    question: "24時間尿カルシウム・CCCRの結果は？",
+    hint: "CCCR = (尿Ca/血清Ca) / (尿Cr/血清Cr)。CKD・VitD不足・サイアザイド・リチウムは解釈を乱す",
+    type: "single",
+    options: [
+      { label: "CCCR < 0.01（低カルシウム尿）", value: "very_low", icon: "⬇️" },
+      { label: "CCCR 0.01〜0.02（境界域）", value: "borderline", icon: "↔️" },
+      { label: "CCCR > 0.02（高カルシウム尿）", value: "high", icon: "⬆️" },
+      { label: "24時間尿Ca > 400 mg/日", value: "very_high", icon: "🔺" },
+      { label: "未検査 / 不明", value: "unknown", icon: "🤔" }
+    ]
+  },
+  {
+    id: "vitd_pthrp",
+    title: "ビタミンD・PTHrP",
+    question: "ビタミンD・PTHrP関連の検査結果は？",
+    hint: "PTHrP高値→悪性腫瘍、25(OH)D高値→VitD中毒、1,25(OH)2D高値→肉芽腫/リンパ腫",
+    type: "single",
+    options: [
+      { label: "PTHrP 高値", value: "pthrp_high", icon: "🔬" },
+      { label: "25(OH)D 高値（>80 ng/mL）", value: "25ohd_high", icon: "☀️" },
+      { label: "1,25(OH)2D 高値", value: "125ohd_high", icon: "🫁" },
+      { label: "いずれも正常 / 低値", value: "all_normal", icon: "✅" },
+      { label: "未検査 / 不明", value: "unknown", icon: "🤔" }
+    ]
+  },
+  {
+    id: "history",
+    title: "背景疾患・病歴（該当するものをすべて選択）",
+    question: "以下の背景疾患・病歴で該当するものは？",
+    type: "multi",
+    options: [
+      { label: "悪性腫瘍の既往または疑い", value: "malignancy" },
+      { label: "長期CKD / 透析歴", value: "ckd_dialysis" },
+      { label: "腎移植後", value: "renal_transplant" },
+      { label: "サルコイドーシス / 肉芽腫性疾患", value: "granuloma" },
+      { label: "長期臥床 / 不動化（脊損・脳卒中後等）", value: "immobilization" },
+      { label: "若年から持続する高Ca血症", value: "young_onset" },
+      { label: "家族歴あり（高Ca血症）", value: "family_history" },
+      { label: "体重減少 / 食欲低下", value: "weight_loss" },
+      { label: "骨痛 / 病的骨折", value: "bone_pain" },
+      { label: "腎結石の既往", value: "renal_stones" },
+      { label: "該当なし", value: "none" }
+    ]
+  },
+  {
+    id: "drugs",
+    title: "薬剤・サプリメント（該当するものをすべて選択）",
+    question: "以下の薬剤・サプリメントを使用していますか？",
+    hint: "市販薬やサプリメントも含めて確認",
+    type: "multi",
+    options: [
+      { label: "リチウム", value: "lithium" },
+      { label: "サイアザイド系利尿薬", value: "thiazide" },
+      { label: "カルシウム製剤（大量）/ 炭酸カルシウム", value: "calcium_supplement" },
+      { label: "ビタミンD製剤 / サプリメント", value: "vitd_supplement" },
+      { label: "ビタミンA（大量）", value: "vita" },
+      { label: "テオフィリン", value: "theophylline" },
+      { label: "該当薬剤なし", value: "none" }
+    ]
+  }
+];
+
+// ===== スコアリングエンジン =====
+function calcScores(answers) {
+  var scores = {};
+  Object.keys(DISEASES).forEach(function(k) { scores[k] = 0; });
+
+  // Step 1: 症状・重症度
+  var severity = answers.severity;
+  if (severity === "asymptomatic") {
+    scores.phpt += 3;
+    scores.fhh += 3;
+    scores.thiazide += 2;
+    scores.malignancy_pthrp -= 2;
+    scores.malignancy_bone -= 2;
+  } else if (severity === "mild") {
+    scores.phpt += 2;
+    scores.fhh += 1;
+    scores.thyrotoxicosis += 1;
+  } else if (severity === "moderate") {
+    scores.malignancy_pthrp += 2;
+    scores.malignancy_bone += 2;
+    scores.vitd_intox += 1;
+    scores.fhh -= 2;
+  } else if (severity === "severe") {
+    scores.malignancy_pthrp += 4;
+    scores.malignancy_bone += 3;
+    scores.malignancy_calcitriol += 2;
+    scores.fhh -= 4;
+    scores.thiazide -= 2;
+  }
+
+  // Step 2: 発症経過
+  var onset = answers.onset;
+  if (onset === "chronic") {
+    scores.phpt += 4;
+    scores.fhh += 5;
+    scores.thiazide += 2;
+    scores.malignancy_pthrp -= 3;
+    scores.malignancy_bone -= 2;
+  } else if (onset === "subacute") {
+    scores.malignancy_pthrp += 2;
+    scores.malignancy_bone += 2;
+    scores.granulomatous += 1;
+    scores.vitd_intox += 1;
+  } else if (onset === "acute") {
+    scores.malignancy_pthrp += 4;
+    scores.malignancy_bone += 3;
+    scores.malignancy_calcitriol += 2;
+    scores.immobilization += 2;
+    scores.phpt -= 2;
+    scores.fhh -= 4;
+  }
+
+  // Step 3: PTH値（最重要分岐）
+  var pth = answers.pth;
+  if (pth === "high") {
+    scores.phpt += 6;
+    scores.fhh += 4;
+    scores.tertiary_hpt += 5;
+    scores.lithium += 4;
+    // PTH非依存性は大幅減点
+    scores.malignancy_pthrp -= 5;
+    scores.malignancy_bone -= 5;
+    scores.malignancy_calcitriol -= 5;
+    scores.vitd_intox -= 5;
+    scores.granulomatous -= 5;
+    scores.thyrotoxicosis -= 5;
+    scores.adrenal_insufficiency -= 5;
+    scores.immobilization -= 5;
+    scores.milk_alkali -= 5;
+  } else if (pth === "normal_unsuppressed") {
+    scores.phpt += 5;
+    scores.fhh += 5;
+    scores.lithium += 3;
+    scores.malignancy_pthrp -= 4;
+    scores.malignancy_bone -= 4;
+    scores.malignancy_calcitriol -= 4;
+    scores.vitd_intox -= 4;
+    scores.granulomatous -= 4;
+    scores.thyrotoxicosis -= 4;
+    scores.adrenal_insufficiency -= 4;
+    scores.immobilization -= 4;
+  } else if (pth === "suppressed") {
+    scores.malignancy_pthrp += 4;
+    scores.malignancy_bone += 4;
+    scores.malignancy_calcitriol += 4;
+    scores.vitd_intox += 4;
+    scores.granulomatous += 4;
+    scores.thyrotoxicosis += 3;
+    scores.adrenal_insufficiency += 3;
+    scores.immobilization += 3;
+    scores.thiazide += 2;
+    scores.milk_alkali += 3;
+    // PTH依存性は大幅減点
+    scores.phpt -= 6;
+    scores.fhh -= 6;
+    scores.tertiary_hpt -= 6;
+    scores.lithium -= 4;
+  }
+
+  // Step 4: 尿中Ca・CCCR
+  var urineCa = answers.urine_ca;
+  if (urineCa === "very_low") {
+    scores.fhh += 6;
+    scores.phpt -= 2;
+  } else if (urineCa === "borderline") {
+    scores.fhh += 3;
+    scores.phpt += 1;
+  } else if (urineCa === "high") {
+    scores.phpt += 4;
+    scores.fhh -= 3;
+  } else if (urineCa === "very_high") {
+    scores.phpt += 5;
+    scores.fhh -= 4;
+    scores.immobilization += 2;
+  }
+
+  // Step 5: ビタミンD・PTHrP
+  var vitd = answers.vitd_pthrp;
+  if (vitd === "pthrp_high") {
+    scores.malignancy_pthrp += 8;
+    scores.malignancy_bone -= 2;
+    scores.granulomatous -= 3;
+    scores.vitd_intox -= 3;
+  } else if (vitd === "25ohd_high") {
+    scores.vitd_intox += 8;
+    scores.malignancy_pthrp -= 3;
+    scores.granulomatous -= 2;
+  } else if (vitd === "125ohd_high") {
+    scores.granulomatous += 6;
+    scores.malignancy_calcitriol += 6;
+    scores.vitd_intox -= 2;
+    scores.malignancy_pthrp -= 2;
+  } else if (vitd === "all_normal") {
+    scores.malignancy_bone += 2;
+    scores.thyrotoxicosis += 2;
+    scores.adrenal_insufficiency += 2;
+    scores.immobilization += 2;
+    scores.thiazide += 1;
+    scores.milk_alkali += 1;
+    scores.vitd_intox -= 4;
+    scores.granulomatous -= 2;
+    scores.malignancy_calcitriol -= 3;
+  }
+
+  // Step 6: 背景疾患・病歴
+  var hx = answers.history || [];
+  hx.forEach(function(v) {
+    if (v === "malignancy") {
+      scores.malignancy_pthrp += 5;
+      scores.malignancy_bone += 5;
+      scores.malignancy_calcitriol += 3;
+    }
+    if (v === "ckd_dialysis") {
+      scores.tertiary_hpt += 6;
+    }
+    if (v === "renal_transplant") {
+      scores.tertiary_hpt += 5;
+      scores.phpt += 1;
+    }
+    if (v === "granuloma") {
+      scores.granulomatous += 6;
+    }
+    if (v === "immobilization") {
+      scores.immobilization += 6;
+    }
+    if (v === "young_onset") {
+      scores.fhh += 4;
+      scores.phpt += 1;
+    }
+    if (v === "family_history") {
+      scores.fhh += 5;
+    }
+    if (v === "weight_loss") {
+      scores.malignancy_pthrp += 3;
+      scores.malignancy_bone += 3;
+      scores.malignancy_calcitriol += 2;
+      scores.adrenal_insufficiency += 2;
+    }
+    if (v === "bone_pain") {
+      scores.malignancy_bone += 4;
+      scores.phpt += 1;
+    }
+    if (v === "renal_stones") {
+      scores.phpt += 3;
+    }
+  });
+
+  // Step 7: 薬剤・サプリメント
+  var drugs = answers.drugs || [];
+  drugs.forEach(function(v) {
+    if (v === "lithium") {
+      scores.lithium += 6;
+    }
+    if (v === "thiazide") {
+      scores.thiazide += 5;
+      scores.phpt += 1;
+    }
+    if (v === "calcium_supplement") {
+      scores.milk_alkali += 6;
+    }
+    if (v === "vitd_supplement") {
+      scores.vitd_intox += 5;
+    }
+    if (v === "vita") {
+      scores.vitd_intox += 2;
+    }
+    if (v === "theophylline") {
+      scores.thiazide += 1;
+    }
+  });
+
+  return scores;
+}
+
+function rankDiseases(scores) {
+  return Object.entries(scores)
+    .map(function(entry) {
+      var key = entry[0];
+      var score = entry[1];
+      var d = DISEASES[key];
+      return { key: key, score: score, name: d.name, emoji: d.emoji, category: d.category, detail: d.detail, workup: d.workup };
+    })
+    .filter(function(d) { return d.score > 0; })
+    .sort(function(a, b) { return b.score - a.score; });
+}
+
+function getProbLevel(score, maxScore) {
+  var ratio = score / Math.max(maxScore, 1);
+  if (ratio >= 0.7) return { level: "high", label: "可能性 高" };
+  if (ratio >= 0.35) return { level: "medium", label: "可能性 中" };
+  return { level: "low", label: "可能性 低" };
+}
+
+// ===== UIレンダリング =====
+var currentStep = 0;
+var answers = {};
+
+function render() {
+  var app = document.getElementById("app");
+  var html = "";
+
+  // アルゴリズムノート
+  html += '<div class="algo-note">';
+  html += '<strong>💡 診断アルゴリズム:</strong> ';
+  html += '症状・経過 → <strong>PTH値で二分</strong> → 尿中Ca/CCCR → ビタミンD/PTHrP → 病歴・薬剤で系統的に鑑別します';
+  html += '</div>';
+
+  STEPS.forEach(function(step, i) {
+    var state = i < currentStep ? "completed" : i === currentStep ? "" : "inactive";
+    var numClass = i < currentStep ? "done" : "";
+    html += '<div class="step-card ' + state + '" id="step-' + i + '">';
+    html += '<div class="step-header">';
+    html += '<span class="step-number ' + numClass + '">' + (i < currentStep ? "✓" : i + 1) + '</span>';
+    html += '<span class="step-title">' + step.title + '</span>';
+    html += '</div>';
+
+    if (i <= currentStep) {
+      html += '<div class="step-body">';
+      html += '<p style="font-weight:600; margin-bottom:4px;">' + step.question + '</p>';
+      if (step.hint) html += '<p class="hint">' + step.hint + '</p>';
+
+      if (step.type === "single") {
+        html += '<div class="option-group">';
+        step.options.forEach(function(opt) {
+          var sel = answers[step.id] === opt.value ? "selected" : "";
+          html += '<button class="option-btn ' + sel + '" onclick="selectOption(\'' + step.id + '\', \'' + opt.value + '\', ' + i + ')">';
+          html += '<span class="icon">' + opt.icon + '</span> ' + opt.label;
+          html += '</button>';
+        });
+        html += '</div>';
+      } else {
+        html += '<div class="checklist">';
+        var checked = answers[step.id] || [];
+        step.options.forEach(function(opt) {
+          var isChecked = checked.indexOf(opt.value) >= 0;
+          html += '<div class="check-item" onclick="toggleCheck(\'' + step.id + '\', \'' + opt.value + '\')">';
+          html += '<input type="checkbox" ' + (isChecked ? "checked" : "") + ' tabindex="-1">';
+          html += '<label>' + opt.label + '</label>';
+          html += '</div>';
+        });
+        html += '</div>';
+        if (i === currentStep) {
+          var hasSelection = checked.length > 0;
+          html += '<button class="next-btn" onclick="nextStep(' + i + ')" ' + (hasSelection ? "" : "disabled") + '>';
+          html += '次へ ▶';
+          html += '</button>';
+        }
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+  });
+
+  // 結果表示
+  if (currentStep >= STEPS.length) {
+    var scores = calcScores(answers);
+    var ranked = rankDiseases(scores);
+    var maxScore = ranked.length > 0 ? ranked[0].score : 1;
+
+    html += '<div class="result-panel show">';
+    html += '<div class="result-header">📊 鑑別診断結果</div>';
+    html += '<div class="result-body">';
+    html += '<p style="margin-bottom:14px; color:#555; font-size:0.9em;">入力された臨床情報に基づく鑑別疾患の優先度です。確定診断には追加検査が必要です。</p>';
+
+    ranked.forEach(function(d) {
+      var prob = getProbLevel(d.score, maxScore);
+      html += '<div class="dx-card ' + prob.level + '">';
+      html += '<div class="dx-name">';
+      html += d.emoji + ' ' + d.name;
+      html += ' <span class="prob-badge">' + prob.label + '</span>';
+      html += '</div>';
+      html += '<div class="dx-detail">' + d.detail + '</div>';
+      html += '<div class="dx-workup">🔍 <strong>追加検査:</strong> ' + d.workup + '</div>';
+      html += '</div>';
+    });
+
+    html += '<div class="divider"></div>';
+    html += '<p style="font-size:0.82em; color:#888; line-height:1.6;">';
+    html += '⚠️ 本ツールは臨床判断の補助を目的としており、確定診断を行うものではありません。<br>';
+    html += '高Ca血症の場面で「PTH正常」は"異常に正常"であり、PHPTやFHHを除外できません。<br>';
+    html += '副甲状腺画像は診断ではなく手術計画のための局在診断です。<br>';
+    html += '実臨床では総合的な臨床判断が必要です。';
+    html += '</p>';
+    html += '</div></div>';
+  }
+
+  html += '<button class="reset-btn" onclick="resetAll()">🔄 最初からやり直す</button>';
+  app.innerHTML = html;
+
+  if (currentStep < STEPS.length) {
+    var el = document.getElementById("step-" + currentStep);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+  } else {
+    var panel = document.querySelector(".result-panel");
+    if (panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+function selectOption(stepId, value, stepIndex) {
+  answers[stepId] = value;
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function toggleCheck(stepId, value) {
+  if (!answers[stepId]) answers[stepId] = [];
+  var arr = answers[stepId];
+  var idx = arr.indexOf(value);
+
+  if (value === "none" || value === "unknown") {
+    answers[stepId] = idx >= 0 ? [] : [value];
+  } else {
+    var noneIdx = arr.indexOf("none");
+    if (noneIdx >= 0) arr.splice(noneIdx, 1);
+    var unkIdx = arr.indexOf("unknown");
+    if (unkIdx >= 0) arr.splice(unkIdx, 1);
+    if (idx >= 0) arr.splice(idx, 1);
+    else arr.push(value);
+  }
+  render();
+}
+
+function nextStep(stepIndex) {
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function resetAll() {
+  currentStep = 0;
+  Object.keys(answers).forEach(function(k) { delete answers[k]; });
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+render();
+</script>
+</body>
+</html>
