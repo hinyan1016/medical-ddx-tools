@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1B3A5C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>振戦 鑑別診断ツール</title>
+<style>
+  :root {
+    --navy: #1B3A5C;
+    --blue: #2C5AA0;
+    --light-blue: #E8F0FE;
+    --red: #DC3545;
+    --yellow: #F5C518;
+    --green: #28A745;
+    --orange: #E8850C;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(27,58,92,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #E8F0FE 0%, #F4F6F8 100%);
+    color: #222;
+    min-height: 100vh;
+    padding: 0 0 40px;
+  }
+  header {
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    padding: 14px 20px 18px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(27,58,92,0.18);
+  }
+  .back-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .back-bar a {
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    font-size: 0.85em;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background 0.2s;
+  }
+  .back-bar a:active { background: rgba(255,255,255,0.15); }
+  header h1 { font-size: 1.7em; font-weight: 700; letter-spacing: 0.04em; }
+  header p { font-size: 0.92em; margin-top: 6px; opacity: 0.85; }
+
+  .container { max-width: 820px; margin: 0 auto; padding: 24px 16px; }
+
+  .step-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+    overflow: hidden;
+    transition: opacity 0.3s;
+  }
+  .step-card.inactive { opacity: 0.45; pointer-events: none; }
+  .step-card.completed { opacity: 1; }
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    background: var(--light-blue);
+    border-bottom: 2px solid var(--blue);
+    cursor: pointer;
+  }
+  .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--blue);
+    color: var(--white);
+    font-weight: 700;
+    font-size: 0.95em;
+    flex-shrink: 0;
+  }
+  .step-number.done { background: var(--green); }
+  .step-title { font-weight: 700; font-size: 1.05em; color: var(--navy); }
+  .step-body { padding: 18px; }
+
+  .option-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border: 2px solid #D0D8E4;
+    border-radius: 8px;
+    background: var(--white);
+    font-size: 0.97em;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: left;
+    color: #222;
+    font-family: inherit;
+    width: 100%;
+  }
+  .option-btn:hover { border-color: var(--blue); background: var(--light-blue); }
+  .option-btn.selected {
+    border-color: var(--blue);
+    background: var(--light-blue);
+    font-weight: 700;
+  }
+  .option-btn .icon { font-size: 1.2em; flex-shrink: 0; width: 24px; text-align: center; }
+
+  .checklist { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--light-gray);
+    cursor: pointer;
+    transition: background 0.15s;
+    user-select: none;
+    font-size: 0.95em;
+  }
+  .check-item:hover { background: #E0E8F0; }
+  .check-item input[type="checkbox"] {
+    width: 18px; height: 18px;
+    accent-color: var(--blue);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .check-item label { cursor: pointer; flex: 1; }
+
+  .result-panel {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(27,58,92,0.15);
+    overflow: hidden;
+    margin-top: 24px;
+    display: none;
+  }
+  .result-panel.show { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  .result-header {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    font-weight: 700;
+    font-size: 1.15em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .result-body { padding: 20px; }
+
+  .dx-card {
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    position: relative;
+    transition: all 0.2s;
+  }
+  .dx-card.high { border-color: var(--red); background: #FFF5F5; }
+  .dx-card.medium { border-color: var(--orange); background: #FFF8F0; }
+  .dx-card.low { border-color: var(--gray); background: var(--light-gray); }
+
+  .dx-card .dx-name {
+    font-weight: 700;
+    font-size: 1.08em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .dx-card .prob-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.78em;
+    font-weight: 700;
+    color: var(--white);
+  }
+  .dx-card.high .prob-badge { background: var(--red); }
+  .dx-card.medium .prob-badge { background: var(--orange); }
+  .dx-card.low .prob-badge { background: var(--gray); }
+
+  .dx-card .dx-detail { font-size: 0.9em; color: #444; line-height: 1.6; }
+  .dx-card .dx-detail strong { color: var(--navy); }
+  .dx-card .dx-workup {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #ccc;
+    font-size: 0.88em;
+    color: var(--blue);
+  }
+
+  .next-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    padding: 10px 22px;
+    background: var(--blue);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: inherit;
+  }
+  .next-btn:hover { background: var(--navy); }
+  .next-btn:disabled { background: #B0BEC5; cursor: not-allowed; }
+
+  .reset-btn {
+    display: block;
+    margin: 24px auto 0;
+    padding: 10px 32px;
+    background: var(--white);
+    color: var(--red);
+    border: 2px solid var(--red);
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .reset-btn:hover { background: var(--red); color: var(--white); }
+
+  .hint {
+    font-size: 0.85em;
+    color: var(--gray);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  .divider { height: 1px; background: #D0D8E4; margin: 14px 0; }
+
+  .algo-note {
+    background: #FFFDE7;
+    border-left: 4px solid var(--yellow);
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 18px;
+    font-size: 0.9em;
+    line-height: 1.6;
+    color: #555;
+  }
+  .algo-note strong { color: var(--navy); }
+
+  @media (max-width: 600px) {
+    header { padding: 12px 14px 14px; }
+    header h1 { font-size: 1.25em; }
+    header p { font-size: 0.85em; }
+    .container { padding: 14px 10px; }
+    .step-header { padding: 12px 14px; }
+    .option-btn { min-height: 44px; font-size: 0.92em; -webkit-tap-highlight-color: transparent; }
+    .step-card { margin-bottom: 14px; }
+    .step-body, .result-body { padding: 14px; }
+    .dx-card { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="back-bar"><a href="index.html">&#8249; ツール一覧</a></div>
+  <h1>振戦 鑑別診断ツール</h1>
+  <p>振戦の型・随伴所見・薬剤歴から系統的に鑑別</p>
+</header>
+
+<div class="container" id="app"></div>
+
+<script>
+// ===== データ定義 =====
+var DISEASES = {
+  essential_tremor: {
+    name: "本態性振戦",
+    emoji: "\uD83E\uDD32",
+    category: "動作時振戦",
+    detail: "最も多い振戦。両側性の姿勢時・動作時振戦で、3年以上持続し他の神経徴候を伴わない。家族歴が多い（常染色体優性遺伝パターン）。頭部振戦や声の震えを伴うこともある。アルコールで一時的に改善するのが特徴的。4-12Hzの中間周波数。",
+    workup: "臨床診断が基本。DATスキャン（パーキンソン病との鑑別時）、甲状腺機能（増強された生理的振戦の除外）、薬剤歴の確認"
+  },
+  et_plus: {
+    name: "本態性振戦プラス",
+    emoji: "\u2795",
+    category: "動作時振戦",
+    detail: "本態性振戦に加え、軽微な神経所見（tandem歩行障害、軽度の認知機能低下、安静時振戦の混在など）を伴う。2018年MDS分類で新設されたカテゴリー。典型的な本態性振戦とパーキンソン病の中間的な位置づけ。経過観察が重要。",
+    workup: "DATスキャン（パーキンソン病との鑑別）、認知機能検査、tandem歩行評価、経時的フォロー"
+  },
+  parkinson: {
+    name: "パーキンソン病",
+    emoji: "\uD83E\uDDE0",
+    category: "安静時振戦",
+    detail: "安静時振戦（pill-rolling tremor）が典型で、4-6Hz。片側発症から両側へ進行する。動作緩慢（bradykinesia）・筋固縮（rigidity）・姿勢反射障害を伴う。Re-emergent tremor（姿勢保持数秒後に再出現する振戦）も特徴的。DATスキャンで線条体の取り込み低下。",
+    workup: "DATスキャン、頭部MRI（二次性パーキンソニズムの除外）、MIBG心筋シンチグラフィ、嗅覚検査"
+  },
+  dystonic_tremor: {
+    name: "ジストニア振戦",
+    emoji: "\uD83D\uDD04",
+    category: "不規則振戦",
+    detail: "不規則でカクつく振戦。左右差が強い。Sensory trick（感覚トリック）やnull point（振戦が消失する特定の肢位）が特徴的。特定の姿勢・動作で悪化し、異常姿勢を伴う。Task-specific tremor（書字振戦など）もジストニア振戦の一型。",
+    workup: "臨床診断が主体。DATスキャン（パーキンソン病との鑑別）、頭部MRI、Wilson病の除外（若年者）、遺伝子検査（DYT遺伝子、若年者）"
+  },
+  cerebellar_tremor: {
+    name: "小脳性振戦（企図振戦）",
+    emoji: "\uD83C\uDFAF",
+    category: "企図振戦",
+    detail: "目標に向かう動作の終盤で増強する企図振戦が特徴。低頻度（<5Hz）で大振幅。測定障害（dysmetria）・協調運動障害・体幹失調を伴う。多発性硬化症、脳卒中、腫瘍、変性疾患などが原因。",
+    workup: "頭部MRI（小脳・脳幹病変の検索）、脊髄液検査（MSの場合）、抗GAD抗体、傍腫瘍性抗体、ビタミンE・B12"
+  },
+  holmes_tremor: {
+    name: "Holmes振戦",
+    emoji: "\uD83C\uDFE5",
+    category: "複合型振戦",
+    detail: "安静時＋姿勢時＋企図時の三要素を持つ振戦。低頻度（<4.5Hz）で大振幅。中脳・視床の病変（脳卒中、外傷など）後に数週〜数ヶ月遅れて発症する。ドパミン系・小脳系・赤核系の複合的障害による。治療抵抗性のことが多い。",
+    workup: "頭部MRI（中脳・視床病変）、DATスキャン、脳血管障害の精査"
+  },
+  enhanced_physiologic: {
+    name: "増強された生理的振戦",
+    emoji: "\u26A1",
+    category: "姿勢時振戦",
+    detail: "健常者にもある微小な生理的振戦が増強されたもの。高頻度（8-12Hz）で細かい両側性の姿勢時振戦。不安、カフェイン、甲状腺機能亢進、低血糖、薬剤（気管支拡張薬、バルプロ酸など）、離脱症状などが原因。原因除去で改善する可逆的な振戦。",
+    workup: "甲状腺機能（TSH, FT4）、血糖、電解質、薬剤歴確認、カフェイン摂取量"
+  },
+  drug_induced: {
+    name: "薬剤性振戦",
+    emoji: "\uD83D\uDC8A",
+    category: "薬剤性",
+    detail: "バルプロ酸、リチウム、アミオダロン、SSRI/SNRI、ドパミン遮断薬（抗精神病薬・制吐薬）などで生じる。姿勢時・動作時振戦が多いが、ドパミン遮断薬ではパーキンソニズム様の安静時振戦も起こりうる。原因薬の減量・中止で改善。",
+    workup: "詳細な薬剤歴の確認、原因薬の減量・変更後の経過観察、DATスキャン（ドパミン遮断薬使用時のPD鑑別）"
+  },
+  psychogenic: {
+    name: "心因性振戦（機能性振戦）",
+    emoji: "\uD83E\uDDE9",
+    category: "機能性",
+    detail: "突然発症で、振戦の頻度・振幅・分布が変動する。Distraction（注意転換）で消失・軽減し、Entrainment（対側の随意運動のリズムに同期する）が陽性。Co-activation sign（主動筋と拮抗筋の同時収縮）もみられる。心理的ストレスとの関連。",
+    workup: "Distraction test、Entrainment test、表面筋電図、精神医学的評価、他の器質的疾患の除外"
+  },
+  wilson: {
+    name: "Wilson病",
+    emoji: "\uD83E\uDD8B",
+    category: "代謝性",
+    detail: "銅代謝異常による常染色体劣性遺伝疾患。若年発症（5-40歳）。Wing-beating tremor（翼を打つような大振幅の姿勢時振戦）が特徴的だが、あらゆる型の振戦をとりうる。肝障害（肝硬変、急性肝不全）を伴う。Kayser-Fleischer ring（角膜輪）。血清セルロプラスミン低下。早期診断・治療が重要。",
+    workup: "血清セルロプラスミン、血清銅、24時間尿中銅、細隙灯顕微鏡（KF ring）、肝機能、頭部MRI、肝生検（必要時）、ATP7B遺伝子検査"
+  },
+  neuropathic_tremor: {
+    name: "ニューロパチー性振戦",
+    emoji: "\uD83D\uDD0C",
+    category: "末梢性",
+    detail: "末梢神経障害に伴う振戦。CIDP（慢性炎症性脱髄性多発神経炎）、IgM MGUS関連ニューロパチー、CMT（Charcot-Marie-Tooth病）などでみられる。姿勢時・動作時振戦が主体。感覚障害・深部腱反射低下を伴う。IgM-MGUS関連では抗MAG抗体が関与。",
+    workup: "神経伝導検査・筋電図、血清蛋白電気泳動（SPEP）、免疫固定法、抗MAG抗体、抗GM1抗体、腰椎穿刺（蛋白上昇）"
+  },
+  orthostatic_tremor: {
+    name: "起立性振戦",
+    emoji: "\uD83E\uDDCD",
+    category: "特殊型",
+    detail: "立位で下肢に高頻度（13-18Hz）の振戦が生じ、座位・臥位で消失する。患者は立位での不安定感・ふらつきを訴えるが、振戦は肉眼では見えにくく触診や表面筋電図で確認する。歩行中は軽減する。表面筋電図での13-18Hzのバーストが確定診断。",
+    workup: "表面筋電図（立位での13-18Hz burst）、神経伝導検査、頭部MRI（二次性の除外）"
+  },
+  palatal_tremor: {
+    name: "口蓋振戦",
+    emoji: "\uD83D\uDC45",
+    category: "特殊型",
+    detail: "口蓋（軟口蓋）の律動的な不随意運動（1-3Hz）。症候性（下オリーブ核肥大を伴う、脳幹・小脳病変後に遅発）と本態性（下オリーブ核肥大なし、耳鳴りが主訴）に分類される。症候性では眼振や小脳失調を伴うことがある。睡眠中も持続するのが特徴。",
+    workup: "頭部MRI（下オリーブ核肥大、Guillain-Mollaret三角の病変）、口蓋の視診、耳鼻咽喉科的評価"
+  }
+};
+
+var STEPS = [
+  {
+    id: "vibration_timing",
+    title: "振戦のタイミング",
+    question: "振戦が出るタイミングは？",
+    hint: "安静時振戦→パーキンソン病、姿勢時→本態性振戦、企図時→小脳性が基本パターン",
+    type: "single",
+    options: [
+      { label: "安静時に目立つ", value: "rest", icon: "\uD83D\uDECB\uFE0F" },
+      { label: "姿勢保持時に目立つ", value: "postural", icon: "\u270B" },
+      { label: "動作時（特に目標到達時）に目立つ", value: "intention", icon: "\uD83C\uDFAF" },
+      { label: "安静時＋姿勢時＋動作時すべてで出る", value: "combined", icon: "\uD83D\uDD04" },
+      { label: "立位でのみ下肢に出る", value: "orthostatic", icon: "\uD83E\uDDCD" },
+      { label: "不明・一定しない", value: "variable", icon: "\u2753" }
+    ]
+  },
+  {
+    id: "symmetry",
+    title: "振戦の左右差・分布",
+    question: "振戦の左右差・分布は？",
+    hint: "両側対称→本態性振戦・生理的振戦、片側優位→パーキンソン病・ジストニア",
+    type: "single",
+    options: [
+      { label: "両側対称性", value: "bilateral", icon: "\u2194\uFE0F" },
+      { label: "片側優位（一側が明らかに強い）", value: "unilateral", icon: "\u27A1\uFE0F" },
+      { label: "限局性（手、頭、声など特定部位）", value: "focal", icon: "\uD83D\uDCCD" },
+      { label: "全身性", value: "generalized", icon: "\uD83C\uDF10" },
+      { label: "変動する（部位が変わる）", value: "variable", icon: "\uD83D\uDD00" }
+    ]
+  },
+  {
+    id: "rhythm",
+    title: "リズム・性状",
+    question: "振戦のリズム・性状は？",
+    hint: "規則的→本態性・パーキンソン、不規則→ジストニア、高頻度・細かい→生理的・薬剤性",
+    type: "single",
+    options: [
+      { label: "規則的・一定のリズム", value: "regular", icon: "\uD83C\uDFB5" },
+      { label: "不規則・カクつく", value: "irregular", icon: "\u2B61" },
+      { label: "大振幅・粗大", value: "large_amplitude", icon: "\uD83C\uDF0A" },
+      { label: "高頻度・細かい", value: "fine_high_freq", icon: "\u2728" },
+      { label: "一定しない（時に消える）", value: "inconsistent", icon: "\uD83D\uDCA8" }
+    ]
+  },
+  {
+    id: "associated_signs",
+    title: "随伴する神経学的所見",
+    question: "随伴する神経学的所見は？（該当するものをすべて選択）",
+    hint: "随伴所見は鑑別の重要な手がかり。複数該当する場合はすべて選択してください",
+    type: "multi",
+    options: [
+      { label: "動作緩慢（bradykinesia）", value: "bradykinesia" },
+      { label: "筋固縮（rigidity）", value: "rigidity" },
+      { label: "姿勢反射障害", value: "postural_instability" },
+      { label: "異常姿勢・ジストニア", value: "dystonia" },
+      { label: "Sensory trick / null point", value: "sensory_trick" },
+      { label: "小脳性運動失調（測定障害・協調障害）", value: "cerebellar_ataxia" },
+      { label: "感覚障害・深部腱反射低下", value: "neuropathy" },
+      { label: "認知機能低下", value: "cognitive" },
+      { label: "KF ring / 肝障害", value: "kf_liver" },
+      { label: "口蓋の律動的運動", value: "palatal" },
+      { label: "該当なし", value: "none" }
+    ]
+  },
+  {
+    id: "special_features",
+    title: "特殊な所見",
+    question: "以下の特殊な所見はありますか？（該当するものをすべて選択）",
+    hint: "アルコール反応性・re-emergent tremor・entrainmentなどは鑑別に非常に有用",
+    type: "multi",
+    options: [
+      { label: "アルコールで振戦が改善", value: "alcohol_responsive" },
+      { label: "Re-emergent tremor（姿勢保持数秒後に再出現）", value: "re_emergent" },
+      { label: "注意転換（distraction）で消失", value: "distraction" },
+      { label: "Entrainment（対側のリズム同期）", value: "entrainment" },
+      { label: "家族歴あり", value: "family_history" },
+      { label: "書字・楽器など特定動作でのみ出現", value: "task_specific" },
+      { label: "頭部振戦あり", value: "head_tremor" },
+      { label: "声の震え", value: "voice_tremor" },
+      { label: "該当なし", value: "none" }
+    ]
+  },
+  {
+    id: "onset_age",
+    title: "発症年齢・経過",
+    question: "発症年齢・経過は？",
+    hint: "若年→Wilson病・ジストニア、高齢→パーキンソン病・本態性振戦、急性→心因性・薬剤性",
+    type: "single",
+    options: [
+      { label: "10-20代", value: "young", icon: "\uD83E\uDDD2" },
+      { label: "30-50代", value: "middle", icon: "\uD83E\uDDD1" },
+      { label: "60代以上", value: "elderly", icon: "\uD83E\uDDD3" },
+      { label: "急性発症（数日以内）", value: "acute", icon: "\u26A1" },
+      { label: "不明", value: "unknown", icon: "\uD83E\uDD14" }
+    ]
+  },
+  {
+    id: "medications",
+    title: "関連薬剤・背景",
+    question: "以下の薬剤・背景で該当するものは？（該当するものをすべて選択）",
+    hint: "薬剤性振戦は頻度が高く、見落としやすい。すべての内服薬を確認",
+    type: "multi",
+    options: [
+      { label: "バルプロ酸", value: "valproate" },
+      { label: "リチウム", value: "lithium" },
+      { label: "ドパミン遮断薬（抗精神病薬・制吐薬）", value: "dopamine_blocker" },
+      { label: "SSRI / SNRI", value: "ssri" },
+      { label: "アミオダロン", value: "amiodarone" },
+      { label: "\u03B2刺激薬・テオフィリン", value: "bronchodilator" },
+      { label: "甲状腺機能亢進（既知または疑い）", value: "hyperthyroid" },
+      { label: "多発性硬化症の既往", value: "ms" },
+      { label: "脳血管障害の既往", value: "stroke" },
+      { label: "該当なし", value: "none" }
+    ]
+  }
+];
+
+// ===== スコアリングエンジン =====
+function calcScores(answers) {
+  var scores = {};
+  Object.keys(DISEASES).forEach(function(k) { scores[k] = 0; });
+
+  // Step 1: 振戦のタイミング（最重要分岐）
+  var timing = answers.vibration_timing;
+  if (timing === "rest") {
+    scores.parkinson += 5;
+    scores.holmes_tremor += 3;
+    scores.dystonic_tremor += 1;
+  } else if (timing === "postural") {
+    scores.essential_tremor += 5;
+    scores.et_plus += 4;
+    scores.enhanced_physiologic += 4;
+    scores.drug_induced += 3;
+    scores.neuropathic_tremor += 3;
+  } else if (timing === "intention") {
+    scores.cerebellar_tremor += 6;
+    scores.holmes_tremor += 3;
+  } else if (timing === "combined") {
+    scores.holmes_tremor += 6;
+    scores.wilson += 3;
+  } else if (timing === "orthostatic") {
+    scores.orthostatic_tremor += 10;
+  } else if (timing === "variable") {
+    scores.psychogenic += 5;
+  }
+
+  // Step 2: 左右差・分布
+  var symmetry = answers.symmetry;
+  if (symmetry === "bilateral") {
+    scores.essential_tremor += 3;
+    scores.enhanced_physiologic += 3;
+    scores.et_plus += 2;
+    scores.drug_induced += 2;
+  } else if (symmetry === "unilateral") {
+    scores.parkinson += 4;
+    scores.dystonic_tremor += 3;
+    scores.holmes_tremor += 2;
+  } else if (symmetry === "focal") {
+    scores.dystonic_tremor += 3;
+    scores.palatal_tremor += 2;
+    scores.orthostatic_tremor += 1;
+  } else if (symmetry === "generalized") {
+    scores.enhanced_physiologic += 2;
+    scores.wilson += 2;
+    scores.drug_induced += 1;
+  } else if (symmetry === "variable") {
+    scores.psychogenic += 4;
+  }
+
+  // Step 3: リズム・性状
+  var rhythm = answers.rhythm;
+  if (rhythm === "regular") {
+    scores.essential_tremor += 3;
+    scores.parkinson += 2;
+    scores.et_plus += 2;
+    scores.orthostatic_tremor += 2;
+  } else if (rhythm === "irregular") {
+    scores.dystonic_tremor += 4;
+    scores.psychogenic += 2;
+    scores.cerebellar_tremor += 1;
+  } else if (rhythm === "large_amplitude") {
+    scores.holmes_tremor += 4;
+    scores.cerebellar_tremor += 3;
+    scores.wilson += 2;
+  } else if (rhythm === "fine_high_freq") {
+    scores.enhanced_physiologic += 5;
+    scores.drug_induced += 3;
+    scores.orthostatic_tremor += 2;
+  } else if (rhythm === "inconsistent") {
+    scores.psychogenic += 5;
+  }
+
+  // Step 4: 随伴する神経学的所見
+  var signs = answers.associated_signs || [];
+  signs.forEach(function(v) {
+    if (v === "bradykinesia") {
+      scores.parkinson += 6;
+      scores.et_plus += 1;
+      scores.wilson += 1;
+    }
+    if (v === "rigidity") {
+      scores.parkinson += 4;
+      scores.wilson += 1;
+    }
+    if (v === "postural_instability") {
+      scores.parkinson += 2;
+      scores.cerebellar_tremor += 1;
+    }
+    if (v === "dystonia") {
+      scores.dystonic_tremor += 5;
+      scores.wilson += 2;
+    }
+    if (v === "sensory_trick") {
+      scores.dystonic_tremor += 5;
+    }
+    if (v === "cerebellar_ataxia") {
+      scores.cerebellar_tremor += 6;
+      scores.holmes_tremor += 2;
+      scores.wilson += 1;
+    }
+    if (v === "neuropathy") {
+      scores.neuropathic_tremor += 6;
+    }
+    if (v === "cognitive") {
+      scores.parkinson += 1;
+      scores.wilson += 2;
+      scores.et_plus += 1;
+    }
+    if (v === "kf_liver") {
+      scores.wilson += 8;
+    }
+    if (v === "palatal") {
+      scores.palatal_tremor += 10;
+    }
+  });
+
+  // Step 5: 特殊な所見
+  var features = answers.special_features || [];
+  features.forEach(function(v) {
+    if (v === "alcohol_responsive") {
+      scores.essential_tremor += 5;
+      scores.et_plus += 3;
+    }
+    if (v === "re_emergent") {
+      scores.parkinson += 6;
+    }
+    if (v === "distraction") {
+      scores.psychogenic += 6;
+    }
+    if (v === "entrainment") {
+      scores.psychogenic += 6;
+    }
+    if (v === "family_history") {
+      scores.essential_tremor += 3;
+      scores.et_plus += 2;
+      scores.wilson += 2;
+    }
+    if (v === "task_specific") {
+      scores.dystonic_tremor += 4;
+    }
+    if (v === "head_tremor") {
+      scores.essential_tremor += 2;
+      scores.dystonic_tremor += 2;
+      scores.et_plus += 1;
+    }
+    if (v === "voice_tremor") {
+      scores.essential_tremor += 2;
+      scores.dystonic_tremor += 1;
+      scores.et_plus += 1;
+    }
+  });
+
+  // Step 6: 発症年齢・経過
+  var age = answers.onset_age;
+  if (age === "young") {
+    scores.wilson += 4;
+    scores.dystonic_tremor += 2;
+    scores.psychogenic += 1;
+  } else if (age === "middle") {
+    scores.essential_tremor += 2;
+    scores.dystonic_tremor += 2;
+    scores.et_plus += 1;
+  } else if (age === "elderly") {
+    scores.parkinson += 3;
+    scores.essential_tremor += 2;
+    scores.et_plus += 2;
+    scores.neuropathic_tremor += 1;
+  } else if (age === "acute") {
+    scores.psychogenic += 4;
+    scores.drug_induced += 3;
+    scores.enhanced_physiologic += 2;
+  }
+
+  // Step 7: 関連薬剤・背景
+  var meds = answers.medications || [];
+  meds.forEach(function(v) {
+    if (v === "valproate") {
+      scores.drug_induced += 6;
+      scores.enhanced_physiologic += 1;
+    }
+    if (v === "lithium") {
+      scores.drug_induced += 6;
+    }
+    if (v === "dopamine_blocker") {
+      scores.drug_induced += 6;
+      scores.parkinson -= 2;
+    }
+    if (v === "ssri") {
+      scores.drug_induced += 4;
+    }
+    if (v === "amiodarone") {
+      scores.drug_induced += 5;
+    }
+    if (v === "bronchodilator") {
+      scores.enhanced_physiologic += 4;
+    }
+    if (v === "hyperthyroid") {
+      scores.enhanced_physiologic += 6;
+    }
+    if (v === "ms") {
+      scores.cerebellar_tremor += 5;
+      scores.holmes_tremor += 2;
+    }
+    if (v === "stroke") {
+      scores.cerebellar_tremor += 3;
+      scores.holmes_tremor += 4;
+    }
+  });
+
+  return scores;
+}
+
+function rankDiseases(scores) {
+  return Object.entries(scores)
+    .map(function(entry) {
+      var key = entry[0];
+      var score = entry[1];
+      var d = DISEASES[key];
+      return { key: key, score: score, name: d.name, emoji: d.emoji, category: d.category, detail: d.detail, workup: d.workup };
+    })
+    .filter(function(d) { return d.score > 0; })
+    .sort(function(a, b) { return b.score - a.score; });
+}
+
+function getProbLevel(score, maxScore) {
+  var ratio = score / Math.max(maxScore, 1);
+  if (ratio >= 0.7) return { level: "high", label: "\u53EF\u80FD\u6027 \u9AD8" };
+  if (ratio >= 0.35) return { level: "medium", label: "\u53EF\u80FD\u6027 \u4E2D" };
+  return { level: "low", label: "\u53EF\u80FD\u6027 \u4F4E" };
+}
+
+// ===== UIレンダリング =====
+var currentStep = 0;
+var answers = {};
+
+function render() {
+  var app = document.getElementById("app");
+  var html = "";
+
+  // アルゴリズムノート
+  html += '<div class="algo-note">';
+  html += '<strong>\uD83D\uDCA1 \u8A3A\u65AD\u30A2\u30EB\u30B4\u30EA\u30BA\u30E0:</strong> ';
+  html += '\u632F\u6226\u306E\u30BF\u30A4\u30DF\u30F3\u30B0\u30FB\u5206\u5E03 \u2192 <strong>\u30EA\u30BA\u30E0\u30FB\u6027\u72B6</strong> \u2192 \u968F\u4F34\u6240\u898B \u2192 \u7279\u6B8A\u6240\u898B \u2192 \u767A\u75C7\u5E74\u9F62\u30FB\u85AC\u5264\u3067\u7CFB\u7D71\u7684\u306B\u9451\u5225\u3057\u307E\u3059';
+  html += '</div>';
+
+  STEPS.forEach(function(step, i) {
+    var state = i < currentStep ? "completed" : i === currentStep ? "" : "inactive";
+    var numClass = i < currentStep ? "done" : "";
+    html += '<div class="step-card ' + state + '" id="step-' + i + '">';
+    html += '<div class="step-header">';
+    html += '<span class="step-number ' + numClass + '">' + (i < currentStep ? "\u2713" : i + 1) + '</span>';
+    html += '<span class="step-title">' + step.title + '</span>';
+    html += '</div>';
+
+    if (i <= currentStep) {
+      html += '<div class="step-body">';
+      html += '<p style="font-weight:600; margin-bottom:4px;">' + step.question + '</p>';
+      if (step.hint) html += '<p class="hint">' + step.hint + '</p>';
+
+      if (step.type === "single") {
+        html += '<div class="option-group">';
+        step.options.forEach(function(opt) {
+          var sel = answers[step.id] === opt.value ? "selected" : "";
+          html += '<button class="option-btn ' + sel + '" onclick="selectOption(\'' + step.id + '\', \'' + opt.value + '\', ' + i + ')">';
+          html += '<span class="icon">' + opt.icon + '</span> ' + opt.label;
+          html += '</button>';
+        });
+        html += '</div>';
+      } else {
+        html += '<div class="checklist">';
+        var checked = answers[step.id] || [];
+        step.options.forEach(function(opt) {
+          var isChecked = checked.indexOf(opt.value) >= 0;
+          html += '<div class="check-item" onclick="toggleCheck(\'' + step.id + '\', \'' + opt.value + '\')">';
+          html += '<input type="checkbox" ' + (isChecked ? "checked" : "") + ' tabindex="-1">';
+          html += '<label>' + opt.label + '</label>';
+          html += '</div>';
+        });
+        html += '</div>';
+        if (i === currentStep) {
+          var hasSelection = checked.length > 0;
+          html += '<button class="next-btn" onclick="nextStep(' + i + ')" ' + (hasSelection ? "" : "disabled") + '>';
+          html += '\u6B21\u3078 \u25B6';
+          html += '</button>';
+        }
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+  });
+
+  // 結果表示
+  if (currentStep >= STEPS.length) {
+    var scores = calcScores(answers);
+    var ranked = rankDiseases(scores);
+    var maxScore = ranked.length > 0 ? ranked[0].score : 1;
+
+    html += '<div class="result-panel show">';
+    html += '<div class="result-header">\uD83D\uDCCA \u9451\u5225\u8A3A\u65AD\u7D50\u679C</div>';
+    html += '<div class="result-body">';
+    html += '<p style="margin-bottom:14px; color:#555; font-size:0.9em;">\u5165\u529B\u3055\u308C\u305F\u81E8\u5E8A\u60C5\u5831\u306B\u57FA\u3065\u304F\u9451\u5225\u75BE\u60A3\u306E\u512A\u5148\u5EA6\u3067\u3059\u3002\u78BA\u5B9A\u8A3A\u65AD\u306B\u306F\u8FFD\u52A0\u691C\u67FB\u304C\u5FC5\u8981\u3067\u3059\u3002</p>';
+
+    ranked.forEach(function(d) {
+      var prob = getProbLevel(d.score, maxScore);
+      html += '<div class="dx-card ' + prob.level + '">';
+      html += '<div class="dx-name">';
+      html += d.emoji + ' ' + d.name;
+      html += ' <span class="prob-badge">' + prob.label + '</span>';
+      html += '</div>';
+      html += '<div class="dx-detail">' + d.detail + '</div>';
+      html += '<div class="dx-workup">\uD83D\uDD0D <strong>\u8FFD\u52A0\u691C\u67FB:</strong> ' + d.workup + '</div>';
+      html += '</div>';
+    });
+
+    html += '<div class="divider"></div>';
+    html += '<p style="font-size:0.82em; color:#888; line-height:1.6;">';
+    html += '\u26A0\uFE0F \u672C\u30C4\u30FC\u30EB\u306F\u81E8\u5E8A\u5224\u65AD\u306E\u88DC\u52A9\u3092\u76EE\u7684\u3068\u3057\u3066\u304A\u308A\u3001\u78BA\u5B9A\u8A3A\u65AD\u3092\u884C\u3046\u3082\u306E\u3067\u306F\u3042\u308A\u307E\u305B\u3093\u3002<br>';
+    html += '2018\u5E74MDS\u5206\u985E\u306B\u57FA\u3065\u304D\u3001\u632F\u6226\u306E\u30BF\u30A4\u30DF\u30F3\u30B0\u30FB\u968F\u4F34\u6240\u898B\u30FB\u7279\u6B8A\u6240\u898B\u3092\u7DCF\u5408\u7684\u306B\u8A55\u4FA1\u3057\u3066\u304F\u3060\u3055\u3044\u3002<br>';
+    html += 'DAT\u30B9\u30AD\u30E3\u30F3\u306F\u30D1\u30FC\u30AD\u30F3\u30BD\u30F3\u75C5\u3068\u672C\u614B\u6027\u632F\u6226\u306E\u9451\u5225\u306B\u6709\u7528\u3067\u3059\u3002<br>';
+    html += '\u5B9F\u81E8\u5E8A\u3067\u306F\u7DCF\u5408\u7684\u306A\u81E8\u5E8A\u5224\u65AD\u304C\u5FC5\u8981\u3067\u3059\u3002';
+    html += '</p>';
+    html += '</div></div>';
+  }
+
+  html += '<button class="reset-btn" onclick="resetAll()">\uD83D\uDD04 \u6700\u521D\u304B\u3089\u3084\u308A\u76F4\u3059</button>';
+  app.innerHTML = html;
+
+  if (currentStep < STEPS.length) {
+    var el = document.getElementById("step-" + currentStep);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+  } else {
+    var panel = document.querySelector(".result-panel");
+    if (panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+function selectOption(stepId, value, stepIndex) {
+  answers[stepId] = value;
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function toggleCheck(stepId, value) {
+  if (!answers[stepId]) answers[stepId] = [];
+  var arr = answers[stepId];
+  var idx = arr.indexOf(value);
+
+  if (value === "none" || value === "unknown") {
+    answers[stepId] = idx >= 0 ? [] : [value];
+  } else {
+    var noneIdx = arr.indexOf("none");
+    if (noneIdx >= 0) arr.splice(noneIdx, 1);
+    var unkIdx = arr.indexOf("unknown");
+    if (unkIdx >= 0) arr.splice(unkIdx, 1);
+    if (idx >= 0) arr.splice(idx, 1);
+    else arr.push(value);
+  }
+  render();
+}
+
+function nextStep(stepIndex) {
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function resetAll() {
+  currentStep = 0;
+  Object.keys(answers).forEach(function(k) { delete answers[k]; });
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+render();
+</script>
+</body>
+</html>
