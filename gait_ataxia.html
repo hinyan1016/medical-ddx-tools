@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A5276">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>歩行障害・協調運動障害 鑑別診断ツール</title>
+<style>
+  :root {
+    --navy: #1A5276;
+    --blue: #2E86C1;
+    --light-blue: #EAF2F8;
+    --red: #DC3545;
+    --yellow: #F5C518;
+    --green: #28A745;
+    --orange: #E8850C;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(26,82,118,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #EAF2F8 0%, #F4F6F8 100%);
+    color: #222;
+    min-height: 100vh;
+    padding: 0 0 40px;
+  }
+  header {
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    padding: 14px 20px 18px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(26,82,118,0.18);
+  }
+  .back-bar { display: flex; align-items: center; margin-bottom: 8px; }
+  .back-bar a {
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    font-size: 0.85em;
+    display: flex; align-items: center; gap: 4px;
+    padding: 4px 8px; border-radius: 6px;
+    transition: background 0.2s;
+  }
+  .back-bar a:active { background: rgba(255,255,255,0.15); }
+  header h1 { font-size: 1.6em; font-weight: 700; letter-spacing: 0.03em; }
+  header p { font-size: 0.9em; margin-top: 6px; opacity: 0.85; }
+
+  .container { max-width: 820px; margin: 0 auto; padding: 24px 16px; }
+
+  .step-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+    overflow: hidden;
+    transition: opacity 0.3s;
+  }
+  .step-card.inactive { opacity: 0.45; pointer-events: none; }
+  .step-card.completed { opacity: 1; }
+  .step-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 18px;
+    background: var(--light-blue);
+    border-bottom: 2px solid var(--blue);
+    cursor: pointer;
+  }
+  .step-number {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--blue); color: var(--white);
+    font-weight: 700; font-size: 0.95em; flex-shrink: 0;
+  }
+  .step-number.done { background: var(--green); }
+  .step-title { font-weight: 700; font-size: 1.05em; color: var(--navy); }
+  .step-body { padding: 18px; }
+
+  .option-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .option-btn {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 16px;
+    border: 2px solid #D0D8E4; border-radius: 8px;
+    background: var(--white); font-size: 0.97em;
+    cursor: pointer; transition: all 0.18s;
+    text-align: left; color: #222; font-family: inherit; width: 100%;
+  }
+  .option-btn:hover { border-color: var(--blue); background: var(--light-blue); }
+  .option-btn.selected { border-color: var(--blue); background: var(--light-blue); font-weight: 700; }
+  .option-btn .icon { font-size: 1.2em; flex-shrink: 0; width: 24px; text-align: center; }
+
+  .checklist { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .check-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; border-radius: 8px;
+    background: var(--light-gray); cursor: pointer;
+    transition: background 0.15s; user-select: none; font-size: 0.95em;
+  }
+  .check-item:hover { background: #DAE8F5; }
+  .check-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--blue); flex-shrink: 0; cursor: pointer; }
+  .check-item label { cursor: pointer; flex: 1; }
+
+  .result-panel {
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(26,82,118,0.15);
+    overflow: hidden; margin-top: 24px; display: none;
+  }
+  .result-panel.show { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  .result-header {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white); font-weight: 700; font-size: 1.15em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .result-body { padding: 20px; }
+
+  .dx-card {
+    border: 2px solid transparent; border-radius: 8px;
+    padding: 16px; margin-bottom: 12px;
+    position: relative; transition: all 0.2s;
+  }
+  .dx-card.high { border-color: var(--red); background: #FFF5F5; }
+  .dx-card.medium { border-color: var(--orange); background: #FFF8F0; }
+  .dx-card.low { border-color: var(--gray); background: var(--light-gray); }
+
+  .dx-card .dx-name {
+    font-weight: 700; font-size: 1.08em;
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 6px; flex-wrap: wrap;
+  }
+  .dx-card .prob-badge {
+    display: inline-block; padding: 2px 10px; border-radius: 12px;
+    font-size: 0.78em; font-weight: 700; color: var(--white);
+  }
+  .dx-card.high .prob-badge { background: var(--red); }
+  .dx-card.medium .prob-badge { background: var(--orange); }
+  .dx-card.low .prob-badge { background: var(--gray); }
+
+  .dx-card .dx-detail { font-size: 0.9em; color: #444; line-height: 1.65; }
+  .dx-card .dx-detail strong { color: var(--navy); }
+  .dx-card .dx-workup {
+    margin-top: 8px; padding-top: 8px;
+    border-top: 1px dashed #ccc;
+    font-size: 0.88em; color: var(--blue);
+  }
+  .dx-card .dx-keys {
+    margin-top: 6px; padding: 8px 10px;
+    background: rgba(46,134,193,0.07); border-radius: 6px;
+    font-size: 0.86em; color: #555;
+  }
+
+  .next-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 14px; padding: 10px 22px;
+    background: var(--blue); color: var(--white);
+    border: none; border-radius: 8px;
+    font-size: 0.95em; font-weight: 600;
+    cursor: pointer; transition: background 0.15s; font-family: inherit;
+  }
+  .next-btn:hover { background: var(--navy); }
+  .next-btn:disabled { background: #B0BEC5; cursor: not-allowed; }
+
+  .reset-btn {
+    display: block; margin: 24px auto 0;
+    padding: 10px 32px;
+    background: var(--white); color: var(--red);
+    border: 2px solid var(--red); border-radius: 8px;
+    font-size: 0.95em; font-weight: 600;
+    cursor: pointer; font-family: inherit; transition: all 0.15s;
+  }
+  .reset-btn:hover { background: var(--red); color: var(--white); }
+
+  .hint { font-size: 0.85em; color: var(--gray); margin-top: 6px; line-height: 1.5; }
+
+  .algo-note {
+    background: #FFFDE7; border-left: 4px solid var(--yellow);
+    padding: 12px 16px; border-radius: 0 8px 8px 0;
+    margin-bottom: 18px; font-size: 0.9em; line-height: 1.6; color: #555;
+  }
+  .algo-note strong { color: var(--navy); }
+
+  .alert-box {
+    background: #FFF3CD; border: 2px solid var(--orange);
+    border-radius: 8px; padding: 14px 16px;
+    margin-bottom: 16px; font-size: 0.92em; line-height: 1.6;
+  }
+  .alert-box.danger { background: #F8D7DA; border-color: var(--red); }
+  .alert-box .alert-title {
+    font-weight: 700; color: var(--red); margin-bottom: 4px;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .category-label {
+    display: inline-block; padding: 3px 10px; border-radius: 12px;
+    font-size: 0.78em; font-weight: 700; margin-bottom: 8px;
+  }
+  .cat-vascular   { background: #FCE4EC; color: #B71C1C; }
+  .cat-degeneration { background: #FFF3E0; color: #BF360C; }
+  .cat-treatable  { background: #E8F5E9; color: #1B5E20; }
+  .cat-sensory    { background: #E3F2FD; color: #0D47A1; }
+  .cat-vestibular { background: #E0F2F1; color: #004D40; }
+  .cat-parkinsonism { background: #EDE7F6; color: #4A148C; }
+  .cat-hydrocephalus { background: #F3E5F5; color: #6A1B9A; }
+  .cat-spinal     { background: #E8EAF6; color: #1A237E; }
+  .cat-peripheral { background: #F1F8E9; color: #33691E; }
+  .cat-functional { background: #FFF8E1; color: #827717; }
+
+  .summary-box {
+    background: var(--light-blue); border-radius: 8px;
+    padding: 14px 16px; margin-bottom: 16px;
+    font-size: 0.92em; line-height: 1.6;
+  }
+  .summary-box .summary-title { font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+
+  .red-flag-box {
+    background: #F8D7DA; border: 2px solid var(--red);
+    border-radius: 8px; padding: 14px 16px; margin-top: 16px;
+    font-size: 0.9em; line-height: 1.6;
+  }
+  .red-flag-box .rf-title {
+    font-weight: 700; color: var(--red); margin-bottom: 6px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .red-flag-box ul { padding-left: 20px; margin-top: 4px; }
+  .red-flag-box li { margin-bottom: 4px; }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.25em; }
+    .step-body, .result-body { padding: 14px; }
+    .dx-card { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="back-bar"><a href="index.html">&#8249; ツール一覧</a></div>
+  <h1>歩行障害・協調運動障害 鑑別診断ツール</h1>
+  <p>歩容・視覚依存性・四肢所見・随伴症状から局在を絞る</p>
+</header>
+
+<div class="container" id="app"></div>
+
+<script>
+// ===== 疾患データ =====
+var DISEASES = {
+
+  acute_cerebellar_vascular: {
+    name: "急性小脳・脳幹血管障害",
+    emoji: "🚨",
+    category: "血管性／緊急",
+    catClass: "cat-vascular",
+    detail: "小脳梗塞・小脳出血・脳幹梗塞による<strong>急性発症の歩行失調</strong>。体幹失調（座位保持困難・立位保持不能）が前景で、眼振・構音障害・眼球運動障害を伴う。<strong>めまい・頭痛が唯一の症状のこともあり過小評価されやすい</strong>。HINTS中枢性所見（頭部衝動試験正常・方向交代性眼振・skew deviation）や重度の体幹失調があれば強く疑う。初期DWIは偽陰性がありうる（感度約80%）。",
+    keys: ["急性発症（分〜時間）", "座位保持困難・立位保持不能レベルの体幹失調", "HINTS中枢性所見", "眼振・構音障害・複視", "脳血管リスク因子あり"],
+    workup: "頭部MRI（DWI含む）を緊急施行。HINTS評価（AVS文脈で有用）。頭部CTは小脳病変の除外には不十分。脳神経内科・脳卒中科緊急紹介"
+  },
+
+  chronic_cerebellar: {
+    name: "慢性小脳失調（SCA・変性疾患）",
+    emoji: "🌀",
+    category: "変性／遺伝性",
+    catClass: "cat-degeneration",
+    detail: "脊髄小脳変性症（SCA1/2/3/6/7等）、sporadic小脳皮質萎縮、MSA-Cなど。<strong>開眼時からすでに広基性で不安定</strong>で、タンデム歩行・旋回での悪化、四肢dysmetria・adiadochokinesis、断綴性構音障害（スキャン話し）、gaze-evoked眼振・smooth pursuit障害が組み合わさる。虫部障害では体幹失調が前景、半球障害では同側四肢失調が前景。<strong>感覚性失調との重要な違いは開眼時からすでに不安定な点</strong>。",
+    keys: ["慢性進行性（月〜年）", "開眼時から広基性不安定", "四肢失調（dysmetria・adiadochokinesis）", "断綴性構音障害・眼振", "家族歴あり（遺伝性SCA）"],
+    workup: "頭部MRI（小脳萎縮・白質病変）。遺伝子検査（SCA1/2/3/6/7等）。神経伝導検査。眼球運動精密評価。神経内科紹介"
+  },
+
+  treatable_ataxia: {
+    name: "治療可能な失調（栄養・免疫・薬剤性）",
+    emoji: "💊",
+    category: "代謝／免疫／薬剤性",
+    catClass: "cat-treatable",
+    detail: "見逃してはならないカテゴリー。<strong>VitB12欠乏（亜急性連合性脊髄変性症）・脂質補正VitE欠乏（AVED）・グルテン失調（抗tTG6抗体）・抗GAD65抗体関連失調・傍腫瘍性失調・薬剤性失調（フェニトイン・カルバマゼピン・リチウム・ベンゾジアゼピン等）</strong>が代表。進行速度が速い、薬剤使用歴・栄養障害・自己免疫疾患がある、アルコール多飲歴がある場合は積極的に検索。<strong>アルコール歴があっても「アルコール性」で片づけず</strong>治療可能な原因を除外する。",
+    keys: ["亜急性〜慢性進行", "薬剤使用歴・栄養障害・アルコール多飲", "急速進行（週〜月単位）", "自己免疫疾患・腫瘍の合併", "B12/VitE低値・抗GAD抗体陽性"],
+    workup: "血清VitB12・MMA・homocysteine。脂質補正VitE。抗GAD65抗体（高力価≥2000 IU/mL）。抗tTG6抗体。傍腫瘍性抗体パネル。薬剤歴見直し・血中濃度。腫瘍検索（CT・PET）。髄液検査"
+  },
+
+  sensory_ataxia: {
+    name: "感覚性失調",
+    emoji: "🦶",
+    category: "後索／末梢神経",
+    catClass: "cat-sensory",
+    detail: "深部感覚（振動覚・関節位置覚）障害による失調。患者は足元を見たがり、足をやや高く上げて強く踏みつけるように歩く（<strong>踏みつけ歩行</strong>）。<strong>感覚性Romberg陽性（閉眼で著明悪化）、暗所での破綻</strong>が診断の核心。<strong>開眼時からすでに不安定な小脳失調との重要な違いは、視覚で代償して歩けている点</strong>。原因：VitB12欠乏（後索障害）、CIDP、感覚神経節障害（ニューロノパチー：シェーグレン・傍腫瘍性）、遺伝性感覚性ニューロパチー（HSN）など。",
+    keys: ["感覚性Romberg陽性", "振動覚・関節位置覚の低下", "閉眼・暗所で著明に悪化", "踏みつけ歩行・視覚代償が強い", "四肢の小脳徴候は軽度"],
+    workup: "神経伝導検査・針筋電図。血清VitB12・MMA・homocysteine。抗核抗体・SS-A（シェーグレン）。傍腫瘍性抗体。免疫電気泳動。頚髄・胸髄MRI"
+  },
+
+  vestibular_ataxia: {
+    name: "前庭性失調（両側前庭障害・CANVAS）",
+    emoji: "🌊",
+    category: "前庭系",
+    catClass: "cat-vestibular",
+    detail: "両側前庭機能低下による失調。座位・臥位では比較的保たれているが、立位・歩行で不安定が前景化し、<strong>暗所・不整地・頭部運動で著明に悪化</strong>。特徴的なのは<strong>oscillopsia（歩くと景色が揺れる・文字がぶれる）</strong>。CANVAS（小脳失調＋感覚ニューロパチー＋両側前庭反射消失）では<strong>RFC1遺伝子のAAGGG反復配列拡大</strong>（常染色体劣性）が原因で、<strong>乾性咳嗽の先行</strong>が特徴的な手がかり。耳毒性薬剤（ゲンタマイシン等）も重要原因。",
+    keys: ["oscillopsia（歩くと景色が揺れる）", "暗所・不整地・頭部運動で悪化", "乾性咳嗽の先行・感覚ニューロパチー合併（CANVAS）", "vHIT・温度刺激で両側前庭反応低下", "RFC1遺伝子検査で診断"],
+    workup: "vHIT（video Head Impulse Test）。温度刺激試験・回転椅子試験。RFC1遺伝子検査（CANVAS疑い）。神経伝導検査。耳鼻咽喉科・神経耳科紹介"
+  },
+
+  parkinsons: {
+    name: "パーキンソン病",
+    emoji: "🧠",
+    category: "パーキンソニズム",
+    catClass: "cat-parkinsonism",
+    detail: "<strong>狭基性・小刻み・前傾姿勢・腕振り低下・すり足・en bloc旋回</strong>が典型的な歩容。静止時振戦（pill-rolling）・筋強剛・ブラジキネジアが三主徴。<strong>非対称性の発症とlevodopa著効</strong>が重要な特徴。freezing・festinationは狭い通路・方向転換・ドア敷居で出やすい。非運動症状（嗅覚障害・REM睡眠行動障害・便秘）が診断前から先行することがある。診断早期から転倒が目立つ場合はParkinson-plus疾患を再考。",
+    keys: ["狭基性・小刻み・腕振り低下（非対称性）", "静止時振戦・筋強剛", "levodopa著効", "嗅覚障害・REM睡眠行動障害の先行", "診断早期の転倒は少ない"],
+    workup: "DAT-SPECT（線条体ドパミントランスポーター）。levodopa試験（急性負荷試験）。心臓MIBG（自律神経評価）。神経内科紹介"
+  },
+
+  psp: {
+    name: "PSP（進行性核上性麻痺）",
+    emoji: "⬆️",
+    category: "パーキンソニズム／Parkinson-plus",
+    catClass: "cat-parkinsonism",
+    detail: "発症<strong>早期からの後方転倒・姿勢反射障害</strong>が特徴的（PDでは後期まで転倒は少ない）。<strong>垂直性核上性注視麻痺（まず下方注視障害→上方→水平）、square wave jerks</strong>が眼球運動の特徴。体幹は比較的伸展位（retrocollis）。<strong>levodopa反応は乏しい</strong>。頭部MRIで中脳萎縮（hummingbird sign・morning glory sign）。認知機能低下・嚥下障害・構音障害が比較的早期から出現。",
+    keys: ["発症早期からの後方転倒", "垂直性核上性注視麻痺（特に下方）", "Square wave jerks", "中脳萎縮（hummingbird sign）", "levodopa反応乏しい"],
+    workup: "頭部MRI（中脳矢状断：hummingbird sign / morning glory sign）。眼球運動精密評価（垂直追跡・反射性サッカード）。DAT-SPECT。神経内科紹介"
+  },
+
+  msa: {
+    name: "MSA（多系統萎縮症）",
+    emoji: "🔄",
+    category: "パーキンソニズム／Parkinson-plus",
+    catClass: "cat-parkinsonism",
+    detail: "MSA-P（パーキンソン型優位）とMSA-C（小脳型優位）に大別。<strong>顕著な自律神経障害（起立性低血圧・排尿障害・発汗異常・勃起障害）がPDとの最大の鑑別点</strong>。levodopa反応は乏しい（初期に一定反応がある場合もある）。MSA-Cでは小脳性歩行失調・断綴性構音障害・眼振が前景。頭部MRIで橋十字サイン（hot cross bun sign）・小脳萎縮。<strong>吸気性喘鳴・sleep apneaは生命予後に影響するため重要</strong>。",
+    keys: ["顕著な自律神経障害（起立性低血圧・排尿障害）", "levodopa反応乏しい", "MSA-C：小脳性失調・断綴性構音障害", "hot cross bun sign（橋）・小脳萎縮", "吸気性喘鳴"],
+    workup: "頭部MRI（橋・小脳萎縮、hot cross bun sign）。自律神経機能検査（起立試験・膀胱内圧測定）。DAT-SPECT。FDG-PET。神経内科紹介"
+  },
+
+  vascular_parkinsonism: {
+    name: "血管性パーキンソニズム",
+    emoji: "🩸",
+    category: "パーキンソニズム／血管性",
+    catClass: "cat-parkinsonism",
+    detail: "白質病変・ラクナ梗塞による<strong>下半身優位のパーキンソニズム（lower body parkinsonism）</strong>。歩幅短縮・すくみ・姿勢反射障害が前景で、上肢の振戦や腕振り低下は目立たないことが多い。<strong>外的キュー（音楽・視覚ライン）やlevodopa反応が乏しい</strong>。脳血管リスク因子（高血圧・糖尿病・心房細動）を背景に持つことが多い。PDとの最大の違いはMRIでの白質病変・ラクナ梗塞の存在と、levodopa反応の乏しさ。",
+    keys: ["下半身優位・歩行障害が前景", "脳血管リスク因子あり", "levodopa反応乏しい・外的キュー効果乏しい", "MRI白質病変・ラクナ梗塞", "上肢振戦は目立たない"],
+    workup: "頭部MRI（白質病変・ラクナ梗塞の評価）。levodopa試験（反応乏しい）。脳血管リスク管理。DAT-SPECT。神経内科紹介"
+  },
+
+  inph: {
+    name: "iNPH（特発性正常圧水頭症）",
+    emoji: "💧",
+    category: "水頭症",
+    catClass: "cat-hydrocephalus",
+    detail: "<strong>歩行障害・認知機能低下・排尿障害</strong>の三徴（全て揃わない場合も多い）。歩容は<strong>広基性よりのmagnetic gait（足が床に貼り付く感じ）・旋回多歩・小刻み・歩行開始困難</strong>。<strong>座位・臥位では脚が比較的よく動くのに立って歩くと著明に悪化する乖離</strong>が高次歩行障害の核心。頭部MRIで<strong>DESH所見（シルビウス裂・側脳室の不均衡拡大）・Evans index≧0.3</strong>。タップテスト後（30mL以上排除後）の歩行改善が診断的補助となる（感度26〜61%）。",
+    keys: ["Magnetic gait・旋回多歩・歩行開始困難", "臥位では脚が動くのに歩行で著明悪化", "認知機能低下（前頭葉優位）・排尿障害", "DESH所見・Evans index≧0.3", "タップテスト後歩行改善"],
+    workup: "頭部MRI（DESH・Evans index計測）。髄液タップテスト（30mL以上排除）。持続髄液排液試験（感度高）。神経内科・脳神経外科紹介。シャント適応評価"
+  },
+
+  cervical_myelopathy: {
+    name: "頚髄症（変性性頚椎疾患）",
+    emoji: "🦴",
+    category: "脊髄疾患",
+    catClass: "cat-spinal",
+    detail: "頚椎症性脊髄症が代表。<strong>失調様歩行に見えることがあり「小脳性」と誤認されやすい落とし穴</strong>がある。実際には錐体路障害＋後索障害の複合。<strong>手指巧緻運動障害（ボタンかけ困難・字を書けない）・腱反射亢進・Babinski陽性・clonus</strong>があれば頚髄を疑う。四肢・体幹のしびれ・感覚障害（手袋靴下型ではなく体幹まで及ぶ）、<strong>膀胱症状（頻尿・尿閉）</strong>、Lhermitte徴候（頸部前屈で四肢に電撃痛）も重要。広基性失調＋UMN徴候の組み合わせで積極的に疑う。",
+    keys: ["手指巧緻運動障害・ボタンかけ困難", "腱反射亢進・Babinski陽性・clonus", "しびれ・感覚障害（四肢〜体幹）", "膀胱症状・Lhermitte徴候", "失調様歩行＋UMN徴候"],
+    workup: "頚髄MRI（第一優先）。神経伝導検査・MEP（motor evoked potential）。整形外科・脳神経外科紹介。手術適応評価"
+  },
+
+  peripheral_neuropathy: {
+    name: "末梢神経障害（鶏歩・steppage gait）",
+    emoji: "🦿",
+    category: "末梢神経",
+    catClass: "cat-peripheral",
+    detail: "足背屈障害による<strong>鶏歩（steppage gait）</strong>：つま先が床に引っかかるため膝を高く上げて歩く。<strong>両側性ならポリニューロパチー、片側性なら腓骨神経麻痺・L5神経根症</strong>を優先考慮。腱反射低下・末梢型感覚障害・筋萎縮・足変形（弓状足）を合わせると局在が明瞭になる。感覚性Romberg陽性を伴う場合は後索（深部感覚）も障害されている。CMT（Charcot-Marie-Tooth病）は遺伝性ポリニューロパチーの代表で、弓状足・槌趾・遠位萎縮が特徴。",
+    keys: ["足背屈筋力低下・つま先引っかかり", "腱反射低下（特に両側アキレス腱反射）", "末梢型感覚障害（手袋靴下型）", "筋萎縮・足変形（弓状足・槌趾）", "片側性なら腓骨神経・L5を検討"],
+    workup: "神経伝導検査・針筋電図（脱髄型vs軸索型）。腰椎MRI（L5神経根症）。血糖・HbA1c・B12・SPEP・免疫電気泳動。必要時遺伝子検査（CMT: PMP22等）"
+  },
+
+  functional_gait: {
+    name: "機能性歩行障害",
+    emoji: "🔄",
+    category: "機能性神経疾患",
+    catClass: "cat-functional",
+    detail: "<strong>除外診断ではなく陽性徴候で積極的に診断する</strong>べき疾患。典型的な陽性所見：①<strong>大きな体幹動揺のわりに転倒しない</strong>（support-seekingだが実際にはバランスが保たれる）②<strong>後方歩行・走行・二重課題でむしろ改善</strong>（注意が逸れると症状軽減）③所見の<strong>変動性・課題間の不一致</strong>④<strong>Hoover徴候陽性</strong>（意図的股関節伸展の筋力低下が対側屈曲抵抗で正常化）⑤膝折れがゆっくりで外傷になりにくい。器質的疾患との合併もありうる。",
+    keys: ["動揺大きいが転倒しない", "後方歩行・二重課題で改善", "所見の変動性・課題間不一致", "Hoover徴候陽性", "膝折れがゆっくり"],
+    workup: "Hoover徴候・後方歩行・二重課題評価。器質的疾患の必要最低限の除外。精神科・心療内科連携。機能性神経疾患として治療的アプローチ（認知行動療法・運動療法）"
+  }
+};
+
+// ===== ステップ定義 =====
+var STEPS = [
+  {
+    id: "onset",
+    title: "発症・経過",
+    question: "症状の始まりと経過はどのパターンですか？",
+    hint: "発症様式は疾患カテゴリーを大きく絞る最初の軸。急性・亜急性・慢性で鑑別が大きく変わる",
+    type: "single",
+    options: [
+      { label: "急性（分〜時間単位で発症）", value: "acute", icon: "🔴" },
+      { label: "亜急性（数日〜数週間で進行）", value: "subacute", icon: "🟡" },
+      { label: "慢性進行性（数か月〜年単位でゆっくり悪化）", value: "chronic", icon: "🟢" },
+      { label: "エピソード性・発作性（間欠的に繰り返す）", value: "episodic", icon: "🔵" }
+    ]
+  },
+  {
+    id: "gait_pattern",
+    title: "歩容の主な特徴",
+    question: "最も当てはまる歩き方を選んでください",
+    hint: "1つを選ぶ。歩容は局在診断の核心。正確な観察が鑑別の出発点",
+    type: "single",
+    options: [
+      { label: "広基性・不規則・ふらつきが大きい（蛇行・酩酊様）", value: "wide_irregular", icon: "🌀" },
+      { label: "狭基性・小刻み・すり足・腕振り低下", value: "small_step_narrow", icon: "🚶" },
+      { label: "足が床に貼り付く感じ・歩き出し困難・旋回に多くの歩数", value: "magnetic", icon: "🧲" },
+      { label: "つま先が床に引っかかる・膝を高く上げる（鶏歩）", value: "steppage", icon: "🦵" },
+      { label: "脚が突っ張る・円回・鋏脚（痙性）", value: "spastic", icon: "⚡" }
+    ]
+  },
+  {
+    id: "visual_balance",
+    title: "視覚・体位の影響",
+    question: "目を閉じたとき、または体位によって症状はどう変化しますか？",
+    hint: "Romberg試験・暗所歩行・姿勢変換での変化を確認。感覚性vs小脳性vs前庭性の最重要鑑別軸",
+    type: "single",
+    options: [
+      { label: "開眼時からすでに不安定（閉眼でさらに悪化）", value: "open_unstable", icon: "👁️" },
+      { label: "開眼時は比較的保たれ、閉眼・暗所で著明に悪化（Romberg陽性）", value: "close_worse", icon: "🌑" },
+      { label: "頭部運動・不整地で悪化し、景色が揺れる感覚がある（oscillopsia）", value: "head_move", icon: "🌊" },
+      { label: "座位・臥位では問題ないが立位・歩行になると著明に悪化", value: "only_walking", icon: "🪑" },
+      { label: "症状の変動が大きい・後方歩行や二重課題でむしろ改善傾向", value: "variable", icon: "🔄" }
+    ]
+  },
+  {
+    id: "limb_findings",
+    title: "四肢・協調運動の所見",
+    question: "当てはまるものをすべて選んでください（複数選択可）",
+    hint: "四肢の神経学的所見は局在を詰める最重要情報。指鼻指・踵膝試験・反射・感覚を確認",
+    type: "multi",
+    options: [
+      { label: "四肢失調あり（dysmetria・adiadochokinesis・rebound）", value: "limb_ataxia" },
+      { label: "振動覚・関節位置覚の低下（深部感覚障害）", value: "deep_sensory" },
+      { label: "腱反射亢進・Babinski陽性・clonus（UMN徴候）", value: "umn_signs" },
+      { label: "腱反射低下・末梢型感覚障害（LMN徴候）", value: "lmn_signs" },
+      { label: "筋強剛・静止時振戦・ブラジキネジア", value: "rigidity_tremor" },
+      { label: "四肢の協調運動は比較的保たれている", value: "relatively_preserved" }
+    ]
+  },
+  {
+    id: "associated_sx",
+    title: "随伴する症状・所見",
+    question: "当てはまるものをすべて選んでください（複数選択可）",
+    hint: "眼球運動異常・構音障害は局在を絞る重要な補助情報",
+    type: "multi",
+    options: [
+      { label: "眼球運動障害（垂直注視麻痺・gaze-evoked眼振・smooth pursuit障害）", value: "oculomotor" },
+      { label: "構音障害（断綴性・スキャン話し、または不明瞭な構音）", value: "dysarthria" },
+      { label: "認知機能低下・排尿障害（頻尿・尿失禁）", value: "cognitive_bladder" },
+      { label: "自律神経障害（起立性低血圧・排尿障害・発汗異常・勃起障害）", value: "autonomic" },
+      { label: "oscillopsia（歩くと景色が揺れる・文字が読めなくなる）", value: "oscillopsia" },
+      { label: "特に目立った随伴症状はない", value: "none_sx" }
+    ]
+  },
+  {
+    id: "background",
+    title: "経過・背景因子",
+    question: "当てはまるものをすべて選んでください（複数選択可）",
+    hint: "背景因子は鑑別の確率を大きく動かす。薬剤歴・栄養状態・血管リスク・家族歴は必ず確認",
+    type: "multi",
+    options: [
+      { label: "急速進行（週〜月単位で著明に悪化）", value: "rapid_progress" },
+      { label: "薬剤使用歴（抗てんかん薬・ベンゾジアゼピン・リチウム等）またはアルコール多飲", value: "drug_alcohol" },
+      { label: "脳血管リスク因子（高血圧・糖尿病・脂質異常・心房細動）", value: "vascular_risk" },
+      { label: "家族歴あり（類似した神経疾患）", value: "family_history" },
+      { label: "乾性咳嗽の先行・感覚障害の合併（CANVAS手がかり）", value: "canvas_clue" },
+      { label: "特に目立った背景因子はない", value: "none_bg" }
+    ]
+  }
+];
+
+// ===== スコアリングロジック =====
+function calcScores(answers) {
+  var scores = {};
+  var keys = Object.keys(DISEASES);
+  for (var i = 0; i < keys.length; i++) { scores[keys[i]] = 0; }
+
+  var onset   = answers.onset || "";
+  var gait    = answers.gait_pattern || "";
+  var visual  = answers.visual_balance || "";
+  var limb    = answers.limb_findings || [];
+  var assoc   = answers.associated_sx || [];
+  var bg      = answers.background || [];
+
+  // --- 発症・経過 ---
+  if (onset === "acute") {
+    scores.acute_cerebellar_vascular += 6;
+    scores.functional_gait += 1;
+  }
+  if (onset === "subacute") {
+    scores.treatable_ataxia += 4;
+    scores.cervical_myelopathy += 3;
+    scores.vascular_parkinsonism += 3;
+    scores.sensory_ataxia += 3;
+    scores.functional_gait += 2;
+  }
+  if (onset === "chronic") {
+    scores.chronic_cerebellar += 5;
+    scores.sensory_ataxia += 4;
+    scores.vestibular_ataxia += 5;
+    scores.parkinsons += 6;
+    scores.psp += 5;
+    scores.msa += 5;
+    scores.vascular_parkinsonism += 4;
+    scores.inph += 5;
+    scores.cervical_myelopathy += 4;
+    scores.peripheral_neuropathy += 5;
+    scores.functional_gait += 2;
+  }
+  if (onset === "episodic") {
+    scores.vestibular_ataxia += 2;
+    scores.functional_gait += 3;
+  }
+
+  // --- 歩容パターン ---
+  if (gait === "wide_irregular") {
+    scores.acute_cerebellar_vascular += 5;
+    scores.chronic_cerebellar += 5;
+    scores.treatable_ataxia += 4;
+    scores.sensory_ataxia += 4;
+    scores.vestibular_ataxia += 4;
+    scores.cervical_myelopathy += 3;
+    scores.functional_gait += 3;
+  }
+  if (gait === "small_step_narrow") {
+    scores.parkinsons += 6;
+    scores.psp += 5;
+    scores.msa += 5;
+    scores.vascular_parkinsonism += 4;
+  }
+  if (gait === "magnetic") {
+    scores.inph += 7;
+    scores.vascular_parkinsonism += 4;
+    scores.psp += 2;
+    scores.functional_gait += 2;
+  }
+  if (gait === "steppage") {
+    scores.peripheral_neuropathy += 7;
+  }
+  if (gait === "spastic") {
+    scores.cervical_myelopathy += 7;
+  }
+
+  // --- 視覚・体位の影響 ---
+  if (visual === "open_unstable") {
+    scores.acute_cerebellar_vascular += 5;
+    scores.chronic_cerebellar += 5;
+    scores.treatable_ataxia += 4;
+    scores.msa += 3;
+    scores.cervical_myelopathy += 3;
+  }
+  if (visual === "close_worse") {
+    scores.sensory_ataxia += 7;
+    scores.vestibular_ataxia += 4;
+    scores.peripheral_neuropathy += 3;
+  }
+  if (visual === "head_move") {
+    scores.vestibular_ataxia += 7;
+  }
+  if (visual === "only_walking") {
+    scores.inph += 6;
+    scores.vascular_parkinsonism += 5;
+    scores.psp += 4;
+    scores.functional_gait += 5;
+  }
+  if (visual === "variable") {
+    scores.functional_gait += 8;
+  }
+
+  // --- 四肢・協調運動 ---
+  if (limb.indexOf("limb_ataxia") >= 0) {
+    scores.acute_cerebellar_vascular += 5;
+    scores.chronic_cerebellar += 6;
+    scores.treatable_ataxia += 4;
+    scores.msa += 3;
+  }
+  if (limb.indexOf("deep_sensory") >= 0) {
+    scores.sensory_ataxia += 7;
+    scores.vestibular_ataxia += 3;
+    scores.cervical_myelopathy += 3;
+    scores.peripheral_neuropathy += 4;
+  }
+  if (limb.indexOf("umn_signs") >= 0) {
+    scores.cervical_myelopathy += 7;
+    scores.vascular_parkinsonism += 2;
+    scores.acute_cerebellar_vascular += 2;
+  }
+  if (limb.indexOf("lmn_signs") >= 0) {
+    scores.peripheral_neuropathy += 6;
+    scores.sensory_ataxia += 3;
+  }
+  if (limb.indexOf("rigidity_tremor") >= 0) {
+    scores.parkinsons += 7;
+    scores.psp += 5;
+    scores.msa += 6;
+    scores.vascular_parkinsonism += 2;
+  }
+  if (limb.indexOf("relatively_preserved") >= 0) {
+    scores.inph += 4;
+    scores.vestibular_ataxia += 3;
+    scores.functional_gait += 4;
+    scores.psp += 3;
+    scores.vascular_parkinsonism += 3;
+  }
+
+  // --- 随伴症状 ---
+  if (assoc.indexOf("oculomotor") >= 0) {
+    scores.acute_cerebellar_vascular += 5;
+    scores.chronic_cerebellar += 4;
+    scores.psp += 7;
+    scores.msa += 3;
+  }
+  if (assoc.indexOf("dysarthria") >= 0) {
+    scores.acute_cerebellar_vascular += 4;
+    scores.chronic_cerebellar += 4;
+    scores.psp += 4;
+    scores.msa += 5;
+  }
+  if (assoc.indexOf("cognitive_bladder") >= 0) {
+    scores.inph += 7;
+    scores.vascular_parkinsonism += 3;
+    scores.psp += 3;
+  }
+  if (assoc.indexOf("autonomic") >= 0) {
+    scores.msa += 8;
+    scores.parkinsons += 2;
+  }
+  if (assoc.indexOf("oscillopsia") >= 0) {
+    scores.vestibular_ataxia += 8;
+  }
+
+  // --- 背景因子 ---
+  if (bg.indexOf("rapid_progress") >= 0) {
+    scores.treatable_ataxia += 5;
+    scores.psp += 3;
+    scores.msa += 3;
+    scores.acute_cerebellar_vascular += 2;
+  }
+  if (bg.indexOf("drug_alcohol") >= 0) {
+    scores.treatable_ataxia += 6;
+  }
+  if (bg.indexOf("vascular_risk") >= 0) {
+    scores.vascular_parkinsonism += 6;
+    scores.acute_cerebellar_vascular += 5;
+  }
+  if (bg.indexOf("family_history") >= 0) {
+    scores.chronic_cerebellar += 6;
+    scores.peripheral_neuropathy += 4;
+  }
+  if (bg.indexOf("canvas_clue") >= 0) {
+    scores.vestibular_ataxia += 8;
+  }
+
+  return scores;
+}
+
+function rankDiseases(scores) {
+  var arr = [];
+  var keys = Object.keys(scores);
+  for (var i = 0; i < keys.length; i++) {
+    if (scores[keys[i]] > 0) {
+      arr.push({ id: keys[i], score: scores[keys[i]], data: DISEASES[keys[i]] });
+    }
+  }
+  arr.sort(function(a, b) { return b.score - a.score; });
+  return arr;
+}
+
+function getProbLevel(score, maxScore) {
+  var ratio = maxScore > 0 ? score / maxScore : 0;
+  if (ratio >= 0.65) return "high";
+  if (ratio >= 0.38) return "medium";
+  return "low";
+}
+
+function getProbLabel(level) {
+  if (level === "high") return "可能性高";
+  if (level === "medium") return "可能性中";
+  return "参考";
+}
+
+// ===== UI =====
+var answers = {};
+var currentStep = 0;
+
+function render() {
+  var app = document.getElementById("app");
+  var html = "";
+
+  html += '<div class="algo-note">';
+  html += '<strong>使い方：</strong>発症経過 → 歩容パターン → 視覚・体位の影響 → 四肢所見 → 随伴症状 → 背景因子の順に入力し、鑑別候補を絞り込みます。<br>';
+  html += '<strong>注意：</strong>本ツールは診断補助を目的とし、最終診断は臨床的判断に基づいてください。<strong>急性発症の失調・歩行障害では小脳・脳幹血管障害の除外を最優先</strong>に行ってください。';
+  html += '</div>';
+
+  for (var i = 0; i < STEPS.length; i++) {
+    var s = STEPS[i];
+    var state = i < currentStep ? "completed" : (i === currentStep ? "" : "inactive");
+    var numClass = i < currentStep ? "done" : "";
+
+    html += '<div class="step-card ' + state + '" id="step-' + i + '">';
+    html += '<div class="step-header">';
+    html += '<span class="step-number ' + numClass + '">' + (i < currentStep ? "&#10003;" : (i + 1)) + '</span>';
+    html += '<span class="step-title">' + s.title + '</span>';
+    html += '</div>';
+
+    if (i <= currentStep) {
+      html += '<div class="step-body">';
+      html += '<div style="font-size:0.97em;font-weight:600;color:#333;">' + s.question + '</div>';
+      if (s.hint) {
+        html += '<div class="hint">' + s.hint + '</div>';
+      }
+
+      if (s.type === "single") {
+        html += '<div class="option-group">';
+        for (var j = 0; j < s.options.length; j++) {
+          var o = s.options[j];
+          var sel = answers[s.id] === o.value ? " selected" : "";
+          html += '<button class="option-btn' + sel + '" onclick="selectSingle(\'' + s.id + '\',\'' + o.value + '\',' + i + ')">';
+          if (o.icon) html += '<span class="icon">' + o.icon + '</span>';
+          html += o.label;
+          html += '</button>';
+        }
+        html += '</div>';
+      } else {
+        html += '<div class="checklist">';
+        var vals = answers[s.id] || [];
+        for (var j = 0; j < s.options.length; j++) {
+          var o = s.options[j];
+          var chk = vals.indexOf(o.value) >= 0 ? ' checked' : '';
+          html += '<div class="check-item" onclick="toggleCheck(\'' + s.id + '\',\'' + o.value + '\',' + i + ')">';
+          html += '<input type="checkbox"' + chk + ' tabindex="-1">';
+          html += '<label>' + o.label + '</label>';
+          html += '</div>';
+        }
+        html += '</div>';
+        if (i === currentStep) {
+          var hasAny = vals.length > 0;
+          html += '<button class="next-btn" onclick="nextStep(' + i + ')"' + (hasAny ? '' : ' disabled') + '>次へ &#8250;</button>';
+        }
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+
+  // 結果パネル
+  if (currentStep >= STEPS.length) {
+    var scores = calcScores(answers);
+    var ranked = rankDiseases(scores);
+    var maxScore = ranked.length > 0 ? ranked[0].score : 1;
+
+    html += '<div class="result-panel show">';
+    html += '<div class="result-header">&#128202; 鑑別診断リスト</div>';
+    html += '<div class="result-body">';
+
+    // サマリー
+    var onsetLabel = "";
+    if (answers.onset === "acute") onsetLabel = "急性発症（緊急評価が必要）";
+    else if (answers.onset === "subacute") onsetLabel = "亜急性発症";
+    else if (answers.onset === "chronic") onsetLabel = "慢性進行性";
+    else onsetLabel = "エピソード性";
+
+    var gaitLabel = "";
+    if (answers.gait_pattern === "wide_irregular") gaitLabel = "広基性・不規則歩行";
+    else if (answers.gait_pattern === "small_step_narrow") gaitLabel = "小刻み・狭基性歩行";
+    else if (answers.gait_pattern === "magnetic") gaitLabel = "Magnetic gait・歩行開始困難";
+    else if (answers.gait_pattern === "steppage") gaitLabel = "鶏歩（Steppage gait）";
+    else if (answers.gait_pattern === "spastic") gaitLabel = "痙性歩行";
+
+    html += '<div class="summary-box">';
+    html += '<div class="summary-title">&#128204; 臨床パターン</div>';
+    html += '<strong>経過：</strong>' + onsetLabel + '　<strong>歩容：</strong>' + gaitLabel;
+    html += '</div>';
+
+    // 急性発症アラート
+    if (answers.onset === "acute") {
+      html += '<div class="alert-box danger">';
+      html += '<div class="alert-title">&#9888;&#65039; 急性発症：緊急対応が必要</div>';
+      html += '急性失調・歩行障害では<strong>小脳・脳幹血管障害を最優先で除外</strong>してください。<br>';
+      html += '「座位保持困難・立位保持不能レベルの体幹失調」はほぼ中枢性です。<strong>頭部MRI（DWI含む）を緊急施行</strong>してください。頭部CTは小脳病変の除外に不十分です。';
+      html += '</div>';
+    }
+
+    // 疾患カード（上位7件まで表示）
+    var showMax = ranked.length > 7 ? 7 : ranked.length;
+    for (var k = 0; k < showMax; k++) {
+      var r = ranked[k];
+      var lvl = getProbLevel(r.score, maxScore);
+      html += '<div class="dx-card ' + lvl + '">';
+      html += '<span class="category-label ' + r.data.catClass + '">' + r.data.category + '</span>';
+      html += '<div class="dx-name">';
+      html += r.data.emoji + ' ' + r.data.name;
+      html += ' <span class="prob-badge">' + getProbLabel(lvl) + '</span>';
+      html += '</div>';
+      html += '<div class="dx-detail">' + r.data.detail + '</div>';
+      html += '<div class="dx-keys">&#128204; <strong>鑑別のポイント：</strong>' + r.data.keys.join('　/　') + '</div>';
+      html += '<div class="dx-workup">&#128269; <strong>検査・対応：</strong>' + r.data.workup + '</div>';
+      html += '</div>';
+    }
+
+    // ピットフォール
+    html += '<div class="red-flag-box">';
+    html += '<div class="rf-title">&#9888;&#65039; 歩行障害診療の落とし穴</div>';
+    html += '<ul>';
+    html += '<li><strong>広基性歩行＝小脳ではない</strong> ─ 感覚性失調・両側前庭障害・iNPH・前頭葉性歩行障害・機能性も広基性になる</li>';
+    html += '<li><strong>Romberg陽性＝小脳ではない</strong> ─ 閉眼で著明悪化は深部感覚障害か前庭障害。小脳失調は開眼時からすでに不安定</li>';
+    html += '<li><strong>「失調様歩行＋手の不器用さ＋腱反射亢進」は頚髄症を疑う</strong> ─ 頭部MRIだけでなく頚髄MRIを施行</li>';
+    html += '<li><strong>治療可能な失調を見逃さない</strong> ─ 進行性失調でVitB12・VitE・抗GAD・薬剤歴を必ず確認</li>';
+    html += '<li><strong>アルコール歴で検索を止めない</strong> ─ 薬剤・栄養・免疫性原因の検索は必要</li>';
+    html += '<li><strong>機能性歩行障害は陽性所見で診断する</strong> ─ 後方歩行での改善・Hoover徴候・所見変動性を積極的に確認</li>';
+    html += '<li><strong>PSPは発症早期の後方転倒が鍵</strong> ─ 垂直注視麻痺は進行してから出現することがある</li>';
+    html += '</ul>';
+    html += '</div>';
+
+    html += '</div></div>';
+  }
+
+  if (currentStep > 0) {
+    html += '<button class="reset-btn" onclick="resetAll()">&#8635; 最初からやり直す</button>';
+  }
+
+  app.innerHTML = html;
+
+  if (currentStep < STEPS.length) {
+    var el = document.getElementById("step-" + currentStep);
+    if (el) {
+      setTimeout(function() {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 100);
+    }
+  } else {
+    var rp = document.querySelector(".result-panel");
+    if (rp) {
+      setTimeout(function() {
+        rp.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+    }
+  }
+}
+
+function selectSingle(stepId, value, stepIndex) {
+  answers[stepId] = value;
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function toggleCheck(stepId, value, stepIndex) {
+  if (!answers[stepId]) answers[stepId] = [];
+  var arr = answers[stepId];
+  var idx = arr.indexOf(value);
+  var noneValues = ["none_sx", "none_bg"];
+  var isNone = noneValues.indexOf(value) >= 0;
+
+  if (isNone) {
+    answers[stepId] = [value];
+  } else {
+    for (var n = 0; n < noneValues.length; n++) {
+      var ni = arr.indexOf(noneValues[n]);
+      if (ni >= 0) arr.splice(ni, 1);
+    }
+    if (idx >= 0) {
+      arr.splice(idx, 1);
+    } else {
+      arr.push(value);
+    }
+  }
+  render();
+}
+
+function nextStep(stepIndex) {
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function resetAll() {
+  answers = {};
+  currentStep = 0;
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+render();
+</script>
+</body>
+</html>
