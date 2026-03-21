@@ -588,7 +588,7 @@ var STEPS = [
     options: [
       { id: "hepatocellular", label: "肝細胞障害型（R値≧5）", icon: "🟥" },
       { id: "cholestatic", label: "胆汁うっ滞型（R値≦2）", icon: "🟦" },
-      { id: "mixed", label: "混合型（2<R値<5）", icon: "🟪" },
+      { id: "mixed", label: "混合型（2＜R値＜5）", icon: "🟪" },
       { id: "muscle", label: "AST優位＋CK高値（肝外性）", icon: "🟨" }
     ]
   },
@@ -614,7 +614,8 @@ var STEPS = [
     options: [
       { id: "acute", label: "急性（数日〜数週）", icon: "⏱" },
       { id: "subacute", label: "亜急性（数週〜数か月）", icon: "📅" },
-      { id: "chronic", label: "慢性（6か月以上）", icon: "🗓" }
+      { id: "chronic", label: "慢性（6か月以上）", icon: "🗓" },
+      { id: "unknown_duration", label: "不明・判断困難", icon: "❓" }
     ]
   },
   {
@@ -623,10 +624,11 @@ var STEPS = [
     subtitle: "ALT>1000を境に鑑別が急に狭まる",
     type: "single",
     options: [
-      { id: "mild", label: "軽度（<5×ULN）", icon: "🟢" },
+      { id: "mild", label: "軽度（＜5×ULN）", icon: "🟢" },
       { id: "moderate", label: "中等度（5〜15×ULN）", icon: "🟡" },
-      { id: "high", label: "高度（>15×ULN）", icon: "🟠" },
-      { id: "alt_1000", label: "AST/ALT>1000", icon: "🔴" }
+      { id: "high", label: "高度（＞15×ULN）", icon: "🟠" },
+      { id: "alt_1000", label: "AST/ALT＞1000", icon: "🔴" },
+      { id: "unknown_severity", label: "不明・未検査", icon: "❓" }
     ]
   },
   {
@@ -668,7 +670,8 @@ var STEPS = [
       { id: "venous_obstruction", label: "肝静脈流出路閉塞", icon: "🩸" },
       { id: "fatty_liver", label: "脂肪肝所見", icon: "🟡" },
       { id: "mass_stricture", label: "腫瘤 / 胆道狭窄", icon: "⚫" },
-      { id: "mrcp_stricture", label: "MRCP多発狭窄（数珠状）", icon: "🟪" }
+      { id: "mrcp_stricture", label: "MRCP多発狭窄（数珠状）", icon: "🟪" },
+      { id: "no_imaging", label: "特記所見なし / 未施行", icon: "❓" }
     ]
   }
 ];
@@ -956,6 +959,7 @@ function render() {
         }
         html += '</div>';
         if (isActive) {
+          html += '<p style="font-size:0.85em;color:#888;margin:8px 0 4px;text-align:center;">該当がなければ選択せずに「次へ」を押してください</p>';
           html += '<button class="next-btn" onclick="nextStep(' + i + ')">次へ &#9654;</button>';
         }
       }
