@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A5276">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>貧血 鑑別診断ツール</title>
+<style>
+  :root {
+    --navy: #1A5276;
+    --blue: #2E86C1;
+    --light-blue: #E8F4FD;
+    --red: #DC3545;
+    --yellow: #F5C518;
+    --green: #28A745;
+    --orange: #E8850C;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(26,82,118,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #E8F4FD 0%, #F4F6F8 100%);
+    color: #222;
+    min-height: 100vh;
+    padding: 0 0 40px;
+  }
+  header {
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    padding: 28px 20px 22px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(26,82,118,0.18);
+  }
+  .back-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .back-bar a {
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    font-size: 0.85em;
+    padding: 4px 10px;
+    border-radius: 6px;
+    transition: background 0.2s;
+  }
+  .back-bar a:active { background: rgba(255,255,255,0.15); }
+  header h1 { font-size: 1.7em; font-weight: 700; letter-spacing: 0.04em; }
+  header p { font-size: 0.92em; margin-top: 6px; opacity: 0.85; }
+
+  .container { max-width: 820px; margin: 0 auto; padding: 24px 16px; }
+
+  .progress-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .progress-dot {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.82em;
+    font-weight: 700;
+    color: var(--white);
+    background: #B0BEC5;
+    transition: all 0.3s;
+  }
+  .progress-dot.done { background: var(--green); }
+  .progress-dot.active { background: var(--blue); transform: scale(1.15); }
+  .progress-line {
+    width: 20px; height: 3px;
+    background: #D0D8E4;
+    border-radius: 2px;
+  }
+  .progress-line.done { background: var(--green); }
+
+  .step-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+    overflow: hidden;
+    transition: opacity 0.3s;
+  }
+  .step-card.inactive { opacity: 0.45; pointer-events: none; }
+  .step-card.completed { opacity: 1; }
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    background: var(--light-blue);
+    border-bottom: 2px solid var(--blue);
+    cursor: pointer;
+  }
+  .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--blue);
+    color: var(--white);
+    font-weight: 700;
+    font-size: 0.95em;
+    flex-shrink: 0;
+  }
+  .step-number.done { background: var(--green); }
+  .step-title-wrap { flex: 1; }
+  .step-title { font-weight: 700; font-size: 1.05em; color: var(--navy); }
+  .step-subtitle { font-size: 0.82em; color: var(--gray); margin-top: 2px; }
+  .step-body { padding: 18px; }
+
+  .option-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border: 2px solid #D0D8E4;
+    border-radius: 8px;
+    background: var(--white);
+    font-size: 0.97em;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: left;
+    color: #222;
+    font-family: inherit;
+    width: 100%;
+  }
+  .option-btn:hover { border-color: var(--blue); background: var(--light-blue); }
+  .option-btn.selected {
+    border-color: var(--blue);
+    background: var(--light-blue);
+    font-weight: 700;
+  }
+  .option-btn .icon { font-size: 1.2em; flex-shrink: 0; width: 28px; text-align: center; }
+
+  .checklist { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--light-gray);
+    cursor: pointer;
+    transition: background 0.15s;
+    user-select: none;
+    font-size: 0.95em;
+  }
+  .check-item:hover { background: #E0E8F0; }
+  .check-item.checked { background: #D6EAF8; }
+  .check-item input[type="checkbox"] {
+    width: 18px; height: 18px;
+    accent-color: var(--blue);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .check-item label { cursor: pointer; flex: 1; }
+
+  .result-panel {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(26,82,118,0.15);
+    overflow: hidden;
+    margin-top: 24px;
+    display: none;
+  }
+  .result-panel.show { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  .result-header {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    font-weight: 700;
+    font-size: 1.15em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .result-body { padding: 20px; }
+
+  .dx-card {
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    position: relative;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .dx-card.high { border-color: var(--red); background: #FFF5F5; }
+  .dx-card.moderate { border-color: var(--orange); background: #FFF8F0; }
+  .dx-card.low { border-color: #B0BEC5; background: var(--light-gray); }
+  .dx-card.very_low { border-color: #E0E0E0; background: #FAFAFA; }
+
+  .dx-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .dx-name {
+    font-weight: 700;
+    font-size: 1.08em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    min-width: 200px;
+  }
+  .prob-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.78em;
+    font-weight: 700;
+    color: var(--white);
+    flex-shrink: 0;
+  }
+  .dx-card.high .prob-badge { background: var(--red); }
+  .dx-card.moderate .prob-badge { background: var(--orange); }
+  .dx-card.low .prob-badge { background: var(--gray); }
+  .dx-card.very_low .prob-badge { background: #BDBDBD; }
+
+  .category-label {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.78em;
+    font-weight: 700;
+    margin-top: 6px;
+    margin-bottom: 6px;
+  }
+  .cat-microcytic { background: #FDEDEC; color: #C0392B; }
+  .cat-normocytic { background: #FDEBD0; color: #CA6F1E; }
+  .cat-macrocytic { background: #D6EAF8; color: #2471A3; }
+
+  .dx-detail {
+    font-size: 0.9em;
+    color: #444;
+    line-height: 1.6;
+    margin-top: 6px;
+    display: none;
+  }
+  .dx-detail.open { display: block; }
+  .dx-detail strong { color: var(--navy); }
+
+  .dx-workup {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #ccc;
+    font-size: 0.88em;
+    color: var(--blue);
+    display: none;
+  }
+  .dx-workup.open { display: block; }
+
+  .dx-toggle {
+    font-size: 0.82em;
+    color: var(--blue);
+    margin-top: 4px;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  .next-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    padding: 10px 22px;
+    background: var(--blue);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: inherit;
+  }
+  .next-btn:hover { background: var(--navy); }
+  .next-btn:disabled { background: #B0BEC5; cursor: not-allowed; }
+
+  .reset-btn {
+    display: block;
+    margin: 24px auto 0;
+    padding: 10px 32px;
+    background: var(--white);
+    color: var(--red);
+    border: 2px solid var(--red);
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .reset-btn:hover { background: var(--red); color: var(--white); }
+
+  .hint {
+    font-size: 0.85em;
+    color: var(--gray);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  .algo-note {
+    background: #FFFDE7;
+    border-left: 4px solid var(--yellow);
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 18px;
+    font-size: 0.9em;
+    line-height: 1.6;
+    color: #555;
+  }
+  .algo-note strong { color: var(--navy); }
+
+  .alert-box {
+    background: #FFF3CD;
+    border: 2px solid var(--orange);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    font-size: 0.92em;
+    line-height: 1.6;
+  }
+  .alert-box.danger {
+    background: #F8D7DA;
+    border-color: var(--red);
+  }
+  .alert-box .alert-title {
+    font-weight: 700;
+    color: var(--red);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .summary-box {
+    background: var(--light-blue);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    font-size: 0.92em;
+    line-height: 1.6;
+  }
+  .summary-box .summary-title {
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .red-flag-box {
+    background: #F8D7DA;
+    border: 2px solid var(--red);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 16px;
+    font-size: 0.9em;
+    line-height: 1.6;
+  }
+  .red-flag-box .rf-title {
+    font-weight: 700;
+    color: var(--red);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .red-flag-box ul { padding-left: 20px; margin-top: 4px; }
+  .red-flag-box li { margin-bottom: 4px; }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.3em; }
+    .step-body, .result-body { padding: 14px; }
+    .dx-card { padding: 12px; }
+    .progress-dot { width: 26px; height: 26px; font-size: 0.72em; }
+    .progress-line { width: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="back-bar"><a href="index.html">&#8249; ツール一覧</a></div>
+  <h1>貧血 鑑別診断ツール</h1>
+  <p>MCV分類・網状赤血球・鉄代謝・溶血所見から系統的に鑑別</p>
+</header>
+
+<div class="container" id="app"></div>
+
+<script>
+// ===== 疾患データ =====
+var DISEASES = {
+  // 小球性貧血
+  ida: {
+    name: "鉄欠乏性貧血",
+    emoji: "🩸",
+    category: "小球性貧血",
+    catClass: "cat-microcytic",
+    detail: "貧血の最頻原因。<strong>小球性低色素性貧血</strong>で、<strong>フェリチン低値（＜12ng/mL）</strong>が確定的。月経過多、消化管出血（特に中高年男性・閉経後女性では<strong>消化管悪性腫瘍の除外が必須</strong>）が主な原因。TSAT低下、TIBC上昇も参考所見。鉄剤投与2週間で<strong>Hb 1g/dL以上の上昇</strong>があれば診断的治療として確認できる。",
+    workup: "フェリチン、血清鉄、TIBC、TSAT、便潜血、上部/下部内視鏡（出血源検索）"
+  },
+  thalassemia: {
+    name: "サラセミア",
+    emoji: "🧬",
+    category: "小球性貧血",
+    catClass: "cat-microcytic",
+    detail: "遺伝性のグロビン鎖合成異常症。<strong>小球性だがRBC数は保たれる（Mentzer index: MCV/RBC＜13）</strong>ことが鉄欠乏との鑑別点。末梢血塗抹で<strong>target cells</strong>が特徴的。β-サラセミアでは<strong>HbA2上昇（＞3.5%）</strong>がHb分析で確認される。東南アジア・地中海沿岸・中東の民族背景で頻度が高い。軽症型（trait）は治療不要だが遺伝カウンセリングが重要。",
+    workup: "Hb分析（HPLC）、HbA2/HbF定量、Mentzer index（MCV/RBC）、遺伝子検査"
+  },
+  sideroblastic: {
+    name: "鉄芽球性貧血",
+    emoji: "🔬",
+    category: "小球性貧血",
+    catClass: "cat-microcytic",
+    detail: "ヘム合成障害により骨髄で<strong>環状鉄芽球（ringed sideroblasts）</strong>が出現する貧血。先天性（ALAS2変異等）と後天性（MDS-RS、薬剤性）がある。末梢血で<strong>二相性赤血球集団（dimorphic）</strong>、<strong>Pappenheimer bodies</strong>を認めることがある。血清鉄・フェリチンは正常〜上昇し、鉄過剰に注意。先天性ではピリドキシン（B6）が有効な場合がある。",
+    workup: "骨髄検査（鉄染色：環状鉄芽球）、血清鉄、フェリチン、TSAT、遺伝子検査（先天性）"
+  },
+  lead_poisoning: {
+    name: "鉛中毒",
+    emoji: "⚠",
+    category: "小球性貧血",
+    catClass: "cat-microcytic",
+    detail: "鉛の職業曝露（バッテリー工場、塗料、弾丸）や環境曝露（古い水道管、輸入食器）で発症。末梢血塗抹で<strong>塩基性斑点（basophilic stippling）</strong>が特徴的。腹痛、便秘、末梢神経障害（下垂手）、歯肉の鉛線を伴う。<strong>血中鉛濃度</strong>で確定診断（成人：≧25μg/dL で治療考慮）。遊離赤血球プロトポルフィリン（FEP/ZPP）も上昇する。",
+    workup: "血中鉛濃度、遊離赤血球プロトポルフィリン（FEP/ZPP）、尿中コプロポルフィリン、職業・環境曝露歴"
+  },
+  irida: {
+    name: "鉄不応性鉄欠乏性貧血（IRIDA）",
+    emoji: "🔒",
+    category: "小球性貧血",
+    catClass: "cat-microcytic",
+    detail: "TMPRSS6（matriptase-2）遺伝子変異による常染色体劣性遺伝疾患。<strong>ヘプシジン高値</strong>のため腸管からの鉄吸収が障害される。臨床的に鉄欠乏性貧血と同じ所見だが、<strong>経口鉄剤に反応しない</strong>ことが特徴。静注鉄剤への反応も部分的。血清ヘプシジン測定が診断の手がかり。小児期からの難治性IDAで疑う。",
+    workup: "血清ヘプシジン、経口鉄剤不応の確認、TMPRSS6遺伝子検査、家族歴"
+  },
+
+  // 正球性貧血
+  acute_bleeding: {
+    name: "急性出血性貧血",
+    emoji: "🆘",
+    category: "正球性貧血",
+    catClass: "cat-normocytic",
+    detail: "急性の出血（消化管出血、外傷、術後、産科出血等）による貧血。<strong>出血直後はHb低下が見られず、数時間後に血液希釈で顕在化</strong>する。初期はMCV正常だが、回復期に<strong>網状赤血球増加</strong>を認める。バイタルサインの変化（頻脈、血圧低下）が先行することが多い。出血源の同定と止血が治療の根本。",
+    workup: "バイタルサイン評価、出血源検索（内視鏡、CT）、網状赤血球（回復期）、凝固検査"
+  },
+  acd: {
+    name: "慢性炎症/慢性疾患に伴う貧血（ACD/AI）",
+    emoji: "🏥",
+    category: "正球性貧血",
+    catClass: "cat-normocytic",
+    detail: "慢性炎症（RA、SLE等）、慢性感染症、悪性腫瘍に伴う貧血。炎症性サイトカインにより<strong>ヘプシジン上昇→鉄利用障害（機能的鉄欠乏）</strong>が主な機序。<strong>フェリチン正常〜高値（通常＞100ng/mL）、TSAT低下、TIBC低下〜正常</strong>が特徴で、絶対的鉄欠乏（フェリチン低値）との合併も多い。軽〜中等度の正球性貧血が典型だが、長期化すると小球性になることもある。",
+    workup: "フェリチン、TSAT、TIBC、CRP/ESR、基礎疾患の評価、可溶性トランスフェリンレセプター（sTfR）"
+  },
+  ckd_anemia: {
+    name: "腎性貧血",
+    emoji: "🫘",
+    category: "正球性貧血",
+    catClass: "cat-normocytic",
+    detail: "慢性腎臓病（CKD）の進行に伴う貧血。<strong>エリスロポエチン（EPO）産生低下</strong>が主因。通常<strong>eGFR＜45mL/min</strong>で出現し、CKD進行とともに増悪する。正球性正色素性で網状赤血球は低値。赤血球寿命短縮、鉄代謝異常も関与する。ESA（赤血球造血刺激因子製剤）とHIF-PHD阻害薬が治療の柱。鉄欠乏の合併が多く、鉄補充も重要。",
+    workup: "eGFR、Cr、EPO（必要時）、フェリチン、TSAT、網状赤血球"
+  },
+  aiha: {
+    name: "自己免疫性溶血性貧血（AIHA）",
+    emoji: "🔴",
+    category: "正球性貧血",
+    catClass: "cat-normocytic",
+    detail: "自己抗体による赤血球破壊。<strong>DAT（直接Coombs試験）陽性</strong>が診断の決め手。温式AIHA（IgG型、脾での血管外溶血）と冷式AIHA（IgM型、補体介在性血管内溶血）がある。末梢血塗抹で<strong>球状赤血球（spherocytes）</strong>を認める。溶血所見（<strong>LDH上昇、間接ビリルビン上昇、ハプトグロビン低下</strong>）が3徴。SLE、リンパ腫、薬剤が二次性の原因となる。温式にはステロイドが第一選択。",
+    workup: "DAT（直接Coombs試験）、間接Coombs、LDH、間接ビリルビン、ハプトグロビン、網状赤血球、末梢血塗抹"
+  },
+  tma: {
+    name: "血栓性微小血管症（TMA：TTP/HUS）",
+    emoji: "⚡",
+    category: "正球性貧血",
+    catClass: "cat-normocytic",
+    detail: "微小血管内での血栓形成により<strong>破砕赤血球（schistocytes）＋血小板減少＋臓器障害</strong>を呈する緊急疾患。TTPでは<strong>ADAMTS13活性著減（＜10%）</strong>が確定的で、<strong>治療前の採血が必須</strong>。HUSでは志賀毒素産生菌（STEC-HUS）や補体異常（aHUS）が原因。<strong>MAHA＋血小板減少を見たら即座にTMAを疑い、血漿交換の適応を検討</strong>する。",
+    workup: "ADAMTS13活性・インヒビター（治療前採血）、末梢血塗抹（破砕赤血球）、LDH、Cr、便培養（HUS）"
+  },
+  mechanical: {
+    name: "機械的溶血",
+    emoji: "⚙",
+    category: "正球性貧血",
+    catClass: "cat-normocytic",
+    detail: "人工弁、LVAD（左室補助人工心臓）、行軍ヘモグロビン尿症などによる赤血球の物理的破壊。<strong>DAT陰性の溶血性貧血</strong>で<strong>破砕赤血球（schistocytes）</strong>を認める。LDH上昇、ハプトグロビン低下、遊離Hb上昇を伴う。人工弁関連では弁周囲逆流（paravalvular leak）の評価が重要。鉄欠乏（慢性的なヘモグロビン尿による鉄喪失）を合併することがある。",
+    workup: "末梢血塗抹（破砕赤血球）、LDH、ハプトグロビン、DAT（陰性確認）、心エコー（弁機能）"
+  },
+  hereditary_hemolysis: {
+    name: "遺伝性溶血性貧血（HS/G6PD欠損症）",
+    emoji: "🧫",
+    category: "正球性貧血",
+    catClass: "cat-normocytic",
+    detail: "遺伝性球状赤血球症（HS）：赤血球膜蛋白異常により<strong>球状赤血球</strong>が出現、<strong>MCHC上昇</strong>、脾腫を伴う。家族歴が重要。G6PD欠損症：酸化ストレス（感染、ソラマメ、薬剤：ST合剤、ダプソン等）で<strong>急性溶血発作</strong>を起こす。末梢血で<strong>bite cells、Heinz bodies</strong>を認める。アフリカ、地中海、東南アジア系に多い。",
+    workup: "末梢血塗抹（球状赤血球/bite cells）、浸透圧脆弱性試験/EMA結合試験（HS）、G6PD活性（発作間欠期に測定）"
+  },
+  aplastic: {
+    name: "再生不良性貧血（AA）",
+    emoji: "💀",
+    category: "正球性貧血",
+    catClass: "cat-normocytic",
+    detail: "造血幹細胞の減少により<strong>汎血球減少（貧血＋白血球減少＋血小板減少）</strong>を呈する。骨髄は<strong>低形成（cellularity低下）</strong>で脂肪髄に置換。網状赤血球は著減。原因は特発性（免疫介在性）が多く、薬剤、ウイルス（肝炎関連AA）、放射線も原因となる。重症度はCamitta分類で評価。<strong>PNHクローンの合併</strong>を約50%に認める。ATG＋CsAまたは同種造血幹細胞移植が治療。",
+    workup: "骨髄生検（cellularity評価）、網状赤血球、PNHフローサイトメトリー、染色体検査"
+  },
+  pnh: {
+    name: "発作性夜間ヘモグロビン尿症（PNH）",
+    emoji: "🌙",
+    category: "正球性貧血",
+    catClass: "cat-normocytic",
+    detail: "PIGA遺伝子変異によるGPIアンカー蛋白欠損で補体制御不全となり、<strong>補体介在性の血管内溶血</strong>を生じる。<strong>早朝の褐色尿（ヘモグロビン尿）</strong>が典型的だが、全例には見られない。静脈血栓症（特に腹腔内・脳静脈）の合併が多い。<strong>フローサイトメトリーでCD55/CD59欠損クローン</strong>を検出して診断。再生不良性貧血との関連が深い。エクリズマブ等の補体阻害薬が治療。",
+    workup: "PNHフローサイトメトリー（CD55/CD59/FLAER）、LDH、ハプトグロビン、尿中ヘモジデリン、D-dimer"
+  },
+  marrow_infiltration: {
+    name: "骨髄浸潤性疾患",
+    emoji: "🦴",
+    category: "正球性貧血",
+    catClass: "cat-normocytic",
+    detail: "白血病、リンパ腫、多発性骨髄腫、転移性癌、骨髄線維症などが骨髄に浸潤し正常造血を圧排する。末梢血で<strong>白赤芽球症（leukoerythroblastic picture）</strong>：有核赤血球＋幼若顆粒球の出現、<strong>涙滴赤血球（dacrocytes）</strong>が特徴的。骨痛、脾腫、LDH上昇を伴う。<strong>骨髄穿刺でdry tapの場合は骨髄生検</strong>が必須。",
+    workup: "末梢血塗抹（白赤芽球症、涙滴赤血球）、骨髄穿刺・生検、フローサイトメトリー、LDH、蛋白電気泳動"
+  },
+  prca: {
+    name: "赤芽球癆（PRCA）",
+    emoji: "🚫",
+    category: "正球性貧血",
+    catClass: "cat-normocytic",
+    detail: "赤芽球系のみが選択的に障害される疾患。<strong>網状赤血球が極度に低下（＜1%、絶対数＜10,000/μL）</strong>し、白血球・血小板は保たれる。原因は<strong>胸腺腫</strong>（約10-15%に合併）、<strong>パルボウイルスB19</strong>（特に溶血性貧血・免疫不全患者）、自己免疫、T-LGL白血病、薬剤（EPO抗体含む）など。骨髄で<strong>赤芽球系の選択的消失</strong>を確認して診断。",
+    workup: "網状赤血球（極度低下）、骨髄検査（赤芽球系消失）、胸部CT（胸腺腫）、パルボウイルスB19 IgM/PCR"
+  },
+
+  // 大球性貧血
+  b12_deficiency: {
+    name: "ビタミンB12欠乏",
+    emoji: "🧠",
+    category: "大球性貧血",
+    catClass: "cat-macrocytic",
+    detail: "巨赤芽球性貧血の代表的原因。自己免疫性胃炎（悪性貧血）、胃切除後、吸収不良が主因。末梢血で<strong>過分葉好中球（hypersegmented neutrophils：5葉以上≧5%）</strong>、<strong>macro-ovalocytes</strong>が特徴的。<strong>神経症状（亜急性連合性脊髄変性：振動覚低下、深部腱反射異常、歩行障害）</strong>は不可逆となりうるため早期診断が重要。血清B12低値、<strong>MMA（メチルマロン酸）上昇</strong>で確定。",
+    workup: "血清ビタミンB12、MMA（メチルマロン酸）、ホモシステイン、抗内因子抗体、抗胃壁細胞抗体"
+  },
+  folate_deficiency: {
+    name: "葉酸欠乏",
+    emoji: "🥬",
+    category: "大球性貧血",
+    catClass: "cat-macrocytic",
+    detail: "巨赤芽球性貧血のもう一つの原因。<strong>摂取不足（アルコール依存、偏食）、需要増大（妊娠、溶血性貧血）、薬剤（MTX、ST合剤、抗てんかん薬）</strong>が主因。B12欠乏と同様に過分葉好中球・巨赤芽球を認めるが、<strong>神経症状は乏しい</strong>。鑑別には<strong>MMA正常（B12欠乏ではMMA上昇）</strong>が重要。赤血球葉酸が組織レベルの反映として有用。",
+    workup: "赤血球葉酸（血清葉酸は変動大）、MMA（正常＝葉酸欠乏を支持）、ホモシステイン"
+  },
+  alcohol_liver: {
+    name: "アルコール/肝疾患関連大球性貧血",
+    emoji: "🍺",
+    category: "大球性貧血",
+    catClass: "cat-macrocytic",
+    detail: "多量飲酒や慢性肝疾患に伴う<strong>非巨赤芽球性の大球性貧血</strong>。アルコールの直接的な骨髄抑制作用と、肝疾患による脂質代謝異常（赤血球膜へのコレステロール蓄積）が機序。過分葉好中球は認めない。末梢血塗抹で<strong>target cells、stomatocytes</strong>を認めることがある。MCVは通常100-110fL程度。栄養障害による葉酸欠乏の合併も多い。",
+    workup: "飲酒歴、肝機能（AST/ALT比、GGT）、赤血球葉酸、ビタミンB12、末梢血塗抹"
+  },
+  hypothyroidism: {
+    name: "甲状腺機能低下症",
+    emoji: "🦋",
+    category: "大球性貧血",
+    catClass: "cat-macrocytic",
+    detail: "甲状腺ホルモン低下に伴う<strong>軽度の大球性貧血</strong>（MCV 100-110fL程度）。EPO産生低下と赤血球寿命短縮が機序。倦怠感、寒がり、便秘、体重増加、浮腫など甲状腺機能低下の症状を伴う。<strong>TSH上昇、FT4低下</strong>で診断。甲状腺ホルモン補充で貧血も改善する。橋本病（自己免疫性）に伴う悪性貧血の合併にも注意。",
+    workup: "TSH、FT4、抗TPO抗体（橋本病の評価）"
+  },
+  mds: {
+    name: "骨髄異形成症候群（MDS）",
+    emoji: "🔮",
+    category: "大球性貧血",
+    catClass: "cat-macrocytic",
+    detail: "造血幹細胞のクローン性疾患で、<strong>無効造血による血球減少と異形成</strong>が特徴。高齢者に多く、<strong>大球性貧血＋輸血依存性</strong>が典型的な初発症状。骨髄は正〜過形成だが<strong>異形成（核の形態異常、環状鉄芽球等）</strong>を認める。<strong>芽球比率と染色体異常</strong>でIPSS-Rリスク分類を行う。<strong>AML（急性骨髄性白血病）への移行リスク</strong>がある。治療はリスクに応じてESA、レナリドミド（5q-）、アザシチジン、移植を選択。",
+    workup: "骨髄穿刺・生検（異形成・芽球比率）、染色体検査、IPSS-Rスコアリング、末梢血塗抹"
+  }
+};
+
+// ===== ステップ定義 =====
+var STEPS = [
+  {
+    id: "triage",
+    title: "初期トリアージ",
+    subtitle: "いま危ない貧血か（輸血・TTP・出血性ショックを先に拾う）",
+    type: "multi",
+    options: [
+      { id: "hemodynamic_unstable", label: "血行動態不安定（ショック/虚脱）", icon: "🆘" },
+      { id: "symptomatic_anemia", label: "Hb低値＋症候性（胸痛、失神、低酸素）", icon: "🩸" },
+      { id: "maha_suspected", label: "血小板減少＋溶血（MAHA疑い：破砕赤血球）", icon: "⚡" },
+      { id: "neuro_megaloblastic", label: "神経症状＋巨赤芽球性疑い", icon: "🧠" },
+      { id: "stable", label: "上記なし（安定）", icon: "✅" }
+    ]
+  },
+  {
+    id: "mcv",
+    title: "MCV分類",
+    subtitle: "赤血球の大きさで鑑別を大きく分岐",
+    type: "single",
+    options: [
+      { id: "microcytic", label: "小球性（MCV＜80fL）", icon: "🔴" },
+      { id: "normocytic", label: "正球性（MCV 80-100fL）", icon: "🟡" },
+      { id: "macrocytic", label: "大球性（MCV＞100fL）", icon: "🔵" },
+      { id: "dimorphic", label: "MCVは正常だがRDW高い/二相性", icon: "🟣" },
+      { id: "unknown_mcv", label: "不明", icon: "❓" }
+    ]
+  },
+  {
+    id: "reticulocyte",
+    title: "網状赤血球（RI/RPI）",
+    subtitle: "骨髄の赤血球産生能を評価",
+    type: "single",
+    options: [
+      { id: "high_retic", label: "高い（RPI＞3：反応良好＝破壊/出血）", icon: "⬆" },
+      { id: "low_retic", label: "低い（RPI＜2：産生低下）", icon: "⬇" },
+      { id: "unknown_retic", label: "不明（未測定）", icon: "❓" }
+    ]
+  },
+  {
+    id: "hemolysis",
+    title: "溶血所見の有無",
+    subtitle: "LDH・間接Bil・ハプトグロビン・DAT・塗抹で評価",
+    type: "multi",
+    options: [
+      { id: "hemolysis_present", label: "溶血パターンあり（LDH↑/間接Bil↑/ハプトグロビン↓）", icon: "🔬" },
+      { id: "dat_positive", label: "DAT（直接Coombs）陽性", icon: "✅" },
+      { id: "dat_negative_hemolysis", label: "DAT陰性だが溶血あり", icon: "❌" },
+      { id: "schistocytes", label: "破砕赤血球が目立つ", icon: "🪓" },
+      { id: "no_hemolysis", label: "溶血所見なし", icon: "🟢" }
+    ]
+  },
+  {
+    id: "iron",
+    title: "鉄代謝",
+    subtitle: "フェリチン・TSAT・TIBCから鉄欠乏/鉄過剰を判断",
+    type: "multi",
+    options: [
+      { id: "absolute_id", label: "絶対的鉄欠乏（フェリチン低値）", icon: "🔻" },
+      { id: "functional_id", label: "炎症下の鉄欠乏疑い（フェリチン正常でもTSAT低い）", icon: "🔶" },
+      { id: "iron_response", label: "鉄剤反応あり（2週間でHb≧1g/dL上昇）", icon: "✅" },
+      { id: "iron_overload", label: "鉄過剰/フェリチン高値＋血清鉄高め", icon: "⬆" }
+    ]
+  },
+  {
+    id: "smear",
+    title: "末梢血塗抹・他血球",
+    subtitle: "形態学的所見から鑑別を絞り込む",
+    type: "multi",
+    options: [
+      { id: "megaloblastic", label: "過分葉好中球＋macro-ovalocytes", icon: "🔬" },
+      { id: "schistocytes_plt", label: "破砕赤血球＋血小板減少", icon: "🪓" },
+      { id: "spherocytes", label: "球状赤血球", icon: "⚪" },
+      { id: "target_cells", label: "target cells", icon: "🎯" },
+      { id: "basophilic_stippling", label: "塩基性斑点", icon: "🔵" },
+      { id: "leukoerythroblastic", label: "白赤芽球症/涙滴赤血球", icon: "💀" },
+      { id: "pancytopenia", label: "汎血球減少（WBC/Pltも低い）", icon: "⚠" }
+    ]
+  },
+  {
+    id: "clinical",
+    title: "臨床背景・リスク",
+    subtitle: "問診から鑑別の優先度を調整",
+    type: "multi",
+    options: [
+      { id: "elderly_male_ida", label: "中高年男性/閉経後女性の新規IDA", icon: "🚹" },
+      { id: "family_ethnicity", label: "家族歴/民族背景＋小球性", icon: "🧬" },
+      { id: "alcohol_liver_hx", label: "多量飲酒/肝機能異常", icon: "🍺" },
+      { id: "drug_history", label: "薬剤（MTX, ヒドロキシカルバミド, 抗てんかん薬等）", icon: "💊" },
+      { id: "chronic_disease", label: "慢性炎症/感染/悪性腫瘍/CKD", icon: "🏥" },
+      { id: "lead_exposure", label: "鉛曝露（職業/環境）", icon: "⚠" }
+    ]
+  },
+  {
+    id: "workup",
+    title: "確定診断へ",
+    subtitle: "必要な追加検査を選択",
+    type: "multi",
+    options: [
+      { id: "bone_marrow", label: "骨髄検査が必要", icon: "🦴" },
+      { id: "hb_analysis", label: "Hb分析/HPLC＋遺伝子検査", icon: "🧪" },
+      { id: "adamts13", label: "ADAMTS13（治療前採血）＋緊急治療", icon: "⚡" },
+      { id: "pnh_flow", label: "PNHフロー（GPI欠損クローン）", icon: "🔬" },
+      { id: "endoscopy", label: "上部/下部内視鏡（出血源検索）", icon: "🔍" },
+      { id: "thymoma_parvo", label: "胸腺腫評価＋パルボB19", icon: "📋" }
+    ]
+  }
+];
+
+// ===== スコアリングロジック =====
+function calcScores(answers) {
+  var scores = {};
+  var keys = Object.keys(DISEASES);
+  var i;
+  for (i = 0; i < keys.length; i++) {
+    scores[keys[i]] = 0;
+  }
+
+  // Step A: 初期トリアージ (+5)
+  var tri = answers.triage || [];
+  for (i = 0; i < tri.length; i++) {
+    if (tri[i] === "hemodynamic_unstable") {
+      scores.acute_bleeding += 5;
+    }
+    if (tri[i] === "symptomatic_anemia") {
+      scores.acute_bleeding += 4; scores.aiha += 3; scores.tma += 3;
+    }
+    if (tri[i] === "maha_suspected") {
+      scores.tma += 5; scores.mechanical += 4;
+    }
+    if (tri[i] === "neuro_megaloblastic") {
+      scores.b12_deficiency += 5;
+    }
+    if (tri[i] === "stable") {
+      scores.ida += 3; scores.acd += 3; scores.ckd_anemia += 3;
+      scores.thalassemia += 3; scores.hypothyroidism += 2;
+    }
+  }
+
+  // Step B: MCV分類 (+6/-3)
+  var mcv = answers.mcv;
+  if (mcv === "microcytic") {
+    scores.ida += 6; scores.thalassemia += 6; scores.sideroblastic += 6;
+    scores.lead_poisoning += 6; scores.irida += 6;
+    scores.acd += 3; // ACDは小球性にもなりうる
+    // 正球性・大球性を減点
+    scores.acute_bleeding -= 3; scores.aiha -= 3; scores.tma -= 3;
+    scores.mechanical -= 3; scores.hereditary_hemolysis -= 3;
+    scores.aplastic -= 3; scores.pnh -= 3; scores.marrow_infiltration -= 3;
+    scores.prca -= 3;
+    scores.b12_deficiency -= 3; scores.folate_deficiency -= 3;
+    scores.alcohol_liver -= 3; scores.hypothyroidism -= 3; scores.mds -= 3;
+  } else if (mcv === "normocytic") {
+    scores.acute_bleeding += 6; scores.acd += 6; scores.ckd_anemia += 6;
+    scores.aiha += 6; scores.tma += 6; scores.mechanical += 6;
+    scores.hereditary_hemolysis += 6; scores.aplastic += 6;
+    scores.pnh += 6; scores.marrow_infiltration += 6; scores.prca += 6;
+    // 小球性・大球性を減点
+    scores.ida -= 3; scores.thalassemia -= 3; scores.sideroblastic -= 3;
+    scores.lead_poisoning -= 3; scores.irida -= 3;
+    scores.b12_deficiency -= 3; scores.folate_deficiency -= 3;
+    scores.alcohol_liver -= 3; scores.hypothyroidism -= 3; scores.mds -= 3;
+  } else if (mcv === "macrocytic") {
+    scores.b12_deficiency += 6; scores.folate_deficiency += 6;
+    scores.alcohol_liver += 6; scores.hypothyroidism += 6; scores.mds += 6;
+    scores.aplastic += 3; // AAは大球性もあり
+    // 小球性・正球性を減点
+    scores.ida -= 3; scores.thalassemia -= 3; scores.sideroblastic -= 3;
+    scores.lead_poisoning -= 3; scores.irida -= 3;
+    scores.acute_bleeding -= 3; scores.acd -= 3; scores.ckd_anemia -= 3;
+    scores.aiha -= 3; scores.tma -= 3; scores.mechanical -= 3;
+    scores.hereditary_hemolysis -= 3; scores.marrow_infiltration -= 3;
+    scores.prca -= 3;
+  } else if (mcv === "dimorphic") {
+    scores.sideroblastic += 5; scores.ida += 3; scores.acd += 3;
+    scores.b12_deficiency += 3; scores.folate_deficiency += 3;
+    scores.mds += 3;
+  }
+  // unknown_mcv: no change
+
+  // Step C: 網状赤血球 (+5/-3)
+  var retic = answers.reticulocyte;
+  if (retic === "high_retic") {
+    scores.acute_bleeding += 5; scores.aiha += 5; scores.tma += 5;
+    scores.mechanical += 5; scores.hereditary_hemolysis += 5; scores.pnh += 5;
+    scores.aplastic -= 3; scores.mds -= 3; scores.prca -= 3;
+    scores.acd -= 2; scores.ckd_anemia -= 2;
+    scores.b12_deficiency -= 2; scores.folate_deficiency -= 2;
+  } else if (retic === "low_retic") {
+    scores.acd += 4; scores.ckd_anemia += 4; scores.aplastic += 5;
+    scores.mds += 5; scores.prca += 5; scores.b12_deficiency += 4;
+    scores.folate_deficiency += 4; scores.marrow_infiltration += 4;
+    scores.ida += 3; scores.hypothyroidism += 3;
+    scores.aiha -= 3; scores.tma -= 3; scores.mechanical -= 3;
+    scores.hereditary_hemolysis -= 3; scores.acute_bleeding -= 3;
+  }
+  // unknown_retic: no change
+
+  // Step D: 溶血所見 (+4〜5)
+  var hemo = answers.hemolysis || [];
+  for (i = 0; i < hemo.length; i++) {
+    if (hemo[i] === "hemolysis_present") {
+      scores.aiha += 5; scores.tma += 5; scores.mechanical += 5;
+      scores.hereditary_hemolysis += 5; scores.pnh += 5;
+    }
+    if (hemo[i] === "dat_positive") {
+      scores.aiha += 5;
+      scores.tma -= 2; scores.mechanical -= 2; scores.hereditary_hemolysis -= 2;
+    }
+    if (hemo[i] === "dat_negative_hemolysis") {
+      scores.mechanical += 4; scores.tma += 4;
+      scores.hereditary_hemolysis += 4; scores.pnh += 4;
+      scores.aiha -= 2;
+    }
+    if (hemo[i] === "schistocytes") {
+      scores.tma += 5; scores.mechanical += 5;
+    }
+    if (hemo[i] === "no_hemolysis") {
+      scores.acd += 3; scores.ckd_anemia += 3; scores.aplastic += 3;
+      scores.mds += 3; scores.prca += 3; scores.ida += 3;
+      scores.aiha -= 3; scores.tma -= 3; scores.mechanical -= 3;
+      scores.hereditary_hemolysis -= 3; scores.pnh -= 3;
+    }
+  }
+
+  // Step E: 鉄代謝 (+4〜5)
+  var iron = answers.iron || [];
+  for (i = 0; i < iron.length; i++) {
+    if (iron[i] === "absolute_id") {
+      scores.ida += 5; scores.irida += 4;
+    }
+    if (iron[i] === "functional_id") {
+      scores.acd += 5; scores.ida += 3;
+    }
+    if (iron[i] === "iron_response") {
+      scores.ida += 5;
+      scores.irida -= 3; scores.thalassemia -= 2;
+    }
+    if (iron[i] === "iron_overload") {
+      scores.sideroblastic += 5; scores.mds += 3;
+    }
+  }
+
+  // Step F: 末梢血塗抹 (+4〜5)
+  var sm = answers.smear || [];
+  for (i = 0; i < sm.length; i++) {
+    if (sm[i] === "megaloblastic") {
+      scores.b12_deficiency += 5; scores.folate_deficiency += 5;
+    }
+    if (sm[i] === "schistocytes_plt") {
+      scores.tma += 5;
+    }
+    if (sm[i] === "spherocytes") {
+      scores.aiha += 4; scores.hereditary_hemolysis += 4;
+    }
+    if (sm[i] === "target_cells") {
+      scores.thalassemia += 4; scores.alcohol_liver += 4;
+    }
+    if (sm[i] === "basophilic_stippling") {
+      scores.lead_poisoning += 5; scores.sideroblastic += 3;
+      scores.thalassemia += 3;
+    }
+    if (sm[i] === "leukoerythroblastic") {
+      scores.marrow_infiltration += 5;
+    }
+    if (sm[i] === "pancytopenia") {
+      scores.aplastic += 5; scores.mds += 4;
+      scores.marrow_infiltration += 4;
+    }
+  }
+
+  // Step G: 臨床背景 (+4〜5)
+  var clin = answers.clinical || [];
+  for (i = 0; i < clin.length; i++) {
+    if (clin[i] === "elderly_male_ida") {
+      scores.ida += 4;
+    }
+    if (clin[i] === "family_ethnicity") {
+      scores.thalassemia += 5; scores.hereditary_hemolysis += 3;
+    }
+    if (clin[i] === "alcohol_liver_hx") {
+      scores.alcohol_liver += 5; scores.folate_deficiency += 3;
+    }
+    if (clin[i] === "drug_history") {
+      scores.mds += 4; scores.folate_deficiency += 3;
+      scores.b12_deficiency += 2;
+    }
+    if (clin[i] === "chronic_disease") {
+      scores.acd += 5; scores.ckd_anemia += 4;
+    }
+    if (clin[i] === "lead_exposure") {
+      scores.lead_poisoning += 5;
+    }
+  }
+
+  // Step H: 確定診断へ (+4〜5)
+  var wu = answers.workup || [];
+  for (i = 0; i < wu.length; i++) {
+    if (wu[i] === "bone_marrow") {
+      scores.aplastic += 4; scores.mds += 4;
+      scores.marrow_infiltration += 4; scores.prca += 4;
+    }
+    if (wu[i] === "hb_analysis") {
+      scores.thalassemia += 5;
+    }
+    if (wu[i] === "adamts13") {
+      scores.tma += 5;
+    }
+    if (wu[i] === "pnh_flow") {
+      scores.pnh += 5;
+    }
+    if (wu[i] === "endoscopy") {
+      scores.ida += 4;
+    }
+    if (wu[i] === "thymoma_parvo") {
+      scores.prca += 5;
+    }
+  }
+
+  return scores;
+}
+
+function getProbLevel(score, maxScore) {
+  if (maxScore <= 0) return "very_low";
+  var ratio = score / maxScore;
+  if (ratio >= 0.6) return "high";
+  if (ratio >= 0.35) return "moderate";
+  if (ratio >= 0.15) return "low";
+  return "very_low";
+}
+
+function getProbLabel(level) {
+  if (level === "high") return "可能性 高";
+  if (level === "moderate") return "可能性 中";
+  if (level === "low") return "可能性 低";
+  return "可能性 極低";
+}
+
+// ===== UI状態 =====
+var app = document.getElementById("app");
+var currentStep = 0;
+var answers = {};
+
+function render() {
+  var html = "";
+  var i, j, step, opt, isActive, isDone, cls, selected, checked, currentAnswers;
+
+  // アルゴリズム説明
+  html += '<div class="algo-note">';
+  html += '<strong>使い方：</strong>各ステップの質問に順番に回答してください。すべてのステップ完了後に鑑別診断の候補が優先順位付きで表示されます。<br>';
+  html += '<strong>MCV分類：</strong>小球性（＜80fL）/ 正球性（80-100fL）/ 大球性（＞100fL）で鑑別を大きく分岐し、網状赤血球・溶血所見・鉄代謝で絞り込みます。';
+  html += '</div>';
+
+  // プログレスバー
+  html += '<div class="progress-bar">';
+  for (i = 0; i < STEPS.length; i++) {
+    if (i > 0) {
+      html += '<div class="progress-line' + (i <= currentStep ? ' done' : '') + '"></div>';
+    }
+    var dotCls = "";
+    if (i < currentStep) dotCls = " done";
+    else if (i === currentStep) dotCls = " active";
+    html += '<div class="progress-dot' + dotCls + '">';
+    if (i < currentStep) {
+      html += '&#10003;';
+    } else {
+      html += (i + 1);
+    }
+    html += '</div>';
+  }
+  html += '</div>';
+
+  // 各ステップ
+  for (i = 0; i < STEPS.length; i++) {
+    step = STEPS[i];
+    isActive = (i === currentStep);
+    isDone = (i < currentStep);
+    cls = isDone ? "completed" : (isActive ? "" : "inactive");
+
+    html += '<div class="step-card ' + cls + '" id="step-' + i + '">';
+    html += '<div class="step-header" onclick="jumpToStep(' + i + ')">';
+    html += '<span class="step-number ' + (isDone ? 'done' : '') + '">' + (isDone ? '&#10003;' : (i + 1)) + '</span>';
+    html += '<div class="step-title-wrap">';
+    html += '<div class="step-title">' + step.title + '</div>';
+    if (step.subtitle) {
+      html += '<div class="step-subtitle">' + step.subtitle + '</div>';
+    }
+    html += '</div>';
+    html += '</div>';
+
+    if (isActive || isDone) {
+      html += '<div class="step-body">';
+
+      if (step.type === "single") {
+        html += '<div class="option-group">';
+        for (j = 0; j < step.options.length; j++) {
+          opt = step.options[j];
+          selected = (answers[step.id] === opt.id);
+          html += '<button class="option-btn' + (selected ? ' selected' : '') + '"';
+          html += ' onclick="selectSingle(\'' + step.id + '\', \'' + opt.id + '\', ' + i + ')"';
+          if (isDone && !isActive) html += ' disabled';
+          html += '>';
+          html += '<span class="icon">' + (opt.icon || '') + '</span>' + opt.label;
+          html += '</button>';
+        }
+        html += '</div>';
+      } else {
+        // multi select
+        currentAnswers = answers[step.id] || [];
+        html += '<div class="checklist">';
+        for (j = 0; j < step.options.length; j++) {
+          opt = step.options[j];
+          checked = false;
+          for (var k = 0; k < currentAnswers.length; k++) {
+            if (currentAnswers[k] === opt.id) { checked = true; break; }
+          }
+          html += '<div class="check-item' + (checked ? ' checked' : '') + '"';
+          html += ' onclick="toggleCheck(\'' + step.id + '\', \'' + opt.id + '\')">';
+          html += '<input type="checkbox"' + (checked ? ' checked' : '') + '>';
+          html += '<label><span class="icon" style="margin-right:6px;">' + (opt.icon || '') + '</span>' + opt.label + '</label>';
+          html += '</div>';
+        }
+        html += '</div>';
+        if (isActive) {
+          html += '<p style="font-size:0.85em;color:#888;margin:8px 0 4px;text-align:center;">該当がなければ選択せずに「次へ」を押してください</p>';
+          html += '<button class="next-btn" onclick="nextStep(' + i + ')">次へ &#9654;</button>';
+        }
+      }
+
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+
+  // 結果パネル
+  if (currentStep >= STEPS.length) {
+    html += renderResults();
+  }
+
+  // リセットボタン
+  if (currentStep > 0) {
+    html += '<button class="reset-btn" onclick="resetAll()">&#128260; 最初からやり直す</button>';
+  }
+
+  app.innerHTML = html;
+
+  // 結果表示後スクロール
+  if (currentStep >= STEPS.length) {
+    setTimeout(function() {
+      var panel = document.querySelector('.result-panel');
+      if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+}
+
+function selectSingle(stepId, value, stepIndex) {
+  answers[stepId] = value;
+  currentStep = stepIndex + 1;
+  render();
+  scrollToStep(currentStep);
+}
+
+function toggleCheck(stepId, value) {
+  if (!answers[stepId]) answers[stepId] = [];
+  var idx = -1;
+  for (var i = 0; i < answers[stepId].length; i++) {
+    if (answers[stepId][i] === value) { idx = i; break; }
+  }
+  if (idx >= 0) {
+    answers[stepId].splice(idx, 1);
+  } else {
+    answers[stepId].push(value);
+  }
+  render();
+}
+
+function nextStep(stepIndex) {
+  currentStep = stepIndex + 1;
+  render();
+  scrollToStep(currentStep);
+}
+
+function jumpToStep(idx) {
+  if (idx < currentStep) {
+    currentStep = idx;
+    render();
+  }
+}
+
+function scrollToStep(idx) {
+  setTimeout(function() {
+    var el = document.getElementById('step-' + idx) || document.querySelector('.result-panel');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+function resetAll() {
+  var keys = Object.keys(answers);
+  for (var i = 0; i < keys.length; i++) {
+    delete answers[keys[i]];
+  }
+  currentStep = 0;
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleDetail(cardId) {
+  var detail = document.getElementById('detail-' + cardId);
+  var workup = document.getElementById('workup-' + cardId);
+  var toggle = document.getElementById('toggle-' + cardId);
+  if (detail) {
+    if (detail.className.indexOf('open') >= 0) {
+      detail.className = 'dx-detail';
+      if (workup) workup.className = 'dx-workup';
+      if (toggle) toggle.textContent = '詳細を表示 \u25BC';
+    } else {
+      detail.className = 'dx-detail open';
+      if (workup) workup.className = 'dx-workup open';
+      if (toggle) toggle.textContent = '詳細を閉じる \u25B2';
+    }
+  }
+}
+
+function renderResults() {
+  var scores = calcScores(answers);
+  var entries = [];
+  var keys = Object.keys(scores);
+  var i;
+  for (i = 0; i < keys.length; i++) {
+    if (scores[keys[i]] > 0) {
+      entries.push({ id: keys[i], score: scores[keys[i]] });
+    }
+  }
+  entries.sort(function(a, b) { return b.score - a.score; });
+
+  var maxScore = entries.length > 0 ? entries[0].score : 0;
+
+  var html = '<div class="result-panel show">';
+  html += '<div class="result-header">&#128203; 鑑別診断の結果</div>';
+  html += '<div class="result-body">';
+
+  // トリアージアラート
+  var tri = answers.triage || [];
+  if (tri.length > 0) {
+    var hasAlert = false;
+    var alertHtml = '';
+    for (i = 0; i < tri.length; i++) {
+      if (tri[i] === "hemodynamic_unstable") {
+        hasAlert = true;
+        alertHtml += '・血行動態不安定 &rarr; <strong>即座に輸血準備・出血源検索・循環管理</strong><br>';
+      }
+      if (tri[i] === "symptomatic_anemia") {
+        hasAlert = true;
+        alertHtml += '・症候性貧血 &rarr; <strong>輸血閾値の評価（Hb＜7g/dL、心疾患ありなら＜8g/dL）</strong><br>';
+      }
+      if (tri[i] === "maha_suspected") {
+        hasAlert = true;
+        alertHtml += '・MAHA疑い &rarr; <strong>ADAMTS13採血→血漿交換の緊急適応を検討</strong><br>';
+      }
+      if (tri[i] === "neuro_megaloblastic") {
+        hasAlert = true;
+        alertHtml += '・神経症状＋巨赤芽球性 &rarr; <strong>B12欠乏の可能性：不可逆的神経障害の前に緊急補充</strong><br>';
+      }
+    }
+    if (hasAlert) {
+      html += '<div class="alert-box danger">';
+      html += '<div class="alert-title">&#128680; 緊急対応を検討</div>';
+      html += '<div>' + alertHtml + '</div>';
+      html += '</div>';
+    }
+  }
+
+  // 初期評価サマリー
+  html += '<div class="summary-box">';
+  html += '<div class="summary-title">&#127919; 貧血の初期評価アプローチ</div>';
+  html += '<strong>(1)</strong> 緊急性の評価（バイタル・症状・MAHA・出血）<br>';
+  html += '<strong>(2)</strong> MCV分類（小球性/正球性/大球性）で鑑別を大きく分岐<br>';
+  html += '<strong>(3)</strong> 網状赤血球で産生低下 vs 破壊/喪失を判断<br>';
+  html += '<strong>(4)</strong> 溶血所見・鉄代謝・塗抹所見で絞り込み';
+  html += '</div>';
+
+  // 鑑別診断リスト
+  if (entries.length === 0) {
+    html += '<p style="color:var(--gray);text-align:center;padding:20px;">入力された情報からは特定の鑑別が示唆されませんでした。追加の検査情報を入力してください。</p>';
+  } else {
+    for (i = 0; i < entries.length; i++) {
+      var d = DISEASES[entries[i].id];
+      var level = getProbLevel(entries[i].score, maxScore);
+      var levelLabel = getProbLabel(level);
+      var cardId = entries[i].id;
+
+      html += '<div class="dx-card ' + level + '" onclick="toggleDetail(\'' + cardId + '\')">';
+
+      // 上段: 名前 + バッジ
+      html += '<div class="dx-top">';
+      html += '<div class="dx-name">';
+      html += '<span>' + d.emoji + '</span>';
+      html += '<span>' + d.name + '</span>';
+      html += '</div>';
+      html += '<span class="prob-badge">' + levelLabel + '</span>';
+      html += '</div>';
+
+      // カテゴリラベル
+      html += '<span class="category-label ' + d.catClass + '">' + d.category + '</span>';
+
+      // 詳細表示トグル
+      html += '<div class="dx-toggle" id="toggle-' + cardId + '">詳細を表示 &#9660;</div>';
+
+      // 詳細 (初期非表示)
+      html += '<div class="dx-detail" id="detail-' + cardId + '">' + d.detail + '</div>';
+
+      // 追加検査 (初期非表示)
+      html += '<div class="dx-workup" id="workup-' + cardId + '">&#128269; 追加検査: ' + d.workup + '</div>';
+
+      html += '</div>';
+    }
+  }
+
+  // 専門医相談基準
+  html += '<div class="red-flag-box">';
+  html += '<div class="rf-title">&#128681; 血液内科・専門医への相談を考慮すべき状況</div>';
+  html += '<ul>';
+  html += '<li>原因不明の貧血が持続する場合</li>';
+  html += '<li>MAHA（破砕赤血球＋血小板減少＋溶血）→ TTP/HUSの緊急対応</li>';
+  html += '<li>汎血球減少（再生不良性貧血・MDS・骨髄浸潤の精査）</li>';
+  html += '<li>DAT陽性溶血性貧血（AIHA：ステロイド治療の適応判断）</li>';
+  html += '<li>骨髄検査が必要と判断された場合</li>';
+  html += '<li>輸血依存性の貧血（MDS、再生不良性貧血など）</li>';
+  html += '<li>中高年の新規IDA → 消化器内科での消化管精査</li>';
+  html += '<li>B12欠乏＋神経症状 → 早期補充（不可逆的変化の予防）</li>';
+  html += '</ul>';
+  html += '</div>';
+
+  // 追加の注意事項
+  html += '<div class="summary-box" style="margin-top:16px;">';
+  html += '<div class="summary-title">&#9888;&#65039; 貧血評価の注意点</div>';
+  html += '<strong>フェリチン：</strong>急性期反応蛋白のため、炎症下ではフェリチン＜100ng/mLでも鉄欠乏合併の可能性がある。sTfR/log ferritin比が有用。<br>';
+  html += '<strong>MCV：</strong>鉄欠乏＋B12/葉酸欠乏の合併ではMCVが正常化しうる（RDW上昇が手がかり）。<br>';
+  html += '<strong>網状赤血球：</strong>必ず網状赤血球産生指数（RPI）で補正して評価する。RPI = 網状赤血球% x (患者Hct/正常Hct) / maturation factor。<br>';
+  html += '<strong>溶血の3徴：</strong>LDH上昇・間接ビリルビン上昇・ハプトグロビン低下。ハプトグロビン低下が最も感度が高い。';
+  html += '</div>';
+
+  html += '</div></div>';
+  return html;
+}
+
+// 初期描画
+render();
+</script>
+
+</body>
+</html>
