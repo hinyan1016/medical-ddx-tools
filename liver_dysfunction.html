@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A5276">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>肝機能障害 鑑別診断ツール</title>
+<style>
+  :root {
+    --navy: #1A5276;
+    --blue: #2E86C1;
+    --light-blue: #E8F4FD;
+    --red: #DC3545;
+    --yellow: #F5C518;
+    --green: #28A745;
+    --orange: #E8850C;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(26,82,118,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #E8F4FD 0%, #F4F6F8 100%);
+    color: #222;
+    min-height: 100vh;
+    padding: 0 0 40px;
+  }
+  header {
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    padding: 28px 20px 22px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(26,82,118,0.18);
+  }
+  header h1 { font-size: 1.7em; font-weight: 700; letter-spacing: 0.04em; }
+  header p { font-size: 0.92em; margin-top: 6px; opacity: 0.85; }
+
+  .container { max-width: 820px; margin: 0 auto; padding: 24px 16px; }
+
+  .progress-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .progress-dot {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.82em;
+    font-weight: 700;
+    color: var(--white);
+    background: #B0BEC5;
+    transition: all 0.3s;
+  }
+  .progress-dot.done { background: var(--green); }
+  .progress-dot.active { background: var(--blue); transform: scale(1.15); }
+  .progress-line {
+    width: 20px; height: 3px;
+    background: #D0D8E4;
+    border-radius: 2px;
+  }
+  .progress-line.done { background: var(--green); }
+
+  .step-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+    overflow: hidden;
+    transition: opacity 0.3s;
+  }
+  .step-card.inactive { opacity: 0.45; pointer-events: none; }
+  .step-card.completed { opacity: 1; }
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    background: var(--light-blue);
+    border-bottom: 2px solid var(--blue);
+    cursor: pointer;
+  }
+  .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--blue);
+    color: var(--white);
+    font-weight: 700;
+    font-size: 0.95em;
+    flex-shrink: 0;
+  }
+  .step-number.done { background: var(--green); }
+  .step-title-wrap { flex: 1; }
+  .step-title { font-weight: 700; font-size: 1.05em; color: var(--navy); }
+  .step-subtitle { font-size: 0.82em; color: var(--gray); margin-top: 2px; }
+  .step-body { padding: 18px; }
+
+  .option-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border: 2px solid #D0D8E4;
+    border-radius: 8px;
+    background: var(--white);
+    font-size: 0.97em;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: left;
+    color: #222;
+    font-family: inherit;
+    width: 100%;
+  }
+  .option-btn:hover { border-color: var(--blue); background: var(--light-blue); }
+  .option-btn.selected {
+    border-color: var(--blue);
+    background: var(--light-blue);
+    font-weight: 700;
+  }
+  .option-btn .icon { font-size: 1.2em; flex-shrink: 0; width: 28px; text-align: center; }
+
+  .checklist { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--light-gray);
+    cursor: pointer;
+    transition: background 0.15s;
+    user-select: none;
+    font-size: 0.95em;
+  }
+  .check-item:hover { background: #E0E8F0; }
+  .check-item.checked { background: #D6EAF8; }
+  .check-item input[type="checkbox"] {
+    width: 18px; height: 18px;
+    accent-color: var(--blue);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .check-item label { cursor: pointer; flex: 1; }
+
+  .result-panel {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(26,82,118,0.15);
+    overflow: hidden;
+    margin-top: 24px;
+    display: none;
+  }
+  .result-panel.show { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  .result-header {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    font-weight: 700;
+    font-size: 1.15em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .result-body { padding: 20px; }
+
+  .dx-card {
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    position: relative;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .dx-card.high { border-color: var(--red); background: #FFF5F5; }
+  .dx-card.moderate { border-color: var(--orange); background: #FFF8F0; }
+  .dx-card.low { border-color: #B0BEC5; background: var(--light-gray); }
+  .dx-card.very_low { border-color: #E0E0E0; background: #FAFAFA; }
+
+  .dx-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .dx-name {
+    font-weight: 700;
+    font-size: 1.08em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    min-width: 200px;
+  }
+  .prob-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.78em;
+    font-weight: 700;
+    color: var(--white);
+    flex-shrink: 0;
+  }
+  .dx-card.high .prob-badge { background: var(--red); }
+  .dx-card.moderate .prob-badge { background: var(--orange); }
+  .dx-card.low .prob-badge { background: var(--gray); }
+  .dx-card.very_low .prob-badge { background: #BDBDBD; }
+
+  .category-label {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.78em;
+    font-weight: 700;
+    margin-top: 6px;
+    margin-bottom: 6px;
+  }
+  .cat-hepatocellular { background: #FDEDEC; color: #C0392B; }
+  .cat-cholestatic { background: #D4EFDF; color: #1E8449; }
+  .cat-mixed { background: #F5EEF8; color: #7D3C98; }
+  .cat-infiltrative { background: #FDEBD0; color: #CA6F1E; }
+
+  .dx-detail {
+    font-size: 0.9em;
+    color: #444;
+    line-height: 1.6;
+    margin-top: 6px;
+    display: none;
+  }
+  .dx-detail.open { display: block; }
+  .dx-detail strong { color: var(--navy); }
+
+  .dx-workup {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #ccc;
+    font-size: 0.88em;
+    color: var(--blue);
+    display: none;
+  }
+  .dx-workup.open { display: block; }
+
+  .dx-toggle {
+    font-size: 0.82em;
+    color: var(--blue);
+    margin-top: 4px;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  .next-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    padding: 10px 22px;
+    background: var(--blue);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: inherit;
+  }
+  .next-btn:hover { background: var(--navy); }
+  .next-btn:disabled { background: #B0BEC5; cursor: not-allowed; }
+
+  .reset-btn {
+    display: block;
+    margin: 24px auto 0;
+    padding: 10px 32px;
+    background: var(--white);
+    color: var(--red);
+    border: 2px solid var(--red);
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .reset-btn:hover { background: var(--red); color: var(--white); }
+
+  .hint {
+    font-size: 0.85em;
+    color: var(--gray);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  .algo-note {
+    background: #FFFDE7;
+    border-left: 4px solid var(--yellow);
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 18px;
+    font-size: 0.9em;
+    line-height: 1.6;
+    color: #555;
+  }
+  .algo-note strong { color: var(--navy); }
+
+  .alert-box {
+    background: #FFF3CD;
+    border: 2px solid var(--orange);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    font-size: 0.92em;
+    line-height: 1.6;
+  }
+  .alert-box.danger {
+    background: #F8D7DA;
+    border-color: var(--red);
+  }
+  .alert-box .alert-title {
+    font-weight: 700;
+    color: var(--red);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .summary-box {
+    background: var(--light-blue);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    font-size: 0.92em;
+    line-height: 1.6;
+  }
+  .summary-box .summary-title {
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .red-flag-box {
+    background: #F8D7DA;
+    border: 2px solid var(--red);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 16px;
+    font-size: 0.9em;
+    line-height: 1.6;
+  }
+  .red-flag-box .rf-title {
+    font-weight: 700;
+    color: var(--red);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .red-flag-box ul { padding-left: 20px; margin-top: 4px; }
+  .red-flag-box li { margin-bottom: 4px; }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.3em; }
+    .step-body, .result-body { padding: 14px; }
+    .dx-card { padding: 12px; }
+    .progress-dot { width: 26px; height: 26px; font-size: 0.72em; }
+    .progress-line { width: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>肝機能障害 鑑別診断ツール</h1>
+  <p>トランスアミナーゼ上昇の原因を系統的に鑑別</p>
+</header>
+
+<div class="container" id="app"></div>
+
+<script>
+// ===== 疾患データ =====
+var DISEASES = {
+  // 肝細胞障害型
+  acute_viral: {
+    name: "急性ウイルス性肝炎（A/B/E）",
+    emoji: "🦠",
+    category: "肝細胞障害型",
+    catClass: "cat-hepatocellular",
+    detail: "HAV・HBV・HEVなどの肝炎ウイルスによる急性肝障害。<strong>AST/ALTが数百〜数千</strong>に急上昇し、黄疸・倦怠感・食欲不振を伴う。HAVは経口感染（旅行歴・貝類摂取）、HBVは血液・性行為感染、HEVは獣肉（豚・鹿）や海外旅行で感染する。<strong>IgM型抗体</strong>が急性期の診断に重要。劇症化のリスクに注意（特にHBV・妊婦のHEV）。",
+    workup: "IgM-HA抗体、HBs抗原、IgM-HBc抗体、IgA-HEV抗体、PT-INR、肝機能推移"
+  },
+  chronic_hbv_hcv: {
+    name: "慢性B/C型肝炎",
+    emoji: "🧬",
+    category: "肝細胞障害型",
+    catClass: "cat-hepatocellular",
+    detail: "HBVまたはHCVの持続感染による慢性肝障害。ALTは<strong>軽〜中等度（1〜5×ULN）の持続的上昇</strong>が特徴で、線維化が進行すると肝硬変・肝細胞癌のリスクが高まる。HBVはHBs抗原・HBV-DNA、HCVはHCV抗体・HCV-RNAで診断。<strong>線維化評価（FIB-4 index、エラストグラフィ）</strong>が治療方針決定に重要。",
+    workup: "HBs抗原、HBe抗原/抗体、HBV-DNA定量、HCV抗体、HCV-RNA定量、FIB-4 index、腹部エコー"
+  },
+  nafld: {
+    name: "NAFLD/NASH",
+    emoji: "🏋",
+    category: "肝細胞障害型",
+    catClass: "cat-hepatocellular",
+    detail: "非アルコール性脂肪性肝疾患。肥満・2型糖尿病・脂質異常症・メタボリック症候群を背景とし、<strong>ALT優位の軽度上昇（1〜3×ULN）</strong>を示す。画像で脂肪肝を認める。NASHでは肝線維化が進行し肝硬変・肝細胞癌に至りうる。<strong>FIB-4 index≧2.67</strong>は高線維化リスクを示唆。2023年からMAFLD/MASLDの新名称が提唱されている。",
+    workup: "腹部エコー（脂肪肝評価）、FIB-4 index、NFS、エラストグラフィ、HbA1c、脂質プロフィール"
+  },
+  alcohol: {
+    name: "アルコール関連肝障害",
+    emoji: "🍺",
+    category: "肝細胞障害型",
+    catClass: "cat-hepatocellular",
+    detail: "大量飲酒（男性>60g/日、女性>40g/日）による肝障害。特徴的な<strong>AST/ALT比≧2</strong>（ミトコンドリア障害によるAST優位上昇）、<strong>GGT高値</strong>、MCV上昇を認める。アルコール性肝炎では黄疸・発熱・腹痛・白血球増多を伴い、<strong>Maddrey discriminant function≧32</strong>は重症で死亡率が高い（ステロイド考慮）。",
+    workup: "飲酒歴の詳細聴取、AST/ALT比、GGT、MCV、腹部エコー、Maddrey DF（重症度評価）"
+  },
+  aih: {
+    name: "自己免疫性肝炎（AIH）",
+    emoji: "🔬",
+    category: "肝細胞障害型",
+    catClass: "cat-hepatocellular",
+    detail: "自己免疫機序による慢性肝炎で<strong>中年女性に好発</strong>。IgG高値、<strong>抗核抗体（ANA）・抗平滑筋抗体（ASMA）陽性</strong>が特徴。急性発症もあり、ALTは軽度〜高度まで様々。組織学的には<strong>interface hepatitis</strong>が特徴的。ステロイド治療への反応が良好。他の自己免疫疾患（甲状腺炎、SjS等）の合併に注意。",
+    workup: "ANA、ASMA、IgG定量、肝生検（interface hepatitis）、AIHスコアリング"
+  },
+  acetaminophen: {
+    name: "アセトアミノフェン中毒",
+    emoji: "💊",
+    category: "肝細胞障害型",
+    catClass: "cat-hepatocellular",
+    detail: "アセトアミノフェンの過量摂取（治療量を超える>4g/日、またはアルコール常飲者では低用量でも）による急性肝障害。<strong>AST/ALTが数千〜数万</strong>に急上昇する。Rumack-Matthewノモグラムで治療適応を判定。<strong>N-アセチルシステイン（NAC）</strong>が解毒薬であり、服用後8時間以内の投与が最も有効。PT-INR延長は重症度の指標。",
+    workup: "血中アセトアミノフェン濃度、服用時刻・量の確認、PT-INR、Rumack-Matthewノモグラム評価"
+  },
+  ischemic: {
+    name: "虚血性肝炎（ショック肝）",
+    emoji: "⚡",
+    category: "肝細胞障害型",
+    catClass: "cat-hepatocellular",
+    detail: "ショック・心不全・低血圧による肝灌流低下で生じる急性肝障害。<strong>AST/ALTが急激に数千以上に上昇</strong>し、特に<strong>LDHの著明な上昇（ALTを超える）</strong>が特徴的。原因循環不全の改善後、AST/ALTは1〜2週間で急速に低下する。心原性ショック・敗血症性ショック・大量出血が主な原因。",
+    workup: "循環動態の評価、LDH、心エコー、乳酸、肝機能推移モニタリング"
+  },
+  budd_chiari: {
+    name: "Budd-Chiari症候群",
+    emoji: "🩸",
+    category: "肝細胞障害型",
+    catClass: "cat-hepatocellular",
+    detail: "肝静脈の血栓性閉塞による肝うっ血・壊死。<strong>腹痛、腹水、肝腫大</strong>の3徴が典型。骨髄増殖性腫瘍（特にPV/ET）、抗リン脂質抗体症候群、経口避妊薬などの血栓性素因が背景にある。ドプラエコーで<strong>肝静脈血流の消失・逆流</strong>を確認。急性型はAST/ALT急上昇、慢性型は門脈圧亢進所見が主体。",
+    workup: "腹部ドプラエコー（肝静脈血流）、造影CT/MRI、血栓性素因検索（JAK2、APS抗体等）"
+  },
+  wilson: {
+    name: "Wilson病",
+    emoji: "🟤",
+    category: "肝細胞障害型",
+    catClass: "cat-hepatocellular",
+    detail: "ATP7B遺伝子変異による銅代謝異常症。<strong>若年（40歳未満）</strong>での肝障害で疑う。<strong>血清セルロプラスミン低下（<20mg/dL）</strong>、<strong>24時間尿中銅排泄増加</strong>、<strong>Kayser-Fleischer輪</strong>（角膜銅沈着）が診断の3徴。急性発症では<strong>Coombs陰性溶血性貧血</strong>を合併しうる。神経・精神症状（振戦、構音障害、性格変化）を伴うことがある。",
+    workup: "血清セルロプラスミン、24時間尿中銅、細隙灯顕微鏡検査（KF輪）、肝銅含量（肝生検）"
+  },
+  hemochromatosis: {
+    name: "遺伝性ヘモクロマトーシス",
+    emoji: "🧲",
+    category: "肝細胞障害型",
+    catClass: "cat-hepatocellular",
+    detail: "HFE遺伝子変異（C282Y等）による鉄過剰吸収・沈着症。<strong>トランスフェリン飽和度（TSAT）>45%</strong>、<strong>フェリチン高値</strong>が特徴。肝障害は軽度のALT上昇から肝硬変まで進行しうる。皮膚色素沈着（ブロンズ色）、糖尿病、関節痛、心筋症を合併する（bronze diabetes）。白人に多いが日本では稀。二次性鉄過剰（輸血後）との鑑別も重要。",
+    workup: "血清鉄、TIBC、TSAT（%）、フェリチン、HFE遺伝子検査、肝MRI（鉄定量）"
+  },
+  // 胆汁うっ滞型
+  choledocholithiasis: {
+    name: "総胆管結石・胆道閉塞",
+    emoji: "🪨",
+    category: "胆汁うっ滞型",
+    catClass: "cat-cholestatic",
+    detail: "胆石の総胆管嵌頓による胆汁うっ滞。<strong>右上腹部痛（胆石疝痛）、黄疸、ALP/GGT優位の上昇</strong>が典型。嵌頓が一過性ならAST/ALTも急上昇するが速やかに低下する。腹部エコーで<strong>胆管拡張（総胆管径>8mm）</strong>を確認。MRCPまたはEUSで結石を同定し、ERCPで治療的除去を行う。",
+    workup: "腹部エコー（胆管径・結石）、MRCP、ALP/GGT、直接ビリルビン、ERCP（治療的）"
+  },
+  cholangitis: {
+    name: "急性胆管炎",
+    emoji: "🌡",
+    category: "胆汁うっ滞型",
+    catClass: "cat-cholestatic",
+    detail: "胆道閉塞に細菌感染が合併した緊急疾患。<strong>Charcot 3徴：発熱/悪寒、黄疸、右上腹部痛</strong>が典型。重症では<strong>Reynolds 5徴</strong>（+意識障害+ショック）を呈し致死的。起因菌はE. coli、Klebsiellaなどのグラム陰性桿菌が多い。Tokyo Guidelines（TG18）で重症度分類し、<strong>緊急胆道ドレナージ（ERCP/PTBD）</strong>が必要。",
+    workup: "血液培養（2セット）、CBC/CRP/PCT、腹部エコー/CT、MRCP、緊急ERCP"
+  },
+  pbc: {
+    name: "原発性胆汁性胆管炎（PBC）",
+    emoji: "🔵",
+    category: "胆汁うっ滞型",
+    catClass: "cat-cholestatic",
+    detail: "中年女性に好発する慢性進行性の胆汁うっ滞性疾患。<strong>掻痒感</strong>が初期症状として重要。<strong>ALP/GGT優位の上昇</strong>で、<strong>抗ミトコンドリア抗体（AMA）陽性</strong>（感度>90%）が診断の決め手。IgM上昇も特徴的。UDCAが標準治療で早期開始が予後を改善する。シェーグレン症候群、橋本病など他の自己免疫疾患の合併に注意。",
+    workup: "AMA（抗ミトコンドリア抗体）、ALP/GGT、IgM、肝生検（必要時）"
+  },
+  psc: {
+    name: "原発性硬化性胆管炎（PSC）",
+    emoji: "🟪",
+    category: "胆汁うっ滞型",
+    catClass: "cat-cholestatic",
+    detail: "肝内外胆管のびまん性狭窄・拡張を呈する慢性胆汁うっ滞性疾患。<strong>炎症性腸疾患（特に潰瘍性大腸炎）との合併が約70%</strong>と高率。若年〜中年男性に多い。MRCPで<strong>数珠状の多発狭窄・拡張（beading pattern）</strong>が特徴的。胆管癌のリスクが高く、定期的なサーベイランスが必要。有効な薬物治療は確立されていない。",
+    workup: "MRCP（胆管狭窄パターン）、ALP/GGT、p-ANCA、大腸内視鏡（IBD評価）、CA19-9"
+  },
+  igg4_sc: {
+    name: "IgG4関連硬化性胆管炎",
+    emoji: "📊",
+    category: "胆汁うっ滞型",
+    catClass: "cat-cholestatic",
+    detail: "IgG4関連疾患の胆管病変。<strong>血清IgG4高値（>135mg/dL）</strong>が診断の手がかり。自己免疫性膵炎（AIP）との合併が多く、膵頭部腫大による閉塞性黄疸を呈することがある。PSCとの鑑別が重要だが、<strong>ステロイドへの良好な反応</strong>がIgG4関連疾患の特徴。組織学的には著明なIgG4陽性形質細胞浸潤と花筵状線維化を認める。",
+    workup: "血清IgG4、IgG、腹部造影CT/MRI（膵・胆管評価）、EUS-FNA（必要時）、ステロイドトライアル"
+  },
+  // 混合型
+  dili: {
+    name: "薬剤性肝障害（DILI）",
+    emoji: "💉",
+    category: "混合型",
+    catClass: "cat-mixed",
+    detail: "薬剤・サプリメント・漢方薬による肝障害。パターンは<strong>肝細胞障害型・胆汁うっ滞型・混合型</strong>のいずれも取りうる。新規薬剤開始後<strong>5日〜3か月</strong>での発症が典型的。原因薬剤の同定には<strong>DDW-J 2004スコア</strong>やRUCAMスコアが有用。<strong>被疑薬の中止</strong>が最も重要な治療であり、中止後のALT推移で因果関係を評価する。漢方薬・健康食品が原因として見落とされやすい。",
+    workup: "詳細な薬剤歴（OTC・サプリ・漢方含む）、DLST、RUCAMスコア、被疑薬中止後のALT推移"
+  },
+  ebv_cmv: {
+    name: "EBV/CMV肝炎",
+    emoji: "🔮",
+    category: "混合型",
+    catClass: "cat-mixed",
+    detail: "Epstein-Barrウイルスまたはサイトメガロウイルスによる肝炎。EBV初感染（伝染性単核症）では<strong>発熱、咽頭痛、頸部リンパ節腫脹、脾腫、異型リンパ球</strong>を伴い、ALTは軽〜中等度上昇（通常<5×ULN）。CMVは免疫不全者で重症化しやすい。EBVでは<strong>アンピシリン投与で薬疹</strong>を生じることがある。",
+    workup: "EBV VCA-IgM/IgG、EBNA抗体、CMV-IgM/IgG、CMV抗原血症（C7-HRP）、末梢血塗抹（異型リンパ球）"
+  },
+  congestive: {
+    name: "うっ血肝（心不全関連）",
+    emoji: "❤️",
+    category: "混合型",
+    catClass: "cat-mixed",
+    detail: "右心不全による肝静脈うっ血で肝障害をきたす。<strong>頸静脈怒張、下腿浮腫、肝腫大（肝頸静脈逆流陽性）</strong>が典型的身体所見。慢性うっ血ではALT軽度上昇・ALP/GGT上昇を示し、急性うっ血（急性心不全増悪）では<strong>AST/ALTが急激に上昇</strong>する（congestive hepatopathy）。<strong>BNP/NT-proBNP高値</strong>が心不全の裏付けとなる。",
+    workup: "BNP/NT-proBNP、心エコー（右心機能・IVC径）、胸部X線、肝機能推移"
+  },
+  // 浸潤性・その他
+  malignancy: {
+    name: "悪性腫瘍・浸潤性疾患",
+    emoji: "⚫",
+    category: "浸潤性・その他",
+    catClass: "cat-infiltrative",
+    detail: "転移性肝癌（大腸癌・乳癌・肺癌等）、肝細胞癌、リンパ腫、サルコイドーシスなどによる肝浸潤。<strong>体重減少、倦怠感、無痛性黄疸</strong>を呈する。胆汁うっ滞型パターンを示すことが多い。画像で<strong>肝内腫瘤、SOL（space-occupying lesion）</strong>を認める。肝細胞癌はHBV/HCV・肝硬変背景で発生することが多い。<strong>AFP、PIVKA-II</strong>が肝細胞癌のマーカーとなる。",
+    workup: "腹部造影CT/MRI、AFP、PIVKA-II、CEA、CA19-9、肝生検（必要時）、原発巣検索"
+  },
+  muscle: {
+    name: "筋障害（横紋筋融解症）",
+    emoji: "💪",
+    category: "浸潤性・その他",
+    catClass: "cat-infiltrative",
+    detail: "横紋筋融解症や筋疾患では、筋逸脱酵素として<strong>ASTが上昇</strong>する（ALTは主に肝特異的だがASTは筋肉にも多い）。<strong>CK著増（>10×ULN）とAST優位の上昇</strong>が特徴で、ALTは比較的軽度の上昇にとどまる。スタチン、過度の運動、外傷、圧挫、けいれん重積が原因となる。<strong>CKが正常なら筋障害は否定的</strong>。",
+    workup: "CK、CK-MB、アルドラーゼ、ミオグロビン（血清/尿）、筋肉MRI（必要時）"
+  }
+};
+
+// ===== ステップ定義 =====
+var STEPS = [
+  {
+    id: "pattern",
+    title: "パターン分類",
+    subtitle: "まず肝細胞障害・胆汁うっ滞・混合・肝外を決める",
+    type: "single",
+    options: [
+      { id: "hepatocellular", label: "肝細胞障害型（R値≧5）", icon: "🟥" },
+      { id: "cholestatic", label: "胆汁うっ滞型（R値≦2）", icon: "🟦" },
+      { id: "mixed", label: "混合型（2<R値<5）", icon: "🟪" },
+      { id: "muscle", label: "AST優位＋CK高値（肝外性）", icon: "🟨" }
+    ]
+  },
+  {
+    id: "red_flag",
+    title: "Red Flagの有無",
+    subtitle: "先に移植/ドレナージ/集中治療が必要かを判定",
+    type: "multi",
+    options: [
+      { id: "encephalopathy", label: "意識障害・見当識障害", icon: "🧠" },
+      { id: "coagulopathy", label: "PT-INR延長≧1.5 / 出血傾向", icon: "🩸" },
+      { id: "cholangitis_sign", label: "発熱＋黄疸＋炎症高値（胆管炎疑い）", icon: "🌡" },
+      { id: "overdose", label: "過量服薬・自殺企図の可能性", icon: "💊" },
+      { id: "shock", label: "ショック / 低灌流", icon: "⚡" },
+      { id: "rapid_jaundice", label: "急速進行する黄疸", icon: "🟡" }
+    ]
+  },
+  {
+    id: "duration",
+    title: "経過の見立て",
+    subtitle: "発症時期・推移で鑑別を大きく分岐",
+    type: "single",
+    options: [
+      { id: "acute", label: "急性（数日〜数週）", icon: "⏱" },
+      { id: "subacute", label: "亜急性（数週〜数か月）", icon: "📅" },
+      { id: "chronic", label: "慢性（6か月以上）", icon: "🗓" }
+    ]
+  },
+  {
+    id: "severity",
+    title: "重症度の手掛かり",
+    subtitle: "ALT>1000を境に鑑別が急に狭まる",
+    type: "single",
+    options: [
+      { id: "mild", label: "軽度（<5×ULN）", icon: "🟢" },
+      { id: "moderate", label: "中等度（5〜15×ULN）", icon: "🟡" },
+      { id: "high", label: "高度（>15×ULN）", icon: "🟠" },
+      { id: "alt_1000", label: "AST/ALT>1000", icon: "🔴" }
+    ]
+  },
+  {
+    id: "history",
+    title: "原因に直結する問診",
+    subtitle: "薬剤・飲酒・代謝・血栓・感染リスク",
+    type: "multi",
+    options: [
+      { id: "new_drug", label: "新規薬剤/サプリ/漢方（直近3か月）", icon: "💊" },
+      { id: "alcohol", label: "大量飲酒・最近の飲酒量増加", icon: "🍺" },
+      { id: "metabolic", label: "肥満/2型糖尿病/脂質異常", icon: "🏋" },
+      { id: "young_neuro", label: "若年＋神経/精神症状 or 溶血", icon: "🧠" },
+      { id: "thrombosis", label: "血栓リスク（骨髄増殖性腫瘍・APS等）", icon: "🩸" },
+      { id: "infection_risk", label: "感染リスク（旅行/食事/性行為/輸血歴）", icon: "✈" }
+    ]
+  },
+  {
+    id: "lab_results",
+    title: "ラボで一気に絞る",
+    subtitle: "バラバラに覚えず陽性カテゴリで整理",
+    type: "multi",
+    options: [
+      { id: "viral_positive", label: "ウイルスマーカー陽性（HBs抗原/HCV抗体等）", icon: "🦠" },
+      { id: "autoimmune", label: "自己免疫を示唆（IgG上昇, ANA/ASMA陽性）", icon: "🔬" },
+      { id: "iron_overload", label: "鉄過剰（TSAT上昇, フェリチン上昇）", icon: "🧲" },
+      { id: "copper_abnormal", label: "銅代謝異常（セルロプラスミン低下）", icon: "🟤" },
+      { id: "igg4_high", label: "IgG4高値", icon: "📊" },
+      { id: "ck_high", label: "CK高値（筋障害）", icon: "💪" }
+    ]
+  },
+  {
+    id: "imaging",
+    title: "画像所見",
+    subtitle: "閉塞・血流・腫瘤を拾う",
+    type: "single",
+    options: [
+      { id: "bile_duct_dilated", label: "胆管拡張 / 結石", icon: "🟦" },
+      { id: "cirrhosis", label: "肝硬変・門脈圧亢進所見", icon: "🔄" },
+      { id: "venous_obstruction", label: "肝静脈流出路閉塞", icon: "🩸" },
+      { id: "fatty_liver", label: "脂肪肝所見", icon: "🟡" },
+      { id: "mass_stricture", label: "腫瘤 / 胆道狭窄", icon: "⚫" },
+      { id: "mrcp_stricture", label: "MRCP多発狭窄（数珠状）", icon: "🟪" }
+    ]
+  }
+];
+
+// ===== スコアリングロジック =====
+function calcScores(answers) {
+  var scores = {};
+  var keys = Object.keys(DISEASES);
+  var i;
+  for (i = 0; i < keys.length; i++) {
+    scores[keys[i]] = 0;
+  }
+
+  // Step 1: パターン分類 (highest weights)
+  var pat = answers.pattern;
+  if (pat === "hepatocellular") {
+    scores.acute_viral += 6; scores.chronic_hbv_hcv += 6; scores.nafld += 6;
+    scores.alcohol += 6; scores.aih += 6; scores.acetaminophen += 6;
+    scores.ischemic += 6; scores.budd_chiari += 6; scores.wilson += 6;
+    scores.hemochromatosis += 6; scores.dili += 5;
+    scores.choledocholithiasis -= 3; scores.cholangitis -= 3;
+    scores.pbc -= 3; scores.psc -= 3; scores.malignancy -= 3;
+  } else if (pat === "cholestatic") {
+    scores.choledocholithiasis += 6; scores.cholangitis += 6;
+    scores.pbc += 6; scores.psc += 6; scores.malignancy += 5;
+    scores.igg4_sc += 6;
+    scores.acute_viral -= 3; scores.chronic_hbv_hcv -= 3;
+    scores.nafld -= 3; scores.alcohol -= 3; scores.aih -= 3;
+    scores.acetaminophen -= 3; scores.ischemic -= 3;
+    scores.budd_chiari -= 3; scores.wilson -= 3;
+    scores.hemochromatosis -= 3; scores.muscle -= 3;
+  } else if (pat === "mixed") {
+    scores.dili += 6; scores.ebv_cmv += 6; scores.congestive += 6;
+    scores.malignancy += 4;
+    scores.muscle -= 3;
+  } else if (pat === "muscle") {
+    scores.muscle += 6;
+    scores.acute_viral -= 3; scores.chronic_hbv_hcv -= 3;
+    scores.nafld -= 3; scores.alcohol -= 3; scores.aih -= 3;
+    scores.acetaminophen -= 3; scores.ischemic -= 3;
+    scores.budd_chiari -= 3; scores.wilson -= 3;
+    scores.hemochromatosis -= 3; scores.choledocholithiasis -= 3;
+    scores.cholangitis -= 3; scores.pbc -= 3; scores.psc -= 3;
+    scores.igg4_sc -= 3; scores.dili -= 3; scores.ebv_cmv -= 3;
+    scores.congestive -= 3; scores.malignancy -= 3;
+  }
+
+  // Step 2: Red flag (high weights +5)
+  var rf = answers.red_flag || [];
+  for (i = 0; i < rf.length; i++) {
+    if (rf[i] === "encephalopathy") {
+      scores.acetaminophen += 5; scores.ischemic += 5;
+      scores.acute_viral += 4; scores.aih += 4;
+    }
+    if (rf[i] === "coagulopathy") {
+      scores.acetaminophen += 5; scores.ischemic += 5;
+      scores.acute_viral += 4; scores.aih += 4;
+    }
+    if (rf[i] === "cholangitis_sign") {
+      scores.cholangitis += 5; scores.choledocholithiasis += 4;
+    }
+    if (rf[i] === "overdose") {
+      scores.acetaminophen += 5; scores.dili += 4;
+    }
+    if (rf[i] === "shock") {
+      scores.ischemic += 5; scores.congestive += 4; scores.cholangitis += 3;
+    }
+    if (rf[i] === "rapid_jaundice") {
+      scores.cholangitis += 4; scores.choledocholithiasis += 4;
+      scores.malignancy += 3; scores.acute_viral += 3;
+    }
+  }
+
+  // Step 3: 経過
+  var dur = answers.duration;
+  if (dur === "acute") {
+    scores.acute_viral += 4; scores.acetaminophen += 4;
+    scores.ischemic += 4; scores.choledocholithiasis += 4;
+    scores.cholangitis += 4; scores.dili += 3;
+    scores.ebv_cmv += 3; scores.budd_chiari += 3;
+    scores.nafld -= 2; scores.hemochromatosis -= 2;
+    scores.pbc -= 2; scores.psc -= 2;
+  } else if (dur === "subacute") {
+    scores.dili += 4; scores.aih += 4;
+    scores.malignancy += 3; scores.psc += 3;
+    scores.acetaminophen -= 2; scores.ischemic -= 2;
+  } else if (dur === "chronic") {
+    scores.chronic_hbv_hcv += 4; scores.nafld += 4;
+    scores.alcohol += 4; scores.pbc += 4;
+    scores.psc += 4; scores.hemochromatosis += 4;
+    scores.congestive += 3;
+    scores.acetaminophen -= 2; scores.acute_viral -= 2;
+    scores.cholangitis -= 2;
+  }
+
+  // Step 4: 重症度
+  var sev = answers.severity;
+  if (sev === "mild") {
+    scores.chronic_hbv_hcv += 3; scores.nafld += 3;
+    scores.hemochromatosis += 3; scores.pbc += 3;
+    scores.psc += 3; scores.congestive += 3;
+    scores.acetaminophen -= 2; scores.ischemic -= 2;
+  } else if (sev === "moderate") {
+    scores.acute_viral += 3; scores.aih += 3;
+    scores.dili += 3; scores.ebv_cmv += 3;
+    scores.pbc -= 2; scores.hemochromatosis -= 2;
+  } else if (sev === "high") {
+    scores.acetaminophen += 4; scores.ischemic += 4;
+    scores.acute_viral += 3; scores.dili += 3;
+    scores.budd_chiari += 3;
+    scores.nafld -= 2; scores.hemochromatosis -= 2;
+    scores.pbc -= 2;
+  } else if (sev === "alt_1000") {
+    scores.ischemic += 5; scores.acetaminophen += 5;
+    scores.acute_viral += 4; scores.dili += 3;
+    scores.choledocholithiasis += 3;
+    scores.pbc -= 2; scores.psc -= 2;
+  }
+
+  // Step 5: 問診
+  var hx = answers.history || [];
+  for (i = 0; i < hx.length; i++) {
+    if (hx[i] === "new_drug") {
+      scores.dili += 4; scores.acetaminophen += 3;
+    }
+    if (hx[i] === "alcohol") {
+      scores.alcohol += 5;
+    }
+    if (hx[i] === "metabolic") {
+      scores.nafld += 5;
+    }
+    if (hx[i] === "young_neuro") {
+      scores.wilson += 5;
+    }
+    if (hx[i] === "thrombosis") {
+      scores.budd_chiari += 5;
+    }
+    if (hx[i] === "infection_risk") {
+      scores.acute_viral += 4; scores.chronic_hbv_hcv += 3;
+    }
+  }
+
+  // Step 6: ラボ
+  var lab = answers.lab_results || [];
+  for (i = 0; i < lab.length; i++) {
+    if (lab[i] === "viral_positive") {
+      scores.acute_viral += 5; scores.chronic_hbv_hcv += 5;
+    }
+    if (lab[i] === "autoimmune") {
+      scores.aih += 5;
+    }
+    if (lab[i] === "iron_overload") {
+      scores.hemochromatosis += 5;
+    }
+    if (lab[i] === "copper_abnormal") {
+      scores.wilson += 5;
+    }
+    if (lab[i] === "igg4_high") {
+      scores.igg4_sc += 5;
+    }
+    if (lab[i] === "ck_high") {
+      scores.muscle += 5;
+    }
+  }
+
+  // Step 7: 画像
+  var img = answers.imaging;
+  if (img === "bile_duct_dilated") {
+    scores.choledocholithiasis += 5; scores.cholangitis += 4;
+  } else if (img === "cirrhosis") {
+    scores.chronic_hbv_hcv += 4; scores.nafld += 4;
+    scores.alcohol += 4; scores.aih += 3; scores.pbc += 3;
+  } else if (img === "venous_obstruction") {
+    scores.budd_chiari += 5;
+  } else if (img === "fatty_liver") {
+    scores.nafld += 5;
+  } else if (img === "mass_stricture") {
+    scores.malignancy += 5;
+  } else if (img === "mrcp_stricture") {
+    scores.psc += 5;
+  }
+
+  return scores;
+}
+
+function getProbLevel(score, maxScore) {
+  if (maxScore <= 0) return "very_low";
+  var ratio = score / maxScore;
+  if (ratio >= 0.6) return "high";
+  if (ratio >= 0.35) return "moderate";
+  if (ratio >= 0.15) return "low";
+  return "very_low";
+}
+
+function getProbLabel(level) {
+  if (level === "high") return "可能性 高";
+  if (level === "moderate") return "可能性 中";
+  if (level === "low") return "可能性 低";
+  return "可能性 極低";
+}
+
+// ===== UI状態 =====
+var app = document.getElementById("app");
+var currentStep = 0;
+var answers = {};
+
+function render() {
+  var html = "";
+  var i, j, step, opt, isActive, isDone, cls, selected, checked, currentAnswers;
+
+  // アルゴリズム説明
+  html += '<div class="algo-note">';
+  html += '<strong>使い方：</strong>各ステップの質問に順番に回答してください。すべてのステップ完了後に鑑別診断の候補が優先順位付きで表示されます。<br>';
+  html += '<strong>R値（ALT/ALP比）：</strong>R = (ALT/ALT上限) / (ALP/ALP上限)。R≧5は肝細胞障害型、R≦2は胆汁うっ滞型、2&lt;R&lt;5は混合型。';
+  html += '</div>';
+
+  // プログレスバー
+  html += '<div class="progress-bar">';
+  for (i = 0; i < STEPS.length; i++) {
+    if (i > 0) {
+      html += '<div class="progress-line' + (i <= currentStep ? ' done' : '') + '"></div>';
+    }
+    var dotCls = "";
+    if (i < currentStep) dotCls = " done";
+    else if (i === currentStep) dotCls = " active";
+    html += '<div class="progress-dot' + dotCls + '">';
+    if (i < currentStep) {
+      html += '&#10003;';
+    } else {
+      html += (i + 1);
+    }
+    html += '</div>';
+  }
+  html += '</div>';
+
+  // 各ステップ
+  for (i = 0; i < STEPS.length; i++) {
+    step = STEPS[i];
+    isActive = (i === currentStep);
+    isDone = (i < currentStep);
+    cls = isDone ? "completed" : (isActive ? "" : "inactive");
+
+    html += '<div class="step-card ' + cls + '" id="step-' + i + '">';
+    html += '<div class="step-header" onclick="jumpToStep(' + i + ')">';
+    html += '<span class="step-number ' + (isDone ? 'done' : '') + '">' + (isDone ? '&#10003;' : (i + 1)) + '</span>';
+    html += '<div class="step-title-wrap">';
+    html += '<div class="step-title">' + step.title + '</div>';
+    if (step.subtitle) {
+      html += '<div class="step-subtitle">' + step.subtitle + '</div>';
+    }
+    html += '</div>';
+    html += '</div>';
+
+    if (isActive || isDone) {
+      html += '<div class="step-body">';
+
+      if (step.type === "single") {
+        html += '<div class="option-group">';
+        for (j = 0; j < step.options.length; j++) {
+          opt = step.options[j];
+          selected = (answers[step.id] === opt.id);
+          html += '<button class="option-btn' + (selected ? ' selected' : '') + '"';
+          html += ' onclick="selectSingle(\'' + step.id + '\', \'' + opt.id + '\', ' + i + ')"';
+          if (isDone && !isActive) html += ' disabled';
+          html += '>';
+          html += '<span class="icon">' + (opt.icon || '') + '</span>' + opt.label;
+          html += '</button>';
+        }
+        html += '</div>';
+      } else {
+        // multi select
+        currentAnswers = answers[step.id] || [];
+        html += '<div class="checklist">';
+        for (j = 0; j < step.options.length; j++) {
+          opt = step.options[j];
+          checked = false;
+          for (var k = 0; k < currentAnswers.length; k++) {
+            if (currentAnswers[k] === opt.id) { checked = true; break; }
+          }
+          html += '<div class="check-item' + (checked ? ' checked' : '') + '"';
+          html += ' onclick="toggleCheck(\'' + step.id + '\', \'' + opt.id + '\')">';
+          html += '<input type="checkbox"' + (checked ? ' checked' : '') + '>';
+          html += '<label><span class="icon" style="margin-right:6px;">' + (opt.icon || '') + '</span>' + opt.label + '</label>';
+          html += '</div>';
+        }
+        html += '</div>';
+        if (isActive) {
+          html += '<button class="next-btn" onclick="nextStep(' + i + ')">次へ &#9654;</button>';
+        }
+      }
+
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+
+  // 結果パネル
+  if (currentStep >= STEPS.length) {
+    html += renderResults();
+  }
+
+  // リセットボタン
+  if (currentStep > 0) {
+    html += '<button class="reset-btn" onclick="resetAll()">&#128260; 最初からやり直す</button>';
+  }
+
+  app.innerHTML = html;
+
+  // 結果表示後スクロール
+  if (currentStep >= STEPS.length) {
+    setTimeout(function() {
+      var panel = document.querySelector('.result-panel');
+      if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+}
+
+function selectSingle(stepId, value, stepIndex) {
+  answers[stepId] = value;
+  currentStep = stepIndex + 1;
+  render();
+  scrollToStep(currentStep);
+}
+
+function toggleCheck(stepId, value) {
+  if (!answers[stepId]) answers[stepId] = [];
+  var idx = -1;
+  for (var i = 0; i < answers[stepId].length; i++) {
+    if (answers[stepId][i] === value) { idx = i; break; }
+  }
+  if (idx >= 0) {
+    answers[stepId].splice(idx, 1);
+  } else {
+    answers[stepId].push(value);
+  }
+  render();
+}
+
+function nextStep(stepIndex) {
+  currentStep = stepIndex + 1;
+  render();
+  scrollToStep(currentStep);
+}
+
+function jumpToStep(idx) {
+  if (idx < currentStep) {
+    currentStep = idx;
+    // 以降の回答をクリアしない（ユーザーが戻って修正可能）
+    render();
+  }
+}
+
+function scrollToStep(idx) {
+  setTimeout(function() {
+    var el = document.getElementById('step-' + idx) || document.querySelector('.result-panel');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+function resetAll() {
+  var keys = Object.keys(answers);
+  for (var i = 0; i < keys.length; i++) {
+    delete answers[keys[i]];
+  }
+  currentStep = 0;
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleDetail(cardId) {
+  var detail = document.getElementById('detail-' + cardId);
+  var workup = document.getElementById('workup-' + cardId);
+  var toggle = document.getElementById('toggle-' + cardId);
+  if (detail) {
+    if (detail.className.indexOf('open') >= 0) {
+      detail.className = 'dx-detail';
+      if (workup) workup.className = 'dx-workup';
+      if (toggle) toggle.textContent = '詳細を表示 ▼';
+    } else {
+      detail.className = 'dx-detail open';
+      if (workup) workup.className = 'dx-workup open';
+      if (toggle) toggle.textContent = '詳細を閉じる ▲';
+    }
+  }
+}
+
+function renderResults() {
+  var scores = calcScores(answers);
+  var entries = [];
+  var keys = Object.keys(scores);
+  var i;
+  for (i = 0; i < keys.length; i++) {
+    if (scores[keys[i]] > 0) {
+      entries.push({ id: keys[i], score: scores[keys[i]] });
+    }
+  }
+  entries.sort(function(a, b) { return b.score - a.score; });
+
+  var maxScore = entries.length > 0 ? entries[0].score : 0;
+
+  var html = '<div class="result-panel show">';
+  html += '<div class="result-header">&#128203; 鑑別診断の結果</div>';
+  html += '<div class="result-body">';
+
+  // Red flag アラート
+  var rf = answers.red_flag || [];
+  if (rf.length > 0) {
+    var hasRedFlag = false;
+    var alertHtml = '';
+    for (i = 0; i < rf.length; i++) {
+      hasRedFlag = true;
+      if (rf[i] === "encephalopathy") alertHtml += '・意識障害/見当識障害 &rarr; <strong>急性肝不全の評価・移植施設への搬送検討</strong><br>';
+      if (rf[i] === "coagulopathy") alertHtml += '・PT-INR延長 &rarr; <strong>急性肝不全の評価・ビタミンK投与・FFP検討</strong><br>';
+      if (rf[i] === "cholangitis_sign") alertHtml += '・胆管炎徴候 &rarr; <strong>緊急胆道ドレナージ（ERCP/PTBD）</strong><br>';
+      if (rf[i] === "overdose") alertHtml += '・過量服薬 &rarr; <strong>NAC投与・中毒専門医相談</strong><br>';
+      if (rf[i] === "shock") alertHtml += '・ショック &rarr; <strong>循環管理・ICU管理</strong><br>';
+      if (rf[i] === "rapid_jaundice") alertHtml += '・急速進行性黄疸 &rarr; <strong>閉塞性黄疸の除外・肝不全評価</strong><br>';
+    }
+    if (hasRedFlag) {
+      html += '<div class="alert-box danger">';
+      html += '<div class="alert-title">&#128680; 緊急対応を検討</div>';
+      html += '<div>' + alertHtml + '</div>';
+      html += '</div>';
+    }
+  }
+
+  // 初期評価サマリー
+  html += '<div class="summary-box">';
+  html += '<div class="summary-title">&#127919; 肝機能障害の初期評価 3ステップ</div>';
+  html += '<strong>(1)</strong> R値でパターン分類（肝細胞障害型 / 胆汁うっ滞型 / 混合型）<br>';
+  html += '<strong>(2)</strong> 重症度評価（PT-INR、ビリルビン、意識レベル）<br>';
+  html += '<strong>(3)</strong> 緊急介入の要否判定（急性肝不全 / 胆管炎 / 中毒）';
+  html += '</div>';
+
+  // 鑑別診断リスト
+  if (entries.length === 0) {
+    html += '<p style="color:var(--gray);text-align:center;padding:20px;">入力された情報からは特定の鑑別が示唆されませんでした。追加の検査情報を入力してください。</p>';
+  } else {
+    for (i = 0; i < entries.length; i++) {
+      var d = DISEASES[entries[i].id];
+      var level = getProbLevel(entries[i].score, maxScore);
+      var levelLabel = getProbLabel(level);
+      var cardId = entries[i].id;
+
+      html += '<div class="dx-card ' + level + '" onclick="toggleDetail(\'' + cardId + '\')">';
+
+      // 上段: 名前 + バッジ
+      html += '<div class="dx-top">';
+      html += '<div class="dx-name">';
+      html += '<span>' + d.emoji + '</span>';
+      html += '<span>' + d.name + '</span>';
+      html += '</div>';
+      html += '<span class="prob-badge">' + levelLabel + '</span>';
+      html += '</div>';
+
+      // カテゴリラベル
+      html += '<span class="category-label ' + d.catClass + '">' + d.category + '</span>';
+
+      // 詳細表示トグル
+      html += '<div class="dx-toggle" id="toggle-' + cardId + '">詳細を表示 &#9660;</div>';
+
+      // 詳細 (初期非表示)
+      html += '<div class="dx-detail" id="detail-' + cardId + '">' + d.detail + '</div>';
+
+      // 追加検査 (初期非表示)
+      html += '<div class="dx-workup" id="workup-' + cardId + '">&#128269; 追加検査: ' + d.workup + '</div>';
+
+      html += '</div>';
+    }
+  }
+
+  // 消化器内科コンサルト基準
+  html += '<div class="red-flag-box">';
+  html += '<div class="rf-title">&#128681; 消化器内科・肝臓専門医への相談を考慮すべき状況</div>';
+  html += '<ul>';
+  html += '<li>急性肝不全の徴候（PT-INR延長 + 肝性脳症）</li>';
+  html += '<li>原因不明の肝機能障害が持続する場合</li>';
+  html += '<li>自己免疫性肝炎が疑われる場合（肝生検の適応検討）</li>';
+  html += '<li>Wilson病が疑われる若年者</li>';
+  html += '<li>胆道閉塞・胆管炎でERCP/PTBDが必要な場合</li>';
+  html += '<li>悪性腫瘍が疑われる場合</li>';
+  html += '<li>肝硬変・門脈圧亢進が判明した場合</li>';
+  html += '<li>アセトアミノフェン中毒（NAC投与・移植評価）</li>';
+  html += '</ul>';
+  html += '</div>';
+
+  // 追加の注意事項
+  html += '<div class="summary-box" style="margin-top:16px;">';
+  html += '<div class="summary-title">&#9888;&#65039; 肝機能障害評価の注意点</div>';
+  html += '<strong>ALT vs AST：</strong>ALTは肝特異性が高いが、ASTは肝・筋・心・赤血球に分布。AST優位はアルコール性・筋障害・虚血性を示唆。<br>';
+  html += '<strong>ALP上昇の確認：</strong>ALP上昇時はGGT同時上昇で肝胆道系由来を確認（骨由来ALPとの鑑別）。<br>';
+  html += '<strong>薬剤歴：</strong>処方薬だけでなくOTC薬・サプリメント・漢方薬・健康食品も必ず聴取。<br>';
+  html += '<strong>フォローアップ：</strong>軽度の肝機能異常でも持続する場合は精査を行い、肝硬変への進展を予防する。';
+  html += '</div>';
+
+  html += '</div></div>';
+  return html;
+}
+
+// 初期描画
+render();
+</script>
+
+</body>
+</html>
