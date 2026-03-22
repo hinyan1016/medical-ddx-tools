@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1B3A5C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>意識消失発作（TLOC）鑑別診断ツール</title>
+<style>
+  :root {
+    --navy: #1B3A5C;
+    --blue: #2C5AA0;
+    --light-blue: #E8F0FE;
+    --red: #DC3545;
+    --yellow: #F5C518;
+    --green: #28A745;
+    --orange: #E8850C;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(27,58,92,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #E8F0FE 0%, #F4F6F8 100%);
+    color: #222;
+    min-height: 100vh;
+    padding: 0 0 40px;
+  }
+  header {
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    padding: 14px 20px 18px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(27,58,92,0.18);
+  }
+  .back-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .back-bar a {
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    font-size: 0.85em;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background 0.2s;
+  }
+  .back-bar a:active { background: rgba(255,255,255,0.15); }
+  header h1 { font-size: 1.7em; font-weight: 700; letter-spacing: 0.04em; }
+  header p { font-size: 0.92em; margin-top: 6px; opacity: 0.85; }
+
+  .container { max-width: 820px; margin: 0 auto; padding: 24px 16px; }
+
+  .step-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+    overflow: hidden;
+    transition: opacity 0.3s;
+  }
+  .step-card.inactive { opacity: 0.45; pointer-events: none; }
+  .step-card.completed { opacity: 1; }
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    background: var(--light-blue);
+    border-bottom: 2px solid var(--blue);
+    cursor: pointer;
+  }
+  .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--blue);
+    color: var(--white);
+    font-weight: 700;
+    font-size: 0.95em;
+    flex-shrink: 0;
+  }
+  .step-number.done { background: var(--green); }
+  .step-title { font-weight: 700; font-size: 1.05em; color: var(--navy); }
+  .step-body { padding: 18px; }
+
+  .option-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border: 2px solid #D0D8E4;
+    border-radius: 8px;
+    background: var(--white);
+    font-size: 0.97em;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: left;
+    color: #222;
+    font-family: inherit;
+    width: 100%;
+  }
+  .option-btn:hover { border-color: var(--blue); background: var(--light-blue); }
+  .option-btn.selected {
+    border-color: var(--blue);
+    background: var(--light-blue);
+    font-weight: 700;
+  }
+  .option-btn .icon { font-size: 1.2em; flex-shrink: 0; width: 24px; text-align: center; }
+
+  .checklist { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--light-gray);
+    cursor: pointer;
+    transition: background 0.15s;
+    user-select: none;
+    font-size: 0.95em;
+  }
+  .check-item:hover { background: #E0E8F0; }
+  .check-item input[type="checkbox"] {
+    width: 18px; height: 18px;
+    accent-color: var(--blue);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .check-item label { cursor: pointer; flex: 1; }
+
+  .result-panel {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(27,58,92,0.15);
+    overflow: hidden;
+    margin-top: 24px;
+    display: none;
+  }
+  .result-panel.show { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  .result-header {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    font-weight: 700;
+    font-size: 1.15em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .result-body { padding: 20px; }
+
+  .dx-card {
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    position: relative;
+    transition: all 0.2s;
+  }
+  .dx-card.high { border-color: var(--red); background: #FFF5F5; }
+  .dx-card.medium { border-color: var(--orange); background: #FFF8F0; }
+  .dx-card.low { border-color: var(--gray); background: var(--light-gray); }
+
+  .dx-card .dx-name {
+    font-weight: 700;
+    font-size: 1.08em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .dx-card .prob-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.78em;
+    font-weight: 700;
+    color: var(--white);
+  }
+  .dx-card.high .prob-badge { background: var(--red); }
+  .dx-card.medium .prob-badge { background: var(--orange); }
+  .dx-card.low .prob-badge { background: var(--gray); }
+
+  .dx-card .dx-detail { font-size: 0.9em; color: #444; line-height: 1.6; }
+  .dx-card .dx-detail strong { color: var(--navy); }
+  .dx-card .dx-workup {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #ccc;
+    font-size: 0.88em;
+    color: var(--blue);
+  }
+
+  .next-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    padding: 10px 22px;
+    background: var(--blue);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: inherit;
+  }
+  .next-btn:hover { background: var(--navy); }
+  .next-btn:disabled { background: #B0BEC5; cursor: not-allowed; }
+
+  .reset-btn {
+    display: block;
+    margin: 24px auto 0;
+    padding: 10px 32px;
+    background: var(--white);
+    color: var(--red);
+    border: 2px solid var(--red);
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .reset-btn:hover { background: var(--red); color: var(--white); }
+
+  .hint {
+    font-size: 0.85em;
+    color: var(--gray);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  .divider { height: 1px; background: #D0D8E4; margin: 14px 0; }
+
+  .algo-note {
+    background: #FFFDE7;
+    border-left: 4px solid var(--yellow);
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 18px;
+    font-size: 0.9em;
+    line-height: 1.6;
+    color: #555;
+  }
+  .algo-note strong { color: var(--navy); }
+
+  .alert-box {
+    background: #FFF3CD;
+    border: 2px solid var(--orange);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    font-size: 0.92em;
+    line-height: 1.6;
+  }
+  .alert-box.danger {
+    background: #F8D7DA;
+    border-color: var(--red);
+  }
+  .alert-box .alert-title {
+    font-weight: 700;
+    color: var(--red);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .category-label {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.78em;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .cat-reflex { background: #E3F2FD; color: #1565C0; }
+  .cat-orthostatic { background: #E8F5E9; color: #2E7D32; }
+  .cat-cardiac { background: #FCE4EC; color: #C62828; }
+  .cat-epilepsy { background: #F3E5F5; color: #6A1B9A; }
+  .cat-pnes { background: #FFF3E0; color: #E65100; }
+  .cat-rare { background: #EFEBE9; color: #4E342E; }
+
+  .summary-box {
+    background: var(--light-blue);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    font-size: 0.92em;
+    line-height: 1.6;
+  }
+  .summary-box .summary-title {
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .red-flag-box {
+    background: #F8D7DA;
+    border: 2px solid var(--red);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 16px;
+    font-size: 0.9em;
+    line-height: 1.6;
+  }
+  .red-flag-box .rf-title {
+    font-weight: 700;
+    color: var(--red);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .red-flag-box ul { padding-left: 20px; margin-top: 4px; }
+  .red-flag-box li { margin-bottom: 4px; }
+
+  .ref-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88em;
+    margin: 12px 0;
+  }
+  .ref-table th, .ref-table td {
+    border: 1px solid #D0D8E4;
+    padding: 8px 10px;
+    text-align: left;
+  }
+  .ref-table th {
+    background: var(--light-blue);
+    color: var(--navy);
+    font-weight: 700;
+  }
+  .ref-table tr:nth-child(even) td { background: var(--light-gray); }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.3em; }
+    .step-body, .result-body { padding: 14px; }
+    .dx-card { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="back-bar"><a href="index.html">‹ ツール一覧</a></div>
+  <h1>意識消失発作（TLOC）鑑別診断ツール</h1>
+  <p>失神・てんかん・PNESを系統的に鑑別</p>
+</header>
+
+<div class="container" id="app"></div>
+
+<script>
+// ===== 疾患データ =====
+const DISEASES = {
+  // 反射性失神
+  vasovagal: {
+    name: "血管迷走神経性失神",
+    emoji: "😵",
+    category: "反射性失神",
+    catClass: "cat-reflex",
+    detail: "最も頻度の高い失神の原因。長時間の立位、痛み、感情的ストレス、採血などが誘因。<strong>前駆症状（発汗・悪心・蒼白・視野暗転）</strong>が典型的で、意識回復は速やか（1分以内）。<strong>EGSYS score</strong>で誘因あり（-1点）・自律神経性前駆症状あり（-1点）は心原性の除外に有用。横になると速やかに意識回復する。",
+    workup: "詳細な病歴聴取（最重要）、チルト試験（再発性で診断不確実な場合）、12誘導心電図",
+  },
+  situational: {
+    name: "状況失神",
+    emoji: "🚽",
+    category: "反射性失神",
+    catClass: "cat-reflex",
+    detail: "特定の状況で誘発される反射性失神。<strong>排尿失神</strong>（立位排尿時、特に夜間・飲酒後の中年男性）、<strong>咳嗽失神</strong>（COPD患者の激しい咳後）、<strong>嚥下失神</strong>（食道疾患合併時）、<strong>排便失神</strong>（いきみ時）が代表的。誘因が明確なため病歴で診断可能。",
+    workup: "病歴聴取（誘因の特定）、12誘導心電図、必要に応じて原因疾患の精査",
+  },
+  carotid_sinus: {
+    name: "頸動脈洞失神",
+    emoji: "👔",
+    category: "反射性失神",
+    catClass: "cat-reflex",
+    detail: "頸動脈洞への機械的刺激（首回り圧迫、ネクタイ、ひげ剃り、振り向き）で誘発される失神。<strong>40歳以上の男性</strong>に多い。頸動脈洞マッサージで心停止>3秒（心抑制型）または収縮期血圧50mmHg以上の低下（血管抑制型）で診断。原因不明の再発性失神の高齢者では必ず評価すべき。",
+    workup: "頸動脈洞マッサージ（>40歳、頸動脈雑音がないことを確認後）、心電図モニタリング、頸動脈エコー",
+  },
+  // 起立性低血圧
+  orthostatic: {
+    name: "起立性低血圧",
+    emoji: "🧍",
+    category: "起立性低血圧",
+    catClass: "cat-orthostatic",
+    detail: "起立後に<strong>収縮期血圧20mmHg以上</strong>または<strong>拡張期血圧10mmHg以上</strong>の低下。立ちくらみ・ふらつきが主症状で、失神に至ることも。原因は<strong>薬剤性</strong>（降圧薬、利尿薬、α遮断薬、三環系抗うつ薬）が最多。<strong>自律神経障害</strong>（糖尿病、パーキンソン病、MSA、純粋自律神経障害）、脱水、出血も原因。起立後の立ちくらみの反復が特徴。",
+    workup: "臥位→立位血圧測定（3分後）、Head-up tilt試験、薬剤歴確認、自律神経機能検査（疑い時）",
+  },
+  // 心原性失神
+  cardiac_arrhythmia: {
+    name: "不整脈性失神",
+    emoji: "💓",
+    category: "心原性失神",
+    catClass: "cat-cardiac",
+    detail: "<strong>前駆症状なしの突然の意識消失</strong>が最も重要な特徴。徐脈性（洞不全症候群、房室ブロック）と頻脈性（心室頻拍、上室性頻拍）に分類。<strong>QT延長症候群</strong>（運動中・驚愕時に多いTorsades de Pointes）、<strong>Brugada症候群</strong>（夜間・安静時の心室細動、東アジア人男性に多い）、<strong>WPW症候群</strong>も原因となる。<strong>EGSYS score ≧3点で心原性失神の感度92%</strong>。",
+    workup: "12誘導心電図（必須）、ホルター心電図、イベントレコーダー、植込み型ループレコーダー（ILR）、電気生理学的検査",
+  },
+  cardiac_structural: {
+    name: "構造的心疾患による失神",
+    emoji: "🫀",
+    category: "心原性失神",
+    catClass: "cat-cardiac",
+    detail: "<strong>労作中の失神</strong>が特徴的な赤旗所見。<strong>大動脈弁狭窄症</strong>（高齢者、収縮期雑音）、<strong>肥大型心筋症</strong>（若年者、労作時失神、突然死家族歴）、<strong>肺塞栓</strong>（胸痛・呼吸困難・頻脈を伴う）、<strong>大動脈解離</strong>（突然の胸背部痛）、<strong>心タンポナーデ</strong>が原因。労作中・臥位での失神は心原性を強く疑い、循環器への緊急相談が必要。",
+    workup: "心エコー（必須）、運動負荷試験（労作中失神）、造影CT（肺塞栓・大動脈解離疑い時）、トロポニン、BNP",
+  },
+  // てんかん
+  gtcs: {
+    name: "全般性強直間代発作（GTCS）",
+    emoji: "⚡",
+    category: "てんかん",
+    catClass: "cat-epilepsy",
+    detail: "強直相（全身硬直、約10-20秒）→間代相（律動的な四肢のけいれん、約30-60秒）の二相性。<strong>チアノーゼ</strong>（蒼白ではなく青色）、<strong>舌側面の咬傷</strong>（LR+ 49、特異度99.8%）、<strong>発作後の意識混濁（postictal confusion）が5分以上</strong>が鑑別の鍵。<strong>睡眠中の発症</strong>はてんかんを強く示唆（失神は臥位で起こらない）。律動的な間代運動は>20回（10/20ルール）。発作後に筋肉痛・頭痛・CK上昇を認める。",
+    workup: "脳波（EEG）、頭部MRI、血清プロラクチン（発作後20分以内、GTCSで感度100%/特異度73%）、血清乳酸（2時間以内）、CK（48時間後）",
+  },
+  focal_impaired: {
+    name: "焦点意識減損発作",
+    emoji: "🧠",
+    category: "てんかん",
+    catClass: "cat-epilepsy",
+    detail: "旧称「複雑部分発作」。意識減損を伴う焦点起始発作で、側頭葉てんかんが最多。<strong>前兆（aura）</strong>として<strong>デジャビュ</strong>、<strong>上腹部不快感の上行</strong>、<strong>恐怖感</strong>が特徴的。発作中は<strong>自動症</strong>（口をもぐもぐ、手をまさぐる）を認め、一点を凝視して反応がなくなる。発作後に<strong>Todd麻痺</strong>（一過性の片麻痺）が見られれば焦点起始が確定的。持続は通常1-2分。",
+    workup: "脳波（EEG、睡眠賦活含む）、頭部MRI（海馬硬化、腫瘍の検索）、長時間ビデオ脳波モニタリング",
+  },
+  absence: {
+    name: "欠神発作",
+    emoji: "👁️",
+    category: "てんかん",
+    catClass: "cat-epilepsy",
+    detail: "小児・思春期に多い。<strong>数秒〜20秒の意識消失</strong>で、突然動作が止まり一点を凝視する。転倒は稀で、終了後は直ちに元の動作に戻る（postictal confusionなし）。1日に数十〜数百回反復しうる。過呼吸で誘発可能（診察室で再現できる）。脳波で<strong>3Hz棘徐波複合</strong>が特徴的。成人での新規発症は非常に稀。",
+    workup: "脳波（過呼吸賦活で3Hz棘徐波の出現）、頭部MRI（成人発症の場合）",
+  },
+  // PNES
+  pnes: {
+    name: "心因性非てんかん性発作（PNES）",
+    emoji: "🎭",
+    category: "PNES",
+    catClass: "cat-pnes",
+    detail: "機能性神経症状症の一型。抗てんかん薬に反応しない反復する発作。<strong>閉眼</strong>が最も重要な鑑別所見（てんかん発作・失神は通常開眼、特異度92%）。<strong>5分以上の持続</strong>（真のてんかん発作は通常1-2分）、<strong>非同期性の四肢運動</strong>、<strong>骨盤突出運動</strong>、<strong>変動する経過（fluctuating course）</strong>が特徴的（感度76%）。発作中の出来事を部分的に記憶していることがある。精神疾患（PTSD、解離性障害、不安障害）の合併が多い。<strong>ビデオ脳波モニタリング</strong>が確定診断のゴールドスタンダード。",
+    workup: "ビデオ脳波モニタリング（vEEG、確定診断）、心理・精神科評価、神経心理学的検査",
+  },
+  // まれな原因
+  vba_tia: {
+    name: "椎骨脳底動脈TIA",
+    emoji: "🩸",
+    category: "まれな原因",
+    catClass: "cat-rare",
+    detail: "椎骨脳底動脈領域のTIAで意識消失をきたしうるが、<strong>意識消失単独でTIAと診断することは極めて稀</strong>。必ず<strong>他の神経症状</strong>（回転性めまい、複視、構音障害、運動失調、嚥下障害、視野障害）を伴う。高齢者、動脈硬化リスク因子（高血圧、糖尿病、脂質異常症、喫煙）を有する患者で疑う。",
+    workup: "頭部MRI/MRA、頸部血管エコー、動脈硬化リスク因子の評価",
+  },
+  subclavian_steal: {
+    name: "鎖骨下動脈盗血症候群",
+    emoji: "💪",
+    category: "まれな原因",
+    catClass: "cat-rare",
+    detail: "鎖骨下動脈の近位部狭窄により、患側上肢運動時に椎骨動脈の血流が逆転し脳幹虚血をきたす。<strong>上肢運動時のめまい・失神</strong>が特徴。<strong>血圧の左右差（>20mmHg）</strong>、患側の脈拍減弱が重要な手がかり。動脈硬化が主因で左側に多い。",
+    workup: "両上肢血圧測定（左右差の確認）、頸部血管エコー（椎骨動脈血流逆転の確認）、CT/MRアンギオグラフィー",
+  },
+  metabolic: {
+    name: "代謝性（低血糖など）",
+    emoji: "🍬",
+    category: "まれな原因",
+    catClass: "cat-rare",
+    detail: "<strong>低血糖</strong>は厳密にはTLOCではなく意識障害だが、鑑別で重要。<strong>交感神経症状</strong>（発汗、振戦、動悸、空腹感）が先行し、遷延すると意識障害をきたす。糖尿病治療中（インスリン、SU薬）で特に注意。<strong>低酸素血症</strong>、<strong>過換気症候群</strong>（呼吸性アルカローシスによるめまい・手足のしびれ）も鑑別に入る。",
+    workup: "血糖測定（発作時が理想）、HbA1c、糖尿病治療薬の確認、動脈血液ガス分析",
+  },
+  sah: {
+    name: "くも膜下出血（SAH）",
+    emoji: "🚨",
+    category: "まれな原因",
+    catClass: "cat-rare",
+    detail: "頭痛が主症状だが、<strong>発症時に一過性の意識消失</strong>をきたすことがある（約10-25%）。「人生最悪の頭痛」「突然発症の雷鳴頭痛」が特徴。意識消失だけで来院し、頭痛を訴えない症例もあり見逃しに注意。髄膜刺激徴候（項部硬直、ケルニッヒ徴候）、片頭痛と異なる突然発症の頭痛は要精査。",
+    workup: "頭部CT（発症6時間以内の感度>98%）、腰椎穿刺（CT陰性の場合）、CT血管造影",
+  },
+};
+
+// ===== ステップ定義 =====
+const STEPS = [
+  {
+    id: "triggers",
+    title: "誘因・状況",
+    question: "意識消失発作が起きた状況・誘因は？（該当するものをすべて選択）",
+    hint: "誘因の有無は失神 vs てんかんの鑑別で最も重要な情報の一つです",
+    type: "multi",
+    options: [
+      { label: "長時間の立位・座位", value: "prolonged_standing" },
+      { label: "痛み・採血・医療処置", value: "pain_medical" },
+      { label: "感情的ストレス（恐怖・驚愕）", value: "emotional" },
+      { label: "暑い・混雑した環境", value: "hot_crowded" },
+      { label: "起立直後（立ち上がり時）", value: "on_standing" },
+      { label: "排尿中・排便中・咳嗽・嚥下時", value: "situational" },
+      { label: "首の圧迫・回旋（ネクタイ・振り向き）", value: "neck_pressure" },
+      { label: "運動中・労作中", value: "exertion" },
+      { label: "臥位・安静時", value: "supine" },
+      { label: "睡眠中", value: "sleep" },
+      { label: "上肢の運動中（特に片側）", value: "arm_exercise" },
+      { label: "明確な誘因なし", value: "no_trigger" },
+    ]
+  },
+  {
+    id: "prodrome",
+    title: "前駆症状・前兆",
+    question: "意識消失の前にどのような症状がありましたか？（該当するものをすべて選択）",
+    hint: "前駆症状の有無と種類は鑑別に非常に重要です",
+    type: "multi",
+    options: [
+      { label: "立ちくらみ・ふらつき", value: "lightheadedness" },
+      { label: "発汗・温感・悪心", value: "autonomic" },
+      { label: "視野の暗転・狭窄", value: "visual_dimming" },
+      { label: "動悸", value: "palpitation" },
+      { label: "デジャビュ・ジャメビュ", value: "dejavu" },
+      { label: "上腹部不快感の上行（epigastric rising）", value: "epigastric_rising" },
+      { label: "恐怖感・不安感（前兆として）", value: "fear_aura" },
+      { label: "異常な臭い・味覚", value: "olfactory_gustatory" },
+      { label: "突然の胸痛・背部痛", value: "chest_pain" },
+      { label: "突然の激しい頭痛", value: "thunderclap_headache" },
+      { label: "前駆症状なし（突然の意識消失）", value: "no_prodrome" },
+    ]
+  },
+  {
+    id: "during",
+    title: "発作中の所見（目撃者情報）",
+    question: "発作中に目撃された所見は？（該当するものをすべて選択）",
+    hint: "目撃者からの情報は鑑別に極めて重要。動画があれば最も有用です",
+    type: "multi",
+    options: [
+      { label: "持続時間 30秒以下", value: "duration_short" },
+      { label: "持続時間 1〜2分", value: "duration_1_2min" },
+      { label: "持続時間 5分以上", value: "duration_long" },
+      { label: "閉眼", value: "eye_closure" },
+      { label: "開眼（凝視）", value: "eye_open" },
+      { label: "顔面蒼白", value: "pallor" },
+      { label: "チアノーゼ（顔面が青紫色）", value: "cyanosis" },
+      { label: "律動的な強直間代運動（全身のけいれん）", value: "tonic_clonic" },
+      { label: "多焦点性の短いミオクローヌス（<10回）", value: "myoclonus_brief" },
+      { label: "非同期性・不規則な四肢の運動", value: "asynchronous_movement" },
+      { label: "自動症（口をもぐもぐ・手をまさぐる）", value: "automatism" },
+      { label: "一側への頭部回旋", value: "head_turning" },
+      { label: "骨盤突出運動", value: "pelvic_thrust" },
+      { label: "舌側面の咬傷", value: "lateral_tongue_bite" },
+      { label: "舌尖部の咬傷", value: "tip_tongue_bite" },
+      { label: "尿失禁", value: "incontinence" },
+      { label: "いびき様呼吸（発作中〜直後）", value: "stertorous_breathing" },
+      { label: "目撃者なし", value: "unwitnessed" },
+    ]
+  },
+  {
+    id: "post_event",
+    title: "発作後の所見",
+    question: "意識回復後の状態は？（該当するものをすべて選択）",
+    hint: "発作後の意識回復パターンは失神 vs てんかんの鑑別で最も信頼できる所見の一つです",
+    type: "multi",
+    options: [
+      { label: "速やかな意識回復（1分以内）", value: "rapid_recovery" },
+      { label: "遷延する意識混濁（5分以上）", value: "prolonged_confusion" },
+      { label: "見当識障害の持続", value: "disorientation" },
+      { label: "全身の筋肉痛", value: "myalgia" },
+      { label: "頭痛", value: "headache" },
+      { label: "一過性の片麻痺・局所神経脱落症状（Todd麻痺）", value: "todd_paralysis" },
+      { label: "発作中の出来事を部分的に記憶している", value: "partial_memory" },
+      { label: "悪心・嘔吐", value: "nausea" },
+      { label: "発作後の疲労感が強い", value: "fatigue" },
+    ]
+  },
+  {
+    id: "cardiac_flags",
+    title: "心原性レッドフラグ",
+    question: "以下の心原性失神を示唆する所見がありますか？（該当するものをすべて選択）",
+    hint: "心原性失神は致死的であり、1つでも該当すれば循環器への相談が必要です",
+    type: "multi",
+    options: [
+      { label: "心電図異常（QT延長、Brugada型、二束ブロック、WPW、異常Q波）", value: "ecg_abnormal" },
+      { label: "構造的心疾患の既往（弁膜症、心筋症、先天性心疾患）", value: "structural_heart" },
+      { label: "心不全の徴候（浮腫、起座呼吸、頸静脈怒張）", value: "heart_failure" },
+      { label: "労作中の失神", value: "exertional_syncope" },
+      { label: "臥位での失神", value: "supine_syncope" },
+      { label: "失神前の動悸", value: "pre_syncope_palpitation" },
+      { label: "該当なし", value: "none" },
+    ]
+  },
+  {
+    id: "background",
+    title: "患者背景・既往歴",
+    question: "患者の背景情報は？（該当するものをすべて選択）",
+    hint: "年齢・既往歴は鑑別の事前確率に大きく影響します",
+    type: "multi",
+    options: [
+      { label: "年齢 40歳未満", value: "age_young" },
+      { label: "年齢 40歳以上", value: "age_over40" },
+      { label: "てんかんの既往", value: "epilepsy_history" },
+      { label: "心疾患の既往", value: "cardiac_history" },
+      { label: "パーキンソン病・自律神経障害", value: "autonomic_disorder" },
+      { label: "糖尿病（インスリン・SU薬使用中）", value: "diabetes_medication" },
+      { label: "精神疾患（うつ病・PTSD・解離性障害・不安障害）", value: "psychiatric" },
+      { label: "降圧薬・利尿薬・α遮断薬の使用", value: "hypotensive_drugs" },
+      { label: "抗てんかん薬を使用しているが発作がコントロール不良", value: "refractory_epilepsy" },
+      { label: "動脈硬化リスク因子（高血圧・脂質異常症・喫煙）", value: "vascular_risk" },
+      { label: "意識消失発作の反復", value: "recurrent" },
+    ]
+  },
+  {
+    id: "family_other",
+    title: "家族歴・その他",
+    question: "以下に該当するものは？（該当するものをすべて選択）",
+    hint: "若年者の突然死家族歴はチャネル病・肥大型心筋症の重要な手がかりです",
+    type: "multi",
+    options: [
+      { label: "40歳未満の突然死の家族歴", value: "family_sudden_death" },
+      { label: "てんかんの家族歴", value: "family_epilepsy" },
+      { label: "QT延長症候群・Brugada症候群の家族歴", value: "family_channelopathy" },
+      { label: "血圧の左右差（>20mmHg）", value: "bp_asymmetry" },
+      { label: "項部硬直・髄膜刺激徴候", value: "meningeal_signs" },
+      { label: "片側の脈拍減弱", value: "pulse_deficit" },
+      { label: "該当なし", value: "none" },
+    ]
+  },
+];
+
+// ===== スコアリングロジック =====
+function calcScores(answers) {
+  const scores = {};
+  Object.keys(DISEASES).forEach(function(k) { scores[k] = 0; });
+
+  var a = {
+    triggers: answers.triggers || [],
+    prodrome: answers.prodrome || [],
+    during: answers.during || [],
+    post_event: answers.post_event || [],
+    cardiac_flags: answers.cardiac_flags || [],
+    background: answers.background || [],
+    family_other: answers.family_other || [],
+  };
+
+  // === Step 1: 誘因・状況 ===
+  if (a.triggers.includes("prolonged_standing")) { scores.vasovagal += 4; scores.orthostatic += 2; }
+  if (a.triggers.includes("pain_medical")) { scores.vasovagal += 4; }
+  if (a.triggers.includes("emotional")) { scores.vasovagal += 3; scores.pnes += 1; }
+  if (a.triggers.includes("hot_crowded")) { scores.vasovagal += 3; }
+  if (a.triggers.includes("on_standing")) { scores.orthostatic += 5; scores.vasovagal += 1; }
+  if (a.triggers.includes("situational")) { scores.situational += 5; }
+  if (a.triggers.includes("neck_pressure")) { scores.carotid_sinus += 5; }
+  if (a.triggers.includes("exertion")) { scores.cardiac_structural += 5; scores.cardiac_arrhythmia += 3; }
+  if (a.triggers.includes("supine")) { scores.cardiac_arrhythmia += 4; scores.gtcs += 2; }
+  if (a.triggers.includes("sleep")) { scores.gtcs += 5; scores.focal_impaired += 3; scores.cardiac_arrhythmia += 2; }
+  if (a.triggers.includes("arm_exercise")) { scores.subclavian_steal += 5; }
+  if (a.triggers.includes("no_trigger")) { scores.cardiac_arrhythmia += 2; scores.gtcs += 1; }
+
+  // === Step 2: 前駆症状 ===
+  if (a.prodrome.includes("lightheadedness")) { scores.vasovagal += 2; scores.orthostatic += 3; }
+  if (a.prodrome.includes("autonomic")) { scores.vasovagal += 4; scores.orthostatic += 1; }
+  if (a.prodrome.includes("visual_dimming")) { scores.vasovagal += 3; scores.orthostatic += 2; }
+  if (a.prodrome.includes("palpitation")) { scores.cardiac_arrhythmia += 4; }
+  if (a.prodrome.includes("dejavu")) { scores.focal_impaired += 5; }
+  if (a.prodrome.includes("epigastric_rising")) { scores.focal_impaired += 5; }
+  if (a.prodrome.includes("fear_aura")) { scores.focal_impaired += 3; scores.pnes += 1; }
+  if (a.prodrome.includes("olfactory_gustatory")) { scores.focal_impaired += 4; }
+  if (a.prodrome.includes("chest_pain")) { scores.cardiac_structural += 3; scores.sah += 1; }
+  if (a.prodrome.includes("thunderclap_headache")) { scores.sah += 5; }
+  if (a.prodrome.includes("no_prodrome")) { scores.cardiac_arrhythmia += 4; scores.cardiac_structural += 2; scores.gtcs += 1; }
+
+  // === Step 3: 発作中の所見 ===
+  if (a.during.includes("duration_short")) { scores.vasovagal += 2; scores.situational += 2; scores.orthostatic += 2; scores.carotid_sinus += 2; scores.cardiac_arrhythmia += 2; scores.absence += 3; }
+  if (a.during.includes("duration_1_2min")) { scores.gtcs += 3; scores.focal_impaired += 3; }
+  if (a.during.includes("duration_long")) { scores.pnes += 5; }
+  if (a.during.includes("eye_closure")) { scores.pnes += 5; }
+  if (a.during.includes("eye_open")) { scores.gtcs += 1; scores.focal_impaired += 1; scores.vasovagal += 1; }
+  if (a.during.includes("pallor")) { scores.vasovagal += 3; scores.orthostatic += 2; scores.situational += 2; scores.cardiac_arrhythmia += 1; }
+  if (a.during.includes("cyanosis")) { scores.gtcs += 4; }
+  if (a.during.includes("tonic_clonic")) { scores.gtcs += 5; }
+  if (a.during.includes("myoclonus_brief")) { scores.vasovagal += 2; scores.cardiac_arrhythmia += 1; }
+  if (a.during.includes("asynchronous_movement")) { scores.pnes += 4; }
+  if (a.during.includes("automatism")) { scores.focal_impaired += 5; }
+  if (a.during.includes("head_turning")) { scores.gtcs += 2; scores.focal_impaired += 3; }
+  if (a.during.includes("pelvic_thrust")) { scores.pnes += 4; }
+  if (a.during.includes("lateral_tongue_bite")) { scores.gtcs += 5; scores.focal_impaired += 3; }
+  if (a.during.includes("tip_tongue_bite")) { scores.vasovagal += 1; scores.pnes += 1; }
+  if (a.during.includes("incontinence")) { scores.gtcs += 2; scores.focal_impaired += 1; }
+  if (a.during.includes("stertorous_breathing")) { scores.gtcs += 3; }
+
+  // === Step 4: 発作後 ===
+  if (a.post_event.includes("rapid_recovery")) { scores.vasovagal += 3; scores.situational += 3; scores.orthostatic += 3; scores.carotid_sinus += 3; scores.cardiac_arrhythmia += 2; scores.absence += 3; }
+  if (a.post_event.includes("prolonged_confusion")) { scores.gtcs += 5; scores.focal_impaired += 3; }
+  if (a.post_event.includes("disorientation")) { scores.gtcs += 3; scores.focal_impaired += 2; }
+  if (a.post_event.includes("myalgia")) { scores.gtcs += 3; }
+  if (a.post_event.includes("headache")) { scores.gtcs += 2; scores.sah += 2; }
+  if (a.post_event.includes("todd_paralysis")) { scores.focal_impaired += 5; scores.gtcs += 2; }
+  if (a.post_event.includes("partial_memory")) { scores.pnes += 4; }
+  if (a.post_event.includes("fatigue")) { scores.gtcs += 1; scores.focal_impaired += 1; }
+
+  // === Step 5: 心原性レッドフラグ ===
+  if (a.cardiac_flags.includes("ecg_abnormal")) { scores.cardiac_arrhythmia += 5; scores.cardiac_structural += 2; }
+  if (a.cardiac_flags.includes("structural_heart")) { scores.cardiac_structural += 5; scores.cardiac_arrhythmia += 2; }
+  if (a.cardiac_flags.includes("heart_failure")) { scores.cardiac_structural += 3; }
+  if (a.cardiac_flags.includes("exertional_syncope")) { scores.cardiac_structural += 5; scores.cardiac_arrhythmia += 3; }
+  if (a.cardiac_flags.includes("supine_syncope")) { scores.cardiac_arrhythmia += 4; scores.cardiac_structural += 2; }
+  if (a.cardiac_flags.includes("pre_syncope_palpitation")) { scores.cardiac_arrhythmia += 4; }
+
+  // === Step 6: 患者背景 ===
+  if (a.background.includes("age_young")) { scores.vasovagal += 1; scores.absence += 1; }
+  if (a.background.includes("age_over40")) { scores.carotid_sinus += 2; scores.cardiac_arrhythmia += 1; scores.cardiac_structural += 1; scores.orthostatic += 1; }
+  if (a.background.includes("epilepsy_history")) { scores.gtcs += 3; scores.focal_impaired += 3; scores.absence += 2; }
+  if (a.background.includes("cardiac_history")) { scores.cardiac_arrhythmia += 3; scores.cardiac_structural += 3; }
+  if (a.background.includes("autonomic_disorder")) { scores.orthostatic += 4; }
+  if (a.background.includes("diabetes_medication")) { scores.metabolic += 4; }
+  if (a.background.includes("psychiatric")) { scores.pnes += 4; }
+  if (a.background.includes("hypotensive_drugs")) { scores.orthostatic += 3; scores.vasovagal += 1; }
+  if (a.background.includes("refractory_epilepsy")) { scores.pnes += 3; scores.gtcs += 1; scores.focal_impaired += 1; }
+  if (a.background.includes("vascular_risk")) { scores.vba_tia += 2; scores.subclavian_steal += 2; scores.cardiac_structural += 1; }
+  if (a.background.includes("recurrent")) { scores.vasovagal += 1; scores.pnes += 1; }
+
+  // === Step 7: 家族歴・その他 ===
+  if (a.family_other.includes("family_sudden_death")) { scores.cardiac_arrhythmia += 4; scores.cardiac_structural += 3; }
+  if (a.family_other.includes("family_epilepsy")) { scores.gtcs += 2; scores.focal_impaired += 1; scores.absence += 2; }
+  if (a.family_other.includes("family_channelopathy")) { scores.cardiac_arrhythmia += 5; }
+  if (a.family_other.includes("bp_asymmetry")) { scores.subclavian_steal += 5; }
+  if (a.family_other.includes("meningeal_signs")) { scores.sah += 5; }
+  if (a.family_other.includes("pulse_deficit")) { scores.subclavian_steal += 3; }
+
+  return scores;
+}
+
+// ===== UI描画 =====
+const app = document.getElementById("app");
+let currentStep = 0;
+const answers = {};
+
+function render() {
+  let html = "";
+
+  // アルゴリズム説明
+  html += '<div class="algo-note">';
+  html += '<strong>使い方：</strong>各ステップの質問に順番に回答してください。すべてのステップ完了後に鑑別診断の候補が優先順位付きで表示されます。<br>';
+  html += '<strong>対象：</strong>一過性意識消失（Transient Loss of Consciousness: TLOC）の鑑別。ESC 2018失神ガイドライン・NICEガイドライン準拠。';
+  html += '</div>';
+
+  // 各ステップ
+  STEPS.forEach(function(step, i) {
+    var isActive = i === currentStep;
+    var isDone = i < currentStep;
+    var cls = isDone ? "completed" : (isActive ? "" : "inactive");
+
+    html += '<div class="step-card ' + cls + '" id="step-' + i + '">';
+    html += '<div class="step-header">';
+    html += '<span class="step-number ' + (isDone ? 'done' : '') + '">' + (isDone ? '✓' : (i + 1)) + '</span>';
+    html += '<span class="step-title">' + step.title + '</span>';
+    html += '</div>';
+
+    if (isActive || isDone) {
+      html += '<div class="step-body">';
+      html += '<p style="font-weight:600;margin-bottom:4px;">' + step.question + '</p>';
+      if (step.hint) html += '<p class="hint">' + step.hint + '</p>';
+
+      if (step.type === "single") {
+        html += '<div class="option-group">';
+        step.options.forEach(function(opt) {
+          var selected = answers[step.id] === opt.value;
+          html += '<button class="option-btn ' + (selected ? 'selected' : '') + '"';
+          html += ' onclick="selectSingle(\'' + step.id + '\', \'' + opt.value + '\', ' + i + ')"';
+          html += (isDone && !isActive) ? ' disabled' : '';
+          html += '>';
+          html += '<span class="icon">' + (opt.icon || '') + '</span>' + opt.label;
+          html += '</button>';
+        });
+        html += '</div>';
+      } else {
+        html += '<div class="checklist">';
+        var currentAnswers = answers[step.id] || [];
+        step.options.forEach(function(opt) {
+          var checked = currentAnswers.indexOf(opt.value) >= 0;
+          html += '<div class="check-item" onclick="toggleCheck(\'' + step.id + '\', \'' + opt.value + '\', this)">';
+          html += '<input type="checkbox" ' + (checked ? 'checked' : '') + ' ' + (isDone && !isActive ? 'disabled' : '') + '>';
+          html += '<label>' + opt.label + '</label>';
+          html += '</div>';
+        });
+        html += '</div>';
+        if (isActive) {
+          html += '<button class="next-btn" onclick="nextStep(' + i + ')">次へ ▶</button>';
+        }
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+  });
+
+  // 結果パネル
+  if (currentStep >= STEPS.length) {
+    html += renderResults();
+  }
+
+  // リセットボタン
+  if (currentStep > 0) {
+    html += '<button class="reset-btn" onclick="resetAll()">🔄 最初からやり直す</button>';
+  }
+
+  app.innerHTML = html;
+
+  // 結果表示後スクロール
+  if (currentStep >= STEPS.length) {
+    setTimeout(function() {
+      var panel = document.querySelector('.result-panel');
+      if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+}
+
+function selectSingle(stepId, value, stepIndex) {
+  answers[stepId] = value;
+  currentStep = stepIndex + 1;
+  render();
+  scrollToStep(currentStep);
+}
+
+function toggleCheck(stepId, value, el) {
+  if (!answers[stepId]) answers[stepId] = [];
+  var idx = answers[stepId].indexOf(value);
+  if (idx >= 0) answers[stepId].splice(idx, 1);
+  else answers[stepId].push(value);
+
+  // 排他処理: "none"と他の選択肢
+  if (value === "none" && answers[stepId].indexOf("none") >= 0) {
+    answers[stepId] = ["none"];
+  } else if (value !== "none" && answers[stepId].indexOf("none") >= 0) {
+    answers[stepId] = answers[stepId].filter(function(v) { return v !== "none"; });
+  }
+
+  render();
+}
+
+function nextStep(stepIndex) {
+  currentStep = stepIndex + 1;
+  render();
+  scrollToStep(currentStep);
+}
+
+function scrollToStep(idx) {
+  setTimeout(function() {
+    var el = document.getElementById("step-" + idx) || document.querySelector('.result-panel');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+function resetAll() {
+  Object.keys(answers).forEach(function(k) { delete answers[k]; });
+  currentStep = 0;
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderResults() {
+  var scores = calcScores(answers);
+  var sorted = Object.entries(scores)
+    .filter(function(entry) { return entry[1] > 0; })
+    .sort(function(a, b) { return b[1] - a[1]; });
+
+  var maxScore = sorted.length > 0 ? sorted[0][1] : 0;
+
+  var html = '<div class="result-panel show">';
+  html += '<div class="result-header">📋 鑑別診断の結果</div>';
+  html += '<div class="result-body">';
+
+  // 心原性レッドフラグ警告
+  var cf = answers.cardiac_flags || [];
+  var hasCardiacFlag = cf.length > 0 && cf.indexOf("none") < 0;
+  if (hasCardiacFlag) {
+    html += '<div class="alert-box danger">';
+    html += '<div class="alert-title">🚨 心原性失神のレッドフラグあり</div>';
+    html += '<div>';
+    if (cf.indexOf("ecg_abnormal") >= 0) html += '・心電図異常<br>';
+    if (cf.indexOf("structural_heart") >= 0) html += '・構造的心疾患の既往<br>';
+    if (cf.indexOf("heart_failure") >= 0) html += '・心不全の徴候<br>';
+    if (cf.indexOf("exertional_syncope") >= 0) html += '・労作中の失神<br>';
+    if (cf.indexOf("supine_syncope") >= 0) html += '・臥位での失神<br>';
+    if (cf.indexOf("pre_syncope_palpitation") >= 0) html += '・失神前の動悸<br>';
+    html += '<strong>→ 循環器内科への相談を強く推奨します。EGSYS score ≧3点は2年死亡率17-21%と関連します。</strong>';
+    html += '</div></div>';
+  }
+
+  // SAH警告
+  var prod = answers.prodrome || [];
+  var fam = answers.family_other || [];
+  if (prod.indexOf("thunderclap_headache") >= 0 || fam.indexOf("meningeal_signs") >= 0) {
+    html += '<div class="alert-box danger">';
+    html += '<div class="alert-title">🚨 くも膜下出血の除外が必要</div>';
+    html += '<div>';
+    html += '突然発症の雷鳴頭痛・髄膜刺激徴候は<strong>くも膜下出血</strong>の可能性があります。<br>';
+    html += '<strong>→ 緊急の頭部CTおよび必要に応じて腰椎穿刺を検討してください。</strong>';
+    html += '</div></div>';
+  }
+
+  // 初期対応サマリー
+  html += '<div class="summary-box">';
+  html += '<div class="summary-title">🎯 TLOC初期評価の3本柱</div>';
+  html += '<strong>①</strong> 詳細な病歴聴取（患者＋目撃者） — 50-60%はこれだけで診断可能<br>';
+  html += '<strong>②</strong> 身体診察（臥位・立位血圧測定を含む）<br>';
+  html += '<strong>③</strong> 12誘導心電図（全例に必須）';
+  html += '</div>';
+
+  // 鑑別診断リスト
+  if (sorted.length === 0) {
+    html += '<p style="color:var(--gray);text-align:center;padding:20px;">入力された情報からは特定の鑑別が示唆されませんでした。追加の情報を入力してください。</p>';
+  } else {
+    sorted.forEach(function(entry) {
+      var key = entry[0];
+      var score = entry[1];
+      var d = DISEASES[key];
+      var level, levelLabel;
+      if (score >= maxScore * 0.7 && score >= 3) { level = "high"; levelLabel = "可能性 高"; }
+      else if (score >= maxScore * 0.4 && score >= 2) { level = "medium"; levelLabel = "可能性 中"; }
+      else { level = "low"; levelLabel = "可能性 低"; }
+
+      html += '<div class="dx-card ' + level + '">';
+      html += '<div class="dx-name">';
+      html += '<span>' + d.emoji + '</span>';
+      html += '<span>' + d.name + '</span>';
+      html += '<span class="prob-badge">' + levelLabel + '</span>';
+      html += '</div>';
+      html += '<span class="category-label ' + d.catClass + '">' + d.category + '</span>';
+      html += '<div class="dx-detail">' + d.detail + '</div>';
+      html += '<div class="dx-workup">🔍 推奨検査: ' + d.workup + '</div>';
+      html += '</div>';
+    });
+  }
+
+  // 鑑別の要点
+  html += '<div class="summary-box" style="margin-top:16px;">';
+  html += '<div class="summary-title">🔑 失神 vs てんかん vs PNES 鑑別のクリニカルパール</div>';
+  html += '<strong>顔色：</strong>蒼白＝失神、チアノーゼ＝てんかん、正常＝PNES<br>';
+  html += '<strong>舌咬傷：</strong>側面（LR+ 49）＝てんかんにほぼ特異的、尖部＝失神/PNES<br>';
+  html += '<strong>閉眼：</strong>特異度92%でPNES（てんかん・失神は通常開眼）<br>';
+  html += '<strong>発作後混濁：</strong>遷延（>5分）＝てんかん、速やかな回復＝失神<br>';
+  html += '<strong>10/20ルール：</strong>ミオクローヌス<10回＝失神、>20回＝てんかん<br>';
+  html += '<strong>持続時間：</strong><30秒＝失神、1-2分＝てんかん、>5分＝PNES（24倍）';
+  html += '</div>';
+
+  // 専門科相談の赤旗
+  html += '<div class="red-flag-box">';
+  html += '<div class="rf-title">🚩 専門科への相談を考慮すべき状況</div>';
+  html += '<ul>';
+  html += '<li><strong>循環器：</strong>心電図異常、労作中・臥位での失神、構造的心疾患、40歳未満の突然死家族歴</li>';
+  html += '<li><strong>神経内科：</strong>舌側面の咬傷、発作後の遷延する意識混濁、Todd麻痺、初発のてんかん発作疑い</li>';
+  html += '<li><strong>精神科/心療内科：</strong>ビデオ脳波でPNES確定後、背景にある心理的要因の評価・治療</li>';
+  html += '<li><strong>脳神経外科：</strong>くも膜下出血の疑い（雷鳴頭痛、髄膜刺激徴候）</li>';
+  html += '</ul>';
+  html += '</div>';
+
+  // EGSYS score参考
+  html += '<div style="margin-top:20px;">';
+  html += '<p style="font-weight:700;color:var(--navy);margin-bottom:8px;">📊 EGSYS Score（心原性失神の同定、参考）</p>';
+  html += '<table class="ref-table">';
+  html += '<thead><tr><th>所見</th><th>点数</th></tr></thead>';
+  html += '<tbody>';
+  html += '<tr><td>失神前の動悸</td><td>+4</td></tr>';
+  html += '<tr><td>心電図異常 and/or 心疾患</td><td>+3</td></tr>';
+  html += '<tr><td>労作中の失神</td><td>+3</td></tr>';
+  html += '<tr><td>臥位での失神</td><td>+2</td></tr>';
+  html += '<tr><td>自律神経性前駆症状（発汗・悪心・温感）</td><td>-1</td></tr>';
+  html += '<tr><td>誘因あり（温環境、長時間立位、恐怖、痛み、感情）</td><td>-1</td></tr>';
+  html += '</tbody>';
+  html += '</table>';
+  html += '<p style="font-size:0.85em;color:var(--gray);margin-top:4px;">≧3点：心原性失神の感度92%・特異度69%。≧3点の患者は2年死亡率17-21%。</p>';
+  html += '</div>';
+
+  // Sheldon Score参考
+  html += '<div style="margin-top:16px;">';
+  html += '<p style="font-weight:700;color:var(--navy);margin-bottom:8px;">📊 失神 vs てんかんの鑑別に有用な所見</p>';
+  html += '<table class="ref-table">';
+  html += '<thead><tr><th>所見</th><th>失神を示唆</th><th>てんかんを示唆</th><th>PNESを示唆</th></tr></thead>';
+  html += '<tbody>';
+  html += '<tr><td>前駆症状</td><td>自律神経症状</td><td>前兆（デジャビュ等）</td><td>変動的</td></tr>';
+  html += '<tr><td>顔色</td><td>蒼白</td><td>チアノーゼ</td><td>正常</td></tr>';
+  html += '<tr><td>持続時間</td><td>&lt;30秒</td><td>1-2分</td><td>&gt;5分</td></tr>';
+  html += '<tr><td>開眼/閉眼</td><td>開眼</td><td>開眼</td><td>閉眼（特異度92%）</td></tr>';
+  html += '<tr><td>舌咬傷</td><td>尖部</td><td>側面（LR+ 49）</td><td>尖部/なし</td></tr>';
+  html += '<tr><td>発作後の回復</td><td>速やか（&lt;1分）</td><td>遷延する混迷（&gt;5分）</td><td>変動的</td></tr>';
+  html += '<tr><td>筋肉痛</td><td>なし</td><td>あり</td><td>なし</td></tr>';
+  html += '</tbody>';
+  html += '</table>';
+  html += '</div>';
+
+  html += '</div></div>';
+  return html;
+}
+
+// 初期描画
+render();
+</script>
+
+</body>
+</html>
