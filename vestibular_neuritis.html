@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1B3A5C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>前庭神経炎 鑑別診断ツール</title>
+<style>
+  :root {
+    --navy: #1B3A5C;
+    --blue: #2C5AA0;
+    --light-blue: #E8F0FE;
+    --red: #DC3545;
+    --yellow: #F5C518;
+    --green: #28A745;
+    --orange: #E8850C;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(27,58,92,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #E8F0FE 0%, #F4F6F8 100%);
+    color: #222;
+    min-height: 100vh;
+    padding: 0 0 40px;
+  }
+  header {
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    padding: 14px 20px 18px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(27,58,92,0.18);
+  }
+  .back-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .back-bar a {
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    font-size: 0.85em;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background 0.2s;
+  }
+  .back-bar a:active { background: rgba(255,255,255,0.15); }
+  header h1 { font-size: 1.7em; font-weight: 700; letter-spacing: 0.04em; }
+  header p { font-size: 0.92em; margin-top: 6px; opacity: 0.85; }
+
+  .container { max-width: 820px; margin: 0 auto; padding: 24px 16px; }
+
+  .step-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+    overflow: hidden;
+    transition: opacity 0.3s;
+  }
+  .step-card.inactive { opacity: 0.45; pointer-events: none; }
+  .step-card.completed { opacity: 1; }
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    background: var(--light-blue);
+    border-bottom: 2px solid var(--blue);
+    cursor: pointer;
+  }
+  .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--blue);
+    color: var(--white);
+    font-weight: 700;
+    font-size: 0.95em;
+    flex-shrink: 0;
+  }
+  .step-number.done { background: var(--green); }
+  .step-title { font-weight: 700; font-size: 1.05em; color: var(--navy); }
+  .step-body { padding: 18px; }
+
+  .option-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border: 2px solid #D0D8E4;
+    border-radius: 8px;
+    background: var(--white);
+    font-size: 0.97em;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: left;
+    color: #222;
+    font-family: inherit;
+    width: 100%;
+  }
+  .option-btn:hover { border-color: var(--blue); background: var(--light-blue); }
+  .option-btn.selected {
+    border-color: var(--blue);
+    background: var(--light-blue);
+    font-weight: 700;
+  }
+  .option-btn .icon { font-size: 1.2em; flex-shrink: 0; width: 24px; text-align: center; }
+
+  .checklist { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--light-gray);
+    cursor: pointer;
+    transition: background 0.15s;
+    user-select: none;
+    font-size: 0.95em;
+  }
+  .check-item:hover { background: #E0E8F0; }
+  .check-item input[type="checkbox"] {
+    width: 18px; height: 18px;
+    accent-color: var(--blue);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .check-item label { cursor: pointer; flex: 1; }
+
+  .result-panel {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(27,58,92,0.15);
+    overflow: hidden;
+    margin-top: 24px;
+    display: none;
+  }
+  .result-panel.show { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  .result-header {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    font-weight: 700;
+    font-size: 1.15em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .result-body { padding: 20px; }
+
+  .dx-card {
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    position: relative;
+    transition: all 0.2s;
+  }
+  .dx-card.high { border-color: var(--red); background: #FFF5F5; }
+  .dx-card.medium { border-color: var(--orange); background: #FFF8F0; }
+  .dx-card.low { border-color: var(--gray); background: var(--light-gray); }
+
+  .dx-card .dx-name {
+    font-weight: 700;
+    font-size: 1.08em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .dx-card .prob-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.78em;
+    font-weight: 700;
+    color: var(--white);
+  }
+  .dx-card.high .prob-badge { background: var(--red); }
+  .dx-card.medium .prob-badge { background: var(--orange); }
+  .dx-card.low .prob-badge { background: var(--gray); }
+
+  .dx-card .dx-detail { font-size: 0.9em; color: #444; line-height: 1.6; }
+  .dx-card .dx-detail strong { color: var(--navy); }
+  .dx-card .dx-workup {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #ccc;
+    font-size: 0.88em;
+    color: var(--blue);
+  }
+
+  .next-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    padding: 10px 22px;
+    background: var(--blue);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: inherit;
+  }
+  .next-btn:hover { background: var(--navy); }
+  .next-btn:disabled { background: #B0BEC5; cursor: not-allowed; }
+
+  .reset-btn {
+    display: block;
+    margin: 24px auto 0;
+    padding: 10px 32px;
+    background: var(--white);
+    color: var(--red);
+    border: 2px solid var(--red);
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .reset-btn:hover { background: var(--red); color: var(--white); }
+
+  .hint {
+    font-size: 0.85em;
+    color: var(--gray);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  .divider { height: 1px; background: #D0D8E4; margin: 14px 0; }
+
+  .algo-note {
+    background: #FFFDE7;
+    border-left: 4px solid var(--yellow);
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 18px;
+    font-size: 0.9em;
+    line-height: 1.6;
+    color: #555;
+  }
+  .algo-note strong { color: var(--navy); }
+
+  @media (max-width: 600px) {
+    header { padding: 12px 14px 14px; }
+    header h1 { font-size: 1.25em; }
+    header p { font-size: 0.85em; }
+    .container { padding: 14px 10px; }
+    .step-header { padding: 12px 14px; }
+    .option-btn { min-height: 44px; font-size: 0.92em; -webkit-tap-highlight-color: transparent; }
+    .step-card { margin-bottom: 14px; }
+    .step-body, .result-body { padding: 14px; }
+    .dx-card { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="back-bar"><a href="index.html">‹ ツール一覧</a></div>
+  <h1>前庭神経炎 鑑別診断ツール</h1>
+  <p>急性めまいの臨床所見から前庭神経炎と中枢性めまいを系統的に鑑別</p>
+</header>
+
+<div class="container" id="app"></div>
+
+<script>
+// ===== データ定義 =====
+var DISEASES = {
+  vestibular_neuritis: {
+    name: "前庭神経炎（AUVP）",
+    emoji: "🌀",
+    category: "末梢性",
+    detail: "急性一側前庭障害（AUVP）。急性に生じた一側の末梢前庭機能低下による持続性めまい。方向固定性の水平回旋混合性自発眼振と一側VOR低下（Head Impulse Test陽性）が特徴。急性の聴覚症状や中枢神経症状を伴わない。病態は十分に解明されておらず、ウイルス関連炎症、血管性、免疫学的機序が提案されている。",
+    workup: "Head Impulse Test、Frenzel眼鏡下眼振評価、温度刺激検査（caloric test）、vHIT、前庭機能検査"
+  },
+  bppv: {
+    name: "良性発作性頭位めまい症（BPPV）",
+    emoji: "💫",
+    category: "末梢性",
+    detail: "頭位変換で誘発される反復性の短時間めまい。後半規管型ではDix-Hallpike検査でtorsional upbeating nystagmusが誘発される。発作持続は数秒～1分で、終日持続する自発性めまいはBPPVに合わない。典型的BPPVにroutineの画像検査は不要。",
+    workup: "Dix-Hallpike検査、supine roll test（水平半規管型の場合）、Epley法による治療的診断"
+  },
+  meniere: {
+    name: "メニエール病",
+    emoji: "👂",
+    category: "末梢性",
+    detail: "反復するvertigo発作に変動性の聴覚症状（低～中音域の感音難聴、耳鳴り、耳閉感）を伴う。発作持続は20分～12時間。内リンパ水腫が病態。単発の持続性急性前庭症候群で耳症状を欠く場合は典型的メニエール病とは言いにくい。",
+    workup: "聴力検査（低音域感音難聴）、蝸電図、内耳MRI（内リンパ水腫の評価）"
+  },
+  vestibular_migraine: {
+    name: "前庭性片頭痛",
+    emoji: "🧠",
+    category: "中枢性/混合",
+    detail: "反復するvestibular symptoms、片頭痛の病歴、前庭症状と片頭痛症状の時間的関連、他疾患の除外で診断。発作持続は5分～72時間と幅広い。症候は多彩だが反復性である点が前庭神経炎との重要な違い。自発性・頭位誘発性いずれのめまいもとりうる。",
+    workup: "片頭痛の病歴聴取、発作時の随伴症状（光過敏・音過敏・視覚性前兆）、他疾患の除外"
+  },
+  central_stroke: {
+    name: "脳幹・小脳梗塞",
+    emoji: "🚨",
+    category: "中枢性",
+    detail: "最重要の鑑別疾患。一般的な神経学的診察の感度は高くなく、明らかな片麻痺や構音障害がなくても安心できない。Skew deviation、注視方向で変わる眼振、垂直眼振、純回旋性眼振、強い体幹失調・歩行不能が中枢性を示唆。Head Impulse Test単独では脳卒中を除外できない。早期MRI陰性でもstroke除外は不十分なことがある。",
+    workup: "MRI/MRA（発症早期は偽陰性あり）、血管リスク因子評価、神経内科コンサルト、必要に応じ再MRI"
+  },
+  other_central: {
+    name: "その他の中枢性めまい",
+    emoji: "⚠️",
+    category: "中枢性",
+    detail: "脱髄疾患（多発性硬化症）、小脳出血、脳幹腫瘍、Wernicke脳症なども急性めまいの原因となりうる。中枢性の眼振パターン（垂直眼振、注視方向性眼振、pure torsional nystagmus）や神経巣症状がある場合は中枢性病変を優先して考える。",
+    workup: "MRI/MRA、神経学的精査、ビタミンB1（Wernicke疑い時）、脳脊髄液検査（脱髄疑い時）"
+  }
+};
+
+// ===== ステップ定義 =====
+var STEPS = [
+  {
+    id: "onset_duration",
+    title: "発症様式と持続時間",
+    question: "めまいの発症様式と持続時間は？",
+    hint: "前庭神経炎は急性発症の持続性めまい（24時間以上）が典型",
+    type: "single",
+    options: [
+      { label: "急性発症で24時間以上持続（持続性）", value: "acute_persistent", icon: "⏰" },
+      { label: "頭位変換で誘発される短時間の反復性めまい", value: "positional_brief", icon: "🔄" },
+      { label: "反復する発作性めまい（20分～数時間）", value: "episodic_hours", icon: "🔁" },
+      { label: "反復する発作性めまい（数分～72時間、多彩）", value: "episodic_variable", icon: "🌊" },
+      { label: "超急性発症（数秒～数分で完成）", value: "hyperacute", icon: "⚡" }
+    ]
+  },
+  {
+    id: "nystagmus",
+    title: "眼振の性状",
+    question: "自発眼振の性状はどれに最も近いですか？",
+    hint: "Frenzel眼鏡下または暗所での評価が望ましい",
+    type: "single",
+    options: [
+      { label: "方向固定性の水平回旋混合性眼振（視固定で抑制）", value: "peripheral_pattern", icon: "👁️" },
+      { label: "注視方向で変わる眼振（gaze-evoked nystagmus）", value: "gaze_evoked", icon: "🔴" },
+      { label: "垂直眼振（upbeat or downbeat）", value: "vertical", icon: "🔴" },
+      { label: "純回旋性眼振", value: "pure_torsional", icon: "🔴" },
+      { label: "頭位変換で誘発される眼振（Dix-Hallpike等）", value: "positional", icon: "💫" },
+      { label: "自発眼振なし / 評価困難", value: "none_or_unknown", icon: "🤔" }
+    ]
+  },
+  {
+    id: "hit",
+    title: "Head Impulse Test（HIT）",
+    question: "Head Impulse Testの結果は？",
+    hint: "患側への急速な頭部回旋でcatch-up saccadeが出れば陽性（VOR低下）",
+    type: "single",
+    options: [
+      { label: "一側で陽性（catch-up saccadeあり）", value: "positive_unilateral", icon: "✅" },
+      { label: "両側で陰性（正常VOR）", value: "negative", icon: "⚠️" },
+      { label: "両側で陽性", value: "positive_bilateral", icon: "🔍" },
+      { label: "未施行 / 評価困難", value: "not_done", icon: "🤔" }
+    ]
+  },
+  {
+    id: "skew_test",
+    title: "Skew deviation / Test of Skew",
+    question: "Skew deviation（垂直性の眼位ずれ）はありますか？",
+    hint: "Alternate cover testで評価。Skew deviationは中枢性を強く示唆する",
+    type: "single",
+    options: [
+      { label: "なし", value: "absent", icon: "✅" },
+      { label: "あり（垂直性の眼位ずれを認める）", value: "present", icon: "🔴" },
+      { label: "評価困難 / 未施行", value: "not_done", icon: "🤔" }
+    ]
+  },
+  {
+    id: "hearing",
+    title: "聴覚症状",
+    question: "急性の聴覚症状はありますか？",
+    hint: "急性の難聴・耳鳴り・耳閉感は典型的前庭神経炎に合わない",
+    type: "single",
+    options: [
+      { label: "聴覚症状なし", value: "none", icon: "✅" },
+      { label: "急性の難聴あり", value: "hearing_loss", icon: "🔇" },
+      { label: "耳鳴り・耳閉感あり", value: "tinnitus_fullness", icon: "👂" },
+      { label: "変動性の聴覚症状（反復あり）", value: "fluctuating", icon: "📊" }
+    ]
+  },
+  {
+    id: "neuro_signs",
+    title: "神経学的所見（該当するものをすべて選択）",
+    question: "以下の神経学的所見で該当するものは？",
+    hint: "一般神経診察が陰性でもstrokeは否定できない点に注意",
+    type: "multi",
+    options: [
+      { label: "強い体幹失調（座位保持困難）", value: "trunk_ataxia" },
+      { label: "歩行不能（失調が著明）", value: "gait_inability" },
+      { label: "構音障害", value: "dysarthria" },
+      { label: "四肢の運動麻痺", value: "motor_weakness" },
+      { label: "感覚障害", value: "sensory_deficit" },
+      { label: "嚥下障害", value: "dysphagia" },
+      { label: "Horner症候群", value: "horner" },
+      { label: "該当なし", value: "none" }
+    ]
+  },
+  {
+    id: "risk_history",
+    title: "リスク因子・病歴（該当するものをすべて選択）",
+    question: "以下のリスク因子・病歴で該当するものは？",
+    hint: "",
+    type: "multi",
+    options: [
+      { label: "血管リスク因子（高血圧・糖尿病・心房細動・脂質異常症）", value: "vascular_risk" },
+      { label: "片頭痛の既往", value: "migraine_history" },
+      { label: "先行する上気道感染", value: "preceding_uri" },
+      { label: "類似めまい発作の反復歴", value: "recurrent_vertigo" },
+      { label: "高齢者（65歳以上）", value: "elderly" },
+      { label: "該当なし", value: "none" }
+    ]
+  }
+];
+
+// ===== スコアリングエンジン =====
+function calcScores(answers) {
+  var scores = {};
+  Object.keys(DISEASES).forEach(function(k) { scores[k] = 0; });
+
+  // Step 1: onset_duration
+  var onset = answers.onset_duration;
+  if (onset === "acute_persistent") {
+    scores.vestibular_neuritis += 5;
+    scores.central_stroke += 4;
+    scores.other_central += 3;
+    scores.bppv -= 3;
+    scores.meniere -= 1;
+  } else if (onset === "positional_brief") {
+    scores.bppv += 8;
+    scores.vestibular_neuritis -= 3;
+    scores.central_stroke -= 2;
+    scores.meniere -= 2;
+  } else if (onset === "episodic_hours") {
+    scores.meniere += 6;
+    scores.vestibular_migraine += 3;
+    scores.vestibular_neuritis -= 3;
+    scores.bppv -= 2;
+  } else if (onset === "episodic_variable") {
+    scores.vestibular_migraine += 6;
+    scores.meniere += 2;
+    scores.vestibular_neuritis -= 3;
+    scores.bppv -= 1;
+  } else if (onset === "hyperacute") {
+    scores.central_stroke += 5;
+    scores.other_central += 3;
+    scores.vestibular_neuritis += 2;
+  }
+
+  // Step 2: nystagmus
+  var nyst = answers.nystagmus;
+  if (nyst === "peripheral_pattern") {
+    scores.vestibular_neuritis += 5;
+    scores.central_stroke -= 2;
+    scores.other_central -= 2;
+  } else if (nyst === "gaze_evoked") {
+    scores.central_stroke += 5;
+    scores.other_central += 5;
+    scores.vestibular_neuritis -= 4;
+    scores.bppv -= 3;
+  } else if (nyst === "vertical") {
+    scores.central_stroke += 6;
+    scores.other_central += 6;
+    scores.vestibular_neuritis -= 5;
+    scores.bppv -= 4;
+    scores.meniere -= 3;
+  } else if (nyst === "pure_torsional") {
+    scores.central_stroke += 5;
+    scores.other_central += 5;
+    scores.vestibular_neuritis -= 4;
+  } else if (nyst === "positional") {
+    scores.bppv += 5;
+    scores.vestibular_neuritis -= 2;
+  }
+
+  // Step 3: HIT
+  var hit = answers.hit;
+  if (hit === "positive_unilateral") {
+    scores.vestibular_neuritis += 5;
+    scores.meniere += 1;
+    // Note: does NOT exclude stroke - small penalty only
+    scores.central_stroke -= 1;
+  } else if (hit === "negative") {
+    scores.central_stroke += 4;
+    scores.other_central += 3;
+    scores.vestibular_migraine += 2;
+    scores.vestibular_neuritis -= 3;
+  } else if (hit === "positive_bilateral") {
+    scores.other_central += 2;
+  }
+
+  // Step 4: Skew
+  var skew = answers.skew_test;
+  if (skew === "present") {
+    scores.central_stroke += 6;
+    scores.other_central += 5;
+    scores.vestibular_neuritis -= 4;
+    scores.bppv -= 3;
+    scores.meniere -= 3;
+  } else if (skew === "absent") {
+    scores.vestibular_neuritis += 2;
+    scores.bppv += 1;
+  }
+
+  // Step 5: hearing
+  var hear = answers.hearing;
+  if (hear === "none") {
+    scores.vestibular_neuritis += 3;
+    scores.meniere -= 3;
+  } else if (hear === "hearing_loss") {
+    scores.meniere += 4;
+    scores.central_stroke += 2;
+    scores.vestibular_neuritis -= 4;
+  } else if (hear === "tinnitus_fullness") {
+    scores.meniere += 3;
+    scores.vestibular_neuritis -= 3;
+  } else if (hear === "fluctuating") {
+    scores.meniere += 5;
+    scores.vestibular_neuritis -= 3;
+  }
+
+  // Step 6: neuro signs
+  var neuro = answers.neuro_signs || [];
+  neuro.forEach(function(v) {
+    if (v === "trunk_ataxia") { scores.central_stroke += 4; scores.other_central += 3; scores.vestibular_neuritis -= 2; }
+    if (v === "gait_inability") { scores.central_stroke += 4; scores.other_central += 3; scores.vestibular_neuritis -= 2; }
+    if (v === "dysarthria") { scores.central_stroke += 5; scores.other_central += 4; scores.vestibular_neuritis -= 4; }
+    if (v === "motor_weakness") { scores.central_stroke += 6; scores.other_central += 4; scores.vestibular_neuritis -= 5; }
+    if (v === "sensory_deficit") { scores.central_stroke += 5; scores.other_central += 4; scores.vestibular_neuritis -= 4; }
+    if (v === "dysphagia") { scores.central_stroke += 5; scores.other_central += 4; scores.vestibular_neuritis -= 4; }
+    if (v === "horner") { scores.central_stroke += 6; scores.other_central += 3; scores.vestibular_neuritis -= 5; }
+  });
+
+  // Step 7: risk/history
+  var risk = answers.risk_history || [];
+  risk.forEach(function(v) {
+    if (v === "vascular_risk") { scores.central_stroke += 3; scores.other_central += 1; }
+    if (v === "migraine_history") { scores.vestibular_migraine += 4; }
+    if (v === "preceding_uri") { scores.vestibular_neuritis += 3; }
+    if (v === "recurrent_vertigo") { scores.meniere += 3; scores.vestibular_migraine += 3; scores.vestibular_neuritis -= 2; }
+    if (v === "elderly") { scores.central_stroke += 2; scores.bppv += 1; }
+  });
+
+  return scores;
+}
+
+function rankDiseases(scores) {
+  var keys = Object.keys(scores);
+  var arr = [];
+  for (var i = 0; i < keys.length; i++) {
+    var key = keys[i];
+    var d = DISEASES[key];
+    arr.push({ key: key, score: scores[key], name: d.name, emoji: d.emoji, category: d.category, detail: d.detail, workup: d.workup });
+  }
+  arr = arr.filter(function(d) { return d.score > 0; });
+  arr.sort(function(a, b) { return b.score - a.score; });
+  return arr;
+}
+
+function getProbLevel(score, maxScore) {
+  var ratio = score / Math.max(maxScore, 1);
+  if (ratio >= 0.7) return { level: "high", label: "可能性 高" };
+  if (ratio >= 0.35) return { level: "medium", label: "可能性 中" };
+  return { level: "low", label: "可能性 低" };
+}
+
+// ===== UIレンダリング =====
+var currentStep = 0;
+var answers = {};
+
+function render() {
+  var app = document.getElementById("app");
+  var html = "";
+
+  // アルゴリズムノート
+  html += '<div class="algo-note">';
+  html += '<strong>💡 診断アプローチ:</strong> ';
+  html += '発症様式 → 眼振の性状 → HIT → Skew → 聴覚症状 → 神経所見 → リスク因子で系統的に鑑別します';
+  html += '</div>';
+
+  for (var i = 0; i < STEPS.length; i++) {
+    var step = STEPS[i];
+    var state = i < currentStep ? "completed" : i === currentStep ? "" : "inactive";
+    var numClass = i < currentStep ? "done" : "";
+    var numText = i < currentStep ? "✓" : String(i + 1);
+
+    html += '<div class="step-card ' + state + '" id="step-' + i + '">';
+    html += '<div class="step-header">';
+    html += '<span class="step-number ' + numClass + '">' + numText + '</span>';
+    html += '<span class="step-title">' + step.title + '</span>';
+    html += '</div>';
+
+    if (i <= currentStep) {
+      html += '<div class="step-body">';
+      html += '<p style="font-weight:600; margin-bottom:4px;">' + step.question + '</p>';
+      if (step.hint) {
+        html += '<p class="hint">' + step.hint + '</p>';
+      }
+
+      if (step.type === "single") {
+        html += '<div class="option-group">';
+        for (var j = 0; j < step.options.length; j++) {
+          var opt = step.options[j];
+          var sel = answers[step.id] === opt.value ? "selected" : "";
+          html += '<button class="option-btn ' + sel + '" onclick="selectOption(\'' + step.id + '\', \'' + opt.value + '\', ' + i + ')">';
+          html += '<span class="icon">' + opt.icon + '</span> ' + opt.label;
+          html += '</button>';
+        }
+        html += '</div>';
+      } else {
+        html += '<div class="checklist">';
+        var checked = answers[step.id] || [];
+        for (var j = 0; j < step.options.length; j++) {
+          var opt = step.options[j];
+          var isChecked = checked.indexOf(opt.value) >= 0;
+          html += '<div class="check-item" onclick="toggleCheck(\'' + step.id + '\', \'' + opt.value + '\')">';
+          html += '<input type="checkbox" ' + (isChecked ? "checked" : "") + ' tabindex="-1">';
+          html += '<label>' + opt.label + '</label>';
+          html += '</div>';
+        }
+        html += '</div>';
+        if (i === currentStep) {
+          var hasSelection = checked.length > 0;
+          html += '<button class="next-btn" onclick="nextStep(' + i + ')" ' + (hasSelection ? "" : "disabled") + '>';
+          html += '次へ ▶';
+          html += '</button>';
+        }
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+
+  // 結果表示
+  if (currentStep >= STEPS.length) {
+    var scores = calcScores(answers);
+    var ranked = rankDiseases(scores);
+    var maxScore = ranked.length > 0 ? ranked[0].score : 1;
+
+    html += '<div class="result-panel show">';
+    html += '<div class="result-header">📊 鑑別診断結果</div>';
+    html += '<div class="result-body">';
+    html += '<p style="margin-bottom:14px; color:#555; font-size:0.9em;">入力された臨床情報に基づく鑑別疾患の優先度です。確定診断には追加検査が必要です。</p>';
+
+    for (var k = 0; k < ranked.length; k++) {
+      var d = ranked[k];
+      var prob = getProbLevel(d.score, maxScore);
+      html += '<div class="dx-card ' + prob.level + '">';
+      html += '<div class="dx-name">';
+      html += d.emoji + ' ' + d.name + ' ';
+      html += '<span class="prob-badge">' + prob.label + '</span>';
+      html += '</div>';
+      html += '<div class="dx-detail">' + d.detail + '</div>';
+      html += '<div class="dx-workup">🔍 <strong>追加検査:</strong> ' + d.workup + '</div>';
+      html += '</div>';
+    }
+
+    html += '<div class="divider"></div>';
+    html += '<p style="font-size:0.82em; color:#888; line-height:1.6;">';
+    html += '⚠️ 本ツールは臨床判断の補助を目的としており、確定診断を行うものではありません。<br>';
+    html += '前庭神経炎の診断の最優先事項は脳卒中の除外です。HINTSは訓練された診察者が持続性AVSの患者に使用する前提で有用です。<br>';
+    html += 'CT陰性ではstroke除外にならず、早期MRI陰性でも安心しすぎないでください。';
+    html += '</p>';
+    html += '</div></div>';
+  }
+
+  html += '<button class="reset-btn" onclick="resetAll()">🔄 最初からやり直す</button>';
+  app.innerHTML = html;
+
+  if (currentStep < STEPS.length) {
+    var el = document.getElementById("step-" + currentStep);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+  } else {
+    var panel = document.querySelector(".result-panel");
+    if (panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+function selectOption(stepId, value, stepIndex) {
+  answers[stepId] = value;
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function toggleCheck(stepId, value) {
+  if (!answers[stepId]) answers[stepId] = [];
+  var arr = answers[stepId];
+  var idx = arr.indexOf(value);
+
+  if (value === "none" || value === "unknown") {
+    answers[stepId] = idx >= 0 ? [] : [value];
+  } else {
+    var noneIdx = arr.indexOf("none");
+    if (noneIdx >= 0) arr.splice(noneIdx, 1);
+    var unkIdx = arr.indexOf("unknown");
+    if (unkIdx >= 0) arr.splice(unkIdx, 1);
+    if (idx >= 0) arr.splice(idx, 1);
+    else arr.push(value);
+  }
+  render();
+}
+
+function nextStep(stepIndex) {
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function resetAll() {
+  currentStep = 0;
+  var keys = Object.keys(answers);
+  for (var i = 0; i < keys.length; i++) {
+    delete answers[keys[i]];
+  }
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+render();
+</script>
+</body>
+</html>
