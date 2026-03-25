@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A5276">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>甲状腺機能異常 鑑別診断ツール</title>
+<style>
+  :root {
+    --navy: #1A5276;
+    --blue: #2E86C1;
+    --light-blue: #E8F4FD;
+    --red: #DC3545;
+    --yellow: #F5C518;
+    --green: #28A745;
+    --orange: #E8850C;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(26,82,118,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #E8F4FD 0%, #F4F6F8 100%);
+    color: #222;
+    min-height: 100vh;
+    padding: 0 0 40px;
+  }
+  header {
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    padding: 14px 20px 18px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(26,82,118,0.18);
+  }
+  .back-bar { display: flex; align-items: center; margin-bottom: 8px; }
+  .back-bar a {
+    color: rgba(255,255,255,0.85); text-decoration: none; font-size: 0.85em;
+    display: flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 6px; transition: background 0.2s;
+  }
+  .back-bar a:active { background: rgba(255,255,255,0.15); }
+  header h1 { font-size: 1.7em; font-weight: 700; letter-spacing: 0.04em; }
+  header p { font-size: 0.92em; margin-top: 6px; opacity: 0.85; }
+  .container { max-width: 820px; margin: 0 auto; padding: 24px 16px; }
+  .step-card {
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: var(--shadow); margin-bottom: 18px; overflow: hidden; transition: opacity 0.3s;
+  }
+  .step-card.inactive { opacity: 0.45; pointer-events: none; }
+  .step-card.hidden { display: none !important; }
+  .step-card.completed { opacity: 1; }
+  .step-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 18px; background: var(--light-blue); border-bottom: 2px solid var(--blue);
+  }
+  .step-number {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--blue); color: var(--white); font-weight: 700; font-size: 0.95em; flex-shrink: 0;
+  }
+  .step-number.done { background: var(--green); }
+  .step-title { font-weight: 700; font-size: 1.05em; color: var(--navy); }
+  .step-subtitle { font-size: 0.85em; color: var(--gray); margin-top: 2px; }
+  .step-body { padding: 18px; }
+  .option-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .option-btn {
+    display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+    border: 2px solid #D0D8E4; border-radius: 8px; background: var(--white);
+    font-size: 0.97em; cursor: pointer; transition: all 0.18s; text-align: left;
+    color: #222; font-family: inherit; width: 100%;
+  }
+  .option-btn:hover { border-color: var(--blue); background: var(--light-blue); }
+  .option-btn.selected { border-color: var(--blue); background: var(--light-blue); font-weight: 700; }
+  .option-btn .icon { font-size: 1.2em; flex-shrink: 0; width: 24px; text-align: center; }
+  .checklist { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .check-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+    border-radius: 8px; background: var(--light-gray); cursor: pointer;
+    transition: background 0.15s; user-select: none; font-size: 0.95em;
+  }
+  .check-item:hover { background: #E0E8F0; }
+  .check-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--blue); flex-shrink: 0; cursor: pointer; }
+  .check-item label { cursor: pointer; flex: 1; }
+  .result-panel {
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(26,82,118,0.15); overflow: hidden; margin-top: 24px; display: none;
+  }
+  .result-panel.show { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .result-header {
+    padding: 16px 20px; background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white); font-weight: 700; font-size: 1.15em; display: flex; align-items: center; gap: 8px;
+  }
+  .result-body { padding: 20px; }
+  .dx-card {
+    border: 2px solid transparent; border-radius: 8px; padding: 16px;
+    margin-bottom: 12px; position: relative; transition: all 0.2s;
+  }
+  .dx-card.high { border-color: var(--red); background: #FFF5F5; }
+  .dx-card.medium { border-color: var(--orange); background: #FFF8F0; }
+  .dx-card.low { border-color: var(--gray); background: var(--light-gray); }
+  .dx-card .dx-name { font-weight: 700; font-size: 1.08em; display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .dx-card .prob-badge {
+    display: inline-block; padding: 2px 10px; border-radius: 12px;
+    font-size: 0.78em; font-weight: 700; color: var(--white);
+  }
+  .dx-card.high .prob-badge { background: var(--red); }
+  .dx-card.medium .prob-badge { background: var(--orange); }
+  .dx-card.low .prob-badge { background: var(--gray); }
+  .dx-card .dx-detail { font-size: 0.9em; color: #444; line-height: 1.6; }
+  .dx-card .dx-detail strong { color: var(--navy); }
+  .dx-card .dx-workup {
+    margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ccc;
+    font-size: 0.88em; color: var(--blue);
+  }
+  .next-btn {
+    display: inline-flex; align-items: center; gap: 6px; margin-top: 14px;
+    padding: 10px 22px; background: var(--blue); color: var(--white); border: none;
+    border-radius: 8px; font-size: 0.95em; font-weight: 600; cursor: pointer;
+    transition: background 0.15s; font-family: inherit;
+  }
+  .next-btn:hover { background: var(--navy); }
+  .next-btn:disabled { background: #B0BEC5; cursor: not-allowed; }
+  .reset-btn {
+    display: block; margin: 24px auto 0; padding: 10px 32px;
+    background: var(--white); color: var(--red); border: 2px solid var(--red);
+    border-radius: 8px; font-size: 0.95em; font-weight: 600; cursor: pointer;
+    font-family: inherit; transition: all 0.15s;
+  }
+  .reset-btn:hover { background: var(--red); color: var(--white); }
+  .hint { font-size: 0.85em; color: var(--gray); margin-top: 6px; line-height: 1.5; }
+  .divider { height: 1px; background: #D0D8E4; margin: 14px 0; }
+  .algo-note {
+    background: #FFFDE7; border-left: 4px solid var(--yellow);
+    padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 18px;
+    font-size: 0.9em; line-height: 1.6; color: #555;
+  }
+  .algo-note strong { color: var(--navy); }
+  .emergency-box {
+    background: #FFF5F5; border-left: 4px solid var(--red);
+    padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 12px;
+    font-size: 0.9em; line-height: 1.6;
+  }
+  .emergency-box strong { color: var(--red); }
+  .summary-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .summary-tag {
+    display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px;
+    background: var(--light-blue); border-radius: 16px; font-size: 0.85em;
+    color: var(--navy); font-weight: 600;
+  }
+  .section-label {
+    font-size: 0.82em; font-weight: 700; color: var(--gray);
+    text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;
+  }
+  footer { text-align: center; padding: 24px 16px; font-size: 0.8em; color: var(--gray); line-height: 1.6; }
+  @media (max-width: 600px) {
+    header { padding: 12px 14px 14px; }
+    header h1 { font-size: 1.25em; }
+    header p { font-size: 0.85em; }
+    .container { padding: 14px 10px; }
+    .step-header { padding: 12px 14px; }
+    .option-btn { min-height: 44px; font-size: 0.92em; -webkit-tap-highlight-color: transparent; }
+    .step-card { margin-bottom: 14px; }
+    .step-body, .result-body { padding: 14px; }
+    .dx-card { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="back-bar"><a href="index.html">‹ ツール一覧</a></div>
+  <h1>甲状腺機能異常 鑑別診断ツール</h1>
+  <p>Thyroid Dysfunction Differential Diagnosis Tool</p>
+</header>
+
+<div class="container">
+  <div class="algo-note">
+    <strong>使い方：</strong>甲状腺機能検査異常を認めた患者について、Step 1 から順に選択してください。TSH・FT4/FT3のパターン、身体所見、抗体、画像、臨床背景から鑑別診断を絞り込みます。
+  </div>
+
+  <!-- Step 1: TSH値 -->
+  <div class="step-card" id="step1">
+    <div class="step-header">
+      <span class="step-number" id="sn1">1</span>
+      <div><span class="step-title">TSH値の方向性</span><div class="step-subtitle">まずTSHが抑制されているか高値かで入口を分ける</div></div>
+    </div>
+    <div class="step-body">
+      <p class="hint">TSH値を選択してください。基準範囲は施設により異なります（一般的に0.4〜4.0 mIU/L程度）。</p>
+      <div class="option-group" id="og-tsh">
+        <button class="option-btn" onclick="selectTSH('low')">
+          <span class="icon">⬇️</span>低値（抑制）：甲状腺中毒症を示唆
+        </button>
+        <button class="option-btn" onclick="selectTSH('high')">
+          <span class="icon">⬆️</span>高値：原発性甲状腺機能低下症を示唆
+        </button>
+        <button class="option-btn" onclick="selectTSH('normal')">
+          <span class="icon">↔️</span>正常範囲：NTIS・回復期・中枢性低下・SITSHを考慮
+        </button>
+        <button class="option-btn" onclick="selectTSH('unreliable')">
+          <span class="icon">⚠️</span>信頼できない / 測定干渉疑い（ビオチン・異好性抗体など）
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: TSH×FT4/FT3パターン -->
+  <div class="step-card inactive" id="step2">
+    <div class="step-header">
+      <span class="step-number" id="sn2">2</span>
+      <div><span class="step-title">TSH × FT4/FT3 パターン</span><div class="step-subtitle">最も重要なパターン認識を確定させる</div></div>
+    </div>
+    <div class="step-body">
+      <p class="hint">FT4・FT3の結果と組み合わせてパターンを選択してください。</p>
+      <div class="option-group" id="og-pattern">
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3: 症状パターン -->
+  <div class="step-card inactive" id="step3">
+    <div class="step-header">
+      <span class="step-number" id="sn3">3</span>
+      <div><span class="step-title">症状パターン</span><div class="step-subtitle">緊急性の評価を含む</div></div>
+    </div>
+    <div class="step-body">
+      <p class="hint">該当する症状をすべて選択してください。</p>
+      <div class="checklist" id="cl-symptoms">
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="crisis"> <label>🔥 甲状腺クリーゼの徴候（高熱・著明な頻脈・心不全・意識障害）</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="coma"> <label>🧊 粘液水腫性昏睡の徴候（低体温・意識低下・低換気・徐脈）</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="hyper_sx"> <label>❤️ 亢進症状（動悸・振戦・体重減少・発汗増加・易刺激性）</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="hypo_sx"> <label>🐢 低下症状（倦怠感・寒がり・便秘・浮腫・体重増加・嗄声）</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="icu"> <label>🏥 ICU入室中 / 重症感染症 / 術後</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="asymptomatic"> <label>😶 無症候（検診・他疾患精査で偶然発見）</label>
+        </div>
+      </div>
+      <button class="next-btn" onclick="submitSymptoms()">次へ →</button>
+    </div>
+  </div>
+
+  <!-- Step 4: 身体所見 -->
+  <div class="step-card inactive" id="step4">
+    <div class="step-header">
+      <span class="step-number" id="sn4">4</span>
+      <div><span class="step-title">甲状腺の身体所見</span><div class="step-subtitle">びまん性 vs 結節性 vs 圧痛で分岐する</div></div>
+    </div>
+    <div class="step-body">
+      <p class="hint">該当する所見をすべて選択してください。</p>
+      <div class="checklist" id="cl-pe">
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="exophthalmos"> <label>👁️ 眼球突出 / バセドウ眼症（眼瞼後退・複視）</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="diffuse_goiter"> <label>🟠 びまん性甲状腺腫</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="nodular"> <label>🧩 結節性甲状腺腫（単発 or 多発）</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="tender"> <label>🤕 圧痛あり（有痛性甲状腺腫）</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="no_tender"> <label>🫥 甲状腺腫痛なし</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="rapid_growth"> <label>🧱 急速増大 + 圧迫症状（嚥下障害・呼吸困難・嗄声）</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="no_goiter"> <label>📏 甲状腺腫なし / 触知困難</label>
+        </div>
+      </div>
+      <button class="next-btn" onclick="submitPE()">次へ →</button>
+    </div>
+  </div>
+
+  <!-- Step 5: 自己抗体 -->
+  <div class="step-card inactive" id="step5">
+    <div class="step-header">
+      <span class="step-number" id="sn5">5</span>
+      <div><span class="step-title">自己抗体</span><div class="step-subtitle">陽性なら強い根拠だが陰性でも否定しきれないものがある</div></div>
+    </div>
+    <div class="step-body">
+      <p class="hint">測定済みの抗体結果を選択してください。</p>
+      <div class="checklist" id="cl-ab">
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="trab_pos"> <label>🧿 TRAb / TSAb 陽性</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="tpo_pos"> <label>🧾 TPOAb / TgAb 陽性</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="ab_neg"> <label>🚫 抗体すべて陰性</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="ab_unknown"> <label>❓ 未測定 / 結果不明</label>
+        </div>
+      </div>
+      <button class="next-btn" onclick="submitAb()">次へ →</button>
+    </div>
+  </div>
+
+  <!-- Step 6: 破壊性・産生過剰の鑑別指標 -->
+  <div class="step-card inactive" id="step6">
+    <div class="step-header">
+      <span class="step-number" id="sn6">6</span>
+      <div><span class="step-title">画像・検査所見</span><div class="step-subtitle">破壊性 vs 産生過剰、エコー・シンチの所見</div></div>
+    </div>
+    <div class="step-body">
+      <p class="hint">該当する所見をすべて選択してください。未施行の検査は選択不要です。</p>
+      <div class="checklist" id="cl-imaging">
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="scinti_high"> <label>☢️ シンチ：びまん性高取り込み（バセドウ病を支持）</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="scinti_hot"> <label>🔴 シンチ：hot nodule（機能性結節を支持）</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="scinti_low"> <label>⬛ シンチ：取り込み低下〜消失（破壊性を支持）</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="echo_flow_up"> <label>🌊 エコー：血流増加（産生過剰を支持）</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="echo_flow_down"> <label>🔻 エコー：血流低下（破壊性を支持）</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="echo_hypo"> <label>🔘 エコー：内部低エコー・不均質（橋本病示唆）</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="echo_pain_hypo"> <label>💧 エコー：疼痛部の低エコー域（亜急性甲状腺炎を支持）</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="crp_high"> <label>🌡️ CRP/ESR高値（炎症を示唆）</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="tg_low"> <label>📉 サイログロブリン(Tg)低値（外因性ホルモンを示唆）</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="imaging_none"> <label>📋 画像検査未施行 / 特記所見なし</label>
+        </div>
+      </div>
+      <button class="next-btn" onclick="submitImaging()">次へ →</button>
+    </div>
+  </div>
+
+  <!-- Step 7: 臨床背景 -->
+  <div class="step-card inactive" id="step7">
+    <div class="step-header">
+      <span class="step-number" id="sn7">7</span>
+      <div><span class="step-title">臨床背景</span><div class="step-subtitle">薬剤歴・手術歴・妊娠など</div></div>
+    </div>
+    <div class="step-body">
+      <p class="hint">該当する背景因子をすべて選択してください。</p>
+      <div class="checklist" id="cl-bg">
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="amiodarone"> <label>💊 アミオダロン使用中</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="lithium"> <label>💊 リチウム使用中</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="ici"> <label>💉 免疫チェックポイント阻害薬使用中</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="iodine"> <label>🧪 ヨウ素大量暴露（造影剤・消毒薬・食品等）</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="thyroidectomy"> <label>🔪 甲状腺手術歴あり</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="rai"> <label>☢️ 放射性ヨウ素治療歴あり</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="pregnant"> <label>🤰 妊娠中（特に初期）</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="postpartum"> <label>👶 産後1年以内</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="thyroid_hormone"> <label>💊 甲状腺ホルモン剤服用中</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="pituitary_hx"> <label>🧠 下垂体疾患の既往 / 頭蓋内手術・放射線歴</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="family_hx"> <label>👨‍👩‍👧 甲状腺疾患の家族歴</label>
+        </div>
+        <div class="check-item" onclick="toggleCheck(this, event)">
+          <input type="checkbox" value="bg_none"> <label>特記すべき背景なし</label>
+        </div>
+      </div>
+      <button class="next-btn" onclick="submitBg()">鑑別結果を表示 →</button>
+    </div>
+  </div>
+
+  <!-- 結果パネル -->
+  <div class="result-panel" id="result-panel">
+    <div class="result-header">🔬 鑑別診断結果</div>
+    <div class="result-body" id="result-body"></div>
+  </div>
+
+  <!-- リセットボタン -->
+  <button class="reset-btn" id="reset-btn" style="display:none;" onclick="resetAll()">🔄 最初からやり直す</button>
+</div>
+
+<footer>
+  <p>⚠️ 本ツールは臨床判断の補助を目的としたものであり、最終的な診断は必ず臨床医が行ってください。</p>
+  <p style="margin-top:8px;">参考: ATA Guidelines 2016, ATA/AACE Hypothyroidism Guidelines, ETA Guidelines (SCH/CeH/AIT), 日本甲状腺学会 甲状腺疾患診断ガイドライン2024, 甲状腺クリーゼ診療ガイドライン</p>
+</footer>
+
+<script>
+/* ===== 疾患定義 ===== */
+var DISEASES = {
+  graves: {
+    name: 'バセドウ病 (Graves\' disease)',
+    category: 'hyper',
+    desc: 'TRAb陽性の自己免疫性甲状腺機能亢進症。甲状腺眼症の主要原因。びまん性甲状腺腫・眼球突出・頻脈・体重減少・手指振戦が特徴。',
+    workup: 'TRAb/TSAb測定、甲状腺エコー（血流評価）、（必要時）Tcシンチ',
+    emergency: '甲状腺クリーゼに移行しうる（未治療＋ストレス時）'
+  },
+  toxic_adenoma: {
+    name: '機能性結節 / Plummer病 (Toxic adenoma)',
+    category: 'hyper',
+    desc: '自律性にホルモンを産生する単発結節。眼症状は通常なし。シンチでhot nodule。',
+    workup: '甲状腺エコー、Tcシンチ（hot nodule確認）',
+    emergency: ''
+  },
+  tmng: {
+    name: '多結節性中毒性甲状腺腫 (TMNG)',
+    category: 'hyper',
+    desc: '複数の自律性結節による中毒症。高齢者に多く、心房細動の原因となりうる。',
+    workup: '甲状腺エコー、Tcシンチ（不均一な取り込み）',
+    emergency: ''
+  },
+  sat: {
+    name: '亜急性甲状腺炎 (Subacute thyroiditis)',
+    category: 'destructive',
+    desc: 'ウイルス感染後の有痛性破壊性甲状腺炎。頸部圧痛・発熱・CRP/ESR高値が特徴。中毒期→低下期→回復の経過をたどる。',
+    workup: 'CRP/ESR、甲状腺エコー（疼痛部低エコー域）、シンチ（取り込み低下）',
+    emergency: '通常自然軽快するが、甲状腺クリーゼ様の経過もまれにある'
+  },
+  painless: {
+    name: '無痛性甲状腺炎 (Painless thyroiditis)',
+    category: 'destructive',
+    desc: '無痛性の破壊性甲状腺炎。橋本病背景が多い。圧痛なし・シンチ取り込み低下が特徴。',
+    workup: 'TRAb（陰性確認）、シンチ（取り込み低下）、エコー（血流低下）',
+    emergency: ''
+  },
+  postpartum: {
+    name: '産後甲状腺炎 (Postpartum thyroiditis)',
+    category: 'destructive',
+    desc: '産後1年以内に発症する破壊性甲状腺炎。中毒期→低下期→回復の経過。TPOAb陽性例が多い。',
+    workup: 'TPOAb、TSH/FT4経時フォロー',
+    emergency: ''
+  },
+  ait: {
+    name: 'アミオダロン誘発性甲状腺中毒症 (AIT)',
+    category: 'hyper',
+    desc: 'Type 1: 基礎疾患あり・産生過剰型（カラードプラ血流増加）。Type 2: 正常甲状腺での破壊型（血流亢進なし）。混合型もある。',
+    workup: 'カラードプラエコー（Type 1 vs 2鑑別）、RAIU、自己抗体',
+    emergency: '心疾患背景で重症化しやすい'
+  },
+  ici_hyper: {
+    name: 'ICI誘発性甲状腺炎 (ICI-thyroiditis)',
+    category: 'destructive',
+    desc: '免疫チェックポイント阻害薬（抗PD-1/PD-L1等）による破壊性甲状腺炎が主体。中毒期→永続的低下への移行が多い。',
+    workup: 'TSH/FT4経時フォロー、（必要時）TRAb',
+    emergency: '重症例や副腎不全合併時は緊急'
+  },
+  iodine_excess: {
+    name: 'ヨウ素誘発性甲状腺中毒症 (Jod-Basedow)',
+    category: 'hyper',
+    desc: 'ヨウ素大量摂取（造影剤等）後の甲状腺中毒症。基礎甲状腺疾患がある場合に起こりやすい。',
+    workup: '尿中ヨウ素、シンチ、甲状腺自己抗体',
+    emergency: ''
+  },
+  factitious: {
+    name: '外因性甲状腺中毒症 (Factitious thyrotoxicosis)',
+    category: 'other',
+    desc: '甲状腺ホルモン剤の過剰摂取。甲状腺腫なし・Tg低値・シンチ取り込み消失が手がかり。',
+    workup: 'サイログロブリン（Tg）測定（低値）、シンチ（取り込み消失）',
+    emergency: ''
+  },
+  tshoma: {
+    name: 'TSH産生下垂体腺腫 (TSHoma)',
+    category: 'other',
+    desc: 'FT4/FT3高値なのにTSHが抑制されない（SITSH）。α-subunit高値・下垂体MRIで腫瘍。甲状腺ホルモン不応症との鑑別が重要。',
+    workup: 'α-subunit、下垂体MRI、TRH負荷試験',
+    emergency: ''
+  },
+  gtt: {
+    name: '妊娠性一過性甲状腺中毒症 (GTT)',
+    category: 'hyper',
+    desc: '妊娠初期のhCGによる甲状腺刺激。つわり（悪阻）と関連。多くは自然軽快。TRAb陰性。',
+    workup: 'TRAb（バセドウ病との鑑別）、経過観察',
+    emergency: '脱水・電解質異常に注意'
+  },
+  struma_ovarii: {
+    name: '卵巣甲状腺腫 (Struma ovarii)',
+    category: 'other',
+    desc: '卵巣奇形腫内の甲状腺組織がホルモンを産生する稀な病態。頸部シンチで集積乏しく、骨盤に集積。',
+    workup: '全身シンチ（骨盤集積）、婦人科評価',
+    emergency: ''
+  },
+  hashimoto: {
+    name: '橋本病 (Hashimoto thyroiditis)',
+    category: 'hypo',
+    desc: '原発性低下症の最多原因。TPOAb/TgAb陽性。びまん性甲状腺腫大（萎縮例も）。エコーで内部低エコー・不均質。',
+    workup: 'TPOAb/TgAb、甲状腺エコー',
+    emergency: '放置で粘液水腫性昏睡のリスク。甲状腺リンパ腫のリスクもある。'
+  },
+  post_surgery: {
+    name: '医原性低下症（術後）(Post-thyroidectomy)',
+    category: 'hypo',
+    desc: '甲状腺手術後の永続性低下症。手術既往と整合する。',
+    workup: '手術歴確認、TSH/FT4',
+    emergency: ''
+  },
+  post_rai: {
+    name: '医原性低下症（RAI後）(Post-RAI)',
+    category: 'hypo',
+    desc: '放射性ヨウ素治療後の低下症。治療後数ヶ月〜数年で発症しうる。',
+    workup: '治療歴確認、TSH/FT4',
+    emergency: ''
+  },
+  lithium_hypo: {
+    name: '薬剤性低下症（リチウム）(Lithium-induced)',
+    category: 'hypo',
+    desc: 'リチウムによるTSH上昇・甲状腺腫・低下症。甲状腺腫を伴うことがある。',
+    workup: '薬剤歴、TPOAb（背景自己免疫の評価）',
+    emergency: ''
+  },
+  aih: {
+    name: 'アミオダロン誘発性低下症 (AIH)',
+    category: 'hypo',
+    desc: 'ヨウ素負荷（Wolff-Chaikoff効果など）や背景自己免疫による低下症。',
+    workup: '薬剤歴、TPOAb',
+    emergency: ''
+  },
+  ici_hypo: {
+    name: 'ICI誘発性低下症',
+    category: 'hypo',
+    desc: '免疫チェックポイント阻害薬による低下症。破壊性甲状腺炎後の永続的低下が多い。下垂体炎による中枢性低下も考慮。',
+    workup: 'TSH/FT4経時フォロー、（下垂体炎疑い時）下垂体MRI・ACTH',
+    emergency: '副腎不全合併に注意'
+  },
+  iodine_hypo: {
+    name: 'ヨウ素過剰/欠乏による低下症',
+    category: 'hypo',
+    desc: 'ヨウ素過剰（Wolff-Chaikoff効果）または欠乏による低下症。日本ではヨウ素過剰が多い。',
+    workup: '尿中ヨウ素、食事歴',
+    emergency: ''
+  },
+  central_hypo: {
+    name: '中枢性甲状腺機能低下症 (Central hypothyroidism)',
+    category: 'central',
+    desc: '下垂体・視床下部由来。FT4低値なのにTSHが低値〜正常（"高くならない"）。他の下垂体ホルモン異常が手がかり。',
+    workup: '下垂体ホルモン評価（ACTH/コルチゾール・GH・ゴナドトロピン等）、下垂体MRI',
+    emergency: '急性下垂体卒中・副腎不全合併時は緊急'
+  },
+  subclinical_hyper: {
+    name: '潜在性甲状腺機能亢進症 (Subclinical hyperthyroidism)',
+    category: 'subclinical',
+    desc: 'TSH低値＋FT4/FT3正常。Grade 1 (TSH 0.1-0.39) / Grade 2 (TSH<0.1)。高齢者で心房細動・骨折リスク。',
+    workup: '反復測定（持続性確認）、原因検索（TRAb・結節評価・シンチ）',
+    emergency: 'Grade 2＋高齢/心疾患では積極介入検討'
+  },
+  subclinical_hypo: {
+    name: '潜在性甲状腺機能低下症 (Subclinical hypothyroidism)',
+    category: 'subclinical',
+    desc: 'TSH高値＋FT4正常。TSH>10は治療対象になりやすい。TSH 4-10は症状・TPOAb・CVDリスク等で個別判断。',
+    workup: '2-3ヶ月後の再検（TSH変動確認）、TPOAb測定',
+    emergency: '妊娠中は別枠管理が必要'
+  },
+  ntis: {
+    name: '非甲状腺疾患 / NTIS (Sick euthyroid)',
+    category: 'other',
+    desc: '重症疾患・飢餓状態でFT3低下（rT3上昇）、TSHは正常〜低値。長期化でFT4も低下しうる。甲状腺自体は正常。',
+    workup: '基礎疾患の治療優先、rT3（測定可能なら）、回復後の再評価',
+    emergency: '基礎疾患の治療が最優先'
+  },
+  rth: {
+    name: '甲状腺ホルモン不応症 (RTH)',
+    category: 'other',
+    desc: 'FT4高値＋TSH正常〜高値（SITSH）。TSHomaとの鑑別が重要。家族歴の聴取が有用。多くは治療不要。',
+    workup: '家族歴、遺伝子検査（THRβ変異）、TSHoma除外（α-subunit・MRI）',
+    emergency: ''
+  }
+};
+
+/* ===== 状態管理 ===== */
+var state = {
+  tsh: null,
+  pattern: null,
+  symptoms: [],
+  pe: [],
+  ab: [],
+  imaging: [],
+  bg: []
+};
+
+/* ===== ヘルパー関数 ===== */
+function selectOption(groupId, btn) {
+  var btns = document.getElementById(groupId).querySelectorAll('.option-btn');
+  for (var i = 0; i < btns.length; i++) btns[i].classList.remove('selected');
+  btn.classList.add('selected');
+}
+
+function toggleCheck(item, ev) {
+  if (ev.target.tagName === 'INPUT') return;
+  var cb = item.querySelector('input[type="checkbox"]');
+  cb.checked = !cb.checked;
+}
+
+function getChecked(clId) {
+  var cbs = document.getElementById(clId).querySelectorAll('input[type="checkbox"]:checked');
+  var vals = [];
+  for (var i = 0; i < cbs.length; i++) vals.push(cbs[i].value);
+  return vals;
+}
+
+function activateStep(id) {
+  var el = document.getElementById(id);
+  if (el) {
+    el.classList.remove('inactive', 'hidden');
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+function markDone(snId) {
+  var sn = document.getElementById(snId);
+  if (sn) { sn.textContent = '✓'; sn.classList.add('done'); }
+}
+
+/* ===== Step 1: TSH ===== */
+function selectTSH(val) {
+  state.tsh = val;
+  selectOption('og-tsh', event.currentTarget);
+  markDone('sn1');
+  document.getElementById('step1').classList.add('completed');
+  buildPatternOptions(val);
+  activateStep('step2');
+}
+
+function buildPatternOptions(tsh) {
+  var og = document.getElementById('og-pattern');
+  var opts = [];
+  if (tsh === 'low') {
+    opts = [
+      { val: 'overt_hyper', icon: '🔥', label: 'TSH低値 ＋ FT4/FT3高値（顕性甲状腺中毒症）' },
+      { val: 't3_dominant', icon: '🟥', label: 'TSH低値 ＋ FT3のみ高値（T3優位型）' },
+      { val: 'subclinical_hyper', icon: '🌿', label: 'TSH低値 ＋ FT4/FT3正常（潜在性亢進症）' }
+    ];
+  } else if (tsh === 'high') {
+    opts = [
+      { val: 'overt_hypo', icon: '🧊', label: 'TSH高値 ＋ FT4低値（顕性低下症）' },
+      { val: 'subclinical_hypo', icon: '🌧️', label: 'TSH高値 ＋ FT4正常（潜在性低下症）' },
+      { val: 'sitsh', icon: '⚡', label: 'TSH高値 ＋ FT4高値（SITSH：TSHoma/RTH）' }
+    ];
+  } else if (tsh === 'normal') {
+    opts = [
+      { val: 'central_hypo', icon: '🧠', label: 'FT4低値 ＋ TSH正常（中枢性低下症/NTIS疑い）' },
+      { val: 'sitsh', icon: '⚡', label: 'FT4高値 ＋ TSH正常（SITSH：TSHoma/RTH）' },
+      { val: 'euthyroid', icon: '✅', label: 'FT4/FT3正常（euthyroid / NTIS回復期）' }
+    ];
+  } else {
+    opts = [
+      { val: 'recheck', icon: '🔄', label: '測定干渉の可能性 → 再検・測定系変更を推奨' }
+    ];
+  }
+  var html = '';
+  for (var i = 0; i < opts.length; i++) {
+    html += '<button class="option-btn" onclick="selectPattern(\'' + opts[i].val + '\')">' +
+      '<span class="icon">' + opts[i].icon + '</span>' + opts[i].label + '</button>';
+  }
+  og.innerHTML = html;
+}
+
+/* ===== Step 2: パターン ===== */
+function selectPattern(val) {
+  state.pattern = val;
+  selectOption('og-pattern', event.currentTarget);
+  markDone('sn2');
+  document.getElementById('step2').classList.add('completed');
+  activateStep('step3');
+}
+
+/* ===== Step 3: 症状 ===== */
+function submitSymptoms() {
+  state.symptoms = getChecked('cl-symptoms');
+  markDone('sn3');
+  document.getElementById('step3').classList.add('completed');
+  activateStep('step4');
+}
+
+/* ===== Step 4: 身体所見 ===== */
+function submitPE() {
+  state.pe = getChecked('cl-pe');
+  markDone('sn4');
+  document.getElementById('step4').classList.add('completed');
+  activateStep('step5');
+}
+
+/* ===== Step 5: 抗体 ===== */
+function submitAb() {
+  state.ab = getChecked('cl-ab');
+  markDone('sn5');
+  document.getElementById('step5').classList.add('completed');
+  activateStep('step6');
+}
+
+/* ===== Step 6: 画像 ===== */
+function submitImaging() {
+  state.imaging = getChecked('cl-imaging');
+  markDone('sn6');
+  document.getElementById('step6').classList.add('completed');
+  activateStep('step7');
+}
+
+/* ===== Step 7: 背景 → 結果表示 ===== */
+function submitBg() {
+  state.bg = getChecked('cl-bg');
+  markDone('sn7');
+  document.getElementById('step7').classList.add('completed');
+  showResults();
+}
+
+/* ===== スコアリングエンジン ===== */
+function calcScores() {
+  var scores = {};
+  var ids = Object.keys(DISEASES);
+  for (var i = 0; i < ids.length; i++) scores[ids[i]] = 0;
+
+  var p = state.pattern;
+  var sx = state.symptoms;
+  var pe = state.pe;
+  var ab = state.ab;
+  var img = state.imaging;
+  var bg = state.bg;
+
+  /* --- パターンによる基本スコア --- */
+  if (p === 'overt_hyper') {
+    scores.graves += 5; scores.toxic_adenoma += 4; scores.tmng += 4;
+    scores.sat += 4; scores.painless += 4; scores.postpartum += 3;
+    scores.ait += 3; scores.ici_hyper += 3; scores.iodine_excess += 3;
+    scores.factitious += 2; scores.gtt += 3; scores.struma_ovarii += 1;
+  }
+  if (p === 't3_dominant') {
+    scores.graves += 5; scores.toxic_adenoma += 4; scores.tmng += 4;
+  }
+  if (p === 'subclinical_hyper') {
+    scores.subclinical_hyper += 6;
+    scores.graves += 2; scores.toxic_adenoma += 2; scores.tmng += 2;
+  }
+  if (p === 'overt_hypo') {
+    scores.hashimoto += 5; scores.post_surgery += 4; scores.post_rai += 4;
+    scores.lithium_hypo += 3; scores.aih += 3; scores.ici_hypo += 3;
+    scores.iodine_hypo += 3; scores.central_hypo += 2;
+  }
+  if (p === 'subclinical_hypo') {
+    scores.subclinical_hypo += 6; scores.hashimoto += 3;
+  }
+  if (p === 'sitsh') {
+    scores.tshoma += 5; scores.rth += 5;
+  }
+  if (p === 'central_hypo') {
+    scores.central_hypo += 6; scores.ntis += 4;
+  }
+  if (p === 'euthyroid') {
+    scores.ntis += 5;
+  }
+
+  /* --- 症状 --- */
+  if (sx.indexOf('crisis') >= 0) {
+    scores.graves += 3; scores.ait += 2; scores.toxic_adenoma += 1; scores.tmng += 1;
+  }
+  if (sx.indexOf('coma') >= 0) {
+    scores.hashimoto += 3; scores.post_surgery += 2; scores.post_rai += 2;
+    scores.central_hypo += 2;
+  }
+  if (sx.indexOf('hyper_sx') >= 0) {
+    scores.graves += 2; scores.toxic_adenoma += 2; scores.tmng += 2;
+    scores.sat += 1; scores.painless += 1; scores.ait += 1;
+  }
+  if (sx.indexOf('hypo_sx') >= 0) {
+    scores.hashimoto += 2; scores.post_surgery += 2; scores.post_rai += 2;
+    scores.lithium_hypo += 2; scores.aih += 2; scores.ici_hypo += 2;
+    scores.central_hypo += 2; scores.iodine_hypo += 1;
+  }
+  if (sx.indexOf('icu') >= 0) {
+    scores.ntis += 4;
+  }
+  if (sx.indexOf('asymptomatic') >= 0) {
+    scores.subclinical_hyper += 2; scores.subclinical_hypo += 2;
+  }
+
+  /* --- 身体所見 --- */
+  if (pe.indexOf('exophthalmos') >= 0) {
+    scores.graves += 4;
+    scores.painless -= 1; scores.sat -= 1; scores.toxic_adenoma -= 1;
+  }
+  if (pe.indexOf('diffuse_goiter') >= 0) {
+    scores.graves += 2; scores.hashimoto += 2;
+  }
+  if (pe.indexOf('nodular') >= 0) {
+    scores.toxic_adenoma += 3; scores.tmng += 3;
+    scores.graves -= 1;
+  }
+  if (pe.indexOf('tender') >= 0) {
+    scores.sat += 4;
+    scores.graves -= 1; scores.painless -= 2;
+  }
+  if (pe.indexOf('no_tender') >= 0) {
+    scores.painless += 1; scores.postpartum += 1; scores.ici_hyper += 1;
+    scores.sat -= 2;
+  }
+  if (pe.indexOf('rapid_growth') >= 0) {
+    /* 悪性リンパ腫・未分化癌の可能性 — ツール対象外だが警告 */
+  }
+  if (pe.indexOf('no_goiter') >= 0) {
+    scores.factitious += 2; scores.central_hypo += 1; scores.ntis += 1;
+    scores.graves -= 1; scores.hashimoto -= 1;
+  }
+
+  /* --- 抗体 --- */
+  if (ab.indexOf('trab_pos') >= 0) {
+    scores.graves += 5;
+    scores.painless -= 2; scores.sat -= 2; scores.factitious -= 2;
+  }
+  if (ab.indexOf('tpo_pos') >= 0) {
+    scores.hashimoto += 4; scores.painless += 1; scores.postpartum += 1;
+    scores.subclinical_hypo += 1;
+  }
+  if (ab.indexOf('ab_neg') >= 0) {
+    scores.graves -= 2;
+    scores.sat += 1; scores.factitious += 1; scores.iodine_excess += 1;
+    scores.gtt += 1; scores.ntis += 1;
+  }
+
+  /* --- 画像 --- */
+  if (img.indexOf('scinti_high') >= 0) {
+    scores.graves += 4;
+    scores.painless -= 3; scores.sat -= 3; scores.factitious -= 3;
+  }
+  if (img.indexOf('scinti_hot') >= 0) {
+    scores.toxic_adenoma += 5; scores.tmng += 4;
+    scores.graves -= 2;
+  }
+  if (img.indexOf('scinti_low') >= 0) {
+    scores.sat += 3; scores.painless += 3; scores.postpartum += 3;
+    scores.ici_hyper += 3; scores.factitious += 3;
+    scores.graves -= 3; scores.toxic_adenoma -= 3; scores.tmng -= 3;
+  }
+  if (img.indexOf('echo_flow_up') >= 0) {
+    scores.graves += 3; scores.ait += 1;
+    scores.painless -= 2; scores.sat -= 1;
+  }
+  if (img.indexOf('echo_flow_down') >= 0) {
+    scores.painless += 2; scores.ici_hyper += 2;
+    scores.graves -= 2;
+  }
+  if (img.indexOf('echo_hypo') >= 0) {
+    scores.hashimoto += 3;
+  }
+  if (img.indexOf('echo_pain_hypo') >= 0) {
+    scores.sat += 3;
+  }
+  if (img.indexOf('crp_high') >= 0) {
+    scores.sat += 3;
+    scores.painless -= 1;
+  }
+  if (img.indexOf('tg_low') >= 0) {
+    scores.factitious += 5;
+    scores.graves -= 2; scores.sat -= 2;
+  }
+
+  /* --- 臨床背景 --- */
+  if (bg.indexOf('amiodarone') >= 0) {
+    scores.ait += 5; scores.aih += 4;
+  }
+  if (bg.indexOf('lithium') >= 0) {
+    scores.lithium_hypo += 5;
+  }
+  if (bg.indexOf('ici') >= 0) {
+    scores.ici_hyper += 4; scores.ici_hypo += 4;
+  }
+  if (bg.indexOf('iodine') >= 0) {
+    scores.iodine_excess += 4; scores.iodine_hypo += 3;
+  }
+  if (bg.indexOf('thyroidectomy') >= 0) {
+    scores.post_surgery += 6;
+  }
+  if (bg.indexOf('rai') >= 0) {
+    scores.post_rai += 6;
+  }
+  if (bg.indexOf('pregnant') >= 0) {
+    scores.gtt += 5;
+  }
+  if (bg.indexOf('postpartum') >= 0) {
+    scores.postpartum += 5;
+  }
+  if (bg.indexOf('thyroid_hormone') >= 0) {
+    scores.factitious += 4;
+  }
+  if (bg.indexOf('pituitary_hx') >= 0) {
+    scores.central_hypo += 5; scores.tshoma += 2;
+  }
+  if (bg.indexOf('family_hx') >= 0) {
+    scores.graves += 1; scores.hashimoto += 1; scores.rth += 2;
+  }
+
+  return scores;
+}
+
+function rankDiseases(scores) {
+  var arr = [];
+  var ids = Object.keys(scores);
+  for (var i = 0; i < ids.length; i++) {
+    if (scores[ids[i]] > 0) {
+      arr.push({ id: ids[i], score: scores[ids[i]], data: DISEASES[ids[i]] });
+    }
+  }
+  arr.sort(function(a, b) { return b.score - a.score; });
+  return arr;
+}
+
+function getProbLevel(score, maxScore) {
+  var ratio = maxScore > 0 ? score / maxScore : 0;
+  if (ratio >= 0.7) return 'high';
+  if (ratio >= 0.4) return 'medium';
+  return 'low';
+}
+
+/* ===== 結果表示 ===== */
+function showResults() {
+  var scores = calcScores();
+  var ranked = rankDiseases(scores);
+  var maxScore = ranked.length > 0 ? ranked[0].score : 1;
+
+  var html = '';
+
+  /* 緊急性警告 */
+  if (state.symptoms.indexOf('crisis') >= 0) {
+    html += '<div class="emergency-box">' +
+      '<strong>⚠️ 甲状腺クリーゼの可能性</strong><br>' +
+      '高熱・著明な頻脈・心不全・意識障害を認める場合、<strong>Burch-Wartofsky スコア</strong>で評価し、スコア≥45で甲状腺クリーゼと診断。' +
+      '直ちにICU管理・抗甲状腺薬・無機ヨウ素・β遮断薬・ステロイドを検討。' +
+      '</div>';
+  }
+  if (state.symptoms.indexOf('coma') >= 0) {
+    html += '<div class="emergency-box">' +
+      '<strong>⚠️ 粘液水腫性昏睡の可能性</strong><br>' +
+      '低体温・意識低下・低換気・徐脈を認める場合、粘液水腫性昏睡を疑う。' +
+      '副腎不全合併の除外後、T4静注（経口不可の場合）＋ヒドロコルチゾン併用。ICU管理。' +
+      '</div>';
+  }
+  if (state.pe.indexOf('rapid_growth') >= 0) {
+    html += '<div class="emergency-box">' +
+      '<strong>⚠️ 急速増大する甲状腺腫</strong><br>' +
+      '甲状腺リンパ腫・未分化癌の可能性。緊急画像評価＋穿刺吸引細胞診（FNA）を検討。' +
+      '</div>';
+  }
+
+  /* サマリータグ */
+  html += '<div class="summary-row">';
+  if (state.tsh) {
+    var tshLabel = { low: 'TSH低値', high: 'TSH高値', normal: 'TSH正常', unreliable: 'TSH測定干渉疑い' };
+    html += '<span class="summary-tag">🔬 ' + (tshLabel[state.tsh] || state.tsh) + '</span>';
+  }
+  var patternLabels = {
+    overt_hyper: '顕性中毒症', t3_dominant: 'T3優位型', subclinical_hyper: '潜在性亢進',
+    overt_hypo: '顕性低下症', subclinical_hypo: '潜在性低下', sitsh: 'SITSH',
+    central_hypo: '中枢性低下/NTIS', euthyroid: 'Euthyroid', recheck: '再検推奨'
+  };
+  if (state.pattern) {
+    html += '<span class="summary-tag">📊 ' + (patternLabels[state.pattern] || state.pattern) + '</span>';
+  }
+  html += '</div>';
+
+  /* 測定干渉の場合 */
+  if (state.pattern === 'recheck') {
+    html += '<div class="algo-note"><strong>推奨：</strong>TSH値の信頼性が低い場合、ビオチンサプリメントの中止（2-3日）後の再検、異なる測定系での再検、または希釈試験を検討してください。</div>';
+  }
+
+  /* 鑑別疾患カード */
+  if (ranked.length === 0) {
+    html += '<p style="text-align:center;color:#666;padding:20px;">選択された条件に合致する鑑別疾患はありません。入力内容を再確認してください。</p>';
+  } else {
+    html += '<div class="section-label">鑑別疾患（可能性順）</div>';
+    var showCount = Math.min(ranked.length, 10);
+    for (var i = 0; i < showCount; i++) {
+      var d = ranked[i];
+      var level = getProbLevel(d.score, maxScore);
+      var levelLabel = { high: '可能性 高', medium: '可能性 中', low: '可能性 低' };
+      html += '<div class="dx-card ' + level + '">' +
+        '<div class="dx-name">' + d.data.name + ' <span class="prob-badge">' + levelLabel[level] + '</span></div>' +
+        '<div class="dx-detail">' + d.data.desc + '</div>';
+      if (d.data.emergency) {
+        html += '<div class="dx-detail" style="color:var(--red);margin-top:4px;"><strong>⚠️ ' + d.data.emergency + '</strong></div>';
+      }
+      html += '<div class="dx-workup">🔍 推奨検査: ' + d.data.workup + '</div>' +
+        '</div>';
+    }
+  }
+
+  document.getElementById('result-body').innerHTML = html;
+  document.getElementById('result-panel').classList.add('show');
+  document.getElementById('reset-btn').style.display = 'block';
+  document.getElementById('result-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ===== リセット ===== */
+function resetAll() {
+  state = { tsh: null, pattern: null, symptoms: [], pe: [], ab: [], imaging: [], bg: [] };
+  var steps = ['step1','step2','step3','step4','step5','step6','step7'];
+  for (var i = 0; i < steps.length; i++) {
+    var el = document.getElementById(steps[i]);
+    el.classList.remove('completed');
+    if (i > 0) el.classList.add('inactive');
+    var btns = el.querySelectorAll('.option-btn');
+    for (var j = 0; j < btns.length; j++) btns[j].classList.remove('selected');
+    var cbs = el.querySelectorAll('input[type="checkbox"]');
+    for (var k = 0; k < cbs.length; k++) cbs[k].checked = false;
+  }
+  var sns = ['sn1','sn2','sn3','sn4','sn5','sn6','sn7'];
+  for (var n = 0; n < sns.length; n++) {
+    var sn = document.getElementById(sns[n]);
+    sn.textContent = String(n + 1);
+    sn.classList.remove('done');
+  }
+  document.getElementById('result-panel').classList.remove('show');
+  document.getElementById('reset-btn').style.display = 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
