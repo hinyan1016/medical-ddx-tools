@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tolosa-Hunt症候群 インフォグラフィック</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'BIZ UDPGothic', 'Segoe UI', 'Hiragino Kaku Gothic ProN', sans-serif;
+    background: #0d1b2a;
+    color: #e0e0e0;
+    min-height: 100vh;
+}
+
+.infographic {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px 60px;
+}
+
+/* ── ヘッダー ── */
+.header {
+    text-align: center;
+    margin-bottom: 48px;
+    position: relative;
+}
+
+.header-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 4px 16px;
+    border-radius: 20px;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+}
+
+.header h1 {
+    font-size: 2.4rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #4fc3f7, #81d4fa, #b3e5fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.3;
+    margin-bottom: 8px;
+}
+
+.header-sub {
+    font-size: 1.1rem;
+    color: #90caf9;
+    font-weight: 500;
+}
+
+.header-line {
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(90deg, #4fc3f7, #e74c3c);
+    margin: 20px auto 0;
+    border-radius: 2px;
+}
+
+/* ── セクション共通 ── */
+.section {
+    margin-bottom: 36px;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.section-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+.section-title h2 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #fff;
+}
+
+/* ── 定義カード ── */
+.definition-card {
+    background: linear-gradient(135deg, #1a3a5c, #1e3d5f);
+    border: 1px solid #2a5a8a;
+    border-radius: 16px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+}
+
+.definition-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: linear-gradient(180deg, #4fc3f7, #29b6f6);
+}
+
+.definition-main {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #cfd8dc;
+}
+
+.definition-main em {
+    color: #4fc3f7;
+    font-style: normal;
+    font-weight: bold;
+}
+
+.definition-stats {
+    display: flex;
+    gap: 16px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.stat-chip {
+    background: rgba(79, 195, 247, 0.1);
+    border: 1px solid rgba(79, 195, 247, 0.3);
+    border-radius: 10px;
+    padding: 12px 18px;
+    text-align: center;
+    flex: 1;
+    min-width: 140px;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #4fc3f7;
+}
+
+.stat-label {
+    font-size: 0.78rem;
+    color: #90caf9;
+    margin-top: 2px;
+}
+
+/* ── 解剖図（海綿静脈洞） ── */
+.anatomy-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.anatomy-card {
+    background: #152238;
+    border: 1px solid #2a4a6a;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: transform 0.2s;
+}
+
+.anatomy-card:hover {
+    transform: translateY(-2px);
+}
+
+.anatomy-nerve-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 900;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.anatomy-nerve-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #e3f2fd;
+    margin-bottom: 2px;
+}
+
+.anatomy-nerve-detail {
+    font-size: 0.8rem;
+    color: #90a4ae;
+    line-height: 1.5;
+}
+
+/* ── 症状バーチャート ── */
+.symptom-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.symptom-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.symptom-label {
+    width: 200px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #cfd8dc;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.symptom-bar-bg {
+    flex: 1;
+    height: 28px;
+    background: #1a2a3a;
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+}
+
+.symptom-bar-fill {
+    height: 100%;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 12px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #fff;
+    transition: width 0.8s ease;
+}
+
+/* ── ICHD-3 診断基準 ── */
+.criteria-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+}
+
+.criteria-item {
+    display: flex;
+    gap: 16px;
+    position: relative;
+}
+
+.criteria-connector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 48px;
+    flex-shrink: 0;
+}
+
+.criteria-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: #fff;
+    flex-shrink: 0;
+    z-index: 1;
+}
+
+.criteria-line {
+    width: 3px;
+    flex: 1;
+    min-height: 16px;
+}
+
+.criteria-content {
+    background: #152238;
+    border-radius: 12px;
+    padding: 16px 20px;
+    flex: 1;
+    margin-bottom: 12px;
+    border: 1px solid #2a4a6a;
+}
+
+.criteria-content h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+}
+
+.criteria-content p {
+    font-size: 0.85rem;
+    color: #90a4ae;
+    line-height: 1.6;
+}
+
+/* ── 鑑別診断 ── */
+.ddx-categories {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.ddx-category {
+    border-radius: 14px;
+    padding: 20px;
+    border: 1px solid;
+}
+
+.ddx-category h3 {
+    font-size: 0.95rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ddx-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.ddx-list li {
+    font-size: 0.82rem;
+    color: #b0bec5;
+    padding-left: 16px;
+    position: relative;
+    line-height: 1.5;
+}
+
+.ddx-list li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: inherit;
+    opacity: 0.6;
+}
+
+.ddx-tumor { background: rgba(244, 67, 54, 0.08); border-color: rgba(244, 67, 54, 0.3); }
+.ddx-tumor h3 { color: #ef5350; }
+.ddx-tumor li::before { color: #ef5350; }
+
+.ddx-vascular { background: rgba(255, 152, 0, 0.08); border-color: rgba(255, 152, 0, 0.3); }
+.ddx-vascular h3 { color: #ffa726; }
+.ddx-vascular li::before { color: #ffa726; }
+
+.ddx-infection { background: rgba(76, 175, 80, 0.08); border-color: rgba(76, 175, 80, 0.3); }
+.ddx-infection h3 { color: #66bb6a; }
+.ddx-infection li::before { color: #66bb6a; }
+
+.ddx-autoimmune { background: rgba(171, 71, 188, 0.08); border-color: rgba(171, 71, 188, 0.3); }
+.ddx-autoimmune h3 { color: #ba68c8; }
+.ddx-autoimmune li::before { color: #ba68c8; }
+
+/* ── Red Flags ── */
+.red-flags {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.red-flag-card {
+    background: rgba(244, 67, 54, 0.08);
+    border: 1px solid rgba(244, 67, 54, 0.25);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.red-flag-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.red-flag-trigger {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #ef5350;
+    margin-bottom: 2px;
+}
+
+.red-flag-action {
+    font-size: 0.8rem;
+    color: #ef9a9a;
+    line-height: 1.5;
+}
+
+/* ── 治療タイムライン ── */
+.treatment-timeline {
+    position: relative;
+    padding-left: 40px;
+}
+
+.treatment-timeline::before {
+    content: '';
+    position: absolute;
+    left: 18px;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, #4caf50, #66bb6a, #a5d6a7);
+    border-radius: 2px;
+}
+
+.treatment-step {
+    position: relative;
+    margin-bottom: 24px;
+    background: #152238;
+    border: 1px solid #2a4a6a;
+    border-radius: 12px;
+    padding: 18px 20px;
+}
+
+.treatment-step::before {
+    content: '';
+    position: absolute;
+    left: -30px;
+    top: 20px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 3px solid #4caf50;
+    background: #0d1b2a;
+    z-index: 1;
+}
+
+.treatment-step h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #81c784;
+    margin-bottom: 6px;
+}
+
+.treatment-step p {
+    font-size: 0.85rem;
+    color: #b0bec5;
+    line-height: 1.6;
+}
+
+.treatment-highlight {
+    display: inline-block;
+    background: rgba(76, 175, 80, 0.15);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    border-radius: 6px;
+    padding: 2px 10px;
+    font-size: 0.85rem;
+    color: #81c784;
+    font-weight: 700;
+    margin-top: 6px;
+}
+
+/* ── 臨床パール ── */
+.pearls-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.pearl-card {
+    background: linear-gradient(135deg, #1b2838, #1e3048);
+    border: 1px solid #2a5a8a;
+    border-radius: 14px;
+    padding: 18px;
+    position: relative;
+    overflow: hidden;
+}
+
+.pearl-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 3px;
+    background: linear-gradient(90deg, #ffd54f, #ffb300);
+}
+
+.pearl-number {
+    font-size: 2rem;
+    font-weight: 900;
+    color: rgba(255, 213, 79, 0.15);
+    position: absolute;
+    top: 8px;
+    right: 14px;
+}
+
+.pearl-text {
+    font-size: 0.88rem;
+    color: #e0e0e0;
+    line-height: 1.7;
+    font-weight: 500;
+}
+
+.pearl-text strong {
+    color: #ffd54f;
+}
+
+/* ── フッター ── */
+.footer {
+    text-align: center;
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid #1a3050;
+}
+
+.footer p {
+    font-size: 0.75rem;
+    color: #546e7a;
+    line-height: 1.6;
+}
+
+/* ── レスポンシブ ── */
+@media (max-width: 768px) {
+    .header h1 { font-size: 1.6rem; }
+    .anatomy-grid { grid-template-columns: 1fr; }
+    .ddx-categories { grid-template-columns: 1fr; }
+    .red-flags { grid-template-columns: 1fr; }
+    .pearls-grid { grid-template-columns: 1fr; }
+    .symptom-label { width: 120px; font-size: 0.75rem; }
+    .definition-stats { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<div class="infographic">
+
+<!-- ヘッダー -->
+<div class="header">
+    <div class="header-badge">Neuro Infographic</div>
+    <h1>Tolosa-Hunt症候群</h1>
+    <div class="header-sub">有痛性眼筋麻痺 ─ Painful Ophthalmoplegia</div>
+    <div class="header-line"></div>
+</div>
+
+<!-- 1. 定義と疫学 -->
+<div class="section">
+    <div class="section-title">
+        <div class="section-icon" style="background:linear-gradient(135deg,#1565c0,#1976d2);">📋</div>
+        <h2>定義と疫学</h2>
+    </div>
+    <div class="definition-card">
+        <div class="definition-main">
+            <em>海綿静脈洞・上眼窩裂・眼窩先端部</em>における原因不明の<em>肉芽腫性炎症</em>により、<br>
+            片側性の眼窩痛と眼筋麻痺を呈する疾患。<strong style="color:#ef5350;">除外診断</strong>である。
+        </div>
+        <div class="definition-stats">
+            <div class="stat-chip">
+                <div class="stat-value">1/100万</div>
+                <div class="stat-label">年間発症率</div>
+            </div>
+            <div class="stat-chip">
+                <div class="stat-value">41歳</div>
+                <div class="stat-label">平均発症年齢</div>
+            </div>
+            <div class="stat-chip">
+                <div class="stat-value">1 : 1</div>
+                <div class="stat-label">男女比</div>
+            </div>
+            <div class="stat-chip">
+                <div class="stat-value">40-50%</div>
+                <div class="stat-label">再発率</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 2. 海綿静脈洞の解剖 -->
+<div class="section">
+    <div class="section-title">
+        <div class="section-icon" style="background:linear-gradient(135deg,#6a1b9a,#8e24aa);">🧠</div>
+        <h2>海綿静脈洞を通過する構造物</h2>
+    </div>
+    <div class="anatomy-grid">
+        <div class="anatomy-card">
+            <div class="anatomy-nerve-icon" style="background:linear-gradient(135deg,#e53935,#ef5350);">III</div>
+            <div>
+                <div class="anatomy-nerve-name">動眼神経（CN III）</div>
+                <div class="anatomy-nerve-detail">外側壁（上部）｜眼球運動・瞳孔収縮</div>
+            </div>
+        </div>
+        <div class="anatomy-card">
+            <div class="anatomy-nerve-icon" style="background:linear-gradient(135deg,#fb8c00,#ffa726);">IV</div>
+            <div>
+                <div class="anatomy-nerve-name">滑車神経（CN IV）</div>
+                <div class="anatomy-nerve-detail">外側壁（中部）｜上斜筋（内旋・下転）</div>
+            </div>
+        </div>
+        <div class="anatomy-card">
+            <div class="anatomy-nerve-icon" style="background:linear-gradient(135deg,#1e88e5,#42a5f5);">V1</div>
+            <div>
+                <div class="anatomy-nerve-name">三叉神経V1（眼神経）</div>
+                <div class="anatomy-nerve-detail">外側壁（下部）｜前頭部・眼窩の感覚</div>
+            </div>
+        </div>
+        <div class="anatomy-card">
+            <div class="anatomy-nerve-icon" style="background:linear-gradient(135deg,#1e88e5,#42a5f5);">V2</div>
+            <div>
+                <div class="anatomy-nerve-name">三叉神経V2（上顎神経）</div>
+                <div class="anatomy-nerve-detail">外側壁（最下部）｜上顎・頬部の感覚</div>
+            </div>
+        </div>
+        <div class="anatomy-card">
+            <div class="anatomy-nerve-icon" style="background:linear-gradient(135deg,#43a047,#66bb6a);">VI</div>
+            <div>
+                <div class="anatomy-nerve-name">外転神経（CN VI）</div>
+                <div class="anatomy-nerve-detail">洞内（内頸動脈外側）｜外側直筋</div>
+            </div>
+        </div>
+        <div class="anatomy-card">
+            <div class="anatomy-nerve-icon" style="background:linear-gradient(135deg,#c62828,#e53935);">ICA</div>
+            <div>
+                <div class="anatomy-nerve-name">内頸動脈</div>
+                <div class="anatomy-nerve-detail">洞内中央｜脳への血液供給</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 3. 神経障害の頻度 -->
+<div class="section">
+    <div class="section-title">
+        <div class="section-icon" style="background:linear-gradient(135deg,#00838f,#0097a7);">📊</div>
+        <h2>神経障害の頻度</h2>
+    </div>
+    <div class="symptom-bars">
+        <div class="symptom-row">
+            <div class="symptom-label">動眼神経（CN III）</div>
+            <div class="symptom-bar-bg">
+                <div class="symptom-bar-fill" style="width:80%;background:linear-gradient(90deg,#e53935,#ef5350);">80%</div>
+            </div>
+        </div>
+        <div class="symptom-row">
+            <div class="symptom-label">外転神経（CN VI）</div>
+            <div class="symptom-bar-bg">
+                <div class="symptom-bar-fill" style="width:70%;background:linear-gradient(90deg,#fb8c00,#ffa726);">70%</div>
+            </div>
+        </div>
+        <div class="symptom-row">
+            <div class="symptom-label">三叉神経V1</div>
+            <div class="symptom-bar-bg">
+                <div class="symptom-bar-fill" style="width:30%;background:linear-gradient(90deg,#1e88e5,#42a5f5);">30%</div>
+            </div>
+        </div>
+        <div class="symptom-row">
+            <div class="symptom-label">滑車神経（CN IV）</div>
+            <div class="symptom-bar-bg">
+                <div class="symptom-bar-fill" style="width:29%;background:linear-gradient(90deg,#7b1fa2,#ab47bc);">29%</div>
+            </div>
+        </div>
+        <div class="symptom-row">
+            <div class="symptom-label">交感神経（Horner）</div>
+            <div class="symptom-bar-bg">
+                <div class="symptom-bar-fill" style="width:20%;background:linear-gradient(90deg,#00838f,#26c6da);">20%</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 4. ICHD-3 診断基準 -->
+<div class="section">
+    <div class="section-title">
+        <div class="section-icon" style="background:linear-gradient(135deg,#f9a825,#fbc02d);">✅</div>
+        <h2>ICHD-3 診断基準（全項目を満たす）</h2>
+    </div>
+    <div class="criteria-flow">
+        <div class="criteria-item">
+            <div class="criteria-connector">
+                <div class="criteria-circle" style="background:linear-gradient(135deg,#e53935,#ef5350);">A</div>
+                <div class="criteria-line" style="background:#e53935;"></div>
+            </div>
+            <div class="criteria-content">
+                <h3>片側性頭痛</h3>
+                <p>同側の眉部・眼周囲に局在する頭痛</p>
+            </div>
+        </div>
+        <div class="criteria-item">
+            <div class="criteria-connector">
+                <div class="criteria-circle" style="background:linear-gradient(135deg,#fb8c00,#ffa726);">B</div>
+                <div class="criteria-line" style="background:#fb8c00;"></div>
+            </div>
+            <div class="criteria-content">
+                <h3>眼筋麻痺 + 画像/生検</h3>
+                <p>① 同側のCN III/IV/VIのうち1つ以上の麻痺<br>② MRIまたは生検で肉芽腫性炎症を証明</p>
+            </div>
+        </div>
+        <div class="criteria-item">
+            <div class="criteria-connector">
+                <div class="criteria-circle" style="background:linear-gradient(135deg,#1e88e5,#42a5f5);">C</div>
+                <div class="criteria-line" style="background:#1e88e5;"></div>
+            </div>
+            <div class="criteria-content">
+                <h3>時間的関連</h3>
+                <p>頭痛が麻痺に2週間以内に先行、または同時に発症</p>
+            </div>
+        </div>
+        <div class="criteria-item">
+            <div class="criteria-connector">
+                <div class="criteria-circle" style="background:linear-gradient(135deg,#43a047,#66bb6a);">D</div>
+                <div class="criteria-line" style="background:transparent;"></div>
+            </div>
+            <div class="criteria-content">
+                <h3>除外診断</h3>
+                <p>他の疾患では説明できない（※ステロイド反応性はICHD-3で基準から除外）</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 5. 鑑別診断 -->
+<div class="section">
+    <div class="section-title">
+        <div class="section-icon" style="background:linear-gradient(135deg,#d84315,#e64a19);">🔍</div>
+        <h2>鑑別診断（有痛性眼筋麻痺）</h2>
+    </div>
+    <div class="ddx-categories">
+        <div class="ddx-category ddx-tumor">
+            <h3>🔴 腫瘍性</h3>
+            <ul class="ddx-list">
+                <li>髄膜腫（硬膜テイルサイン）</li>
+                <li>悪性リンパ腫（ステロイドに一時反応）</li>
+                <li>転移性腫瘍（骨破壊）</li>
+                <li>下垂体腫瘍（内分泌異常）</li>
+            </ul>
+        </div>
+        <div class="ddx-category ddx-vascular">
+            <h3>🟠 血管性</h3>
+            <ul class="ddx-list">
+                <li>脳動脈瘤（CN III＋瞳孔散大）</li>
+                <li>内頸動脈海綿静脈洞瘻</li>
+                <li>海綿静脈洞血栓症</li>
+                <li>頸動脈解離（Horner症候群）</li>
+            </ul>
+        </div>
+        <div class="ddx-category ddx-infection">
+            <h3>🟢 感染性</h3>
+            <ul class="ddx-list">
+                <li>真菌症（ムコール・アスペルギルス）</li>
+                <li>結核性髄膜炎</li>
+                <li>帯状疱疹（V1領域）</li>
+                <li>梅毒・ライム病</li>
+            </ul>
+        </div>
+        <div class="ddx-category ddx-autoimmune">
+            <h3>🟣 炎症性・自己免疫</h3>
+            <ul class="ddx-list">
+                <li>サルコイドーシス（ACE↑, BHL）</li>
+                <li>IgG4関連疾患</li>
+                <li>肥厚性硬膜炎（ANCA関連）</li>
+                <li>SLE・ANCA関連血管炎</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- 6. Red Flags -->
+<div class="section">
+    <div class="section-title">
+        <div class="section-icon" style="background:linear-gradient(135deg,#b71c1c,#c62828);">🚨</div>
+        <h2>Red Flags — 見逃してはならない徴候</h2>
+    </div>
+    <div class="red-flags">
+        <div class="red-flag-card">
+            <div class="red-flag-icon">⚡</div>
+            <div>
+                <div class="red-flag-trigger">急速進行 ＋ 免疫不全</div>
+                <div class="red-flag-action">→ 真菌感染（ムコール症）を緊急除外</div>
+            </div>
+        </div>
+        <div class="red-flag-card">
+            <div class="red-flag-icon">👁️</div>
+            <div>
+                <div class="red-flag-trigger">CN III麻痺 ＋ 瞳孔散大</div>
+                <div class="red-flag-action">→ 動脈瘤による圧迫を緊急除外</div>
+            </div>
+        </div>
+        <div class="red-flag-card">
+            <div class="red-flag-icon">🌡️</div>
+            <div>
+                <div class="red-flag-trigger">発熱 ＋ 両側性進展</div>
+                <div class="red-flag-action">→ 海綿静脈洞血栓症を疑う</div>
+            </div>
+        </div>
+        <div class="red-flag-card">
+            <div class="red-flag-icon">📉</div>
+            <div>
+                <div class="red-flag-trigger">ステロイドで一時改善→再増悪</div>
+                <div class="red-flag-action">→ リンパ腫の可能性を精査</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 7. 治療 -->
+<div class="section">
+    <div class="section-title">
+        <div class="section-icon" style="background:linear-gradient(135deg,#2e7d32,#43a047);">💊</div>
+        <h2>治療アルゴリズム</h2>
+    </div>
+    <div class="treatment-timeline">
+        <div class="treatment-step">
+            <h3>第一選択：副腎皮質ステロイド</h3>
+            <p>プレドニゾロン 0.5〜1.0 mg/kg/日で開始</p>
+            <div class="treatment-highlight">疼痛は24〜72時間以内に改善</div>
+        </div>
+        <div class="treatment-step">
+            <h3>神経障害の回復</h3>
+            <p>2〜8週間かけて段階的に回復。症状改善に応じて数週〜数ヶ月で漸減。</p>
+        </div>
+        <div class="treatment-step">
+            <h3>難治例：免疫抑制療法</h3>
+            <p>アザチオプリン、メトトレキサート、ミコフェノール酸モフェチル、インフリキシマブ（TNF阻害薬）など</p>
+        </div>
+        <div class="treatment-step">
+            <h3>⚠️ 72時間で疼痛改善なし → 診断再検討</h3>
+            <p>特にリンパ腫を考慮。ステロイド反応性はTHS確定の根拠にならない。</p>
+        </div>
+    </div>
+</div>
+
+<!-- 8. 臨床パール -->
+<div class="section">
+    <div class="section-title">
+        <div class="section-icon" style="background:linear-gradient(135deg,#f9a825,#fbc02d);">💎</div>
+        <h2>臨床パール</h2>
+    </div>
+    <div class="pearls-grid">
+        <div class="pearl-card">
+            <div class="pearl-number">1</div>
+            <div class="pearl-text"><strong>除外診断である</strong>ことを常に念頭に。MRI・血液・髄液で他疾患を系統的に除外。</div>
+        </div>
+        <div class="pearl-card">
+            <div class="pearl-number">2</div>
+            <div class="pearl-text"><strong>ステロイド反応性は診断基準ではない</strong>（ICHD-3で除外済）。リンパ腫も反応する。</div>
+        </div>
+        <div class="pearl-card">
+            <div class="pearl-number">3</div>
+            <div class="pearl-text"><strong>MRI正常でも否定できない</strong>。18-57%で画像所見なし（1mm未満の病変）。</div>
+        </div>
+        <div class="pearl-card">
+            <div class="pearl-number">4</div>
+            <div class="pearl-text"><strong>CN III + VI + V1の複合障害</strong>は海綿静脈洞病変を強く示唆する。</div>
+        </div>
+        <div class="pearl-card">
+            <div class="pearl-number">5</div>
+            <div class="pearl-text"><strong>72時間以内</strong>にステロイドで疼痛改善しなければ診断を再考する。</div>
+        </div>
+        <div class="pearl-card">
+            <div class="pearl-number">6</div>
+            <div class="pearl-text"><strong>再発時も毎回フルワークアップ</strong>が必要。40-50%が再発する。</div>
+        </div>
+    </div>
+</div>
+
+<!-- フッター -->
+<div class="footer">
+    <p>Tolosa-Hunt Syndrome Infographic ｜ 医知創造ラボ<br>
+    References: StatPearls 2024, ICHD-3 (Cephalalgia 2018), Amrutkar & Burton (J Clin Med 2021)</p>
+</div>
+
+</div>
+
+</body>
+</html>
