@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a5276">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>片側性舞踏病 鑑別診断ツール</title>
+<style>
+  :root {
+    --primary: #1a5276;
+    --primary-light: #2980b9;
+    --accent: #e74c3c;
+    --success: #27ae60;
+    --warning: #f39c12;
+    --bg: #f5f7fa;
+    --card-bg: #ffffff;
+    --text: #2c3e50;
+    --text-light: #7f8c8d;
+    --border: #dce1e8;
+    --step-inactive: #bdc3c7;
+    --step-active: #2980b9;
+    --step-done: #27ae60;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    padding: 14px 20px 18px;
+    text-align: center;
+  }
+  header h1 { font-size: 1.5rem; margin-bottom: 4px; }
+  header p { font-size: 0.85rem; opacity: 0.85; }
+  .container { max-width: 800px; margin: 0 auto; padding: 16px; }
+  .progress-bar {
+    display: flex; align-items: center; justify-content: center;
+    flex-wrap: wrap; gap: 4px; margin: 16px 0; padding: 12px;
+    background: var(--card-bg); border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .progress-step {
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 700;
+    background: var(--step-inactive); color: white;
+    cursor: pointer; transition: all 0.3s;
+  }
+  .progress-step.active {
+    background: var(--step-active); transform: scale(1.2);
+    box-shadow: 0 0 0 4px rgba(41,128,185,0.2);
+  }
+  .progress-step.done { background: var(--step-done); }
+  .card {
+    background: var(--card-bg); border-radius: 12px;
+    padding: 24px; margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: none;
+  }
+  .card.visible { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .card h2 {
+    font-size: 1.15rem; color: var(--primary);
+    margin-bottom: 4px; display: flex; align-items: center; gap: 8px;
+  }
+  .card h2 .step-badge {
+    background: var(--primary); color: white;
+    padding: 2px 10px; border-radius: 12px; font-size: 0.75rem;
+  }
+  .card .subtitle { font-size: 0.85rem; color: var(--text-light); margin-bottom: 12px; }
+  .card p, .card li { font-size: 0.92rem; margin-bottom: 8px; }
+  .card ul { padding-left: 20px; }
+  .radio-group { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+  .radio-group label {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border: 2px solid var(--border);
+    border-radius: 8px; cursor: pointer; font-size: 0.9rem;
+    transition: all 0.2s;
+  }
+  .radio-group label:hover { border-color: var(--primary-light); background: #f0f7ff; }
+  .radio-group input:checked + span { color: var(--primary); font-weight: 600; }
+  .radio-group input:checked ~ span { color: var(--primary); font-weight: 600; }
+  .radio-group label:has(input:checked) { border-color: var(--primary); background: #e8f4fd; }
+  .checkbox-list { display: flex; flex-direction: column; gap: 6px; margin: 8px 0; }
+  .checkbox-list label {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 12px; border: 2px solid var(--border);
+    border-radius: 8px; cursor: pointer; font-size: 0.9rem;
+    transition: all 0.2s;
+  }
+  .checkbox-list label:hover { border-color: var(--primary-light); background: #f0f7ff; }
+  .checkbox-list label:has(input:checked) { border-color: var(--primary); background: #e8f4fd; }
+  .input-group { margin: 12px 0; }
+  .input-group label { display: block; font-weight: 600; font-size: 0.88rem; margin-bottom: 4px; }
+  .btn-row { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+  .btn {
+    padding: 10px 24px; border: none; border-radius: 8px;
+    font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-primary { background: var(--primary); color: white; }
+  .btn-primary:hover { background: var(--primary-light); }
+  .btn-secondary { background: var(--border); color: var(--text); }
+  .btn-secondary:hover { background: #c5ccd6; }
+  .btn-reset { background: var(--accent); color: white; }
+  .btn-reset:hover { background: #c0392b; }
+  .alert {
+    padding: 12px 16px; border-radius: 8px; margin: 12px 0;
+    font-size: 0.88rem; display: flex; align-items: flex-start; gap: 8px;
+  }
+  .alert-danger { background: #fdedee; border-left: 4px solid var(--accent); }
+  .alert-warning { background: #fef9e7; border-left: 4px solid var(--warning); }
+  .alert-info { background: #eaf2f8; border-left: 4px solid var(--primary-light); }
+  .alert-success { background: #e8f8f0; border-left: 4px solid var(--success); }
+  .result-box {
+    padding: 14px 16px; border-radius: 8px; margin: 12px 0;
+    font-size: 0.9rem; line-height: 1.5;
+  }
+  .result-normal { background: #e8f8f0; border-left: 4px solid var(--success); }
+  .result-abnormal { background: #fdedee; border-left: 4px solid var(--accent); }
+  .result-warning { background: #fef9e7; border-left: 4px solid var(--warning); }
+  .result-info { background: #eaf2f8; border-left: 4px solid var(--primary-light); }
+  /* Summary */
+  .summary-section { margin: 16px 0; }
+  .summary-section h3 { font-size: 1rem; color: var(--primary); margin-bottom: 8px; border-bottom: 2px solid var(--border); padding-bottom: 4px; }
+  .summary-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #eee; font-size: 0.88rem; }
+  .summary-item .label { color: var(--text-light); }
+  .ddx-card {
+    padding: 14px 16px; border-radius: 10px; margin: 8px 0;
+    border-left: 5px solid var(--primary);
+  }
+  .ddx-high { background: #fdedee; border-left-color: var(--accent); }
+  .ddx-moderate { background: #fef9e7; border-left-color: var(--warning); }
+  .ddx-low { background: #eaf2f8; border-left-color: var(--primary-light); }
+  .ddx-card h4 { font-size: 0.95rem; margin-bottom: 4px; }
+  .ddx-card p { font-size: 0.85rem; color: var(--text-light); margin-bottom: 4px; }
+  .ddx-card .prob-tag {
+    display: inline-block; padding: 2px 8px; border-radius: 10px;
+    font-size: 0.75rem; font-weight: 700; color: white;
+  }
+  .prob-high { background: var(--accent); }
+  .prob-moderate { background: var(--warning); }
+  .prob-low { background: var(--primary-light); }
+  .ref-box { background: #f8f9fa; border-radius: 8px; padding: 12px; margin-top: 16px; font-size: 0.8rem; color: var(--text-light); }
+  .ref-box a { color: var(--primary-light); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>片側性舞踏病 鑑別診断ツール</h1>
+  <p>Hemichorea / Hemiballismus ── 原因の優先順位付け</p>
+</header>
+
+<div class="container">
+  <div class="progress-bar" id="progressBar"></div>
+
+  <!-- Step 1: 不随意運動の確認 -->
+  <div class="card visible" id="step1">
+    <h2><span class="step-badge">Step 1</span> 不随意運動の性状確認</h2>
+    <p class="subtitle">まず本当に舞踏病かを確認します</p>
+
+    <div class="input-group">
+      <label>不随意運動のパターン</label>
+      <div class="radio-group">
+        <label><input type="radio" name="pattern" value="chorea"><span>不規則・非律動的・流動的に移動する</span></label>
+        <label><input type="radio" name="pattern" value="ballism"><span>近位優位で投げ出すような激しい動き</span></label>
+        <label><input type="radio" name="pattern" value="dystonia"><span>同じ姿勢・方向に持続的に捻れる</span></label>
+        <label><input type="radio" name="pattern" value="myoclonus"><span>一瞬のピクつきが主体</span></label>
+        <label><input type="radio" name="pattern" value="seizure"><span>反復的・常同的で予測可能</span></label>
+        <label><input type="radio" name="pattern" value="other"><span>その他・判断困難</span></label>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>分布</label>
+      <div class="radio-group">
+        <label><input type="radio" name="laterality" value="unilateral"><span>片側性（明らかに一側優位）</span></label>
+        <label><input type="radio" name="laterality" value="bilateral"><span>両側性</span></label>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>睡眠時</label>
+      <div class="radio-group">
+        <label><input type="radio" name="sleep" value="disappear"><span>消失する</span></label>
+        <label><input type="radio" name="sleep" value="persist"><span>持続する</span></label>
+        <label><input type="radio" name="sleep" value="unknown"><span>不明</span></label>
+      </div>
+    </div>
+
+    <div id="step1Result" style="display:none;"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="evaluateStep1()">次へ</button>
+    </div>
+  </div>
+
+  <!-- Step 2: 発症様式・患者背景 -->
+  <div class="card" id="step2">
+    <h2><span class="step-badge">Step 2</span> 発症様式・患者背景</h2>
+    <p class="subtitle">時間経過と背景因子を評価します</p>
+
+    <div class="input-group">
+      <label>発症様式</label>
+      <div class="radio-group">
+        <label><input type="radio" name="onset" value="sudden"><span>突然発症（秒〜分）</span></label>
+        <label><input type="radio" name="onset" value="acute"><span>急性（時間〜日）</span></label>
+        <label><input type="radio" name="onset" value="subacute"><span>亜急性（数日〜数週）</span></label>
+        <label><input type="radio" name="onset" value="chronic"><span>慢性（数ヶ月以上）</span></label>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>年齢</label>
+      <div class="radio-group">
+        <label><input type="radio" name="age" value="young"><span>40歳未満</span></label>
+        <label><input type="radio" name="age" value="middle"><span>40〜64歳</span></label>
+        <label><input type="radio" name="age" value="elderly"><span>65歳以上</span></label>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>性別</label>
+      <div class="radio-group">
+        <label><input type="radio" name="sex" value="female"><span>女性</span></label>
+        <label><input type="radio" name="sex" value="male"><span>男性</span></label>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>血管危険因子（該当するものを選択）</label>
+      <div class="checkbox-list">
+        <label><input type="checkbox" name="risk" value="hypertension">高血圧</label>
+        <label><input type="checkbox" name="risk" value="diabetes">糖尿病（既知）</label>
+        <label><input type="checkbox" name="risk" value="afib">心房細動</label>
+        <label><input type="checkbox" name="risk" value="stroke_hx">脳卒中既往</label>
+        <label><input type="checkbox" name="risk" value="dyslipidemia">脂質異常症</label>
+        <label><input type="checkbox" name="risk" value="none">該当なし</label>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep('step1')">戻る</button>
+      <button class="btn btn-primary" onclick="evaluateStep2()">次へ</button>
+    </div>
+  </div>
+
+  <!-- Step 3: 血液検査 -->
+  <div class="card" id="step3">
+    <h2><span class="step-badge">Step 3</span> 血液検査結果</h2>
+    <p class="subtitle">高血糖性舞踏病と代謝性原因を評価します</p>
+
+    <div class="input-group">
+      <label>血糖値</label>
+      <div class="radio-group">
+        <label><input type="radio" name="glucose" value="normal"><span>正常（70〜140 mg/dL）</span></label>
+        <label><input type="radio" name="glucose" value="mild_high"><span>軽度高値（140〜250 mg/dL）</span></label>
+        <label><input type="radio" name="glucose" value="high"><span>高値（250〜400 mg/dL）</span></label>
+        <label><input type="radio" name="glucose" value="very_high"><span>著明高値（400 mg/dL以上）</span></label>
+        <label><input type="radio" name="glucose" value="unknown"><span>未測定</span></label>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>HbA1c</label>
+      <div class="radio-group">
+        <label><input type="radio" name="hba1c" value="normal"><span>正常（6.5%未満）</span></label>
+        <label><input type="radio" name="hba1c" value="elevated"><span>高値（6.5〜10%）</span></label>
+        <label><input type="radio" name="hba1c" value="very_high"><span>著明高値（10%以上）</span></label>
+        <label><input type="radio" name="hba1c" value="unknown"><span>未測定</span></label>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>その他の血液検査異常</label>
+      <div class="checkbox-list">
+        <label><input type="checkbox" name="lab" value="electrolyte">電解質異常（Ca, Mg, Na）</label>
+        <label><input type="checkbox" name="lab" value="thyroid">甲状腺機能異常</label>
+        <label><input type="checkbox" name="lab" value="renal">腎機能障害</label>
+        <label><input type="checkbox" name="lab" value="liver">肝機能障害</label>
+        <label><input type="checkbox" name="lab" value="none">すべて正常 / 未測定</label>
+      </div>
+    </div>
+
+    <div class="alert alert-danger">
+      <div><strong>重要：</strong>糖尿病の既往がなくても22%で舞踏病が糖尿病の初発所見です。必ず血糖・HbA1cを確認してください。</div>
+    </div>
+
+    <div id="step3Result" style="display:none;"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep('step2')">戻る</button>
+      <button class="btn btn-primary" onclick="evaluateStep3()">次へ</button>
+    </div>
+  </div>
+
+  <!-- Step 4: 画像所見 -->
+  <div class="card" id="step4">
+    <h2><span class="step-badge">Step 4</span> 頭部画像所見</h2>
+    <p class="subtitle">脳血管障害と糖尿病性線条体症の画像を評価します</p>
+
+    <div class="input-group">
+      <label>頭部MRI DWI</label>
+      <div class="radio-group">
+        <label><input type="radio" name="dwi" value="bg_positive"><span>対側基底核に急性虚血あり</span></label>
+        <label><input type="radio" name="dwi" value="cortical"><span>皮質に急性虚血あり（基底核正常）</span></label>
+        <label><input type="radio" name="dwi" value="negative"><span>急性虚血なし</span></label>
+        <label><input type="radio" name="dwi" value="not_done"><span>未施行</span></label>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>MRI T1強調画像 ─ 対側線条体</label>
+      <div class="radio-group">
+        <label><input type="radio" name="t1" value="high"><span>T1高信号あり</span></label>
+        <label><input type="radio" name="t1" value="normal"><span>正常</span></label>
+        <label><input type="radio" name="t1" value="not_done"><span>未施行 / 未確認</span></label>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>頭部CT ─ 対側線条体</label>
+      <div class="radio-group">
+        <label><input type="radio" name="ct_striatum" value="high"><span>高吸収あり</span></label>
+        <label><input type="radio" name="ct_striatum" value="normal"><span>正常</span></label>
+        <label><input type="radio" name="ct_striatum" value="not_done"><span>未施行</span></label>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>慢性虚血性変化</label>
+      <div class="radio-group">
+        <label><input type="radio" name="chronic_ischemia" value="prominent"><span>目立つ</span></label>
+        <label><input type="radio" name="chronic_ischemia" value="mild"><span>軽度</span></label>
+        <label><input type="radio" name="chronic_ischemia" value="absent"><span>なし</span></label>
+      </div>
+    </div>
+
+    <div class="alert alert-warning">
+      <div><strong>画像の落とし穴：</strong>CT/MRI不一致≒1/6、MRI正常例5.2%。皮質梗塞のみでhemichoreaが起こることもあります。</div>
+    </div>
+
+    <div id="step4Result" style="display:none;"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep('step3')">戻る</button>
+      <button class="btn btn-primary" onclick="evaluateStep4()">次へ</button>
+    </div>
+  </div>
+
+  <!-- Step 5: 薬剤歴 -->
+  <div class="card" id="step5">
+    <h2><span class="step-badge">Step 5</span> 薬剤歴</h2>
+    <p class="subtitle">薬剤性舞踏病の可能性を評価します</p>
+
+    <div class="input-group">
+      <label>現在または最近使用した薬剤（該当するものを選択）</label>
+      <div class="checkbox-list">
+        <label><input type="checkbox" name="drug" value="antipsychotic">抗精神病薬</label>
+        <label><input type="checkbox" name="drug" value="antiemetic">制吐薬（メトクロプラミド、ドンペリドン）</label>
+        <label><input type="checkbox" name="drug" value="levodopa">レボドパ / ドパミンアゴニスト</label>
+        <label><input type="checkbox" name="drug" value="antiepileptic">抗てんかん薬（フェニトイン等）</label>
+        <label><input type="checkbox" name="drug" value="antidepressant">抗うつ薬</label>
+        <label><input type="checkbox" name="drug" value="dementia_change">認知症治療薬の変更・中止</label>
+        <label><input type="checkbox" name="drug" value="recent_stop">最近中止した薬剤あり</label>
+        <label><input type="checkbox" name="drug" value="none">該当なし</label>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>口舌ジスキネジアの合併</label>
+      <div class="radio-group">
+        <label><input type="radio" name="tardive" value="yes"><span>あり</span></label>
+        <label><input type="radio" name="tardive" value="no"><span>なし</span></label>
+      </div>
+    </div>
+
+    <div id="step5Result" style="display:none;"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep('step4')">戻る</button>
+      <button class="btn btn-primary" onclick="evaluateStep5()">次へ</button>
+    </div>
+  </div>
+
+  <!-- Step 6: 自己免疫 -->
+  <div class="card" id="step6">
+    <h2><span class="step-badge">Step 6</span> 自己免疫・その他</h2>
+    <p class="subtitle">画像・血糖・薬剤で説明できない場合に評価します</p>
+
+    <div class="input-group">
+      <label>自己免疫関連の所見・既往</label>
+      <div class="checkbox-list">
+        <label><input type="checkbox" name="autoimmune" value="thrombosis">血栓症既往</label>
+        <label><input type="checkbox" name="autoimmune" value="livedo">Livedo reticularis</label>
+        <label><input type="checkbox" name="autoimmune" value="aps">抗リン脂質抗体陽性</label>
+        <label><input type="checkbox" name="autoimmune" value="sle">SLE / 膠原病の既往・疑い</label>
+        <label><input type="checkbox" name="autoimmune" value="ana_positive">抗核抗体陽性</label>
+        <label><input type="checkbox" name="autoimmune" value="sydenham">Sydenham舞踏病の可能性（若年・溶連菌感染後）</label>
+        <label><input type="checkbox" name="autoimmune" value="none">該当なし</label>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>舞踏運動の家族歴</label>
+      <div class="radio-group">
+        <label><input type="radio" name="family" value="yes"><span>あり</span></label>
+        <label><input type="radio" name="family" value="no"><span>なし</span></label>
+        <label><input type="radio" name="family" value="unknown"><span>不明</span></label>
+      </div>
+    </div>
+
+    <div id="step6Result" style="display:none;"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goToStep('step5')">戻る</button>
+      <button class="btn btn-primary" onclick="evaluateStep6()">結果を表示</button>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="card" id="summary">
+    <h2>鑑別診断結果</h2>
+    <p class="subtitle">入力情報に基づく鑑別の優先順位</p>
+    <div id="summaryContent"></div>
+
+    <div class="ref-box">
+      <strong>参考文献:</strong><br>
+      1. Bovenzi R, et al. Neurol Sci. 2021;42(12):5187-5196. <a href="https://doi.org/10.1007/s10072-021-05468-3" target="_blank">doi</a><br>
+      2. Cincotta M, Walker RH. Tremor Other Hyperkinet Mov. 2022;12:3. <a href="https://doi.org/10.5334/tohm.675" target="_blank">doi</a><br>
+      3. Carbayo A, et al. Cerebrovasc Dis. 2020;49(5):498-505. <a href="https://doi.org/10.1159/000510578" target="_blank">doi</a><br>
+      4. Chua CB, et al. Sci Rep. 2020;10(1):1594. <a href="https://doi.org/10.1038/s41598-020-58555-w" target="_blank">doi</a><br>
+      5. Hoffmeister MC, et al. J Endocrinol Invest. 2024;47(1):21-34. <a href="https://doi.org/10.1007/s40618-023-02159-y" target="_blank">doi</a><br>
+      7. Shiraiwa N, et al. J Neurol Sci. 2020;417:117033. <a href="https://doi.org/10.1016/j.jns.2020.117033" target="_blank">doi</a>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-reset" onclick="resetAll()">最初からやり直す</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var stepIds = ['step1','step2','step3','step4','step5','step6','summary'];
+var stepLabels = ['1','2','3','4','5','6','結果'];
+var currentStep = 0;
+var data = {};
+
+function initProgress() {
+  var bar = document.getElementById('progressBar');
+  bar.innerHTML = '';
+  stepLabels.forEach(function(label, i) {
+    var el = document.createElement('div');
+    el.className = 'progress-step' + (i === 0 ? ' active' : '');
+    el.textContent = label;
+    el.onclick = function() { if (i <= currentStep) goToStepIndex(i); };
+    bar.appendChild(el);
+  });
+}
+
+function updateProgress() {
+  var dots = document.querySelectorAll('.progress-step');
+  for (var i = 0; i < dots.length; i++) {
+    dots[i].className = 'progress-step';
+    if (i < currentStep) dots[i].classList.add('done');
+    if (i === currentStep) dots[i].classList.add('active');
+  }
+}
+
+function goToStep(id) {
+  var idx = stepIds.indexOf(id);
+  if (idx >= 0) goToStepIndex(idx);
+}
+
+function goToStepIndex(idx) {
+  document.getElementById(stepIds[currentStep]).classList.remove('visible');
+  currentStep = idx;
+  document.getElementById(stepIds[currentStep]).classList.add('visible');
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function nextStep() {
+  if (currentStep < stepIds.length - 1) goToStepIndex(currentStep + 1);
+}
+
+function getChecked(name) {
+  var els = document.querySelectorAll('input[name="' + name + '"]:checked');
+  var vals = [];
+  for (var i = 0; i < els.length; i++) vals.push(els[i].value);
+  return vals;
+}
+
+function getRadio(name) {
+  var el = document.querySelector('input[name="' + name + '"]:checked');
+  return el ? el.value : null;
+}
+
+function evaluateStep1() {
+  var pattern = getRadio('pattern');
+  var laterality = getRadio('laterality');
+  if (!pattern || !laterality) { alert('すべての項目を選択してください'); return; }
+  data.pattern = pattern;
+  data.laterality = laterality;
+  data.sleep = getRadio('sleep') || 'unknown';
+
+  var el = document.getElementById('step1Result');
+  el.style.display = 'block';
+
+  if (pattern === 'dystonia') {
+    el.innerHTML = '<div class="result-box result-warning">ジストニアの可能性があります。舞踏病とは異なるアプローチが必要な場合がありますが、混合型の不随意運動もあるため鑑別を続行します。</div>';
+  } else if (pattern === 'myoclonus') {
+    el.innerHTML = '<div class="result-box result-warning">ミオクローヌスの可能性があります。てんかん性ミオクローヌスや皮質性ミオクローヌスの鑑別も考慮してください。鑑別を続行します。</div>';
+  } else if (pattern === 'seizure') {
+    el.innerHTML = '<div class="result-box result-abnormal">てんかん性の不随意運動（focal motor seizure / EPC）の可能性があります。脳波検査を検討してください。鑑別を続行します。</div>';
+  } else if (pattern === 'chorea' || pattern === 'ballism') {
+    el.innerHTML = '<div class="result-box result-normal">Hemichorea / hemiballismusとして鑑別を進めます。</div>';
+  } else {
+    el.innerHTML = '<div class="result-box result-info">動画記録が有用です。鑑別を続行します。</div>';
+  }
+  setTimeout(nextStep, 100);
+}
+
+function evaluateStep2() {
+  var onset = getRadio('onset');
+  var age = getRadio('age');
+  var sex = getRadio('sex');
+  if (!onset || !age || !sex) { alert('すべての項目を選択してください'); return; }
+  data.onset = onset;
+  data.age = age;
+  data.sex = sex;
+  data.risks = getChecked('risk');
+  nextStep();
+}
+
+function evaluateStep3() {
+  var glucose = getRadio('glucose');
+  var hba1c = getRadio('hba1c');
+  if (!glucose || !hba1c) { alert('すべての項目を選択してください'); return; }
+  data.glucose = glucose;
+  data.hba1c = hba1c;
+  data.labAbnormal = getChecked('lab');
+
+  var el = document.getElementById('step3Result');
+  el.style.display = 'block';
+
+  if ((glucose === 'high' || glucose === 'very_high') && (hba1c === 'very_high' || hba1c === 'elevated')) {
+    el.innerHTML = '<div class="result-box result-abnormal"><strong>高血糖性舞踏病（糖尿病性線条体症）の可能性が高い。</strong>頭部CT/MRIで対側線条体の異常を確認してください。</div>';
+  } else if (glucose === 'very_high') {
+    el.innerHTML = '<div class="result-box result-warning">著明な高血糖があります。高血糖性舞踏病を積極的に疑ってください。</div>';
+  } else if (glucose === 'unknown' || hba1c === 'unknown') {
+    el.innerHTML = '<div class="result-box result-warning">血糖・HbA1cが未測定です。高血糖性舞踏病を除外するために必ず測定してください。</div>';
+  } else {
+    el.innerHTML = '<div class="result-box result-normal">高血糖性舞踏病の典型パターンではありませんが、画像所見も含めて総合的に判断します。</div>';
+  }
+  setTimeout(nextStep, 100);
+}
+
+function evaluateStep4() {
+  data.dwi = getRadio('dwi');
+  data.t1 = getRadio('t1');
+  data.ct_striatum = getRadio('ct_striatum');
+  data.chronic_ischemia = getRadio('chronic_ischemia');
+
+  if (!data.dwi) { alert('MRI DWIの結果を選択してください'); return; }
+
+  var el = document.getElementById('step4Result');
+  el.style.display = 'block';
+
+  if (data.dwi === 'bg_positive') {
+    el.innerHTML = '<div class="result-box result-abnormal"><strong>対側基底核の急性虚血 ── 血管性hemichoreaの可能性が高い。</strong>脳卒中として対応してください。</div>';
+  } else if (data.dwi === 'cortical') {
+    el.innerHTML = '<div class="result-box result-abnormal"><strong>皮質梗塞が検出されました。</strong>基底核病変がなくても皮質梗塞でhemichoreaが起こることがあります（Carbayo 2020）。</div>';
+  } else if (data.t1 === 'high' || data.ct_striatum === 'high') {
+    el.innerHTML = '<div class="result-box result-warning"><strong>対側線条体にT1高信号 / CT高吸収 ── 糖尿病性線条体症を示唆。</strong>血糖・HbA1cと合わせて評価してください。</div>';
+  } else {
+    el.innerHTML = '<div class="result-box result-info">画像で明らかな原因が特定されていません。薬剤性・自己免疫性を含めた鑑別を続行します。<br>※ MRI正常例が5.2%あり、画像だけでは高血糖性舞踏病を除外できません。</div>';
+  }
+  setTimeout(nextStep, 100);
+}
+
+function evaluateStep5() {
+  data.drugs = getChecked('drug');
+  data.tardive = getRadio('tardive');
+
+  var el = document.getElementById('step5Result');
+  el.style.display = 'block';
+
+  if (data.drugs.indexOf('none') === -1 && data.drugs.length > 0) {
+    var drugLabels = {
+      antipsychotic: '抗精神病薬', antiemetic: '制吐薬', levodopa: 'レボドパ/DA',
+      antiepileptic: '抗てんかん薬', antidepressant: '抗うつ薬',
+      dementia_change: '認知症薬変更', recent_stop: '最近の薬剤中止'
+    };
+    var found = data.drugs.filter(function(d) { return d !== 'none'; }).map(function(d) { return drugLabels[d] || d; }).join(', ');
+    el.innerHTML = '<div class="result-box result-warning"><strong>薬剤性舞踏病の可能性：</strong>' + found + '<br>原因薬剤の中止・変更を検討してください。' + (data.tardive === 'yes' ? '<br>口舌ジスキネジアを合併しており、遅発性ジスキネジアの可能性があります。' : '') + '</div>';
+  } else {
+    el.innerHTML = '<div class="result-box result-normal">薬剤性の可能性は低いと考えられます。</div>';
+  }
+  setTimeout(nextStep, 100);
+}
+
+function evaluateStep6() {
+  data.autoimmune = getChecked('autoimmune');
+  data.family = getRadio('family');
+  showSummary();
+}
+
+function calcScores() {
+  var scores = {
+    vascular: 0,
+    hyperglycemic: 0,
+    drug_induced: 0,
+    autoimmune: 0,
+    hereditary: 0
+  };
+
+  // --- 血管性 ---
+  if (data.onset === 'sudden') scores.vascular += 30;
+  else if (data.onset === 'acute') scores.vascular += 20;
+  else if (data.onset === 'subacute') scores.vascular += 10;
+  if (data.age === 'elderly') scores.vascular += 10;
+  if (data.risks && data.risks.indexOf('none') === -1) {
+    scores.vascular += Math.min(data.risks.length * 5, 20);
+  }
+  if (data.risks && data.risks.indexOf('afib') >= 0) scores.vascular += 10;
+  if (data.risks && data.risks.indexOf('stroke_hx') >= 0) scores.vascular += 10;
+  if (data.dwi === 'bg_positive') scores.vascular += 40;
+  else if (data.dwi === 'cortical') scores.vascular += 30;
+  if (data.chronic_ischemia === 'prominent') scores.vascular += 5;
+
+  // --- 高血糖性 ---
+  if (data.glucose === 'very_high') scores.hyperglycemic += 30;
+  else if (data.glucose === 'high') scores.hyperglycemic += 20;
+  else if (data.glucose === 'mild_high') scores.hyperglycemic += 5;
+  if (data.hba1c === 'very_high') scores.hyperglycemic += 25;
+  else if (data.hba1c === 'elevated') scores.hyperglycemic += 10;
+  if (data.t1 === 'high') scores.hyperglycemic += 25;
+  if (data.ct_striatum === 'high') scores.hyperglycemic += 20;
+  if (data.age === 'elderly') scores.hyperglycemic += 5;
+  if (data.sex === 'female') scores.hyperglycemic += 5;
+  if (data.risks && data.risks.indexOf('diabetes') >= 0) scores.hyperglycemic += 10;
+
+  // --- 薬剤性 ---
+  if (data.drugs && data.drugs.indexOf('none') === -1 && data.drugs.length > 0) {
+    scores.drug_induced += 15 + data.drugs.length * 5;
+  }
+  if (data.tardive === 'yes') scores.drug_induced += 20;
+  if (data.drugs && data.drugs.indexOf('antipsychotic') >= 0) scores.drug_induced += 10;
+  if (data.drugs && data.drugs.indexOf('antiemetic') >= 0) scores.drug_induced += 10;
+
+  // --- 自己免疫性 ---
+  if (data.autoimmune && data.autoimmune.indexOf('none') === -1) {
+    for (var i = 0; i < data.autoimmune.length; i++) {
+      var a = data.autoimmune[i];
+      if (a === 'aps') scores.autoimmune += 25;
+      else if (a === 'sle') scores.autoimmune += 20;
+      else if (a === 'thrombosis') scores.autoimmune += 15;
+      else if (a === 'sydenham') scores.autoimmune += 25;
+      else if (a === 'ana_positive') scores.autoimmune += 5;
+      else if (a === 'livedo') scores.autoimmune += 10;
+    }
+  }
+
+  // --- 遺伝性 ---
+  if (data.family === 'yes') scores.hereditary += 30;
+  if (data.onset === 'chronic') scores.hereditary += 15;
+  if (data.age === 'young') scores.hereditary += 10;
+  else if (data.age === 'middle') scores.hereditary += 5;
+
+  return scores;
+}
+
+function getProbLevel(score) {
+  if (score >= 40) return { level: 'high', label: '可能性高', cls: 'prob-high', cardCls: 'ddx-high' };
+  if (score >= 20) return { level: 'moderate', label: '要考慮', cls: 'prob-moderate', cardCls: 'ddx-moderate' };
+  return { level: 'low', label: '可能性低', cls: 'prob-low', cardCls: 'ddx-low' };
+}
+
+function showSummary() {
+  goToStep('summary');
+  var scores = calcScores();
+
+  var ddxList = [
+    { id: 'vascular', name: '脳血管障害', desc: '脳梗塞・脳出血による血管性hemichorea。成人発症の最多原因（68%）。突然発症なら最優先。', action: '脳卒中として対応（DWI再読影、MRA、心房細動検索、頸動脈エコー）' },
+    { id: 'hyperglycemic', name: '高血糖性舞踏病（糖尿病性線条体症）', desc: '高齢女性に多い。平均血糖414 mg/dL、HbA1c 13.1%。22%が糖尿病の初発所見。', action: '厳格な血糖コントロール（インスリン・補液）。CT線条体高吸収/MRI T1高信号を確認。' },
+    { id: 'drug_induced', name: '薬剤性舞踏病', desc: 'ドパミン遮断薬・制吐薬・レボドパ・抗てんかん薬など。遅発性ジスキネジアを含む。', action: '原因薬剤の中止・変更。口舌ジスキネジア合併時は遅発性ジスキネジアを考慮。' },
+    { id: 'autoimmune', name: '自己免疫性舞踏病', desc: '抗リン脂質抗体症候群、SLE、Sydenham舞踏病。比較的急速発症で片側優位もありうる。', action: '抗カルジオリピン抗体、抗β2GPI抗体、ループスアンチコアグラント、ANA検査。' },
+    { id: 'hereditary', name: '変性・遺伝性疾患', desc: 'ハンチントン病が代表。高齢初発は稀だが完全否定は困難。', action: '家族歴精査。必要に応じて遺伝子検査。高齢者では優先度は低い。' }
+  ];
+
+  // スコア順にソート
+  ddxList.sort(function(a, b) { return scores[b.id] - scores[a.id]; });
+
+  var html = '';
+
+  // 入力サマリー
+  html += '<div class="summary-section"><h3>入力情報</h3>';
+  var onsetLabels = { sudden: '突然', acute: '急性', subacute: '亜急性', chronic: '慢性' };
+  var patternLabels = { chorea: '舞踏運動', ballism: 'バリスム', dystonia: 'ジストニア様', myoclonus: 'ミオクローヌス様', seizure: 'てんかん性', other: 'その他' };
+  html += '<div class="summary-item"><span class="label">不随意運動</span><span>' + (patternLabels[data.pattern] || '-') + ' / ' + (data.laterality === 'unilateral' ? '片側性' : '両側性') + '</span></div>';
+  html += '<div class="summary-item"><span class="label">発症</span><span>' + (onsetLabels[data.onset] || '-') + '</span></div>';
+  html += '<div class="summary-item"><span class="label">年齢・性別</span><span>' + (data.age === 'elderly' ? '65歳以上' : data.age === 'middle' ? '40-64歳' : '40歳未満') + ' / ' + (data.sex === 'female' ? '女性' : '男性') + '</span></div>';
+  html += '</div>';
+
+  // 鑑別リスト
+  html += '<div class="summary-section"><h3>鑑別の優先順位</h3>';
+  for (var i = 0; i < ddxList.length; i++) {
+    var d = ddxList[i];
+    var prob = getProbLevel(scores[d.id]);
+    html += '<div class="ddx-card ' + prob.cardCls + '">';
+    html += '<h4>' + d.name + ' <span class="prob-tag ' + prob.cls + '">' + prob.label + '</span></h4>';
+    html += '<p>' + d.desc + '</p>';
+    html += '<p><strong>推奨アクション:</strong> ' + d.action + '</p>';
+    html += '</div>';
+  }
+  html += '</div>';
+
+  // 対症療法
+  html += '<div class="summary-section"><h3>対症療法（症状が強い場合）</h3>';
+  html += '<div class="alert alert-info"><div>';
+  html += '<strong>原因治療が第一ですが、転倒やADL障害がある場合：</strong><br>';
+  html += '・ハロペリドール 0.375〜0.75 mg/日<br>';
+  html += '・クロナゼパム 0.5〜1 mg/日<br>';
+  html += '<span style="color:var(--accent);font-weight:600;">高齢者では傾眠・嚥下低下・QT延長・パーキンソニズムに注意</span>';
+  html += '</div></div></div>';
+
+  // 予後
+  html += '<div class="summary-section"><h3>予後</h3>';
+  html += '<div class="alert alert-success"><div>';
+  html += '<strong>82%が自然軽快 or 軽微な後遺症</strong>（Bovenzi 2021）<br>';
+  html += '可逆的原因が多い病態です。迅速な原因検索が予後を左右します。<br>';
+  html += '高血糖性の再発率は約28%（Chua 2020）。';
+  html += '</div></div></div>';
+
+  document.getElementById('summaryContent').innerHTML = html;
+}
+
+function resetAll() {
+  data = {};
+  var inputs = document.querySelectorAll('input[type="radio"], input[type="checkbox"]');
+  for (var i = 0; i < inputs.length; i++) inputs[i].checked = false;
+  var results = document.querySelectorAll('[id$="Result"]');
+  for (var j = 0; j < results.length; j++) results[j].style.display = 'none';
+  document.getElementById('summaryContent').innerHTML = '';
+  goToStepIndex(0);
+}
+
+initProgress();
+</script>
+
+</body>
+</html>
