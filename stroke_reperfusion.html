@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A5276">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>脳梗塞 再灌流療法 適応判定ツール</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1A5276;--blue:#2E86C1;--light-blue:#E8F0FE;
+  --red:#DC3545;--yellow:#F5C518;--green:#28A745;--orange:#E8850C;
+  --gray:#6C757D;--light-gray:#F4F6F8;--white:#FFFFFF;
+  --shadow:0 2px 8px rgba(27,58,92,0.10);--radius:10px;
+  --purple:#7B2D8E;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Kaku Gothic ProN",Meiryo,sans-serif;background:var(--light-gray);color:#333;line-height:1.6}
+.header{background:linear-gradient(135deg,var(--navy),var(--blue));color:var(--white);padding:20px 16px;text-align:center}
+.header h1{font-size:1.25rem;margin-bottom:4px}
+.header p{font-size:0.82rem;opacity:0.85}
+.container{max-width:640px;margin:0 auto;padding:12px}
+
+.algo-note{background:var(--light-blue);border-left:4px solid var(--blue);border-radius:var(--radius);padding:12px 14px;margin-bottom:14px;font-size:0.88rem}
+.algo-note strong{color:var(--navy)}
+
+.step-card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:12px;overflow:hidden;transition:opacity .3s}
+.step-card.inactive{opacity:0.4;pointer-events:none}
+.step-card.completed{opacity:1}
+.step-header{display:flex;align-items:center;padding:12px 14px;border-bottom:1px solid #eee;cursor:pointer}
+.step-number{width:30px;height:30px;border-radius:50%;background:var(--blue);color:var(--white);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;flex-shrink:0;margin-right:10px}
+.step-number.done{background:var(--green)}
+.step-title{font-weight:700;font-size:0.95rem;color:var(--navy)}
+.step-subtitle{font-size:0.8rem;color:var(--gray);margin-left:auto;padding-left:8px;text-align:right}
+.step-body{padding:10px 14px 14px}
+.step-hint{font-size:0.82rem;color:var(--gray);margin-bottom:8px;padding:6px 10px;background:#f8f9fa;border-radius:6px}
+
+.option-group{display:flex;flex-direction:column;gap:6px}
+.option-btn{display:flex;align-items:center;gap:8px;padding:10px 12px;border:2px solid #dee2e6;border-radius:8px;background:var(--white);font-size:0.9rem;cursor:pointer;transition:all .15s;text-align:left;width:100%;color:#333}
+.option-btn:hover{border-color:var(--blue);background:var(--light-blue)}
+.option-btn.selected{border-color:var(--blue);background:var(--light-blue);font-weight:600}
+.option-btn .icon{font-size:1.1rem;flex-shrink:0}
+
+.checklist{display:flex;flex-direction:column;gap:4px}
+.check-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border:2px solid transparent;border-radius:8px;cursor:pointer;transition:all .15s;font-size:0.88rem}
+.check-item:hover{background:#f0f4ff}
+.check-item.checked{background:var(--light-blue);border-color:var(--blue)}
+.check-item.checked.contra{background:#fff5f5;border-color:var(--red)}
+.check-item input[type=checkbox]{width:18px;height:18px;accent-color:var(--blue);flex-shrink:0;cursor:pointer}
+.check-item.contra-item input[type=checkbox]:checked{accent-color:var(--red)}
+
+.next-btn{display:block;width:100%;padding:10px;margin-top:10px;border:none;border-radius:8px;background:var(--blue);color:var(--white);font-size:0.95rem;font-weight:700;cursor:pointer}
+.next-btn:hover{background:var(--navy)}
+
+.reset-btn{display:block;width:100%;padding:12px;margin-top:6px;border:2px solid var(--gray);border-radius:var(--radius);background:var(--white);color:var(--gray);font-size:0.9rem;font-weight:600;cursor:pointer}
+.reset-btn:hover{background:var(--light-gray)}
+
+/* 結果パネル */
+.result-panel{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:12px;overflow:hidden}
+.result-header{padding:14px;font-weight:700;font-size:1rem;color:var(--white);display:flex;align-items:center;gap:8px}
+.result-header.go{background:var(--green)}
+.result-header.nogo{background:var(--red)}
+.result-header.caution{background:var(--orange)}
+.result-header.info{background:var(--blue)}
+.result-body{padding:14px}
+.result-body p{margin-bottom:8px;font-size:0.9rem}
+.result-body ul{margin:4px 0 10px 20px;font-size:0.88rem}
+.result-body li{margin-bottom:3px}
+
+.contra-tag{display:inline-block;background:#f8d7da;color:#721c24;border-radius:4px;padding:1px 8px;font-size:0.82rem;font-weight:600;margin:2px}
+.ok-tag{display:inline-block;background:#d4edda;color:#155724;border-radius:4px;padding:1px 8px;font-size:0.82rem;font-weight:600;margin:2px}
+.warn-tag{display:inline-block;background:#fff3cd;color:#856404;border-radius:4px;padding:1px 8px;font-size:0.82rem;font-weight:600;margin:2px}
+
+.num-input-row{display:flex;align-items:center;gap:8px;margin:6px 0;padding:8px 10px;background:#f8f9fa;border-radius:8px}
+.num-input-row label{font-size:0.88rem;font-weight:600;color:var(--navy);min-width:100px}
+.num-input-row input[type=number]{width:90px;padding:6px 8px;border:2px solid #dee2e6;border-radius:6px;font-size:0.95rem;text-align:center}
+.num-input-row .unit{font-size:0.82rem;color:var(--gray)}
+.num-input-row input:focus{outline:none;border-color:var(--blue)}
+
+.section-divider{text-align:center;padding:8px 0;font-size:0.82rem;color:var(--gray);font-weight:600}
+.section-divider span{background:var(--light-gray);padding:0 12px}
+
+.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0}
+.summary-item{background:#f8f9fa;border-radius:6px;padding:8px;text-align:center;font-size:0.85rem}
+.summary-item .val{font-size:1.1rem;font-weight:700;color:var(--navy)}
+.summary-item .lbl{font-size:0.75rem;color:var(--gray)}
+
+.timer-bar{background:var(--light-blue);border-radius:8px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.timer-bar .clock{font-size:1.4rem}
+.timer-bar .timer-text{font-size:0.85rem;color:var(--navy)}
+.timer-bar .timer-text strong{color:var(--red)}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>脳梗塞 再灌流療法 適応判定ツール</h1>
+  <p>rt-PA静注療法 + 機械的血栓回収術 ― 「時・血・画・出・偽」で判定</p>
+</div>
+
+<div class="container" id="app"></div>
+
+<script>
+/* ============================================================
+   脳梗塞 再灌流療法 適応判定ツール
+   rt-PA（アルテプラーゼ）静注療法 + 機械的血栓回収術
+   ============================================================ */
+
+var STEPS = [
+  {
+    id: "time",
+    title: "時 ― 発症からの時間",
+    subtitle: "Step 1/7",
+    type: "single",
+    hint: "Last Known Well（最終健常確認時刻）から計算。起床時発症は就寝時刻をLKWとする。",
+    options: [
+      { label: "4.5時間以内", value: "within_4_5h", icon: "\u2705" },
+      { label: "4.5時間超〜6時間以内", value: "4_5h_to_6h", icon: "\u23F1" },
+      { label: "6時間超〜24時間以内", value: "6h_to_24h", icon: "\u23F0" },
+      { label: "24時間超", value: "over_24h", icon: "\u274C" },
+      { label: "発症時刻不明（DWI/FLAIRミスマッチあり）", value: "unknown_mismatch", icon: "\uD83E\uDDE0" },
+      { label: "発症時刻不明（ミスマッチなし／MRI未施行）", value: "unknown_no_mismatch", icon: "\u2753" }
+    ]
+  },
+  {
+    id: "blood",
+    title: "血 ― バイタル・採血の禁忌",
+    subtitle: "Step 2/7",
+    type: "multi",
+    hint: "該当する項目をすべて選択。降圧後に185/110未満を維持できていれば「高血圧」は選択しない。",
+    options: [
+      { label: "収縮期BP \u2265 185 mmHg（降圧後も持続）", value: "sbp_high" },
+      { label: "拡張期BP \u2265 110 mmHg（降圧後も持続）", value: "dbp_high" },
+      { label: "血糖 < 50 mg/dL", value: "glucose_low" },
+      { label: "血糖 > 400 mg/dL", value: "glucose_high" },
+      { label: "血小板 < 10万/\u00B5L", value: "plt_low" },
+      { label: "PT-INR > 1.7", value: "inr_high" },
+      { label: "aPTT 基準上限超（ヘパリン使用中など）", value: "aptt_high" },
+      { label: "DOAC 48時間以内服用（中和薬未使用）", value: "doac" },
+      { label: "活動性の出血（消化管・尿路・喀血など）", value: "active_bleeding" },
+      { label: "該当なし", value: "none" }
+    ]
+  },
+  {
+    id: "imaging",
+    title: "画 ― 画像所見の禁忌",
+    subtitle: "Step 3/7",
+    type: "multi",
+    hint: "来院時CT/MRIの所見を選択。",
+    options: [
+      { label: "頭蓋内出血あり（脳内血腫・硬膜下血腫など）", value: "ich" },
+      { label: "くも膜下出血（疑い含む）", value: "sah" },
+      { label: "広範な早期虚血性変化（ASPECTS \u2264 5）", value: "extensive_ischemia" },
+      { label: "ASPECTS 6", value: "aspects_6" },
+      { label: "圧排所見・正中線偏位あり", value: "mass_effect" },
+      { label: "該当なし", value: "none" }
+    ]
+  },
+  {
+    id: "history",
+    title: "出 ― 出血・手術の既往歴",
+    subtitle: "Step 4/7",
+    type: "multi",
+    hint: "3か月/21日/14日ルールを確認。該当するものをすべて選択。",
+    options: [
+      { label: "3か月以内の脳梗塞", value: "recent_stroke" },
+      { label: "3か月以内の頭蓋内/脊髄手術・頭部外傷", value: "recent_cranial_surgery" },
+      { label: "21日以内の消化管出血・尿路出血", value: "recent_gi_bleeding" },
+      { label: "14日以内の大手術・重篤な外傷", value: "recent_major_surgery" },
+      { label: "頭蓋内出血の既往（時期問わず）", value: "ich_history" },
+      { label: "頭蓋内腫瘍", value: "intracranial_tumor" },
+      { label: "脳動静脈奇形（AVM）/ 脳動脈瘤", value: "avm_aneurysm" },
+      { label: "大動脈解離（既知 or 疑い）", value: "aortic_dissection" },
+      { label: "該当なし", value: "none" }
+    ]
+  },
+  {
+    id: "mimic",
+    title: "偽 ― Stroke Mimic の除外",
+    subtitle: "Step 5/7",
+    type: "multi",
+    hint: "脳梗塞以外の原因が疑われる場合に選択。",
+    options: [
+      { label: "発症時の痙攣（Todd麻痺の可能性）", value: "seizure" },
+      { label: "低血糖（< 50 mg/dL）による神経症候", value: "hypoglycemia" },
+      { label: "くも膜下出血疑い（雷鳴頭痛）", value: "sah_suspicion" },
+      { label: "その他mimic疑い（片頭痛・代謝性脳症など）", value: "other_mimic" },
+      { label: "該当なし（虚血性脳卒中と判断）", value: "none" }
+    ]
+  },
+  {
+    id: "severity",
+    title: "重症度・閉塞部位（NIHSS・血管評価）",
+    subtitle: "Step 6/7",
+    type: "single",
+    hint: "NIHSSと血管閉塞の情報で血栓回収療法の適応を判断。",
+    options: [
+      { label: "NIHSS \u2265 6 + 前方循環大血管閉塞（ICA/M1）", value: "lvo_anterior" },
+      { label: "NIHSS \u2265 6 + 後方循環大血管閉塞（BA）", value: "lvo_posterior" },
+      { label: "NIHSS \u2265 6 + M2/ACA閉塞 or 閉塞不明", value: "lvo_uncertain" },
+      { label: "NIHSS \u2265 6 + 大血管閉塞なし", value: "high_nihss_no_lvo" },
+      { label: "NIHSS < 6（軽症）", value: "mild" },
+      { label: "NIHSS未評価", value: "nihss_unknown" }
+    ]
+  },
+  {
+    id: "prestroke",
+    title: "発症前の状態（mRS・年齢）",
+    subtitle: "Step 7/7",
+    type: "single",
+    hint: "血栓回収療法の適応判断に使用。mRS = modified Rankin Scale。",
+    options: [
+      { label: "mRS 0-1（自立）、80歳未満", value: "good_young" },
+      { label: "mRS 0-1（自立）、80歳以上", value: "good_elderly" },
+      { label: "mRS 2（軽度障害あり）", value: "mild_disability" },
+      { label: "mRS 3-5（中等度〜重度障害）", value: "significant_disability" }
+    ]
+  }
+];
+
+var currentStep = 0;
+var answers = {};
+var app = document.getElementById("app");
+
+/* ── 選択ロジック ── */
+function selectSingle(stepId, value, stepIndex) {
+  answers[stepId] = value;
+  currentStep = stepIndex + 1;
+  render();
+  scrollToStep(currentStep);
+}
+
+function toggleCheck(stepId, value) {
+  if (!answers[stepId]) answers[stepId] = [];
+  var arr = answers[stepId];
+  var idx = arr.indexOf(value);
+  if (idx >= 0) { arr.splice(idx, 1); }
+  else { arr.push(value); }
+  if (value === "none" && arr.indexOf("none") >= 0) {
+    answers[stepId] = ["none"];
+  } else if (value !== "none") {
+    answers[stepId] = arr.filter(function(v){ return v !== "none"; });
+  }
+  render();
+}
+
+function nextStep(stepIndex) {
+  currentStep = stepIndex + 1;
+  render();
+  scrollToStep(currentStep);
+}
+
+function resetAll() {
+  Object.keys(answers).forEach(function(k){ delete answers[k]; });
+  currentStep = 0;
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function scrollToStep(idx) {
+  setTimeout(function(){
+    var el = document.getElementById("step-" + idx);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, 80);
+}
+
+/* ── 適応判定ロジック ── */
+function evaluate() {
+  var result = {
+    rtpa: { eligible: true, contras: [], warnings: [], notes: [] },
+    evt: { eligible: false, contras: [], warnings: [], notes: [], consider: false }
+  };
+
+  var time = answers.time;
+  var blood = answers.blood || [];
+  var imaging = answers.imaging || [];
+  var history = answers.history || [];
+  var mimic = answers.mimic || [];
+  var severity = answers.severity;
+  var prestroke = answers.prestroke;
+
+  /* === rt-PA 判定 === */
+
+  /* 時 */
+  if (time === "within_4_5h" || time === "unknown_mismatch") {
+    /* 適応内 */
+    if (time === "unknown_mismatch") {
+      result.rtpa.notes.push("DWI/FLAIRミスマッチにより4.5時間以内相当と判断");
+    }
+  } else if (time === "4_5h_to_6h") {
+    result.rtpa.eligible = false;
+    result.rtpa.contras.push("発症4.5時間超（rt-PA時間枠外）");
+  } else if (time === "6h_to_24h") {
+    result.rtpa.eligible = false;
+    result.rtpa.contras.push("発症6時間超（rt-PA時間枠外）");
+  } else if (time === "over_24h") {
+    result.rtpa.eligible = false;
+    result.rtpa.contras.push("発症24時間超（再灌流療法の時間枠外）");
+  } else if (time === "unknown_no_mismatch") {
+    result.rtpa.eligible = false;
+    result.rtpa.contras.push("発症時刻不明かつDWI/FLAIRミスマッチなし");
+  }
+
+  /* 血 */
+  var bloodContras = {
+    "sbp_high": "収縮期血圧 \u2265 185 mmHg（降圧抵抗性）",
+    "dbp_high": "拡張期血圧 \u2265 110 mmHg（降圧抵抗性）",
+    "glucose_low": "低血糖（< 50 mg/dL）",
+    "glucose_high": "高血糖（> 400 mg/dL）",
+    "plt_low": "血小板減少（< 10万/\u00B5L）",
+    "inr_high": "PT-INR > 1.7",
+    "aptt_high": "aPTT延長（抗凝固状態）",
+    "doac": "DOAC 48時間以内服用",
+    "active_bleeding": "活動性の出血"
+  };
+  blood.forEach(function(v){
+    if (v !== "none" && bloodContras[v]) {
+      result.rtpa.eligible = false;
+      result.rtpa.contras.push(bloodContras[v]);
+    }
+  });
+
+  /* 画 */
+  if (imaging.indexOf("ich") >= 0) {
+    result.rtpa.eligible = false;
+    result.rtpa.contras.push("頭蓋内出血あり");
+  }
+  if (imaging.indexOf("sah") >= 0) {
+    result.rtpa.eligible = false;
+    result.rtpa.contras.push("くも膜下出血（疑い）");
+  }
+  if (imaging.indexOf("extensive_ischemia") >= 0) {
+    result.rtpa.eligible = false;
+    result.rtpa.contras.push("広範な早期虚血性変化（ASPECTS \u2264 5）");
+  }
+  if (imaging.indexOf("aspects_6") >= 0) {
+    result.rtpa.warnings.push("ASPECTS 6: 相対禁忌。出血転化リスクを考慮して判断");
+  }
+  if (imaging.indexOf("mass_effect") >= 0) {
+    result.rtpa.eligible = false;
+    result.rtpa.contras.push("圧排所見・正中線偏位");
+  }
+
+  /* 出 */
+  var histContras = {
+    "recent_stroke": "3か月以内の脳梗塞",
+    "recent_cranial_surgery": "3か月以内の頭蓋内/脊髄手術・頭部外傷",
+    "recent_gi_bleeding": "21日以内の消化管/尿路出血",
+    "recent_major_surgery": "14日以内の大手術",
+    "ich_history": "頭蓋内出血の既往",
+    "intracranial_tumor": "頭蓋内腫瘍",
+    "avm_aneurysm": "脳動静脈奇形 / 脳動脈瘤",
+    "aortic_dissection": "大動脈解離"
+  };
+  history.forEach(function(v){
+    if (v !== "none" && histContras[v]) {
+      result.rtpa.eligible = false;
+      result.rtpa.contras.push(histContras[v]);
+    }
+  });
+
+  /* 偽 */
+  var mimicContras = {
+    "seizure": "痙攣発作（Todd麻痺の可能性）",
+    "hypoglycemia": "低血糖による神経症候",
+    "sah_suspicion": "くも膜下出血疑い",
+    "other_mimic": "その他のstroke mimic疑い"
+  };
+  mimic.forEach(function(v){
+    if (v !== "none" && mimicContras[v]) {
+      result.rtpa.eligible = false;
+      result.rtpa.contras.push("Stroke mimic: " + mimicContras[v]);
+    }
+  });
+
+  /* === 血栓回収療法 判定 === */
+
+  /* 時間枠 */
+  var evtTimeOk = (time === "within_4_5h" || time === "4_5h_to_6h" ||
+                   time === "6h_to_24h" || time === "unknown_mismatch");
+
+  if (time === "over_24h") {
+    result.evt.contras.push("発症24時間超");
+  }
+  if (time === "unknown_no_mismatch") {
+    result.evt.warnings.push("発症時刻不明: 灌流画像評価が必要");
+  }
+
+  /* 画像で絶対禁忌 */
+  if (imaging.indexOf("ich") >= 0) {
+    result.evt.contras.push("頭蓋内出血あり");
+    evtTimeOk = false;
+  }
+  if (imaging.indexOf("sah") >= 0) {
+    result.evt.contras.push("くも膜下出血");
+    evtTimeOk = false;
+  }
+
+  /* LVO + NIHSS */
+  var hasLVO = (severity === "lvo_anterior" || severity === "lvo_posterior");
+  var possibleLVO = (severity === "lvo_uncertain");
+
+  if (hasLVO && evtTimeOk) {
+    result.evt.eligible = true;
+    if (severity === "lvo_anterior") {
+      result.evt.notes.push("前方循環大血管閉塞: 血栓回収療法の強い適応");
+      if (time === "within_4_5h" || time === "4_5h_to_6h") {
+        result.evt.notes.push("発症6時間以内: エビデンスレベル最高");
+      } else if (time === "6h_to_24h") {
+        result.evt.notes.push("発症6-24時間: 灌流画像でペナンブラ評価を推奨（DAWN/DEFUSE 3基準）");
+      }
+    }
+    if (severity === "lvo_posterior") {
+      result.evt.notes.push("後方循環（脳底動脈）閉塞: 血栓回収療法を検討");
+      result.evt.warnings.push("後方循環のエビデンスは前方循環に比べ限定的");
+    }
+  } else if (possibleLVO && evtTimeOk) {
+    result.evt.consider = true;
+    result.evt.notes.push("M2/ACA閉塞または閉塞部位不明: CTA/MRAで血管評価を推奨");
+  } else if (severity === "high_nihss_no_lvo") {
+    result.evt.notes.push("NIHSS高値だが大血管閉塞なし: 血栓回収の適応は限定的");
+  } else if (severity === "mild") {
+    result.evt.notes.push("軽症（NIHSS < 6）: 原則として血栓回収の適応外だが、急速悪化例は再評価");
+  }
+
+  /* ASPECTS による EVT 判断 */
+  if (imaging.indexOf("extensive_ischemia") >= 0) {
+    if (result.evt.eligible) {
+      result.evt.warnings.push("ASPECTS \u2264 5: 広範虚血。SELECT2基準等で慎重に判断");
+    }
+  }
+
+  /* 発症前mRS */
+  if (prestroke === "significant_disability") {
+    result.evt.warnings.push("発症前mRS 3-5: 血栓回収の有益性が限定的な可能性あり");
+  }
+  if (prestroke === "good_elderly") {
+    result.evt.notes.push("80歳以上: 適応あり。年齢のみで除外しない（HERMES解析）");
+  }
+
+  /* rt-PA + EVT の関係 */
+  if (result.rtpa.eligible && result.evt.eligible) {
+    if (time === "within_4_5h") {
+      result.evt.notes.push("rt-PA適応あり: ブリッジング療法（rt-PA先行 \u2192 血栓回収）を推奨");
+    }
+  }
+  if (!result.rtpa.eligible && result.evt.eligible) {
+    result.evt.notes.push("rt-PA禁忌だが血栓回収は施行可能: 直接血栓回収（direct EVT）へ");
+  }
+
+  /* 2h20m ルール */
+  if (result.rtpa.eligible && result.evt.eligible && severity === "lvo_anterior") {
+    if (time === "4_5h_to_6h" || time === "unknown_mismatch") {
+      /* この場合rt-PAはeligibleでないはずだが念のため */
+    }
+    if (time === "within_4_5h") {
+      result.evt.notes.push("2025年改訂: 前方循環LVOで発症2時間20分以降かつ迅速にEVT可能な施設では、rt-PA省略（direct EVT）も考慮可");
+    }
+  }
+
+  return result;
+}
+
+/* ── 結果レンダリング ── */
+function renderResults() {
+  var r = evaluate();
+  var html = "";
+
+  /* --- rt-PA 結果 --- */
+  html += '<div class="section-divider"><span>rt-PA 静注療法の判定</span></div>';
+
+  if (r.rtpa.eligible) {
+    html += '<div class="result-panel">';
+    html += '<div class="result-header go">\u2705 rt-PA 静注療法: 適応あり</div>';
+    html += '<div class="result-body">';
+    html += '<p><strong>アルテプラーゼ 0.6 mg/kg 静注の適応あり</strong></p>';
+    html += '<p>来院後は可及的速やかに（目標: door-to-needle 60分以内）投与を開始してください。</p>';
+    if (r.rtpa.warnings.length > 0) {
+      html += '<p style="color:#856404;font-weight:600;">\u26A0 注意事項:</p><ul>';
+      r.rtpa.warnings.forEach(function(w){ html += '<li>' + w + '</li>'; });
+      html += '</ul>';
+    }
+    if (r.rtpa.notes.length > 0) {
+      html += '<p style="color:#0c5460;font-weight:600;">\u2139 補足:</p><ul>';
+      r.rtpa.notes.forEach(function(n){ html += '<li>' + n + '</li>'; });
+      html += '</ul>';
+    }
+    html += '</div></div>';
+  } else {
+    html += '<div class="result-panel">';
+    html += '<div class="result-header nogo">\u274C rt-PA 静注療法: 禁忌</div>';
+    html += '<div class="result-body">';
+    html += '<p><strong>以下の禁忌項目に該当:</strong></p>';
+    html += '<div style="margin:8px 0">';
+    r.rtpa.contras.forEach(function(c){
+      html += '<span class="contra-tag">\u274C ' + c + '</span> ';
+    });
+    html += '</div>';
+    if (r.rtpa.warnings.length > 0) {
+      html += '<p style="color:#856404;font-weight:600;margin-top:8px;">\u26A0 注意事項:</p><ul>';
+      r.rtpa.warnings.forEach(function(w){ html += '<li>' + w + '</li>'; });
+      html += '</ul>';
+    }
+    html += '</div></div>';
+  }
+
+  /* --- 血栓回収 結果 --- */
+  html += '<div class="section-divider"><span>機械的血栓回収術の判定</span></div>';
+
+  if (r.evt.eligible) {
+    html += '<div class="result-panel">';
+    html += '<div class="result-header go">\u2705 機械的血栓回収術: 適応あり</div>';
+    html += '<div class="result-body">';
+    if (r.evt.notes.length > 0) {
+      html += '<ul>';
+      r.evt.notes.forEach(function(n){ html += '<li>' + n + '</li>'; });
+      html += '</ul>';
+    }
+    if (r.evt.warnings.length > 0) {
+      html += '<p style="color:#856404;font-weight:600;">\u26A0 注意事項:</p><ul>';
+      r.evt.warnings.forEach(function(w){ html += '<li>' + w + '</li>'; });
+      html += '</ul>';
+    }
+    html += '</div></div>';
+  } else if (r.evt.consider) {
+    html += '<div class="result-panel">';
+    html += '<div class="result-header caution">\u26A0 機械的血栓回収術: 要検討</div>';
+    html += '<div class="result-body">';
+    if (r.evt.notes.length > 0) {
+      html += '<ul>';
+      r.evt.notes.forEach(function(n){ html += '<li>' + n + '</li>'; });
+      html += '</ul>';
+    }
+    if (r.evt.warnings.length > 0) {
+      html += '<p style="color:#856404;font-weight:600;">\u26A0 注意事項:</p><ul>';
+      r.evt.warnings.forEach(function(w){ html += '<li>' + w + '</li>'; });
+      html += '</ul>';
+    }
+    html += '</div></div>';
+  } else {
+    html += '<div class="result-panel">';
+    if (r.evt.contras.length > 0) {
+      html += '<div class="result-header nogo">\u274C 機械的血栓回収術: 適応なし</div>';
+      html += '<div class="result-body">';
+      html += '<div style="margin:8px 0">';
+      r.evt.contras.forEach(function(c){
+        html += '<span class="contra-tag">\u274C ' + c + '</span> ';
+      });
+      html += '</div>';
+    } else {
+      html += '<div class="result-header info">\u2139 機械的血栓回収術: 現時点では適応限定的</div>';
+      html += '<div class="result-body">';
+    }
+    if (r.evt.notes.length > 0) {
+      html += '<ul>';
+      r.evt.notes.forEach(function(n){ html += '<li>' + n + '</li>'; });
+      html += '</ul>';
+    }
+    if (r.evt.warnings.length > 0) {
+      html += '<p style="color:#856404;font-weight:600;">\u26A0 注意事項:</p><ul>';
+      r.evt.warnings.forEach(function(w){ html += '<li>' + w + '</li>'; });
+      html += '</ul>';
+    }
+    html += '</div></div>';
+  }
+
+  /* --- 判定サマリー --- */
+  html += '<div class="result-panel">';
+  html += '<div class="result-header info">\uD83D\uDCCB 判定サマリー</div>';
+  html += '<div class="result-body">';
+  html += '<div class="summary-grid">';
+  html += '<div class="summary-item"><div class="val">' + (r.rtpa.eligible ? '<span style="color:var(--green)">\u2705 適応</span>' : '<span style="color:var(--red)">\u274C 禁忌</span>') + '</div><div class="lbl">rt-PA 静注</div></div>';
+  html += '<div class="summary-item"><div class="val">' + (r.evt.eligible ? '<span style="color:var(--green)">\u2705 適応</span>' : (r.evt.consider ? '<span style="color:var(--orange)">\u26A0 要検討</span>' : '<span style="color:var(--gray)">- 限定的</span>')) + '</div><div class="lbl">血栓回収術</div></div>';
+  html += '</div>';
+
+  /* 推奨アクション */
+  html += '<p style="font-weight:700;margin-top:12px;color:var(--navy);">\u25B6 推奨アクション:</p>';
+  if (r.rtpa.eligible && r.evt.eligible) {
+    html += '<p>\u2705 <strong>ブリッジング療法:</strong> rt-PA投与を開始しつつ、血栓回収チーム/施設への連絡を並行して進める。</p>';
+  } else if (r.rtpa.eligible && !r.evt.eligible && !r.evt.consider) {
+    html += '<p>\u2705 <strong>rt-PA単独投与:</strong> アルテプラーゼ 0.6 mg/kg を速やかに開始。神経症状悪化時は血管評価を再検討。</p>';
+  } else if (!r.rtpa.eligible && r.evt.eligible) {
+    html += '<p>\u2705 <strong>直接血栓回収（Direct EVT）:</strong> rt-PAは禁忌のため、速やかに血栓回収術へ。</p>';
+  } else if (!r.rtpa.eligible && r.evt.consider) {
+    html += '<p>\u26A0 <strong>血管評価を優先:</strong> rt-PAは禁忌。CTA/MRAで閉塞部位を確認し、血栓回収の適応を再評価。</p>';
+  } else if (r.rtpa.eligible && r.evt.consider) {
+    html += '<p>\u2705 <strong>rt-PA投与 + 血管評価:</strong> まずrt-PAを開始。並行してCTA/MRAで閉塞評価を行い、血栓回収の適応を判断。</p>';
+  } else {
+    html += '<p>現時点では再灌流療法（rt-PA・血栓回収）の適応は限定的です。神経内科/脳卒中科へのコンサルトを検討してください。</p>';
+  }
+
+  html += '<p style="font-size:0.8rem;color:var(--gray);margin-top:10px;border-top:1px solid #eee;padding-top:8px;">';
+  html += '\u26A0 本ツールは判断支援であり、最終的な治療決定は臨床状況と上級医の判断に基づいてください。';
+  html += '<br>準拠: 脳卒中治療ガイドライン2025、AHA/ASA Guidelines 2019、アルテプラーゼ添付文書</p>';
+  html += '</div></div>';
+
+  return html;
+}
+
+/* ── メインレンダリング ── */
+function render() {
+  var html = "";
+
+  /* アルゴリズム説明 */
+  html += '<div class="algo-note">';
+  html += '<strong>\uD83E\uDDE0 「時\u30FB血\u30FB画\u30FB出\u30FB偽」\u306E\u9806\u756A\u3067\u5224\u5B9A</strong><br>';
+  html += '\u6642\u9593\u2192\u30D0\u30A4\u30BF\u30EB\u30FB\u63A1\u8840\u2192\u753B\u50CF\u2192\u65E2\u5F80\u6B74\u2192Stroke mimic\u306E\u9806\u306B\u78BA\u8A8D\u3057\u3001rt-PA\u9759\u6CE8\u7642\u6CD5\u3068\u6A5F\u68B0\u7684\u8840\u6813\u56DE\u53CE\u8853\u306E\u9069\u5FDC\u3092\u5224\u5B9A\u3057\u307E\u3059\u3002';
+  html += '</div>';
+
+  /* ステップカード */
+  for (var i = 0; i < STEPS.length; i++) {
+    var step = STEPS[i];
+    var isActive = (i === currentStep);
+    var isDone = (i < currentStep);
+    var cls = isDone ? "completed" : (isActive ? "" : "inactive");
+
+    html += '<div class="step-card ' + cls + '" id="step-' + i + '">';
+    html += '<div class="step-header"' + (isDone ? ' onclick="goToStep(' + i + ')"' : '') + '>';
+    html += '<div class="step-number' + (isDone ? ' done' : '') + '">' + (isDone ? "\u2713" : (i + 1)) + '</div>';
+    html += '<div class="step-title">' + step.title + '</div>';
+    html += '<div class="step-subtitle">' + step.subtitle + '</div>';
+    html += '</div>';
+
+    if (isActive || isDone) {
+      html += '<div class="step-body">';
+      if (step.hint && isActive) {
+        html += '<div class="step-hint">' + step.hint + '</div>';
+      }
+
+      if (step.type === "single") {
+        html += '<div class="option-group">';
+        for (var j = 0; j < step.options.length; j++) {
+          var opt = step.options[j];
+          var selected = (answers[step.id] === opt.value);
+          html += '<button class="option-btn' + (selected ? ' selected' : '') + '" onclick="selectSingle(\'' + step.id + '\',\'' + opt.value + '\',' + i + ')">';
+          html += '<span class="icon">' + (opt.icon || "") + '</span>' + opt.label;
+          html += '</button>';
+        }
+        html += '</div>';
+      } else {
+        html += '<div class="checklist">';
+        var currentAnswers = answers[step.id] || [];
+        for (var j = 0; j < step.options.length; j++) {
+          var opt = step.options[j];
+          var checked = (currentAnswers.indexOf(opt.value) >= 0);
+          var isContra = (opt.value !== "none" && checked);
+          html += '<div class="check-item' + (checked ? ' checked' : '') + (isContra ? ' contra' : '') + '" onclick="toggleCheck(\'' + step.id + '\',\'' + opt.value + '\')">';
+          html += '<input type="checkbox"' + (checked ? ' checked' : '') + ' onclick="event.stopPropagation();toggleCheck(\'' + step.id + '\',\'' + opt.value + '\')">';
+          html += '<label>' + opt.label + '</label>';
+          html += '</div>';
+        }
+        html += '</div>';
+        if (isActive) {
+          html += '<button class="next-btn" onclick="nextStep(' + i + ')">次へ \u25B6</button>';
+        }
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+
+  /* 結果表示 */
+  if (currentStep >= STEPS.length) {
+    html += renderResults();
+  }
+
+  /* リセットボタン */
+  if (currentStep > 0) {
+    html += '<button class="reset-btn" onclick="resetAll()">\uD83D\uDD04 最初からやり直す</button>';
+  }
+
+  app.innerHTML = html;
+}
+
+function goToStep(idx) {
+  currentStep = idx;
+  render();
+  scrollToStep(idx);
+}
+
+/* 初期表示 */
+render();
+</script>
+</body>
+</html>
