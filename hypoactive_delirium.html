@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1B3A5C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>低活動性せん妄スクリーニング＆原因検索ツール</title>
+<style>
+  :root {
+    --navy: #1B3A5C;
+    --blue: #2C5AA0;
+    --light-blue: #E8F0FE;
+    --red: #DC3545;
+    --yellow: #F5C518;
+    --green: #28A745;
+    --orange: #E8850C;
+    --purple: #7B2D8E;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(27,58,92,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #E8F0FE 0%, #F4F6F8 100%);
+    color: #222;
+    min-height: 100vh;
+    padding: 0 0 40px;
+  }
+  header {
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    padding: 14px 20px 18px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(27,58,92,0.18);
+  }
+  .back-bar { display: flex; align-items: center; margin-bottom: 8px; }
+  .back-bar a {
+    color: rgba(255,255,255,0.85); text-decoration: none; font-size: 0.85em;
+    display: flex; align-items: center; gap: 4px; padding: 4px 8px;
+    border-radius: 6px; transition: background 0.2s;
+  }
+  .back-bar a:active { background: rgba(255,255,255,0.15); }
+  header h1 { font-size: 1.55em; font-weight: 700; letter-spacing: 0.04em; }
+  header p { font-size: 0.92em; margin-top: 6px; opacity: 0.85; }
+  .container { max-width: 820px; margin: 0 auto; padding: 24px 16px; }
+
+  .step-card {
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: var(--shadow); margin-bottom: 18px; overflow: hidden;
+    transition: opacity 0.3s;
+  }
+  .step-card.inactive { opacity: 0.45; pointer-events: none; }
+  .step-card.completed { opacity: 1; }
+  .step-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 18px; background: var(--light-blue);
+    border-bottom: 2px solid var(--blue); cursor: pointer;
+  }
+  .step-number {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--blue); color: var(--white);
+    font-weight: 700; font-size: 0.95em; flex-shrink: 0;
+  }
+  .step-number.done { background: var(--green); }
+  .step-title { font-weight: 700; font-size: 1.05em; color: var(--navy); }
+  .step-subtitle { font-size: 0.82em; color: var(--gray); margin-left: auto; }
+  .step-body { padding: 18px; }
+
+  .option-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .option-btn {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 16px; border: 2px solid #D0D8E4; border-radius: 8px;
+    background: var(--white); font-size: 0.97em; cursor: pointer;
+    transition: all 0.18s; text-align: left; color: #222;
+    font-family: inherit; width: 100%;
+  }
+  .option-btn:hover { border-color: var(--blue); background: var(--light-blue); }
+  .option-btn.selected { border-color: var(--blue); background: var(--light-blue); font-weight: 700; }
+  .option-btn .icon { font-size: 1.2em; flex-shrink: 0; width: 24px; text-align: center; }
+
+  .checklist { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .check-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; border-radius: 8px; background: var(--light-gray);
+    cursor: pointer; transition: background 0.15s; user-select: none; font-size: 0.95em;
+  }
+  .check-item:hover { background: #E0E8F0; }
+  .check-item.checked { background: var(--light-blue); }
+  .check-item input[type="checkbox"] {
+    width: 18px; height: 18px; accent-color: var(--blue); flex-shrink: 0; cursor: pointer;
+  }
+  .check-item label { cursor: pointer; flex: 1; }
+
+  .hint {
+    font-size: 0.85em; color: var(--gray); margin-top: 6px; line-height: 1.5;
+  }
+  .hint strong { color: var(--navy); }
+
+  .algo-note {
+    background: #FFFDE7; border-left: 4px solid var(--yellow);
+    padding: 12px 16px; border-radius: 0 8px 8px 0;
+    margin-bottom: 14px; font-size: 0.9em; line-height: 1.6; color: #555;
+  }
+  .algo-note strong { color: var(--navy); }
+  .algo-note.danger {
+    background: #F8D7DA; border-left-color: var(--red);
+  }
+  .algo-note.danger strong { color: var(--red); }
+  .algo-note.green {
+    background: #D4EDDA; border-left-color: var(--green);
+  }
+
+  .next-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 14px; padding: 10px 22px; background: var(--blue);
+    color: var(--white); border: none; border-radius: 8px;
+    font-size: 0.95em; font-weight: 600; cursor: pointer;
+    transition: background 0.15s; font-family: inherit;
+  }
+  .next-btn:hover { background: var(--navy); }
+  .next-btn:disabled { background: #B0BEC5; cursor: not-allowed; }
+
+  .reset-btn {
+    display: block; margin: 24px auto 0; padding: 10px 32px;
+    background: var(--white); color: var(--red); border: 2px solid var(--red);
+    border-radius: 8px; font-size: 0.95em; font-weight: 600;
+    cursor: pointer; font-family: inherit; transition: all 0.15s;
+  }
+  .reset-btn:hover { background: var(--red); color: var(--white); }
+
+  .result-panel {
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(27,58,92,0.15);
+    overflow: hidden; margin-top: 24px; display: none;
+  }
+  .result-panel.show { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  .result-header {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white); font-weight: 700; font-size: 1.15em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .result-body { padding: 20px; }
+
+  .result-section {
+    margin-bottom: 18px; padding: 14px 16px;
+    border-radius: 8px; border: 2px solid #E0E0E0;
+  }
+  .result-section.high { border-color: var(--red); background: #FFF5F5; }
+  .result-section.moderate { border-color: var(--orange); background: #FFF8F0; }
+  .result-section.low { border-color: var(--green); background: #F0FFF4; }
+
+  .result-section .rs-title {
+    font-weight: 700; font-size: 1.1em; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .result-section.high .rs-title { color: var(--red); }
+  .result-section.moderate .rs-title { color: var(--orange); }
+  .result-section.low .rs-title { color: var(--green); }
+
+  .result-section .rs-body { font-size: 0.92em; line-height: 1.7; color: #333; }
+  .result-section .rs-body strong { color: var(--navy); }
+  .result-section .rs-body ul { padding-left: 20px; margin-top: 6px; }
+  .result-section .rs-body li { margin-bottom: 4px; }
+
+  .badge {
+    display: inline-block; padding: 3px 10px; border-radius: 12px;
+    font-size: 0.78em; font-weight: 700; color: var(--white);
+  }
+  .badge-red { background: var(--red); }
+  .badge-orange { background: var(--orange); }
+  .badge-green { background: var(--green); }
+  .badge-blue { background: var(--blue); }
+  .badge-purple { background: var(--purple); }
+
+  .cause-card {
+    background: var(--light-gray); border-radius: 8px; padding: 10px 14px;
+    margin-bottom: 8px; font-size: 0.9em;
+  }
+  .cause-card .cause-letter {
+    display: inline-block; width: 26px; height: 26px; line-height: 26px;
+    text-align: center; border-radius: 4px; color: var(--white);
+    font-weight: 700; font-size: 0.85em; margin-right: 8px; vertical-align: middle;
+  }
+  .cause-card .cause-name { font-weight: 700; color: var(--navy); }
+  .cause-card .cause-detail { margin-top: 4px; color: #555; }
+
+  .divider { height: 1px; background: #D0D8E4; margin: 14px 0; }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.3em; }
+    .step-body, .result-body { padding: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="back-bar"><a href="index.html">&#8249; ツール一覧</a></div>
+  <h1>低活動性せん妄スクリーニング＆原因検索ツール</h1>
+  <p>HYPO-D + CAM + DELIRIUM で「静かなせん妄」を見逃さない</p>
+</header>
+
+<div class="container" id="app"></div>
+
+<script>
+var STEPS = [
+  {
+    id: "hypod",
+    title: "HYPO-D 臨床像チェック",
+    subtitle: "Step 1",
+    hint: "低活動性せん妄を疑う臨床的特徴です。<strong>急性の変化</strong>（入院後や数日以内の出現）に注目してください。",
+    type: "multi",
+    options: [
+      { id: "h", label: "過眠・傾眠（日中うとうと、覚醒が鈍い）", icon: "H", color: "#2C5AA0" },
+      { id: "y", label: "注意力低下（会話が続かない、質問に答えられない）", icon: "Y", color: "#7B2D8E" },
+      { id: "p", label: "受動性・無関心（自発的な動きの減少）", icon: "P", color: "#DC3545" },
+      { id: "o", label: "経口摂取低下（食事量の急激な低下）", icon: "O", color: "#E8850C" },
+      { id: "d", label: "昼夜逆転（夜間不眠＋日中傾眠）", icon: "D", color: "#28A745" }
+    ]
+  },
+  {
+    id: "onset",
+    title: "発症パターンの確認",
+    subtitle: "Step 2",
+    hint: "せん妄の最大の特徴は<strong>急性発症</strong>と<strong>日内変動</strong>です。認知症やうつ病との鑑別の鍵になります。",
+    type: "single",
+    options: [
+      { id: "acute_fluctuate", label: "急性発症（数時間〜数日）で日内変動がある", icon: "&#9888;", score: 3 },
+      { id: "acute_stable", label: "急性発症だが日内変動は不明確", icon: "&#9679;", score: 2 },
+      { id: "subacute", label: "亜急性（数週間かけて出現）", icon: "&#9675;", score: 1 },
+      { id: "chronic", label: "緩徐進行（数ヵ月以上）", icon: "&#8722;", score: 0 }
+    ]
+  },
+  {
+    id: "cam",
+    title: "CAM スクリーニング（簡易版）",
+    subtitle: "Step 3",
+    hint: "CAM陽性 = 項目1 + 項目2 + (項目3 or 項目4)。<strong>注意障害（項目2）はDSM-5の中核症状</strong>です。",
+    type: "multi",
+    options: [
+      { id: "cam1", label: "【1】急性発症 and/or 症状の日内変動がある", icon: "1" },
+      { id: "cam2", label: "【2】注意力障害がある（曜日の逆唱、20からの逆数えなどが困難）", icon: "2" },
+      { id: "cam3", label: "【3】思考の障害がある（まとまりのない会話、論理の飛躍）", icon: "3" },
+      { id: "cam4", label: "【4】意識レベルの変容がある（過覚醒でも傾眠でもない正常以外）", icon: "4" }
+    ]
+  },
+  {
+    id: "ddx",
+    title: "鑑別診断チェック",
+    subtitle: "Step 4",
+    hint: "低活動性せん妄と誤診されやすい疾患を除外します。<strong>「入院してから急にぼけた」はせん妄を強く疑うサイン</strong>です。",
+    type: "single",
+    options: [
+      { id: "ddx_delirium", label: "急性発症＋注意障害が顕著 → せん妄の可能性が高い", icon: "&#9888;" },
+      { id: "ddx_depression", label: "悲哀感・自責・早朝覚醒が主体 → うつ病の可能性", icon: "&#128546;" },
+      { id: "ddx_dementia", label: "数ヵ月以上の緩徐な経過、注意は保持 → 認知症の進行", icon: "&#128100;" },
+      { id: "ddx_apathy", label: "意識清明だが無関心、日内変動なし → アパシー", icon: "&#128564;" },
+      { id: "ddx_overlap", label: "認知症ベースにせん妄が重畳（急性増悪）", icon: "&#128200;" }
+    ]
+  },
+  {
+    id: "delirium_cause",
+    title: "DELIRIUM 原因検索",
+    subtitle: "Step 5",
+    hint: "せん妄の治療は<strong>原因の同定と除去</strong>が最優先です。複数該当することも多い。",
+    type: "multi",
+    options: [
+      { id: "drug", label: "D: 薬剤（抗コリン薬、ベンゾ、オピオイド、H2B、ステロイド）", icon: "D", color: "#DC3545" },
+      { id: "electrolyte", label: "E: 電解質異常（Na、Ca、低血糖、高血糖）", icon: "E", color: "#E8850C" },
+      { id: "lack_sleep", label: "L: 睡眠障害（不眠、睡眠覚醒リズム障害）", icon: "L", color: "#7B2D8E" },
+      { id: "infection", label: "I: 感染症（尿路感染、肺炎、胆管炎、敗血症）", icon: "I", color: "#28A745" },
+      { id: "retention", label: "R: 排泄障害（尿閉、便秘）", icon: "R", color: "#5B8C5A" },
+      { id: "intracranial", label: "I: 頭蓋内疾患（脳卒中、硬膜下血腫、てんかん）", icon: "I", color: "#2C5AA0" },
+      { id: "undernutrition", label: "U: 低栄養（脱水、VitB1欠乏、腎不全、肝不全）", icon: "U", color: "#8B6914" },
+      { id: "myocardial", label: "M: 心肺疾患（心不全、低酸素血症、呼吸不全）", icon: "M", color: "#DC3545" }
+    ]
+  },
+  {
+    id: "risk",
+    title: "準備因子・誘発因子",
+    subtitle: "Step 6",
+    hint: "準備因子が多いほど、小さな直接因子でもせん妄が発症します。<strong>誘発因子の除去が予防の鍵</strong>です。",
+    type: "multi",
+    options: [
+      { id: "age70", label: "高齢（70歳以上）", icon: "&#128116;" },
+      { id: "dementia_base", label: "認知症・認知機能障害の既往", icon: "&#129504;" },
+      { id: "polypharm", label: "多剤併用（ポリファーマシー）", icon: "&#128138;" },
+      { id: "sensory", label: "感覚障害（視力・聴力低下）", icon: "&#128065;" },
+      { id: "restraint", label: "身体抑制・抑制帯の使用", icon: "&#128275;" },
+      { id: "catheter", label: "膀胱留置カテーテル・不要なルート", icon: "&#129656;" },
+      { id: "immobility", label: "安静臥床・離床不足", icon: "&#128716;" },
+      { id: "pain", label: "疼痛コントロール不良", icon: "&#128548;" }
+    ]
+  }
+];
+
+var answers = {};
+var currentStep = 0;
+
+function render() {
+  var app = document.getElementById("app");
+  var html = "";
+
+  // Intro note
+  html += '<div class="algo-note"><strong>このツールについて</strong><br>';
+  html += '低活動性せん妄（hypoactive delirium）を「HYPO-D」「CAM」「DELIRIUM」の3つのフレームワークで系統的にスクリーニングし、原因を検索するためのツールです。';
+  html += '</div>';
+
+  for (var i = 0; i < STEPS.length; i++) {
+    var step = STEPS[i];
+    var isActive = i <= currentStep;
+    var isCompleted = i < currentStep;
+    var isCurrent = i === currentStep;
+
+    var cardClass = "step-card";
+    if (!isActive) cardClass += " inactive";
+    if (isCompleted) cardClass += " completed";
+
+    html += '<div class="' + cardClass + '" id="step-' + step.id + '">';
+    html += '<div class="step-header" onclick="toggleStep(' + i + ')">';
+    html += '<span class="step-number' + (isCompleted ? ' done' : '') + '">' + (isCompleted ? '&#10003;' : (i + 1)) + '</span>';
+    html += '<span class="step-title">' + step.title + '</span>';
+    html += '<span class="step-subtitle">' + step.subtitle + '</span>';
+    html += '</div>';
+
+    if (isCurrent) {
+      html += '<div class="step-body">';
+      html += '<div class="hint">' + step.hint + '</div>';
+
+      if (step.type === "multi") {
+        html += '<div class="checklist">';
+        var selected = answers[step.id] || [];
+        for (var j = 0; j < step.options.length; j++) {
+          var opt = step.options[j];
+          var checked = selected.indexOf(opt.id) !== -1;
+          var iconStyle = opt.color ? ' style="background:' + opt.color + ';color:#fff;display:inline-block;width:24px;height:24px;line-height:24px;text-align:center;border-radius:4px;font-weight:700;font-size:0.85em;flex-shrink:0;"' : '';
+          html += '<div class="check-item' + (checked ? ' checked' : '') + '" onclick="toggleCheck(\'' + step.id + '\',\'' + opt.id + '\')">';
+          html += '<input type="checkbox"' + (checked ? ' checked' : '') + ' onclick="event.stopPropagation();toggleCheck(\'' + step.id + '\',\'' + opt.id + '\')">';
+          if (opt.icon && opt.color) {
+            html += '<span' + iconStyle + '>' + opt.icon + '</span>';
+          }
+          html += '<label>' + opt.label + '</label>';
+          html += '</div>';
+        }
+        html += '</div>';
+        html += '<button class="next-btn" onclick="nextStep()">次へ &#8250;</button>';
+      } else {
+        html += '<div class="option-group">';
+        var sel = answers[step.id] || null;
+        for (var k = 0; k < step.options.length; k++) {
+          var opt2 = step.options[k];
+          var isSel = sel === opt2.id;
+          html += '<button class="option-btn' + (isSel ? ' selected' : '') + '" onclick="selectOption(\'' + step.id + '\',\'' + opt2.id + '\')">';
+          html += '<span class="icon">' + opt2.icon + '</span>';
+          html += opt2.label;
+          html += '</button>';
+        }
+        html += '</div>';
+      }
+
+      html += '</div>';
+    } else if (isCompleted) {
+      html += '<div class="step-body" style="padding:10px 18px;font-size:0.88em;color:#666;">';
+      html += getSummary(step);
+      html += '</div>';
+    }
+
+    html += '</div>';
+  }
+
+  // Result
+  if (currentStep >= STEPS.length) {
+    html += buildResult();
+  }
+
+  html += '<button class="reset-btn" onclick="resetAll()">&#8634; 最初からやり直す</button>';
+  app.innerHTML = html;
+
+  if (currentStep < STEPS.length) {
+    var el = document.getElementById("step-" + STEPS[currentStep].id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  } else {
+    var rp = document.querySelector(".result-panel");
+    if (rp) rp.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+function getSummary(step) {
+  if (step.type === "multi") {
+    var sel = answers[step.id] || [];
+    if (sel.length === 0) return "（該当なし）";
+    var names = [];
+    for (var i = 0; i < step.options.length; i++) {
+      if (sel.indexOf(step.options[i].id) !== -1) {
+        var short = step.options[i].label;
+        if (short.indexOf("（") !== -1) short = short.substring(0, short.indexOf("（"));
+        if (short.indexOf(": ") !== -1) short = short.substring(short.indexOf(": ") + 2);
+        names.push(short);
+      }
+    }
+    return "&#10003; " + names.join("、");
+  } else {
+    var val = answers[step.id];
+    for (var j = 0; j < step.options.length; j++) {
+      if (step.options[j].id === val) {
+        return "&#10003; " + step.options[j].label;
+      }
+    }
+    return "";
+  }
+}
+
+function toggleCheck(stepId, optId) {
+  var sel = answers[stepId] || [];
+  var idx = sel.indexOf(optId);
+  if (idx === -1) { sel.push(optId); } else { sel.splice(idx, 1); }
+  answers[stepId] = sel;
+  render();
+}
+
+function selectOption(stepId, optId) {
+  answers[stepId] = optId;
+  setTimeout(function() { nextStep(); }, 200);
+}
+
+function nextStep() {
+  currentStep++;
+  render();
+}
+
+function toggleStep(idx) {
+  if (idx < currentStep) {
+    currentStep = idx;
+    render();
+  }
+}
+
+function resetAll() {
+  answers = {};
+  currentStep = 0;
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function buildResult() {
+  var hypod = answers["hypod"] || [];
+  var onset = answers["onset"] || "";
+  var cam = answers["cam"] || [];
+  var ddx = answers["ddx"] || "";
+  var causes = answers["delirium_cause"] || [];
+  var risks = answers["risk"] || [];
+
+  // CAM判定: 1 + 2 + (3 or 4)
+  var camPositive = cam.indexOf("cam1") !== -1 && cam.indexOf("cam2") !== -1 && (cam.indexOf("cam3") !== -1 || cam.indexOf("cam4") !== -1);
+
+  // 総合スコア
+  var score = 0;
+  score += hypod.length * 2;
+  if (onset === "acute_fluctuate") score += 6;
+  else if (onset === "acute_stable") score += 4;
+  else if (onset === "subacute") score += 1;
+  if (camPositive) score += 8;
+  else score += cam.length * 1;
+  if (ddx === "ddx_delirium" || ddx === "ddx_overlap") score += 4;
+  score += causes.length * 1;
+  score += risks.length * 0.5;
+
+  var level, levelClass, levelBadge, levelText;
+  if (camPositive && (onset === "acute_fluctuate" || onset === "acute_stable")) {
+    level = "high";
+    levelClass = "high";
+    levelBadge = "badge-red";
+    levelText = "せん妄の可能性が高い";
+  } else if (score >= 10 || (hypod.length >= 3 && (onset === "acute_fluctuate" || onset === "acute_stable"))) {
+    level = "moderate";
+    levelClass = "moderate";
+    levelBadge = "badge-orange";
+    levelText = "せん妄の可能性あり ― 追加評価を推奨";
+  } else {
+    level = "low";
+    levelClass = "low";
+    levelBadge = "badge-green";
+    levelText = "現時点でせん妄の可能性は低い";
+  }
+
+  var html = '<div class="result-panel show">';
+  html += '<div class="result-header">&#128202; 評価結果</div>';
+  html += '<div class="result-body">';
+
+  // 総合判定
+  html += '<div class="result-section ' + levelClass + '">';
+  html += '<div class="rs-title"><span class="badge ' + levelBadge + '">' + levelText + '</span></div>';
+  html += '<div class="rs-body">';
+
+  if (level === "high") {
+    html += '<strong>CAM陽性</strong>であり、<strong>低活動性せん妄</strong>の臨床診断が強く示唆されます。';
+    html += '<ul>';
+    html += '<li>直ちに原因検索と治療介入を開始してください</li>';
+    html += '<li>非薬物療法（不快刺激の除去、見当識維持、早期離床）が治療の柱です</li>';
+    html += '<li>原因薬剤の見直しを最優先で行ってください</li>';
+    html += '</ul>';
+  } else if (level === "moderate") {
+    html += 'せん妄の可能性を考慮して<strong>追加のスクリーニング</strong>を行ってください。';
+    html += '<ul>';
+    html += '<li>CAMの再評価（時間帯を変えて）を推奨します</li>';
+    html += '<li>看護記録・家族からの情報も確認してください</li>';
+    html += '<li>精神科コンサルテーションも選択肢です</li>';
+    html += '</ul>';
+  } else {
+    html += '現時点でせん妄を積極的に疑う所見は乏しいですが、<strong>リスク因子がある場合は定期的な再評価</strong>が重要です。';
+    if (ddx === "ddx_depression") {
+      html += '<br><strong>うつ病の可能性</strong>が示唆されています。精神科への相談を検討してください。';
+    } else if (ddx === "ddx_dementia") {
+      html += '<br><strong>認知症の進行</strong>が疑われます。認知機能評価を検討してください。';
+    }
+  }
+  html += '</div></div>';
+
+  // HYPO-Dサマリー
+  if (hypod.length > 0) {
+    html += '<div class="result-section" style="border-color:var(--blue);background:var(--light-blue);">';
+    html += '<div class="rs-title" style="color:var(--navy);">&#128203; HYPO-D 該当項目（' + hypod.length + '/5）</div>';
+    html += '<div class="rs-body">';
+    var hypodLabels = { h: "H: 過眠・傾眠", y: "Y: 注意力低下", p: "P: 受動性・無関心", o: "O: 経口摂取低下", d: "D: 昼夜逆転" };
+    var hypodColors = { h: "#2C5AA0", y: "#7B2D8E", p: "#DC3545", o: "#E8850C", d: "#28A745" };
+    for (var i = 0; i < hypod.length; i++) {
+      html += '<span class="badge" style="background:' + hypodColors[hypod[i]] + ';margin-right:6px;margin-bottom:4px;">' + hypodLabels[hypod[i]] + '</span> ';
+    }
+    html += '</div></div>';
+  }
+
+  // CAM結果
+  html += '<div class="result-section" style="border-color:' + (camPositive ? 'var(--red)' : 'var(--gray)') + ';background:' + (camPositive ? '#FFF5F5' : 'var(--light-gray)') + ';">';
+  html += '<div class="rs-title" style="color:' + (camPositive ? 'var(--red)' : 'var(--gray)') + ';">';
+  html += (camPositive ? '&#9888; CAM 陽性' : '&#9675; CAM 陰性（または情報不足）');
+  html += '</div>';
+  html += '<div class="rs-body">';
+  if (camPositive) {
+    html += 'CAMの判定基準（項目1 + 項目2 + 項目3 or 4）を満たしています。<br>';
+    html += '<strong>せん妄の臨床診断</strong>が可能です。';
+  } else {
+    html += '該当項目: ' + cam.length + '/4。CAM陰性でもせん妄を完全に否定はできません。<br>';
+    html += '時間帯を変えた再評価や、Nu-DESCなど別のツールでの評価を検討してください。';
+  }
+  html += '</div></div>';
+
+  // 原因（DELIRIUM）
+  if (causes.length > 0) {
+    html += '<div class="result-section" style="border-color:var(--orange);background:#FFF8F0;">';
+    html += '<div class="rs-title" style="color:var(--orange);">&#128269; 推定される原因（DELIRIUM）</div>';
+    html += '<div class="rs-body">';
+    var causeData = {
+      drug: { letter: "D", name: "薬剤", detail: "抗コリン薬・ベンゾジアゼピンの中止/変更を最優先で検討", color: "#DC3545", workup: "処方薬の一覧確認、抗コリンリスクスケール評価" },
+      electrolyte: { letter: "E", name: "電解質異常", detail: "Na, K, Ca, 血糖を確認し補正", color: "#E8850C", workup: "血液検査（Na, K, Ca, 血糖, BUN, Cr）" },
+      lack_sleep: { letter: "L", name: "睡眠障害", detail: "睡眠衛生の改善、トラゾドン25mg眠前を検討", color: "#7B2D8E", workup: "睡眠パターンの看護記録確認" },
+      infection: { letter: "I", name: "感染症", detail: "尿路感染・肺炎が最も多い", color: "#28A745", workup: "尿検査、胸部X線、血液培養、CRP/PCT" },
+      retention: { letter: "R", name: "排泄障害", detail: "尿閉・便秘の確認と対処", color: "#5B8C5A", workup: "膀胱エコー（残尿）、腹部X線（便秘）" },
+      intracranial: { letter: "I", name: "頭蓋内疾患", detail: "局所神経徴候がある場合は画像検査を", color: "#2C5AA0", workup: "頭部CT/MRI、神経学的診察" },
+      undernutrition: { letter: "U", name: "低栄養/代謝", detail: "脱水補正、VitB1投与を検討", color: "#8B6914", workup: "血液検査（Alb, VitB1, 腎機能, 肝機能）、水分出納" },
+      myocardial: { letter: "M", name: "心肺疾患", detail: "低酸素血症の確認、心不全の評価", color: "#DC3545", workup: "SpO2、胸部X線、BNP、血液ガス" }
+    };
+    for (var c = 0; c < causes.length; c++) {
+      var cd = causeData[causes[c]];
+      if (!cd) continue;
+      html += '<div class="cause-card">';
+      html += '<span class="cause-letter" style="background:' + cd.color + ';">' + cd.letter + '</span>';
+      html += '<span class="cause-name">' + cd.name + '</span>';
+      html += '<div class="cause-detail">' + cd.detail + '<br><strong>検査:</strong> ' + cd.workup + '</div>';
+      html += '</div>';
+    }
+    html += '</div></div>';
+  }
+
+  // リスク因子
+  if (risks.length > 0) {
+    html += '<div class="result-section" style="border-color:var(--purple);background:#F5F0FF;">';
+    html += '<div class="rs-title" style="color:var(--purple);">&#128203; リスク因子（' + risks.length + '個該当）</div>';
+    html += '<div class="rs-body">';
+    var riskLabels = {
+      age70: "高齢（70歳以上）", dementia_base: "認知症の既往",
+      polypharm: "ポリファーマシー", sensory: "感覚障害",
+      restraint: "身体抑制", catheter: "不要なカテーテル",
+      immobility: "安静臥床", pain: "疼痛コントロール不良"
+    };
+    html += '<ul>';
+    for (var r = 0; r < risks.length; r++) {
+      html += '<li>' + (riskLabels[risks[r]] || risks[r]) + '</li>';
+    }
+    html += '</ul>';
+    if (risks.indexOf("restraint") !== -1 || risks.indexOf("catheter") !== -1 || risks.indexOf("immobility") !== -1) {
+      html += '<div class="algo-note danger" style="margin-top:10px;"><strong>介入推奨:</strong> ';
+      if (risks.indexOf("restraint") !== -1) html += '身体抑制の解除を検討。';
+      if (risks.indexOf("catheter") !== -1) html += '不要なカテーテル・ルートの抜去を検討。';
+      if (risks.indexOf("immobility") !== -1) html += '早期離床・リハビリを開始。';
+      html += '</div>';
+    }
+    html += '</div></div>';
+  }
+
+  // 治療推奨
+  html += '<div class="result-section" style="border-color:var(--green);background:#F0FFF4;">';
+  html += '<div class="rs-title" style="color:var(--green);">&#128138; 推奨される対応</div>';
+  html += '<div class="rs-body">';
+  html += '<strong>非薬物療法（最重要）:</strong>';
+  html += '<ul>';
+  html += '<li>不快刺激の除去（身体抑制回避、不要カテーテル抜去）</li>';
+  html += '<li>見当識の維持（カレンダー、時計、入院目的の説明）</li>';
+  html += '<li>感覚入力の最適化（眼鏡、補聴器、義歯）</li>';
+  html += '<li>早期離床、段階的リハビリ</li>';
+  html += '<li>睡眠衛生（夜間処置の最小化、日中覚醒促進）</li>';
+  html += '</ul>';
+
+  if (level === "high" || level === "moderate") {
+    html += '<div class="divider"></div>';
+    html += '<strong>薬物療法（補助的）:</strong>';
+    html += '<ul>';
+    html += '<li><strong>トラゾドン 25mg</strong>（眠前または夕食後）― 低活動型の第一候補</li>';
+    html += '<li>ラメルテオン ― 予防的使用のエビデンスあり</li>';
+    html += '<li>スボレキサント ― 不眠対策として</li>';
+    html += '</ul>';
+    html += '<div class="algo-note danger" style="margin-top:10px;">';
+    html += '<strong>注意:</strong> 低活動型に抗精神病薬は原則使用しない。2024年APAガイドラインでは効果は「限定的〜なし」。高齢者では死亡率上昇リスクあり。';
+    html += '</div>';
+  }
+
+  if (level !== "high") {
+    html += '<div class="divider"></div>';
+    html += '<strong>経過観察:</strong> リスク因子がある場合は、<strong>毎日のCAMスクリーニング</strong>を推奨します。';
+  }
+
+  html += '</div></div>';
+
+  html += '</div></div>';
+  return html;
+}
+
+render();
+</script>
+
+</body>
+</html>
