@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#5B2A86">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>前庭性片頭痛 セルフチェック・診断ツール</title>
+<style>
+  :root {
+    --navy: #5B2A86;
+    --blue: #8E44AD;
+    --light-blue: #F3E5F5;
+    --red: #DC3545;
+    --yellow: #F5C518;
+    --green: #28A745;
+    --orange: #E8850C;
+    --gray: #6C757D;
+    --light-gray: #F8F4FB;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(91,42,134,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #F3E5F5 0%, #F8F4FB 100%);
+    color: #222;
+    min-height: 100vh;
+    padding: 0 0 40px;
+  }
+  header {
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    padding: 14px 20px 18px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(91,42,134,0.18);
+  }
+  .back-bar { display: flex; align-items: center; margin-bottom: 8px; }
+  .back-bar a {
+    color: rgba(255,255,255,0.85); text-decoration: none; font-size: 0.85em;
+    display: flex; align-items: center; gap: 4px; padding: 4px 8px;
+    border-radius: 6px; transition: background 0.2s;
+  }
+  .back-bar a:active { background: rgba(255,255,255,0.15); }
+  header h1 { font-size: 1.7em; font-weight: 700; letter-spacing: 0.04em; }
+  header p { font-size: 0.92em; margin-top: 6px; opacity: 0.9; }
+
+  .container { max-width: 820px; margin: 0 auto; padding: 24px 16px; }
+
+  .step-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+    overflow: hidden;
+    transition: opacity 0.3s;
+  }
+  .step-card.inactive { opacity: 0.45; pointer-events: none; }
+  .step-card.completed { opacity: 1; }
+  .step-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 18px;
+    background: var(--light-blue);
+    border-bottom: 2px solid var(--blue);
+  }
+  .step-number {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--blue); color: var(--white);
+    font-weight: 700; font-size: 0.95em;
+    flex-shrink: 0;
+  }
+  .step-number.done { background: var(--green); }
+  .step-title { font-weight: 700; font-size: 1.05em; color: var(--navy); }
+  .step-body { padding: 18px; }
+
+  .option-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .option-btn {
+    background: var(--white);
+    border: 2px solid #DDD;
+    border-radius: 8px;
+    padding: 12px 14px;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.95em;
+    line-height: 1.5;
+    color: #333;
+    transition: all 0.15s;
+    font-family: inherit;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .option-btn:hover { border-color: var(--blue); background: #FAF6FD; }
+  .option-btn.selected { border-color: var(--blue); background: var(--light-blue); color: var(--navy); font-weight: 600; }
+  .option-btn .icon { font-size: 1.1em; flex-shrink: 0; }
+
+  .checklist { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .check-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 14px;
+    background: var(--white);
+    border: 2px solid #DDD;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.93em;
+    line-height: 1.5;
+    transition: all 0.15s;
+  }
+  .check-item:hover { border-color: var(--blue); background: #FAF6FD; }
+  .check-item input[type="checkbox"] {
+    accent-color: var(--blue);
+    width: 18px; height: 18px;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+  .check-item.checked { border-color: var(--blue); background: var(--light-blue); color: var(--navy); font-weight: 600; }
+
+  .result-panel {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-top: 24px;
+    overflow: hidden;
+    opacity: 0;
+    max-height: 0;
+    transition: opacity 0.4s, max-height 0.4s;
+  }
+  .result-panel.show { opacity: 1; max-height: 99999px; }
+  .result-header {
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    padding: 14px 20px;
+    font-size: 1.15em;
+    font-weight: 700;
+  }
+  .result-body { padding: 18px; }
+
+  .verdict-card {
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    border: 3px solid;
+  }
+  .verdict-card.definite { background: #FFE5EC; border-color: #C2185B; }
+  .verdict-card.probable { background: #FFF3E0; border-color: var(--orange); }
+  .verdict-card.not_met { background: #ECEFF1; border-color: var(--gray); }
+  .verdict-card .v-title {
+    font-size: 1.2em; font-weight: 700; margin-bottom: 6px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .verdict-card.definite .v-title { color: #C2185B; }
+  .verdict-card.probable .v-title { color: #E65100; }
+  .verdict-card.not_met .v-title { color: #455A64; }
+  .verdict-card .v-detail { font-size: 0.93em; line-height: 1.7; color: #333; }
+
+  .criteria-table {
+    width: 100%; border-collapse: collapse; font-size: 0.9em; margin: 10px 0;
+  }
+  .criteria-table th, .criteria-table td {
+    border: 1px solid #D0C0E0; padding: 8px 10px; text-align: left; vertical-align: top;
+  }
+  .criteria-table th { background: var(--light-blue); color: var(--navy); font-weight: 700; }
+  .criteria-table td.met { background: #E8F5E9; color: #2E7D32; font-weight: 600; }
+  .criteria-table td.not-met { background: #FFEBEE; color: #C62828; font-weight: 600; }
+
+  .dx-card {
+    background: var(--white);
+    border: 1px solid #E0D0EC;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    border-left: 5px solid var(--blue);
+  }
+  .dx-card.warn { border-left-color: var(--orange); background: #FFFBF0; }
+  .dx-card .dx-name {
+    font-weight: 700; font-size: 1.02em; color: var(--navy); margin-bottom: 6px;
+  }
+  .dx-card .dx-detail { font-size: 0.9em; color: #444; line-height: 1.6; }
+  .dx-card .dx-detail strong { color: var(--navy); }
+
+  .next-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 14px;
+    padding: 10px 22px;
+    background: var(--blue); color: var(--white);
+    border: none; border-radius: 8px;
+    font-size: 0.95em; font-weight: 600;
+    cursor: pointer; transition: background 0.15s;
+    font-family: inherit;
+  }
+  .next-btn:hover { background: var(--navy); }
+  .next-btn:disabled { background: #B0A0C5; cursor: not-allowed; }
+
+  .reset-btn {
+    display: block;
+    margin: 24px auto 0;
+    padding: 10px 32px;
+    background: var(--white); color: var(--red);
+    border: 2px solid var(--red); border-radius: 8px;
+    font-size: 0.95em; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+    transition: all 0.15s;
+  }
+  .reset-btn:hover { background: var(--red); color: var(--white); }
+
+  .hint {
+    font-size: 0.85em; color: var(--gray);
+    margin-top: 6px; line-height: 1.5;
+  }
+
+  .algo-note {
+    background: #FFFDE7;
+    border-left: 4px solid var(--yellow);
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 18px;
+    font-size: 0.9em; line-height: 1.6;
+    color: #555;
+  }
+  .algo-note strong { color: var(--navy); }
+
+  .red-flag-box {
+    background: #F8D7DA;
+    border: 2px solid var(--red);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 16px;
+    font-size: 0.9em; line-height: 1.6;
+  }
+  .red-flag-box .rf-title {
+    font-weight: 700; color: var(--red);
+    margin-bottom: 6px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .red-flag-box ul { padding-left: 20px; margin-top: 4px; }
+  .red-flag-box li { margin-bottom: 4px; }
+
+  .summary-box {
+    background: var(--light-blue);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    font-size: 0.92em; line-height: 1.6;
+  }
+  .summary-box .summary-title {
+    font-weight: 700; color: var(--navy); margin-bottom: 6px;
+  }
+
+  .trigger-tag {
+    display: inline-block;
+    background: var(--light-blue);
+    color: var(--navy);
+    padding: 4px 10px;
+    border-radius: 14px;
+    font-size: 0.84em;
+    font-weight: 600;
+    margin: 3px 4px 3px 0;
+  }
+
+  .ref-link {
+    display: inline-block;
+    color: var(--blue);
+    text-decoration: none;
+    font-size: 0.88em;
+    margin-top: 10px;
+    border-bottom: 1px dashed var(--blue);
+  }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.3em; }
+    .step-body, .result-body { padding: 14px; }
+    .dx-card { padding: 12px; }
+    .verdict-card { padding: 14px; }
+    .verdict-card .v-title { font-size: 1.05em; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="back-bar"><a href="index.html">&#8249; ツール一覧</a></div>
+  <h1>前庭性片頭痛 セルフチェック</h1>
+  <p>Bárány Society / IHS 2021 診断基準ベース</p>
+</header>
+
+<div class="container" id="app"></div>
+
+<script>
+// ===== ステップ定義 =====
+var STEPS = [
+  {
+    id: "migraine_history",
+    title: "片頭痛の現病歴・既往歴（B項目）",
+    question: "あなたは現在または過去に片頭痛の診断を受けていますか？片頭痛の特徴に当てはまる頭痛がありますか？",
+    hint: "ICHD-3 片頭痛の基本特徴：①片側性 ②拍動性 ③中等度〜重度 ④日常活動で悪化、のうち2つ以上 + 悪心/嘔吐 or 光・音過敏",
+    type: "single",
+    options: [
+      { label: "医師から片頭痛と診断されたことがある（現在も時々起こる）", value: "diagnosed_active", icon: "✅" },
+      { label: "過去に片頭痛と診断された（最近は頭痛がない）", value: "diagnosed_past", icon: "📝" },
+      { label: "未診断だが、片頭痛の特徴を満たす頭痛がある", value: "undiagnosed_likely", icon: "🤔" },
+      { label: "片頭痛の特徴に当てはまらない / 片頭痛歴なし", value: "no_migraine", icon: "❌" }
+    ]
+  },
+  {
+    id: "vertigo_episodes",
+    title: "めまい発作の回数（A項目）",
+    question: "中等度〜重度のめまい発作（持続5分〜72時間）を、これまでに何回経験しましたか？",
+    hint: "前庭性片頭痛の診断基準では「5回以上のエピソード」が必要です。1回や2回だけでは確定診断は付けられません",
+    type: "single",
+    options: [
+      { label: "5回以上経験している", value: "5_or_more", icon: "📊" },
+      { label: "2〜4回経験している", value: "2_to_4", icon: "📉" },
+      { label: "1回のみ", value: "single", icon: "1️⃣" },
+      { label: "数えきれないほど頻繁にある", value: "frequent", icon: "🔁" }
+    ]
+  },
+  {
+    id: "duration",
+    title: "めまい発作の典型的な持続時間（A項目）",
+    question: "1回のめまい発作は、通常どのくらい続きますか？（最も近いもの）",
+    hint: "5分〜72時間の範囲が前庭性片頭痛の基準。秒単位はBPPV、72時間超は他疾患を疑います",
+    type: "single",
+    options: [
+      { label: "数秒〜数分（5分未満）", value: "under_5min", icon: "⚡" },
+      { label: "5分〜1時間", value: "5min_1h", icon: "⏱️" },
+      { label: "1時間〜24時間", value: "1h_24h", icon: "🕐" },
+      { label: "1日〜3日（24〜72時間）", value: "1_3d", icon: "📅" },
+      { label: "3日（72時間）以上続く", value: "over_72h", icon: "⚠️" },
+      { label: "発作によりバラバラ（5分〜72時間の範囲内で変動）", value: "variable_in_range", icon: "🌊" }
+    ]
+  },
+  {
+    id: "intensity",
+    title: "めまいの強度（A項目）",
+    question: "発作時のめまいはどの程度ですか？",
+    hint: "軽度：日常活動に影響なし／中等度：影響あるが続けられる／重度：日常活動継続不可",
+    type: "single",
+    options: [
+      { label: "重度：寝込む・歩けない・嘔吐するなど日常生活が中断される", value: "severe", icon: "🛌" },
+      { label: "中等度：仕事・家事は何とかできるが影響を受ける", value: "moderate", icon: "😵" },
+      { label: "軽度：違和感はあるが日常活動に支障はない", value: "mild", icon: "🙂" }
+    ]
+  },
+  {
+    id: "migraine_features",
+    title: "めまい発作時の片頭痛特徴（C項目）",
+    question: "めまい発作の半数（50%）以上で、以下のどの症状を伴いますか？すべて選択してください",
+    hint: "C項目は「①頭痛 ②光・音過敏 ③視覚性前兆」のうち1項目以上。ただし頭痛は2つ以上の特徴が必要",
+    type: "multi",
+    options: [
+      { label: "片側性の頭痛（こめかみや片側だけが痛む）", value: "unilateral" },
+      { label: "拍動性の頭痛（ズキンズキン、心拍に同期）", value: "pulsating" },
+      { label: "中等度〜重度の頭痛", value: "moderate_severe_pain" },
+      { label: "日常活動（歩く・階段など）で頭痛が悪化", value: "activity_worsens" },
+      { label: "光がまぶしく感じる（光過敏）", value: "photophobia" },
+      { label: "音がうるさく感じる（音過敏）", value: "phonophobia" },
+      { label: "視覚性前兆（閃輝暗点、ギザギザの光、視野欠損など）", value: "visual_aura" },
+      { label: "該当なし（めまい単独で頭痛・光音過敏・前兆を伴わない）", value: "none" }
+    ]
+  },
+  {
+    id: "exclusion",
+    title: "他疾患を示唆する所見（D項目）",
+    question: "以下のうち、当てはまるものをすべて選択してください",
+    hint: "これらは前庭性片頭痛以外の疾患を疑わせる所見です。該当があれば鑑別診断が必要です",
+    type: "multi",
+    options: [
+      { label: "発作のたびに進行する難聴がある（メニエール病疑い）", value: "fluctuating_hearing_loss" },
+      { label: "耳閉感・耳鳴り・耳の圧迫感がある", value: "aural_symptoms" },
+      { label: "寝返りや起き上がりで誘発される短時間（数秒〜1分）のめまいが主体", value: "positional_brief" },
+      { label: "立ち上がった瞬間にだけふらつき・眼前暗黒感が起こる", value: "orthostatic" },
+      { label: "ふわふわが3か月以上ほぼ毎日続いている（PPPD疑い）", value: "chronic_persistent" },
+      { label: "強い構音障害・複視・片麻痺・意識障害を伴う発作がある", value: "neuro_deficits" },
+      { label: "該当なし", value: "none" }
+    ]
+  },
+  {
+    id: "triggers",
+    title: "トリガー（参考情報）",
+    question: "めまい・頭痛発作のきっかけになると感じるものをすべて選択してください",
+    hint: "トリガーの特定は予防に重要。診断基準には含まれませんが、頭痛日記での管理に役立ちます",
+    type: "multi",
+    options: [
+      { label: "睡眠不足・睡眠過多", value: "sleep" },
+      { label: "ストレス・緊張", value: "stress" },
+      { label: "月経・ホルモン変動", value: "hormone" },
+      { label: "気圧の変化・天候", value: "weather" },
+      { label: "赤ワイン・アルコール", value: "alcohol" },
+      { label: "チョコレート・チーズ・加工肉", value: "food" },
+      { label: "強い光・点滅・画面（PC、スマホ）", value: "visual_stim" },
+      { label: "人混み・スクロール・乗り物", value: "motion_stim" },
+      { label: "空腹・低血糖", value: "fasting" },
+      { label: "特に思い当たらない", value: "none" }
+    ]
+  },
+  {
+    id: "redflag",
+    title: "レッドフラッグ（緊急性の評価）",
+    question: "以下のうち、現在または最近の発作で当てはまるものをすべて選択してください",
+    hint: "該当があれば前庭性片頭痛の前に脳卒中・腫瘍などの除外が必要です",
+    type: "multi",
+    options: [
+      { label: "突然（数秒で完成）の激しいめまいや頭痛", value: "thunderclap" },
+      { label: "65歳以上で初めてのめまい発作", value: "elderly_first" },
+      { label: "進行性に悪化する症状（数週〜数か月で悪くなる）", value: "progressive" },
+      { label: "片麻痺・構音障害・複視・嚥下障害・意識障害のいずれか", value: "focal" },
+      { label: "強い体幹失調（座位保持できない、歩行不能）", value: "ataxia" },
+      { label: "発熱・項部硬直を伴う", value: "infection" },
+      { label: "該当なし", value: "none" }
+    ]
+  }
+];
+
+// ===== 状態 =====
+var answers = {};
+var currentStep = 0;
+
+// ===== 基準判定エンジン =====
+function evaluateCriteria(a) {
+  var result = {
+    A: false, // ≥5 episodes, 5min-72h, moderate-severe
+    B: false, // migraine history
+    C: false, // ≥50% with migraine features
+    D: true,  // not better explained by another disorder
+    redflag: false,
+    A_detail: "",
+    B_detail: "",
+    C_detail: "",
+    D_detail: "",
+    differentials: []
+  };
+
+  // === A項目: 発作回数×持続時間×強度 ===
+  var ep = a.vertigo_episodes;
+  var dur = a.duration;
+  var inten = a.intensity;
+  var aEp = (ep === "5_or_more" || ep === "frequent");
+  var aDur = (dur === "5min_1h" || dur === "1h_24h" || dur === "1_3d" || dur === "variable_in_range");
+  var aInten = (inten === "moderate" || inten === "severe");
+  result.A = aEp && aDur && aInten;
+  result.A_detail = "発作回数: " + (aEp ? "✓ 5回以上" : "✗ 5回未満") +
+                    " / 持続: " + (aDur ? "✓ 5分〜72時間" : "✗ 範囲外") +
+                    " / 強度: " + (aInten ? "✓ 中等度以上" : "✗ 軽度のみ");
+
+  // === B項目: 片頭痛歴 ===
+  var mh = a.migraine_history;
+  result.B = (mh === "diagnosed_active" || mh === "diagnosed_past" || mh === "undiagnosed_likely");
+  result.B_detail = result.B ? "✓ 片頭痛歴あり（現在または既往）" : "✗ 片頭痛歴なし";
+
+  // === C項目: 50%以上の発作で片頭痛特徴 ===
+  var mf = a.migraine_features || [];
+  var headacheFeatures = 0;
+  if (mf.indexOf("unilateral") >= 0) headacheFeatures++;
+  if (mf.indexOf("pulsating") >= 0) headacheFeatures++;
+  if (mf.indexOf("moderate_severe_pain") >= 0) headacheFeatures++;
+  if (mf.indexOf("activity_worsens") >= 0) headacheFeatures++;
+  var headacheOK = headacheFeatures >= 2;
+  var photoPhono = (mf.indexOf("photophobia") >= 0 && mf.indexOf("phonophobia") >= 0);
+  var aura = (mf.indexOf("visual_aura") >= 0);
+  result.C = (headacheOK || photoPhono || aura);
+  var cParts = [];
+  if (headacheOK) cParts.push("頭痛特徴2項目以上");
+  if (photoPhono) cParts.push("光＋音過敏");
+  if (aura) cParts.push("視覚性前兆");
+  result.C_detail = result.C ? ("✓ " + cParts.join(" / ")) : "✗ 該当する片頭痛特徴なし";
+
+  // === D項目: 他疾患の除外 ===
+  var ex = a.exclusion || [];
+  var hasExclusion = false;
+  if (ex.indexOf("fluctuating_hearing_loss") >= 0) {
+    result.differentials.push({
+      name: "メニエール病",
+      detail: "発作時に進行する難聴・耳鳴り・耳閉感を伴うめまいはメニエール病を強く示唆します。<strong>純音聴力検査・反復評価</strong>が必要。前庭性片頭痛と合併することもあります。"
+    });
+    hasExclusion = true;
+  }
+  if (ex.indexOf("aural_symptoms") >= 0 && ex.indexOf("fluctuating_hearing_loss") < 0) {
+    result.differentials.push({
+      name: "メニエール病・耳科疾患",
+      detail: "耳閉感・耳鳴りを繰り返す場合は<strong>耳鼻咽喉科で聴力検査</strong>を受けて鑑別してください。"
+    });
+    hasExclusion = true;
+  }
+  if (ex.indexOf("positional_brief") >= 0) {
+    result.differentials.push({
+      name: "良性発作性頭位めまい症（BPPV）",
+      detail: "寝返り・起き上がりで誘発される<strong>数秒〜1分の短時間めまい</strong>はBPPVが第一に考えられます。Dix-Hallpike試験・Epley法で診断・治療可能です。"
+    });
+    hasExclusion = true;
+  }
+  if (ex.indexOf("orthostatic") >= 0) {
+    result.differentials.push({
+      name: "起立性低血圧・自律神経障害",
+      detail: "立ち上がった瞬間の眼前暗黒感・ふらつきは<strong>起立試験で血圧・脈拍を測定</strong>して鑑別。起立後3分以内にSBP≥20mmHg低下で診断。"
+    });
+    hasExclusion = true;
+  }
+  if (ex.indexOf("chronic_persistent") >= 0) {
+    result.differentials.push({
+      name: "持続性知覚性姿勢誘発めまい（PPPD）",
+      detail: "<strong>3か月以上ほぼ毎日続くふらつき</strong>はPPPDの可能性。立位・視覚刺激で悪化が特徴。前庭性片頭痛から二次的に発症することもあります。"
+    });
+    hasExclusion = true;
+  }
+  if (ex.indexOf("neuro_deficits") >= 0) {
+    result.differentials.push({
+      name: "中枢性めまい（脳卒中・脳腫瘍など）",
+      detail: "<strong>緊急対応が必要</strong>。構音障害・複視・片麻痺などを伴うめまいは後方循環脳卒中を最優先に除外。MRI-DWIを含む評価を急いでください。"
+    });
+    hasExclusion = true;
+  }
+  result.D = !hasExclusion;
+  result.D_detail = result.D ? "✓ 他疾患を示唆する所見なし" : "⚠ 鑑別が必要な所見あり（下記参照）";
+
+  // === レッドフラッグ ===
+  var rf = a.redflag || [];
+  var rfActive = false;
+  for (var i = 0; i < rf.length; i++) { if (rf[i] !== "none") { rfActive = true; break; } }
+  result.redflag = rfActive;
+
+  return result;
+}
+
+// ===== 描画 =====
+function render() {
+  var app = document.getElementById("app");
+  var html = "";
+
+  html += '<div class="algo-note">';
+  html += '<strong>使い方：</strong>このツールは<strong>Bárány Society / IHS 2021 アップデート</strong>の前庭性片頭痛（Vestibular Migraine）診断基準を基に、症状を質問形式で評価します。8ステップですべて答えると判定結果が表示されます。<br>';
+  html += '<strong>注意：</strong>このツールは医師の診断を代替するものではありません。判定結果は受診時の参考としてご活用ください。';
+  html += '</div>';
+
+  for (var i = 0; i < STEPS.length; i++) {
+    var s = STEPS[i];
+    var state = i < currentStep ? "completed" : (i === currentStep ? "" : "inactive");
+    var numClass = i < currentStep ? "done" : "";
+
+    html += '<div class="step-card ' + state + '" id="step-' + i + '">';
+    html += '<div class="step-header">';
+    html += '<span class="step-number ' + numClass + '">' + (i < currentStep ? "&#10003;" : (i + 1)) + '</span>';
+    html += '<span class="step-title">' + s.title + '</span>';
+    html += '</div>';
+
+    if (i <= currentStep) {
+      html += '<div class="step-body">';
+      html += '<div style="font-size:0.97em;font-weight:600;color:#333;">' + s.question + '</div>';
+      if (s.hint) html += '<div class="hint">' + s.hint + '</div>';
+
+      if (s.type === "single") {
+        html += '<div class="option-group">';
+        for (var j = 0; j < s.options.length; j++) {
+          var o = s.options[j];
+          var sel = answers[s.id] === o.value ? " selected" : "";
+          html += '<button class="option-btn' + sel + '" onclick="selectSingle(\'' + s.id + '\',\'' + o.value + '\',' + i + ')">';
+          if (o.icon) html += '<span class="icon">' + o.icon + '</span>';
+          html += '<span>' + o.label + '</span>';
+          html += '</button>';
+        }
+        html += '</div>';
+      } else {
+        html += '<div class="checklist">';
+        var vals = answers[s.id] || [];
+        for (var j = 0; j < s.options.length; j++) {
+          var o = s.options[j];
+          var chk = vals.indexOf(o.value) >= 0;
+          var chkClass = chk ? ' checked' : '';
+          var chkAttr = chk ? ' checked' : '';
+          html += '<div class="check-item' + chkClass + '" onclick="toggleCheck(\'' + s.id + '\',\'' + o.value + '\',' + i + ')">';
+          html += '<input type="checkbox"' + chkAttr + ' tabindex="-1">';
+          html += '<label>' + o.label + '</label>';
+          html += '</div>';
+        }
+        html += '</div>';
+        if (i === currentStep) {
+          var hasAny = vals.length > 0;
+          html += '<button class="next-btn" onclick="nextStep(' + i + ')"' + (hasAny ? '' : ' disabled') + '>次へ &#8250;</button>';
+        }
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+
+  // ===== 結果パネル =====
+  if (currentStep >= STEPS.length) {
+    var ev = evaluateCriteria(answers);
+
+    html += '<div class="result-panel show">';
+    html += '<div class="result-header">&#128202; セルフチェック結果</div>';
+    html += '<div class="result-body">';
+
+    // レッドフラッグ警告（最優先）
+    if (ev.redflag) {
+      html += '<div class="verdict-card not_met" style="border-color:#DC3545;background:#F8D7DA;">';
+      html += '<div class="v-title" style="color:#DC3545;">&#9888;&#65039; レッドフラッグあり ─ 早急な医療機関受診を</div>';
+      html += '<div class="v-detail">突然発症、新規発症の高齢者、進行性、神経局在症状などのいずれかに該当しています。<strong>前庭性片頭痛の判定より先に、脳卒中・脳腫瘍などの中枢性疾患の除外が必要</strong>です。';
+      html += '神経内科・脳神経外科・救急外来を受診し、頭部MRI（DWI含む）など適切な検査を受けてください。</div>';
+      html += '</div>';
+    }
+
+    // 主判定
+    var verdict = "not_met";
+    var verdictTitle = "";
+    var verdictDetail = "";
+    if (ev.A && ev.B && ev.C && ev.D) {
+      verdict = "definite";
+      verdictTitle = "✅ Definite VM（確定診断 ─ 前庭性片頭痛）";
+      verdictDetail = "Bárány Society / IHS 2021 基準A〜Dをすべて満たしています。<strong>前庭性片頭痛の確定診断</strong>に該当します。";
+      verdictDetail += "頭痛外来・神経内科で治療方針（急性期治療・予防薬）の相談をお勧めします。";
+    } else if (ev.A && (ev.B || ev.C) && ev.D) {
+      verdict = "probable";
+      verdictTitle = "🟡 Probable VM（可能性が高い ─ 前庭性片頭痛疑い）";
+      verdictDetail = "発作回数・持続時間・強度のA項目を満たしており、";
+      verdictDetail += ev.B ? "<strong>片頭痛歴（B項目）あり</strong>" : "<strong>めまい時の片頭痛特徴（C項目）あり</strong>";
+      verdictDetail += "ですが、もう一方が確認できません。<strong>前庭性片頭痛の可能性が高い状態（Probable VM）</strong>です。";
+      verdictDetail += "頭痛日記をつけながら専門医での評価を受けてください。";
+    } else {
+      verdict = "not_met";
+      verdictTitle = "❌ 現時点では前庭性片頭痛の基準を満たさない";
+      verdictDetail = "Bárány Society 基準のいくつかの項目を満たしていません。下記の項目別評価をご確認ください。";
+      verdictDetail += "別の疾患（BPPV、メニエール病、PPPD、起立性めまいなど）の可能性も含めて、医療機関での評価をお勧めします。";
+    }
+
+    html += '<div class="verdict-card ' + verdict + '">';
+    html += '<div class="v-title">' + verdictTitle + '</div>';
+    html += '<div class="v-detail">' + verdictDetail + '</div>';
+    html += '</div>';
+
+    // 基準別評価表
+    html += '<div class="summary-box">';
+    html += '<div class="summary-title">&#128203; Bárány Society 2021基準の項目別評価</div>';
+    html += '<table class="criteria-table">';
+    html += '<tr><th style="width:14%;">項目</th><th>内容</th><th style="width:30%;">あなたの状態</th></tr>';
+    html += '<tr><td><strong>A</strong></td><td>5分〜72時間続く中等度以上のめまい発作が5回以上</td>';
+    html += '<td class="' + (ev.A ? "met" : "not-met") + '">' + (ev.A ? "✓ 満たす" : "✗ 満たさない") + '<br><span style="font-weight:normal;font-size:0.85em;">' + ev.A_detail + '</span></td></tr>';
+    html += '<tr><td><strong>B</strong></td><td>ICHD-3 片頭痛の現病歴または既往歴</td>';
+    html += '<td class="' + (ev.B ? "met" : "not-met") + '">' + ev.B_detail + '</td></tr>';
+    html += '<tr><td><strong>C</strong></td><td>めまい発作の50%以上で片頭痛特徴を伴う（頭痛・光音過敏・前兆）</td>';
+    html += '<td class="' + (ev.C ? "met" : "not-met") + '">' + ev.C_detail + '</td></tr>';
+    html += '<tr><td><strong>D</strong></td><td>他のICHD-3診断や前庭障害でよりよく説明できない</td>';
+    html += '<td class="' + (ev.D ? "met" : "not-met") + '">' + ev.D_detail + '</td></tr>';
+    html += '</table>';
+    html += '<div style="font-size:0.82em;color:#666;margin-top:8px;">';
+    html += '※ Definite VM: A+B+C+Dすべて / Probable VM: A + (BまたはC) + D';
+    html += '</div>';
+    html += '</div>';
+
+    // 鑑別すべき疾患
+    if (ev.differentials.length > 0) {
+      html += '<div class="summary-box" style="background:#FFF3E0;">';
+      html += '<div class="summary-title" style="color:#E65100;">&#128269; 鑑別が必要な疾患</div>';
+      for (var d = 0; d < ev.differentials.length; d++) {
+        var df = ev.differentials[d];
+        html += '<div class="dx-card warn">';
+        html += '<div class="dx-name">' + df.name + '</div>';
+        html += '<div class="dx-detail">' + df.detail + '</div>';
+        html += '</div>';
+      }
+      html += '</div>';
+    }
+
+    // トリガー要約
+    var triggers = answers.triggers || [];
+    var hasTrig = false;
+    for (var t = 0; t < triggers.length; t++) { if (triggers[t] !== "none") { hasTrig = true; break; } }
+    if (hasTrig) {
+      var tagMap = {
+        sleep: "睡眠", stress: "ストレス", hormone: "ホルモン", weather: "気圧・天候",
+        alcohol: "アルコール", food: "食事", visual_stim: "視覚刺激",
+        motion_stim: "動き・乗り物", fasting: "空腹"
+      };
+      html += '<div class="summary-box">';
+      html += '<div class="summary-title">&#127919; あなたのトリガー候補</div>';
+      html += '<div>';
+      for (var t = 0; t < triggers.length; t++) {
+        if (triggers[t] !== "none" && tagMap[triggers[t]]) {
+          html += '<span class="trigger-tag">' + tagMap[triggers[t]] + '</span>';
+        }
+      }
+      html += '</div>';
+      html += '<div style="margin-top:10px;font-size:0.88em;color:#444;">';
+      html += '頭痛日記でトリガーと発作の関係を記録すると、予防に役立ちます。<strong>規則的な睡眠・食事、ストレスマネジメント</strong>が予防の基本です。';
+      html += '</div>';
+      html += '</div>';
+    }
+
+    // 治療の概要
+    if (verdict === "definite" || verdict === "probable") {
+      html += '<div class="summary-box" style="background:#E8F5E9;">';
+      html += '<div class="summary-title" style="color:#2E7D32;">&#128138; 主な治療選択肢（参考）</div>';
+      html += '<div style="font-size:0.92em;line-height:1.7;">';
+      html += '<strong>急性期治療：</strong>トリプタン系（スマトリプタン等）、制吐薬（メトクロプラミド）、安静・暗所<br>';
+      html += '<strong>予防薬：</strong>ロメリジン（ミグシス）、プロプラノロール（β遮断薬）、バルプロ酸、トピラマート<br>';
+      html += '<strong>★最新★：</strong>CGRP関連抗体製剤（エムガリティ、アジョビ、アイモビーグ）─ 頭痛・めまい両方に有効性が報告されています<br>';
+      html += '<strong>非薬物療法：</strong>前庭リハビリテーション、規則的睡眠、トリガー回避、漢方（半夏白朮天麻湯・苓桂朮甘湯）<br>';
+      html += '<span style="font-size:0.85em;color:#666;">※ 治療は必ず医師の指示のもとで行ってください</span>';
+      html += '</div>';
+      html += '</div>';
+    }
+
+    // 注意事項
+    html += '<div class="red-flag-box">';
+    html += '<div class="rf-title">&#9888;&#65039; 受診の目安と注意点</div>';
+    html += '<ul>';
+    html += '<li><strong>初めての強いめまいは必ず医療機関へ</strong> ─ 脳卒中・脳腫瘍などの除外が最優先</li>';
+    html += '<li><strong>難聴を伴うめまいの繰り返し</strong> ─ メニエール病鑑別のため耳鼻咽喉科で聴力検査を</li>';
+    html += '<li><strong>頭痛日記をつける</strong> ─ 発作日時・持続・強度・トリガー・薬効を記録すると診断・治療に役立つ</li>';
+    html += '<li><strong>市販薬の使いすぎに注意</strong> ─ 月10日以上の鎮痛薬使用は薬物乱用頭痛を招く可能性</li>';
+    html += '<li><strong>このツールは診断補助です</strong> ─ 確定診断は神経内科・頭痛外来・耳鼻咽喉科の医師が行います</li>';
+    html += '</ul>';
+    html += '</div>';
+
+    html += '<div style="margin-top:14px;font-size:0.82em;color:#666;line-height:1.6;">';
+    html += '参考: <a class="ref-link" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9249276/" target="_blank" rel="noopener">Lempert T, et al. Vestibular migraine: Diagnostic criteria (Update). J Vestib Res. 2022</a> / ';
+    html += '<a class="ref-link" href="https://ichd-3.org/appendix/a1-migraine/a1-6-episodic-syndromes-that-may-be-associated-with-migraine/a1-6-6-vestibular-migraine/" target="_blank" rel="noopener">ICHD-3 A1.6.6 Vestibular migraine</a>';
+    html += '</div>';
+
+    html += '</div></div>';
+  }
+
+  if (currentStep > 0) {
+    html += '<button class="reset-btn" onclick="resetAll()">&#8635; 最初からやり直す</button>';
+  }
+
+  app.innerHTML = html;
+
+  // スクロール
+  if (currentStep < STEPS.length) {
+    var el = document.getElementById("step-" + currentStep);
+    if (el) {
+      setTimeout(function() {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 100);
+    }
+  } else {
+    var rp = document.querySelector(".result-panel");
+    if (rp) {
+      setTimeout(function() {
+        rp.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+    }
+  }
+}
+
+function selectSingle(stepId, value, stepIndex) {
+  answers[stepId] = value;
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function toggleCheck(stepId, value, stepIndex) {
+  if (!answers[stepId]) answers[stepId] = [];
+  var arr = answers[stepId];
+  var idx = arr.indexOf(value);
+
+  if (value === "none") {
+    answers[stepId] = ["none"];
+  } else {
+    var noneIdx = arr.indexOf("none");
+    if (noneIdx >= 0) arr.splice(noneIdx, 1);
+    if (idx >= 0) {
+      arr.splice(idx, 1);
+    } else {
+      arr.push(value);
+    }
+  }
+  render();
+}
+
+function nextStep(stepIndex) {
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function resetAll() {
+  answers = {};
+  currentStep = 0;
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+render();
+</script>
+</body>
+</html>

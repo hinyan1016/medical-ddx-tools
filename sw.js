@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v30';
+const CACHE_NAME = 'ddx-tools-v31';
 const ASSETS = [
   './',
   './index.html',
@@ -31,6 +31,7 @@ const ASSETS = [
   './anemia.html',
   './syncope.html',
   './vestibular_neuritis.html',
+  './vestibular_migraine.html',
   './thyroid_dysfunction.html',
   './hemichorea.html',
   './cavernous_sinus.html',
