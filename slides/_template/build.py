@@ -58,11 +58,21 @@ def render_viewer(deck: dict, slide_count: int) -> str:
             f'    </a>'
         )
 
+    youtube_button = ""
+    yt_id = deck.get("youtube_id") or ""
+    if yt_id:
+        youtube_button = (
+            f'    <a class="btn btn-youtube" href="https://youtu.be/{yt_id}" target="_blank" rel="noopener">\n'
+            f'      ▶ YouTubeで動画を見る\n'
+            f'    </a>'
+        )
+
     replacements = {
         "{{TITLE}}": deck["title"],
         "{{SUBTITLE}}": deck.get("subtitle", ""),
         "{{DESCRIPTION}}": deck.get("description", deck["title"]),
-        "{{YOUTUBE_ID}}": deck["youtube_id"],
+        "{{YOUTUBE_ID}}": yt_id,
+        "{{YOUTUBE_BUTTON}}": youtube_button,
         "{{SLIDE_COUNT}}": str(slide_count),
         "{{SLIDE_CARDS}}": "\n".join(cards_html),
         "{{BLOG_BUTTON}}": blog_button,
