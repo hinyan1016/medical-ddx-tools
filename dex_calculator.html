@@ -79,17 +79,31 @@
   .input-row input[type="number"]:focus { outline: none; border-color: var(--blue); }
   .unit { font-size: 0.9em; color: var(--gray); }
 
-  /* μg/kg/h プリセットボタン */
-  .dose-presets { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
-  .dose-btn {
-    flex: 1 1 auto; min-width: 64px;
-    padding: 10px 6px; border: 2px solid #D0D8E4; border-radius: 8px;
-    background: var(--white); cursor: pointer; transition: all 0.15s;
-    font-family: inherit; font-size: 0.95em; font-weight: 600; color: var(--navy);
+  /* 鎮静目標 注記 */
+  .goal-note {
+    background: var(--light-blue); border-left: 4px solid var(--blue);
+    padding: 10px 14px; border-radius: 6px; margin-bottom: 14px;
+    font-size: 0.9em; color: var(--navy); line-height: 1.6;
   }
-  .dose-btn:hover { border-color: var(--blue); }
-  .dose-btn.active { background: var(--blue); color: var(--white); border-color: var(--blue); }
-  .dose-btn .label { display: block; font-size: 0.7em; opacity: 0.8; margin-top: 2px; font-weight: 400; }
+  .goal-note strong { color: var(--blue); }
+
+  /* ポンプ設定 開始/上限 2 値表示 */
+  .pump-grid {
+    display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+    gap: 10px; padding: 18px 16px; background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white); border-radius: var(--radius); margin-bottom: 14px;
+  }
+  .pump-cell { text-align: center; }
+  .pump-cell .label { font-size: 0.82em; opacity: 0.88; margin-bottom: 2px; }
+  .pump-cell .value { font-size: 1.9em; font-weight: 800; letter-spacing: 0.01em; font-variant-numeric: tabular-nums; }
+  .pump-cell .unit { font-size: 0.8em; opacity: 0.85; margin-top: 2px; }
+  .pump-arrow { font-size: 1.6em; opacity: 0.7; }
+  .pump-note { font-size: 0.78em; color: var(--gray); text-align: center; margin-top: -4px; margin-bottom: 10px; }
+  @media (max-width: 480px) {
+    .pump-grid { grid-template-columns: 1fr; gap: 6px; padding: 14px; }
+    .pump-arrow { transform: rotate(90deg); }
+    .pump-cell .value { font-size: 1.6em; }
+  }
 
   /* チェックボックス */
   .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -202,17 +216,12 @@
         <span class="unit">kg</span>
       </div>
 
-      <label class="field-label">維持量（μg/kg/時）— 添付文書範囲 0.2〜0.7</label>
-      <div class="dose-presets" id="dosePresets">
-        <button class="dose-btn" data-dose="0.2">0.2<span class="label">開始目安</span></button>
-        <button class="dose-btn" data-dose="0.3">0.3</button>
-        <button class="dose-btn active" data-dose="0.4">0.4<span class="label">中央値</span></button>
-        <button class="dose-btn" data-dose="0.5">0.5</button>
-        <button class="dose-btn" data-dose="0.6">0.6</button>
-        <button class="dose-btn" data-dose="0.7">0.7<span class="label">上限</span></button>
+      <div class="goal-note">
+        <strong>🎯 鎮静目標：RASS 0〜-1</strong>（強い興奮時のみ -2 まで許容）<br>
+        添付文書範囲 0.2〜0.7 μg/kg/時。<strong>開始は常に 0.2 から</strong>、RASS を見ながら段階的に漸増します。
       </div>
 
-      <label class="field-label" style="margin-top:14px;">患者属性（該当をチェック）</label>
+      <label class="field-label">患者属性（該当をチェック）</label>
       <div class="checkbox-grid" id="riskGrid">
         <label class="check-item"><input type="checkbox" value="elderly"><span>高齢（75歳以上）</span></label>
         <label class="check-item"><input type="checkbox" value="sbp_low"><span>SBP ≦ 100 mmHg</span></label>
@@ -226,19 +235,28 @@
 
   <!-- 結果カード -->
   <div class="card">
-    <div class="card-header">💉 推奨投与速度</div>
+    <div class="card-header">💉 ポンプ設定（開始 → 漸増上限）</div>
     <div class="card-body">
-      <div class="result-hero">
-        <div class="label">ポンプ設定</div>
-        <div class="value"><span id="mlhrValue">5.0</span> mL/hr</div>
-        <div class="formula" id="formulaText">体重50kg × 0.4μg/kg/時 ÷ 4μg/mL</div>
+      <div class="pump-grid">
+        <div class="pump-cell">
+          <div class="label">開始</div>
+          <div class="value"><span id="startMl">2.0</span> mL/hr</div>
+          <div class="unit">0.2 μg/kg/時（添付文書最低）</div>
+        </div>
+        <div class="pump-arrow">→</div>
+        <div class="pump-cell">
+          <div class="label">上限</div>
+          <div class="value"><span id="maxMl">7.0</span> mL/hr</div>
+          <div class="unit">0.7 μg/kg/時（添付文書上限）</div>
+        </div>
       </div>
+      <p class="pump-note" id="formulaText">体重50kg ÷ 20 ≒ 2.5 mL/hr（暗算式）</p>
 
       <div id="warningArea"></div>
 
       <div class="warning-box info">
         <div class="head">📋 初期負荷について</div>
-        せん妄目的では <strong>初期負荷（6μg/kg/時×10分）は原則行わない</strong>。徐脈・低血圧を増やすだけのため、上記の維持量から開始する<sup style="color:var(--red)">[1]</sup>。
+        せん妄目的では <strong>初期負荷（6μg/kg/時×10分）は原則行わない</strong>。徐脈・低血圧を増やすだけのため、開始量から漸増する<sup style="color:var(--red)">[1]</sup>。
       </div>
     </div>
   </div>
@@ -255,7 +273,7 @@
         </thead>
         <tbody id="lookupBody"></tbody>
       </table>
-      <p style="font-size:0.78em;color:var(--gray);margin-top:6px;">※ 入力した体重・μg/kg/時に該当するセルがハイライトされます</p>
+      <p style="font-size:0.78em;color:var(--gray);margin-top:6px;">※ 入力体重に近い行がハイライト表示されます</p>
     </div>
   </div>
 
@@ -324,19 +342,20 @@
 <script>
 (function(){
   var weightEl = document.getElementById('weight');
-  var doseBtns = document.querySelectorAll('.dose-btn');
   var riskInputs = document.querySelectorAll('#riskGrid input[type="checkbox"]');
-  var mlhrEl = document.getElementById('mlhrValue');
+  var startMlEl = document.getElementById('startMl');
+  var maxMlEl = document.getElementById('maxMl');
   var formulaEl = document.getElementById('formulaText');
   var warningArea = document.getElementById('warningArea');
   var orderEl = document.getElementById('orderTemplate');
   var copyBtn = document.getElementById('copyBtn');
   var lookupBody = document.getElementById('lookupBody');
 
-  var currentDose = 0.4;
   var WEIGHTS = [40, 50, 60, 70, 80, 90];
   var DOSES = [0.2, 0.3, 0.4, 0.5, 0.6, 0.7];
   var CONC = 4; // μg/mL
+  var START_DOSE = 0.2; // 添付文書最低・常にここから開始
+  var MAX_DOSE = 0.7;   // 添付文書上限
 
   function calc(weight, dose){
     return Math.round((weight * dose / CONC) * 10) / 10;
@@ -351,7 +370,10 @@
       for (var j = 0; j < DOSES.length; j++){
         var d = DOSES[j];
         var ml = calc(w, d);
-        var cellClass = (Math.abs(currentDose - d) < 0.05) ? ' class="current-col"' : '';
+        // 開始(0.2)と上限(0.7)の列は常時ハイライト
+        var cellClass = '';
+        if (Math.abs(d - START_DOSE) < 0.05) cellClass = ' class="current-col"';
+        else if (Math.abs(d - MAX_DOSE) < 0.05) cellClass = ' class="current-col"';
         html += '<td' + cellClass + '>' + ml.toFixed(1) + '</td>';
       }
       html += '</tr>';
@@ -367,13 +389,8 @@
     return risks;
   }
 
-  function buildWarnings(weight, dose, risks){
+  function buildWarnings(risks){
     var warnings = [];
-
-    // 投与量上限警告（体重とドーズの相互作用）
-    if (dose >= 0.7){
-      warnings.push({level:'caution', head:'⚠ 添付文書の維持量上限', body:'0.7 μg/kg/時は添付文書範囲の上限。これ以上効果不十分なら、せん妄の誘因検索（尿閉・便秘・低酸素・薬剤・離脱）と他剤併用を検討。'});
-    }
 
     // 循環動態リスク
     var circRisks = [];
@@ -382,14 +399,14 @@
     if (risks.beta_blocker) circRisks.push('β遮断薬内服中');
     if (risks.sepsis) circRisks.push('敗血症・血行動態不安定');
     if (circRisks.length >= 2){
-      warnings.push({level:'red', head:'🛑 徐脈・低血圧の高リスク', body:'該当: ' + circRisks.join(' / ') + '。<strong>0.2 μg/kg/時から慎重に開始</strong>し、15〜30分ごとに BP・HR を評価。代替（少量プロポフォール等）も考慮。'});
+      warnings.push({level:'red', head:'🛑 徐脈・低血圧の高リスク', body:'該当: ' + circRisks.join(' / ') + '。<strong>15〜30分ごとに BP・HR を評価</strong>し、漸増ペースを通常より遅く（30分→1時間ごと）。代替（少量プロポフォール等）の併用も考慮。'});
     } else if (circRisks.length === 1){
-      warnings.push({level:'caution', head:'⚠ 循環動態への影響に注意', body:'該当: ' + circRisks.join(' / ') + '。維持量は<strong>1段下げて開始</strong>し、30分ごとに BP・HR を確認。'});
+      warnings.push({level:'caution', head:'⚠ 循環動態への影響に注意', body:'該当: ' + circRisks.join(' / ') + '。漸増のたびに BP・HR を確認し、徐脈・低血圧の出現時は増量を控える。'});
     }
 
     // 高齢
-    if (risks.elderly && dose >= 0.5){
-      warnings.push({level:'caution', head:'⚠ 高齢者での維持量', body:'75歳以上では薬物クリアランス低下のため、0.2〜0.4 μg/kg/時を上限として開始することが推奨される。'});
+    if (risks.elderly){
+      warnings.push({level:'caution', head:'⚠ 高齢者では漸増を慎重に', body:'75歳以上では薬物クリアランス低下のため、増量は<strong>1時間以上の観察</strong>を挟む。0.4〜0.5 μg/kg/時でも十分なことが多い。'});
     }
 
     // 適応外
@@ -414,15 +431,10 @@
     warningArea.innerHTML = html;
   }
 
-  function buildOrderTemplate(weight, dose, mlhr, risks){
-    var startMl = mlhr;
+  function buildOrderTemplate(weight, startMl, maxMl, risks){
     var circHigh = (risks.sbp_low ? 1 : 0) + (risks.hr_low ? 1 : 0) + (risks.beta_blocker ? 1 : 0) + (risks.sepsis ? 1 : 0) >= 2;
-    if (circHigh){
-      startMl = calc(weight, 0.2); // 高リスク時は最低用量で開始
-    } else if (risks.elderly && dose > 0.4){
-      startMl = calc(weight, 0.3);
-    }
-    var maxMl = calc(weight, 0.7);
+    var observeInterval = (circHigh || risks.elderly) ? '15〜30分ごと' : '30〜60分ごと';
+    var titrateInterval = (circHigh || risks.elderly) ? '1時間以上の間隔' : '30〜60分の間隔';
 
     var lines = [];
     lines.push('【プレセデックス（デクスメデトミジン）持続静注指示】');
@@ -431,25 +443,22 @@
     lines.push('▼ 製剤・濃度');
     lines.push('  プレセデックス 200μg/50mL シリンジ（濃度 4 μg/mL）');
     lines.push('');
-    lines.push('▼ 開始');
-    lines.push('  ' + startMl.toFixed(1) + ' mL/hr で持続静注開始（初期負荷なし）');
-    if (startMl < mlhr){
-      lines.push('  ※ 患者リスクに応じて目標 ' + mlhr.toFixed(1) + ' mL/hr より低用量で開始');
-    }
+    lines.push('▼ 開始（添付文書最低用量・初期負荷なし）');
+    lines.push('  ' + startMl.toFixed(1) + ' mL/hr（0.2 μg/kg/時）で持続静注開始');
     lines.push('');
     lines.push('▼ 鎮静目標');
     lines.push('  RASS 0〜-1（強い興奮時のみ -2 まで許容）');
     lines.push('');
-    lines.push('▼ 観察・調整');
-    lines.push('  30〜60分ごとに RASS / BP / HR / SpO2 評価');
-    lines.push('  RASS ≧ +1 → +1 mL/hr 増量（最大 ' + maxMl.toFixed(1) + ' mL/hr）');
+    lines.push('▼ 観察・漸増（RASS連動）');
+    lines.push('  ' + observeInterval + 'に RASS / BP / HR / SpO2 評価');
+    lines.push('  RASS ≧ +1 → ' + titrateInterval + 'を空けて +1 mL/hr 漸増（上限 ' + maxMl.toFixed(1) + ' mL/hr = 0.7 μg/kg/時）');
     lines.push('  RASS = -2 が30分以上持続 → 1〜2 mL/hr 減量');
     lines.push('');
     lines.push('▼ [STOP] 中止基準（いずれか該当で中止＋当直医報告）');
     lines.push('  ・SBP < 90 mmHg または MAP < 65 mmHg');
     lines.push('  ・HR < 50 bpm');
     lines.push('  ・RASS ≦ -3');
-    lines.push('  ・最大 ' + maxMl.toFixed(1) + ' mL/hr でも興奮制御不能');
+    lines.push('  ・上限 ' + maxMl.toFixed(1) + ' mL/hr でも興奮制御不能（誘因検索＋他剤検討）');
 
     return lines.join('\n');
   }
@@ -478,26 +487,20 @@
     var weight = parseFloat(weightEl.value) || 50;
     if (weight < 20) weight = 20;
     if (weight > 150) weight = 150;
-    var mlhr = calc(weight, currentDose);
-    mlhrEl.textContent = mlhr.toFixed(1);
-    formulaEl.textContent = '体重' + weight + 'kg × ' + currentDose + 'μg/kg/時 ÷ 4μg/mL';
+    var startMl = calc(weight, START_DOSE);
+    var maxMl = calc(weight, MAX_DOSE);
+    startMlEl.textContent = startMl.toFixed(1);
+    maxMlEl.textContent = maxMl.toFixed(1);
+    // 暗算式: 体重 ÷ 20 ≒ 開始 mL/hr (= 体重 × 0.2 / 4)
+    formulaEl.textContent = '暗算式: 体重' + weight + 'kg ÷ 20 ≒ ' + startMl.toFixed(1) + ' mL/hr（開始量）';
     var risks = getRisks();
-    renderWarnings(buildWarnings(weight, currentDose, risks));
-    renderTemplate(buildOrderTemplate(weight, currentDose, mlhr, risks));
+    renderWarnings(buildWarnings(risks));
+    renderTemplate(buildOrderTemplate(weight, startMl, maxMl, risks));
     buildLookupTable(weight);
   }
 
   // イベントハンドラ
   weightEl.addEventListener('input', update);
-
-  for (var i = 0; i < doseBtns.length; i++){
-    doseBtns[i].addEventListener('click', function(){
-      for (var j = 0; j < doseBtns.length; j++){ doseBtns[j].classList.remove('active'); }
-      this.classList.add('active');
-      currentDose = parseFloat(this.dataset.dose);
-      update();
-    });
-  }
 
   for (var i = 0; i < riskInputs.length; i++){
     riskInputs[i].addEventListener('change', function(){
