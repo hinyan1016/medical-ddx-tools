@@ -162,6 +162,20 @@
   .calc-detail .key { color: var(--primary-dark); font-weight: 600; }
   .calc-detail .val { font-variant-numeric: tabular-nums; }
 
+  /* 院内採用規格 → 最適バイアル */
+  .stock-box { margin-top: 12px; padding: 12px 14px; background: var(--light-blue); border: 1px solid #cfe0ef; border-radius: var(--radius); }
+  .stock-title { font-size: 0.88em; font-weight: 700; color: var(--primary-dark); margin-bottom: 8px; }
+  .stock-opts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .stock-opt { display: inline-flex; align-items: center; gap: 5px; font-size: 0.86em; padding: 6px 10px; background: var(--white); border: 2px solid #d0d8e4; border-radius: 8px; cursor: pointer; user-select: none; }
+  .stock-opt.checked { border-color: var(--primary); background: #eaf3fb; color: var(--primary-dark); font-weight: 600; }
+  .stock-opt input { width: 16px; height: 16px; cursor: pointer; }
+  .stock-empty { font-size: 0.86em; color: var(--gray); margin: 10px 0 0; }
+  .stock-result { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #b8cde0; }
+  .stock-headline { font-size: 0.92em; color: var(--primary-dark); }
+  .stock-note { font-size: 0.78em; color: var(--gray); margin: 6px 0 0; }
+  .vial-list { font-size: 0.86em; margin: 6px 0 0 0; padding-left: 18px; }
+  .vial-list li { margin-bottom: 2px; }
+
   .warning-box {
     background: #fff5f5; border-left: 4px solid var(--red);
     padding: 12px 14px; margin-bottom: 10px; border-radius: 6px;
@@ -596,7 +610,7 @@
   };
 
   // ===== 状態 =====
-  var state = { ind: null, prod: null, age: "adult" };
+  var state = { ind: null, prod: null, age: "adult", stockSel: null };
 
   // ===== 要素 =====
   var indContainer = document.getElementById('indContainer');
@@ -638,6 +652,7 @@
       items[k].addEventListener('click', function(){
         state.ind = this.getAttribute('data-ind');
         state.prod = null;
+        state.stockSel = null;
         renderIndications();
         renderProducts();
         clearDownstream();
@@ -677,6 +692,7 @@
     for (var k = 0; k < els.length; k++){
       els[k].addEventListener('click', function(){
         state.prod = this.getAttribute('data-prod');
+        state.stockSel = null;
         renderProducts();
         unlockDownstream();
         renderAll();
@@ -701,6 +717,40 @@
     step5Card.classList.remove('disabled');
     monoCard.classList.remove('disabled');
     actionBar.style.display = 'block';
+  }
+
+  // 院内採用規格から最適なバイアル組合せを算出（第一目的=余剰薬液最小、第二=本数最小）
+  // 整数DP（単位 = g×10）。指定規格の集合で総量gを満たす最小余剰・最小本数の組合せを返す。
+  function findOptimalVials(vials, totalG){
+    if (!vials || !vials.length) return null;
+    var SCALE = 10;
+    var target = Math.round(totalG * SCALE);
+    if (target <= 0) return { plan: [], totalVials: 0, suppliedG: 0, totalMl: 0, wasteG: 0 };
+    var units = [], maxU = 0, j, s;
+    for (j = 0; j < vials.length; j++){ var u = Math.round(vials[j].g * SCALE); units.push(u); if (u > maxU) maxU = u; }
+    var cap = target + maxU;
+    var INF = 1e9;
+    var dp = new Array(cap + 1), pick = new Array(cap + 1);
+    for (s = 0; s <= cap; s++){ dp[s] = INF; pick[s] = -1; }
+    dp[0] = 0;
+    for (s = 1; s <= cap; s++){
+      for (j = 0; j < units.length; j++){
+        var uu = units[j];
+        if (uu <= s && dp[s - uu] + 1 < dp[s]){ dp[s] = dp[s - uu] + 1; pick[s] = j; }
+      }
+    }
+    var best = -1;
+    for (s = target; s <= cap; s++){ if (dp[s] < INF){ best = s; break; } } // 最初の到達点＝最小余剰
+    if (best < 0) return null;
+    var counts = {}, ss = best;
+    while (ss > 0){ var pj = pick[ss]; counts[pj] = (counts[pj] || 0) + 1; ss -= units[pj]; }
+    var plan = [], totalVials = 0, totalMl = 0;
+    for (j = 0; j < vials.length; j++){
+      if (counts[j]){ plan.push({ g: vials[j].g, mL: vials[j].mL, count: counts[j] }); totalVials += counts[j]; totalMl += counts[j] * vials[j].mL; }
+    }
+    plan.sort(function(a, b){ return b.g - a.g; });
+    var suppliedG = best / SCALE;
+    return { plan: plan, totalVials: totalVials, suppliedG: suppliedG, totalMl: totalMl, wasteG: suppliedG - totalG };
   }
 
   // ===== Step4 用量計算 =====
@@ -740,12 +790,65 @@
     html += '<div class="row"><span class="key">投与日数</span><span class="val">' + r.days + ' 日（' + esc(r.interval) + '）</span></div>';
     html += '</div>';
 
+    // ===== 院内採用規格 → 最適バイアル選択 =====
+    html += '<div class="stock-box">';
+    html += '<div class="stock-title">&#127973; 院内採用規格を選択（チェックした規格から最適な組合せを提案）</div>';
+    html += '<div class="stock-opts">';
+    for (var vi = 0; vi < prod.vials.length; vi++){
+      var vg = prod.vials[vi].g;
+      var checked = (state.stockSel === null) || (indexOfNum(state.stockSel, vg) >= 0);
+      html += '<label class="stock-opt' + (checked ? ' checked' : '') + '">';
+      html += '<input type="checkbox" class="stock-cb" value="' + vg + '"' + (checked ? ' checked' : '') + '> ';
+      html += vg + 'g(' + prod.vials[vi].mL + 'mL)';
+      html += '</label>';
+    }
+    html += '</div>';
+
+    var selVials = [];
+    for (var vk = 0; vk < prod.vials.length; vk++){
+      if (state.stockSel === null || indexOfNum(state.stockSel, prod.vials[vk].g) >= 0){ selVials.push(prod.vials[vk]); }
+    }
+    if (selVials.length === 0){
+      html += '<p class="stock-empty">規格を1つ以上選択すると、最適なバイアル組合せを表示します。</p>';
+    } else {
+      var opt = findOptimalVials(selVials, totalG);
+      html += '<div class="stock-result">';
+      html += '<div class="stock-headline">推奨組合せ：<strong>計 ' + opt.totalVials + ' 本</strong>（供給 ' + opt.suppliedG.toFixed(1) + ' g・余剰 ' + opt.wasteG.toFixed(1) + ' g）</div>';
+      html += '<ul class="vial-list">';
+      for (var pi = 0; pi < opt.plan.length; pi++){
+        html += '<li><strong>' + opt.plan[pi].g + 'g(' + opt.plan[pi].mL + 'mL)</strong> × ' + opt.plan[pi].count + ' 本</li>';
+      }
+      html += '<li style="color:var(--gray);">バイアル充填量の合計: 約 ' + opt.totalMl + ' mL</li>';
+      html += '</ul>';
+      html += '<p class="stock-note">余剰薬液が最小になる組合せを優先し、同等なら本数最小を選択しています。投与量・希釈は施設プロトコルに従ってください。</p>';
+      html += '</div>';
+    }
+    html += '</div>';
+
     html += '<div class="warning-box caution" style="margin-top:12px;"><div class="head">&#9888; 計算上の注意</div>';
     html += '<strong>レジメン:</strong> ' + esc(r.note) + '<br>';
     html += '単位確認: 用量 <strong>' + r.mgkg + ' mg/kg/日</strong>（＝ ' + (r.mgkg/1000) + ' g/kg/日）／総量 <strong>' + totalG.toFixed(1) + ' g</strong>／概算液量 <strong>約 ' + Math.round(approxMl) + ' mL</strong>（' + concPct.toFixed(0) + '%濃度＝' + prod.conc + ' g/mL）。';
     html += '体重補正（小児・肥満・腎障害例）が必要な場合は施設プロトコルに従ってください。</div>';
 
     calcContainer.innerHTML = html;
+
+    // 院内採用規格チェックボックスのイベント
+    var cbs = calcContainer.querySelectorAll('.stock-cb');
+    for (var ci = 0; ci < cbs.length; ci++){
+      cbs[ci].addEventListener('change', function(){
+        var sel = [];
+        for (var x = 0; x < cbs.length; x++){ if (cbs[x].checked){ sel.push(parseFloat(cbs[x].value)); } }
+        state.stockSel = sel;
+        renderCalc();
+      });
+    }
+  }
+
+  // 数値配列に値が含まれるか（浮動小数の安全比較）
+  function indexOfNum(arr, val){
+    if (!arr) return -1;
+    for (var i = 0; i < arr.length; i++){ if (Math.abs(arr[i] - val) < 1e-6) return i; }
+    return -1;
   }
 
   // ===== Step5 投与速度＋モニタリング =====
@@ -870,7 +973,7 @@
 
   document.getElementById('printBtn').addEventListener('click', function(){ window.print(); });
   document.getElementById('resetBtn').addEventListener('click', function(){
-    state.ind = null; state.prod = null;
+    state.ind = null; state.prod = null; state.stockSel = null;
     renderIndications();
     renderProducts();
     clearDownstream();
