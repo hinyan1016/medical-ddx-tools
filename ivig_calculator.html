@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A5276">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>免疫グロブリン投与支援｜IVIG/SCIG投与計算・適応ナビ</title>
+<style>
+  :root {
+    --primary-dark: #1A5276;
+    --primary: #2E86C1;
+    --light-blue: #E8F2FB;
+    --red: #DC3545;
+    --yellow: #F5C518;
+    --green: #28A745;
+    --orange: #E8850C;
+    --purple: #7B2D8E;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(26,82,118,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #E8F2FB 0%, #F4F6F8 100%);
+    color: #222;
+    min-height: 100vh;
+    padding: 0 0 40px;
+    line-height: 1.55;
+  }
+  header {
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    color: var(--white);
+    padding: 14px 20px 18px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(26,82,118,0.18);
+  }
+  .back-bar { display: flex; align-items: center; margin-bottom: 8px; }
+  .back-bar a {
+    color: rgba(255,255,255,0.85); text-decoration: none; font-size: 0.85em;
+    display: flex; align-items: center; gap: 4px; padding: 4px 8px;
+    border-radius: 6px;
+  }
+  .back-bar a:active { background: rgba(255,255,255,0.15); }
+  header h1 { font-size: 1.32em; font-weight: 700; letter-spacing: 0.02em; }
+  header p { font-size: 0.82em; margin-top: 6px; opacity: 0.85; }
+  .container { max-width: 860px; margin: 0 auto; padding: 20px 14px; }
+
+  .alert-disclaimer {
+    background: #fff8e1; border-left: 4px solid var(--orange);
+    padding: 10px 14px; margin-bottom: 16px; border-radius: 6px;
+    font-size: 0.85em; color: #5d4400;
+  }
+
+  .card {
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: var(--shadow); margin-bottom: 16px; overflow: hidden;
+  }
+  .card-header {
+    padding: 12px 16px; background: var(--light-blue);
+    border-bottom: 2px solid var(--primary);
+    font-weight: 700; font-size: 1em; color: var(--primary-dark);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .step-badge {
+    background: var(--primary); color: var(--white); font-size: 0.75em;
+    padding: 2px 8px; border-radius: 12px; font-weight: 700; flex-shrink: 0;
+  }
+  .card-body { padding: 16px; }
+  .card.disabled { opacity: 0.5; pointer-events: none; }
+  .card.disabled .card-header { background: var(--light-gray); border-bottom-color: #ccc; color: var(--gray); }
+  .card.disabled .step-badge { background: var(--gray); }
+
+  /* Step1 疾患選択 */
+  .cat-block { margin-bottom: 14px; }
+  .cat-title {
+    font-size: 0.85em; font-weight: 700; color: var(--primary-dark);
+    border-left: 4px solid var(--primary); padding-left: 8px; margin-bottom: 8px;
+  }
+  .ind-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  @media (max-width: 480px) { .ind-grid { grid-template-columns: 1fr; } }
+  .ind-item {
+    padding: 10px 12px; border: 2px solid #D0D8E4; border-radius: 8px;
+    cursor: pointer; transition: all 0.15s; user-select: none; font-size: 0.9em;
+    background: var(--white);
+  }
+  .ind-item:hover { border-color: var(--primary); }
+  .ind-item.selected { background: var(--light-blue); border-color: var(--primary); color: var(--primary-dark); font-weight: 700; }
+
+  /* Step2 製剤選択 */
+  .prod-item {
+    border: 2px solid #D0D8E4; border-radius: 8px; padding: 12px 14px;
+    margin-bottom: 10px; cursor: pointer; transition: all 0.15s;
+  }
+  .prod-item:hover { border-color: var(--primary); }
+  .prod-item.selected { background: var(--light-blue); border-color: var(--primary); }
+  .prod-name { font-weight: 700; color: var(--primary-dark); font-size: 1em; }
+  .prod-type {
+    display: inline-block; font-size: 0.72em; font-weight: 700; color: var(--white);
+    background: var(--primary); padding: 1px 8px; border-radius: 10px; margin-left: 8px; vertical-align: middle;
+  }
+  .prod-type.scig { background: var(--green); }
+  .prod-type.fscig { background: var(--purple); }
+  .prod-regimen { font-size: 0.85em; color: #333; margin-top: 6px; }
+  .prod-regimen .key { font-weight: 700; color: var(--primary-dark); }
+  .prod-note { font-size: 0.78em; color: var(--gray); margin-top: 4px; }
+  .empty-note { font-size: 0.88em; color: var(--gray); padding: 8px 0; }
+
+  /* 入力フォーム */
+  label.field-label { display: block; font-weight: 700; font-size: 0.92em; color: var(--primary-dark); margin-bottom: 8px; margin-top: 12px; }
+  label.field-label:first-child { margin-top: 0; }
+  .input-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .input-row input[type="number"] {
+    width: 100px; padding: 10px 12px; font-size: 1.15em; font-weight: 700;
+    border: 2px solid #D0D8E4; border-radius: 8px; color: var(--primary-dark);
+    text-align: right; font-family: inherit;
+  }
+  .input-row input[type="number"]:focus { outline: none; border-color: var(--primary); }
+  .unit { font-size: 0.9em; color: var(--gray); }
+  .seg-group { display: inline-flex; border: 2px solid #D0D8E4; border-radius: 8px; overflow: hidden; }
+  .seg-group button {
+    border: none; background: var(--white); padding: 9px 18px; font-size: 0.92em;
+    font-family: inherit; cursor: pointer; color: var(--primary-dark); font-weight: 600;
+  }
+  .seg-group button.active { background: var(--primary); color: var(--white); }
+
+  /* チェックボックス */
+  .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
+  @media (max-width: 480px) { .checkbox-grid { grid-template-columns: 1fr; } }
+  .check-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 12px; border: 2px solid #D0D8E4; border-radius: 8px;
+    cursor: pointer; transition: all 0.15s; user-select: none; font-size: 0.9em;
+  }
+  .check-item:hover { border-color: var(--primary); }
+  .check-item.checked { background: var(--light-blue); border-color: var(--primary); }
+  .check-item input { width: 18px; height: 18px; cursor: pointer; flex-shrink: 0; }
+
+  /* 結果 hero グリッド */
+  .result-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;
+  }
+  @media (max-width: 480px) { .result-grid { grid-template-columns: 1fr; } }
+  .result-cell {
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    color: var(--white); padding: 16px; text-align: center; border-radius: var(--radius);
+  }
+  .result-cell .label { font-size: 0.82em; opacity: 0.9; margin-bottom: 4px; }
+  .result-cell .value { font-size: 2.0em; font-weight: 800; letter-spacing: 0.01em; font-variant-numeric: tabular-nums; }
+  .result-cell .sub { font-size: 0.78em; opacity: 0.85; margin-top: 4px; }
+  .result-cell.accent { background: linear-gradient(135deg, #145A32, var(--green)); }
+  .result-cell.vial { background: linear-gradient(135deg, #6E2C00, var(--orange)); }
+
+  .calc-detail { font-size: 0.85em; color: #333; line-height: 1.7; }
+  .calc-detail .row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #e0e0e0; }
+  .calc-detail .row:last-child { border-bottom: none; }
+  .calc-detail .key { color: var(--primary-dark); font-weight: 600; }
+  .calc-detail .val { font-variant-numeric: tabular-nums; }
+  .vial-list { font-size: 0.85em; margin: 4px 0 0 0; padding-left: 18px; }
+  .vial-list li { margin-bottom: 2px; }
+
+  .warning-box {
+    background: #fff5f5; border-left: 4px solid var(--red);
+    padding: 12px 14px; margin-bottom: 10px; border-radius: 6px;
+    font-size: 0.9em; color: #6a1a1a;
+  }
+  .warning-box .head { font-weight: 700; color: var(--red); margin-bottom: 4px; }
+  .warning-box.caution { background: #fff8e1; border-color: var(--orange); color: #5d4400; }
+  .warning-box.caution .head { color: var(--orange); }
+  .warning-box.info { background: #e7f6ff; border-color: var(--primary); color: #14385f; }
+  .warning-box.info .head { color: var(--primary); }
+  .warning-box ul { margin: 4px 0 0 18px; }
+  .warning-box li { margin-bottom: 2px; }
+
+  /* 速度表 */
+  .rate-table { width: 100%; border-collapse: collapse; font-size: 0.86em; margin-top: 8px; }
+  .rate-table th, .rate-table td {
+    border: 1px solid #D0D8E4; padding: 7px 8px; text-align: center; font-variant-numeric: tabular-nums;
+  }
+  .rate-table th { background: var(--primary-dark); color: var(--white); font-weight: 700; }
+  .rate-table td.lbl { text-align: left; font-weight: 600; color: var(--primary-dark); }
+
+  /* リスト系 */
+  .info-list { list-style: none; padding: 0; margin: 0; }
+  .info-list li {
+    padding: 8px 0 8px 22px; border-bottom: 1px solid #eee;
+    position: relative; font-size: 0.9em;
+  }
+  .info-list li:last-child { border-bottom: none; }
+  .info-list li::before {
+    content: "\25B8"; position: absolute; left: 4px; color: var(--primary); font-weight: 700;
+  }
+  .info-list .key { font-weight: 700; color: var(--primary-dark); }
+
+  .mono-detail { font-size: 0.84em; color: #333; line-height: 1.7; }
+  .mono-detail .key { font-weight: 700; color: var(--primary-dark); }
+  .unconfirmed { color: var(--gray); font-style: italic; }
+
+  .print-btn {
+    background: var(--primary); color: var(--white); border: none;
+    padding: 10px 18px; border-radius: 6px; cursor: pointer;
+    font-family: inherit; font-size: 0.9em; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .print-btn:hover { background: var(--primary-dark); }
+  .reset-btn {
+    background: var(--white); color: var(--primary); border: 2px solid var(--primary);
+    padding: 8px 16px; border-radius: 6px; cursor: pointer;
+    font-family: inherit; font-size: 0.85em; font-weight: 600; margin-left: 8px;
+  }
+
+  .ref-list { font-size: 0.8em; color: var(--gray); line-height: 1.7; padding-left: 18px; }
+  .ref-list li { margin-bottom: 4px; }
+  .ref-list a { color: var(--primary); text-decoration: none; }
+  .ref-list a:hover { text-decoration: underline; }
+
+  footer {
+    max-width: 860px; margin: 30px auto 0; padding: 14px;
+    text-align: center; color: var(--gray); font-size: 0.78em; line-height: 1.6;
+  }
+  footer a { color: var(--primary); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  /* 印刷レイアウト（指示簿用） */
+  @media print {
+    body { background: var(--white); padding: 0; }
+    header, .alert-disclaimer, footer, .print-btn, .reset-btn,
+    #step1Card, #step2Card, #step3Card, .no-print { display: none !important; }
+    .container { max-width: 100%; padding: 0; }
+    .card { box-shadow: none; border: 1px solid #999; page-break-inside: avoid; }
+    .card.disabled { display: none !important; }
+    .result-cell { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="back-bar"><a href="index.html">&larr; ツール一覧へ</a></div>
+  <h1>免疫グロブリン投与支援ツール</h1>
+  <p>IVIG/SCIG 適応ナビ・用量計算・投与速度プロトコル・モニタリング</p>
+</header>
+
+<div class="container">
+
+  <div class="alert-disclaimer">
+    <strong>&#9888; 免責</strong>：本ツールは医療従事者向けの<strong>確認補助</strong>です。適応・用量・投与速度は製剤ごとに添付文書が異なります。最終的な適応判断・用量決定は<strong>最新の添付文書および主治医の判断</strong>によります。組成（IgA含量・浸透圧・pH 等）は一次資料未確認のため「添付文書要確認」と表示しています。
+  </div>
+
+  <!-- Step1 適応疾患 -->
+  <div class="card" id="step1Card">
+    <div class="card-header"><span class="step-badge">STEP 1</span>適応疾患を選択</div>
+    <div class="card-body" id="indContainer"></div>
+  </div>
+
+  <!-- Step2 製剤選択 -->
+  <div class="card disabled" id="step2Card">
+    <div class="card-header"><span class="step-badge">STEP 2</span>使用可能製剤を選択（適応で自動フィルタ）</div>
+    <div class="card-body" id="prodContainer">
+      <p class="empty-note">先に Step 1 で疾患を選択してください。</p>
+    </div>
+  </div>
+
+  <!-- Step3 患者情報 -->
+  <div class="card disabled" id="step3Card">
+    <div class="card-header"><span class="step-badge">STEP 3</span>患者情報を入力</div>
+    <div class="card-body">
+      <label class="field-label">体重（必須）</label>
+      <div class="input-row">
+        <input type="number" id="weight" value="60" min="2" max="150" step="0.5">
+        <span class="unit">kg</span>
+      </div>
+
+      <label class="field-label">年齢区分</label>
+      <div class="seg-group" id="ageGroup">
+        <button type="button" data-age="adult" class="active">成人</button>
+        <button type="button" data-age="child">小児</button>
+      </div>
+
+      <label class="field-label">リスク評価（該当をチェック・表示用）</label>
+      <div class="checkbox-grid" id="riskGrid">
+        <label class="check-item"><input type="checkbox" value="iga_def"><span>IgA欠損の疑い</span></label>
+        <label class="check-item"><input type="checkbox" value="renal"><span>腎機能低下</span></label>
+        <label class="check-item"><input type="checkbox" value="thrombo"><span>血栓塞栓症リスク</span></label>
+        <label class="check-item"><input type="checkbox" value="first_dose"><span>初回投与</span></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step4 用量計算 -->
+  <div class="card disabled" id="step4Card">
+    <div class="card-header"><span class="step-badge">STEP 4</span>用量計算</div>
+    <div class="card-body" id="calcContainer"></div>
+  </div>
+
+  <!-- Step5 投与速度＋モニタリング -->
+  <div class="card disabled" id="step5Card">
+    <div class="card-header"><span class="step-badge">STEP 5</span>投与速度プロトコル・モニタリング</div>
+    <div class="card-body" id="protoContainer"></div>
+  </div>
+
+  <!-- 製剤詳細 -->
+  <div class="card disabled" id="monoCard">
+    <div class="card-header">&#128138; 製剤詳細・組成</div>
+    <div class="card-body" id="monoContainer"></div>
+  </div>
+
+  <!-- 操作ボタン -->
+  <div class="no-print" id="actionBar" style="display:none;text-align:center;margin-bottom:16px;">
+    <button class="print-btn" id="printBtn">&#128424; この結果を印刷（指示簿用）</button>
+    <button class="reset-btn" id="resetBtn">最初からやり直す</button>
+  </div>
+
+  <!-- 参考文献 -->
+  <div class="card">
+    <div class="card-header">&#128218; データ出典・参考</div>
+    <div class="card-body">
+      <p style="font-size:0.86em;margin-bottom:8px;">本ツールの適応・用法用量・投与速度・規格は各製剤の PMDA 添付文書／電子添文を一次資料とし、二次資料（日経メディカル処方薬事典・KEGG/JAPIC・MEDLEY）で照合した値のみを転記しています。</p>
+      <ol class="ref-list">
+        <li>PMDA 医療用医薬品 添付文書情報（各製剤 電子添文）</li>
+        <li>献血グロベニンI CTD 同種同効品一覧表（PMDA）</li>
+        <li>日経メディカル 処方薬事典（添付文書由来情報の確認）</li>
+        <li>KEGG / JAPIC 医薬品情報</li>
+      </ol>
+      <p style="font-size:0.78em;color:var(--gray);margin-top:8px;">サングロポール点滴静注用は終売（販売中止）のため本ツールの選択肢から除外しています。</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>本ツールは医療従事者向けの参考情報です。最終的な投与判断は最新の添付文書・施設プロトコル・個別症例の臨床状況に基づき医師が行ってください。</p>
+  <p style="margin-top:6px;">&copy; 医知創造ラボ ｜ <a href="index.html">DDxツール一覧</a></p>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  // ===== 製剤マスタ（製剤マスタmdの検証済み値のみ転記。未確認は null/[未確認]）=====
+  var PRODUCTS = {
+    veno: {
+      name: "献血ヴェノグロブリンIH5%静注", maker: "日本血液製剤機構", type: "IVIG",
+      conc: 0.05, // g/mL（5%）
+      vials: [ {g:0.5, mL:10}, {g:1, mL:20}, {g:2.5, mL:50}, {g:5, mL:100}, {g:10, mL:200} ],
+      method: "PEG4000処理（Cohn低温エタノール分画）", additive: "D-ソルビトール 等",
+      iga: null, osmo: null, ph: null,
+      rate: "初日 第1時間 0.01mL/kg/分 → 以降 0.06mL/kg/分 を上限に段階的増速。2日目以降は前日に耐容した速度で可。川崎病大量投与時は12時間以上かけて点滴。",
+      adverse: "ショック・アナフィラキシー、肝機能障害・黄疸、無菌性髄膜炎、急性腎不全、血小板減少、肺水腫、血栓塞栓症、心不全",
+      warn: "禁忌＝本剤成分でショック既往＋遺伝性果糖不耐症（添加物 D-ソルビトールが代謝されず低血糖・肝不全・腎不全のおそれ）。IgA欠損症は慎重投与。",
+      igaPolicy: "慎重投与（抗IgA抗体保有者で過敏反応のおそれ）"
+    },
+    globenin: {
+      name: "献血グロベニンI静注用", maker: "日本製薬（武田薬品 販売）", type: "IVIG",
+      conc: 0.05, // 溶解時5%相当（規格 g/mL 比）
+      vials: [ {g:0.5, mL:10}, {g:2.5, mL:50}, {g:5, mL:100} ],
+      method: "乾燥PEG処理（凍結乾燥）", additive: "D-ソルビトール・グリシン・塩化ナトリウム",
+      iga: null, osmo: "1.3〜1.7（溶解時）", ph: "6.4〜7.2",
+      rate: "初日 開始から1時間（CIDP進行抑制は30分間）は 0.01mL/kg/分 → 異常なければ 0.06mL/kg/分 を上限に漸増。",
+      adverse: "ショック・アナフィラキシー、肝機能障害・黄疸、無菌性髄膜炎、急性腎不全、血小板減少、肺水腫、血栓塞栓症、心不全",
+      warn: "禁忌＝本剤成分でショック既往。原則禁忌＝本剤過敏症既往。",
+      igaPolicy: "IgA欠損症は慎重投与"
+    },
+    benilon: {
+      name: "献血ベニロンI静注用", maker: "KMバイオロジクス", type: "IVIG",
+      conc: 0.05,
+      vials: [ {g:0.5, mL:10}, {g:1, mL:20}, {g:2.5, mL:50}, {g:5, mL:100} ],
+      method: "乾燥スルホ化（凍結乾燥）", additive: null,
+      iga: null, osmo: null, ph: null,
+      rate: "初日 0.01〜0.02mL/kg/分 で開始 → 異常なければ 0.03〜0.06mL/kg/分 まで漸増。2日目以降は前日耐容速度。",
+      adverse: "ショック・アナフィラキシー、肝機能障害・黄疸、無菌性髄膜炎、急性腎不全、血小板減少、血栓塞栓症、心不全 系統",
+      warn: "詳細な禁忌記載は添付文書要確認。",
+      igaPolicy: "IgA欠損症は慎重投与"
+    },
+    poly: {
+      name: "日赤ポリグロビンN5%静注", maker: "日本血液製剤機構", type: "IVIG",
+      conc: 0.05,
+      vials: [ {g:0.5, mL:10}, {g:2.5, mL:50}, {g:5, mL:100} ],
+      method: "pH4処理酸性", additive: "マルトース 10%含有",
+      iga: null, osmo: null, ph: null,
+      rate: "初日 開始30分間は 0.01〜0.02mL/kg/分 → 異常なければ 0.03〜0.06mL/kg/分 まで漸増。",
+      adverse: "ショック・アナフィラキシー様、肝機能障害・黄疸、無菌性髄膜炎、急性腎不全、血小板減少、血栓塞栓症、心不全",
+      warn: "添加物マルトースにより GDH法等の血糖測定で偽高値を示し、それに基づくインスリン過量投与で低血糖の危険（重要な注意）。",
+      igaPolicy: "IgA欠損症は慎重投与"
+    },
+    privigen: {
+      name: "ピリヴィジェン10%静注", maker: "CSLベーリング", type: "IVIG",
+      conc: 0.10, // 10%液
+      vials: [ {g:2.5, mL:25}, {g:20, mL:200} ],
+      method: "pH4処理酸性（液状10%）", additive: "L-プロリン",
+      iga: null, osmo: null, ph: null,
+      rate: "無低γ: 初期 0.6mL/kg/時 → 最高 7.2mL/kg/時 まで段階的増速。CIDP: 初期 0.3mL/kg/時 → 最高 4.8mL/kg/時 まで段階的増速。",
+      adverse: "溶血性貧血、血栓塞栓症、心筋梗塞、脳血管障害、急性腎障害、アナフィラキシー反応、無菌性髄膜炎、肺水腫、肝機能障害",
+      warn: "抗IgA抗体保有者で過敏反応のおそれ（慎重投与）。",
+      igaPolicy: "抗IgA抗体保有者で過敏反応のおそれ（慎重投与）"
+    },
+    hizentra: {
+      name: "ハイゼントラ20%皮下注", maker: "CSLベーリング", type: "SCIG",
+      conc: 0.20, // 20%液
+      vials: [ {g:1, mL:5}, {g:2, mL:10}, {g:4, mL:20} ],
+      method: "pH4処理酸性（皮下注射）", additive: "L-プロリン、ポリソルベート80",
+      iga: "≤50μg/mL（旧CTD由来・電子添文要再確認）", osmo: "ほぼ等張（要再確認）", ph: "約4.8（要再確認）",
+      rate: "初回は部位あたり 20mL/時以下、患者状態に応じ最大 50mL/時 まで漸増。投与部位: 腹部・大腿・腰部側面等。",
+      adverse: "アナフィラキシー反応、無菌性髄膜炎症候群、血栓塞栓症、肝機能障害、急性腎障害、血小板減少、肺水腫",
+      warn: "皮下投与。SCIG のため投与速度は mL/時（部位あたり）で管理。",
+      igaPolicy: "抗IgA抗体保有者で過敏反応のおそれ（慎重対応）"
+    },
+    cuvitru: {
+      name: "キュービトル20%皮下注", maker: "武田薬品工業", type: "SCIG",
+      conc: 0.20,
+      vials: [ {g:2, mL:10}, {g:4, mL:20}, {g:8, mL:40} ],
+      method: "pH4処理酸性（皮下注射）", additive: "グリシン（安定剤）",
+      iga: "平均 100μg/mL", osmo: null, ph: null,
+      rate: "シリンジポンプ: 初回・2回目 10mL/時で開始 → 10分後 最大20mL/時。3回目以降は最大60mL/時まで段階的増速。手動: 初回は緩徐に、最大約1〜2mL/分。部位は初回 ≤20mL、以降最大60mL、複数部位は5cm以上間隔。",
+      adverse: "アナフィラキシー反応、無菌性髄膜炎症候群、急性腎障害、血栓塞栓症、肝機能障害、血小板減少、肺水腫、溶血性貧血",
+      warn: "皮下投与。SCIG のため投与速度は mL/時（部位あたり）で管理。",
+      igaPolicy: "抗IgA抗体保有者で過敏反応のおそれ。治療上やむを得ない場合以外は投与回避"
+    },
+    hyqvia: {
+      name: "ハイキュービア10%皮下注セット", maker: "武田薬品工業", type: "fSCIG",
+      conc: 0.10, // IgG 10%
+      vials: [ {g:5, mL:50}, {g:10, mL:100}, {g:20, mL:200} ],
+      method: "pH4処理酸性人免疫グロブリン＋ボルヒアルロニダーゼ アルファ（facilitated SCIG）", additive: null,
+      iga: null, osmo: null, ph: null,
+      rate: "必ずヒアルロニダーゼを先に注入（混合不可）。ヒアルロニダーゼ: 部位あたり 1〜2mL/分。IgG（体重40kg以上の初回）: 最初の5〜15分 10mL/時 → 次の5〜15分 30mL/時 → 最終 240mL/時 まで段階的増速。ヒアルロニダーゼ用量は IgG 1gあたり 80単位(0.5mL)。",
+      adverse: "血栓塞栓症、脳梗塞、心筋梗塞、肺塞栓症、アナフィラキシー反応、無菌性髄膜炎症候群、急性腎障害",
+      warn: "facilitated SCIG。ヒアルロニダーゼを先行注入し IgG と混合しないこと。",
+      igaPolicy: "抗IgA抗体保有者は過敏反応リスク。治療上やむを得ない場合を除き投与非推奨"
+    }
+  };
+
+  // ===== 適応疾患（カテゴリ別）=====
+  var INDICATIONS = [
+    { cat: "免疫不全", items: [
+      { id: "agamma", name: "無又は低ガンマグロブリン血症" },
+      { id: "igg2", name: "血清IgG2低下を伴う急性中耳炎・気管支炎・肺炎の発症抑制" }
+    ]},
+    { cat: "神経", items: [
+      { id: "cidp_str", name: "CIDP の筋力低下の改善" },
+      { id: "cidp_prog", name: "CIDP の運動機能低下の進行抑制" },
+      { id: "mmn", name: "多巣性運動ニューロパチー（MMN）" },
+      { id: "gbs", name: "ギラン・バレー症候群（GBS）" },
+      { id: "pmdm", name: "多発性筋炎・皮膚筋炎の筋力低下改善" },
+      { id: "mg", name: "全身型重症筋無力症" },
+      { id: "egpa", name: "EGPA の神経障害改善" },
+      { id: "optic", name: "視神経炎の急性期" }
+    ]},
+    { cat: "血液", items: [
+      { id: "itp", name: "特発性血小板減少性紫斑病（ITP）" }
+    ]},
+    { cat: "皮膚", items: [
+      { id: "pemphigus", name: "天疱瘡" },
+      { id: "bp", name: "水疱性類天疱瘡" },
+      { id: "sjs", name: "SJS・中毒性表皮壊死症（TEN）" }
+    ]},
+    { cat: "その他", items: [
+      { id: "infection", name: "重症感染症（抗生物質との併用）" },
+      { id: "kawasaki", name: "川崎病の急性期" },
+      { id: "transplant", name: "抗ドナー抗体陽性腎移植の術前脱感作" }
+    ]}
+  ];
+
+  // ===== REGIMENS: 疾患ID -> { 製剤ID: {label, mgkg, days, interval, note} } =====
+  // mgkg/days は計算用。範囲やor投与法は label/note に保持。複数候補は variants[] で持つ。
+  // 計算には primary（mgkg×days）を使い、note に他の選択肢を明記。
+  var REGIMENS = {
+    agamma: {
+      label: "無又は低ガンマグロブリン血症",
+      products: {
+        veno:     { mgkg: 600, days: 1, interval: "3〜4週間隔", note: "200〜600mg/kg を3〜4週間隔（計算は上限600で表示）" },
+        globenin: { mgkg: 600, days: 1, interval: "3〜4週間隔", note: "200〜600mg/kg を3〜4週間隔（計算は上限600で表示）" },
+        benilon:  { mgkg: 600, days: 1, interval: "3〜4週間隔", note: "200〜600mg/kg を3〜4週間隔（計算は上限600で表示）" },
+        poly:     { mgkg: 600, days: 1, interval: "3〜4週間隔", note: "200〜600mg/kg を3〜4週間隔（計算は上限600で表示）" },
+        privigen: { mgkg: 600, days: 1, interval: "3〜4週間隔", note: "200〜600mg/kg を3〜4週間隔（計算は上限600で表示）" },
+        hizentra: { mgkg: 200, days: 1, interval: "週1回（皮下）", note: "50〜200mg/kg を週1回。2週に1回なら100〜400mg/kg（計算は週1回上限200で表示）" },
+        cuvitru:  { mgkg: 200, days: 1, interval: "週1回（皮下）", note: "50〜200mg/kg を週1回、または100〜400mg/kg を2週に1回（計算は週1回上限200で表示）" },
+        hyqvia:   { mgkg: 1000, days: 1, interval: "3週に1回（皮下）", note: "IgGとして 1.0g/kg を3週に1回。0.3〜1.6g/kg(3週) / 0.4〜2.2g/kg(4週) で適宜増減" }
+      }
+    },
+    igg2: {
+      label: "血清IgG2低下を伴う急性中耳炎・気管支炎・肺炎の発症抑制",
+      products: {
+        globenin: { mgkg: 300, days: 1, interval: "4週間隔", note: "初回 300mg/kg、2回目以降 200mg/kg、4週間隔（計算は初回300で表示）" }
+      }
+    },
+    cidp_str: {
+      label: "CIDP の筋力低下の改善",
+      products: {
+        veno:     { mgkg: 400, days: 5, interval: "連日", note: "400mg/kg/日×5日間連日" },
+        globenin: { mgkg: 400, days: 5, interval: "連日", note: "400mg/kg/日×5日間連日" },
+        benilon:  { mgkg: 400, days: 5, interval: "連日", note: "400mg/kg/日×5日間連日" },
+        privigen: { mgkg: 400, days: 5, interval: "連日", note: "400mg/kg/日×5日間連日" },
+        hizentra: { mgkg: 200, days: 1, interval: "週1回（皮下）", note: "成人 1週あたり 200mg/kg を1日又は連続2日で分割。最大400mg/kgから開始可、維持200〜400mg/kg（計算は200/週で表示）" }
+      }
+    },
+    cidp_prog: {
+      label: "CIDP の運動機能低下の進行抑制",
+      products: {
+        veno:     { mgkg: 1000, days: 1, interval: "3週間隔", note: "1000mg/kg を3週間隔 または 500mg/kg×2日間連日を3週間隔（計算は1000mg/kg×1日で表示）" },
+        globenin: { mgkg: 1000, days: 1, interval: "3週間隔", note: "1000mg/kg×1日 または 500mg/kg×2日間連日、3週間隔（計算は1000mg/kg×1日で表示）" },
+        privigen: { mgkg: 1000, days: 1, interval: "3週間隔", note: "1000mg/kg/日（1日）または 500mg/kg/日（2日間）を3週間隔（計算は1000mg/kg×1日で表示）" },
+        hyqvia:   { mgkg: 1000, days: 1, interval: "3週に1回（皮下）", note: "IgGとして 1.0g/kg を3週に1回。0.3〜1.6g/kg(3週) / 0.4〜2.2g/kg(4週) で適宜増減" }
+      }
+    },
+    mmn: {
+      label: "多巣性運動ニューロパチー（MMN）",
+      products: {
+        benilon: { mgkg: 400, days: 5, interval: "連日", note: "MMN の筋力低下改善: 400mg/kg/日×5日間連日" },
+        hyqvia:  { mgkg: 1000, days: 1, interval: "3週に1回（皮下）", note: "MMN の運動機能低下の進行抑制: IgGとして 1.0g/kg を3週に1回。0.3〜1.6g/kg(3週) / 0.4〜2.2g/kg(4週)" }
+      }
+    },
+    gbs: {
+      label: "ギラン・バレー症候群（GBS）",
+      products: {
+        veno:     { mgkg: 400, days: 5, interval: "連日", note: "400mg/kg/日×5日間連日（急性増悪期）" },
+        globenin: { mgkg: 400, days: 5, interval: "連日", note: "400mg/kg/日×5日間連日" },
+        benilon:  { mgkg: 400, days: 5, interval: "連日", note: "400mg/kg/日×5日間連日" }
+      }
+    },
+    pmdm: {
+      label: "多発性筋炎・皮膚筋炎の筋力低下改善",
+      products: {
+        veno:     { mgkg: 400, days: 5, interval: "連日", note: "400mg/kg/日×5日間連日（ステロイド効果不十分な場合に限る）" },
+        globenin: { mgkg: 400, days: 5, interval: "連日", note: "400mg/kg/日×5日間連日（成人のみ）" }
+      }
+    },
+    mg: {
+      label: "全身型重症筋無力症",
+      products: {
+        veno:     { mgkg: 400, days: 5, interval: "連日", note: "400mg/kg/日×5日間連日（ステロイド剤又は免疫抑制剤が奏効しない場合に限る）" },
+        globenin: { mgkg: 400, days: 5, interval: "連日", note: "400mg/kg/日×5日間連日（成人のみ）" }
+      }
+    },
+    egpa: {
+      label: "EGPA の神経障害改善",
+      products: {
+        benilon: { mgkg: 400, days: 5, interval: "連日", note: "好酸球性多発血管炎性肉芽腫症（EGPA）の神経障害改善: 400mg/kg/日×5日間連日" }
+      }
+    },
+    optic: {
+      label: "視神経炎の急性期",
+      products: {
+        benilon: { mgkg: 400, days: 5, interval: "連日", note: "視神経炎の急性期: 400mg/kg/日×5日間連日（IVIG中で本剤に特徴的）" }
+      }
+    },
+    itp: {
+      label: "特発性血小板減少性紫斑病（ITP）",
+      products: {
+        veno:     { mgkg: 400, days: 5, interval: "最大5日間", note: "200〜400mg/kg/日（最大5日間。計算は上限400で表示）" },
+        globenin: { mgkg: 400, days: 5, interval: "最大5日間", note: "200〜400mg/kg/日（5日間使用で改善なければ中止。計算は上限400で表示）" },
+        benilon:  { mgkg: 400, days: 5, interval: "最大5日間", note: "200〜400mg/kg/日（5日間。計算は上限400で表示）" },
+        poly:     { mgkg: 400, days: 1, interval: "（製剤差: 400mg/kg/日 単一記載）", note: "400mg/kg/日（他剤の200〜400と異なり本剤は400mg/kg/日 単一記載）" }
+      }
+    },
+    pemphigus: {
+      label: "天疱瘡",
+      products: {
+        veno:     { mgkg: 400, days: 5, interval: "連日", note: "400mg/kg/日×5日間連日（ステロイド効果不十分な場合に限る）" },
+        globenin: { mgkg: 400, days: 5, interval: "連日", note: "400mg/kg/日×5日間連日（ステロイド効果不十分な場合に限る）" }
+      }
+    },
+    bp: {
+      label: "水疱性類天疱瘡",
+      products: {
+        veno:     { mgkg: 400, days: 5, interval: "連日", note: "400mg/kg/日×5日間連日（ステロイド効果不十分な場合に限る）" },
+        globenin: { mgkg: 400, days: 5, interval: "連日", note: "400mg/kg/日×5日間連日" }
+      }
+    },
+    sjs: {
+      label: "SJS・中毒性表皮壊死症（TEN）",
+      products: {
+        globenin: { mgkg: 400, days: 5, interval: "連日", note: "Stevens-Johnson症候群・中毒性表皮壊死症: 400mg/kg/日×5日間連日（IVIG中で本剤に特徴的）" }
+      }
+    },
+    infection: {
+      label: "重症感染症（抗生物質との併用）",
+      products: {
+        veno:     { mgkg: null, days: 1, interval: "回", note: "成人 2500〜5000mg/回、小児 100〜150mg/kg/回（体重比でないため自動計算なし。下記注記参照）" },
+        globenin: { mgkg: null, days: 1, interval: "回", note: "成人 2500〜5000mg/回、小児 100〜150mg/kg/回" },
+        benilon:  { mgkg: null, days: 1, interval: "回", note: "成人 2500〜5000mg/回、小児 50〜150mg/kg/回" },
+        poly:     { mgkg: null, days: 1, interval: "回", note: "成人 2500〜5000mg/回（添付文書要確認）" }
+      }
+    },
+    kawasaki: {
+      label: "川崎病の急性期",
+      products: {
+        veno:     { mgkg: 2000, days: 1, interval: "単回", note: "400mg/kg/日×5日間 または 2000mg/kg 単回（計算は2000mg/kg単回で表示）" },
+        globenin: { mgkg: 2000, days: 1, interval: "単回", note: "200mg/kg/日×5日間 または 2000mg/kg 単回（12時間以上かけて点滴。計算は2000mg/kg単回で表示）" },
+        benilon:  { mgkg: 2000, days: 1, interval: "単回", note: "200mg/kg/日×5日間 または 2000mg/kg 単回（計算は2000mg/kg単回で表示）" },
+        poly:     { mgkg: 2000, days: 1, interval: "単回", note: "200mg/kg/日×5日間 または 2000mg/kg 単回（計算は2000mg/kg単回で表示）" }
+      }
+    },
+    transplant: {
+      label: "抗ドナー抗体陽性腎移植の術前脱感作",
+      products: {
+        veno: { mgkg: 1000, days: 1, interval: "/日", note: "1000mg/kg/日（総量4000mg/kgを超えない、投与開始7日以内目安。計算は1000mg/kg/日で表示）" }
+      }
+    }
+  };
+
+  // ===== 状態 =====
+  var state = { ind: null, prod: null, age: "adult" };
+
+  // ===== 要素 =====
+  var indContainer = document.getElementById('indContainer');
+  var prodContainer = document.getElementById('prodContainer');
+  var calcContainer = document.getElementById('calcContainer');
+  var protoContainer = document.getElementById('protoContainer');
+  var monoContainer = document.getElementById('monoContainer');
+  var weightEl = document.getElementById('weight');
+  var ageGroup = document.getElementById('ageGroup');
+  var riskInputs = document.querySelectorAll('#riskGrid input[type="checkbox"]');
+  var step2Card = document.getElementById('step2Card');
+  var step3Card = document.getElementById('step3Card');
+  var step4Card = document.getElementById('step4Card');
+  var step5Card = document.getElementById('step5Card');
+  var monoCard = document.getElementById('monoCard');
+  var actionBar = document.getElementById('actionBar');
+
+  // ===== ユーティリティ =====
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function typeLabel(t){ return t === 'IVIG' ? 'IVIG' : (t === 'SCIG' ? 'SCIG' : 'facilitated SCIG'); }
+  function typeCls(t){ return t === 'IVIG' ? '' : (t === 'SCIG' ? 'scig' : 'fscig'); }
+
+  // 必要バイアル数（最小本数: 規格降順の貪欲法）。総量g・製剤を受け、内訳を返す
+  function calcVials(prod, totalG){
+    var vials = prod.vials.slice().sort(function(a,b){ return b.g - a.g; });
+    var remain = totalG;
+    var plan = [];
+    var totalMl = 0;
+    var i;
+    for (i = 0; i < vials.length; i++){
+      var v = vials[i];
+      var n = Math.floor(remain / v.g + 1e-9);
+      if (n > 0){
+        plan.push({ g: v.g, mL: v.mL, count: n });
+        remain -= n * v.g;
+        totalMl += n * v.mL;
+      }
+    }
+    // 端数が残れば最小規格を1本追加
+    if (remain > 1e-6){
+      var smallest = vials[vials.length - 1];
+      var existing = null;
+      for (i = 0; i < plan.length; i++){ if (plan[i].g === smallest.g) existing = plan[i]; }
+      if (existing){ existing.count += 1; }
+      else { plan.push({ g: smallest.g, mL: smallest.mL, count: 1 }); }
+      totalMl += smallest.mL;
+    }
+    var totalVials = 0;
+    for (i = 0; i < plan.length; i++){ totalVials += plan[i].count; }
+    return { plan: plan, totalVials: totalVials, totalMl: totalMl };
+  }
+
+  // ===== Step1 描画 =====
+  function renderIndications(){
+    var html = '';
+    for (var c = 0; c < INDICATIONS.length; c++){
+      var grp = INDICATIONS[c];
+      html += '<div class="cat-block"><div class="cat-title">' + esc(grp.cat) + '</div><div class="ind-grid">';
+      for (var i = 0; i < grp.items.length; i++){
+        var it = grp.items[i];
+        var sel = (state.ind === it.id) ? ' selected' : '';
+        html += '<div class="ind-item' + sel + '" data-ind="' + it.id + '">' + esc(it.name) + '</div>';
+      }
+      html += '</div></div>';
+    }
+    indContainer.innerHTML = html;
+    var items = indContainer.querySelectorAll('.ind-item');
+    for (var k = 0; k < items.length; k++){
+      items[k].addEventListener('click', function(){
+        state.ind = this.getAttribute('data-ind');
+        state.prod = null;
+        renderIndications();
+        renderProducts();
+        clearDownstream();
+      });
+    }
+  }
+
+  // ===== Step2 描画 =====
+  function renderProducts(){
+    if (!state.ind){
+      prodContainer.innerHTML = '<p class="empty-note">先に Step 1 で疾患を選択してください。</p>';
+      step2Card.classList.add('disabled');
+      return;
+    }
+    step2Card.classList.remove('disabled');
+    var reg = REGIMENS[state.ind];
+    var html = '<p style="font-size:0.85em;color:var(--gray);margin-bottom:10px;">「<strong>' + esc(reg.label) + '</strong>」を適応に持つ製剤のみ表示しています。製剤を1つ選択してください。</p>';
+    var pids = [];
+    for (var p in reg.products){ if (reg.products.hasOwnProperty(p)) pids.push(p); }
+    if (pids.length === 0){
+      html += '<p class="empty-note">該当製剤がありません。</p>';
+    }
+    for (var i = 0; i < pids.length; i++){
+      var pid = pids[i];
+      var prod = PRODUCTS[pid];
+      var r = reg.products[pid];
+      var sel = (state.prod === pid) ? ' selected' : '';
+      html += '<div class="prod-item' + sel + '" data-prod="' + pid + '">';
+      html += '<div><span class="prod-name">' + esc(prod.name) + '</span>';
+      html += '<span class="prod-type ' + typeCls(prod.type) + '">' + typeLabel(prod.type) + '</span></div>';
+      html += '<div class="prod-regimen"><span class="key">標準レジメン:</span> ' + esc(r.note) + '</div>';
+      html += '<div class="prod-note">製造販売元: ' + esc(prod.maker) + '</div>';
+      html += '</div>';
+    }
+    prodContainer.innerHTML = html;
+    var els = prodContainer.querySelectorAll('.prod-item');
+    for (var k = 0; k < els.length; k++){
+      els[k].addEventListener('click', function(){
+        state.prod = this.getAttribute('data-prod');
+        renderProducts();
+        unlockDownstream();
+        renderAll();
+      });
+    }
+  }
+
+  function clearDownstream(){
+    step3Card.classList.add('disabled');
+    step4Card.classList.add('disabled');
+    step5Card.classList.add('disabled');
+    monoCard.classList.add('disabled');
+    actionBar.style.display = 'none';
+    calcContainer.innerHTML = '';
+    protoContainer.innerHTML = '';
+    monoContainer.innerHTML = '';
+  }
+
+  function unlockDownstream(){
+    step3Card.classList.remove('disabled');
+    step4Card.classList.remove('disabled');
+    step5Card.classList.remove('disabled');
+    monoCard.classList.remove('disabled');
+    actionBar.style.display = 'block';
+  }
+
+  // ===== Step4 用量計算 =====
+  function renderCalc(){
+    if (!state.prod || !state.ind){ calcContainer.innerHTML = ''; return; }
+    var prod = PRODUCTS[state.prod];
+    var reg = REGIMENS[state.ind];
+    var r = reg.products[state.prod];
+    var weight = parseFloat(weightEl.value);
+    if (!weight || weight <= 0){
+      calcContainer.innerHTML = '<p class="empty-note">Step 3 で体重を入力してください。</p>';
+      return;
+    }
+
+    var html = '';
+
+    if (r.mgkg === null){
+      // 体重比でない（重症感染症など）
+      html += '<div class="warning-box info"><div class="head">&#8505; 体重比でない用量</div>';
+      html += '本レジメンは体重あたり用量での自動計算に適しません。<br><strong>' + esc(r.note) + '</strong></div>';
+      calcContainer.innerHTML = html;
+      return;
+    }
+
+    var dailyG = weight * r.mgkg / 1000; // g/日
+    var totalG = dailyG * r.days;        // 総量g
+    var vinfo = calcVials(prod, totalG);
+    var concPct = (prod.conc * 100);     // %
+    var approxMl = totalG / prod.conc;   // 概算投与液量 mL（総量g ÷ g/mL）
+
+    html += '<div class="result-grid">';
+    html += '<div class="result-cell"><div class="label">総投与量</div><div class="value">' + totalG.toFixed(1) + '</div><div class="sub">g（' + r.mgkg + 'mg/kg/日 × ' + r.days + '日）</div></div>';
+    html += '<div class="result-cell"><div class="label">1日投与量</div><div class="value">' + dailyG.toFixed(1) + '</div><div class="sub">g/日（' + r.mgkg + 'mg/kg × ' + weight + 'kg）</div></div>';
+    html += '<div class="result-cell vial"><div class="label">必要バイアル数</div><div class="value">' + vinfo.totalVials + '</div><div class="sub">本（規格組合せ最小本数）</div></div>';
+    html += '<div class="result-cell accent"><div class="label">概算投与液量</div><div class="value">' + Math.round(approxMl) + '</div><div class="sub">mL（製剤濃度 ' + concPct.toFixed(0) + '%）</div></div>';
+    html += '</div>';
+
+    // バイアル内訳
+    html += '<div class="calc-detail">';
+    html += '<div class="row"><span class="key">投与日数</span><span class="val">' + r.days + ' 日（' + esc(r.interval) + '）</span></div>';
+    html += '<div class="row"><span class="key">バイアル内訳</span><span class="val"></span></div>';
+    html += '</div>';
+    html += '<ul class="vial-list">';
+    for (var i = 0; i < vinfo.plan.length; i++){
+      var pl = vinfo.plan[i];
+      html += '<li>' + pl.g + 'g(' + pl.mL + 'mL) × ' + pl.count + ' 本</li>';
+    }
+    html += '<li style="color:var(--gray);">合計液量（規格ベース）: 約 ' + vinfo.totalMl + ' mL（バイアル充填量の合計）</li>';
+    html += '</ul>';
+
+    html += '<div class="warning-box caution" style="margin-top:12px;"><div class="head">&#9888; 計算上の注意</div>';
+    html += '<strong>レジメン:</strong> ' + esc(r.note) + '<br>';
+    html += '単位確認: 用量 <strong>' + r.mgkg + ' mg/kg/日</strong>（＝ ' + (r.mgkg/1000) + ' g/kg/日）／総量 <strong>' + totalG.toFixed(1) + ' g</strong>／概算液量 <strong>約 ' + Math.round(approxMl) + ' mL</strong>（' + concPct.toFixed(0) + '%濃度＝' + prod.conc + ' g/mL）。';
+    html += '体重補正（小児・肥満・腎障害例）が必要な場合は施設プロトコルに従ってください。</div>';
+
+    calcContainer.innerHTML = html;
+  }
+
+  // ===== Step5 投与速度＋モニタリング =====
+  function renderProto(){
+    if (!state.prod){ protoContainer.innerHTML = ''; return; }
+    var prod = PRODUCTS[state.prod];
+    var risks = getRisks();
+
+    var html = '';
+    // 投与速度
+    html += '<div class="warning-box info"><div class="head">&#128640; 投与速度プロトコル（' + typeLabel(prod.type) + '）</div>' + esc(prod.rate) + '</div>';
+
+    if (prod.type === 'fSCIG'){
+      html += '<div class="warning-box caution"><div class="head">&#9888; facilitated SCIG 手順</div>ヒアルロニダーゼを<strong>先に注入</strong>し、IgG と<strong>混合しない</strong>こと。ヒアルロニダーゼ用量は IgG 1gあたり 80単位(0.5mL)。</div>';
+    }
+
+    // 製剤固有の警告
+    html += '<div class="warning-box"><div class="head">&#128680; 製剤固有の警告</div>' + esc(prod.warn) + '</div>';
+
+    // 副作用モニタリング
+    html += '<div class="card-header" style="background:transparent;border:none;padding:8px 0 4px;">&#128300; 副作用モニタリング項目</div>';
+    html += '<ul class="info-list">';
+    html += '<li><span class="key">infusion reaction（輸注反応）</span>：投与開始直後〜数時間。発熱・悪寒・頭痛・血圧変動。速度減速 or 一時中断で対応。</li>';
+    html += '<li><span class="key">血栓塞栓症</span>：脳梗塞・心筋梗塞・肺塞栓・DVT。高粘度・脱水・高齢・血栓既往でリスク増。</li>';
+    html += '<li><span class="key">無菌性髄膜炎</span>：投与後数時間〜2日。頭痛・項部硬直・発熱。大量投与・急速投与で多い。</li>';
+    html += '<li><span class="key">急性腎障害</span>：尿量・血清Cr モニタ。腎障害例は特に注意。</li>';
+    html += '<li><span class="key">溶血</span>：血液型抗体による。投与後のHb低下・LDH・ハプトグロビンを確認。</li>';
+    html += '<li><span class="key">IgA欠損アナフィラキシー</span>：抗IgA抗体保有者で重篤反応のおそれ。</li>';
+    html += '</ul>';
+
+    // リスク別の強調（Step3 チェックに連動）
+    var alerts = [];
+    if (risks.iga_def){ alerts.push('<strong>IgA欠損の疑い</strong>あり → ' + esc(prod.igaPolicy) + '。投与前に抗IgA抗体の有無・既往反応を確認。'); }
+    if (risks.renal){ alerts.push('<strong>腎機能低下</strong>あり → 急性腎障害リスク。投与速度を遅く、十分な補液、尿量・Cr を頻回モニタ。'); }
+    if (risks.thrombo){ alerts.push('<strong>血栓塞栓症リスク</strong>あり → 脱水補正、投与速度を遅く、症状（胸痛・片麻痺・呼吸苦・下肢腫脹）を監視。'); }
+    if (risks.first_dose){ alerts.push('<strong>初回投与</strong> → 開始時は最低速度から、15〜30分ごとにバイタル測定。アナフィラキシー対応の準備。'); }
+    if (alerts.length > 0){
+      html += '<div class="warning-box"><div class="head">&#9888; 患者リスクに基づく強調事項</div><ul>';
+      for (var a = 0; a < alerts.length; a++){ html += '<li>' + alerts[a] + '</li>'; }
+      html += '</ul></div>';
+    }
+
+    // 前投薬チェックリスト
+    html += '<div class="card-header" style="background:transparent;border:none;padding:8px 0 4px;">&#9989; 前投薬・準備チェックリスト</div>';
+    html += '<ul class="info-list">';
+    html += '<li>抗ヒスタミン薬・アセトアミノフェン（infusion reaction の既往例で考慮）</li>';
+    html += '<li>ステロイド前投薬（反応既往例・高リスク例で考慮）</li>';
+    html += '<li>十分な補液（脱水補正・血栓/腎障害予防）</li>';
+    html += '<li>バイタル測定間隔の設定（初回・増速時は15〜30分ごと）</li>';
+    html += '<li>救急対応物品（アナフィラキシー: アドレナリン等）の準備</li>';
+    html += '</ul>';
+
+    html += '<div class="alert-disclaimer" style="margin-top:12px;margin-bottom:0;"><strong>&#9888;</strong> 投与速度・モニタリングの最終判断は<strong>最新の添付文書・主治医</strong>によります。本表示は確認補助です。</div>';
+
+    protoContainer.innerHTML = html;
+  }
+
+  // ===== 製剤詳細 =====
+  function renderMono(){
+    if (!state.prod){ monoContainer.innerHTML = ''; return; }
+    var prod = PRODUCTS[state.prod];
+    function uc(v){ return (v === null || v === undefined) ? '<span class="unconfirmed">添付文書要確認</span>' : esc(v); }
+    var vlist = [];
+    for (var i = 0; i < prod.vials.length; i++){ vlist.push(prod.vials[i].g + 'g(' + prod.vials[i].mL + 'mL)'); }
+    var html = '<div class="mono-detail">';
+    html += '<p><span class="key">製剤名:</span> ' + esc(prod.name) + '（' + typeLabel(prod.type) + '）</p>';
+    html += '<p><span class="key">製造販売元:</span> ' + esc(prod.maker) + '</p>';
+    html += '<p><span class="key">規格:</span> ' + esc(vlist.join(' / ')) + '</p>';
+    html += '<p><span class="key">濃度:</span> ' + (prod.conc * 100).toFixed(0) + '%（' + prod.conc + ' g/mL）</p>';
+    html += '<p><span class="key">製法:</span> ' + esc(prod.method) + '</p>';
+    html += '<p><span class="key">添加物:</span> ' + uc(prod.additive) + '</p>';
+    html += '<p><span class="key">IgA含量:</span> ' + uc(prod.iga) + '</p>';
+    html += '<p><span class="key">浸透圧:</span> ' + uc(prod.osmo) + '</p>';
+    html += '<p><span class="key">pH:</span> ' + uc(prod.ph) + '</p>';
+    html += '<p><span class="key">重大な副作用:</span> ' + esc(prod.adverse) + '</p>';
+    html += '<p><span class="key">IgA欠損方針:</span> ' + esc(prod.igaPolicy) + '</p>';
+    html += '</div>';
+    monoContainer.innerHTML = html;
+  }
+
+  function getRisks(){
+    var risks = {};
+    for (var i = 0; i < riskInputs.length; i++){
+      risks[riskInputs[i].value] = riskInputs[i].checked;
+    }
+    return risks;
+  }
+
+  function renderAll(){
+    renderCalc();
+    renderProto();
+    renderMono();
+  }
+
+  // ===== イベント =====
+  weightEl.addEventListener('input', function(){ if (state.prod) renderCalc(); });
+
+  var ageBtns = ageGroup.querySelectorAll('button');
+  for (var b = 0; b < ageBtns.length; b++){
+    ageBtns[b].addEventListener('click', function(){
+      for (var j = 0; j < ageBtns.length; j++){ ageBtns[j].classList.remove('active'); }
+      this.classList.add('active');
+      state.age = this.getAttribute('data-age');
+    });
+  }
+
+  for (var i = 0; i < riskInputs.length; i++){
+    riskInputs[i].addEventListener('change', function(){
+      var label = this.parentElement;
+      if (this.checked){ label.classList.add('checked'); }
+      else { label.classList.remove('checked'); }
+      if (state.prod) renderProto();
+    });
+  }
+
+  document.getElementById('printBtn').addEventListener('click', function(){ window.print(); });
+  document.getElementById('resetBtn').addEventListener('click', function(){
+    state.ind = null; state.prod = null;
+    renderIndications();
+    renderProducts();
+    clearDownstream();
+    if (typeof window.scrollTo === 'function') window.scrollTo(0, 0);
+  });
+
+  // 初期描画
+  renderIndications();
+  renderProducts();
+})();
+</script>
+</body>
+</html>
