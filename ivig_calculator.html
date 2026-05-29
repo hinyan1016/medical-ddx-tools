@@ -155,15 +155,12 @@
   .result-cell .value { font-size: 2.0em; font-weight: 800; letter-spacing: 0.01em; font-variant-numeric: tabular-nums; }
   .result-cell .sub { font-size: 0.78em; opacity: 0.85; margin-top: 4px; }
   .result-cell.accent { background: linear-gradient(135deg, #145A32, var(--green)); }
-  .result-cell.vial { background: linear-gradient(135deg, #6E2C00, var(--orange)); }
 
   .calc-detail { font-size: 0.85em; color: #333; line-height: 1.7; }
   .calc-detail .row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #e0e0e0; }
   .calc-detail .row:last-child { border-bottom: none; }
   .calc-detail .key { color: var(--primary-dark); font-weight: 600; }
   .calc-detail .val { font-variant-numeric: tabular-nums; }
-  .vial-list { font-size: 0.85em; margin: 4px 0 0 0; padding-left: 18px; }
-  .vial-list li { margin-bottom: 2px; }
 
   .warning-box {
     background: #fff5f5; border-left: 4px solid var(--red);
@@ -622,36 +619,6 @@
   function typeLabel(t){ return t === 'IVIG' ? 'IVIG' : (t === 'SCIG' ? 'SCIG' : 'facilitated SCIG'); }
   function typeCls(t){ return t === 'IVIG' ? '' : (t === 'SCIG' ? 'scig' : 'fscig'); }
 
-  // 必要バイアル数（最小本数: 規格降順の貪欲法）。総量g・製剤を受け、内訳を返す
-  function calcVials(prod, totalG){
-    var vials = prod.vials.slice().sort(function(a,b){ return b.g - a.g; });
-    var remain = totalG;
-    var plan = [];
-    var totalMl = 0;
-    var i;
-    for (i = 0; i < vials.length; i++){
-      var v = vials[i];
-      var n = Math.floor(remain / v.g + 1e-9);
-      if (n > 0){
-        plan.push({ g: v.g, mL: v.mL, count: n });
-        remain -= n * v.g;
-        totalMl += n * v.mL;
-      }
-    }
-    // 端数が残れば最小規格を1本追加
-    if (remain > 1e-6){
-      var smallest = vials[vials.length - 1];
-      var existing = null;
-      for (i = 0; i < plan.length; i++){ if (plan[i].g === smallest.g) existing = plan[i]; }
-      if (existing){ existing.count += 1; }
-      else { plan.push({ g: smallest.g, mL: smallest.mL, count: 1 }); }
-      totalMl += smallest.mL;
-    }
-    var totalVials = 0;
-    for (i = 0; i < plan.length; i++){ totalVials += plan[i].count; }
-    return { plan: plan, totalVials: totalVials, totalMl: totalMl };
-  }
-
   // ===== Step1 描画 =====
   function renderIndications(){
     var html = '';
@@ -760,29 +727,18 @@
 
     var dailyG = weight * r.mgkg / 1000; // g/日
     var totalG = dailyG * r.days;        // 総量g
-    var vinfo = calcVials(prod, totalG);
     var concPct = (prod.conc * 100);     // %
     var approxMl = totalG / prod.conc;   // 概算投与液量 mL（総量g ÷ g/mL）
 
     html += '<div class="result-grid">';
     html += '<div class="result-cell"><div class="label">総投与量</div><div class="value">' + totalG.toFixed(1) + '</div><div class="sub">g（' + r.mgkg + 'mg/kg/日 × ' + r.days + '日）</div></div>';
     html += '<div class="result-cell"><div class="label">1日投与量</div><div class="value">' + dailyG.toFixed(1) + '</div><div class="sub">g/日（' + r.mgkg + 'mg/kg × ' + weight + 'kg）</div></div>';
-    html += '<div class="result-cell vial"><div class="label">必要バイアル数</div><div class="value">' + vinfo.totalVials + '</div><div class="sub">本（規格組合せ最小本数）</div></div>';
     html += '<div class="result-cell accent"><div class="label">概算投与液量</div><div class="value">' + Math.round(approxMl) + '</div><div class="sub">mL（製剤濃度 ' + concPct.toFixed(0) + '%）</div></div>';
     html += '</div>';
 
-    // バイアル内訳
     html += '<div class="calc-detail">';
     html += '<div class="row"><span class="key">投与日数</span><span class="val">' + r.days + ' 日（' + esc(r.interval) + '）</span></div>';
-    html += '<div class="row"><span class="key">バイアル内訳</span><span class="val"></span></div>';
     html += '</div>';
-    html += '<ul class="vial-list">';
-    for (var i = 0; i < vinfo.plan.length; i++){
-      var pl = vinfo.plan[i];
-      html += '<li>' + pl.g + 'g(' + pl.mL + 'mL) × ' + pl.count + ' 本</li>';
-    }
-    html += '<li style="color:var(--gray);">合計液量（規格ベース）: 約 ' + vinfo.totalMl + ' mL（バイアル充填量の合計）</li>';
-    html += '</ul>';
 
     html += '<div class="warning-box caution" style="margin-top:12px;"><div class="head">&#9888; 計算上の注意</div>';
     html += '<strong>レジメン:</strong> ' + esc(r.note) + '<br>';
