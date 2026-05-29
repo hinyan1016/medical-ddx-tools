@@ -330,7 +330,7 @@
         <li>日経メディカル 処方薬事典（添付文書由来情報の確認）</li>
         <li>KEGG / JAPIC 医薬品情報</li>
       </ol>
-      <p style="font-size:0.78em;color:var(--gray);margin-top:8px;">サングロポール点滴静注用は終売（販売中止）のため本ツールの選択肢から除外しています。</p>
+      <p style="font-size:0.78em;color:var(--gray);margin-top:8px;">サングロポール点滴静注用・日赤ポリグロビンN（5%/10%）は供給停止／販売中止（後者の代替＝献血ヴェノグロブリンIH）のため本ツールの選択肢から除外しています。</p>
     </div>
   </div>
 
@@ -382,19 +382,6 @@
       warn: "詳細な禁忌記載は添付文書要確認。",
       igaPolicy: "IgA欠損症は慎重投与",
       pmda: "https://www.pmda.go.jp/PmdaSearch/iyakuDetail/GeneralList/6343400X1041_3"
-    },
-    poly: {
-      name: "日赤ポリグロビンN5%静注", maker: "日本血液製剤機構", type: "IVIG",
-      conc: 0.05,
-      vials: [ {g:0.5, mL:10}, {g:2.5, mL:50}, {g:5, mL:100} ],
-      method: "pH4処理酸性", additive: "マルトース 10%含有",
-      iga: null, osmo: null, ph: null,
-      rate: "初日 開始30分間は 0.01〜0.02mL/kg/分 → 異常なければ 0.03〜0.06mL/kg/分 まで漸増。",
-      adverse: "ショック・アナフィラキシー様、肝機能障害・黄疸、無菌性髄膜炎、急性腎不全、血小板減少、血栓塞栓症、心不全",
-      warn: "添加物マルトースにより GDH法等の血糖測定で偽高値を示し、それに基づくインスリン過量投与で低血糖の危険（重要な注意）。",
-      igaPolicy: "IgA欠損症は慎重投与",
-      pmda: "https://medical.nikkeibp.co.jp/inc/all/drugdic/prd/63/6343427A3032.html",
-      pmdaNote: "供給停止製剤（代替＝献血ヴェノグロブリンIH）。PMDA電子添文は統合済のため日経メディカルにリンク"
     },
     privigen: {
       name: "ピリヴィジェン10%静注", maker: "CSLベーリング", type: "IVIG",
@@ -487,7 +474,6 @@
         veno:     { mgkg: 600, days: 1, interval: "3〜4週間隔", note: "200〜600mg/kg を3〜4週間隔（計算は上限600で表示）" },
         globenin: { mgkg: 600, days: 1, interval: "3〜4週間隔", note: "200〜600mg/kg を3〜4週間隔（計算は上限600で表示）" },
         benilon:  { mgkg: 600, days: 1, interval: "3〜4週間隔", note: "200〜600mg/kg を3〜4週間隔（計算は上限600で表示）" },
-        poly:     { mgkg: 600, days: 1, interval: "3〜4週間隔", note: "200〜600mg/kg を3〜4週間隔（計算は上限600で表示）" },
         privigen: { mgkg: 600, days: 1, interval: "3〜4週間隔", note: "200〜600mg/kg を3〜4週間隔（計算は上限600で表示）" },
         hizentra: { mgkg: 200, days: 1, interval: "週1回（皮下）", note: "50〜200mg/kg を週1回。2週に1回なら100〜400mg/kg（計算は週1回上限200で表示）" },
         cuvitru:  { mgkg: 200, days: 1, interval: "週1回（皮下）", note: "50〜200mg/kg を週1回、または100〜400mg/kg を2週に1回（計算は週1回上限200で表示）" },
@@ -565,8 +551,7 @@
       products: {
         veno:     { mgkg: 400, days: 5, interval: "最大5日間", note: "200〜400mg/kg/日（最大5日間。計算は上限400で表示）" },
         globenin: { mgkg: 400, days: 5, interval: "最大5日間", note: "200〜400mg/kg/日（5日間使用で改善なければ中止。計算は上限400で表示）" },
-        benilon:  { mgkg: 400, days: 5, interval: "最大5日間", note: "200〜400mg/kg/日（5日間。計算は上限400で表示）" },
-        poly:     { mgkg: 400, days: 1, interval: "（製剤差: 400mg/kg/日 単一記載）", note: "400mg/kg/日（他剤の200〜400と異なり本剤は400mg/kg/日 単一記載）" }
+        benilon:  { mgkg: 400, days: 5, interval: "最大5日間", note: "200〜400mg/kg/日（5日間。計算は上限400で表示）" }
       }
     },
     pemphigus: {
@@ -594,8 +579,7 @@
       products: {
         veno:     { mgkg: null, days: 1, interval: "回", note: "成人 2500〜5000mg/回、小児 100〜150mg/kg/回（体重比でないため自動計算なし。下記注記参照）" },
         globenin: { mgkg: null, days: 1, interval: "回", note: "成人 2500〜5000mg/回、小児 100〜150mg/kg/回" },
-        benilon:  { mgkg: null, days: 1, interval: "回", note: "成人 2500〜5000mg/回、小児 50〜150mg/kg/回" },
-        poly:     { mgkg: null, days: 1, interval: "回", note: "成人 2500〜5000mg/回（添付文書要確認）" }
+        benilon:  { mgkg: null, days: 1, interval: "回", note: "成人 2500〜5000mg/回、小児 50〜150mg/kg/回" }
       }
     },
     kawasaki: {
@@ -603,8 +587,7 @@
       products: {
         veno:     { mgkg: 2000, days: 1, interval: "単回", note: "400mg/kg/日×5日間 または 2000mg/kg 単回（計算は2000mg/kg単回で表示）" },
         globenin: { mgkg: 2000, days: 1, interval: "単回", note: "200mg/kg/日×5日間 または 2000mg/kg 単回（12時間以上かけて点滴。計算は2000mg/kg単回で表示）" },
-        benilon:  { mgkg: 2000, days: 1, interval: "単回", note: "200mg/kg/日×5日間 または 2000mg/kg 単回（計算は2000mg/kg単回で表示）" },
-        poly:     { mgkg: 2000, days: 1, interval: "単回", note: "200mg/kg/日×5日間 または 2000mg/kg 単回（計算は2000mg/kg単回で表示）" }
+        benilon:  { mgkg: 2000, days: 1, interval: "単回", note: "200mg/kg/日×5日間 または 2000mg/kg 単回（計算は2000mg/kg単回で表示）" }
       }
     },
     transplant: {
