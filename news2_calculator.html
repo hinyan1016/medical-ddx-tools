@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0B5563">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>NEWS2 計算ツール（早期警告スコア・RCP 2017）</title>
+<style>
+  :root {
+    --dark: #08414C;
+    --primary: #0B5563;
+    --mid: #138496;
+    --light: #E6F2F4;
+    --accent: #E07000;
+    --red: #C0392B;
+    --orange: #E08600;
+    --green: #2E7D32;
+    --yellow-bg: #FFF8E1;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(8,65,76,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #E6F2F4 0%, #F4F6F8 100%);
+    color: #222; min-height: 100vh; padding: 0 0 40px; line-height: 1.55;
+  }
+  header {
+    background: linear-gradient(135deg, var(--dark), var(--mid));
+    color: var(--white); padding: 14px 20px 18px; text-align: center;
+    box-shadow: 0 4px 16px rgba(8,65,76,0.18);
+  }
+  .back-bar { display: flex; align-items: center; margin-bottom: 8px; }
+  .back-bar a {
+    color: rgba(255,255,255,0.85); text-decoration: none; font-size: 0.85em;
+    display: flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 6px;
+  }
+  .back-bar a:active { background: rgba(255,255,255,0.15); }
+  header h1 { font-size: 1.4em; font-weight: 700; letter-spacing: 0.02em; }
+  header p { font-size: 0.85em; margin-top: 6px; opacity: 0.88; }
+  .container { max-width: 820px; margin: 0 auto; padding: 20px 14px; }
+
+  .card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 16px; overflow: hidden; }
+  .card-header { padding: 12px 16px; background: var(--light); border-bottom: 2px solid var(--primary); font-weight: 700; font-size: 1em; color: var(--primary); }
+  .card-body { padding: 16px; }
+
+  .alert-disclaimer {
+    background: #fff8e1; border-left: 4px solid var(--orange);
+    padding: 10px 14px; margin-bottom: 16px; border-radius: 6px;
+    font-size: 0.85em; color: #5d4400;
+  }
+
+  /* 入力 */
+  .param { padding: 12px 0; border-bottom: 1px solid #eef2f3; }
+  .param:last-child { border-bottom: none; }
+  .param-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+  label.field-label { font-weight: 700; font-size: 0.95em; color: var(--primary); }
+  .param-score-badge {
+    flex-shrink: 0; min-width: 58px; text-align: center; font-weight: 800;
+    font-size: 0.9em; padding: 3px 8px; border-radius: 999px; color: var(--white);
+    font-variant-numeric: tabular-nums;
+  }
+  .sc0 { background: var(--green); } .sc1 { background: #C9A227; }
+  .sc2 { background: var(--orange); } .sc3 { background: var(--red); }
+  .scnull { background: var(--gray); }
+  .input-row { display: flex; align-items: center; gap: 8px; }
+  .input-row input[type="number"] {
+    width: 110px; padding: 10px 12px; font-size: 1.15em; font-weight: 700;
+    border: 2px solid #CBD9DC; border-radius: 8px; color: var(--primary);
+    text-align: right; font-family: inherit;
+  }
+  .input-row input[type="number"]:focus { outline: none; border-color: var(--mid); }
+  .unit { font-size: 0.9em; color: var(--gray); }
+
+  /* セグメント（トグル） */
+  .seg { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+  .seg button {
+    border: 2px solid #CBD9DC; background: var(--white); color: var(--primary);
+    padding: 9px 14px; border-radius: 8px; font-family: inherit; font-size: 0.92em;
+    font-weight: 600; cursor: pointer; transition: all 0.12s;
+  }
+  .seg button:hover { border-color: var(--mid); }
+  .seg button.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
+  .seg button.active.warnsel { background: var(--red); border-color: var(--red); }
+  .hint { font-size: 0.78em; color: var(--gray); margin-top: 6px; }
+
+  /* 結果ヒーロー */
+  .result-hero {
+    background: linear-gradient(135deg, var(--dark), var(--mid));
+    color: var(--white); padding: 22px 20px; text-align: center;
+    border-radius: var(--radius); margin-bottom: 14px;
+  }
+  .result-hero .label { font-size: 0.88em; opacity: 0.9; margin-bottom: 2px; }
+  .result-hero .value { font-size: 3.0em; font-weight: 800; letter-spacing: 0.01em; font-variant-numeric: tabular-nums; }
+  .result-hero .value small { font-size: 0.35em; font-weight: 600; opacity: 0.85; }
+  .risk-pill {
+    display: inline-block; margin-top: 8px; padding: 5px 16px; border-radius: 999px;
+    font-weight: 800; font-size: 1.0em; background: rgba(255,255,255,0.18);
+  }
+
+  .warning-box { padding: 12px 14px; margin-bottom: 10px; border-radius: 6px; font-size: 0.92em; }
+  .warning-box .head { font-weight: 700; margin-bottom: 4px; }
+  .warning-box.red { background: #fdecea; border-left: 4px solid var(--red); color: #6a1a1a; }
+  .warning-box.red .head { color: var(--red); }
+  .warning-box.caution { background: #fff8e1; border-left: 4px solid var(--orange); color: #5d4400; }
+  .warning-box.caution .head { color: var(--orange); }
+  .warning-box.info { background: #e7f6f9; border-left: 4px solid var(--mid); color: #0c3c45; }
+  .warning-box.info .head { color: var(--mid); }
+
+  /* 内訳・早見表 */
+  .lookup-table { width: 100%; border-collapse: collapse; font-size: 0.86em; }
+  .lookup-table th, .lookup-table td { border: 1px solid #D5E0E2; padding: 7px 8px; text-align: center; font-variant-numeric: tabular-nums; }
+  .lookup-table th { background: var(--primary); color: var(--white); font-weight: 700; }
+  .lookup-table td.left { text-align: left; }
+  .lookup-table tr.current td { background: var(--yellow-bg); font-weight: 700; color: var(--primary); }
+  .breakdown td .chip { display: inline-block; min-width: 26px; padding: 1px 6px; border-radius: 6px; color: #fff; font-weight: 800; }
+
+  /* コピー */
+  .template-box {
+    background: #0d2a30; color: #e2eef0; padding: 14px 16px; border-radius: 8px;
+    font-family: "Consolas", "Courier New", monospace; font-size: 0.86em; line-height: 1.7;
+    white-space: pre-wrap; word-wrap: break-word; margin-bottom: 8px;
+  }
+  .copy-btn {
+    background: var(--primary); color: var(--white); border: none; padding: 8px 14px;
+    border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 0.85em; font-weight: 600;
+  }
+  .copy-btn:hover { background: var(--dark); }
+  .copy-btn.copied { background: var(--green); }
+
+  .info-list { list-style: none; padding: 0; margin: 0; }
+  .info-list li { padding: 8px 0 8px 22px; border-bottom: 1px solid #eee; position: relative; font-size: 0.92em; }
+  .info-list li:last-child { border-bottom: none; }
+  .info-list li::before { content: "▸"; position: absolute; left: 4px; color: var(--mid); font-weight: 700; }
+  .info-list .key { font-weight: 700; color: var(--primary); }
+
+  .ref-list { font-size: 0.82em; color: var(--gray); line-height: 1.7; padding-left: 18px; }
+  .ref-list li { margin-bottom: 4px; }
+  .ref-list a { color: var(--mid); text-decoration: none; }
+  .ref-list a:hover { text-decoration: underline; }
+
+  footer { max-width: 820px; margin: 30px auto 0; padding: 14px; text-align: center; color: var(--gray); font-size: 0.78em; line-height: 1.6; }
+  footer a { color: var(--mid); text-decoration: none; }
+</style>
+</head>
+<body>
+<header>
+  <div class="back-bar"><a href="index.html">← ツール一覧へ</a></div>
+  <h1>NEWS2 計算ツール</h1>
+  <p>National Early Warning Score 2（RCP 2017）｜バイタル入力 → 合計点・起動基準を自動判定</p>
+</header>
+
+<div class="container">
+
+  <div class="alert-disclaimer">
+    <strong>⚠ 使用上の注意</strong>：本ツールは英国王立内科医協会（RCP）NEWS2（2017）に基づく参考計算機です。実際のエスカレーション基準・起動カットオフは<strong>施設の運用に従って</strong>ください。スコアが低くても、出血・けいれん・胸痛・「何かおかしい（worried criteria）」など臨床的な違和感があれば起動の根拠になります。
+  </div>
+
+  <!-- 入力 -->
+  <div class="card">
+    <div class="card-header">📝 バイタルサイン入力</div>
+    <div class="card-body">
+
+      <!-- 呼吸数 -->
+      <div class="param">
+        <div class="param-top"><label class="field-label" for="resp">① 呼吸数</label><span class="param-score-badge scnull" id="b_resp">— 点</span></div>
+        <div class="input-row"><input type="number" id="resp" value="16" min="0" max="80" step="1"><span class="unit">回/分</span></div>
+      </div>
+
+      <!-- SpO2 スケール -->
+      <div class="param">
+        <div class="param-top"><label class="field-label">② SpO2 スケール</label></div>
+        <div class="seg" id="segScale">
+          <button type="button" data-val="1" class="active">Scale 1（標準）</button>
+          <button type="button" data-val="2">Scale 2（高炭酸ガス血症リスク）</button>
+        </div>
+        <p class="hint">COPD等で高炭酸ガス血症性呼吸不全のリスクがある患者は、医師の指示のもと Scale 2（目標88〜92%）を使用します。</p>
+      </div>
+
+      <!-- SpO2 値 -->
+      <div class="param">
+        <div class="param-top"><label class="field-label" for="spo2">③ SpO2（酸素飽和度）</label><span class="param-score-badge scnull" id="b_spo2">— 点</span></div>
+        <div class="input-row"><input type="number" id="spo2" value="98" min="50" max="100" step="1"><span class="unit">%</span></div>
+      </div>
+
+      <!-- 酸素投与 -->
+      <div class="param">
+        <div class="param-top"><label class="field-label">④ 酸素投与の有無</label><span class="param-score-badge sc0" id="b_o2">0 点</span></div>
+        <div class="seg" id="segO2">
+          <button type="button" data-val="air" class="active">空気（なし）</button>
+          <button type="button" data-val="o2">酸素投与あり（＋2点）</button>
+        </div>
+      </div>
+
+      <!-- 収縮期血圧 -->
+      <div class="param">
+        <div class="param-top"><label class="field-label" for="sbp">⑤ 収縮期血圧</label><span class="param-score-badge scnull" id="b_sbp">— 点</span></div>
+        <div class="input-row"><input type="number" id="sbp" value="120" min="40" max="300" step="1"><span class="unit">mmHg</span></div>
+      </div>
+
+      <!-- 脈拍 -->
+      <div class="param">
+        <div class="param-top"><label class="field-label" for="hr">⑥ 脈拍</label><span class="param-score-badge scnull" id="b_hr">— 点</span></div>
+        <div class="input-row"><input type="number" id="hr" value="75" min="0" max="250" step="1"><span class="unit">回/分</span></div>
+      </div>
+
+      <!-- 意識 ACVPU -->
+      <div class="param">
+        <div class="param-top"><label class="field-label">⑦ 意識（ACVPU）</label><span class="param-score-badge sc0" id="b_acvpu">0 点</span></div>
+        <div class="seg" id="segAcvpu">
+          <button type="button" data-val="A" class="active">A 清明</button>
+          <button type="button" data-val="C">C 混乱/せん妄</button>
+          <button type="button" data-val="V">V 声に反応</button>
+          <button type="button" data-val="P">P 痛みに反応</button>
+          <button type="button" data-val="U">U 無反応</button>
+        </div>
+        <p class="hint">A 以外（C/V/P/U）はすべて 3 点。C は「新規発症の混乱・せん妄」。</p>
+      </div>
+
+      <!-- 体温 -->
+      <div class="param">
+        <div class="param-top"><label class="field-label" for="temp">⑧ 体温</label><span class="param-score-badge scnull" id="b_temp">— 点</span></div>
+        <div class="input-row"><input type="number" id="temp" value="36.8" min="30" max="43" step="0.1"><span class="unit">℃</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 結果 -->
+  <div class="card">
+    <div class="card-header">🧮 NEWS2 合計・リスク判定</div>
+    <div class="card-body">
+      <div class="result-hero">
+        <div class="label">NEWS2 合計スコア</div>
+        <div class="value"><span id="totalScore">0</span><small> / 20 点</small></div>
+        <div class="risk-pill" id="riskPill">低リスク</div>
+      </div>
+      <div id="warningArea"></div>
+    </div>
+  </div>
+
+  <!-- 内訳 -->
+  <div class="card">
+    <div class="card-header">🔎 スコア内訳</div>
+    <div class="card-body">
+      <table class="lookup-table breakdown">
+        <thead><tr><th class="left">パラメータ</th><th>入力値</th><th>点数</th></tr></thead>
+        <tbody id="breakdownBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- エスカレーション早見表 -->
+  <div class="card">
+    <div class="card-header">🚦 エスカレーション基準（RCP 2017）</div>
+    <div class="card-body">
+      <table class="lookup-table" id="escTable">
+        <thead><tr><th>NEWS2</th><th class="left">リスク</th><th class="left">モニタリング頻度</th><th class="left">対応</th></tr></thead>
+        <tbody>
+          <tr data-key="zero"><td>0</td><td class="left">低</td><td class="left">12時間ごと</td><td class="left">観察を継続</td></tr>
+          <tr data-key="low"><td>1〜4</td><td class="left">低</td><td class="left">4〜6時間ごと</td><td class="left">看護師が評価し、必要ならエスカレーション検討</td></tr>
+          <tr data-key="single3"><td>単項目3</td><td class="left">低〜中</td><td class="left">最低1時間ごと</td><td class="left">担当医（病棟チーム）の評価</td></tr>
+          <tr data-key="medium"><td>5〜6</td><td class="left">中</td><td class="left">最低1時間ごと</td><td class="left">医師・対応チームの緊急評価</td></tr>
+          <tr data-key="high"><td>7以上</td><td class="left">高</td><td class="left">持続モニタリング</td><td class="left">救急・集中治療チームの緊急評価 ＝ <strong>RRS起動の典型トリガー</strong></td></tr>
+        </tbody>
+      </table>
+      <p class="hint">※ 合計点が低くても「単一の項目が3点」なら警戒ライン。具体的な起動カットオフは施設基準に従ってください。</p>
+    </div>
+  </div>
+
+  <!-- コピー -->
+  <div class="card">
+    <div class="card-header">📋 記録用サマリ（コピー可）</div>
+    <div class="card-body">
+      <div class="template-box" id="summaryBox"></div>
+      <button class="copy-btn" id="copyBtn">📋 クリップボードにコピー</button>
+    </div>
+  </div>
+
+  <!-- 関連情報 -->
+  <div class="card">
+    <div class="card-header">📚 関連情報・参考文献</div>
+    <div class="card-body">
+      <p style="font-size:0.9em;margin-bottom:8px;">
+        🎬 動画解説: <a href="https://youtu.be/dEDZb8azjns" target="_blank" rel="noopener" style="color:var(--mid);">院内急変は“予測して動く”｜NEWS2とRapid Response System（RRS）を使いこなす</a><br>
+        📝 ブログ記事: <a href="https://blog.ichisouzo-lab.com/entry/2026/06/04/090301" target="_blank" rel="noopener" style="color:var(--mid);">スコア表【完全版】・起動基準・RRSの4要素を解説</a><br>
+        📊 スライド資料: <a href="https://tools.ichisouzo-lab.com/slides/news2-rrs/" target="_blank" rel="noopener" style="color:var(--mid);">全15枚・Web閲覧／PDF</a>
+      </p>
+      <ol class="ref-list">
+        <li>Royal College of Physicians. National Early Warning Score (NEWS) 2. London: RCP, 2017. <a href="https://www.rcp.ac.uk/improving-care/resources/national-early-warning-score-news-2/" target="_blank" rel="noopener">RCP</a></li>
+        <li>Smith GB, et al. The ability of the NEWS to discriminate patients at risk of early cardiac arrest, unanticipated ICU admission, and death. Resuscitation. 2013;84(4):465-470. <a href="https://doi.org/10.1016/j.resuscitation.2012.12.016" target="_blank" rel="noopener">DOI</a></li>
+        <li>日本集中治療医学会・日本臨床救急医学会 合同. Rapid Response System運用指針. 2025. <a href="https://www.jsicm.org/publication/pdf/JSICM_RRS_20250315.pdf" target="_blank" rel="noopener">PDF</a></li>
+      </ol>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>本ツールは医療従事者向けの参考情報です。最終的な判断は最新ガイドライン・施設プロトコル・個別症例の臨床状況に基づき医師が行ってください。</p>
+  <p style="margin-top:6px;">© 医知創造ラボ ｜ <a href="index.html">DDxツール一覧</a></p>
+</footer>
+
+<script>
+(function(){
+  var respEl = document.getElementById('resp');
+  var spo2El = document.getElementById('spo2');
+  var sbpEl = document.getElementById('sbp');
+  var hrEl = document.getElementById('hr');
+  var tempEl = document.getElementById('temp');
+
+  var scale = 1;     // 1 or 2
+  var onOxygen = false;
+  var acvpu = 'A';
+
+  // ---- スコアリング（RCP NEWS2 2017） ----
+  function scoreResp(v){
+    if (v == null || isNaN(v)) return null;
+    if (v <= 8) return 3;
+    if (v <= 11) return 1;
+    if (v <= 20) return 0;
+    if (v <= 24) return 2;
+    return 3;
+  }
+  function scoreSpo2Scale1(v){
+    if (v == null || isNaN(v)) return null;
+    if (v <= 91) return 3;
+    if (v <= 93) return 2;
+    if (v <= 95) return 1;
+    return 0;
+  }
+  function scoreSpo2Scale2(v, ox){
+    if (v == null || isNaN(v)) return null;
+    if (v <= 83) return 3;
+    if (v <= 85) return 2;
+    if (v <= 87) return 1;
+    if (v <= 92) return 0;            // 88–92
+    // v >= 93
+    if (!ox) return 0;               // 空気呼吸で93%以上は0点
+    if (v <= 94) return 1;           // 酸素下 93–94
+    if (v <= 96) return 2;           // 酸素下 95–96
+    return 3;                        // 酸素下 ≥97
+  }
+  function scoreSpo2(v){
+    return scale === 2 ? scoreSpo2Scale2(v, onOxygen) : scoreSpo2Scale1(v);
+  }
+  function scoreOxygen(){ return onOxygen ? 2 : 0; }
+  function scoreSBP(v){
+    if (v == null || isNaN(v)) return null;
+    if (v <= 90) return 3;
+    if (v <= 100) return 2;
+    if (v <= 110) return 1;
+    if (v <= 219) return 0;
+    return 3;
+  }
+  function scoreHR(v){
+    if (v == null || isNaN(v)) return null;
+    if (v <= 40) return 3;
+    if (v <= 50) return 1;
+    if (v <= 90) return 0;
+    if (v <= 110) return 1;
+    if (v <= 130) return 2;
+    return 3;
+  }
+  function scoreACVPU(){ return acvpu === 'A' ? 0 : 3; }
+  function scoreTemp(v){
+    if (v == null || isNaN(v)) return null;
+    if (v <= 35.0) return 3;
+    if (v <= 36.0) return 1;
+    if (v <= 38.0) return 0;
+    if (v <= 39.0) return 1;
+    return 2;
+  }
+
+  function num(el){ var v = parseFloat(el.value); return isNaN(v) ? null : v; }
+  function scClass(s){ return s == null ? 'scnull' : ('sc' + s); }
+  function badgeText(s){ return s == null ? '— 点' : (s + ' 点'); }
+
+  function setBadge(id, s){
+    var el = document.getElementById(id);
+    el.className = 'param-score-badge ' + scClass(s);
+    el.textContent = badgeText(s);
+  }
+
+  function getRisk(total, single3, complete){
+    if (!complete) return { key:'', label:'未入力あり', cls:'' };
+    if (total >= 7) return { key:'high', label:'高リスク（≥7）' };
+    if (total >= 5) return { key:'medium', label:'中リスク（5〜6）' };
+    if (single3)    return { key:'single3', label:'低〜中リスク（単項目3点）' };
+    if (total >= 1) return { key:'low', label:'低リスク（1〜4）' };
+    return { key:'zero', label:'低リスク（0）' };
+  }
+
+  function buildWarnings(total, single3, single3names, complete){
+    var w = [];
+    if (!complete){
+      w.push({ level:'caution', head:'⚠ 未入力の項目があります', body:'すべてのバイタル（数値項目）を入力すると、正しい合計点・リスク判定が表示されます。' });
+    }
+    if (single3){
+      w.push({ level:'red', head:'🚩 単一項目で3点：' + single3names.join(' / '),
+        body:'合計点が低くても、<strong>単一項目が3点</strong>なら警戒ラインです。最低1時間ごとの観察と担当医（病棟チーム）の評価を検討してください。' });
+    }
+    if (complete && total >= 7){
+      w.push({ level:'red', head:'🛑 NEWS2 ≥ 7：緊急評価＝RRS起動の典型トリガー',
+        body:'持続モニタリングのうえ、救急・集中治療の能力をもつチームによる緊急評価を。高度ケア環境への移動を検討します（施設基準に従う）。' });
+    } else if (complete && total >= 5){
+      w.push({ level:'caution', head:'⚠ NEWS2 5〜6：医師・対応チームの緊急評価',
+        body:'最低1時間ごとの観察。医師または対応チームによる緊急評価と、モニタリング設備のある環境を検討します。' });
+    }
+    w.push({ level:'info', head:'💡 スコアだけに頼らない（worried criteria）',
+      body:'出血・けいれん・胸痛・「何かおかしい」といった、点数に表れない危険サインはスコアと並行して起動の根拠になります。「数字＋臨床的な違和感」で動くのが原則です。' });
+    return w;
+  }
+
+  function renderWarnings(ws){
+    var html = '';
+    for (var i = 0; i < ws.length; i++){
+      var lv = ws[i].level;
+      html += '<div class="warning-box ' + lv + '"><div class="head">' + ws[i].head + '</div>' + ws[i].body + '</div>';
+    }
+    document.getElementById('warningArea').innerHTML = html;
+  }
+
+  function chip(s){
+    if (s == null) return '<span class="chip scnull">—</span>';
+    return '<span class="chip ' + scClass(s) + '">' + s + '</span>';
+  }
+
+  function fmt(v, suffix){ return (v == null ? '—' : v) + (v == null ? '' : suffix); }
+
+  function buildBreakdown(rows){
+    var html = '';
+    for (var i = 0; i < rows.length; i++){
+      html += '<tr><td class="left">' + rows[i].name + '</td><td>' + rows[i].val + '</td><td>' + chip(rows[i].score) + '</td></tr>';
+    }
+    document.getElementById('breakdownBody').innerHTML = html;
+  }
+
+  function highlightEsc(key){
+    var rows = document.querySelectorAll('#escTable tbody tr');
+    for (var i = 0; i < rows.length; i++){
+      if (rows[i].getAttribute('data-key') === key) rows[i].className = 'current';
+      else rows[i].className = '';
+    }
+  }
+
+  function buildSummary(vals, scores, total, riskLabel, complete){
+    var L = [];
+    L.push('【NEWS2（RCP 2017）評価】');
+    L.push('呼吸数 ' + fmt(vals.resp, ' 回/分') + '：' + badgeText(scores.resp));
+    L.push('SpO2 ' + fmt(vals.spo2, ' %') + '（Scale ' + scale + (onOxygen ? '・酸素投与あり' : '・空気') + '）：' + badgeText(scores.spo2));
+    L.push('酸素投与：' + (onOxygen ? 'あり' : 'なし') + '：' + badgeText(scores.o2));
+    L.push('収縮期血圧 ' + fmt(vals.sbp, ' mmHg') + '：' + badgeText(scores.sbp));
+    L.push('脈拍 ' + fmt(vals.hr, ' 回/分') + '：' + badgeText(scores.hr));
+    L.push('意識（ACVPU）：' + acvpu + '：' + badgeText(scores.acvpu));
+    L.push('体温 ' + fmt(vals.temp, ' ℃') + '：' + badgeText(scores.temp));
+    L.push('────────────');
+    L.push('NEWS2 合計：' + total + ' / 20 点' + (complete ? '' : '（未入力あり）'));
+    L.push('リスク判定：' + riskLabel);
+    return L.join('\n');
+  }
+
+  function update(){
+    var vals = { resp:num(respEl), spo2:num(spo2El), sbp:num(sbpEl), hr:num(hrEl), temp:num(tempEl) };
+    var scores = {
+      resp: scoreResp(vals.resp),
+      spo2: scoreSpo2(vals.spo2),
+      o2: scoreOxygen(),
+      sbp: scoreSBP(vals.sbp),
+      hr: scoreHR(vals.hr),
+      acvpu: scoreACVPU(),
+      temp: scoreTemp(vals.temp)
+    };
+
+    setBadge('b_resp', scores.resp);
+    setBadge('b_spo2', scores.spo2);
+    setBadge('b_o2', scores.o2);
+    setBadge('b_sbp', scores.sbp);
+    setBadge('b_hr', scores.hr);
+    setBadge('b_acvpu', scores.acvpu);
+    setBadge('b_temp', scores.temp);
+
+    var list = [scores.resp, scores.spo2, scores.o2, scores.sbp, scores.hr, scores.acvpu, scores.temp];
+    var total = 0, complete = true, single3 = false;
+    var single3names = [];
+    var nameMap = ['呼吸数','SpO2','酸素投与','収縮期血圧','脈拍','意識','体温'];
+    for (var i = 0; i < list.length; i++){
+      if (list[i] == null){ complete = false; continue; }
+      total += list[i];
+      if (list[i] === 3){ single3 = true; single3names.push(nameMap[i]); }
+    }
+
+    document.getElementById('totalScore').textContent = complete ? total : total + '＊';
+
+    var risk = getRisk(total, single3, complete);
+    var pill = document.getElementById('riskPill');
+    pill.textContent = risk.label;
+    highlightEsc(complete ? risk.key : '');
+
+    renderWarnings(buildWarnings(total, single3, single3names, complete));
+
+    buildBreakdown([
+      { name:'① 呼吸数', val: fmt(vals.resp, ' 回/分'), score: scores.resp },
+      { name:'② SpO2（Scale ' + scale + '）', val: fmt(vals.spo2, ' %'), score: scores.spo2 },
+      { name:'③ 酸素投与', val: onOxygen ? 'あり' : '空気', score: scores.o2 },
+      { name:'④ 収縮期血圧', val: fmt(vals.sbp, ' mmHg'), score: scores.sbp },
+      { name:'⑤ 脈拍', val: fmt(vals.hr, ' 回/分'), score: scores.hr },
+      { name:'⑥ 意識（ACVPU）', val: acvpu, score: scores.acvpu },
+      { name:'⑦ 体温', val: fmt(vals.temp, ' ℃'), score: scores.temp }
+    ]);
+
+    var box = document.getElementById('summaryBox');
+    box.textContent = buildSummary(vals, scores, total, risk.label, complete);
+    box.dataset.plain = box.textContent;
+  }
+
+  // セグメント共通ハンドラ
+  function bindSeg(containerId, onSelect){
+    var c = document.getElementById(containerId);
+    var btns = c.querySelectorAll('button');
+    for (var i = 0; i < btns.length; i++){
+      btns[i].addEventListener('click', function(){
+        var grp = this.parentElement.querySelectorAll('button');
+        for (var j = 0; j < grp.length; j++) grp[j].classList.remove('active');
+        this.classList.add('active');
+        onSelect(this.getAttribute('data-val'), this);
+        update();
+      });
+    }
+  }
+
+  bindSeg('segScale', function(v){ scale = parseInt(v, 10); });
+  bindSeg('segO2', function(v){ onOxygen = (v === 'o2'); });
+  bindSeg('segAcvpu', function(v, btn){
+    acvpu = v;
+    // A以外は警告色
+    var grp = btn.parentElement.querySelectorAll('button');
+    for (var j = 0; j < grp.length; j++) grp[j].classList.remove('warnsel');
+    if (v !== 'A') btn.classList.add('warnsel');
+  });
+
+  var inputs = [respEl, spo2El, sbpEl, hrEl, tempEl];
+  for (var k = 0; k < inputs.length; k++) inputs[k].addEventListener('input', update);
+
+  document.getElementById('copyBtn').addEventListener('click', function(){
+    var btn = this;
+    var text = document.getElementById('summaryBox').dataset.plain || document.getElementById('summaryBox').textContent;
+    function done(){
+      btn.textContent = '✓ コピー完了'; btn.classList.add('copied');
+      setTimeout(function(){ btn.textContent = '📋 クリップボードにコピー'; btn.classList.remove('copied'); }, 1800);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done, function(){ done(); });
+    } else {
+      var ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta);
+      ta.select(); try { document.execCommand('copy'); } catch(e){} document.body.removeChild(ta); done();
+    }
+  });
+
+  update();
+})();
+</script>
+</body>
+</html>
