@@ -206,12 +206,8 @@
     </div>
 
     <div class="field">
-      <label>疾患・病態</label>
-      <select id="disease"></select>
-    </div>
-    <div class="field" id="freeDiseaseWrap" style="display:none;">
-      <label>疾患名（自由入力）</label>
-      <input type="text" id="freeDisease" placeholder="例：正常圧水頭症">
+      <label>疾患・病態 <span class="hint">（自由記載。例：脳梗塞、進行胃がん、パーキンソン病、ALSの疑い など）</span></label>
+      <input type="text" id="disease" placeholder="診断名や病態を自由に入力">
     </div>
 
     <div class="row">
@@ -278,12 +274,12 @@
     </div>
 
     <div class="tabbar no-print">
-      <div class="tab active" data-tab="spikes">🗣️ 説明の流れ</div>
+      <div class="tab active" data-tab="prompt">🤖 AIプロンプト</div>
+      <div class="tab" data-tab="spikes">🗣️ 説明の流れ</div>
       <div class="tab" data-tab="leaflet">📄 疾患説明書</div>
-      <div class="tab" data-tab="prompt">🤖 AIプロンプト</div>
     </div>
 
-    <div class="tabpane active" id="spikesPane">
+    <div class="tabpane" id="spikesPane">
       <div class="panel">
         <h2>SPIKESに沿った説明の流れ</h2>
         <p class="sub">各ステップをタップで開閉。言葉がけ例はそのまま使わず、患者さんの反応に合わせて調整してください。</p>
@@ -299,7 +295,7 @@
       </div>
     </div>
 
-    <div class="tabpane" id="promptPane">
+    <div class="tabpane active" id="promptPane">
       <div class="panel">
         <h2>🤖 ご自身のAI用プロンプト</h2>
         <p class="sub">下のプロンプトをコピーして、ご契約中のAI（ChatGPT・Claude など）に貼り付けると、この症例に即した説明の流れと疾患説明書を生成できます。<b>このツールから外部に情報は送信されません。</b></p>
@@ -321,91 +317,13 @@
 </div>
 
 <script>
-/* ===== 疾患ナレッジベース（一般的・定性的な記述。個別数値は含めない） ===== */
-var DISEASES = {
-  stroke: {
-    name: "脳卒中（脳梗塞・脳出血）",
-    plain: "脳の血管が詰まったり破れたりして、脳の一部に栄養や酸素が届かなくなり、その部分のはたらきが低下する病気です。",
-    course: "発症直後は症状が変動しやすく、急性期の治療と並行して全身の管理を行います。その後はリハビリで残った力を引き出し、生活への影響をできるだけ小さくしていきます。回復の程度には個人差があります。",
-    treatment: "再発予防のお薬や血圧・生活習慣の管理、原因に応じた検査を行います。早期からのリハビリテーションが回復を助けます。",
-    life: "再発予防のため血圧・血糖・脂質の管理を続けます。麻痺や言葉の症状が残る場合は、ご自宅の環境調整や介護サービスの利用を一緒に検討します。",
-    support: "リハビリ病院、地域連携室、介護保険(要介護認定)、身体障害者手帳、訪問リハビリ・デイケアなど"
-  },
-  dementia: {
-    name: "認知症",
-    plain: "脳の神経のはたらきが少しずつ低下し、記憶や判断などの認知機能が日常生活に支障が出る程度まで下がる状態です。",
-    course: "多くはゆっくりと進行します。症状の進み方には個人差があり、ご本人ができることを保ちながら、生活を支える工夫を重ねていきます。",
-    treatment: "進行を緩やかにするお薬や、不安・不眠などの症状への対応を行います。生活リズムや環境を整えることも大切な治療の一部です。",
-    life: "安心して過ごせる環境づくり、火の元や服薬の見守り、外出時の安全対策を整えます。ご家族の負担を抱え込まないことも重要です。",
-    support: "もの忘れ外来、地域包括支援センター、介護保険、認知症カフェ・家族会、成年後見制度など"
-  },
-  parkinson: {
-    name: "パーキンソン病",
-    plain: "脳の中でからだの動きを調整する物質(ドパミン)が減ることで、動きがゆっくりになる・手が震える・からだがこわばるといった症状が出る病気です。",
-    course: "多くはゆっくり進行します。お薬で症状をうまく抑えられる時期が長く続くことが多く、運動を続けることも大切です。",
-    treatment: "不足している物質を補うお薬を中心に、症状や生活に合わせて調整します。リハビリ・運動療法も効果があります。",
-    life: "転倒の予防、規則正しい服薬、適度な運動が大切です。症状の日内変動に合わせて生活を組み立てます。",
-    support: "神経内科外来、リハビリ、難病医療費助成(指定難病)、介護保険、患者会など"
-  },
-  epilepsy: {
-    name: "てんかん",
-    plain: "脳の神経に一時的な過剰な電気の乱れが起こり、けいれんや意識の途切れなどの発作をくり返す状態です。",
-    course: "多くは適切なお薬で発作をコントロールできます。発作の状況を記録しながら、お薬の種類や量を調整していきます。",
-    treatment: "抗てんかん薬を継続して使用します。自己判断で中断すると発作が起きやすくなるため、内服の継続が重要です。",
-    life: "睡眠不足や飲酒など発作の誘因を避けます。入浴・運転・就労など生活上の注意は、発作の状況に応じて個別に相談します。",
-    support: "てんかん専門外来、発作時の対応指導、自立支援医療、運転に関する相談窓口など"
-  },
-  als: {
-    name: "筋萎縮性側索硬化症(ALS)など神経難病",
-    plain: "からだを動かす神経が少しずつはたらきを失い、手足の力や、のみこみ・呼吸にかかわる筋肉の力が低下していく病気です。",
-    course: "進行の速さには個人差があります。今後どのような変化が起こりうるかを見通しながら、その時々のご希望を大切に、療養の準備を一緒に進めていきます。",
-    treatment: "進行を緩やかにする治療と、症状をやわらげるケアを組み合わせます。呼吸や栄養のサポートについては、ご本人の価値観を伺いながら段階的に相談します。",
-    life: "コミュニケーション手段や生活環境を、進行に合わせて整えていきます。早めの準備が、選択の幅を広げます。",
-    support: "難病医療費助成(指定難病)、多職種チーム、訪問診療・訪問看護、療養先の相談、患者会など"
-  },
-  ms: {
-    name: "多発性硬化症・脱髄性疾患",
-    plain: "神経を包む“さや”の部分に炎症が起こり、神経の信号がうまく伝わらなくなることで、しびれ・見えにくさ・力の入りにくさなどが現れる病気です。",
-    course: "症状が出たり治まったりをくり返すことがあります。再発を予防する治療を続けることで、長期的な経過を良くすることを目指します。",
-    treatment: "急性期の炎症を抑える治療と、再発を予防する治療があります。経過に応じて治療を調整します。",
-    life: "疲れや感染、体温の上昇が症状に影響することがあります。無理のない生活と再発予防治療の継続が大切です。",
-    support: "神経内科外来、難病医療費助成、リハビリ、就労・生活の相談窓口など"
-  },
-  brain_tumor: {
-    name: "脳腫瘍",
-    plain: "脳やその周囲に“できもの”ができ、その場所のはたらきを妨げたり、頭の中の圧を高めたりする病気です。",
-    course: "腫瘍の種類や場所によって経過や治療が大きく異なります。検査の結果をふまえ、最適な治療を専門の科と一緒に検討します。",
-    treatment: "手術・放射線治療・薬物療法などを、腫瘍の性質に応じて組み合わせます。専門科と連携して方針を決めます。",
-    life: "症状やけいれんへの対応、生活上の安全対策を整えます。治療と生活の両立について一緒に考えます。",
-    support: "脳神経外科・腫瘍内科との連携、セカンドオピニオン、相談支援センター、各種制度など"
-  },
-  cancer: {
-    name: "がん（一般）",
-    plain: "からだの細胞の一部が異常に増え、周囲の組織に影響を及ぼす病気です。種類や広がりによって治療や見通しが異なります。",
-    course: "検査で種類と広がりを正確に把握したうえで、治療の選択肢を一緒に検討します。治療と生活の両立を大切にしていきます。",
-    treatment: "手術・薬物療法・放射線治療・緩和ケアなどを、病状とご希望に合わせて組み合わせます。",
-    life: "治療に伴う体調の変化への対応、仕事や生活との両立、つらさをやわらげるケアを並行して行います。",
-    support: "がん相談支援センター、緩和ケア、セカンドオピニオン、高額療養費制度、就労支援など"
-  },
-  heart_failure: {
-    name: "心不全",
-    plain: "心臓のポンプのはたらきが低下し、息切れやむくみが出やすくなる状態です。",
-    course: "良くなったり悪くなったりをくり返しながら進むことがあります。お薬と生活の管理で、悪化をできるだけ防いでいきます。",
-    treatment: "心臓の負担を減らすお薬を中心に、原因となる病気の治療も行います。塩分・水分・体重の管理が重要です。",
-    life: "毎日の体重測定、減塩、服薬の継続、症状が悪化したときの受診の目安を一緒に確認します。",
-    support: "循環器外来、心臓リハビリ、訪問看護、介護保険、生活指導など"
-  },
-  generic: {
-    name: "その他（自由入力）",
-    plain: "",
-    course: "検査の結果をふまえ、今の状態とこれからの見通しについてご説明します。",
-    treatment: "病状とご希望に合わせて、これからの対応を一緒に決めていきます。",
-    life: "日常生活で気をつけることや利用できるサポートについて、一緒に確認していきます。",
-    support: "外来での経過観察、地域連携室、必要に応じた専門科・各種制度の紹介など"
-  }
+/* ===== 共通の型（疾患に依存しない雛形。疾患固有の中身はAI生成 or 担当医が記載） ===== */
+var GENERIC = {
+  course: "検査の結果をふまえ、今の状態とこれからの見通しについてご説明します。",
+  treatment: "病状とご希望に合わせて、これからの対応を一緒に決めていきます。",
+  life: "日常生活で気をつけることや、利用できるサポートについて、一緒に確認していきます。",
+  support: "外来での経過観察、地域連携室、必要に応じた専門科・各種制度の紹介など"
 };
-
-var DISEASE_ORDER = ["stroke","dementia","parkinson","epilepsy","als","ms","brain_tumor","cancer","heart_failure","generic"];
 
 var SCENE_LABEL = {
   new: "新規の診断", progress: "病状の進行・再発", change: "治療方針の変更",
@@ -428,13 +346,11 @@ var PROGNOSIS_LABEL = {
 function val(id){ var e=document.getElementById(id); return e?e.value.trim():""; }
 
 function getInput(){
-  var dkey = val("disease") || "generic";
-  var d = DISEASES[dkey] || DISEASES.generic;
-  var dname = (dkey==="generic") ? (val("freeDisease") || "ご病気") : d.name;
+  var dname = val("disease") || "ご病気";
   var pt = val("patient") || "○○さん";
   var fam = val("family") || "ご家族";
   return {
-    dkey: dkey, d: d, dname: dname,
+    dname: dname,
     patient: pt, family: fam,
     scene: val("scene") || "new",
     perception: val("perception") || "vague",
@@ -481,11 +397,10 @@ function warningShot(inp){
 }
 
 function sentenceK(inp){
-  var d = inp.d;
   var s = warningShot(inp) + "\n\n";
-  s += "【ご病気について】\n" + inp.dname + "です。";
-  if (d.plain) s += d.plain;
-  s += "\n\n【今の状態とこれからの経過】\n" + d.course;
+  s += "【ご病気について】\n" + inp.dname + "について、専門用語を避けて、ゆっくり段階的にご説明します。";
+  s += "\n（この症例に合わせた具体的な説明は、AIの生成結果または担当医がここで補足してください）";
+  s += "\n\n【今の状態とこれからの経過】\n" + GENERIC.course;
   return s;
 }
 
@@ -500,14 +415,13 @@ function sentenceE(inp){
 }
 
 function sentenceS(inp){
-  var d = inp.d;
   var s = "【これからの方針】\n";
   if (inp.plan) {
     s += inp.plan;
   } else {
-    s += d.treatment;
+    s += GENERIC.treatment;
   }
-  s += "\n\n【生活で気をつけること・サポート】\n" + d.life;
+  s += "\n\n【生活で気をつけること・サポート】\n" + GENERIC.life;
   if (inp.concern) s += "\n（配慮：" + inp.concern + "）";
   s += "\n\n【今日のまとめと次回】\n今日お話ししたことで、わかりにくかった点やご心配なことはありますか。";
   s += "\nまた気になることが出てきたら、いつでも遠慮なくお尋ねください。次回、改めて経過を確認しましょう。";
@@ -617,10 +531,9 @@ function renderSteps(inp){
 }
 
 function renderLeaflet(inp){
-  var d = inp.d;
   var today = new Date();
   var dateStr = today.getFullYear()+"年"+(today.getMonth()+1)+"月"+today.getDate()+"日";
-  var planText = inp.plan ? inp.plan : d.treatment;
+  var planText = inp.plan ? inp.plan : GENERIC.treatment;
   var html = "";
   html += '<h3 class="editable" contenteditable="true">'+esc(inp.dname)+' について</h3>';
   html += '<div class="lf-meta">'+esc(inp.patient)+' へ ／ '+dateStr+' 説明</div>';
@@ -630,12 +543,11 @@ function renderLeaflet(inp){
            '<div class="lf-body editable" contenteditable="true">'+esc(body)+'</div></div>';
   }
 
-  var about = (d.plain ? d.plain+"\n" : "") ;
-  html += sec("この病気について", about || "（担当医が補足します）");
-  html += sec("今の状態とこれからの経過", d.course);
+  html += sec("この病気について", "（" + inp.dname + " について、AIの生成結果または担当医の説明をここに記載してください）");
+  html += sec("今の状態とこれからの経過", GENERIC.course);
   html += sec("これからの対応・治療", planText);
-  html += sec("生活で気をつけること", d.life);
-  html += sec("利用できる相談先・サポート", d.support);
+  html += sec("生活で気をつけること", GENERIC.life);
+  html += sec("利用できる相談先・サポート", GENERIC.support);
   if (inp.concern) html += sec("あなたの状況をふまえて", inp.concern);
 
   html += '<div class="lf-foot">';
@@ -735,22 +647,7 @@ function generate(){
   document.getElementById("output").scrollIntoView({behavior:"smooth", block:"start"});
 }
 
-function initDiseaseSelect(){
-  var sel = document.getElementById("disease");
-  var html = "";
-  for (var i=0;i<DISEASE_ORDER.length;i++){
-    var k = DISEASE_ORDER[i];
-    html += '<option value="'+k+'">'+DISEASES[k].name+'</option>';
-  }
-  sel.innerHTML = html;
-  sel.addEventListener("change", function(){
-    document.getElementById("freeDiseaseWrap").style.display =
-      (sel.value==="generic") ? "block" : "none";
-  });
-}
-
 document.addEventListener("DOMContentLoaded", function(){
-  initDiseaseSelect();
   document.getElementById("generateBtn").addEventListener("click", generate);
 
   document.getElementById("copyScript").addEventListener("click", function(){
