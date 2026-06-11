@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v41';
+const CACHE_NAME = 'ddx-tools-v42';
 const ASSETS = [
   './',
   './index.html',

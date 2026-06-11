@@ -171,7 +171,7 @@
 
   @media print {
     body { background:#fff; }
-    header, .panel.input-panel, .toolbar, .tabbar, footer, #spikesPane, .no-print { display:none !important; }
+    header, .panel.input-panel, .toolbar, .tabbar, footer, #spikesPane, #promptPane, .no-print { display:none !important; }
     .container { max-width:none; padding:0; }
     #output, #leafletPane { display:block !important; }
     .panel { box-shadow:none; padding:0; margin:0; }
@@ -184,7 +184,7 @@
 
 <header>
   <h1>🗣️ SPIKES 病状説明アシスタント</h1>
-  <p>簡単な病歴から、SPIKESプロトコルに沿った病状説明の流れと疾患説明書の下書きを作成します</p>
+  <p>簡単な病歴から、SPIKESプロトコルに沿った病状説明の流れ・疾患説明書・お使いのAI用プロンプトを作成します</p>
   <a class="back" href="index.html">← ツール一覧へ戻る</a>
 </header>
 
@@ -278,8 +278,9 @@
     </div>
 
     <div class="tabbar no-print">
-      <div class="tab active" data-tab="spikes">🗣️ 説明の流れ（SPIKES）</div>
+      <div class="tab active" data-tab="spikes">🗣️ 説明の流れ</div>
       <div class="tab" data-tab="leaflet">📄 疾患説明書</div>
+      <div class="tab" data-tab="prompt">🤖 AIプロンプト</div>
     </div>
 
     <div class="tabpane active" id="spikesPane">
@@ -295,6 +296,16 @@
         <h2 class="no-print">疾患説明書（お渡し用の下書き）</h2>
         <p class="sub no-print">クリックすると本文を編集できます。「印刷」ボタンでこの説明書だけを印刷できます。</p>
         <div class="leaflet" id="leaflet"></div>
+      </div>
+    </div>
+
+    <div class="tabpane" id="promptPane">
+      <div class="panel">
+        <h2>🤖 ご自身のAI用プロンプト</h2>
+        <p class="sub">下のプロンプトをコピーして、ご契約中のAI（ChatGPT・Claude など）に貼り付けると、この症例に即した説明の流れと疾患説明書を生成できます。<b>このツールから外部に情報は送信されません。</b></p>
+        <button class="btn btn-primary" id="copyPromptTop" style="margin-bottom:12px;">📋 プロンプトをコピー</button>
+        <textarea id="aiPrompt" style="min-height:340px; font-size:0.9em; line-height:1.7;"></textarea>
+        <p class="sub" style="margin-top:10px; margin-bottom:0;">※プロンプト内に「エビデンスのない数値は書かない」「下書き前提で担当医が確認」などの安全制約を含めています。生成結果も必ず担当医がご確認ください。</p>
       </div>
     </div>
 
@@ -399,6 +410,18 @@ var DISEASE_ORDER = ["stroke","dementia","parkinson","epilepsy","als","ms","brai
 var SCENE_LABEL = {
   new: "新規の診断", progress: "病状の進行・再発", change: "治療方針の変更",
   palliative: "緩和ケアへの移行", eol: "予後・看取り"
+};
+var PERCEPTION_LABEL = {
+  none: "ほとんど認識されていない", vague: "うすうす感じておられる",
+  partial: "ある程度理解されている", full: "十分に理解されている"
+};
+var INVITATION_LABEL = {
+  all: "詳しくすべて知りたい", key: "要点を中心に知りたい",
+  family: "家族と相談しながら", defer: "本人は詳細を望まれない"
+};
+var PROGNOSIS_LABEL = {
+  explain: "具体的に説明する", careful: "慎重に段階的に伝える",
+  uncertain: "不確実性を強調して伝える", hold: "今回は踏み込まない"
 };
 
 /* ===== 入力取得 ===== */
@@ -644,6 +667,50 @@ function leafletToText(){
   return el ? el.innerText : "";
 }
 
+/* ===== ご自身のAI（ChatGPT/Claude等）に貼るプロンプトを生成 ===== */
+function buildAIPrompt(inp){
+  var L = [];
+  L.push("あなたは経験豊富な脳神経内科医であり、患者さん・ご家族への病状説明（悪い知らせの伝え方）の専門家です。");
+  L.push("以下の症例について、SPIKESプロトコルに沿った「病状説明の流れ」と、患者さんにお渡しする「疾患説明書」の2つを日本語で作成してください。");
+  L.push("");
+  L.push("# 症例情報");
+  L.push("- 患者さんの呼称：" + inp.patient);
+  L.push("- 同席されるご家族：" + inp.family);
+  L.push("- 疾患・病態：" + inp.dname);
+  L.push("- 説明する場面：" + (SCENE_LABEL[inp.scene] || ""));
+  L.push("- 患者さんの現状理解：" + (PERCEPTION_LABEL[inp.perception] || ""));
+  L.push("- 情報提供の希望：" + (INVITATION_LABEL[inp.invitation] || ""));
+  L.push("- 予後の説明方針：" + (PROGNOSIS_LABEL[inp.prognosis] || ""));
+  L.push("- 今後の方針・治療内容：" + (inp.plan || "（担当医が後で補足）"));
+  L.push("- 特に配慮したいこと：" + (inp.concern || "（特になし）"));
+  L.push("");
+  L.push("# 作成してほしいもの");
+  L.push("");
+  L.push("## ① 病状説明の流れ（SPIKES）");
+  L.push("S（場の設定）・P（認識の確認）・I（情報共有の希望）・K（情報の提供）・E（感情への対応）・S（方針と要約）の6ステップごとに、次の3点を書いてください。");
+  L.push("- そのステップの目的（1行）");
+  L.push("- この症例に即した具体的な「言葉がけ例（実際のセリフ）」");
+  L.push("- 注意点・チェックポイント");
+  L.push("Kでは、いきなり悪い知らせを伝えず予告（warning shot）を入れ、専門用語を避けて段階的に説明してください。");
+  L.push("");
+  L.push("## ② 疾患説明書（患者さんにお渡しする文書）");
+  L.push("見出し＋平易な本文の形式で、次の項目を作成してください。");
+  L.push("- この病気について");
+  L.push("- 今の状態とこれからの経過");
+  L.push("- これからの対応・治療");
+  L.push("- 生活で気をつけること");
+  L.push("- 利用できる相談先・サポート");
+  L.push("");
+  L.push("# 制約（重要・必ず守ること）");
+  L.push("- 専門用語を避け、中学生にもわかる平易な日本語で書く。");
+  L.push("- 患者さん・ご家族の感情に配慮した、共感的で穏やかなトーンにする。");
+  L.push("- 不確実なことは正直に伝え、断定しすぎない。");
+  L.push("- エビデンスのない具体的な数値（生存率○％・余命○年・再発率○％・○人中○人 など）は記載しない。一般的な経過は定性的に説明する（数値の捏造を避けるため）。");
+  L.push("- これは下書きであり、最終的な内容・医学的妥当性は担当医が確認・修正することを前提とする。患者さん個別の検査結果が必要な箇所は［担当医が補足］と明示する。");
+  L.push("- 上記の「今後の方針・治療内容」に書かれた内容を踏まえて記述する。");
+  return L.join("\n");
+}
+
 function copyText(text, btn){
   function done(){ var o=btn.innerHTML; btn.innerHTML="✅ コピーしました"; setTimeout(function(){btn.innerHTML=o;},1500); }
   if (navigator.clipboard && navigator.clipboard.writeText){
@@ -663,6 +730,7 @@ function generate(){
   lastInput = getInput();
   renderSteps(lastInput);
   renderLeaflet(lastInput);
+  document.getElementById("aiPrompt").value = buildAIPrompt(lastInput);
   document.getElementById("output").style.display="block";
   document.getElementById("output").scrollIntoView({behavior:"smooth", block:"start"});
 }
@@ -696,6 +764,9 @@ document.addEventListener("DOMContentLoaded", function(){
     switchTab("leaflet");
     window.print();
   });
+  document.getElementById("copyPromptTop").addEventListener("click", function(){
+    copyText(document.getElementById("aiPrompt").value, this);
+  });
 
   var tabs = document.querySelectorAll(".tab");
   for (var i=0;i<tabs.length;i++){
@@ -708,6 +779,7 @@ function switchTab(name){
   for(var i=0;i<tabs.length;i++){ tabs[i].classList.toggle("active", tabs[i].getAttribute("data-tab")===name); }
   document.getElementById("spikesPane").classList.toggle("active", name==="spikes");
   document.getElementById("leafletPane").classList.toggle("active", name==="leaflet");
+  document.getElementById("promptPane").classList.toggle("active", name==="prompt");
 }
 </script>
 </body>
