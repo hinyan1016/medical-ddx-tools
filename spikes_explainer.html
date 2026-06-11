@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#14746F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>SPIKES 病状説明アシスタント</title>
+<style>
+  :root {
+    --dark: #0F5A56;
+    --primary: #14746F;
+    --accent: #E76F51;
+    --light: #E5F2F1;
+    --paper: #FFFFFF;
+    --ink: #243B3A;
+    --muted: #5d6f6e;
+    --shadow: 0 2px 12px rgba(15,90,86,0.13);
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Hiragino Kaku Gothic ProN", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #E5F2F1 0%, #F4F7F7 100%);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 0 0 60px;
+    line-height: 1.7;
+  }
+  header {
+    background: linear-gradient(135deg, var(--dark), var(--primary));
+    color: #fff;
+    padding: 30px 20px 26px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(15,90,86,0.2);
+  }
+  header h1 { font-size: 1.55em; font-weight: 700; letter-spacing: 0.02em; }
+  header p { font-size: 0.9em; margin-top: 8px; opacity: 0.9; }
+  header .back { display:inline-block; margin-top:14px; font-size:0.82em; color:#cfeae8; text-decoration:none; }
+  .container { max-width: 780px; margin: 0 auto; padding: 26px 16px; }
+
+  .panel {
+    background: var(--paper);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 22px 20px;
+    margin-bottom: 22px;
+  }
+  .panel h2 {
+    font-size: 1.12em; color: var(--dark); margin-bottom: 4px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .panel .sub { font-size: 0.82em; color: var(--muted); margin-bottom: 16px; }
+
+  .field { margin-bottom: 15px; }
+  .field label { display:block; font-size:0.86em; font-weight:600; color:var(--dark); margin-bottom:6px; }
+  .field .hint { font-weight: 400; color: var(--muted); font-size: 0.92em; }
+  input[type=text], select, textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #cfdcdb;
+    border-radius: 9px;
+    font-size: 0.95em;
+    font-family: inherit;
+    color: var(--ink);
+    background: #fff;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input[type=text]:focus, select:focus, textarea:focus { border-color: var(--primary); }
+  textarea { resize: vertical; min-height: 64px; line-height:1.6; }
+  .row { display:flex; gap:12px; flex-wrap:wrap; }
+  .row > .field { flex:1; min-width: 200px; }
+
+  .btn {
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    border:none; border-radius:10px; cursor:pointer;
+    font-family:inherit; font-size:0.98em; font-weight:700;
+    padding:13px 22px; transition: all 0.15s; -webkit-tap-highlight-color:transparent;
+  }
+  .btn-primary { background: var(--primary); color:#fff; width:100%; }
+  .btn-primary:hover { background: var(--dark); }
+  .btn-primary:active { transform: scale(0.99); }
+  .btn-ghost { background: var(--light); color: var(--dark); }
+  .btn-ghost:hover { background: #d2e8e6; }
+
+  .toolbar { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
+  .toolbar .btn { flex:1; min-width:130px; font-size:0.9em; padding:11px 14px; }
+
+  #output { display:none; }
+
+  /* SPIKES step cards */
+  .step {
+    border:1px solid #d8e6e5; border-radius:11px; overflow:hidden; margin-bottom:14px;
+    background:#fff;
+  }
+  .step-head {
+    display:flex; align-items:center; gap:12px;
+    padding:13px 16px; background:var(--light); cursor:pointer;
+  }
+  .step-letter {
+    flex:none; width:34px; height:34px; border-radius:8px;
+    background:var(--primary); color:#fff; font-weight:800; font-size:1.1em;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .step-title { flex:1; }
+  .step-title b { display:block; color:var(--dark); font-size:1em; }
+  .step-title span { display:block; font-size:0.78em; color:var(--muted); }
+  .step-toggle { color:var(--primary); font-size:1.2em; transition:transform 0.2s; }
+  .step.open .step-toggle { transform: rotate(180deg); }
+  .step-body { padding: 4px 16px 16px; display:none; }
+  .step.open .step-body { display:block; }
+
+  .block-label {
+    font-size:0.74em; font-weight:700; letter-spacing:0.04em;
+    color:var(--accent); margin:14px 0 5px; text-transform:uppercase;
+  }
+  .say {
+    background:#f6faf9; border-left:3px solid var(--primary);
+    border-radius:0 8px 8px 0; padding:11px 13px; font-size:0.95em;
+    white-space:pre-wrap; color:#1d3433;
+  }
+  .checklist { list-style:none; margin-top:4px; }
+  .checklist li { font-size:0.9em; padding:3px 0 3px 24px; position:relative; color:#33514f; }
+  .checklist li:before { content:"✓"; position:absolute; left:4px; color:var(--primary); font-weight:800; }
+  .watch { font-size:0.86em; color:#9c4221; background:#fdf1ec; border-radius:8px; padding:8px 11px; margin-top:8px; }
+
+  /* Leaflet (疾患説明書) */
+  .leaflet {
+    border:1px solid #d8e6e5; border-radius:11px; padding:26px 24px; background:#fff;
+  }
+  .leaflet h3 {
+    font-size:1.3em; color:var(--dark); text-align:center;
+    border-bottom:3px solid var(--primary); padding-bottom:12px; margin-bottom:6px;
+  }
+  .leaflet .lf-meta { text-align:center; font-size:0.8em; color:var(--muted); margin-bottom:20px; }
+  .lf-sec { margin-bottom:18px; }
+  .lf-sec h4 {
+    font-size:1em; color:#fff; background:var(--primary);
+    border-radius:7px; padding:7px 13px; margin-bottom:9px;
+  }
+  .lf-sec .lf-body { font-size:0.95em; color:#243B3A; padding:0 4px; white-space:pre-wrap; }
+  .lf-foot { margin-top:24px; border-top:1px dashed #bcd; padding-top:14px; font-size:0.82em; color:var(--muted); }
+  .editable { outline:none; }
+  .editable:focus { background:#fffbe9; border-radius:4px; }
+
+  .disclaimer {
+    font-size:0.8em; color:var(--muted); background:#fff8f4;
+    border:1px solid #f3d9cc; border-radius:9px; padding:12px 14px; margin-top:6px;
+  }
+  .tabbar { display:flex; gap:8px; margin-bottom:16px; }
+  .tab {
+    flex:1; text-align:center; padding:10px; border-radius:9px; cursor:pointer;
+    font-size:0.9em; font-weight:700; background:var(--light); color:var(--muted);
+  }
+  .tab.active { background:var(--primary); color:#fff; }
+  .tabpane { display:none; }
+  .tabpane.active { display:block; }
+
+  footer { text-align:center; margin-top:30px; font-size:0.8em; color:#9aa; line-height:1.6; padding:0 16px; }
+
+  @media (max-width:600px){
+    header h1 { font-size:1.25em; }
+    .container { padding:16px 10px; }
+    .panel { padding:16px 14px; }
+    .leaflet { padding:18px 14px; }
+  }
+
+  @media print {
+    body { background:#fff; }
+    header, .panel.input-panel, .toolbar, .tabbar, footer, #spikesPane, .no-print { display:none !important; }
+    .container { max-width:none; padding:0; }
+    #output, #leafletPane { display:block !important; }
+    .panel { box-shadow:none; padding:0; margin:0; }
+    .leaflet { border:none; }
+    .lf-sec h4 { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🗣️ SPIKES 病状説明アシスタント</h1>
+  <p>簡単な病歴から、SPIKESプロトコルに沿った病状説明の流れと疾患説明書の下書きを作成します</p>
+  <a class="back" href="index.html">← ツール一覧へ戻る</a>
+</header>
+
+<div class="container">
+
+  <div class="panel input-panel">
+    <h2>📝 症例情報の入力</h2>
+    <p class="sub">わかる範囲で入力してください（空欄でもひな型を生成します）。生成後は本文を直接クリックして編集できます。</p>
+
+    <div class="row">
+      <div class="field">
+        <label>患者さんの呼称 <span class="hint">（例：田中さん）</span></label>
+        <input type="text" id="patient" placeholder="○○さん">
+      </div>
+      <div class="field">
+        <label>同席されるご家族 <span class="hint">（例：奥様、長男さん）</span></label>
+        <input type="text" id="family" placeholder="ご家族">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>疾患・病態</label>
+      <select id="disease"></select>
+    </div>
+    <div class="field" id="freeDiseaseWrap" style="display:none;">
+      <label>疾患名（自由入力）</label>
+      <input type="text" id="freeDisease" placeholder="例：正常圧水頭症">
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label>説明する場面</label>
+        <select id="scene">
+          <option value="new">新規の診断を伝える</option>
+          <option value="progress">病状の進行・再発を伝える</option>
+          <option value="change">治療方針の変更を伝える</option>
+          <option value="palliative">積極的治療の中止・緩和ケアへの移行</option>
+          <option value="eol">予後・看取りについて伝える</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>患者さんの現状理解</label>
+        <select id="perception">
+          <option value="none">ほとんど認識されていない</option>
+          <option value="vague" selected>うすうす感じておられる</option>
+          <option value="partial">ある程度理解されている</option>
+          <option value="full">十分に理解されている</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label>情報提供の希望</label>
+        <select id="invitation">
+          <option value="all">詳しくすべて知りたい</option>
+          <option value="key" selected>要点を中心に知りたい</option>
+          <option value="family">家族と相談しながら</option>
+          <option value="defer">本人は詳細を望まれない</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>予後の説明方針</label>
+        <select id="prognosis">
+          <option value="explain">具体的に説明する</option>
+          <option value="careful" selected>慎重に段階的に伝える</option>
+          <option value="uncertain">不確実性を強調して伝える</option>
+          <option value="hold">今回は踏み込まない</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>今後の方針・治療内容 <span class="hint">（自由記述。例：抗血小板薬を開始し、リハビリ目的に転院を調整）</span></label>
+      <textarea id="plan" placeholder="検査・治療・療養先など、これから提案する内容を入力"></textarea>
+    </div>
+
+    <div class="field">
+      <label>特に配慮したいこと <span class="hint">（任意。例：独居で介護力が乏しい／本人が仕事継続を強く希望）</span></label>
+      <textarea id="concern" placeholder="心理社会的な背景や配慮点があれば入力"></textarea>
+    </div>
+
+    <button class="btn btn-primary" id="generateBtn">説明の流れと説明書を作成する</button>
+  </div>
+
+  <div id="output">
+    <div class="toolbar no-print">
+      <button class="btn btn-ghost" id="copyScript">📋 説明フローをコピー</button>
+      <button class="btn btn-ghost" id="copyLeaflet">📋 説明書をコピー</button>
+      <button class="btn btn-ghost" id="printLeaflet">🖨️ 説明書を印刷</button>
+    </div>
+
+    <div class="tabbar no-print">
+      <div class="tab active" data-tab="spikes">🗣️ 説明の流れ（SPIKES）</div>
+      <div class="tab" data-tab="leaflet">📄 疾患説明書</div>
+    </div>
+
+    <div class="tabpane active" id="spikesPane">
+      <div class="panel">
+        <h2>SPIKESに沿った説明の流れ</h2>
+        <p class="sub">各ステップをタップで開閉。言葉がけ例はそのまま使わず、患者さんの反応に合わせて調整してください。</p>
+        <div id="steps"></div>
+      </div>
+    </div>
+
+    <div class="tabpane" id="leafletPane">
+      <div class="panel">
+        <h2 class="no-print">疾患説明書（お渡し用の下書き）</h2>
+        <p class="sub no-print">クリックすると本文を編集できます。「印刷」ボタンでこの説明書だけを印刷できます。</p>
+        <div class="leaflet" id="leaflet"></div>
+      </div>
+    </div>
+
+    <div class="disclaimer no-print">
+      ⚠️ <b>本ツールが生成する文章は下書きです。</b> 内容の医学的妥当性・患者さん個別の状況への適合は、必ず担当医がご確認・修正のうえご使用ください。数値や予後など個別性の高い情報は、エビデンスと診療経過に基づき医師が判断してください。
+    </div>
+  </div>
+
+  <footer>
+    出典：脳神経内科医が解説する病状説明とSPIKESプロトコル（医知創造ラボ）。<br>
+    本ツールは臨床コミュニケーションの補助を目的としており、説明内容の最終判断は担当医が行うものです。
+  </footer>
+</div>
+
+<script>
+/* ===== 疾患ナレッジベース（一般的・定性的な記述。個別数値は含めない） ===== */
+var DISEASES = {
+  stroke: {
+    name: "脳卒中（脳梗塞・脳出血）",
+    plain: "脳の血管が詰まったり破れたりして、脳の一部に栄養や酸素が届かなくなり、その部分のはたらきが低下する病気です。",
+    course: "発症直後は症状が変動しやすく、急性期の治療と並行して全身の管理を行います。その後はリハビリで残った力を引き出し、生活への影響をできるだけ小さくしていきます。回復の程度には個人差があります。",
+    treatment: "再発予防のお薬や血圧・生活習慣の管理、原因に応じた検査を行います。早期からのリハビリテーションが回復を助けます。",
+    life: "再発予防のため血圧・血糖・脂質の管理を続けます。麻痺や言葉の症状が残る場合は、ご自宅の環境調整や介護サービスの利用を一緒に検討します。",
+    support: "リハビリ病院、地域連携室、介護保険(要介護認定)、身体障害者手帳、訪問リハビリ・デイケアなど"
+  },
+  dementia: {
+    name: "認知症",
+    plain: "脳の神経のはたらきが少しずつ低下し、記憶や判断などの認知機能が日常生活に支障が出る程度まで下がる状態です。",
+    course: "多くはゆっくりと進行します。症状の進み方には個人差があり、ご本人ができることを保ちながら、生活を支える工夫を重ねていきます。",
+    treatment: "進行を緩やかにするお薬や、不安・不眠などの症状への対応を行います。生活リズムや環境を整えることも大切な治療の一部です。",
+    life: "安心して過ごせる環境づくり、火の元や服薬の見守り、外出時の安全対策を整えます。ご家族の負担を抱え込まないことも重要です。",
+    support: "もの忘れ外来、地域包括支援センター、介護保険、認知症カフェ・家族会、成年後見制度など"
+  },
+  parkinson: {
+    name: "パーキンソン病",
+    plain: "脳の中でからだの動きを調整する物質(ドパミン)が減ることで、動きがゆっくりになる・手が震える・からだがこわばるといった症状が出る病気です。",
+    course: "多くはゆっくり進行します。お薬で症状をうまく抑えられる時期が長く続くことが多く、運動を続けることも大切です。",
+    treatment: "不足している物質を補うお薬を中心に、症状や生活に合わせて調整します。リハビリ・運動療法も効果があります。",
+    life: "転倒の予防、規則正しい服薬、適度な運動が大切です。症状の日内変動に合わせて生活を組み立てます。",
+    support: "神経内科外来、リハビリ、難病医療費助成(指定難病)、介護保険、患者会など"
+  },
+  epilepsy: {
+    name: "てんかん",
+    plain: "脳の神経に一時的な過剰な電気の乱れが起こり、けいれんや意識の途切れなどの発作をくり返す状態です。",
+    course: "多くは適切なお薬で発作をコントロールできます。発作の状況を記録しながら、お薬の種類や量を調整していきます。",
+    treatment: "抗てんかん薬を継続して使用します。自己判断で中断すると発作が起きやすくなるため、内服の継続が重要です。",
+    life: "睡眠不足や飲酒など発作の誘因を避けます。入浴・運転・就労など生活上の注意は、発作の状況に応じて個別に相談します。",
+    support: "てんかん専門外来、発作時の対応指導、自立支援医療、運転に関する相談窓口など"
+  },
+  als: {
+    name: "筋萎縮性側索硬化症(ALS)など神経難病",
+    plain: "からだを動かす神経が少しずつはたらきを失い、手足の力や、のみこみ・呼吸にかかわる筋肉の力が低下していく病気です。",
+    course: "進行の速さには個人差があります。今後どのような変化が起こりうるかを見通しながら、その時々のご希望を大切に、療養の準備を一緒に進めていきます。",
+    treatment: "進行を緩やかにする治療と、症状をやわらげるケアを組み合わせます。呼吸や栄養のサポートについては、ご本人の価値観を伺いながら段階的に相談します。",
+    life: "コミュニケーション手段や生活環境を、進行に合わせて整えていきます。早めの準備が、選択の幅を広げます。",
+    support: "難病医療費助成(指定難病)、多職種チーム、訪問診療・訪問看護、療養先の相談、患者会など"
+  },
+  ms: {
+    name: "多発性硬化症・脱髄性疾患",
+    plain: "神経を包む“さや”の部分に炎症が起こり、神経の信号がうまく伝わらなくなることで、しびれ・見えにくさ・力の入りにくさなどが現れる病気です。",
+    course: "症状が出たり治まったりをくり返すことがあります。再発を予防する治療を続けることで、長期的な経過を良くすることを目指します。",
+    treatment: "急性期の炎症を抑える治療と、再発を予防する治療があります。経過に応じて治療を調整します。",
+    life: "疲れや感染、体温の上昇が症状に影響することがあります。無理のない生活と再発予防治療の継続が大切です。",
+    support: "神経内科外来、難病医療費助成、リハビリ、就労・生活の相談窓口など"
+  },
+  brain_tumor: {
+    name: "脳腫瘍",
+    plain: "脳やその周囲に“できもの”ができ、その場所のはたらきを妨げたり、頭の中の圧を高めたりする病気です。",
+    course: "腫瘍の種類や場所によって経過や治療が大きく異なります。検査の結果をふまえ、最適な治療を専門の科と一緒に検討します。",
+    treatment: "手術・放射線治療・薬物療法などを、腫瘍の性質に応じて組み合わせます。専門科と連携して方針を決めます。",
+    life: "症状やけいれんへの対応、生活上の安全対策を整えます。治療と生活の両立について一緒に考えます。",
+    support: "脳神経外科・腫瘍内科との連携、セカンドオピニオン、相談支援センター、各種制度など"
+  },
+  cancer: {
+    name: "がん（一般）",
+    plain: "からだの細胞の一部が異常に増え、周囲の組織に影響を及ぼす病気です。種類や広がりによって治療や見通しが異なります。",
+    course: "検査で種類と広がりを正確に把握したうえで、治療の選択肢を一緒に検討します。治療と生活の両立を大切にしていきます。",
+    treatment: "手術・薬物療法・放射線治療・緩和ケアなどを、病状とご希望に合わせて組み合わせます。",
+    life: "治療に伴う体調の変化への対応、仕事や生活との両立、つらさをやわらげるケアを並行して行います。",
+    support: "がん相談支援センター、緩和ケア、セカンドオピニオン、高額療養費制度、就労支援など"
+  },
+  heart_failure: {
+    name: "心不全",
+    plain: "心臓のポンプのはたらきが低下し、息切れやむくみが出やすくなる状態です。",
+    course: "良くなったり悪くなったりをくり返しながら進むことがあります。お薬と生活の管理で、悪化をできるだけ防いでいきます。",
+    treatment: "心臓の負担を減らすお薬を中心に、原因となる病気の治療も行います。塩分・水分・体重の管理が重要です。",
+    life: "毎日の体重測定、減塩、服薬の継続、症状が悪化したときの受診の目安を一緒に確認します。",
+    support: "循環器外来、心臓リハビリ、訪問看護、介護保険、生活指導など"
+  },
+  generic: {
+    name: "その他（自由入力）",
+    plain: "",
+    course: "検査の結果をふまえ、今の状態とこれからの見通しについてご説明します。",
+    treatment: "病状とご希望に合わせて、これからの対応を一緒に決めていきます。",
+    life: "日常生活で気をつけることや利用できるサポートについて、一緒に確認していきます。",
+    support: "外来での経過観察、地域連携室、必要に応じた専門科・各種制度の紹介など"
+  }
+};
+
+var DISEASE_ORDER = ["stroke","dementia","parkinson","epilepsy","als","ms","brain_tumor","cancer","heart_failure","generic"];
+
+var SCENE_LABEL = {
+  new: "新規の診断", progress: "病状の進行・再発", change: "治療方針の変更",
+  palliative: "緩和ケアへの移行", eol: "予後・看取り"
+};
+
+/* ===== 入力取得 ===== */
+function val(id){ var e=document.getElementById(id); return e?e.value.trim():""; }
+
+function getInput(){
+  var dkey = val("disease") || "generic";
+  var d = DISEASES[dkey] || DISEASES.generic;
+  var dname = (dkey==="generic") ? (val("freeDisease") || "ご病気") : d.name;
+  var pt = val("patient") || "○○さん";
+  var fam = val("family") || "ご家族";
+  return {
+    dkey: dkey, d: d, dname: dname,
+    patient: pt, family: fam,
+    scene: val("scene") || "new",
+    perception: val("perception") || "vague",
+    invitation: val("invitation") || "key",
+    prognosis: val("prognosis") || "careful",
+    plan: val("plan"),
+    concern: val("concern")
+  };
+}
+
+/* ===== Sステップ本文生成 ===== */
+function sentenceP(inp){
+  var m = {
+    none: "今のお体の状態について、これまで担当の医師からどのようにお聞きになっていますか？",
+    vague: "ご自身では、今のお体の調子をどのように感じていらっしゃいますか？",
+    partial: "これまでの説明で、今のご病状についてどこまでお聞きになっているか、確認させてください。",
+    full: "これまでの経過について、○○さんのご理解を確認しながら進めさせてください。"
+  };
+  return (m[inp.perception]||m.vague).replace("○○さん", inp.patient);
+}
+
+function sentenceI(inp){
+  var m = {
+    all: "これから検査の結果を詳しくお話ししますが、細かい点までお伝えして大丈夫でしょうか。",
+    key: "結果について、まず要点をお話しし、ご希望に応じて詳しくご説明していきますね。",
+    family: "今日は△△と一緒にお聞きいただき、ご相談しながら進めていきましょう。",
+    defer: "どこまで詳しくお伝えするか、○○さんのご希望に合わせます。お知りになりたい範囲を教えてください。"
+  };
+  var base = (m[inp.invitation]||m.key).replace("△△", inp.family).replace("○○さん", inp.patient);
+  if (inp.prognosis==="explain") base += "\n先々の見通しについても、ご希望があればお話しします。";
+  if (inp.prognosis==="hold") base += "\n先々のことは、今日は無理にお話しせず、ご質問があればその範囲でお答えします。";
+  return base;
+}
+
+function warningShot(inp){
+  var m = {
+    new: "これからお伝えするのは、少し心構えをしてお聞きいただきたい内容です。",
+    progress: "前回からの経過について、残念ながらよいお知らせばかりではありません。",
+    change: "これまでの治療について、方針を見直す必要が出てきました。",
+    palliative: "今の状態をふまえて、これからの治療の進め方について大切なお話があります。",
+    eol: "これからの時間の過ごし方について、大切なお話をさせてください。"
+  };
+  return m[inp.scene] || m.new;
+}
+
+function sentenceK(inp){
+  var d = inp.d;
+  var s = warningShot(inp) + "\n\n";
+  s += "【ご病気について】\n" + inp.dname + "です。";
+  if (d.plain) s += d.plain;
+  s += "\n\n【今の状態とこれからの経過】\n" + d.course;
+  return s;
+}
+
+function sentenceE(inp){
+  var lines = [
+    "（少し沈黙をとり、ご本人・ご家族の反応を待つ）",
+    "突然のことで、驚かれたと思います。",
+    "おつらいですよね。今、どんなお気持ちですか。",
+    "ご心配なことを、よろしければ聞かせてください。"
+  ];
+  return lines.join("\n");
+}
+
+function sentenceS(inp){
+  var d = inp.d;
+  var s = "【これからの方針】\n";
+  if (inp.plan) {
+    s += inp.plan;
+  } else {
+    s += d.treatment;
+  }
+  s += "\n\n【生活で気をつけること・サポート】\n" + d.life;
+  if (inp.concern) s += "\n（配慮：" + inp.concern + "）";
+  s += "\n\n【今日のまとめと次回】\n今日お話ししたことで、わかりにくかった点やご心配なことはありますか。";
+  s += "\nまた気になることが出てきたら、いつでも遠慮なくお尋ねください。次回、改めて経過を確認しましょう。";
+  return s;
+}
+
+/* ===== ステップ定義 ===== */
+function buildSteps(inp){
+  return [
+    {
+      letter:"S", title:"Setting｜場の設定",
+      sub:"環境を整え、落ち着いて話せる準備をする",
+      say:"本日はお時間をいただきありがとうございます。"+inp.patient+"の今のご病状について、検査結果をふまえてご説明したいと思います。\nご一緒にお聞きいただくのは"+inp.family+"でよろしいですか。ごゆっくりお話しできるよう、お席にどうぞ。",
+      checks:[
+        "静かで中断の少ない個室を確保し、全員が座る",
+        "同席者（キーパーソン）と、本人の希望を事前に確認",
+        "ポケベル・電話を預け、十分な時間を確保",
+        "目線の高さを合わせ、適度な距離をとる"
+      ],
+      watch:""
+    },
+    {
+      letter:"P", title:"Perception｜認識の確認",
+      sub:"まず相手がどう理解しているかを聴く（"+'"'+"先に話さず先に聴く"+'"'+"）",
+      say:sentenceP(inp),
+      checks:[
+        "本人の言葉で現状の理解を語ってもらう",
+        "医学的事実とのズレ・誤解の有無を把握",
+        "否認・過度の楽観などの心理状態に注目"
+      ],
+      watch:""
+    },
+    {
+      letter:"I", title:"Invitation｜情報共有の希望",
+      sub:"どこまで知りたいかを本人に確認する",
+      say:sentenceI(inp),
+      checks:[
+        "詳しく知りたいか／要点でよいかを確認",
+        "予後を聞きたいか、本人の希望を尊重",
+        "知りたくない権利も保障する"
+      ],
+      watch: (inp.invitation==="defer") ? "本人が詳細を望まない場合、誰に・どこまで伝えるかを本人と取り決める。" : ""
+    },
+    {
+      letter:"K", title:"Knowledge｜情報の提供",
+      sub:"予告(warning shot)→専門用語を避け、段階的に",
+      say:sentenceK(inp),
+      checks:[
+        "一度に大量に伝えず、区切って理解度を確認",
+        "専門用語を避け、平易な言葉に翻訳",
+        "「ここまでで、ご質問はありますか」と都度確認",
+        "曖昧にせず、わからないことは正直に伝える"
+      ],
+      watch:"悪い情報をやわらげすぎて誤解を招かないよう、正確さと共感のバランスをとる。"
+    },
+    {
+      letter:"E", title:"Emotions｜感情への対応",
+      sub:"沈黙を許し、感情を言葉にして寄り添う",
+      say:sentenceE(inp),
+      checks:[
+        "沈黙を待ち、感情の表出を妨げない",
+        "「お辛いですね」と感情を言葉にして共感",
+        "情報の追加より、まず気持ちを受けとめる"
+      ],
+      watch:"感情が強いときは、無理に説明を続けず、いったん受けとめることを優先する。"
+    },
+    {
+      letter:"S", title:"Strategy & Summary｜方針と要約",
+      sub:"協働で方針を決め、要約し、逃げ道を残す",
+      say:sentenceS(inp),
+      checks:[
+        "本人と一緒に方針を決める（一方的にしない）",
+        "退院後の生活場所・サポート体制を早めに提示",
+        "要点を要約し、質問の時間をとる",
+        "「いつでも聞ける」逃げ道と次回予定を伝える"
+      ],
+      watch:""
+    }
+  ];
+}
+
+/* ===== 描画 ===== */
+function esc(t){ return (t||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+function renderSteps(inp){
+  var steps = buildSteps(inp);
+  var html = "";
+  for (var i=0;i<steps.length;i++){
+    var st = steps[i];
+    var open = (i===0) ? " open" : "";
+    html += '<div class="step'+open+'">';
+    html += '<div class="step-head" onclick="this.parentNode.classList.toggle(\'open\')">';
+    html += '<div class="step-letter">'+st.letter+'</div>';
+    html += '<div class="step-title"><b>'+esc(st.title)+'</b><span>'+esc(st.sub)+'</span></div>';
+    html += '<div class="step-toggle">▾</div></div>';
+    html += '<div class="step-body">';
+    html += '<div class="block-label">言葉がけ例</div>';
+    html += '<div class="say">'+esc(st.say)+'</div>';
+    html += '<div class="block-label">チェックポイント</div>';
+    html += '<ul class="checklist">';
+    for (var j=0;j<st.checks.length;j++){ html += '<li>'+esc(st.checks[j])+'</li>'; }
+    html += '</ul>';
+    if (st.watch) html += '<div class="watch">⚠ '+esc(st.watch)+'</div>';
+    html += '</div></div>';
+  }
+  document.getElementById("steps").innerHTML = html;
+}
+
+function renderLeaflet(inp){
+  var d = inp.d;
+  var today = new Date();
+  var dateStr = today.getFullYear()+"年"+(today.getMonth()+1)+"月"+today.getDate()+"日";
+  var planText = inp.plan ? inp.plan : d.treatment;
+  var html = "";
+  html += '<h3 class="editable" contenteditable="true">'+esc(inp.dname)+' について</h3>';
+  html += '<div class="lf-meta">'+esc(inp.patient)+' へ ／ '+dateStr+' 説明</div>';
+
+  function sec(title, body){
+    return '<div class="lf-sec"><h4>'+title+'</h4>'+
+           '<div class="lf-body editable" contenteditable="true">'+esc(body)+'</div></div>';
+  }
+
+  var about = (d.plain ? d.plain+"\n" : "") ;
+  html += sec("この病気について", about || "（担当医が補足します）");
+  html += sec("今の状態とこれからの経過", d.course);
+  html += sec("これからの対応・治療", planText);
+  html += sec("生活で気をつけること", d.life);
+  html += sec("利用できる相談先・サポート", d.support);
+  if (inp.concern) html += sec("あなたの状況をふまえて", inp.concern);
+
+  html += '<div class="lf-foot">';
+  html += '<div>本日の担当医：________________________</div>';
+  html += '<div style="margin-top:6px;">次回の予定：________________________</div>';
+  html += '<div style="margin-top:6px;">ご質問・お気づきのことは、いつでも遠慮なくお尋ねください。</div>';
+  html += '<div style="margin-top:10px;font-size:0.9em;">※この説明書は、お話しした内容の要点をまとめたものです。詳しい内容は担当医にご確認ください。</div>';
+  html += '</div>';
+
+  document.getElementById("leaflet").innerHTML = html;
+}
+
+/* ===== コピー用テキスト ===== */
+function scriptToText(inp){
+  var steps = buildSteps(inp);
+  var out = "■ 病状説明フロー（SPIKES）  患者："+inp.patient+" ／ "+inp.dname+" ／ 場面："+(SCENE_LABEL[inp.scene]||"")+"\n";
+  for (var i=0;i<steps.length;i++){
+    var st = steps[i];
+    out += "\n──────────\n["+st.letter+"] "+st.title+"\n（"+st.sub+"）\n\n〔言葉がけ例〕\n"+st.say+"\n\n〔チェック〕\n";
+    for (var j=0;j<st.checks.length;j++){ out += "・"+st.checks[j]+"\n"; }
+    if (st.watch) out += "⚠ "+st.watch+"\n";
+  }
+  out += "\n※下書きです。医学的妥当性は担当医がご確認ください。";
+  return out;
+}
+
+function leafletToText(){
+  var el = document.getElementById("leaflet");
+  return el ? el.innerText : "";
+}
+
+function copyText(text, btn){
+  function done(){ var o=btn.innerHTML; btn.innerHTML="✅ コピーしました"; setTimeout(function(){btn.innerHTML=o;},1500); }
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done, function(){ fallbackCopy(text); done(); });
+  } else { fallbackCopy(text); done(); }
+}
+function fallbackCopy(text){
+  var ta=document.createElement("textarea"); ta.value=text;
+  ta.style.position="fixed"; ta.style.opacity="0"; document.body.appendChild(ta);
+  ta.select(); try{document.execCommand("copy");}catch(e){} document.body.removeChild(ta);
+}
+
+/* ===== イベント ===== */
+var lastInput = null;
+
+function generate(){
+  lastInput = getInput();
+  renderSteps(lastInput);
+  renderLeaflet(lastInput);
+  document.getElementById("output").style.display="block";
+  document.getElementById("output").scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+function initDiseaseSelect(){
+  var sel = document.getElementById("disease");
+  var html = "";
+  for (var i=0;i<DISEASE_ORDER.length;i++){
+    var k = DISEASE_ORDER[i];
+    html += '<option value="'+k+'">'+DISEASES[k].name+'</option>';
+  }
+  sel.innerHTML = html;
+  sel.addEventListener("change", function(){
+    document.getElementById("freeDiseaseWrap").style.display =
+      (sel.value==="generic") ? "block" : "none";
+  });
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+  initDiseaseSelect();
+  document.getElementById("generateBtn").addEventListener("click", generate);
+
+  document.getElementById("copyScript").addEventListener("click", function(){
+    if(lastInput) copyText(scriptToText(lastInput), this);
+  });
+  document.getElementById("copyLeaflet").addEventListener("click", function(){
+    copyText(leafletToText(), this);
+  });
+  document.getElementById("printLeaflet").addEventListener("click", function(){
+    // 印刷前に説明書タブを表示
+    switchTab("leaflet");
+    window.print();
+  });
+
+  var tabs = document.querySelectorAll(".tab");
+  for (var i=0;i<tabs.length;i++){
+    tabs[i].addEventListener("click", function(){ switchTab(this.getAttribute("data-tab")); });
+  }
+});
+
+function switchTab(name){
+  var tabs=document.querySelectorAll(".tab");
+  for(var i=0;i<tabs.length;i++){ tabs[i].classList.toggle("active", tabs[i].getAttribute("data-tab")===name); }
+  document.getElementById("spikesPane").classList.toggle("active", name==="spikes");
+  document.getElementById("leafletPane").classList.toggle("active", name==="leaflet");
+}
+</script>
+</body>
+</html>
