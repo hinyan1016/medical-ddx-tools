@@ -151,6 +151,10 @@
     font-size:0.8em; color:var(--muted); background:#fff8f4;
     border:1px solid #f3d9cc; border-radius:9px; padding:12px 14px; margin-top:6px;
   }
+  .privacy-note {
+    font-size:0.82em; color:#1d5a56; background:#eef7f6;
+    border:1px solid #bfe0dd; border-radius:9px; padding:10px 13px; margin-bottom:15px; line-height:1.6;
+  }
   .tabbar { display:flex; gap:8px; margin-bottom:16px; }
   .tab {
     flex:1; text-align:center; padding:10px; border-radius:9px; cursor:pointer;
@@ -194,16 +198,11 @@
     <h2>📝 症例情報の入力</h2>
     <p class="sub">わかる範囲で入力してください（空欄でもひな型を生成します）。生成後は本文を直接クリックして編集できます。</p>
 
-    <div class="row">
-      <div class="field">
-        <label>患者さんの呼称 <span class="hint">（例：田中さん）</span></label>
-        <input type="text" id="patient" placeholder="○○さん">
-      </div>
-      <div class="field">
-        <label>同席されるご家族 <span class="hint">（例：奥様、長男さん）</span></label>
-        <input type="text" id="family" placeholder="ご家族">
-      </div>
+    <div class="field">
+      <label>同席されるご家族（続柄） <span class="hint">（お名前ではなく「奥様」「ご長女」など続柄で。空欄可）</span></label>
+      <input type="text" id="family" placeholder="ご家族">
     </div>
+    <div class="privacy-note">🔒 患者さんのお名前などの個人情報は入力しません。出力は「○○さん」のままにし、<b>印刷後・AI生成後にご自身で実名を補ってください</b>（生成AIに個人情報を送らない運用です）。</div>
 
     <div class="field">
       <label>疾患・病態 <span class="hint">（自由記載。例：脳梗塞、進行胃がん、パーキンソン病、ALSの疑い など）</span></label>
@@ -299,7 +298,7 @@
     <div class="tabpane active" id="promptPane">
       <div class="panel">
         <h2>🤖 ご自身のAI用プロンプト</h2>
-        <p class="sub">下のプロンプトをコピーして、ご契約中のAI（ChatGPT・Claude など）に貼り付けると、この症例に即した説明の流れと疾患説明書を生成できます。<b>このツールから外部に情報は送信されません。</b></p>
+        <p class="sub">下のプロンプトをコピーして、ご契約中のAI（ChatGPT・Claude など）に貼り付けると、この症例に即した説明の流れと疾患説明書を生成できます。<b>このツールから外部に情報は送信されません。プロンプトには患者さんの実名などの個人情報は含めていません</b>（呼称は「○○さん」のまま。実名は生成後にご記入ください）。</p>
         <button class="btn btn-primary" id="copyPromptTop" style="margin-bottom:12px;">📋 プロンプトをコピー</button>
         <textarea id="aiPrompt" style="min-height:340px; font-size:0.9em; line-height:1.7;"></textarea>
         <p class="sub" style="margin-top:10px; margin-bottom:0;">※プロンプト内に「エビデンスのない数値は書かない」「下書き前提で担当医が確認」などの安全制約を含めています。生成結果も必ず担当医がご確認ください。</p>
@@ -349,11 +348,10 @@ function val(id){ var e=document.getElementById(id); return e?e.value.trim():"";
 
 function getInput(){
   var dname = val("disease") || "ご病気";
-  var pt = val("patient") || "○○さん";
   var fam = val("family") || "ご家族";
   return {
     dname: dname,
-    patient: pt, family: fam,
+    patient: "○○さん", family: fam,
     scene: val("scene") || "new",
     perception: val("perception") || "vague",
     invitation: val("invitation") || "key",
@@ -547,7 +545,7 @@ function renderLeaflet(inp){
   var planText = inp.plan ? inp.plan : GENERIC.treatment;
   var html = "";
   html += '<h3 class="editable" contenteditable="true">'+esc(inp.dname)+' について</h3>';
-  html += '<div class="lf-meta">'+esc(inp.patient)+' へ ／ '+dateStr+' 説明</div>';
+  html += '<div class="lf-meta">＿＿＿＿＿＿ 様 へ ／ '+dateStr+' 説明　<span style="font-size:0.92em;">（お名前は印刷後にご記入ください）</span></div>';
 
   function sec(title, body){
     return '<div class="lf-sec"><h4>'+title+'</h4>'+
@@ -598,8 +596,8 @@ function buildAIPrompt(inp){
   L.push("以下の症例について、SPIKESプロトコルに沿った「説明・面談の流れ」と、患者さんにお渡しする「説明書」の2つを日本語で作成してください。");
   L.push("");
   L.push("# 症例情報");
-  L.push("- 患者さんの呼称：" + inp.patient);
-  L.push("- 同席されるご家族：" + inp.family);
+  L.push("- 患者さんの呼称：○○さん（※個人情報保護のため実名は入力していません。出力でも「○○さん」のままにしてください。実名は後で担当者が記入します）");
+  L.push("- 同席されるご家族（続柄）：" + inp.family);
   L.push("- 疾患・病態：" + inp.dname);
   L.push("- 説明する場面：" + (SCENE_LABEL[inp.scene] || ""));
   L.push("- 患者さんの現状理解：" + (PERCEPTION_LABEL[inp.perception] || ""));
@@ -647,6 +645,7 @@ function buildAIPrompt(inp){
   }
   L.push("");
   L.push("# 制約（重要・必ず守ること）");
+  L.push("- 患者さんの実名や個人を特定できる情報は含めない。呼称は「○○さん」のままにし、実名は使わない（実名は後で担当者が補います）。");
   L.push("- 専門用語を避け、中学生にもわかる平易な日本語で書く。");
   L.push("- 患者さん・ご家族の感情に配慮した、共感的で穏やかなトーンにする。");
   L.push("- 不確実なことは正直に伝え、断定しすぎない。");
