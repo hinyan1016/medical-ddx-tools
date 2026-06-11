@@ -87,8 +87,6 @@
   .btn-ghost { background: var(--light); color: var(--dark); }
   .btn-ghost:hover { background: #d2e8e6; }
 
-  .toolbar { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
-  .toolbar .btn { flex:1; min-width:130px; font-size:0.9em; padding:11px 14px; }
 
   #output { display:none; }
 
@@ -128,25 +126,6 @@
   .checklist li:before { content:"✓"; position:absolute; left:4px; color:var(--primary); font-weight:800; }
   .watch { font-size:0.86em; color:#9c4221; background:#fdf1ec; border-radius:8px; padding:8px 11px; margin-top:8px; }
 
-  /* Leaflet (疾患説明書) */
-  .leaflet {
-    border:1px solid #d8e6e5; border-radius:11px; padding:26px 24px; background:#fff;
-  }
-  .leaflet h3 {
-    font-size:1.3em; color:var(--dark); text-align:center;
-    border-bottom:3px solid var(--primary); padding-bottom:12px; margin-bottom:6px;
-  }
-  .leaflet .lf-meta { text-align:center; font-size:0.8em; color:var(--muted); margin-bottom:20px; }
-  .lf-sec { margin-bottom:18px; }
-  .lf-sec h4 {
-    font-size:1em; color:#fff; background:var(--primary);
-    border-radius:7px; padding:7px 13px; margin-bottom:9px;
-  }
-  .lf-sec .lf-body { font-size:0.95em; color:#243B3A; padding:0 4px; white-space:pre-wrap; }
-  .lf-foot { margin-top:24px; border-top:1px dashed #bcd; padding-top:14px; font-size:0.82em; color:var(--muted); }
-  .editable { outline:none; }
-  .editable:focus { background:#fffbe9; border-radius:4px; }
-
   .disclaimer {
     font-size:0.8em; color:var(--muted); background:#fff8f4;
     border:1px solid #f3d9cc; border-radius:9px; padding:12px 14px; margin-top:6px;
@@ -170,17 +149,6 @@
     header h1 { font-size:1.25em; }
     .container { padding:16px 10px; }
     .panel { padding:16px 14px; }
-    .leaflet { padding:18px 14px; }
-  }
-
-  @media print {
-    body { background:#fff; }
-    header, .panel.input-panel, .toolbar, .tabbar, footer, #spikesPane, #promptPane, .no-print { display:none !important; }
-    .container { max-width:none; padding:0; }
-    #output, #leafletPane { display:block !important; }
-    .panel { box-shadow:none; padding:0; margin:0; }
-    .leaflet { border:none; }
-    .lf-sec h4 { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   }
 </style>
 </head>
@@ -188,7 +156,7 @@
 
 <header>
   <h1>🗣️ SPIKES 病状説明アシスタント</h1>
-  <p>簡単な病歴から、SPIKESプロトコルに沿った病状説明の流れ・疾患説明書・お使いのAI用プロンプトを作成します</p>
+  <p>簡単な病歴から、SPIKESプロトコルに沿った病状説明の流れと、説明書をAIで完成させるためのプロンプトを作成します</p>
   <a class="back" href="index.html">← ツール一覧へ戻る</a>
 </header>
 
@@ -269,45 +237,31 @@
   </div>
 
   <div id="output">
-    <div class="toolbar no-print">
-      <button class="btn btn-ghost" id="copyScript">📋 説明フローをコピー</button>
-      <button class="btn btn-ghost" id="copyLeaflet">📋 説明書をコピー</button>
-      <button class="btn btn-ghost" id="printLeaflet">🖨️ 説明書を印刷</button>
-    </div>
-
-    <div class="tabbar no-print">
+    <div class="tabbar">
       <div class="tab active" data-tab="prompt">🤖 AIプロンプト</div>
       <div class="tab" data-tab="spikes">🗣️ 説明の流れ</div>
-      <div class="tab" data-tab="leaflet">📄 疾患説明書</div>
-    </div>
-
-    <div class="tabpane" id="spikesPane">
-      <div class="panel">
-        <h2>SPIKESに沿った説明の流れ</h2>
-        <p class="sub">各ステップをタップで開閉。言葉がけ例はそのまま使わず、患者さんの反応に合わせて調整してください。</p>
-        <div id="steps"></div>
-      </div>
-    </div>
-
-    <div class="tabpane" id="leafletPane">
-      <div class="panel">
-        <h2 class="no-print">疾患説明書（お渡し用の下書き）</h2>
-        <p class="sub no-print">クリックすると本文を編集できます。「印刷」ボタンでこの説明書だけを印刷できます。</p>
-        <div class="leaflet" id="leaflet"></div>
-      </div>
     </div>
 
     <div class="tabpane active" id="promptPane">
       <div class="panel">
-        <h2>🤖 ご自身のAI用プロンプト</h2>
-        <p class="sub">下のプロンプトをコピーして、ご契約中のAI（ChatGPT・Claude など）に貼り付けると、この症例に即した説明の流れと疾患説明書を生成できます。<b>このツールから外部に情報は送信されません。プロンプトには患者さんの実名などの個人情報は含めていません</b>（呼称は「○○さん」のまま。実名は生成後にご記入ください）。</p>
+        <h2>🤖 説明書を完成させるAI用プロンプト</h2>
+        <p class="sub">下のプロンプトをコピーして、ご契約中のAI（ChatGPT・Claude など）に貼り付けると、この症例に即した<b>病状説明の流れと疾患説明書</b>をAIが作成します。<b>このツールから外部に情報は送信されません。プロンプトには患者さんの実名などの個人情報は含めていません</b>（呼称は「○○さん」のまま。実名は生成後にご記入ください）。</p>
         <button class="btn btn-primary" id="copyPromptTop" style="margin-bottom:12px;">📋 プロンプトをコピー</button>
         <textarea id="aiPrompt" style="min-height:340px; font-size:0.9em; line-height:1.7;"></textarea>
         <p class="sub" style="margin-top:10px; margin-bottom:0;">※プロンプト内に「エビデンスのない数値は書かない」「下書き前提で担当医が確認」などの安全制約を含めています。生成結果も必ず担当医がご確認ください。</p>
       </div>
     </div>
 
-    <div class="disclaimer no-print">
+    <div class="tabpane" id="spikesPane">
+      <div class="panel">
+        <h2>SPIKESに沿った説明の流れ</h2>
+        <p class="sub">面談時の進め方の参考に。各ステップをタップで開閉。言葉がけ例はそのまま使わず、患者さんの反応に合わせて調整してください。</p>
+        <button class="btn btn-ghost" id="copyScript" style="margin-bottom:12px;">📋 説明フローをコピー</button>
+        <div id="steps"></div>
+      </div>
+    </div>
+
+    <div class="disclaimer">
       ⚠️ <b>本ツールが生成する文章は下書きです。</b> 内容の医学的妥当性・患者さん個別の状況への適合は、必ず担当医がご確認・修正のうえご使用ください。数値や予後など個別性の高い情報は、エビデンスと診療経過に基づき医師が判断してください。
     </div>
   </div>
@@ -541,36 +495,6 @@ function renderSteps(inp){
   document.getElementById("steps").innerHTML = html;
 }
 
-function renderLeaflet(inp){
-  var today = new Date();
-  var dateStr = today.getFullYear()+"年"+(today.getMonth()+1)+"月"+today.getDate()+"日";
-  var planText = inp.plan ? inp.plan : GENERIC.treatment;
-  var html = "";
-  html += '<h3 class="editable" contenteditable="true">'+esc(inp.dname)+' について</h3>';
-  html += '<div class="lf-meta">＿＿＿＿＿＿ 様 へ ／ '+dateStr+' 説明　<span style="font-size:0.92em;">（お名前は印刷後にご記入ください）</span></div>';
-
-  function sec(title, body){
-    return '<div class="lf-sec"><h4>'+title+'</h4>'+
-           '<div class="lf-body editable" contenteditable="true">'+esc(body)+'</div></div>';
-  }
-
-  html += sec("この病気について", "（" + inp.dname + " について、AIの生成結果または担当医の説明をここに記載してください）");
-  html += sec("今の状態とこれからの経過", GENERIC.course);
-  html += sec("これからの対応・治療", planText);
-  html += sec("生活で気をつけること", GENERIC.life);
-  html += sec("利用できる相談先・サポート", GENERIC.support);
-  if (inp.concern) html += sec("あなたの状況をふまえて", inp.concern);
-
-  html += '<div class="lf-foot">';
-  html += '<div>本日の担当医：________________________</div>';
-  html += '<div style="margin-top:6px;">次回の予定：________________________</div>';
-  html += '<div style="margin-top:6px;">ご質問・お気づきのことは、いつでも遠慮なくお尋ねください。</div>';
-  html += '<div style="margin-top:10px;font-size:0.9em;">※この説明書は、お話しした内容の要点をまとめたものです。詳しい内容は担当医にご確認ください。</div>';
-  html += '</div>';
-
-  document.getElementById("leaflet").innerHTML = html;
-}
-
 /* ===== コピー用テキスト ===== */
 function scriptToText(inp){
   var steps = buildSteps(inp);
@@ -583,11 +507,6 @@ function scriptToText(inp){
   }
   out += "\n※下書きです。医学的妥当性は担当医がご確認ください。";
   return out;
-}
-
-function leafletToText(){
-  var el = document.getElementById("leaflet");
-  return el ? el.innerText : "";
 }
 
 /* ===== ご自身のAI（ChatGPT/Claude等）に貼るプロンプトを生成 ===== */
@@ -675,7 +594,6 @@ var lastInput = null;
 function generate(){
   lastInput = getInput();
   renderSteps(lastInput);
-  renderLeaflet(lastInput);
   document.getElementById("aiPrompt").value = buildAIPrompt(lastInput);
   document.getElementById("output").style.display="block";
   document.getElementById("output").scrollIntoView({behavior:"smooth", block:"start"});
@@ -686,14 +604,6 @@ document.addEventListener("DOMContentLoaded", function(){
 
   document.getElementById("copyScript").addEventListener("click", function(){
     if(lastInput) copyText(scriptToText(lastInput), this);
-  });
-  document.getElementById("copyLeaflet").addEventListener("click", function(){
-    copyText(leafletToText(), this);
-  });
-  document.getElementById("printLeaflet").addEventListener("click", function(){
-    // 印刷前に説明書タブを表示
-    switchTab("leaflet");
-    window.print();
   });
   document.getElementById("copyPromptTop").addEventListener("click", function(){
     copyText(document.getElementById("aiPrompt").value, this);
@@ -709,7 +619,6 @@ function switchTab(name){
   var tabs=document.querySelectorAll(".tab");
   for(var i=0;i<tabs.length;i++){ tabs[i].classList.toggle("active", tabs[i].getAttribute("data-tab")===name); }
   document.getElementById("spikesPane").classList.toggle("active", name==="spikes");
-  document.getElementById("leafletPane").classList.toggle("active", name==="leaflet");
   document.getElementById("promptPane").classList.toggle("active", name==="prompt");
 }
 </script>
