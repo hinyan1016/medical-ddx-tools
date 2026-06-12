@@ -67,7 +67,16 @@ def render_viewer(deck: dict, slide_count: int) -> str:
             f'    </a>'
         )
 
+    html_deck_button = ""
+    if deck.get("html_deck"):
+        html_deck_button = (
+            '    <a class="btn btn-deck" href="deck.html" target="_blank" rel="noopener">\n'
+            '      🖥 インタラクティブ版（HTMLスライド）\n'
+            '    </a>'
+        )
+
     replacements = {
+        "{{HTML_DECK_BUTTON}}": html_deck_button,
         "{{TITLE}}": deck["title"],
         "{{SUBTITLE}}": deck.get("subtitle", ""),
         "{{DESCRIPTION}}": deck.get("description", deck["title"]),
