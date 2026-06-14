@@ -48,7 +48,7 @@ def build_index():
             '      <h2 class="title"><a href="{s}/">{t}</a></h2>\n'
             '      <p class="desc">{d}</p>\n'
             '      <div class="meta"><span class="tag {ac}">{aud}</span><span class="date">{date}</span></div>\n'
-            '      <div class="links"><a class="lnk lnk--main" href="{s}/">📊 図を開く</a>{bl}</div>\n'
+            '      <div class="links"><a class="lnk lnk--main" href="{s}/">📊 図を開く</a><a class="lnk" href="{s}/infographic.png" target="_blank" rel="noopener">🖼️ 画像</a>{bl}</div>\n'
             '    </div>\n'
             '  </article>'.format(sr=search, th=thumb_html, s=s, t=t, d=d, ac=aud_cls, aud=aud, date=date, bl=blog_link))
     grid = "\n".join(cards)
