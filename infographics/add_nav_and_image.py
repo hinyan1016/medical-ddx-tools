@@ -12,23 +12,25 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 RENDER = HERE.parent.parent / "medical-content" / "youtube-slides" / "_shared_scripts" / "render_html_to_png.py"
-MARK = "ig-nav-v1"
-
-NAV = (
-    '<nav data-{mark} style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;'
-    'align-items:center;margin:{mt} auto {mb};font-family:\'Hiragino Kaku Gothic ProN\',\'Yu Gothic\',\'Segoe UI\',sans-serif;">'
-    '<a href="../" style="display:inline-flex;align-items:center;gap:6px;background:#1A5276;color:#fff;'
-    'text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;">🖼️ インフォグラフィック一覧</a>'
-    '<a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;'
-    'background:#fff;color:#1A5276;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;'
-    'border-radius:8px;border:1px solid #cfdae6;">📥 画像版（PNG）</a>'
-    '</nav>'
-)
-NAV_TOP = NAV.format(mark=MARK, mt="0", mb="12px")
-NAV_BOTTOM = NAV.format(mark=MARK, mt="14px", mb="0")
+MARK = "ig-nav-v2"
+_BTN = "display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;"
 
 
-def process(slug: str, do_png: bool):
+def build_nav(youtube_id: str, mt: str, mb: str) -> str:
+    yt = ('<a href="https://youtu.be/{yid}" target="_blank" rel="noopener" style="{b}background:#C0392B;color:#fff;">▶ 解説動画（YouTube）</a>'.format(yid=youtube_id, b=_BTN)
+          if youtube_id else "")
+    return (
+        '<nav data-{mark} style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;'
+        'align-items:center;margin:{mt} auto {mb};font-family:\'Hiragino Kaku Gothic ProN\',\'Yu Gothic\',\'Segoe UI\',sans-serif;">'
+        '<a href="../" style="{b}background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a>'
+        '{yt}'
+        '<a href="infographic.png" target="_blank" rel="noopener" style="{b}background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a>'
+        '</nav>'
+    ).format(mark=MARK, mt=mt, mb=mb, b=_BTN, yt=yt)
+
+
+def process(item: dict, do_png: bool):
+    slug = item["slug"]; yid = item.get("youtube_id", "")
     f = HERE / slug / "index.html"
     if not f.exists():
         print("  [skip] no index:", slug); return
@@ -38,15 +40,14 @@ def process(slug: str, do_png: bool):
                             "--selector", ".ig", "--dsf", "2"], capture_output=True, text=True, encoding="utf-8")
         print("  png:", slug, "OK" if out.exists() else "FAIL", (r.stderr or "").strip()[:100])
     s = f.read_text(encoding="utf-8")
-    if MARK in s:
-        print("  [nav exists] ", slug); return
-    # body を縦並び中央寄せに（nav と .ig を縦に積む）
+    # body を縦並び中央寄せに（旧版で未変更なら）
     s = s.replace("display:flex;justify-content:center;", "display:flex;flex-direction:column;align-items:center;")
-    # 先頭 nav を <body> 直後、末尾 nav を </body> 直前に
-    s = re.sub(r"(<body[^>]*>)", r"\1\n" + NAV_TOP, s, count=1)
-    s = s.replace("</body>", NAV_BOTTOM + "\n</body>", 1)
+    # 既存ナビ（旧版含む）を除去してから新ナビを挿入（冪等・差し替え可能）
+    s = re.sub(r"\n?<nav data-ig-nav[^>]*>.*?</nav>", "", s, flags=re.S)
+    s = re.sub(r"(<body[^>]*>)", r"\1\n" + build_nav(yid, "0", "12px"), s, count=1)
+    s = s.replace("</body>", build_nav(yid, "14px", "0") + "\n</body>", 1)
     f.write_text(s, encoding="utf-8", newline="\n")
-    print("  [nav+] ", slug)
+    print("  [nav~] ", slug, "(YT)" if yid else "")
 
 
 def main():
@@ -55,9 +56,9 @@ def main():
     ap.add_argument("--only", help="単一slugのみ")
     args = ap.parse_args()
     items = json.loads((HERE / "manifest.json").read_text(encoding="utf-8"))["items"]
-    slugs = [args.only] if args.only else [it["slug"] for it in items]
-    for sl in slugs:
-        process(sl, do_png=not args.no_png)
+    targets = [it for it in items if (not args.only or it["slug"] == args.only)]
+    for it in targets:
+        process(it, do_png=not args.no_png)
 
 
 if __name__ == "__main__":

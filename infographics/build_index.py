@@ -41,6 +41,8 @@ def build_index():
         thumb_html = ('<a class="thumb" href="{s}/" aria-label="{t}"><img src="{th}" alt="{t} サムネイル" loading="lazy"></a>'.format(s=s, t=t, th=thumb)
                       if thumb else '<a class="thumb thumb--noimg" href="{s}/">✚</a>'.format(s=s))
         blog_link = '<a class="lnk" href="{b}" target="_blank" rel="noopener">解説記事</a>'.format(b=html.escape(blog)) if blog else ""
+        yid = it.get("youtube_id", "")
+        yt_link = '<a class="lnk lnk--yt" href="https://youtu.be/{y}" target="_blank" rel="noopener">▶ 動画</a>'.format(y=html.escape(yid)) if yid else ""
         cards.append(
             '  <article class="card" data-search="{sr}">\n'
             '    {th}\n'
@@ -48,9 +50,9 @@ def build_index():
             '      <h2 class="title"><a href="{s}/">{t}</a></h2>\n'
             '      <p class="desc">{d}</p>\n'
             '      <div class="meta"><span class="tag {ac}">{aud}</span><span class="date">{date}</span></div>\n'
-            '      <div class="links"><a class="lnk lnk--main" href="{s}/">📊 図を開く</a><a class="lnk" href="{s}/infographic.png" target="_blank" rel="noopener">🖼️ 画像</a>{bl}</div>\n'
+            '      <div class="links"><a class="lnk lnk--main" href="{s}/">📊 図を開く</a><a class="lnk" href="{s}/infographic.png" target="_blank" rel="noopener">🖼️ 画像</a>{yt}{bl}</div>\n'
             '    </div>\n'
-            '  </article>'.format(sr=search, th=thumb_html, s=s, t=t, d=d, ac=aud_cls, aud=aud, date=date, bl=blog_link))
+            '  </article>'.format(sr=search, th=thumb_html, s=s, t=t, d=d, ac=aud_cls, aud=aud, date=date, bl=blog_link, yt=yt_link))
     grid = "\n".join(cards)
     tpl = TEMPLATE.replace("<!--CARDS-->", grid).replace("<!--COUNT-->", str(len(items)))
     (HERE / "index.html").write_text(tpl, encoding="utf-8", newline="\n")
@@ -102,6 +104,8 @@ TEMPLATE = """<!DOCTYPE html>
   .lnk--main{background:var(--navy);color:#fff;}
   .lnk--main:hover{background:var(--blue);}
   .lnk:not(.lnk--main){color:var(--blue);border:1px solid var(--line);}
+  .lnk.lnk--yt{background:#C0392B;color:#fff;border:1px solid #C0392B;}
+  .lnk.lnk--yt:hover{background:#a93226;}
   .empty{text-align:center;color:var(--muted);padding:40px 0;display:none;}
   footer{text-align:center;color:var(--muted);font-size:.8em;margin-top:34px;}
   footer a{color:var(--blue);}
