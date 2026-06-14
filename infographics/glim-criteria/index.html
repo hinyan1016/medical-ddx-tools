@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A5276">
+<meta name="robots" content="index,follow">
+<title>GLIM基準 早見インフォグラフィック｜低栄養診断の表現型・病因・重症度カットオフ ― 医知創造ラボ</title>
+<meta name="description" content="低栄養の世界共通診断基準GLIM基準を1枚に。診断の3ステップ（スクリーニング→診断→重症度）、表現型基準3項目（意図しない体重減少・低BMI・筋肉量減少）と病因基準2項目のカットオフ値、診断のルール（表現型1つ＋病因1つ）、重症度判定と日本人カットオフ未確定問題までを、拡大しても鮮明なHTMLインフォグラフィックで整理。管理栄養士・NST・看護師向け。">
+<style>
+  :root{
+    --navy:#1A5276; --navy-ink:#10324a; --blue:#2E86C1; --blue-soft:#E8F2FB;
+    --accent:#2C6E49; --accent-soft:#E8F3EC; --ink:#222; --ink2:#445;
+    --line:#dfe6ef; --green:#1E8449; --red:#C0392B; --red-soft:#FDECEA; --paper:#F4F7FB;
+    --gray:#9bb7cc;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{ -webkit-text-size-adjust:100%; }
+  body{background:#eef2f6;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Segoe UI",sans-serif;color:var(--ink);padding:16px;display:flex;flex-direction:column;align-items:center;}
+  .ig{width:100%;max-width:1080px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 6px 24px rgba(16,50,74,.12);}
+  .hd{background:linear-gradient(135deg,var(--navy-ink),var(--blue));color:#fff;padding:clamp(22px,4.2vw,38px) clamp(20px,4.5vw,48px) clamp(20px,3.6vw,34px);position:relative;overflow:hidden;}
+  .hd::after{content:"";position:absolute;right:-90px;top:-90px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle at 30% 30%,rgba(44,110,73,.5),transparent 62%);}
+  .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.14);padding:6px 15px;border-radius:999px;font-size:clamp(13px,1.9vw,20px);font-weight:700;}
+  .badge .cross{color:#7FE0A8;}
+  .hd h1{font-size:clamp(26px,5.2vw,48px);line-height:1.22;margin-top:14px;font-weight:800;}
+  .hd h1 .hl{color:#7FE0A8;}
+  .hd .sub{font-size:clamp(14px,2.3vw,22px);margin-top:11px;opacity:.93;font-weight:500;line-height:1.5;}
+  .hero{display:flex;border-bottom:1px solid var(--line);}
+  .hero>div{flex:1;padding:clamp(16px,2.6vw,26px) clamp(18px,3.4vw,40px);}
+  .hero .h-good{background:var(--accent-soft);}
+  .hero .h-warn{background:var(--red-soft);}
+  .hero .lbl{font-size:clamp(13px,1.9vw,20px);font-weight:800;}
+  .hero .h-good .lbl{color:var(--accent);}
+  .hero .h-warn .lbl{color:var(--red);}
+  .hero .big{font-size:clamp(18px,3.2vw,32px);font-weight:800;color:var(--navy);margin-top:5px;line-height:1.3;}
+  .hero .small{font-size:clamp(12px,1.9vw,19px);color:var(--ink2);margin-top:5px;line-height:1.45;}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);}
+  .card{background:#fff;padding:clamp(16px,2.6vw,24px) clamp(18px,3.2vw,34px);}
+  .card .ico{font-size:clamp(24px,3.4vw,30px);}
+  .card .ct{font-size:clamp(17px,2.6vw,24px);font-weight:800;color:var(--navy);margin-top:4px;line-height:1.3;}
+  .card .cb{font-size:clamp(13.5px,2.1vw,19px);line-height:1.6;color:var(--ink2);margin-top:8px;}
+  .card .cb b{color:var(--accent);font-weight:800;}
+  .card .cb .blue{color:var(--blue);font-weight:800;}
+  .card .cb .red{color:var(--red);font-weight:800;}
+  .card.full{grid-column:1 / -1;}
+  .cols{display:flex;gap:1px;background:var(--line);margin-top:8px;}
+  .cols>div{flex:1;padding:clamp(11px,1.8vw,16px) clamp(12px,2vw,18px);background:#fff;}
+  .cols .ph{font-size:clamp(14px,2.1vw,20px);font-weight:800;color:var(--navy);}
+  .cols .ph.a{color:var(--blue);} .cols .ph.b{color:var(--accent);} .cols .ph.c{color:var(--green);}
+  .cols .pl{font-size:clamp(12.5px,1.9vw,18px);color:var(--ink2);line-height:1.55;margin-top:5px;}
+  .cols .pl b{color:var(--red);font-weight:800;}
+  .eqbox{display:flex;align-items:center;justify-content:center;gap:clamp(8px,2vw,18px);flex-wrap:wrap;margin-top:10px;background:var(--accent-soft);border:2px solid var(--accent);border-radius:10px;padding:clamp(12px,2.4vw,20px);}
+  .eqbox .b{font-size:clamp(14px,2.4vw,23px);font-weight:800;color:var(--navy);text-align:center;line-height:1.3;}
+  .eqbox .op{font-size:clamp(22px,3.6vw,34px);font-weight:800;color:var(--accent);}
+  .eqbox .res{color:var(--accent);}
+  .sev{margin-top:8px;}
+  .sevrow{display:flex;gap:clamp(8px,1.6vw,14px);align-items:flex-start;padding:clamp(8px,1.4vw,11px) 0;border-top:1px solid var(--line);}
+  .sevrow:first-child{border-top:none;}
+  .sevrow .k{width:clamp(92px,16vw,170px);font-size:clamp(13px,2vw,19px);font-weight:800;color:var(--navy);flex:none;}
+  .sevrow .v{flex:1;font-size:clamp(12.5px,1.9vw,18px);color:var(--ink2);line-height:1.5;}
+  .sevrow .v b{color:var(--red);font-weight:800;}
+  .sevrow .v .gray{color:#8090a0;font-weight:700;}
+  .stat{display:flex;align-items:center;gap:clamp(16px,3.5vw,40px);flex-wrap:wrap;margin-top:6px;}
+  .stat .num{font-size:clamp(40px,9vw,84px);font-weight:800;color:var(--accent);line-height:1;}
+  .stat .num small{font-size:.5em;}
+  .stat .msg{flex:1;min-width:230px;font-size:clamp(14px,2.2vw,21px);color:var(--ink2);line-height:1.55;}
+  .stat .msg b{color:var(--navy);font-weight:800;}
+  .ft{background:var(--paper);border-top:1px solid var(--line);padding:clamp(16px,2.4vw,22px) clamp(20px,4vw,48px);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;}
+  .ft .src{font-size:clamp(11px,1.5vw,15px);color:#67788c;line-height:1.5;}
+  .ft .logo{font-size:clamp(15px,2vw,20px);font-weight:800;color:var(--navy);white-space:nowrap;}
+  .ft .logo .cross{color:var(--accent);}
+  .disc{font-size:clamp(10.5px,1.4vw,14px);color:#8090a0;padding:12px clamp(20px,4vw,48px) 24px;line-height:1.5;}
+  .disc a{color:var(--blue);}
+  @media (max-width:720px){
+    .hero{flex-direction:column;}
+    .grid{grid-template-columns:1fr;}
+    .cols{flex-direction:column;}
+  }
+</style>
+</head>
+<body>
+<nav id="ics-globalnav" style="background:#15324E;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
+<div style="max-width:1040px;margin:0 auto;padding:9px 16px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+<a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;">医知創造ラボ</a>
+<a href="https://ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">ホーム</a>
+<a href="https://blog.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">ブログ</a>
+<a href="https://tools.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">ツール</a>
+<a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">YouTube</a>
+</div>
+</nav>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="https://youtu.be/p_5ozQOQicE" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#C0392B;color:#fff;">▶ 解説動画（YouTube）</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+<div class="ig">
+  <div class="hd">
+    <span class="badge"><span class="cross">✚</span>医知創造ラボ｜管理栄養士・NST向け</span>
+    <h1>GLIM基準 ― 低栄養診断の<span class="hl">世界共通ルール</span></h1>
+    <p class="sub">スクリーニング→診断→重症度の3ステップ・表現型3項目・病因2項目のカットオフを1枚に（2024 JSPEN改訂／2025 5年アップデート対応）</p>
+  </div>
+
+  <div class="hero">
+    <div class="h-good">
+      <div class="lbl">◎ 診断のルール</div>
+      <div class="big">表現型1つ＋病因1つ</div>
+      <div class="small">「結果（からだ）」と「原因」の掛け算で診断する</div>
+    </div>
+    <div class="h-warn">
+      <div class="lbl">△ 落とし穴</div>
+      <div class="big">片方だけでは診断しない</div>
+      <div class="small">「BMIが低い＝低栄養」ではない。原因が要る</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card full">
+      <div class="ico">🔎</div>
+      <div class="ct">診断は3ステップ</div>
+      <div class="cols">
+        <div><div class="ph a">① スクリーニング</div><div class="pl">MNA®-SF・NRS-2002・MUSTなど検証済みツールで栄養リスクを拾う（入口であって診断ではない）</div></div>
+        <div><div class="ph b">② 診断</div><div class="pl">表現型基準と病因基準を評価。両方から1つ以上で低栄養と確定</div></div>
+        <div><div class="ph c">③ 重症度判定</div><div class="pl">表現型基準だけで中等度（ステージ1）／重度（ステージ2）を判定</div></div>
+      </div>
+    </div>
+
+    <div class="card full">
+      <div class="ico">📋</div>
+      <div class="ct">表現型基準 ― からだの所見（1つ以上該当）</div>
+      <div class="cols">
+        <div><div class="ph">① 意図しない体重減少</div><div class="pl"><b>6ヶ月以内に5%超</b>、または6ヶ月超で10%超</div></div>
+        <div><div class="ph">② 低BMI</div><div class="pl"><b>70歳未満18.5未満／70歳以上20未満</b>（kg/m²・アジア人カットオフ）</div></div>
+        <div><div class="ph">③ 筋肉量減少</div><div class="pl">DEXA・CT・BIAで評価／下腿周囲長で代用可。<b>握力は代用にしない</b></div></div>
+      </div>
+    </div>
+
+    <div class="card full">
+      <div class="ico">🧬</div>
+      <div class="ct">病因基準 ― なぜやせたか（1つ以上該当）</div>
+      <div class="cols">
+        <div><div class="ph b">④ 食事摂取量減少／消化吸収能低下</div><div class="pl">1週間以上 必要量の50%以下／2週間以上の摂取減／慢性的な消化管の障害</div></div>
+        <div><div class="ph b">⑤ 疾患負荷／炎症</div><div class="pl">急性疾患・外傷による炎症／がん・COPDなど慢性疾患による炎症（臨床判断でよい）</div></div>
+      </div>
+    </div>
+
+    <div class="card full">
+      <div class="ico">📊</div>
+      <div class="ct">重症度判定（重度＝ステージ2の目安）</div>
+      <div class="sev">
+        <div class="sevrow"><div class="k">体重減少</div><div class="v"><b>6ヶ月以内に10%超</b>、または6ヶ月超で20%超</div></div>
+        <div class="sevrow"><div class="k">低BMI</div><div class="v">高度な減少 <span class="gray">（日本人のカットオフは未確定）</span></div></div>
+        <div class="sevrow"><div class="k">筋肉量減少</div><div class="v">高度な減少 <span class="gray">（日本人のカットオフは未確定）</span></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ico">⚠️</div>
+      <div class="ct">最も誤解されやすい点</div>
+      <div class="cb">重症度の<b>低BMI・筋肉量は日本人カットオフが未確定</b>。明確に数値判定できるのは<span class="red">体重減少だけ</span>です。</div>
+    </div>
+    <div class="card">
+      <div class="ico">🔬</div>
+      <div class="ct">研究レベルの重度BMI</div>
+      <div class="cb">日本発の研究では重度低栄養のBMIとして<b>70歳未満17.0・70歳以上17.8</b>が提案・検証されつつあります（Maeda 2019 ほか）。</div>
+    </div>
+
+    <div class="card full">
+      <div class="ico">🆕</div>
+      <div class="ct">2025年・GLIM 5年アップデート</div>
+      <div class="cb"><b>体重減少・低BMI・食事摂取の基準は改訂なし</b>。メタ解析で妥当性は強いと確認され、筋肉量・炎症は「利用可能な資源・臨床判断で評価」と整理。<span class="blue">本図の数値は最新版でもそのまま使えます。</span></div>
+    </div>
+  </div>
+
+  <div class="ft">
+    <div class="src">出典：JSPEN GLIMワーキンググループ GLIM基準による低栄養診断のプロセス（2024.10.10改訂版）／Cederholm 2019・2025 Clin Nutr／Barazzoni 2022／Maeda 2019（PubMed・DOI照合済）</div>
+    <div class="logo"><span class="cross">✚</span> 医知創造ラボ</div>
+  </div>
+  <p class="disc">※本図は医療従事者向けの教育・情報提供です。実際の診断・栄養管理は各施設のプロトコルおよび最新ガイドラインに従ってください。<br>解説記事：<a href="https://blog.ichisouzo-lab.com/entry/2026/06/15/023556">GLIM基準とは｜低栄養診断の表現型・病因・重症度カットオフを図解【管理栄養士・NST向け】</a></p>
+</div>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px auto 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="https://youtu.be/p_5ozQOQicE" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#C0392B;color:#fff;">▶ 解説動画（YouTube）</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+</body>
+</html>
