@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A6E78">
+<meta name="robots" content="index,follow">
+<title>カタトニア（緊張病）の診断と治療 早見インフォグラフィック｜BFCRS・ロラゼパムテスト・ECT・悪性カタトニア ― 医知創造ラボ</title>
+<meta name="description" content="カタトニア（緊張病）の診断（BFCRS・DSM-5）・治療（ロラゼパムテスト→ECT）・悪性カタトニアとNMSの鑑別・抗NMDA受容体脳炎を1枚に。レッドフラッグと治療アルゴリズムを医療従事者向けに整理した、拡大しても鮮明なHTMLインフォグラフィック。">
+<style>
+  :root{
+    --navy:#1A6E78; --navy-ink:#0E4A4F; --blue:#1A6E78; --blue-soft:#E6F2F1;
+    --accent:#E08A1E; --ink:#222; --ink2:#445;
+    --line:#cfe0df; --green:#1E8449; --red:#C0392B; --red-soft:#FDECEA; --paper:#ECF6F5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{ -webkit-text-size-adjust:100%; }
+  body{background:#eef4f3;font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP","Segoe UI",sans-serif;color:var(--ink);padding:16px;display:flex;flex-direction:column;align-items:center;}
+  .ig{width:100%;max-width:1080px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 6px 24px rgba(14,74,79,.12);}
+  /* header */
+  .hd{background:linear-gradient(135deg,var(--navy-ink),var(--blue));color:#fff;padding:clamp(22px,4.2vw,38px) clamp(20px,4.5vw,48px) clamp(22px,3.6vw,36px);position:relative;overflow:hidden;}
+  .hd::after{content:"";position:absolute;right:-90px;top:-90px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle at 30% 30%,rgba(224,138,30,.5),transparent 62%);}
+  .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.14);padding:6px 15px;border-radius:999px;font-size:clamp(13px,1.9vw,20px);font-weight:700;position:relative;z-index:2;}
+  .badge .cross{color:var(--accent);}
+  .hd h1{font-size:clamp(26px,5vw,46px);line-height:1.22;margin-top:14px;font-weight:800;position:relative;z-index:2;}
+  .hd h1 .hl{color:var(--accent);}
+  .hd .sub{font-size:clamp(14px,2.3vw,22px);margin-top:11px;opacity:.93;font-weight:500;line-height:1.5;position:relative;z-index:2;}
+  /* stats */
+  .stats{display:flex;gap:clamp(10px,1.6vw,16px);margin-top:clamp(18px,3vw,28px);position:relative;z-index:2;flex-wrap:wrap;}
+  .stat{flex:1;min-width:150px;background:#fff;border-radius:12px;padding:clamp(14px,2vw,20px) clamp(10px,1.6vw,16px);text-align:center;}
+  .stat .n{font-size:clamp(26px,4.4vw,40px);font-weight:800;color:var(--blue);line-height:1;}
+  .stat:nth-child(2) .n{color:var(--red);}
+  .stat:nth-child(3) .n{color:var(--accent);}
+  .stat .t{font-size:clamp(12px,1.7vw,17px);color:var(--ink2);margin-top:8px;line-height:1.35;font-weight:700;}
+  .callout{margin-top:clamp(14px,2.2vw,20px);background:var(--accent);color:#fff;font-weight:800;font-size:clamp(14px,2.1vw,21px);border-radius:12px;padding:clamp(12px,1.8vw,16px) clamp(16px,2.6vw,24px);position:relative;z-index:2;text-align:center;line-height:1.45;}
+  /* section heading */
+  .sec{padding:clamp(20px,3.4vw,30px) clamp(18px,3.4vw,40px) 0;}
+  .sec .sh{display:flex;align-items:center;gap:clamp(10px,1.6vw,14px);font-size:clamp(18px,2.9vw,28px);font-weight:800;color:var(--blue);margin-bottom:clamp(12px,2vw,18px);line-height:1.3;}
+  .sec .sn{flex:none;width:clamp(34px,5vw,46px);height:clamp(34px,5vw,46px);border-radius:12px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:clamp(18px,2.7vw,26px);font-weight:800;}
+  /* two-col boxes */
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,2.2vw,20px);}
+  .box{border:2px solid var(--blue);background:var(--blue-soft);border-radius:14px;padding:clamp(16px,2.4vw,24px);}
+  .box .bh{font-size:clamp(16px,2.3vw,22px);font-weight:800;color:var(--blue);margin-bottom:clamp(8px,1.4vw,12px);line-height:1.35;}
+  .box .grp{font-size:clamp(13.5px,2vw,19px);color:var(--ink);line-height:1.55;margin-bottom:6px;}
+  .box .grp b{color:var(--navy-ink);font-weight:800;}
+  .box .note{font-size:clamp(12.5px,1.8vw,17px);color:var(--ink2);margin-top:8px;line-height:1.5;}
+  .pill{display:inline-block;background:var(--blue);color:#fff;font-weight:700;font-size:clamp(13px,1.8vw,18px);padding:7px 16px;border-radius:999px;margin:0 8px 8px 0;}
+  .box .stat-l{font-size:clamp(14px,2vw,20px);font-weight:800;color:var(--accent);margin-top:8px;line-height:1.4;}
+  .box .arrow{font-size:clamp(13px,1.9vw,18px);color:var(--ink2);margin-top:10px;line-height:1.5;}
+  .box .arrow b{color:var(--navy-ink);}
+  /* flow */
+  .flow{display:flex;flex-direction:column;gap:clamp(10px,1.6vw,14px);}
+  .fbox{border-radius:14px;padding:clamp(14px,2.2vw,20px) clamp(16px,2.8vw,26px);font-size:clamp(15px,2.2vw,22px);font-weight:800;text-align:center;line-height:1.4;}
+  .fbox.start{background:var(--blue);color:#fff;}
+  .fbox.test{background:#fff;border:2px solid var(--blue);color:var(--navy-ink);}
+  .fbox small{display:block;font-size:clamp(12px,1.7vw,17px);font-weight:400;color:var(--ink2);margin-top:6px;line-height:1.45;}
+  .farrow{text-align:center;font-size:clamp(20px,3vw,28px);color:var(--blue);font-weight:800;line-height:1;}
+  .fsplit{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,2vw,18px);}
+  .fpath{border-radius:14px;padding:clamp(14px,2.2vw,20px) clamp(14px,2.4vw,22px);}
+  .fpath.good{background:#fbeed7;border-left:8px solid var(--accent);}
+  .fpath.bad{background:var(--red-soft);border-left:8px solid var(--red);}
+  .fpath .pt{font-size:clamp(15px,2.1vw,21px);font-weight:800;color:var(--navy-ink);line-height:1.4;}
+  .fpath.bad .pt{color:var(--red);}
+  .fpath .pd{font-size:clamp(12.5px,1.8vw,17px);color:var(--ink2);margin-top:8px;line-height:1.5;}
+  .fcaution{margin-top:clamp(12px,1.8vw,16px);background:var(--accent);color:#fff;font-weight:800;font-size:clamp(14px,2vw,21px);border-radius:12px;padding:clamp(12px,1.8vw,15px) clamp(16px,2.6vw,22px);text-align:center;line-height:1.45;}
+  /* table */
+  .tbl{width:100%;border-collapse:collapse;font-size:clamp(13px,1.9vw,21px);border-radius:14px;overflow:hidden;border:2px solid var(--line);}
+  .tbl td,.tbl th{border:1px solid var(--line);padding:clamp(9px,1.5vw,14px) clamp(10px,1.6vw,18px);vertical-align:top;line-height:1.45;text-align:left;}
+  .tbl th{background:var(--blue);color:#fff;font-weight:800;font-size:clamp(13.5px,2vw,22px);}
+  .tbl th.mc{background:var(--red);}
+  .tbl th.nms{background:var(--accent);}
+  .tbl .k{background:var(--paper);font-weight:800;color:var(--navy-ink);width:20%;}
+  /* red badge */
+  .redbadge{margin-top:clamp(14px,2.2vw,18px);background:var(--red);color:#fff;border-radius:14px;padding:clamp(16px,2.4vw,24px);}
+  .redbadge .t{font-size:clamp(16px,2.3vw,23px);font-weight:800;margin-bottom:10px;line-height:1.35;}
+  .redbadge .items{font-size:clamp(14px,2vw,20px);font-weight:700;line-height:1.55;}
+  .redbadge .ar{font-size:clamp(13px,1.9vw,19px);margin-top:10px;font-weight:400;line-height:1.5;}
+  /* info box */
+  .infobox{margin-top:clamp(14px,2.2vw,16px);background:var(--paper);border:2px solid var(--blue);border-radius:14px;padding:clamp(16px,2.4vw,24px);}
+  .infobox .t{font-size:clamp(15px,2.1vw,22px);font-weight:800;color:var(--navy-ink);margin-bottom:8px;line-height:1.35;}
+  .infobox p{font-size:clamp(13px,1.9vw,19px);color:var(--ink2);line-height:1.55;}
+  /* footer */
+  .ft{background:var(--paper);border-top:1px solid var(--line);margin-top:clamp(22px,3.6vw,34px);padding:clamp(16px,2.4vw,22px) clamp(20px,4vw,48px);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;}
+  .ft .src{font-size:clamp(11px,1.5vw,15px);color:#5d7472;line-height:1.5;}
+  .ft .logo{font-size:clamp(15px,2vw,20px);font-weight:800;color:var(--navy);white-space:nowrap;}
+  .ft .logo .cross{color:var(--accent);}
+  .disc{font-size:clamp(10.5px,1.4vw,14px);color:#7a8e8c;padding:12px clamp(20px,4vw,48px) 24px;line-height:1.5;}
+  .disc a{color:var(--blue);}
+  /* mobile: stack to 1 column */
+  @media (max-width:720px){
+    .stats{flex-direction:column;}
+    .two{grid-template-columns:1fr;}
+    .fsplit{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<nav id="ics-globalnav" style="background:#0E4A4F;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
+<div style="max-width:1040px;margin:0 auto;padding:9px 16px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+<a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;">医知創造ラボ</a>
+<a href="https://ichisouzo-lab.com/" style="color:#cfe6e3;text-decoration:none;padding:5px 11px;border-radius:6px;">ホーム</a>
+<a href="https://blog.ichisouzo-lab.com/" style="color:#cfe6e3;text-decoration:none;padding:5px 11px;border-radius:6px;">ブログ</a>
+<a href="https://tools.ichisouzo-lab.com/" style="color:#cfe6e3;text-decoration:none;padding:5px 11px;border-radius:6px;">ツール</a>
+<a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe6e3;text-decoration:none;padding:5px 11px;border-radius:6px;">YouTube</a>
+</div>
+</nav>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A6E78;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="https://youtu.be/98OJlDYfUnc" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#C0392B;color:#fff;">▶ 解説動画（YouTube）</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A6E78;border:1px solid #cfdee0;">📥 画像版（PNG）</a></nav>
+<div class="ig">
+  <div class="hd">
+    <span class="badge"><span class="cross">✚</span>医知創造ラボ</span>
+    <h1>カタトニア（緊張病）とは？<br><span class="hl">見逃されやすい「治療可能な精神運動症候群」</span></h1>
+    <p class="sub">昏迷・無動・無言・姿勢保持・拒絶症などを特徴とし、統合失調症だけでなく多様な背景に生じる独立症候群</p>
+    <div class="stats">
+      <div class="stat"><div class="n">7〜9%</div><div class="t">精神科入院での有病率<br>（Solmi 2018／Bush 1996）</div></div>
+      <div class="stat"><div class="n">20.6%</div><div class="t">身体・神経疾患下<br>（精神科併存なし／Solmi 2018）</div></div>
+      <div class="stat"><div class="n">10.6</div><div class="t">発生率：エピソード／10万人年<br>（Rogers 2021）</div></div>
+    </div>
+    <div class="callout">統合失調症だけではない ― 気分障害・身体疾患・自己免疫疾患でも起こる</div>
+  </div>
+
+  <div class="sec">
+    <div class="sh"><span class="sn">1</span>診断基準</div>
+    <div class="two">
+      <div class="box">
+        <div class="bh">DSM-5 ― 12徴候のうち3つ以上</div>
+        <div class="grp"><b>運動減少：</b>昏迷／カタレプシー／蝋屈症／無言症</div>
+        <div class="grp"><b>その他：</b>姿勢保持／わざとらしさ／常同症／しかめ顔／拒絶症／反響言語／反響動作／興奮</div>
+        <div class="note">※ 12徴候のうち3つ以上で診断（背景疾患の特定とセット）</div>
+      </div>
+      <div class="box">
+        <div class="bh">BFCRS（Bush-Francis評価尺度）</div>
+        <span class="pill">23項目 評価尺度</span><span class="pill">14項目 スクリーニング版</span>
+        <div class="stat-l">評価者間信頼性 r = 0.93（尺度）／0.95（スクリーニング）</div>
+        <div class="arrow">↓ スクリーニング14項目中 <b>2項目以上が陽性</b> → 本評価23項目へ</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sh"><span class="sn">2</span>治療アルゴリズム</div>
+    <div class="flow">
+      <div class="fbox start">カタトニア疑い ― BFCRSでスクリーニング</div>
+      <div class="farrow">↓</div>
+      <div class="fbox test">ロラゼパムテスト<small>診断と治療を兼ねる「診断的治療」／効果発現が速い</small></div>
+      <div class="farrow">↓</div>
+      <div class="fsplit">
+        <div class="fpath good">
+          <div class="pt">奏効（76%）→ ベンゾジアゼピン継続</div>
+          <div class="pd">Bush 1996 II：完全試験21例中16例（76%）でカタトニア徴候が消失</div>
+        </div>
+        <div class="fpath bad">
+          <div class="pt">無効 または 悪性カタトニア → ECTを速やかに検討</div>
+          <div class="pd">Bush 1996 II：ロラゼパム無効4例はECTに速やかに反応</div>
+        </div>
+      </div>
+      <div class="fcaution">⚠ 抗精神病薬は悪性化（NMS）リスクあり ― 安易な単独投与は慎重に</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sh"><span class="sn">3</span>悪性カタトニア／NMS 鑑別のポイント</div>
+    <table class="tbl">
+      <tr><th>項目</th><th class="mc">悪性カタトニア</th><th class="nms">NMS（悪性症候群）</th></tr>
+      <tr><td class="k">誘因</td><td>精神／身体疾患・自己免疫など（カタトニアの増悪）</td><td>抗精神病薬（ドパミン遮断）投与後</td></tr>
+      <tr><td class="k">発症</td><td>数日かけて進行が多い</td><td>薬剤開始後 数日以内が多い</td></tr>
+      <tr><td class="k">発熱・自律神経・CK</td><td>発熱あり／自律神経不安定／CK上昇</td><td>発熱あり／自律神経不安定／CK著増</td></tr>
+      <tr><td class="k">特徴</td><td>カタトニア徴候（昏迷・姿勢保持）が前景</td><td>鉛管様筋強剛が前景</td></tr>
+    </table>
+    <div class="redbadge">
+      <div class="t">🔴 レッドフラッグ（悪性化のサイン）</div>
+      <div class="items">● 発熱　● 自律神経不安定（血圧変動・頻脈・発汗）　● 意識変容　● CK上昇</div>
+      <div class="ar">→ いずれか出現したら、ベンゾ高用量・ECTを速やかに検討（抗精神病薬は中止）</div>
+    </div>
+    <div class="infobox">
+      <div class="t">🛡️ 背景疾患の検索も必須</div>
+      <p>抗NMDA受容体脳炎はカタトニア様症状で発症することがある（若年女性・卵巣奇形腫との関連）。血液・CK・甲状腺・自己抗体・髄液・頭部MRI・脳波を状況に応じて組む。</p>
+    </div>
+  </div>
+
+  <div class="ft">
+    <div class="src">出典：BAP 2023・APA 2025・Nat Rev Dis Primers 2024・Bush 1996（I/II）・Solmi 2018・Rogers 2021（いずれもPubMed照合済）</div>
+    <div class="logo"><span class="cross">✚</span> 医知創造ラボ</div>
+  </div>
+  <p class="disc">※本図は医療従事者向けの教育目的の要約であり、診断・治療を代替しません。実際の診断・治療は患者の病態・併存疾患・背景疾患をふまえ最新のガイドラインに従ってください。<br>解説記事：<a href="https://blog.ichisouzo-lab.com/entry/2026/06/15/175708">カタトニア（緊張病）の診断と治療｜BFCRS・ロラゼパムテスト・ECT・悪性カタトニア</a></p>
+</div>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px auto 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A6E78;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="https://youtu.be/98OJlDYfUnc" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#C0392B;color:#fff;">▶ 解説動画（YouTube）</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A6E78;border:1px solid #cfdee0;">📥 画像版（PNG）</a></nav>
+</body>
+</html>
