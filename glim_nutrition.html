@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#2C6E49">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="GLIM基準による低栄養診断ツール。表現型基準3項目（意図しない体重減少・低BMI・筋肉量減少）と病因基準2項目（食事摂取量減少/消化吸収・疾患負荷/炎症）を入力すると、低栄養の有無と重症度（中等度/重度）を自動判定します。BMIは身長体重から自動計算。管理栄養士・NST・看護師向け。">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>GLIM基準 低栄養診断ツール（表現型×病因・重症度判定）</title>
+<style>
+  :root {
+    --dark: #1E5235;
+    --primary: #2C6E49;
+    --mid: #4C956C;
+    --light: #E8F3EC;
+    --accent: #E07000;
+    --red: #C0392B;
+    --orange: #E08600;
+    --green: #2E7D32;
+    --yellow-bg: #FFF8E1;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(30,82,53,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #E8F3EC 0%, #F4F6F8 100%);
+    color: #222; min-height: 100vh; padding: 0 0 40px; line-height: 1.55;
+  }
+  header {
+    background: linear-gradient(135deg, var(--dark), var(--mid));
+    color: var(--white); padding: 14px 20px 18px; text-align: center;
+    box-shadow: 0 4px 16px rgba(30,82,53,0.18);
+  }
+  .back-bar { display: flex; align-items: center; margin-bottom: 8px; }
+  .back-bar a {
+    color: rgba(255,255,255,0.85); text-decoration: none; font-size: 0.85em;
+    display: flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 6px;
+  }
+  .back-bar a:active { background: rgba(255,255,255,0.15); }
+  header h1 { font-size: 1.4em; font-weight: 700; letter-spacing: 0.02em; }
+  header p { font-size: 0.85em; margin-top: 6px; opacity: 0.88; }
+  .container { max-width: 820px; margin: 0 auto; padding: 20px 14px; }
+
+  .card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 16px; overflow: hidden; }
+  .card-header { padding: 12px 16px; background: var(--light); border-bottom: 2px solid var(--primary); font-weight: 700; font-size: 1em; color: var(--primary); }
+  .card-body { padding: 16px; }
+  .axis-note { font-size: 0.85em; color: var(--gray); margin-bottom: 12px; }
+  .axis-note b { color: var(--primary); }
+
+  .alert-disclaimer {
+    background: #fff8e1; border-left: 4px solid var(--orange);
+    padding: 10px 14px; margin-bottom: 16px; border-radius: 6px;
+    font-size: 0.85em; color: #5d4400;
+  }
+
+  .param { padding: 12px 0; border-bottom: 1px solid #eef2f3; }
+  .param:last-child { border-bottom: none; }
+  .param-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+  label.field-label { font-weight: 700; font-size: 0.95em; color: var(--primary); }
+  .param-badge {
+    flex-shrink: 0; min-width: 64px; text-align: center; font-weight: 800;
+    font-size: 0.82em; padding: 3px 10px; border-radius: 999px; color: var(--white);
+  }
+  .bg-hit { background: var(--accent); } .bg-no { background: var(--gray); } .bg-null { background: #b9c4c7; }
+
+  .input-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .input-row input[type="number"] {
+    width: 96px; padding: 10px 12px; font-size: 1.1em; font-weight: 700;
+    border: 2px solid #CBD9DC; border-radius: 8px; color: var(--primary);
+    text-align: right; font-family: inherit;
+  }
+  .input-row input[type="number"]:focus { outline: none; border-color: var(--mid); }
+  .unit { font-size: 0.9em; color: var(--gray); }
+  .bmi-readout { font-size: 0.9em; color: var(--primary); font-weight: 700; margin-top: 8px; }
+  .bmi-readout .thr { color: var(--gray); font-weight: 400; }
+
+  .seg { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+  .seg button {
+    border: 2px solid #CBD9DC; background: var(--white); color: var(--primary);
+    padding: 9px 14px; border-radius: 8px; font-family: inherit; font-size: 0.9em;
+    font-weight: 600; cursor: pointer; transition: all 0.12s;
+  }
+  .seg button:hover { border-color: var(--mid); }
+  .seg button.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
+  .seg button.active.hitsel { background: var(--accent); border-color: var(--accent); }
+  .hint { font-size: 0.78em; color: var(--gray); margin-top: 6px; }
+
+  .result-hero {
+    color: var(--white); padding: 22px 20px; text-align: center;
+    border-radius: var(--radius); margin-bottom: 14px;
+    background: linear-gradient(135deg, var(--gray), #9aa4a8);
+    transition: background 0.2s;
+  }
+  .result-hero.is-malnut { background: linear-gradient(135deg, #7a1f1f, var(--red)); }
+  .result-hero.is-normal { background: linear-gradient(135deg, var(--dark), var(--mid)); }
+  .result-hero .label { font-size: 0.88em; opacity: 0.92; margin-bottom: 4px; }
+  .result-hero .value { font-size: 2.0em; font-weight: 800; letter-spacing: 0.01em; line-height: 1.25; }
+  .risk-pill {
+    display: inline-block; margin-top: 10px; padding: 5px 18px; border-radius: 999px;
+    font-weight: 800; font-size: 1.0em; background: rgba(255,255,255,0.20);
+  }
+
+  .warning-box { padding: 12px 14px; margin-bottom: 10px; border-radius: 6px; font-size: 0.9em; }
+  .warning-box .head { font-weight: 700; margin-bottom: 4px; }
+  .warning-box.red { background: #fdecea; border-left: 4px solid var(--red); color: #6a1a1a; }
+  .warning-box.red .head { color: var(--red); }
+  .warning-box.caution { background: #fff8e1; border-left: 4px solid var(--orange); color: #5d4400; }
+  .warning-box.caution .head { color: var(--orange); }
+  .warning-box.info { background: var(--light); border-left: 4px solid var(--mid); color: #173a27; }
+  .warning-box.info .head { color: var(--primary); }
+
+  .lookup-table { width: 100%; border-collapse: collapse; font-size: 0.86em; }
+  .lookup-table th, .lookup-table td { border: 1px solid #D5E0E2; padding: 7px 8px; text-align: center; }
+  .lookup-table th { background: var(--primary); color: var(--white); font-weight: 700; }
+  .lookup-table td.left { text-align: left; }
+  .lookup-table .chip { display: inline-block; min-width: 26px; padding: 1px 8px; border-radius: 6px; color: #fff; font-weight: 800; font-size: 0.92em; }
+
+  .template-box {
+    background: #14301f; color: #e4efe8; padding: 14px 16px; border-radius: 8px;
+    font-family: "Consolas", "Courier New", monospace; font-size: 0.85em; line-height: 1.7;
+    white-space: pre-wrap; word-wrap: break-word; margin-bottom: 8px;
+  }
+  .copy-btn {
+    background: var(--primary); color: var(--white); border: none; padding: 8px 14px;
+    border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 0.85em; font-weight: 600;
+  }
+  .copy-btn:hover { background: var(--dark); }
+  .copy-btn.copied { background: var(--green); }
+
+  .ref-list { font-size: 0.82em; color: var(--gray); line-height: 1.7; padding-left: 18px; }
+  .ref-list li { margin-bottom: 4px; }
+  .ref-list a { color: var(--mid); text-decoration: none; }
+  .ref-list a:hover { text-decoration: underline; }
+
+  footer { max-width: 820px; margin: 30px auto 0; padding: 14px; text-align: center; color: var(--gray); font-size: 0.78em; line-height: 1.6; }
+  footer a { color: var(--mid); text-decoration: none; }
+</style>
+</head>
+<body>
+<nav id="ics-globalnav" style="background:#15324E;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
+<div style="max-width:1040px;margin:0 auto;padding:9px 16px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+<a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;">医知創造ラボ</a>
+<a href="https://ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">ホーム</a>
+<a href="https://blog.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">ブログ</a>
+<a href="https://tools.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">ツール</a>
+<a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">YouTube</a>
+</div>
+</nav>
+<header>
+  <div class="back-bar"><a href="index.html">← ツール一覧へ</a></div>
+  <h1>GLIM基準 低栄養診断ツール</h1>
+  <p>表現型基準3項目＋病因基準2項目を入力 → 低栄養の有無・重症度を自動判定（JSPEN 2024 / 2025 5年アップデート対応）</p>
+</header>
+
+<div class="container">
+
+  <div class="alert-disclaimer">
+    <strong>⚠ 使用上の注意</strong>：本ツールはGLIM基準（Cederholm 2019・2025／JSPEN 2024改訂版）に基づく教育・参考用です。診断は<strong>栄養スクリーニングでリスクありと判定された症例</strong>に行うのが前提です。重症度の低BMI・筋肉量「高度減少」は<strong>日本人カットオフが未確定</strong>のため、本ツールの重症度は<strong>体重減少</strong>で判定し、BMIの研究値は参考表示にとどめます。最終判断は主治医・施設プロトコルに従ってください。
+  </div>
+
+  <!-- スクリーニング -->
+  <div class="card">
+    <div class="card-header">① 栄養スクリーニング（入口）</div>
+    <div class="card-body">
+      <div class="param">
+        <div class="param-top"><label class="field-label">検証済みツールでのリスク判定</label></div>
+        <div class="seg" id="segScreen">
+          <button type="button" data-val="risk" class="active">リスクあり</button>
+          <button type="button" data-val="unknown">未確認 / 未実施</button>
+        </div>
+        <p class="hint">MNA®-SF・NRS-2002・MUST など。スクリーニングは入口であって診断ではありません。「未確認」でも下の評価は行えますが、まずスクリーニングの実施を推奨します。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 表現型基準 -->
+  <div class="card">
+    <div class="card-header">② 表現型基準（からだの所見・1つ以上で該当）</div>
+    <div class="card-body">
+      <p class="axis-note">①〜③のうち <b>1つ以上</b> 該当で表現型基準を満たします。</p>
+
+      <!-- 体重減少 -->
+      <div class="param">
+        <div class="param-top"><label class="field-label">① 意図しない体重減少</label><span class="param-badge bg-no" id="b_wl">非該当</span></div>
+        <div class="seg" id="segWL">
+          <button type="button" data-val="none" class="active">なし</button>
+          <button type="button" data-val="mod">中等度（6ヶ月以内5〜10% / 6ヶ月超10〜20%）</button>
+          <button type="button" data-val="sev">高度（6ヶ月以内＞10% / 6ヶ月超＞20%）</button>
+        </div>
+        <p class="hint">ダイエット等の意図的な減量は除く。重症度（重度/中等度）はこの項目で判定します。</p>
+      </div>
+
+      <!-- 低BMI -->
+      <div class="param">
+        <div class="param-top"><label class="field-label">② 低BMI</label><span class="param-badge bg-null" id="b_bmi">— </span></div>
+        <div class="input-row" style="margin-bottom:8px;">
+          <span class="unit">年齢</span><input type="number" id="age" value="75" min="18" max="120" step="1"><span class="unit">歳</span>
+        </div>
+        <div class="seg" id="segBmiMode" style="margin-bottom:10px;">
+          <button type="button" data-val="hw" class="active">身長×体重で計算</button>
+          <button type="button" data-val="direct">BMIを直接入力</button>
+        </div>
+        <div id="bmiHW" class="input-row">
+          <span class="unit">身長</span><input type="number" id="height" value="160" min="100" max="220" step="0.1"><span class="unit">cm</span>
+          <span class="unit">体重</span><input type="number" id="weight" value="48" min="20" max="200" step="0.1"><span class="unit">kg</span>
+        </div>
+        <div id="bmiDirect" class="input-row" style="display:none;">
+          <span class="unit">BMI</span><input type="number" id="bmiVal" value="18.0" min="8" max="50" step="0.1"><span class="unit">kg/m²</span>
+        </div>
+        <div class="bmi-readout" id="bmiReadout">BMI — ／ <span class="thr">カットオフ —</span></div>
+        <p class="hint">診断カットオフ（アジア人）：<b>70歳未満 18.5未満／70歳以上 20未満</b>。研究レベルの重度値（参考・未確定）：70歳未満 17.0未満／70歳以上 17.8未満。</p>
+      </div>
+
+      <!-- 筋肉量減少 -->
+      <div class="param">
+        <div class="param-top"><label class="field-label">③ 筋肉量減少</label><span class="param-badge bg-no" id="b_mus">非該当</span></div>
+        <div class="seg" id="segMus">
+          <button type="button" data-val="none" class="active">なし</button>
+          <button type="button" data-val="mild">あり（軽〜中等度）</button>
+          <button type="button" data-val="sev">高度減少（参考）</button>
+        </div>
+        <p class="hint">DEXA・CT・BIAで定量評価。機器がなければ下腿周囲長などの身体計測で代用可。<b>握力など筋機能は筋肉量の代用にしない</b>（サルコペニア評価項目）。「高度減少」は日本人カットオフ未確定のため参考。</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 病因基準 -->
+  <div class="card">
+    <div class="card-header">③ 病因基準（原因・1つ以上で該当）</div>
+    <div class="card-body">
+      <p class="axis-note">④〜⑤のうち <b>1つ以上</b> 該当で病因基準を満たします。</p>
+
+      <!-- 摂取/吸収 -->
+      <div class="param">
+        <div class="param-top"><label class="field-label">④ 食事摂取量減少／消化吸収能低下</label><span class="param-badge bg-no" id="b_intake">非該当</span></div>
+        <div class="seg" id="segIntake">
+          <button type="button" data-val="no" class="active">なし</button>
+          <button type="button" data-val="yes">あり</button>
+        </div>
+        <p class="hint">・1週間以上、必要栄養量の50%以下の摂取／・2週間以上の摂取量減少／・消化吸収に悪影響を及ぼす慢性的な消化管の状態（短腸症候群・膵機能不全 等）。</p>
+      </div>
+
+      <!-- 疾患負荷/炎症 -->
+      <div class="param">
+        <div class="param-top"><label class="field-label">⑤ 疾患負荷／炎症</label><span class="param-badge bg-no" id="b_dis">非該当</span></div>
+        <div class="seg" id="segDis">
+          <button type="button" data-val="no" class="active">なし</button>
+          <button type="button" data-val="yes">あり</button>
+        </div>
+        <p class="hint">急性疾患・外傷による炎症（敗血症・大手術・重症外傷 等）／慢性疾患による炎症（がん・COPD・慢性心不全・CKD 等）。炎症は数値必須ではなく臨床判断で可。</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 結果 -->
+  <div class="card">
+    <div class="card-header">🧮 判定結果</div>
+    <div class="card-body">
+      <div class="result-hero" id="resultHero">
+        <div class="label">GLIM基準による判定</div>
+        <div class="value" id="resultValue">入力してください</div>
+        <div class="risk-pill" id="severityPill">重症度 —</div>
+      </div>
+      <div id="warningArea"></div>
+    </div>
+  </div>
+
+  <!-- 内訳 -->
+  <div class="card">
+    <div class="card-header">🔎 判定内訳</div>
+    <div class="card-body">
+      <table class="lookup-table">
+        <thead><tr><th class="left">基準</th><th class="left">入力</th><th>判定</th></tr></thead>
+        <tbody id="breakdownBody"></tbody>
+      </table>
+      <p class="hint" style="margin-top:8px;">低栄養＝<b>表現型1つ以上 ＋ 病因1つ以上</b>。重症度は表現型基準で判定し、より高度な基準を1つでも超えれば重度（ステージ2）、なければ中等度（ステージ1）。</p>
+    </div>
+  </div>
+
+  <!-- コピー -->
+  <div class="card">
+    <div class="card-header">📋 記録用サマリ（コピー可）</div>
+    <div class="card-body">
+      <div class="template-box" id="summaryBox"></div>
+      <button class="copy-btn" id="copyBtn">📋 クリップボードにコピー</button>
+    </div>
+  </div>
+
+  <!-- 関連情報 -->
+  <div class="card">
+    <div class="card-header">📚 関連情報・参考文献</div>
+    <div class="card-body">
+      <p style="font-size:0.9em;margin-bottom:8px;">
+        🎬 動画解説: <a href="https://youtu.be/p_5ozQOQicE" target="_blank" rel="noopener" style="color:var(--mid);">GLIM基準を5分で｜表現型・病因・重症度カットオフを図解</a><br>
+        📝 ブログ記事: <a href="https://blog.ichisouzo-lab.com/entry/2026/06/15/023556" target="_blank" rel="noopener" style="color:var(--mid);">GLIM基準とは｜カットオフと現場の使い方</a><br>
+        📊 スライド資料: <a href="https://tools.ichisouzo-lab.com/slides/glim-criteria/" target="_blank" rel="noopener" style="color:var(--mid);">全15枚・Web閲覧／PDF</a> ／ 🖼️ <a href="https://tools.ichisouzo-lab.com/infographics/glim-criteria/" target="_blank" rel="noopener" style="color:var(--mid);">早見インフォグラフィック</a>
+      </p>
+      <ol class="ref-list">
+        <li>日本栄養治療学会(JSPEN) GLIMワーキンググループ. GLIM基準による低栄養診断のプロセス（2024.10.10改訂版）. <a href="https://www.jspen.or.jp/glim/glim_overview" target="_blank" rel="noopener">JSPEN</a></li>
+        <li>Cederholm T, et al. GLIM criteria for the diagnosis of malnutrition. Clin Nutr. 2019;38(1):1-9. <a href="https://doi.org/10.1016/j.clnu.2018.08.002" target="_blank" rel="noopener">DOI</a></li>
+        <li>Cederholm T, et al. The GLIM consensus approach: A 5-year update. Clin Nutr. 2025;49:11-20. <a href="https://doi.org/10.1016/j.clnu.2025.03.018" target="_blank" rel="noopener">DOI</a></li>
+        <li>Maeda K, et al. Reference BMI values and prevalence of malnutrition according to GLIM. Clin Nutr. 2019;39(1):180-184. <a href="https://doi.org/10.1016/j.clnu.2019.01.011" target="_blank" rel="noopener">DOI</a></li>
+      </ol>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>本ツールは医療従事者向けの参考情報です。最終的な診断・栄養管理は最新ガイドライン・施設プロトコル・個別症例の臨床状況に基づき医師が行ってください。</p>
+  <p style="margin-top:6px;">© 医知創造ラボ ｜ <a href="index.html">DDxツール一覧</a></p>
+</footer>
+
+<script>
+(function(){
+  var st = { screen:'risk', wl:'none', bmiMode:'hw', mus:'none', intake:'no', dis:'no' };
+  var ageEl = document.getElementById('age');
+  var heightEl = document.getElementById('height');
+  var weightEl = document.getElementById('weight');
+  var bmiValEl = document.getElementById('bmiVal');
+
+  function num(el){ var v = parseFloat(el.value); return isNaN(v) ? null : v; }
+
+  // ---- BMI 計算・分類 ----
+  function computeBMI(){
+    if (st.bmiMode === 'direct') return num(bmiValEl);
+    var h = num(heightEl), w = num(weightEl);
+    if (h == null || w == null || h <= 0) return null;
+    var m = h / 100;
+    return Math.round((w / (m * m)) * 10) / 10;
+  }
+  function ageBand(){ var a = num(ageEl); if (a == null) return null; return a >= 70 ? 'old' : 'young'; }
+  function bmiDiagThreshold(){ var b = ageBand(); return b == null ? null : (b === 'old' ? 20 : 18.5); }
+  function bmiSevereThreshold(){ var b = ageBand(); return b == null ? null : (b === 'old' ? 17.8 : 17.0); }
+  function bmiHit(){
+    var bmi = computeBMI(), thr = bmiDiagThreshold();
+    if (bmi == null || thr == null) return null;
+    return bmi < thr;
+  }
+  function bmiSevereResearch(){
+    var bmi = computeBMI(), thr = bmiSevereThreshold();
+    if (bmi == null || thr == null) return false;
+    return bmi < thr;
+  }
+
+  // ---- 該当判定 ----
+  function wlHit(){ return st.wl !== 'none'; }
+  function musHit(){ return st.mus !== 'none'; }
+  function intakeHit(){ return st.intake === 'yes'; }
+  function disHit(){ return st.dis === 'yes'; }
+
+  function setBadge(id, state){
+    var el = document.getElementById(id);
+    if (state === true){ el.className = 'param-badge bg-hit'; el.textContent = '該当'; }
+    else if (state === false){ el.className = 'param-badge bg-no'; el.textContent = '非該当'; }
+    else { el.className = 'param-badge bg-null'; el.textContent = '—'; }
+  }
+
+  function chip(hit){
+    if (hit === true) return '<span class="chip" style="background:var(--accent)">該当</span>';
+    if (hit === false) return '<span class="chip" style="background:var(--gray)">非該当</span>';
+    return '<span class="chip" style="background:#b9c4c7">—</span>';
+  }
+
+  function wlLabel(){ return st.wl === 'sev' ? '高度' : (st.wl === 'mod' ? '中等度' : 'なし'); }
+  function musLabel(){ return st.mus === 'sev' ? '高度減少（参考）' : (st.mus === 'mild' ? 'あり' : 'なし'); }
+
+  function renderWarnings(boxes){
+    var html = '';
+    for (var i = 0; i < boxes.length; i++){
+      html += '<div class="warning-box ' + boxes[i].cls + '"><div class="head">' + boxes[i].head + '</div><div>' + boxes[i].body + '</div></div>';
+    }
+    document.getElementById('warningArea').innerHTML = html;
+  }
+
+  function update(){
+    // BMI readout
+    var bmi = computeBMI(), thr = bmiDiagThreshold();
+    var bh = bmiHit();
+    var ro = document.getElementById('bmiReadout');
+    if (bmi == null || thr == null){
+      ro.innerHTML = 'BMI — ／ <span class="thr">カットオフ —</span>';
+    } else {
+      ro.innerHTML = 'BMI <b>' + bmi.toFixed(1) + '</b> ／ <span class="thr">診断カットオフ ' + thr + '未満（' + (ageBand()==='old'?'70歳以上':'70歳未満') + '）</span>';
+    }
+    setBadge('b_bmi', bh);
+    setBadge('b_wl', wlHit());
+    setBadge('b_mus', musHit());
+    setBadge('b_intake', intakeHit());
+    setBadge('b_dis', disHit());
+
+    // counts
+    var phenoList = [wlHit(), bh, musHit()];
+    var phenoCount = 0, phenoUnknown = false;
+    for (var i=0;i<phenoList.length;i++){ if (phenoList[i] === true) phenoCount++; else if (phenoList[i] == null) phenoUnknown = true; }
+    var etioCount = (intakeHit()?1:0) + (disHit()?1:0);
+
+    var hero = document.getElementById('resultHero');
+    var val = document.getElementById('resultValue');
+    var pill = document.getElementById('severityPill');
+
+    var diagnosed = (phenoCount >= 1 && etioCount >= 1);
+    var boxes = [];
+
+    if (diagnosed){
+      hero.className = 'result-hero is-malnut';
+      val.textContent = '低栄養（GLIM基準を満たす）';
+      // 重症度：体重減少で判定
+      var severe = (st.wl === 'sev');
+      var stage = severe ? '重度（ステージ2）' : '中等度（ステージ1）';
+      pill.textContent = '重症度：' + stage;
+      boxes.push({cls:'red', head:'✅ GLIM基準を満たします', body:'表現型基準 ' + phenoCount + ' 項目 ＋ 病因基準 ' + etioCount + ' 項目が該当。栄養介入の対象です。'});
+      if (severe){
+        boxes.push({cls:'caution', head:'重度（ステージ2）', body:'体重減少が高度基準（6ヶ月以内＞10% / 6ヶ月超＞20%）を超えています。'});
+      } else {
+        boxes.push({cls:'info', head:'中等度（ステージ1）', body:'体重減少は高度基準に達していません。重症度は体重減少で判定しています。'});
+      }
+      // BMI 研究値の参考
+      if (bmiSevereResearch()){
+        boxes.push({cls:'caution', head:'参考：BMIは研究上の重度域', body:'BMIが研究レベルの重度値（70歳未満17.0／70歳以上17.8未満・Maeda 2019）を下回ります。ただし日本人の重症度カットオフは公式未確定のため、参考所見です。'});
+      }
+      if (st.mus === 'sev'){
+        boxes.push({cls:'info', head:'参考：筋肉量 高度減少', body:'筋肉量の高度減少も重度を示唆しますが、日本人カットオフは未確定のため参考としています。'});
+      }
+    } else {
+      val.textContent = '低栄養の基準を満たしません';
+      pill.textContent = '重症度 —';
+      if (phenoUnknown){
+        hero.className = 'result-hero';
+        val.textContent = '入力を確認してください';
+        boxes.push({cls:'info', head:'入力未完了', body:'低BMIの判定に必要な値（年齢・身長/体重 または BMI）が未入力です。'});
+      } else {
+        hero.className = 'result-hero is-normal';
+        var msg = [];
+        if (phenoCount < 1) msg.push('表現型基準が0項目');
+        if (etioCount < 1) msg.push('病因基準が0項目');
+        boxes.push({cls:'info', head:'現時点では低栄養の基準を満たしません', body:msg.join('・') + '。GLIMは「表現型1つ以上＋病因1つ以上」が揃って初めて低栄養と診断します（片方だけでは診断しない）。'});
+      }
+    }
+
+    if (st.screen === 'unknown'){
+      boxes.push({cls:'caution', head:'スクリーニング未確認', body:'GLIM診断はスクリーニングでリスクありと判定された症例に行うのが前提です。MNA®-SF・NRS-2002・MUST等の実施を推奨します。'});
+    }
+
+    renderWarnings(boxes);
+
+    // breakdown
+    var bmiInputStr = (st.bmiMode==='direct') ? ('BMI ' + (bmi==null?'—':bmi.toFixed(1)) + ' 直接入力') : ((num(heightEl)==null?'—':num(heightEl))+'cm / '+(num(weightEl)==null?'—':num(weightEl))+'kg → BMI '+(bmi==null?'—':bmi.toFixed(1)));
+    var rows = [
+      { name:'［表現型①］意図しない体重減少', val: wlLabel(), hit: wlHit() },
+      { name:'［表現型②］低BMI（'+(ageBand()==='old'?'70歳以上':(ageBand()==='young'?'70歳未満':'年齢—'))+'）', val: bmiInputStr, hit: bh },
+      { name:'［表現型③］筋肉量減少', val: musLabel(), hit: musHit() },
+      { name:'［病因④］食事摂取量減少/消化吸収能低下', val: intakeHit()?'あり':'なし', hit: intakeHit() },
+      { name:'［病因⑤］疾患負荷/炎症', val: disHit()?'あり':'なし', hit: disHit() }
+    ];
+    var html = '';
+    for (var r=0;r<rows.length;r++){
+      html += '<tr><td class="left">'+rows[r].name+'</td><td class="left">'+rows[r].val+'</td><td>'+chip(rows[r].hit)+'</td></tr>';
+    }
+    document.getElementById('breakdownBody').innerHTML = html;
+
+    // summary
+    var L = [];
+    L.push('【GLIM基準 低栄養診断】');
+    L.push('スクリーニング：' + (st.screen==='risk'?'リスクあり':'未確認/未実施'));
+    L.push('────────────');
+    L.push('表現型基準（該当 '+phenoCount+' / 3）');
+    L.push('・体重減少：' + wlLabel() + '（' + (wlHit()?'該当':'非該当') + '）');
+    L.push('・低BMI：' + bmiInputStr + '（' + (bh===true?'該当':(bh===false?'非該当':'—')) + '）');
+    L.push('・筋肉量減少：' + musLabel() + '（' + (musHit()?'該当':'非該当') + '）');
+    L.push('病因基準（該当 '+etioCount+' / 2）');
+    L.push('・食事摂取/消化吸収：' + (intakeHit()?'あり（該当）':'なし'));
+    L.push('・疾患負荷/炎症：' + (disHit()?'あり（該当）':'なし'));
+    L.push('────────────');
+    if (diagnosed){
+      L.push('判定：低栄養（GLIM基準を満たす）');
+      L.push('重症度：' + (st.wl==='sev'?'重度（ステージ2）':'中等度（ステージ1）'));
+      if (bmiSevereResearch()) L.push('参考：BMIは研究上の重度域（17.0/17.8未満・公式未確定）');
+    } else if (phenoUnknown){
+      L.push('判定：入力未完了（BMI関連の値を確認）');
+    } else {
+      L.push('判定：低栄養の基準を満たさない（表現型1つ以上＋病因1つ以上が必要）');
+    }
+    var box = document.getElementById('summaryBox');
+    box.textContent = L.join('\n');
+    box.dataset.plain = box.textContent;
+  }
+
+  function bindSeg(containerId, onSelect, hitVals){
+    var c = document.getElementById(containerId);
+    var btns = c.querySelectorAll('button');
+    for (var i = 0; i < btns.length; i++){
+      btns[i].addEventListener('click', function(){
+        var grp = this.parentElement.querySelectorAll('button');
+        for (var j = 0; j < grp.length; j++){ grp[j].classList.remove('active'); grp[j].classList.remove('hitsel'); }
+        this.classList.add('active');
+        var v = this.getAttribute('data-val');
+        if (hitVals && hitVals.indexOf(v) !== -1) this.classList.add('hitsel');
+        onSelect(v, this);
+        update();
+      });
+    }
+  }
+
+  bindSeg('segScreen', function(v){ st.screen = v; });
+  bindSeg('segWL', function(v){ st.wl = v; }, ['mod','sev']);
+  bindSeg('segMus', function(v){ st.mus = v; }, ['mild','sev']);
+  bindSeg('segIntake', function(v){ st.intake = v; }, ['yes']);
+  bindSeg('segDis', function(v){ st.dis = v; }, ['yes']);
+  bindSeg('segBmiMode', function(v){
+    st.bmiMode = v;
+    document.getElementById('bmiHW').style.display = (v === 'hw') ? 'flex' : 'none';
+    document.getElementById('bmiDirect').style.display = (v === 'direct') ? 'flex' : 'none';
+  });
+
+  var inputs = [ageEl, heightEl, weightEl, bmiValEl];
+  for (var k = 0; k < inputs.length; k++) inputs[k].addEventListener('input', update);
+
+  document.getElementById('copyBtn').addEventListener('click', function(){
+    var btn = this;
+    var text = document.getElementById('summaryBox').dataset.plain || document.getElementById('summaryBox').textContent;
+    function done(){
+      btn.textContent = '✓ コピー完了'; btn.classList.add('copied');
+      setTimeout(function(){ btn.textContent = '📋 クリップボードにコピー'; btn.classList.remove('copied'); }, 1800);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done, function(){ done(); });
+    } else {
+      var ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta);
+      ta.select(); try { document.execCommand('copy'); } catch(e){} document.body.removeChild(ta); done();
+    }
+  });
+
+  update();
+})();
+</script>
+</body>
+</html>
