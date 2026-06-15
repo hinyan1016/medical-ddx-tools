@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0E4A4F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>BFCRS 緊張病評価尺度 計算ツール（Bush-Francis Catatonia Rating Scale）</title>
+<style>
+  :root {
+    --dark: #0E4A4F;
+    --primary: #1A6E78;
+    --mid: #2B8C97;
+    --light: #E4F1F2;
+    --accent: #E08A1E;
+    --red: #C0392B;
+    --orange: #E08600;
+    --green: #2E7D32;
+    --yellow-bg: #FFF8E1;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(14,74,79,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #E4F1F2 0%, #F4F6F8 100%);
+    color: #222; min-height: 100vh; padding: 0 0 40px; line-height: 1.55;
+  }
+  header {
+    background: linear-gradient(135deg, var(--dark), var(--mid));
+    color: var(--white); padding: 14px 20px 18px; text-align: center;
+    box-shadow: 0 4px 16px rgba(14,74,79,0.18);
+  }
+  .back-bar { display: flex; align-items: center; margin-bottom: 8px; }
+  .back-bar a {
+    color: rgba(255,255,255,0.85); text-decoration: none; font-size: 0.85em;
+    display: flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 6px;
+  }
+  .back-bar a:active { background: rgba(255,255,255,0.15); }
+  header h1 { font-size: 1.4em; font-weight: 700; letter-spacing: 0.02em; }
+  header p { font-size: 0.85em; margin-top: 6px; opacity: 0.88; }
+  .container { max-width: 820px; margin: 0 auto; padding: 20px 14px; }
+
+  .card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 16px; overflow: hidden; }
+  .card-header { padding: 12px 16px; background: var(--light); border-bottom: 2px solid var(--primary); font-weight: 700; font-size: 1em; color: var(--primary); }
+  .card-body { padding: 16px; }
+
+  .alert-disclaimer {
+    background: #fff8e1; border-left: 4px solid var(--orange);
+    padding: 10px 14px; margin-bottom: 16px; border-radius: 6px;
+    font-size: 0.85em; color: #5d4400;
+  }
+
+  /* 入力（各項目） */
+  .param { padding: 14px 0; border-bottom: 1px solid #eef2f3; }
+  .param:last-child { border-bottom: none; }
+  .param.screening { border-left: 3px solid var(--accent); padding-left: 12px; margin-left: -12px; }
+  .param-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+  label.field-label { font-weight: 700; font-size: 0.95em; color: var(--primary); }
+  .field-label .en { font-weight: 600; font-size: 0.85em; color: var(--gray); }
+  .field-label .scr-tag {
+    display: inline-block; font-size: 0.66em; font-weight: 800; color: var(--white);
+    background: var(--accent); padding: 1px 6px; border-radius: 999px; margin-left: 6px; vertical-align: middle;
+  }
+  .field-label .bin-tag {
+    display: inline-block; font-size: 0.66em; font-weight: 800; color: var(--white);
+    background: var(--gray); padding: 1px 6px; border-radius: 999px; margin-left: 6px; vertical-align: middle;
+  }
+  .param-score-badge {
+    flex-shrink: 0; min-width: 58px; text-align: center; font-weight: 800;
+    font-size: 0.9em; padding: 3px 8px; border-radius: 999px; color: var(--white);
+    font-variant-numeric: tabular-nums;
+  }
+  .sc0 { background: var(--green); } .sc1 { background: #C9A227; }
+  .sc2 { background: var(--orange); } .sc3 { background: var(--red); }
+  .scnull { background: var(--gray); }
+
+  /* セグメント（採点選択） */
+  .seg { display: flex; flex-wrap: wrap; gap: 6px; }
+  .seg button {
+    border: 2px solid #CBD9DC; background: var(--white); color: var(--primary);
+    padding: 8px 12px; border-radius: 8px; font-family: inherit; font-size: 0.86em;
+    font-weight: 600; cursor: pointer; transition: all 0.12s; text-align: left; flex: 1 1 auto; min-width: 0;
+  }
+  .seg button .pt { display: inline-block; font-weight: 800; min-width: 16px; }
+  .seg button:hover { border-color: var(--mid); }
+  .seg button.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
+  .seg button.active.s3 { background: var(--red); border-color: var(--red); }
+  .seg button.active.s2 { background: var(--orange); border-color: var(--orange); }
+  .seg button.active.s1 { background: #C9A227; border-color: #C9A227; }
+  .seg button.active.s0 { background: var(--green); border-color: var(--green); }
+  .hint { font-size: 0.78em; color: var(--gray); margin-top: 6px; }
+
+  /* 結果ヒーロー */
+  .result-hero {
+    background: linear-gradient(135deg, var(--dark), var(--mid));
+    color: var(--white); padding: 22px 20px; text-align: center;
+    border-radius: var(--radius); margin-bottom: 14px;
+  }
+  .result-hero .label { font-size: 0.88em; opacity: 0.9; margin-bottom: 2px; }
+  .result-hero .value { font-size: 3.0em; font-weight: 800; letter-spacing: 0.01em; font-variant-numeric: tabular-nums; }
+  .result-hero .value small { font-size: 0.35em; font-weight: 600; opacity: 0.85; }
+  .risk-pill {
+    display: inline-block; margin-top: 8px; padding: 5px 16px; border-radius: 999px;
+    font-weight: 800; font-size: 1.0em; background: rgba(255,255,255,0.18);
+  }
+
+  .metric-row { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  .metric {
+    flex: 1 1 140px; background: var(--light); border-radius: var(--radius);
+    padding: 14px 12px; text-align: center; border: 1px solid #D5E0E2;
+  }
+  .metric .m-label { font-size: 0.8em; color: var(--gray); margin-bottom: 4px; }
+  .metric .m-value { font-size: 1.8em; font-weight: 800; color: var(--primary); font-variant-numeric: tabular-nums; }
+  .metric .m-value small { font-size: 0.5em; font-weight: 600; color: var(--gray); }
+
+  .warning-box { padding: 12px 14px; margin-bottom: 10px; border-radius: 6px; font-size: 0.92em; }
+  .warning-box .head { font-weight: 700; margin-bottom: 4px; }
+  .warning-box.red { background: #fdecea; border-left: 4px solid var(--red); color: #6a1a1a; }
+  .warning-box.red .head { color: var(--red); }
+  .warning-box.caution { background: #fff8e1; border-left: 4px solid var(--orange); color: #5d4400; }
+  .warning-box.caution .head { color: var(--orange); }
+  .warning-box.info { background: #e7f6f9; border-left: 4px solid var(--mid); color: #0c3c45; }
+  .warning-box.info .head { color: var(--mid); }
+  .warning-box.pos { background: #fdecea; border-left: 4px solid var(--red); color: #6a1a1a; }
+  .warning-box.pos .head { color: var(--red); }
+  .warning-box.neg { background: #eef7ef; border-left: 4px solid var(--green); color: #1f4d22; }
+  .warning-box.neg .head { color: var(--green); }
+
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+  .copy-btn, .reset-btn {
+    color: var(--white); border: none; padding: 9px 16px;
+    border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 0.88em; font-weight: 600;
+  }
+  .copy-btn { background: var(--primary); }
+  .copy-btn:hover { background: var(--dark); }
+  .copy-btn.copied { background: var(--green); }
+  .reset-btn { background: var(--gray); }
+  .reset-btn:hover { background: #555; }
+
+  .template-box {
+    background: #0d2a30; color: #e2eef0; padding: 14px 16px; border-radius: 8px;
+    font-family: "Consolas", "Courier New", monospace; font-size: 0.82em; line-height: 1.7;
+    white-space: pre-wrap; word-wrap: break-word; margin-bottom: 8px; max-height: 300px; overflow-y: auto;
+  }
+
+  .ref-list { font-size: 0.82em; color: var(--gray); line-height: 1.7; padding-left: 18px; }
+  .ref-list li { margin-bottom: 4px; }
+  .ref-list a { color: var(--mid); text-decoration: none; }
+  .ref-list a:hover { text-decoration: underline; }
+
+  footer { max-width: 820px; margin: 30px auto 0; padding: 14px; text-align: center; color: var(--gray); font-size: 0.78em; line-height: 1.6; }
+  footer a { color: var(--mid); text-decoration: none; }
+</style>
+</head>
+<body>
+<nav id="ics-globalnav" style="background:#15324E;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
+<div style="max-width:1040px;margin:0 auto;padding:9px 16px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+<a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;">医知創造ラボ</a>
+<a href="https://ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">ホーム</a>
+<a href="https://blog.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">ブログ</a>
+<a href="https://tools.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">ツール</a>
+<a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">YouTube</a>
+</div>
+</nav>
+<header>
+  <div class="back-bar"><a href="index.html">← ツール一覧へ</a></div>
+  <h1>BFCRS 緊張病評価尺度 計算ツール</h1>
+  <p>Bush-Francis Catatonia Rating Scale（23項目）｜スクリーニング14項目で2項目以上陽性 → カタトニア疑い・総得点で重症度を評価</p>
+</header>
+
+<div class="container">
+
+  <div class="alert-disclaimer">
+    <strong>⚠ 使用上の注意</strong>：本ツールは Bush-Francis Catatonia Rating Scale（BFCRS, 1996）に基づく<strong>教育目的</strong>の参考計算機です。各項目はベッドサイドでの<strong>標準化された観察・診察手順</strong>に従って評価してください。スクリーニング陽性や総得点は診断の代替ではなく、確定診断は DSM-5（12徴候中3つ以上）等の臨床判断と併せて行ってください。
+  </div>
+
+  <!-- 入力 -->
+  <div class="card">
+    <div class="card-header">📝 23項目 評価入力（<span style="color:var(--accent)">橙ライン</span>＝スクリーニング版 BFCSI 14項目）</div>
+    <div class="card-body" id="itemBody">
+      <!-- 項目は JS で生成 -->
+    </div>
+  </div>
+
+  <!-- 結果 -->
+  <div class="card">
+    <div class="card-header">🧮 判定・スコア</div>
+    <div class="card-body">
+      <div class="result-hero">
+        <div class="label">BFCRS 総得点（全23項目・重症度）</div>
+        <div class="value"><span id="totalScore">0</span><small> / 69 点</small></div>
+        <div class="risk-pill" id="screenPill">スクリーニング判定</div>
+      </div>
+      <div class="metric-row">
+        <div class="metric">
+          <div class="m-label">スクリーニング陽性項目（14項目中・スコア≥1）</div>
+          <div class="m-value"><span id="screenCount">0</span><small> / 14</small></div>
+        </div>
+        <div class="metric">
+          <div class="m-label">陽性項目数（全23項目・スコア&gt;0）</div>
+          <div class="m-value"><span id="posCount">0</span><small> / 23</small></div>
+        </div>
+      </div>
+      <div id="warningArea"></div>
+    </div>
+  </div>
+
+  <!-- コピー -->
+  <div class="card">
+    <div class="card-header">📋 記録用サマリ（コピー可）</div>
+    <div class="card-body">
+      <div class="template-box" id="summaryBox"></div>
+      <div class="btn-row">
+        <button class="copy-btn" id="copyBtn">📋 クリップボードにコピー</button>
+        <button class="reset-btn" id="resetBtn">↺ リセット（全項目0に）</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 関連情報 -->
+  <div class="card">
+    <div class="card-header">📚 関連情報・参考文献</div>
+    <div class="card-body">
+      <p style="font-size:0.9em;margin-bottom:8px;">
+        📝 ブログ解説: <a href="https://blog.ichisouzo-lab.com/entry/2026/06/16/003501" target="_blank" rel="noopener" style="color:var(--mid);">カタトニア（緊張病）の見方とBFCRSの使い方</a><br>
+        📊 スライド資料: <a href="https://tools.ichisouzo-lab.com/slides/catatonia/" target="_blank" rel="noopener" style="color:var(--mid);">カタトニア スライド・Web閲覧／PDF</a><br>
+        📄 原票PDF（評価マニュアル付）: <a href="https://www.urmc.rochester.edu/MediaLibraries/URMCMedia/psychiatry/about/docs/BFCRS-with-Manual-links.pdf" target="_blank" rel="noopener" style="color:var(--mid);">BFCRS with Manual（URMC）</a>
+      </p>
+      <ol class="ref-list">
+        <li>Bush G, Fink M, Petrides G, Dowling F, Francis A. Catatonia. I. Rating scale and standardized examination. Acta Psychiatr Scand. 1996;93(2):129-136. <a href="https://doi.org/10.1111/j.1600-0447.1996.tb09814.x" target="_blank" rel="noopener">DOI</a></li>
+        <li>Bush-Francis Catatonia Rating Scale（原票・評価マニュアル）. University of Rochester Medical Center. <a href="https://www.urmc.rochester.edu/MediaLibraries/URMCMedia/psychiatry/about/docs/BFCRS-with-Manual-links.pdf" target="_blank" rel="noopener">PDF</a></li>
+      </ol>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>本ツールは医療従事者向けの教育・参考情報です。診断の代替ではありません。最終的な判断は最新ガイドライン・施設プロトコル・個別症例の臨床状況に基づき医師が行ってください。</p>
+  <p style="margin-top:6px;">© 医知創造ラボ ｜ <a href="index.html">DDxツール一覧</a></p>
+</footer>
+
+<script>
+(function(){
+  // ---- 23項目定義（PDF原文に忠実なアンカー） ----
+  // type: 'graded'（0/1/2/3）/ 'binary'（0 or 3）
+  // screening: 項目1〜14（BFCSI スクリーニング版）
+  var ITEMS = [
+    { n:1,  ja:'興奮', en:'Excitement', type:'graded', anchors:['なし','過剰な運動・間欠的','休みなく常時運動・運動亢進','本格的な緊張病性興奮・絶え間ない狂躁的運動'] },
+    { n:2,  ja:'無動／昏迷', en:'Immobility/Stupor', type:'graded', anchors:['なし','異常に静止・短時間なら反応','外界とほぼ交流なし','昏迷・疼痛刺激にも無反応'] },
+    { n:3,  ja:'無言症', en:'Mutism', type:'graded', anchors:['なし','大半の質問に無反応・聞き取れない囁き','5分で20語未満','発語なし'] },
+    { n:4,  ja:'凝視', en:'Staring', type:'graded', anchors:['なし','視線が乏しい・20秒未満で注意移動・瞬目減少','20秒超注視・時折注意移動','固定凝視・無反応'] },
+    { n:5,  ja:'姿勢保持／カタレプシー', en:'Posturing/Catalepsy', type:'graded', anchors:['なし','1分未満','1分超〜15分未満','奇異な姿勢、または日常姿勢を15分超保持'] },
+    { n:6,  ja:'しかめ顔', en:'Grimacing', type:'graded', anchors:['なし','10秒未満','1分未満','奇異な表情、または1分超保持'] },
+    { n:7,  ja:'反響動作／反響言語', en:'Echopraxia/Echolalia', type:'graded', anchors:['なし','時々','頻繁','常時'] },
+    { n:8,  ja:'常同症', en:'Stereotypy', type:'graded', anchors:['なし','時々','頻繁','常時'] },
+    { n:9,  ja:'わざとらしさ', en:'Mannerisms', type:'graded', anchors:['なし','時々','頻繁','常時'] },
+    { n:10, ja:'反復言語', en:'Verbigeration', type:'graded', anchors:['なし','時々','頻繁・中断困難','常時'] },
+    { n:11, ja:'筋強剛', en:'Rigidity', type:'graded', anchors:['なし','軽度抵抗','中等度','高度・姿勢変更不能（歯車・振戦があれば除外）'] },
+    { n:12, ja:'拒絶症', en:'Negativism', type:'graded', anchors:['なし','軽度抵抗・時に反対行動','中等度抵抗・頻繁に反対','高度抵抗・持続的に反対'] },
+    { n:13, ja:'蝋屈症', en:'Waxy Flexibility', type:'binary', anchors:['なし','あり（再姿勢付け時に蝋燭を曲げるような初期抵抗）'] },
+    { n:14, ja:'拒絶（摂食・交流拒否）', en:'Withdrawal', type:'graded', anchors:['なし','経口摂取/交流が最小・1日未満','最小・1日超','1日以上 摂取/交流なし'] },
+    { n:15, ja:'衝動性', en:'Impulsivity', type:'graded', anchors:['なし','時々','頻繁','常時・誘導不能'] },
+    { n:16, ja:'自動的従順', en:'Automatic Obedience', type:'graded', anchors:['なし','時々','頻繁','常時'] },
+    { n:17, ja:'ミットゲーエン', en:'Mitgehen', type:'binary', anchors:['なし','あり（指の軽い圧で「電気スタンド」様に挙上）'] },
+    { n:18, ja:'ゲーゲンハルテン', en:'Gegenhalten', type:'binary', anchors:['なし','あり（刺激の強さに比例する自動的な受動運動抵抗）'] },
+    { n:19, ja:'両価運動', en:'Ambitendency', type:'binary', anchors:['なし','あり（優柔不断でためらい運動に「固まる」）'] },
+    { n:20, ja:'把握反射', en:'Grasp Reflex', type:'binary', anchors:['なし','あり（神経学的所見）'] },
+    { n:21, ja:'保続', en:'Perseveration', type:'binary', anchors:['なし','あり（同じ話題/運動に繰り返し戻る）'] },
+    { n:22, ja:'好戦性', en:'Combativeness', type:'graded', anchors:['なし','時々殴りかかる・傷害可能性低','頻繁・中等度','他者に重大な危険'] },
+    { n:23, ja:'自律神経異常', en:'Autonomic Abnormality', type:'graded', anchors:['なし','1項目異常（既存高血圧は除外）','2項目','3項目以上（体温・血圧・脈拍・呼吸数・発汗）'] }
+  ];
+
+  var state = ITEMS.map(function(){ return 0; }); // 全項目スコア（初期0）
+
+  var itemBody = document.getElementById('itemBody');
+
+  // ---- 項目UI生成 ----
+  function buildItems(){
+    var html = '';
+    for (var i = 0; i < ITEMS.length; i++){
+      var it = ITEMS[i];
+      var isScr = it.n <= 14;
+      var tag = isScr ? '<span class="scr-tag">SCR</span>' : '';
+      if (it.type === 'binary') tag += '<span class="bin-tag">0/3</span>';
+      html += '<div class="param' + (isScr ? ' screening' : '') + '" data-idx="' + i + '">';
+      html += '<div class="param-top">';
+      html += '<label class="field-label">' + it.n + '. ' + it.ja + ' <span class="en">' + it.en + '</span>' + tag + '</label>';
+      html += '<span class="param-score-badge sc0" id="b_' + i + '">0 点</span>';
+      html += '</div>';
+      html += '<div class="seg" data-idx="' + i + '">';
+      if (it.type === 'binary'){
+        html += '<button type="button" data-val="0" class="active s0"><span class="pt">0</span> ' + it.anchors[0] + '</button>';
+        html += '<button type="button" data-val="3"><span class="pt">3</span> ' + it.anchors[1] + '</button>';
+      } else {
+        for (var s = 0; s < 4; s++){
+          html += '<button type="button" data-val="' + s + '"' + (s === 0 ? ' class="active s0"' : '') + '><span class="pt">' + s + '</span> ' + it.anchors[s] + '</button>';
+        }
+      }
+      html += '</div>';
+      html += '</div>';
+    }
+    itemBody.innerHTML = html;
+  }
+
+  function scClass(s){ return 'sc' + s; }
+
+  function setBadge(i, s){
+    var el = document.getElementById('b_' + i);
+    el.className = 'param-score-badge ' + scClass(s);
+    el.textContent = s + ' 点';
+  }
+
+  function setActive(idx, val){
+    var seg = itemBody.querySelector('.seg[data-idx="' + idx + '"]');
+    var btns = seg.querySelectorAll('button');
+    for (var j = 0; j < btns.length; j++){
+      btns[j].className = '';
+      if (parseInt(btns[j].getAttribute('data-val'), 10) === val){
+        btns[j].className = 'active s' + val;
+      }
+    }
+  }
+
+  function buildSummary(total, screenCount, posCount, screenPositive){
+    var L = [];
+    L.push('【BFCRS（Bush-Francis Catatonia Rating Scale）評価】');
+    for (var i = 0; i < ITEMS.length; i++){
+      var it = ITEMS[i];
+      L.push((it.n < 10 ? ' ' : '') + it.n + '. ' + it.ja + '（' + it.en + '）：' + state[i] + ' 点');
+    }
+    L.push('────────────');
+    L.push('スクリーニング（項目1〜14でスコア≥1）：' + screenCount + ' / 14 項目');
+    L.push('スクリーニング判定：' + (screenPositive ? '陽性（2項目以上）→ カタトニア疑い' : '陰性（0〜1項目）'));
+    L.push('陽性項目数（全23項目・スコア>0）：' + posCount + ' / 23 項目');
+    L.push('総得点（重症度）：' + total + ' / 69 点');
+    return L.join('\n');
+  }
+
+  function buildWarnings(total, screenCount, posCount, screenPositive){
+    var w = [];
+    if (screenPositive){
+      w.push({ level:'pos', head:'🚩 スクリーニング陽性（' + screenCount + '/14 項目）：カタトニア疑い',
+        body:'スクリーニング版（項目1〜14）で<strong>2項目以上</strong>がスコア≥1です。Bush-Francis研究基準では陽性であり、<strong>全23項目の評価</strong>を推奨します。確定診断は DSM-5（12徴候中3つ以上）等の臨床判断と併せて行ってください。' });
+    } else {
+      w.push({ level:'neg', head:'スクリーニング陰性（' + screenCount + '/14 項目）',
+        body:'スクリーニング版（項目1〜14）でスコア≥1の項目は<strong>0〜1項目</strong>です。Bush-Francis研究基準では陰性ですが、臨床的疑いが強い場合は経過観察・再評価を検討してください。' });
+    }
+    w.push({ level:'info', head:'💡 解釈の注記',
+      body:'Bush-Francis研究基準では14項目中2項目以上で陽性。確定診断はDSM-5（12徴候中3つ以上）等の臨床判断と併せて行う。総得点は重症度の経時モニタリングに有用。本ツールは教育目的で診断の代替ではない。' });
+    return w;
+  }
+
+  function renderWarnings(ws){
+    var html = '';
+    for (var i = 0; i < ws.length; i++){
+      html += '<div class="warning-box ' + ws[i].level + '"><div class="head">' + ws[i].head + '</div>' + ws[i].body + '</div>';
+    }
+    document.getElementById('warningArea').innerHTML = html;
+  }
+
+  // ---- 計算（リアルタイム） ----
+  function update(){
+    var total = 0;       // 全23項目合計
+    var screenCount = 0; // 項目1〜14でスコア≥1の数
+    var posCount = 0;    // 全23項目でスコア>0の数
+    for (var i = 0; i < ITEMS.length; i++){
+      var s = state[i];
+      total += s;
+      if (s > 0) posCount++;
+      if (ITEMS[i].n <= 14 && s >= 1) screenCount++;
+    }
+    var screenPositive = screenCount >= 2;
+
+    document.getElementById('totalScore').textContent = total;
+    document.getElementById('screenCount').textContent = screenCount;
+    document.getElementById('posCount').textContent = posCount;
+
+    var pill = document.getElementById('screenPill');
+    pill.textContent = screenPositive ? 'スクリーニング陽性（カタトニア疑い）' : 'スクリーニング陰性';
+
+    renderWarnings(buildWarnings(total, screenCount, posCount, screenPositive));
+
+    var box = document.getElementById('summaryBox');
+    box.textContent = buildSummary(total, screenCount, posCount, screenPositive);
+    box.dataset.plain = box.textContent;
+  }
+
+  // ---- イベント ----
+  buildItems();
+  itemBody.addEventListener('click', function(e){
+    var btn = e.target.closest ? e.target.closest('button') : null;
+    if (!btn) {
+      // フォールバック（pt span クリック等）
+      var t = e.target;
+      while (t && t.tagName !== 'BUTTON' && t !== itemBody) t = t.parentElement;
+      if (!t || t.tagName !== 'BUTTON') return;
+      btn = t;
+    }
+    var seg = btn.parentElement;
+    var idx = parseInt(seg.getAttribute('data-idx'), 10);
+    var val = parseInt(btn.getAttribute('data-val'), 10);
+    state[idx] = val;
+    setActive(idx, val);
+    setBadge(idx, val);
+    update();
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', function(){
+    for (var i = 0; i < ITEMS.length; i++){
+      state[i] = 0;
+      setActive(i, 0);
+      setBadge(i, 0);
+    }
+    update();
+  });
+
+  document.getElementById('copyBtn').addEventListener('click', function(){
+    var btn = this;
+    var text = document.getElementById('summaryBox').dataset.plain || document.getElementById('summaryBox').textContent;
+    function done(){
+      btn.textContent = '✓ コピー完了'; btn.classList.add('copied');
+      setTimeout(function(){ btn.textContent = '📋 クリップボードにコピー'; btn.classList.remove('copied'); }, 1800);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done, function(){ done(); });
+    } else {
+      var ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta);
+      ta.select(); try { document.execCommand('copy'); } catch(e){} document.body.removeChild(ta); done();
+    }
+  });
+
+  update();
+})();
+</script>
+</body>
+</html>
