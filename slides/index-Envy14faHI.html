@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1B3A5C">
+<meta name="description" content="医学教育YouTube動画のスライド資料一覧。動画を見る時間がない方向けに、PDFと全スライドを閲覧できます。">
+<title>スライド資料一覧 | 医学教育コンテンツ</title>
+<style>
+  :root {
+    --navy: #1B3A5C;
+    --blue: #2C5AA0;
+    --light-blue: #E8F0FE;
+    --bg: #F4F6F8;
+    --white: #FFFFFF;
+    --text: #222;
+    --muted: #666;
+    --shadow: 0 2px 12px rgba(27,58,92,0.12);
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 60px;
+    line-height: 1.6;
+  }
+  header {
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    padding: 40px 20px 32px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(27,58,92,0.18);
+  }
+  header .breadcrumb {
+    font-size: 0.82em;
+    opacity: 0.75;
+    margin-bottom: 10px;
+  }
+  header .breadcrumb a { color: var(--white); text-decoration: none; border-bottom: 1px dotted rgba(255,255,255,0.5); }
+  header h1 { font-size: 1.7em; font-weight: 700; letter-spacing: 0.02em; }
+  header p { font-size: 0.95em; margin-top: 10px; opacity: 0.88; }
+  .container { max-width: 960px; margin: 0 auto; padding: 28px 16px; }
+  .search-box { position: relative; margin-bottom: 20px; }
+  .search-input {
+    width: 100%;
+    padding: 12px 14px 12px 42px;
+    border: 2px solid #D1D5DB;
+    border-radius: var(--radius);
+    font-size: 1em;
+    font-family: inherit;
+    background: var(--white);
+    box-shadow: var(--shadow);
+    outline: none;
+  }
+  .search-input:focus { border-color: var(--blue); }
+  .search-icon {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    font-size: 1.1em; color: #999; pointer-events: none;
+  }
+  .deck-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
+  .deck-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+  }
+  .deck-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 24px rgba(27,58,92,0.2);
+  }
+  .deck-card .thumb { background: #ddd; aspect-ratio: 16/9; overflow: hidden; }
+  .deck-card .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .deck-card .body { padding: 16px 18px; flex: 1; display: flex; flex-direction: column; }
+  .deck-card .deck-title { font-size: 1.02em; font-weight: 700; color: var(--navy); margin-bottom: 8px; line-height: 1.4; }
+  .deck-card .deck-desc { font-size: 0.86em; color: #555; line-height: 1.55; flex: 1; }
+  .deck-card .deck-meta { font-size: 0.78em; color: var(--muted); margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .deck-card .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--light-blue);
+    color: var(--blue);
+    font-weight: 600;
+  }
+  .empty { text-align: center; padding: 40px 20px; color: var(--muted); }
+  footer {
+    max-width: 960px; margin: 40px auto 0; padding: 24px 16px;
+    text-align: center; color: var(--muted); font-size: 0.85em; line-height: 1.8;
+  }
+  footer a { color: var(--navy); text-decoration: none; border-bottom: 1px dotted var(--navy); }
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.35em; }
+    .deck-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<nav id="ics-globalnav" style="background:#15324E;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
+<div style="max-width:1040px;margin:0 auto;padding:9px 16px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+<a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;">医知創造ラボ</a>
+<a href="https://ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">ホーム</a>
+<a href="https://blog.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">ブログ</a>
+<a href="https://tools.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">ツール</a>
+<a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">YouTube</a>
+</div>
+</nav>
+
+<header>
+  <div class="breadcrumb"><a href="https://tools.ichisouzo-lab.com/">DDxツール</a> / スライド資料</div>
+  <h1>📊 スライド資料一覧</h1>
+  <p>動画を見る時間がない方向けの、YouTubeで使用したスライド資料です</p>
+</header>
+
+<div class="container">
+  <div class="search-box">
+    <span class="search-icon">🔍</span>
+    <input type="text" class="search-input" id="searchInput" placeholder="キーワードで検索（例: 認知症, 頭痛, 脳梗塞）">
+  </div>
+
+  <div class="deck-grid" id="deckGrid">
+        <a class="deck-card" href="what-is-happiness/" data-search="幸せとは何か｜脳科学が出した答え 3種類の幸せ・50-10-40の法則・ヘドニック適応・人間関係の力・今日からできる5つの行動 幸せとは何かを脳科学とポジティブ心理学の視点でやさしく解説。幸福の3つの種類（快楽・つながり・意味）、幸福度を決める50-10-40の法則、なぜ幸せは長続きしないのか（ヘドニック適応）、ドーパミンをめぐる誤解、ハーバード80年研究が示す人間関係の力、今日からできる5つの行動まで全15スライドで。 幸せ 脳科学 ポジティブ心理学 一般向け">
+      <div class="thumb"><img src="what-is-happiness/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">幸せとは何か｜脳科学が出した答え</div>
+        <div class="deck-desc">3種類の幸せ・50-10-40の法則・ヘドニック適応・人間関係の力・今日からできる5つの行動</div>
+        <div class="deck-meta"><span class="tag">幸せ</span><span class="tag">脳科学</span><span class="tag">ポジティブ心理学</span><span>📊 15枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="epilepsy-2026-papers/" data-search="2025-2026 てんかん診療を動かした重要論文6選 遺伝子治療・新規asm・sudep・妊娠・ad連関｜脳神経内科医向け 2025-2026年に発表されたてんかん診療に直結する重要論文6本を脳神経内科医向けに整理。dravet症候群への初の疾患修飾療法zorevunersen（nejm）、kv7開口薬azetukalner、cenobamateの4剤リアルワールド比較（jama neurology）、sudepの独立リスクを再定義したrepo2mse（lancet neurology）、妊娠前からの高用量葉酸（jnnp）、アルツハイマー病とてんかん活動の双方向性（lancet neurology）まで全14スライドで。 てんかん 最新論文 医師向け">
+      <div class="thumb"><img src="epilepsy-2026-papers/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">2025-2026 てんかん診療を動かした重要論文6選</div>
+        <div class="deck-desc">遺伝子治療・新規ASM・SUDEP・妊娠・AD連関｜脳神経内科医向け</div>
+        <div class="deck-meta"><span class="tag">てんかん</span><span class="tag">最新論文</span><span class="tag">医師向け</span><span>📊 14枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="summer-food-poisoning/" data-search="夏の食中毒、その下痢どうする？ 原因菌×潜伏時間の早見表・下痢止めng・o157の危険サイン 夏に増える細菌性食中毒（カンピロバクター・o157・サルモネラ・黄色ブドウ球菌・腸炎ビブリオ）を脳神経内科医が解説。原因菌ごとの潜伏時間の早見表、家庭での正しい水分補給、やってはいけない下痢止め・残り物の抗生物質、o157の溶血性尿毒症症候群（hus）の危険サインと受診の目安まで、全14スライドで。 食中毒 夏の感染症 o157">
+      <div class="thumb"><img src="summer-food-poisoning/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">夏の食中毒、その下痢どうする？</div>
+        <div class="deck-desc">原因菌×潜伏時間の早見表・下痢止めNG・O157の危険サイン</div>
+        <div class="deck-meta"><span class="tag">食中毒</span><span class="tag">夏の感染症</span><span class="tag">O157</span><span>📊 14枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="summer-pediatric-infections/" data-search="子どもの夏の感染症、いつから登園できる？ 手足口病・ヘルパンギーナ・プール熱・とびひの登園のめやす 夏に流行する子どもの感染症（手足口病・ヘルパンギーナ・プール熱／咽頭結膜熱・とびひ）の症状の見分け方と、いつから登園・登校できるかの目安を、学校保健安全法の第二種・第三種という法的根拠つきの早見表で全15スライドで解説。発疹が残っていても登園できる理由、なぜプール熱だけ日数が決まっているのか、受診すべき危険なサインまで。 手足口病 夏の感染症 登園のめやす">
+      <div class="thumb"><img src="summer-pediatric-infections/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">子どもの夏の感染症、いつから登園できる？</div>
+        <div class="deck-desc">手足口病・ヘルパンギーナ・プール熱・とびひの登園のめやす</div>
+        <div class="deck-meta"><span class="tag">手足口病</span><span class="tag">夏の感染症</span><span class="tag">登園のめやす</span><span>📊 15枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="zuranolone-zazbey/" data-search="ザズベイ（ズラノロン）の全貌と臨床的意義｜新規gaba作動性抗うつ薬を医療従事者向けに解説 作用機序・有効性・安全性・ssriとの使い分け｜投与3日目から効果発現・14日間で完結する新世代抗うつ薬【2025年12月承認】 2025年12月に日本で承認された新規抗うつ薬ザズベイ（ズラノロン）の動画スライド。gaba-a受容体に作用する神経ステロイド型の作用機序、日本人第3相試験の有効性（主要評価項目の群間差−1.2点）、副作用プロファイル（傾眠・めまい）、ssriとの使い分け、依存性と効果持続性の課題までを医療従事者向けに整理した全17枚。 抗うつ薬 ズラノロン 精神科">
+      <div class="thumb"><img src="zuranolone-zazbey/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">ザズベイ（ズラノロン）の全貌と臨床的意義｜新規GABA作動性抗うつ薬を医療従事者向けに解説</div>
+        <div class="deck-desc">作用機序・有効性・安全性・SSRIとの使い分け｜投与3日目から効果発現・14日間で完結する新世代抗うつ薬【2025年12月承認】</div>
+        <div class="deck-meta"><span class="tag">抗うつ薬</span><span class="tag">ズラノロン</span><span class="tag">精神科</span><span>📊 17枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="neuro-breakthroughs-2025-2026/" data-search="「治らない」が変わる｜2025-2026 脳・神経の最新治療ブレイクスルー7選 als・ドラベ症候群・sma・パーキンソン病ips・進行型ms・脳腫瘍・脳梗塞｜日本発ipsが世界初の保険適用【2025-2026の最新論文7本を一般向けに】 2025-2026年に報告された脳神経領域のブレイクスルー論文7本を、遺伝子を狙う薬・失った細胞を補う再生医療（日本発ips）・打つ手がなかった病気への新しい選択肢の3つの革命で一般向けに解説。日本発のips細胞パーキンソン病治療が世界で初めて承認・保険適用された話題も含む全18枚。 脳神経 最新治療 ips細胞">
+      <div class="thumb"><img src="neuro-breakthroughs-2025-2026/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">「治らない」が変わる｜2025-2026 脳・神経の最新治療ブレイクスルー7選</div>
+        <div class="deck-desc">ALS・ドラベ症候群・SMA・パーキンソン病iPS・進行型MS・脳腫瘍・脳梗塞｜日本発iPSが世界初の保険適用【2025-2026の最新論文7本を一般向けに】</div>
+        <div class="deck-meta"><span class="tag">脳神経</span><span class="tag">最新治療</span><span class="tag">iPS細胞</span><span>📊 18枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="daraxonrasib-pancreatic-cancer/" data-search="膵がん新薬ダラクソンラシブ｜ras(on)阻害薬で生存を約2倍に nejm 2026 rasolute 302：全生存13.2か月・ハザード比0.40。機序・効果・副作用・日本での立ち位置【医療従事者向け】 膵がんの90%超を駆動する「打てない標的」ras変異を直接ねらう世界初クラスのras(on)阻害薬ダラクソンラシブ。nejm 2026第3相rasolute 302（全生存13.2か月 vs 6.6か月・ハザード比0.40・治療中止1.2% vs 11.2%）をもとに、tri-complex/molecular glueの作用機序、ソトラシブとの違い、副作用、日本での承認状況までを全14スライドで解説。 膵がん 分子標的薬 医師向け">
+      <div class="thumb"><img src="daraxonrasib-pancreatic-cancer/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">膵がん新薬ダラクソンラシブ｜RAS(ON)阻害薬で生存を約2倍に</div>
+        <div class="deck-desc">NEJM 2026 RASolute 302：全生存13.2か月・ハザード比0.40。機序・効果・副作用・日本での立ち位置【医療従事者向け】</div>
+        <div class="deck-meta"><span class="tag">膵がん</span><span class="tag">分子標的薬</span><span class="tag">医師向け</span><span>📊 14枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="epidural-hematoma-epilepsy/" data-search="硬膜外血腫はてんかんになる？｜脳挫傷・硬膜下血腫との「てんかんリスクの差」 急性硬膜外血腫(edh)は外傷後てんかん(pte)のリスクか——最新エビデンスと発症の仕組みで解説【医療従事者向け】 脳挫傷・急性硬膜下血腫・皮質下出血は外傷後てんかん(pte)の危険因子として知られるが、硬膜の外に出血する急性硬膜外血腫(edh)はどうか。2026年の系統的レビュー（edhは発作と有意な関連なし）と、てんかん原性＝皮質への血液分解産物曝露の機序から、血腫型別リスク・早期発作と晩期てんかんの違い・予防投与は7日までを全14スライドで解説。 外傷後てんかん 神経・外傷 医師向け">
+      <div class="thumb"><img src="epidural-hematoma-epilepsy/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">硬膜外血腫はてんかんになる？｜脳挫傷・硬膜下血腫との「てんかんリスクの差」</div>
+        <div class="deck-desc">急性硬膜外血腫(EDH)は外傷後てんかん(PTE)のリスクか——最新エビデンスと発症の仕組みで解説【医療従事者向け】</div>
+        <div class="deck-meta"><span class="tag">外傷後てんかん</span><span class="tag">神経・外傷</span><span class="tag">医師向け</span><span>📊 14枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="news2-rrs/" data-search="news2とrrs｜院内急変を予測して動く早期警告スコア news2の全項目スコア表・起動基準・rapid response systemの4要素と現場運用【医療従事者向け】 院内の急変は数時間前からバイタルに予兆が出る——早期警告スコアnews2の全項目スコア表（rcp 2017）とエスカレーション基準（何点で誰が動くか）、rapid response system（rrs）の4要素・rrt/met/コードブルーの違い・現場運用の流れを医療従事者向けに整理。merit試験が示す「仕組みを置くだけでは効果は出ない＝動く運用が成否を分ける」までを全15スライドで解説。 news2・rrs 医療安全 医師向け">
+      <div class="thumb"><img src="news2-rrs/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">NEWS2とRRS｜院内急変を予測して動く早期警告スコア</div>
+        <div class="deck-desc">NEWS2の全項目スコア表・起動基準・Rapid Response Systemの4要素と現場運用【医療従事者向け】</div>
+        <div class="deck-meta"><span class="tag">NEWS2・RRS</span><span class="tag">医療安全</span><span class="tag">医師向け</span><span>📊 15枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="sulbacillin-abpc-sbt/" data-search="スルバシリン®（abpc/sbt）これだけ｜投与量・使い分け アンピシリン・スルバクタムの投与量・腎機能調整・効かない菌・使い分け 病棟でよく使う抗菌薬スルバシリン®（一般名アンピシリン・スルバクタム、略語abpc/sbt、商品名ユナシン®s）を、研修医・看護師・薬剤師向けに整理。投与量（1日6g分2・上限12g）、腎機能(ccr)別調整、溶解、効く菌/効かない菌（緑膿菌・esbl・腸球菌e. faecium・mrsaは外れる）、誤嚥性肺炎・蜂窩織炎での使いどころ、ゾシン・セフトリアキソンとの使い分けまで、添付文書と2025年最新の日本の大規模データを交えた全16スライド。 抗菌薬 スルバシリン 感染症">
+      <div class="thumb"><img src="sulbacillin-abpc-sbt/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">スルバシリン®（ABPC/SBT）これだけ｜投与量・使い分け</div>
+        <div class="deck-desc">アンピシリン・スルバクタムの投与量・腎機能調整・効かない菌・使い分け</div>
+        <div class="deck-meta"><span class="tag">抗菌薬</span><span class="tag">スルバシリン</span><span class="tag">感染症</span><span>📊 16枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="sleep-paralysis/" data-search="金縛りの正体とは？幽霊じゃない、脳が起こす睡眠現象 からだの不思議 #18 ― レム睡眠と筋アトニア（体のロック） 金縛り（睡眠麻痺）の正体を睡眠科学でやさしく解説。レム睡眠中の筋アトニア（体のロック）が覚醒に持ち越される脳のしくみ、なりやすい人、来たときの対処法（4ステップ）、そして危険な金縛り（ナルコレプシー）の見分け方までを、からだの不思議シリーズ第18回としてまとめます。 金縛り 睡眠麻痺 睡眠">
+      <div class="thumb"><img src="sleep-paralysis/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">金縛りの正体とは？幽霊じゃない、脳が起こす睡眠現象</div>
+        <div class="deck-desc">からだの不思議 #18 ― レム睡眠と筋アトニア（体のロック）</div>
+        <div class="deck-meta"><span class="tag">金縛り</span><span class="tag">睡眠麻痺</span><span class="tag">睡眠</span><span>📊 13枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="proxy-consent-decision/" data-search="本人がサインできない時の医療同意 医師が5分で判断するフローチャート 本人が同意書にサインできない場面（身体的に書けない・意識障害・身寄りなし・パートナー・家族間対立）を医師目線で整理。厚労省ガイドライン2本（2018年・2019年）と民法・精神保健福祉法を踏まえた代諾権者の優先順位8段階と6ケース横断比較、緊急時の3つの法的根拠+4条件チェックリスト、倫理委員会エスカレーションフローまで網羅。 医療同意 意思決定支援 医療倫理">
+      <div class="thumb"><img src="proxy-consent-decision/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">本人がサインできない時の医療同意</div>
+        <div class="deck-desc">医師が5分で判断するフローチャート</div>
+        <div class="deck-meta"><span class="tag">医療同意</span><span class="tag">意思決定支援</span><span class="tag">医療倫理</span><span>📊 22枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="disability-car-tax-visit-frequency/" data-search="障害者自動車税減免「月1回通院」は本当に必要？ 医師が損益を解説 ― 自治体差・医療費助成・通院証明書文書料 家族に障害者手帳をお持ちの方が自動車税減免を申請する際、『月1回通院』が条件と聞いて無理に通院していませんか？医師目線で減免額と追加コストを比較し、本当に得になる人・損になる人を解説。山形県/鹿児島市/神奈川県/東京都など主要自治体の条文比較・損益シミュレーション3ケース・判断軸チェックリスト付き。 医療制度 障害福祉 医療経済">
+      <div class="thumb"><img src="disability-car-tax-visit-frequency/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">障害者自動車税減免「月1回通院」は本当に必要？</div>
+        <div class="deck-desc">医師が損益を解説 ― 自治体差・医療費助成・通院証明書文書料</div>
+        <div class="deck-meta"><span class="tag">医療制度</span><span class="tag">障害福祉</span><span class="tag">医療経済</span><span>📊 19枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="dementia-feeding-refusal/" data-search="認知症の食事拒否 病型別の鑑別と実践介入（ad/dlb/vad/ftd） 認知症の食事拒否を病型別に分解。薬剤・感覚刺激・comfort feeding only まで臨床で使える介入を整理。 認知症 介護 嚥下障害">
+      <div class="thumb"><img src="dementia-feeding-refusal/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">認知症の食事拒否</div>
+        <div class="deck-desc">病型別の鑑別と実践介入（AD/DLB/VaD/FTD）</div>
+        <div class="deck-meta"><span class="tag">認知症</span><span class="tag">介護</span><span class="tag">嚥下障害</span><span>📊 22枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="watershed-infarct/" data-search="分水嶺梗塞 ― 低灌流か塞栓か？ 病態・診断・血圧管理の落とし穴 分水嶺梗塞の病態・診断・治療を完全解説。低灌流型と塞栓型の鑑別、急性期血圧管理の判断軸を整理。 脳神経内科 脳梗塞 脳血管障害">
+      <div class="thumb"><img src="watershed-infarct/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">分水嶺梗塞 ― 低灌流か塞栓か？</div>
+        <div class="deck-desc">病態・診断・血圧管理の落とし穴</div>
+        <div class="deck-meta"><span class="tag">脳神経内科</span><span class="tag">脳梗塞</span><span class="tag">脳血管障害</span><span>📊 17枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="diplopia/" data-search="物が二重に見えたら要注意 ― 複視 原因と受診すべき科｜その症状、大丈夫？ #07 複視の原因（外転神経麻痺・動眼神経麻痺・重症筋無力症など）と受診の目安を脳神経内科医が解説。 複視 脳神経 症状チェック">
+      <div class="thumb"><img src="diplopia/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">物が二重に見えたら要注意 ― 複視</div>
+        <div class="deck-desc">原因と受診すべき科｜その症状、大丈夫？ #07</div>
+        <div class="deck-meta"><span class="tag">複視</span><span class="tag">脳神経</span><span class="tag">症状チェック</span><span>📊 13枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="gait-disorder/" data-search="歩き方がおかしい ― 歩行パターンでわかる隠れた病気 その症状、大丈夫？ #11 歩行パターン別に隠れた疾患を見抜く。パーキンソン病・正常圧水頭症・脊髄症などの鑑別ポイントを解説。 歩行障害 症状チェック 脳神経内科">
+      <div class="thumb"><img src="gait-disorder/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">歩き方がおかしい ― 歩行パターンでわかる隠れた病気</div>
+        <div class="deck-desc">その症状、大丈夫？ #11</div>
+        <div class="deck-meta"><span class="tag">歩行障害</span><span class="tag">症状チェック</span><span class="tag">脳神経内科</span><span>📊 13枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="insomnia-brain/" data-search="眠れないのは脳のせい？ ― 不眠のメカニズム 正しい対処法｜その症状、大丈夫？ #15 不眠のメカニズムと正しい対処法を脳科学の視点から解説。睡眠衛生・薬物療法の使い分け。 不眠 睡眠 症状チェック">
+      <div class="thumb"><img src="insomnia-brain/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">眠れないのは脳のせい？ ― 不眠のメカニズム</div>
+        <div class="deck-desc">正しい対処法｜その症状、大丈夫？ #15</div>
+        <div class="deck-meta"><span class="tag">不眠</span><span class="tag">睡眠</span><span class="tag">症状チェック</span><span>📊 13枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="smartphone-neck/" data-search="スマホの使いすぎで手がしびれる？ デジタル時代の神経トラブル｜その症状、大丈夫？ #16 スマホ首・テキストネック症候群と神経圧迫の関係を整理。日常生活での予防策と受診の目安。 神経圧迫 スマホ首 症状チェック">
+      <div class="thumb"><img src="smartphone-neck/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">スマホの使いすぎで手がしびれる？</div>
+        <div class="deck-desc">デジタル時代の神経トラブル｜その症状、大丈夫？ #16</div>
+        <div class="deck-meta"><span class="tag">神経圧迫</span><span class="tag">スマホ首</span><span class="tag">症状チェック</span><span>📊 13枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="neck-pain-nerve/" data-search="その首の痛み、実は神経が原因？ 整形外科と脳神経内科の境界線｜その症状、大丈夫？ #17 首の痛みの原因が筋骨格系か神経系か。整形外科と脳神経内科のどちらにかかるべきかの判断軸。 首の痛み 神経 症状チェック">
+      <div class="thumb"><img src="neck-pain-nerve/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">その首の痛み、実は神経が原因？</div>
+        <div class="deck-desc">整形外科と脳神経内科の境界線｜その症状、大丈夫？ #17</div>
+        <div class="deck-meta"><span class="tag">首の痛み</span><span class="tag">神経</span><span class="tag">症状チェック</span><span>📊 13枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="child-headache/" data-search="子どもが「頭が痛い」と言ったら 親が知るべき判断基準｜その症状、大丈夫？ #18 子どもの頭痛で見逃せない危険サインと、年齢別の受診先（小児科/脳神経内科/頭痛外来）の使い分け。 小児 頭痛 症状チェック">
+      <div class="thumb"><img src="child-headache/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">子どもが「頭が痛い」と言ったら</div>
+        <div class="deck-desc">親が知るべき判断基準｜その症状、大丈夫？ #18</div>
+        <div class="deck-meta"><span class="tag">小児</span><span class="tag">頭痛</span><span class="tag">症状チェック</span><span>📊 13枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="private-credit/" data-search="プライベートクレジット問題 3兆ドル市場の構造リスク プライベートクレジット市場のリスク構造と今後のシナリオをわかりやすく解説。 金融 経済 投資">
+      <div class="thumb"><img src="private-credit/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">プライベートクレジット問題</div>
+        <div class="deck-desc">3兆ドル市場の構造リスク</div>
+        <div class="deck-meta"><span class="tag">金融</span><span class="tag">経済</span><span class="tag">投資</span><span>📊 10枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="minnebro-mra/" data-search="ミネブロ（エサキセレノン）徹底解説 mra4剤比較と臨床での使い分け ミネブロをはじめとするmra4剤（スピロノラクトン・エプレレノン・ミネブロ・フィネレノン）の比較と臨床での使い分け。 薬剤 高血圧 心不全">
+      <div class="thumb"><img src="minnebro-mra/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">ミネブロ（エサキセレノン）徹底解説</div>
+        <div class="deck-desc">MRA4剤比較と臨床での使い分け</div>
+        <div class="deck-meta"><span class="tag">薬剤</span><span class="tag">高血圧</span><span class="tag">心不全</span><span>📊 10枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="vestibular-migraine/" data-search="前庭性片頭痛 ― 片頭痛とめまいが同時に来る人へ 診断基準・セルフチェック・治療 片頭痛とめまいが共存する「前庭性片頭痛」の診断基準・セルフチェック・治療を医師が解説。 片頭痛 めまい 脳神経内科">
+      <div class="thumb"><img src="vestibular-migraine/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">前庭性片頭痛 ― 片頭痛とめまいが同時に来る人へ</div>
+        <div class="deck-desc">診断基準・セルフチェック・治療</div>
+        <div class="deck-meta"><span class="tag">片頭痛</span><span class="tag">めまい</span><span class="tag">脳神経内科</span><span>📊 22枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="referral-points/" data-search="紹介状の保険点数 完全解説 診療情報提供料ⅰ・ⅱ・連携強化（2026年改定対応） 紹介状の保険点数（250点・500点・150点）を厚労省告示で読み解く。医療従事者と患者向けに整理。 保険診療 診療報酬 2026改定">
+      <div class="thumb"><img src="referral-points/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">紹介状の保険点数 完全解説</div>
+        <div class="deck-desc">診療情報提供料Ⅰ・Ⅱ・連携強化（2026年改定対応）</div>
+        <div class="deck-meta"><span class="tag">保険診療</span><span class="tag">診療報酬</span><span class="tag">2026改定</span><span>📊 16枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="slurred-speech/" data-search="「ろれつが回りにくい」は脳のsos？ 緊急性の見分け方｜その症状、大丈夫？ #02 ろれつが回りにくいとき、脳卒中など緊急性の高い病態を見逃さない判断軸を脳神経内科医が解説。 構音障害 脳卒中 症状チェック">
+      <div class="thumb"><img src="slurred-speech/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">「ろれつが回りにくい」は脳のSOS？</div>
+        <div class="deck-desc">緊急性の見分け方｜その症状、大丈夫？ #02</div>
+        <div class="deck-meta"><span class="tag">構音障害</span><span class="tag">脳卒中</span><span class="tag">症状チェック</span><span>📊 13枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="facial-twitch/" data-search="顔がピクピク動く ― 片側顔面けいれんと放置していいタイプの違い その症状、大丈夫？ #04 顔のピクつきには良性なものと治療が必要なものがある。脳神経内科医が見分け方を解説。 顔面けいれん 症状チェック 脳神経内科">
+      <div class="thumb"><img src="facial-twitch/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">顔がピクピク動く ― 片側顔面けいれんと放置していいタイプの違い</div>
+        <div class="deck-desc">その症状、大丈夫？ #04</div>
+        <div class="deck-meta"><span class="tag">顔面けいれん</span><span class="tag">症状チェック</span><span class="tag">脳神経内科</span><span>📊 13枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="leg-cramps/" data-search="寝ている時に足がつる ― 危険なサインと予防法 その症状、大丈夫？ #05 夜間のこむら返りに潜む脱水・電解質異常・脊柱管狭窄症などの背景疾患と日常での予防策。 こむら返り 脊柱管狭窄症 症状チェック">
+      <div class="thumb"><img src="leg-cramps/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">寝ている時に足がつる ― 危険なサインと予防法</div>
+        <div class="deck-desc">その症状、大丈夫？ #05</div>
+        <div class="deck-meta"><span class="tag">こむら返り</span><span class="tag">脊柱管狭窄症</span><span class="tag">症状チェック</span><span>📊 13枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="forgetfulness-dementia/" data-search="「あの人の名前が出てこない」は認知症のサインか？ &quot;ふつうの物忘れ&quot;との違い｜からだの不思議 加齢に伴う良性の物忘れと、認知症の初期サインを区別するポイント。受診の目安も整理。 認知症 物忘れ 高齢者">
+      <div class="thumb"><img src="forgetfulness-dementia/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">「あの人の名前が出てこない」は認知症のサインか？</div>
+        <div class="deck-desc">&quot;ふつうの物忘れ&quot;との違い｜からだの不思議</div>
+        <div class="deck-meta"><span class="tag">認知症</span><span class="tag">物忘れ</span><span class="tag">高齢者</span><span>📊 11枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="morning-hand-numbness/" data-search="「手がしびれて目が覚めた」の正体 朝のしびれの原因と受診のタイミング｜からだの不思議 朝の手のしびれの背景にある正中神経・尺骨神経の圧迫、糖尿病性神経障害などを整理。 しびれ 末梢神経 症状チェック">
+      <div class="thumb"><img src="morning-hand-numbness/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">「手がしびれて目が覚めた」の正体</div>
+        <div class="deck-desc">朝のしびれの原因と受診のタイミング｜からだの不思議</div>
+        <div class="deck-meta"><span class="tag">しびれ</span><span class="tag">末梢神経</span><span class="tag">症状チェック</span><span>📊 11枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="dizziness-types/" data-search="めまいの種類を脳神経内科医が解説 回転性・浮動性・立ちくらみの見分け方｜からだの不思議 めまいを3つのタイプに分けて鑑別。bppv・前庭神経炎・起立性低血圧などの代表疾患を整理。 めまい bppv 症状チェック">
+      <div class="thumb"><img src="dizziness-types/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">めまいの種類を脳神経内科医が解説</div>
+        <div class="deck-desc">回転性・浮動性・立ちくらみの見分け方｜からだの不思議</div>
+        <div class="deck-meta"><span class="tag">めまい</span><span class="tag">BPPV</span><span class="tag">症状チェック</span><span>📊 11枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="functional-neurological-disorder/" data-search="ストレスで本当に体は動かなくなるのか 「機能性神経障害（fnd）」の真実｜からだの不思議 fnd（機能性神経障害）の病態とリハビリ介入。器質的疾患との鑑別と治療アプローチ。 fnd 機能性神経障害 心因性">
+      <div class="thumb"><img src="functional-neurological-disorder/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">ストレスで本当に体は動かなくなるのか</div>
+        <div class="deck-desc">「機能性神経障害（FND）」の真実｜からだの不思議</div>
+        <div class="deck-meta"><span class="tag">FND</span><span class="tag">機能性神経障害</span><span class="tag">心因性</span><span>📊 11枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="handedness/" data-search="利き手はなぜ決まるのか？ 脳の左右非対称と遺伝のしくみ｜からだの不思議 #11 利き手が決まる仕組みを脳の左右機能差・遺伝・環境要因から解説。 脳科学 利き手 発達">
+      <div class="thumb"><img src="handedness/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">利き手はなぜ決まるのか？</div>
+        <div class="deck-desc">脳の左右非対称と遺伝のしくみ｜からだの不思議 #11</div>
+        <div class="deck-meta"><span class="tag">脳科学</span><span class="tag">利き手</span><span class="tag">発達</span><span>📊 10枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="bathing-epilepsy/" data-search="お風呂で決まって意識を失う ― 入浴てんかん 正体と安全対策 入浴中の意識消失発作（入浴てんかん）の特徴・診断・予防策を脳神経内科医が解説。 てんかん 意識消失 高齢者">
+      <div class="thumb"><img src="bathing-epilepsy/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">お風呂で決まって意識を失う ― 入浴てんかん</div>
+        <div class="deck-desc">正体と安全対策</div>
+        <div class="deck-meta"><span class="tag">てんかん</span><span class="tag">意識消失</span><span class="tag">高齢者</span><span>📊 13枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="stroke-acute-heparin/" data-search="脳梗塞急性期のヘパリン、結局どう使う？ 1万単位 vs aptt管理・ブリッジング不要論・hit対応 脳梗塞急性期のヘパリン使い分け：用量・モニタリング・hit対応をガイドラインで整理。 脳梗塞 抗凝固 医師向け">
+      <div class="thumb"><img src="stroke-acute-heparin/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">脳梗塞急性期のヘパリン、結局どう使う？</div>
+        <div class="deck-desc">1万単位 vs APTT管理・ブリッジング不要論・HIT対応</div>
+        <div class="deck-meta"><span class="tag">脳梗塞</span><span class="tag">抗凝固</span><span class="tag">医師向け</span><span>📊 11枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="sudden-weakness/" data-search="突然手に力が入らない ― 脳？神経？筋肉？ 原因の見分け方｜その症状、大丈夫？ #03 急に手に力が入らないときの原因を脳・神経・筋肉の3階層で鑑別。 脱力 脳神経内科 症状チェック">
+      <div class="thumb"><img src="sudden-weakness/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">突然手に力が入らない ― 脳？神経？筋肉？</div>
+        <div class="deck-desc">原因の見分け方｜その症状、大丈夫？ #03</div>
+        <div class="deck-meta"><span class="tag">脱力</span><span class="tag">脳神経内科</span><span class="tag">症状チェック</span><span>📊 13枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="autonomic-dysfunction/" data-search="「自律神経失調症」と言われたら 本当の原因と正しい受診先｜その症状、大丈夫？ #06 「自律神経失調症」と診断されたとき、隠れた疾患を見逃さないための受診先選択。 自律神経 脳神経内科 症状チェック">
+      <div class="thumb"><img src="autonomic-dysfunction/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">「自律神経失調症」と言われたら</div>
+        <div class="deck-desc">本当の原因と正しい受診先｜その症状、大丈夫？ #06</div>
+        <div class="deck-meta"><span class="tag">自律神経</span><span class="tag">脳神経内科</span><span class="tag">症状チェック</span><span>📊 13枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="dysphagia-aging/" data-search="「むせやすくなった」は老化のせい？ 嚥下障害の早期サインと受診の目安｜その症状、大丈夫？ #08 むせ・嚥下障害の早期発見と受診のタイミングを脳神経内科医が解説。 嚥下障害 誤嚥 症状チェック">
+      <div class="thumb"><img src="dysphagia-aging/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">「むせやすくなった」は老化のせい？</div>
+        <div class="deck-desc">嚥下障害の早期サインと受診の目安｜その症状、大丈夫？ #08</div>
+        <div class="deck-meta"><span class="tag">嚥下障害</span><span class="tag">誤嚥</span><span class="tag">症状チェック</span><span>📊 13枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="head-injury/" data-search="頭をぶつけた後、病院に行くべき？ 48時間ルールと危険なサイン｜その症状、大丈夫？ #12 頭部外傷後の48時間以内に注意すべきサインと医療機関を受診すべき目安。 頭部外傷 脳神経外科 症状チェック">
+      <div class="thumb"><img src="head-injury/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">頭をぶつけた後、病院に行くべき？</div>
+        <div class="deck-desc">48時間ルールと危険なサイン｜その症状、大丈夫？ #12</div>
+        <div class="deck-meta"><span class="tag">頭部外傷</span><span class="tag">脳神経外科</span><span class="tag">症状チェック</span><span>📊 13枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="weather-headache/" data-search="雨の日に頭が痛くなる科学的理由 気象病・片頭痛のメカニズムと最新治療｜その症状、大丈夫？ #13 天気の変化で頭痛が悪化する科学的メカニズムと、片頭痛の最新治療オプション。 気象病 片頭痛 症状チェック">
+      <div class="thumb"><img src="weather-headache/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">雨の日に頭が痛くなる科学的理由</div>
+        <div class="deck-desc">気象病・片頭痛のメカニズムと最新治療｜その症状、大丈夫？ #13</div>
+        <div class="deck-meta"><span class="tag">気象病</span><span class="tag">片頭痛</span><span class="tag">症状チェック</span><span>📊 13枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="taste-disorder/" data-search="味がしない・味が変わった コロナだけじゃない味覚障害の原因と受診の目安｜その症状、大丈夫？ #14 味覚障害の原因（亜鉛欠乏・薬剤性・神経性など）と受診先の選び方。 味覚障害 症状チェック 脳神経内科">
+      <div class="thumb"><img src="taste-disorder/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">味がしない・味が変わった</div>
+        <div class="deck-desc">コロナだけじゃない味覚障害の原因と受診の目安｜その症状、大丈夫？ #14</div>
+        <div class="deck-meta"><span class="tag">味覚障害</span><span class="tag">症状チェック</span><span class="tag">脳神経内科</span><span>📊 13枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="dementia-driving/" data-search="認知症と運転免許 家族が知っておくべき制度と説得のコツ｜その症状、大丈夫？ #19 認知症高齢者の運転免許更新制度と、家族としての対応・説得のコツ。 認知症 高齢者 運転免許">
+      <div class="thumb"><img src="dementia-driving/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">認知症と運転免許</div>
+        <div class="deck-desc">家族が知っておくべき制度と説得のコツ｜その症状、大丈夫？ #19</div>
+        <div class="deck-meta"><span class="tag">認知症</span><span class="tag">高齢者</span><span class="tag">運転免許</span><span>📊 13枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="brain-checkup/" data-search="脳ドックは受けるべき？ 検査の意味と結果の活かし方｜その症状、大丈夫？ #20 脳ドックの検査内容・対象者・結果の解釈と、過剰検査を避けるための判断。 脳ドック 予防医療 症状チェック">
+      <div class="thumb"><img src="brain-checkup/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">脳ドックは受けるべき？</div>
+        <div class="deck-desc">検査の意味と結果の活かし方｜その症状、大丈夫？ #20</div>
+        <div class="deck-meta"><span class="tag">脳ドック</span><span class="tag">予防医療</span><span class="tag">症状チェック</span><span>📊 13枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="reiwa8-fee-revision/" data-search="令和8年度診療報酬改定の全体像 +3.09%改定の内訳と医科の主要変更点 令和8年度診療報酬改定の全体像。改定率の内訳・医科主要変更点を徹底解説。 診療報酬 2026改定 医療政策">
+      <div class="thumb"><img src="reiwa8-fee-revision/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">令和8年度診療報酬改定の全体像</div>
+        <div class="deck-desc">+3.09%改定の内訳と医科の主要変更点</div>
+        <div class="deck-meta"><span class="tag">診療報酬</span><span class="tag">2026改定</span><span class="tag">医療政策</span><span>📊 10枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="migraine-basics/" data-search="片頭痛持ちが知っておくべき5つのこと 「我慢しない」ための知識｜からだの不思議 片頭痛と上手に付き合うために知っておくべき5つの基礎知識。 片頭痛 頭痛">
+      <div class="thumb"><img src="migraine-basics/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">片頭痛持ちが知っておくべき5つのこと</div>
+        <div class="deck-desc">「我慢しない」ための知識｜からだの不思議</div>
+        <div class="deck-meta"><span class="tag">片頭痛</span><span class="tag">頭痛</span><span>📊 9枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="yawn-contagion/" data-search="なぜあくびはうつるのか？ ミラーニューロンと共感の脳科学｜からだの不思議 あくびがうつる神経科学的メカニズムと共感の脳基盤。 脳科学 ミラーニューロン 共感">
+      <div class="thumb"><img src="yawn-contagion/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">なぜあくびはうつるのか？</div>
+        <div class="deck-desc">ミラーニューロンと共感の脳科学｜からだの不思議</div>
+        <div class="deck-meta"><span class="tag">脳科学</span><span class="tag">ミラーニューロン</span><span class="tag">共感</span><span>📊 9枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="hypnic-jerk/" data-search="寝る瞬間にビクッとなる原因 入眠時ミオクローヌスとは何か・対処法・受診の目安｜からだの不思議 入眠時ミオクローヌス（hypnic jerk）の機序と病的ミオクローヌスとの鑑別。 睡眠 ミオクローヌス 脳科学">
+      <div class="thumb"><img src="hypnic-jerk/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">寝る瞬間にビクッとなる原因</div>
+        <div class="deck-desc">入眠時ミオクローヌスとは何か・対処法・受診の目安｜からだの不思議</div>
+        <div class="deck-meta"><span class="tag">睡眠</span><span class="tag">ミオクローヌス</span><span class="tag">脳科学</span><span>📊 9枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="hypoactive-delirium/" data-search="低活動性せん妄 ― 「静かなせん妄」を見逃さない 実践ガイド 低活動性せん妄の臨床像・スクリーニング・対処方針を実践的に整理。 せん妄 高齢者 医師向け">
+      <div class="thumb"><img src="hypoactive-delirium/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">低活動性せん妄 ― 「静かなせん妄」を見逃さない</div>
+        <div class="deck-desc">実践ガイド</div>
+        <div class="deck-meta"><span class="tag">せん妄</span><span class="tag">高齢者</span><span class="tag">医師向け</span><span>📊 11枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="deja-vu/" data-search="デジャヴの正体を神経科学で解説 "既視感"はなぜ起きるのか｜からだの不思議 デジャヴ現象の神経学的メカニズム（側頭葉てんかんとの違いを含む）。 脳科学 記憶 側頭葉">
+      <div class="thumb"><img src="deja-vu/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">デジャヴの正体を神経科学で解説</div>
+        <div class="deck-desc">"既視感"はなぜ起きるのか｜からだの不思議</div>
+        <div class="deck-meta"><span class="tag">脳科学</span><span class="tag">記憶</span><span class="tag">側頭葉</span><span>📊 10枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="dangerous-headache/" data-search="この頭痛、病院に行くべき？ 危険な頭痛の見分け方｜からだの不思議 危険な頭痛（くも膜下出血・髄膜炎など）と一次性頭痛との鑑別ポイント。 頭痛 くも膜下出血 症状チェック">
+      <div class="thumb"><img src="dangerous-headache/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">この頭痛、病院に行くべき？</div>
+        <div class="deck-desc">危険な頭痛の見分け方｜からだの不思議</div>
+        <div class="deck-meta"><span class="tag">頭痛</span><span class="tag">くも膜下出血</span><span class="tag">症状チェック</span><span>📊 9枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="stumbling/" data-search="「最近つまずきやすい」は脳の問題？ 歩行とつまずきの原因を解剖学レベルで解説｜からだの不思議 #15 つまずきやすさの背景にある神経・筋・骨関節の問題を解剖学的に整理。 歩行 高齢者 脳神経内科">
+      <div class="thumb"><img src="stumbling/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">「最近つまずきやすい」は脳の問題？</div>
+        <div class="deck-desc">歩行とつまずきの原因を解剖学レベルで解説｜からだの不思議 #15</div>
+        <div class="deck-meta"><span class="tag">歩行</span><span class="tag">高齢者</span><span class="tag">脳神経内科</span><span>📊 9枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="hypertension-2025/" data-search="高血圧の新基準（2025年）と減塩対策 130/80mmhg時代の診療と日本人の3人に1人 高血圧の2025年新基準（130/80mmhg）と日常の減塩対策・薬物療法。 高血圧 循環器 減塩">
+      <div class="thumb"><img src="hypertension-2025/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">高血圧の新基準（2025年）と減塩対策</div>
+        <div class="deck-desc">130/80mmHg時代の診療と日本人の3人に1人</div>
+        <div class="deck-meta"><span class="tag">高血圧</span><span class="tag">循環器</span><span class="tag">減塩</span><span>📊 10枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="migraine-update-2026/" data-search="片頭痛診療アップデート2026 トリプタン・ジタン・ゲパント・抗cgrp抗体の使い分け完全ガイド 片頭痛急性期治療と予防療法の最新アルゴリズム。抗cgrp抗体までの使い分け。 片頭痛 抗cgrp抗体 医師向け">
+      <div class="thumb"><img src="migraine-update-2026/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">片頭痛診療アップデート2026</div>
+        <div class="deck-desc">トリプタン・ジタン・ゲパント・抗CGRP抗体の使い分け完全ガイド</div>
+        <div class="deck-meta"><span class="tag">片頭痛</span><span class="tag">抗CGRP抗体</span><span class="tag">医師向け</span><span>📊 18枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="barnum-effect/" data-search="「バーナム効果」の正しい使い方 日常診療と人間関係に活かす心理テクニック バーナム効果（誰にでも当てはまる記述を自分のことと感じる現象）の臨床応用。 心理学 コミュニケーション 医師向け">
+      <div class="thumb"><img src="barnum-effect/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">「バーナム効果」の正しい使い方</div>
+        <div class="deck-desc">日常診療と人間関係に活かす心理テクニック</div>
+        <div class="deck-meta"><span class="tag">心理学</span><span class="tag">コミュニケーション</span><span class="tag">医師向け</span><span>📊 10枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="parkinson-dysphagia-levodopa/" data-search="パーキンソン病で内服できなくなったら レボドパ点滴・経管・貼付薬の使い分けと「エビデンスの限界」 進行期pd・嚥下障害時のレボドパ投与戦略。ドパストン公知申請1,500mg、経管投与、ロチゴチン×13.3換算（gl2018）、進行期dat、palliative deprescribingまで解説。 パーキンソン病 嚥下障害 緩和ケア">
+      <div class="thumb"><img src="parkinson-dysphagia-levodopa/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">パーキンソン病で内服できなくなったら</div>
+        <div class="deck-desc">レボドパ点滴・経管・貼付薬の使い分けと「エビデンスの限界」</div>
+        <div class="deck-meta"><span class="tag">パーキンソン病</span><span class="tag">嚥下障害</span><span class="tag">緩和ケア</span><span>📊 20枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="serotonin-syndrome/" data-search="セロトニン症候群 一般医が見落とさないための診断・鑑別・治療の実践ガイド【2026最新版】 ssri内服患者にトラマドール・リネゾリド・メチレンブルー等が追加された際に発症するセロトニン症候群。hunter基準・悪性症候群との時間軸/クローヌス鑑別・2025-2026年最新エビデンス（smoldering型・cyp2d6薬理ゲノミクス）を踏まえた治療プロトコルを整理。 精神神経科 薬物有害反応 救急 鑑別診断">
+      <div class="thumb"><img src="serotonin-syndrome/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">セロトニン症候群</div>
+        <div class="deck-desc">一般医が見落とさないための診断・鑑別・治療の実践ガイド【2026最新版】</div>
+        <div class="deck-meta"><span class="tag">精神神経科</span><span class="tag">薬物有害反応</span><span class="tag">救急</span><span>📊 16枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="enteral-nutrition-2026/" data-search="エンシュア・ラコール 2026年改定で「栄養保持目的」は保険給付外 経管栄養・術後・医師判断 3条件を完全整理 令和8年度（2026年度）診療報酬改定で2026年6月から、エンシュア・リキッド/エンシュア・h/ラコールnf/ツインラインnf/エネーボ/イノラスの「栄養保持目的の経口投与」が保険給付外に。経管栄養・術後・医師判断の3条件、maラクフィア等の食品扱いonsとの違い、レセプト記載例、faqまでを医師目線で完全整理。 診療報酬改定 経腸栄養 在宅医療 レセプト">
+      <div class="thumb"><img src="enteral-nutrition-2026/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">エンシュア・ラコール 2026年改定で「栄養保持目的」は保険給付外</div>
+        <div class="deck-desc">経管栄養・術後・医師判断 3条件を完全整理</div>
+        <div class="deck-meta"><span class="tag">診療報酬改定</span><span class="tag">経腸栄養</span><span class="tag">在宅医療</span><span>📊 18枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="brainstem-tracheostomy-timing/" data-search="脳幹梗塞で抜管困難な患者の気管切開、いつ行うべきか setpoint2が変えた臨床判断 ― 早期 vs 標準のエビデンス 脳幹梗塞で人工呼吸中・抜管困難な患者の気管切開タイミング。setpoint2試験(jama 2022, n=382)とpremraj 2023メタ解析(n=17,346)を整理し、setscoreカットオフ8と5軸判断フレーム、pdt vs st(schneider 2024 post hoc)、wallenberg/locked-in症候群への適用まで14枚で解説。 脳幹梗塞 気管切開 神経集中治療">
+      <div class="thumb"><img src="brainstem-tracheostomy-timing/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">脳幹梗塞で抜管困難な患者の気管切開、いつ行うべきか</div>
+        <div class="deck-desc">SETPOINT2が変えた臨床判断 ― 早期 vs 標準のエビデンス</div>
+        <div class="deck-meta"><span class="tag">脳幹梗塞</span><span class="tag">気管切開</span><span class="tag">神経集中治療</span><span>📊 14枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="cerebral-fat-embolism/" data-search="骨折後の脳梗塞？脂肪塞栓症（fes）とstarfield patternを見逃さない 長管骨骨折後の意識変容 ― cfeのmri診断と治療 長管骨や骨盤骨折後に骨髄由来の脂肪が血流に入り込み、肺・脳・皮膚・網膜の微小循環を傷害する脂肪塞栓症候群（fes）と脳脂肪塞栓（cfe）。受傷後12〜72時間の意識変容の鑑別、mri拡散強調像のstarfield pattern、gurd基準・schonfeld 5点スコア、pdt vs orif早期固定、ステロイドの是非まで29枚で解説。 脂肪塞栓症 脳脂肪塞栓 外傷 mri 救急">
+      <div class="thumb"><img src="cerebral-fat-embolism/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">骨折後の脳梗塞？脂肪塞栓症（FES）とstarfield patternを見逃さない</div>
+        <div class="deck-desc">長管骨骨折後の意識変容 ― CFEのMRI診断と治療</div>
+        <div class="deck-meta"><span class="tag">脂肪塞栓症</span><span class="tag">脳脂肪塞栓</span><span class="tag">外傷</span><span>📊 29枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="dex-delirium-rass/" data-search="せん妄に困ったらこの1枚｜デクスメデトミジン×rass連動投与法 200μg/50mlシリンジの指示テンプレと体重別 ml/hr 早見表【若手医師向け】 夜間せん妄でハロペリドール静注では乗り切れない場面に、デクスメデトミジン（プレセデックス）200μg/50mlシリンジを「何ml/hrで始めて、rassをどう見ながら増減し、どこで止めるか」を、添付文書・sccm padis 2018・spice iii・dahlia等の一次資料で整理。体重別 ml/hr 早見表、指示テンプレ、中止基準、ハロペリドール・クエチアピンとの使い分けまで全16スライド。 せん妄 集中治療 医師向け">
+      <div class="thumb"><img src="dex-delirium-rass/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">せん妄に困ったらこの1枚｜デクスメデトミジン×RASS連動投与法</div>
+        <div class="deck-desc">200μg/50mLシリンジの指示テンプレと体重別 mL/hr 早見表【若手医師向け】</div>
+        <div class="deck-meta"><span class="tag">せん妄</span><span class="tag">集中治療</span><span class="tag">医師向け</span><span>📊 16枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="facial-palsy-bell-vs-stroke/" data-search="顔がゆがむ ― ベル麻痺と脳卒中の見分け方 おでこで見分ける・fast・治療は72時間以内｜その症状、大丈夫？ #22 突然の顔のゆがみ。脳卒中（中枢性）とベル麻痺（末梢性）を「おでこにしわを寄せられるか」で見分けるポイント、緊急サインfast、受診先、ステロイドの72時間の治療窓を一般向けに整理した全14スライド。 ベル麻痺 脳卒中 顔面神経麻痺">
+      <div class="thumb"><img src="facial-palsy-bell-vs-stroke/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">顔がゆがむ ― ベル麻痺と脳卒中の見分け方</div>
+        <div class="deck-desc">おでこで見分ける・FAST・治療は72時間以内｜その症状、大丈夫？ #22</div>
+        <div class="deck-meta"><span class="tag">ベル麻痺</span><span class="tag">脳卒中</span><span class="tag">顔面神経麻痺</span><span>📊 14枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="elderly-epilepsy/" data-search="認知症と間違えやすい高齢者のてんかん ぼーっとする発作・認知症との見分け方・治せる病気｜その症状、大丈夫？ #23 高齢者のてんかんは認知症と間違えやすい「ぼーっとするだけ」の焦点意識減損発作として現れます。凝視・もうろう・口部自動症・発作後健忘などの症状、認知症・tia・失神との見分け方、脳血管障害やアルツハイマー病などの原因、問診・脳波・mri・家族による動画記録を用いた診断、抗てんかん薬による治療と予後、受診の目安までを一般向けに整理した全14スライド。 てんかん 高齢者てんかん 認知症">
+      <div class="thumb"><img src="elderly-epilepsy/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">認知症と間違えやすい高齢者のてんかん</div>
+        <div class="deck-desc">ぼーっとする発作・認知症との見分け方・治せる病気｜その症状、大丈夫？ #23</div>
+        <div class="deck-meta"><span class="tag">てんかん</span><span class="tag">高齢者てんかん</span><span class="tag">認知症</span><span>📊 14枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="rem-sleep-behavior-disorder/" data-search="寝ながら暴れるのは病気？ レム睡眠行動障害（rbd） パーキンソン病の前触れ・夢遊病との見分け方・安全対策｜からだの不思議 #19 夜中に大声で叫ぶ・隣の人を殴る・ベッドから飛び出す「レム睡眠行動障害（rbd）」を一般向けにやさしく解説。見ている夢を体がそのまま行動化する睡眠の病気で、中高年男性に多く、後年のパーキンソン病やレビー小体型認知症の前触れになることがあります（必ずではありません）。体のロック（筋アトニア）の仕組み、夢遊病・夜驚症との見分け方、ケガのリスク、睡眠ポリグラフ検査、今夜からできる安全対策、メラトニン・クロナゼパムによる治療と受診先（睡眠外来・脳神経内科）までを全13スライドで整理。 レム睡眠行動障害 睡眠 パーキンソン病">
+      <div class="thumb"><img src="rem-sleep-behavior-disorder/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">寝ながら暴れるのは病気？ レム睡眠行動障害（RBD）</div>
+        <div class="deck-desc">パーキンソン病の前触れ・夢遊病との見分け方・安全対策｜からだの不思議 #19</div>
+        <div class="deck-meta"><span class="tag">レム睡眠行動障害</span><span class="tag">睡眠</span><span class="tag">パーキンソン病</span><span>📊 13枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="medical-ai-2026-world-japan/" data-search="医療aiは世界と日本でどこまで来たか 【2026年最新】カルテ・画像診断・問診の最前線と限界 2026年、医療aiは「実用」フェーズへ。米国のアンビエントai・画像診断aiから、日本の内視鏡ai・aiカルテ実証・ai問診・2026年度診療報酬改定まで、世界と日本の医療現場のai活用を比較し、ハルシネーションや責任の所在といった限界まで脳神経内科医が解説した全14スライド。 医療ai 医療dx 生成ai">
+      <div class="thumb"><img src="medical-ai-2026-world-japan/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">医療AIは世界と日本でどこまで来たか</div>
+        <div class="deck-desc">【2026年最新】カルテ・画像診断・問診の最前線と限界</div>
+        <div class="deck-meta"><span class="tag">医療AI</span><span class="tag">医療DX</span><span class="tag">生成AI</span><span>📊 14枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="medication-overuse-headache/" data-search="頭痛薬を飲むほど、頭痛が増える？ 薬物乱用頭痛の見分け方と抜け出し方｜脳神経内科医が解説 痛み止めの使いすぎ自体が新しい頭痛を生む“薬物乱用頭痛(moh)”を一般向けに解説。月10日/月15日・3か月の境界線、市販薬(複合成分・カフェイン)の落とし穴、悪循環の仕組み、抜け出す3ステップ(記録・減薬/切替・予防薬を医師と一緒に)、受診の目安までを15スライドでまとめた早見資料。 頭痛 薬物乱用頭痛 片頭痛">
+      <div class="thumb"><img src="medication-overuse-headache/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">頭痛薬を飲むほど、頭痛が増える？</div>
+        <div class="deck-desc">薬物乱用頭痛の見分け方と抜け出し方｜脳神経内科医が解説</div>
+        <div class="deck-meta"><span class="tag">頭痛</span><span class="tag">薬物乱用頭痛</span><span class="tag">片頭痛</span><span>📊 15枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="chlorpromazine-equivalent/" data-search="クロルプロマジン換算（cp換算）｜使い方と"破綻"する理由 主要抗精神病薬の換算値・部分作動薬で破綻する理由・単剤化での使いどころ【研修医・精神科向け】 リスペリドン・オランザピン・アリピプラゾールなど力価の違う抗精神病薬を「クロルプロマジン何mg分」に置き換えるcp換算を、研修医・精神科レジデント・薬剤師向けに整理。主要薬の換算早見表（稲田・稲垣 2015）、3つの臨床用途（総量把握・単剤化・高用量評価）、アリピプラゾール等のパーシャルアゴニストやルラシドン・laiで換算が理論的に破綻する理由、scap法による多剤併用是正までを全14スライドで解説。 クロルプロマジン換算 抗精神病薬 医師向け">
+      <div class="thumb"><img src="chlorpromazine-equivalent/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">クロルプロマジン換算（CP換算）｜使い方と"破綻"する理由</div>
+        <div class="deck-desc">主要抗精神病薬の換算値・部分作動薬で破綻する理由・単剤化での使いどころ【研修医・精神科向け】</div>
+        <div class="deck-meta"><span class="tag">クロルプロマジン換算</span><span class="tag">抗精神病薬</span><span class="tag">医師向け</span><span>📊 14枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="diazepam-equivalent/" data-search="ジアゼパム換算（ベンゾ等価換算）｜使い方と"換算できない薬" 主要薬の換算値・z薬は換算可・デエビゴ/ロゼレムが換算できない理由・漸減法【研修医・薬剤師向け】 デパス・ソラナックス・マイスリーなど力価の違うベンゾジアゼピン系・睡眠薬を「ジアゼパム何mg分」に置き換えるベンゾ等価換算を、研修医・薬剤師向けに整理。主要薬の換算早見表（稲田・稲垣 2015）、3つの臨床用途（減薬・力価比較・総量評価）、z薬は換算できるがベンゾと異なる点、デエビゴ・ベルソムラ（dora）・ロゼレム（メラトニン作動）が作用機序の違いで換算できない理由、ジアゼパム置換による漸減法（ashton法）までを全14スライドで解説。 ジアゼパム換算 睡眠薬 医師向け">
+      <div class="thumb"><img src="diazepam-equivalent/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">ジアゼパム換算（ベンゾ等価換算）｜使い方と"換算できない薬"</div>
+        <div class="deck-desc">主要薬の換算値・Z薬は換算可・デエビゴ/ロゼレムが換算できない理由・漸減法【研修医・薬剤師向け】</div>
+        <div class="deck-meta"><span class="tag">ジアゼパム換算</span><span class="tag">睡眠薬</span><span class="tag">医師向け</span><span>📊 14枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="drug-induced-akathisia/" data-search="アカシジア（静坐不能）これだけ｜原因薬・見分け方・治療の使い分け 抗精神病薬・制吐薬・抗うつ薬で起こる静坐不能の見抜き方と治療の使い分け【医師・薬剤師・看護師向け】 薬剤性アカシジア（静坐不能）を医師・薬剤師・看護師向けに整理。原因薬（抗精神病薬・制吐薬メトクロプラミド・抗うつ薬）、不安焦燥・むずむず脚症候群(rls)との見分け方、barnes尺度(bars)による評価、治療の大原則（原因薬の減量・中止・低リスク薬への変更が補助薬より先）、補助薬の使い分け（ビタミンb6・ミルタザピン・β遮断薬・bzd/抗コリン薬）までを、cpsガイドラインと2024年の最新ネットワークメタ解析（pubmed逆引き済）に基づき全16スライドで解説。 アカシジア 抗精神病薬 脳神経内科">
+      <div class="thumb"><img src="drug-induced-akathisia/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">アカシジア（静坐不能）これだけ｜原因薬・見分け方・治療の使い分け</div>
+        <div class="deck-desc">抗精神病薬・制吐薬・抗うつ薬で起こる静坐不能の見抜き方と治療の使い分け【医師・薬剤師・看護師向け】</div>
+        <div class="deck-meta"><span class="tag">アカシジア</span><span class="tag">抗精神病薬</span><span class="tag">脳神経内科</span><span>📊 16枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="extracellular-fluid-saline-ringer/" data-search="細胞外液補充液の使い分け｜生食 vs リンゲル液を徹底比較 smart〜plus・esicm 2024で変わった輸液選択を病態別に【医師・研修医向け】 細胞外液補充液（生理食塩水 vs バランス型リンゲル液）の使い分けを医療従事者向けに解説。組成の違い・高クロール性代謝性アシドーシス、smart/salt-ed/basics/plus/best-livingの大規模rct、敗血症・dka・外傷性脳損傷・高カリウム血症の病態別選択、乳酸/酢酸/重炭酸リンゲルの緩衝剤、維持液との違い、fluid stewardship(rose model)までを全23スライドで整理。 輸液 細胞外液 集中治療">
+      <div class="thumb"><img src="extracellular-fluid-saline-ringer/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">細胞外液補充液の使い分け｜生食 vs リンゲル液を徹底比較</div>
+        <div class="deck-desc">SMART〜PLUS・ESICM 2024で変わった輸液選択を病態別に【医師・研修医向け】</div>
+        <div class="deck-meta"><span class="tag">輸液</span><span class="tag">細胞外液</span><span class="tag">集中治療</span><span>📊 23枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="how-to-stop-sleeping-pills/" data-search="睡眠薬は一生やめられない？ 安全なやめ方・減らし方 やってはいけないやめ方・漸減・置き換え・cbt-i 睡眠薬の安全なやめ方・減らし方を一般向けに医師が解説。自己判断での急な中止が招く反跳性不眠・離脱症状、主治医と進める漸減（テーパリング）、依存の少ない薬（オレキシン受容体拮抗薬・メラトニン受容体作動薬）への置き換え、薬に頼らず眠る力を取り戻すcbt-i（認知行動療法）まで、全14スライドで。 睡眠薬 不眠症 減薬">
+      <div class="thumb"><img src="how-to-stop-sleeping-pills/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">睡眠薬は一生やめられない？ 安全なやめ方・減らし方</div>
+        <div class="deck-desc">やってはいけないやめ方・漸減・置き換え・CBT-I</div>
+        <div class="deck-meta"><span class="tag">睡眠薬</span><span class="tag">不眠症</span><span class="tag">減薬</span><span>📊 14枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="nemaline-myopathy/" data-search="ネマリンミオパチー徹底解説｜先天型からslonmまで 分類・診断・治療 ネマリン小体(rod)を見たら何を考えるか。enmc分類・原因遺伝子・成人発症slonmのmgus検索と治療を脳神経内科医向けに ネマリンミオパチーを脳神経内科医向けに整理。rod(ネマリン小体)は病因非特異的でz帯由来、enmc分類(重症先天〜成人発症)、二大原因遺伝子acta1/neb、筋生検と遺伝子診断・心呼吸評価、成人発症の孤発性成人発症型(slonm)のmgus検索と治療(asct・メルファラン・ctd・免疫治療)までを、pubmed収載の一次文献に基づき全19スライドで解説。 ネマリンミオパチー slonm 脳神経内科">
+      <div class="thumb"><img src="nemaline-myopathy/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">ネマリンミオパチー徹底解説｜先天型からSLONMまで 分類・診断・治療</div>
+        <div class="deck-desc">ネマリン小体(rod)を見たら何を考えるか。ENMC分類・原因遺伝子・成人発症SLONMのMGUS検索と治療を脳神経内科医向けに</div>
+        <div class="deck-meta"><span class="tag">ネマリンミオパチー</span><span class="tag">SLONM</span><span class="tag">脳神経内科</span><span>📊 19枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="young-onset-dementia/" data-search="40代・50代の物忘れは“うつ”？それとも若年性認知症？ 見分け方・原因・治る認知症・相談先を脳神経内科医が解説 65歳未満で発症する若年性認知症について、うつ・更年期との見分け方、原因疾患、見逃してはいけない“治る認知症”、相談窓口や支援制度までを一般の方向けに14枚のスライドで解説します。 認知症 若年性認知症 一般向け">
+      <div class="thumb"><img src="young-onset-dementia/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">40代・50代の物忘れは“うつ”？それとも若年性認知症？</div>
+        <div class="deck-desc">見分け方・原因・治る認知症・相談先を脳神経内科医が解説</div>
+        <div class="deck-meta"><span class="tag">認知症</span><span class="tag">若年性認知症</span><span class="tag">一般向け</span><span>📊 14枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="osteoporosis/" data-search="骨粗鬆症 — 検査・薬・食事・運動 骨密度はいつ測る？順序療法と二次骨折予防（fls）まで 痛くないのに突然折れる骨粗鬆症。検査のタイミング、薬の使い分け（順序療法）、続発性の見逃し、二次骨折予防flsまでをやさしく解説。 骨粗鬆症 骨密度 二次骨折予防">
+      <div class="thumb"><img src="osteoporosis/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">骨粗鬆症 — 検査・薬・食事・運動</div>
+        <div class="deck-desc">骨密度はいつ測る？順序療法と二次骨折予防（FLS）まで</div>
+        <div class="deck-meta"><span class="tag">骨粗鬆症</span><span class="tag">骨密度</span><span class="tag">二次骨折予防</span><span>📊 16枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="overactive-bladder-frequency/" data-search="過活動膀胱・頻尿 その尿トラブル、膀胱だけが原因とは限りません 頻尿・尿もれ・尿意切迫感。まず行動療法、神経の病気の可能性、薬2種と高齢者の認知機能注意までを専門医がやさしく解説。 過活動膀胱 頻尿 尿もれ">
+      <div class="thumb"><img src="overactive-bladder-frequency/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">過活動膀胱・頻尿</div>
+        <div class="deck-desc">その尿トラブル、膀胱だけが原因とは限りません</div>
+        <div class="deck-meta"><span class="tag">過活動膀胱</span><span class="tag">頻尿</span><span class="tag">尿もれ</span><span>📊 16枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="internuclear-ophthalmoplegia/" data-search="内側縦束症候群（mlf症候群）の診かた 核間性眼筋麻痺（ino）｜病側の決め方・ms / 脳梗塞の鑑別 内側縦束症候群（mlf症候群・核間性眼筋麻痺ino）を脳神経内科医が解説。内転障害＋対側の外転眼振という古典像、病側の決め方、mlfの配線図、inoの亜型（片側/両側/webino/one and a half）、原因の三分割（脳梗塞/多発性硬化症/その他）、動眼神経麻痺や偽性ino（重症筋無力症）との鑑別を図解で整理します。 脳神経内科 眼球運動 医師向け">
+      <div class="thumb"><img src="internuclear-ophthalmoplegia/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">内側縦束症候群（MLF症候群）の診かた</div>
+        <div class="deck-desc">核間性眼筋麻痺（INO）｜病側の決め方・MS / 脳梗塞の鑑別</div>
+        <div class="deck-meta"><span class="tag">脳神経内科</span><span class="tag">眼球運動</span><span class="tag">医師向け</span><span>📊 15枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="catatonia/" data-search="カタトニア（緊張病）の診断と治療｜bfcrs・ロラゼパムテスト・ect・悪性カタトニア bfcrs・dsm-5／ロラゼパムテスト→ect／悪性カタトニア・nms鑑別／抗nmda受容体脳炎 見逃されやすい治療可能な精神運動症候群カタトニア（緊張病）を、精神科・脳神経内科・救急・研修医向けに整理。dsm-5の12徴候3つ以上とbfcrs（23項目＋14項目スクリーニング・r=0.93）による診断、ロラゼパムテスト（76%奏効）→無効・悪性ならectへ進む治療アルゴリズム、悪性カタトニアとnms（悪性症候群）の鑑別、レッドフラッグ（発熱・自律神経不安定・ck上昇）、背景疾患としての抗nmda受容体脳炎までを全21スライドで解説。 カタトニア 緊張病 精神科 脳神経内科 医師向け">
+      <div class="thumb"><img src="catatonia/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">カタトニア（緊張病）の診断と治療｜BFCRS・ロラゼパムテスト・ECT・悪性カタトニア</div>
+        <div class="deck-desc">BFCRS・DSM-5／ロラゼパムテスト→ECT／悪性カタトニア・NMS鑑別／抗NMDA受容体脳炎</div>
+        <div class="deck-meta"><span class="tag">カタトニア</span><span class="tag">緊張病</span><span class="tag">精神科</span><span>📊 21枚</span></div>
+      </div>
+    </a>
+    <a class="deck-card" href="anemia-headache/" data-search="その頭痛、貧血のサインかもしれません｜鉄不足と頭痛の関係・受診の目安 なぜ貧血で頭痛？／セルフチェック／受診の目安と危険サイン／鉄剤の自己判断はng 頭痛の背景に貧血（鉄不足）が隠れていることがあります。鉄が不足するとヘモグロビンが減り脳に届く酸素が低下し、頭痛・ふらつき・動悸が起こりうること、鉄欠乏と片頭痛（特に女性・月経関連）の関連、頭痛＋疲れやすい・動悸・顔色が白い・氷食症・むずむず脚などのセルフチェック、突然の激しい頭痛や黒い便・血便など「すぐ受診」の危険サイン、そして鉄剤を自己判断で飲み続けない（消化管出血・がんを見逃さない）ことまでを、一般向けに全16スライドでやさしく解説。 貧血 頭痛 鉄欠乏性貧血 片頭痛 一般向け">
+      <div class="thumb"><img src="anemia-headache/slide-01.png" alt="" loading="lazy"></div>
+      <div class="body">
+        <div class="deck-title">その頭痛、貧血のサインかもしれません｜鉄不足と頭痛の関係・受診の目安</div>
+        <div class="deck-desc">なぜ貧血で頭痛？／セルフチェック／受診の目安と危険サイン／鉄剤の自己判断はNG</div>
+        <div class="deck-meta"><span class="tag">貧血</span><span class="tag">頭痛</span><span class="tag">鉄欠乏性貧血</span><span>📊 16枚</span></div>
+      </div>
+    </a>
+  </div>
+  <div class="empty" id="emptyState" style="display:none;">該当するスライドが見つかりませんでした</div>
+</div>
+
+<footer>
+  <p>
+    <a href="https://tools.ichisouzo-lab.com/">🔍 臨床鑑別診断ツール</a> ・
+    <a href="https://tools.ichisouzo-lab.com/infographics/">🖼️ インフォグラフィック一覧</a> ・
+    <a href="https://blog.ichisouzo-lab.com/">📝 ブログ</a> ・
+    <a href="https://www.youtube.com/@hinyan1016">▶ YouTube</a>
+  </p>
+  <p style="margin-top:8px; font-size:0.82em;">
+    本資料は医療従事者・医療系学生向けの学習教材です。診療判断は必ず最新ガイドライン・主治医判断に従ってください。
+  </p>
+</footer>
+
+<script>
+(function(){
+  var input = document.getElementById('searchInput');
+  var grid = document.getElementById('deckGrid');
+  var empty = document.getElementById('emptyState');
+  var cards = grid.querySelectorAll('.deck-card');
+
+  input.addEventListener('input', function(){
+    var q = input.value.trim().toLowerCase();
+    var visible = 0;
+    for (var i = 0; i < cards.length; i++) {
+      var text = cards[i].getAttribute('data-search') || '';
+      if (q === '' || text.indexOf(q) >= 0) {
+        cards[i].style.display = '';
+        visible++;
+      } else {
+        cards[i].style.display = 'none';
+      }
+    }
+    empty.style.display = visible === 0 ? 'block' : 'none';
+  });
+})();
+</script>
+</body>
+</html>

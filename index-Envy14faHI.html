@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1B3A5C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DDxツール">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>臨床鑑別診断ツール集</title>
+<style>
+  :root {
+    --navy: #1B3A5C;
+    --blue: #2C5AA0;
+    --light-blue: #E8F0FE;
+    --white: #FFFFFF;
+    --shadow: 0 2px 12px rgba(27,58,92,0.12);
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #E8F0FE 0%, #F4F6F8 100%);
+    color: #222;
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+  header {
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    padding: 36px 20px 30px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(27,58,92,0.18);
+  }
+  header h1 { font-size: 1.8em; font-weight: 700; letter-spacing: 0.04em; }
+  header p { font-size: 0.95em; margin-top: 8px; opacity: 0.85; }
+  .container { max-width: 720px; margin: 0 auto; padding: 32px 16px; }
+  .tool-grid { display: flex; flex-direction: column; gap: 20px; }
+  .tool-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px 24px;
+    text-decoration: none;
+    color: #222;
+    transition: all 0.2s;
+    border-left: 5px solid var(--blue);
+    display: block;
+  }
+  .tool-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 24px rgba(27,58,92,0.18);
+    border-left-color: var(--navy);
+  }
+  .tool-card .tool-emoji { font-size: 2em; margin-bottom: 8px; }
+  .tool-card .tool-name { font-size: 1.25em; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+  .tool-card .tool-desc { font-size: 0.92em; color: #555; line-height: 1.6; }
+  .tool-card .tool-tag {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 0.78em;
+    font-weight: 600;
+    background: var(--light-blue);
+    color: var(--blue);
+  }
+  .search-box {
+    position: relative;
+    margin-bottom: 20px;
+  }
+  .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.1em;
+    color: #999;
+    pointer-events: none;
+  }
+  .search-input {
+    width: 100%;
+    padding: 12px 14px 12px 42px;
+    border: 2px solid #D1D5DB;
+    border-radius: var(--radius);
+    font-size: 1em;
+    font-family: inherit;
+    color: #222;
+    background: var(--white);
+    box-shadow: var(--shadow);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-input:focus {
+    border-color: var(--blue);
+  }
+  .search-input::placeholder {
+    color: #aaa;
+  }
+  .search-count {
+    text-align: center;
+    font-size: 0.82em;
+    color: #999;
+    margin-bottom: 14px;
+    display: none;
+  }
+  .tool-card.hidden {
+    display: none;
+  }
+  .no-results {
+    text-align: center;
+    padding: 40px 0;
+    color: #999;
+    font-size: 0.95em;
+    display: none;
+  }
+  footer {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 0.82em;
+    color: #999;
+    line-height: 1.6;
+  }
+  @media (max-width: 600px) {
+    header { padding: 28px 16px 22px; }
+    header h1 { font-size: 1.35em; }
+    header p { font-size: 0.88em; }
+    .container { padding: 16px 10px; }
+    .tool-grid { gap: 14px; }
+    .tool-card {
+      padding: 18px 16px;
+      border-left-width: 4px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .tool-card:active {
+      transform: scale(0.98);
+      background: #f8faff;
+    }
+    .tool-card .tool-emoji { font-size: 1.7em; margin-bottom: 6px; }
+    .tool-card .tool-name { font-size: 1.1em; }
+    .tool-card .tool-desc { font-size: 0.88em; line-height: 1.55; }
+    .tool-card .tool-tag { font-size: 0.75em; padding: 3px 10px; }
+    .search-input { padding: 10px 12px 10px 38px; font-size: 0.95em; }
+    .search-icon { left: 12px; font-size: 1em; }
+    .search-box { margin-bottom: 14px; }
+    footer { font-size: 0.78em; margin-top: 28px; }
+  }
+</style>
+</head>
+<body>
+<nav id="ics-globalnav" style="background:#15324E;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
+<div style="max-width:1040px;margin:0 auto;padding:9px 16px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+<a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;">医知創造ラボ</a>
+<a href="https://ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">ホーム</a>
+<a href="https://blog.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">ブログ</a>
+<a href="https://tools.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">ツール</a>
+<a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">YouTube</a>
+</div>
+</nav>
+
+<header>
+  <h1>臨床鑑別診断ツール集</h1>
+  <p>臨床所見・検査所見から系統的に鑑別診断を行うインタラクティブツール</p>
+</header>
+
+<div class="container">
+  <a href="slides/" style="display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#E8F0FE 0%,#F4F6F8 100%);border-left:5px solid #2E7D32;border-radius:12px;padding:14px 18px;margin-bottom:18px;box-shadow:0 2px 12px rgba(27,58,92,0.12);text-decoration:none;color:#222;transition:all 0.2s;">
+    <div style="font-size:1.8em;line-height:1;">📊</div>
+    <div style="flex:1;">
+      <div style="font-weight:700;color:#1B3A5C;font-size:1.05em;">スライド資料一覧</div>
+      <div style="font-size:0.86em;color:#555;line-height:1.5;margin-top:2px;">YouTube動画で使用したスライドをPDF・Webで閲覧できます（41デッキ）</div>
+    </div>
+    <div style="color:#2E7D32;font-size:1.4em;line-height:1;">→</div>
+  </a>
+  <a href="infographics/" style="display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#FDEEE9 0%,#F4F6F8 100%);border-left:5px solid #FF7A59;border-radius:12px;padding:14px 18px;margin-bottom:18px;box-shadow:0 2px 12px rgba(27,58,92,0.12);text-decoration:none;color:#222;transition:all 0.2s;">
+    <div style="font-size:1.8em;line-height:1;">🖼️</div>
+    <div style="flex:1;">
+      <div style="font-weight:700;color:#1B3A5C;font-size:1.05em;">インフォグラフィック一覧</div>
+      <div style="font-size:0.86em;color:#555;line-height:1.5;margin-top:2px;">診断・治療・生活のポイントを1枚に。拡大しても鮮明なHTML図解集です。</div>
+    </div>
+    <div style="color:#FF7A59;font-size:1.4em;line-height:1;">→</div>
+  </a>
+  <div class="search-box">
+    <span class="search-icon">&#x1F50D;</span>
+    <input type="text" class="search-input" id="searchInput" placeholder="&#x30C4;&#x30FC;&#x30EB;&#x3092;&#x691C;&#x7D22;&#xFF08;&#x4F8B;: &#x8133;&#x6CE2;&#x3001;&#x96FB;&#x89E3;&#x8CEA;&#x3001;&#x795E;&#x7D4C;&#xFF09;">
+  </div>
+  <div class="search-count" id="searchCount"></div>
+  <div class="no-results" id="noResults">&#x8A72;&#x5F53;&#x3059;&#x308B;&#x30C4;&#x30FC;&#x30EB;&#x304C;&#x898B;&#x3064;&#x304B;&#x308A;&#x307E;&#x305B;&#x3093;</div>
+  <div class="tool-grid" id="toolGrid">
+
+    <a class="tool-card" href="bfcrs_calculator.html">
+      <div class="tool-emoji">🧠</div>
+      <div class="tool-name">BFCRS 緊張病評価尺度 計算ツール</div>
+      <div class="tool-desc">Bush-Francis Catatonia Rating Scale（23項目）。スクリーニング14項目で2項目以上陽性→カタトニア疑い、総得点で重症度を評価します。</div>
+      <span class="tool-tag">23項目 / スクリーニング14項目</span>
+    </a>
+
+    <a class="tool-card" href="aki.html">
+      <div class="tool-emoji">🫘</div>
+      <div class="tool-name">急性腎障害（AKI）鑑別診断ツール</div>
+      <div class="tool-desc">
+        緊急度評価、尿路閉塞除外、循環動態評価、腎毒性物質確認、尿検査所見、臨床所見・病歴から
+        腎前性・腎性（ATN/AIN/RPGN/TMA）・腎後性の13疾患を系統的に鑑別します。
+      </div>
+      <span class="tool-tag">6ステップ / 13疾患</span>
+    </a>
+
+    <a class="tool-card" href="edema.html">
+      <div class="tool-emoji">🫧</div>
+      <div class="tool-name">全身浮腫 鑑別診断ツール</div>
+      <div class="tool-desc">
+        浮腫の性状（圧痕性/非圧痕性）、分布、頸静脈怒張、検査所見、随伴症状、薬剤歴から
+        心不全・肝硬変・ネフローゼ・甲状腺機能低下症など9疾患を系統的に鑑別します。
+      </div>
+      <span class="tool-tag">6ステップ / 9疾患</span>
+    </a>
+
+    <a class="tool-card" href="hyponatremia.html">
+      <div class="tool-emoji">🧪</div>
+      <div class="tool-name">低ナトリウム血症 鑑別診断ツール</div>
+      <div class="tool-desc">
+        血清浸透圧、体液量評価、尿浸透圧、尿中Na、検査所見、臨床所見・病歴、薬剤歴から
+        SIADH・体液量減少性・心不全・副腎不全など14疾患を系統的に鑑別します。
+      </div>
+      <span class="tool-tag">7ステップ / 14疾患</span>
+    </a>
+
+    <a class="tool-card" href="hyperckemia.html">
+      <div class="tool-emoji">💪</div>
+      <div class="tool-name">無症候性高CK血症 鑑別診断ツール</div>
+      <div class="tool-desc">
+        EAN 2024ガイドライン準拠。性別・人種別ULN基準によるCK評価、神経学的診察、後天性原因除外、
+        GAA-DBS検査、EMG/NCS、代謝検査、筋MRI、NGSまで12ステップで系統的に鑑別します。
+      </div>
+      <span class="tool-tag">12ステップ / EAN 2024準拠</span>
+    </a>
+
+    <a class="tool-card" href="hypokalemia.html">
+      <div class="tool-emoji">⚡</div>
+      <div class="tool-name">低カリウム血症 鑑別診断ツール</div>
+      <div class="tool-desc">
+        重症度評価、偽性/細胞内シフト除外、尿中K排泄評価、血圧・酸塩基平衡から
+        腎性/腎外性喪失、原発性アルドステロン症・RTA・Gitelman症候群など系統的に鑑別します。
+      </div>
+      <span class="tool-tag">7ステップ / 分岐型アルゴリズム</span>
+    </a>
+
+    <a class="tool-card" href="hypernatremia.html">
+      <div class="tool-emoji">🔥</div>
+      <div class="tool-name">高ナトリウム血症 鑑別診断ツール</div>
+      <div class="tool-desc">
+        体液量評価、尿浸透圧、尿量、検査所見、病歴・薬剤歴、DDAVP試験から
+        中枢性/腎性尿崩症、浸透圧利尿、腎外性水分喪失、飲水不足、Na過剰負荷などを系統的に鑑別します。
+      </div>
+      <span class="tool-tag">7ステップ / 10疾患鑑別</span>
+    </a>
+
+    <a class="tool-card" href="hypercalcemia.html">
+      <div class="tool-emoji">🧪</div>
+      <div class="tool-name">高カルシウム血症 鑑別診断ツール</div>
+      <div class="tool-desc">
+        PTHを軸にした系統的鑑別。症状・経過、PTH値、尿中Ca/CCCR、ビタミンD/PTHrP、背景疾患、薬剤歴から
+        PHPT・FHH・悪性腫瘍・肉芽腫性疾患・ビタミンD中毒・長期臥床など14疾患を鑑別します。
+      </div>
+      <span class="tool-tag">7ステップ / 14疾患鑑別</span>
+    </a>
+
+    <a class="tool-card" href="abdominal_pain.html">
+      <div class="tool-emoji">🩺</div>
+      <div class="tool-name">腹痛 鑑別診断ツール</div>
+      <div class="tool-desc">
+        疼痛部位、発症様式、疼痛性状、バイタルサイン・身体所見、随伴症状、リスク因子、検査所見から
+        急性虫垂炎・胆嚢炎・膵炎・腸閉塞・腸間膜虚血・異所性妊娠など13疾患を系統的に鑑別します。
+      </div>
+      <span class="tool-tag">7ステップ / 13疾患鑑別</span>
+    </a>
+
+    <a class="tool-card" href="liver_dysfunction.html">
+      <div class="tool-emoji">🫀</div>
+      <div class="tool-name">肝機能障害 鑑別診断ツール</div>
+      <div class="tool-desc">
+        R値によるパターン分類（肝細胞障害型/胆汁うっ滞型/混合型）、Red flag評価、急性/慢性の判断、重症度、病歴、検査、画像の7ステップで
+        急性ウイルス肝炎・NAFLD・DILI・胆管炎・AIH・Wilson病・Budd-Chiari・PBC/PSCなど20疾患を系統的に鑑別します。
+      </div>
+      <span class="tool-tag">7ステップ / 20疾患鑑別</span>
+    </a>
+
+    <a class="tool-card" href="anemia.html">
+      <div class="tool-emoji">🩸</div>
+      <div class="tool-name">貧血 鑑別診断ツール</div>
+      <div class="tool-desc">
+        MCV分類（小球性/正球性/大球性）、初期トリアージ、網状赤血球、溶血所見、鉄代謝、末梢血塗抹、臨床背景、確定検査の8ステップで
+        鉄欠乏性貧血・サラセミア・AIHA・TTP/TMA・再生不良性貧血・B12欠乏・MDSなど20疾患を系統的に鑑別します。
+      </div>
+      <span class="tool-tag">8ステップ / 20疾患鑑別</span>
+    </a>
+
+    <a class="tool-card" href="highbun.html">
+      <div class="tool-emoji">🩸</div>
+      <div class="tool-name">高BUN血症 鑑別診断ツール</div>
+      <div class="tool-desc">
+        BUN/Cr比の自動計算、脱水評価、消化管出血の確認、尿路閉塞評価、薬剤・食事歴、基礎疾患から
+        腎前性・腎性・腎後性・腎外性の4カテゴリーを系統的に鑑別します。
+      </div>
+      <span class="tool-tag">7ステップ / 4カテゴリー鑑別</span>
+    </a>
+
+    <a class="tool-card" href="bilateral_thalamus.html">
+      <div class="tool-emoji">🟣</div>
+      <div class="tool-name">両側視床FLAIR高信号 鑑別診断ツール</div>
+      <div class="tool-desc">
+        MRI画像パターン（DWI/SWI/造影）、発症様式、臨床症状、背景・既往歴、検査所見から
+        脳深部静脈血栓症・Percheron動脈梗塞・Wernicke脳症・CJD・自己免疫性脳炎など14疾患を系統的に鑑別します。
+      </div>
+      <span class="tool-tag">6ステップ / 14疾患鑑別</span>
+    </a>
+
+    <a class="tool-card" href="sensory_polyneuropathy.html">
+      <div class="tool-emoji">🦶</div>
+      <div class="tool-name">感覚性ポリニューロパチー 鑑別診断ツール</div>
+      <div class="tool-desc">
+        分布パターン、発症様式、電気生理検査（軸索/脱髄）、臨床症状、背景・既往歴、検査所見から
+        糖尿病性・CIDP・GBS・血管炎性・CMT・FAP・POEMS症候群など25疾患を系統的に鑑別します。
+      </div>
+      <span class="tool-tag">7ステップ / 25疾患鑑別</span>
+    </a>
+
+    <a class="tool-card" href="polyneuropathy_workup.html">
+      <div class="tool-emoji">🔎</div>
+      <div class="tool-name">ポリニューロパチー鑑別・検査ワークアップツール</div>
+      <div class="tool-desc">
+        発症様式、分布パターン、電気生理検査（軸索/脱髄）、障害モダリティ、随伴症状、背景・既往歴、検査所見から
+        糖尿病性・CIDP・GBS・血管炎性・POEMS・アミロイドーシスなど24疾患を鑑別し、推奨検査リストを自動生成します。
+      </div>
+      <span class="tool-tag">7ステップ / 24疾患鑑別 + 検査リスト生成</span>
+    </a>
+
+    <a class="tool-card" href="secondary_hypertension.html">
+      <div class="tool-emoji">🩺</div>
+      <div class="tool-name">二次性高血圧 鑑別診断ツール</div>
+      <div class="tool-desc">
+        高血圧の重症度、発症年齢、随伴症状、身体所見、基本検査、リスク因子、精密検査から
+        原発性アルドステロン症・褐色細胞腫・クッシング症候群・腎血管性・OSAなど12疾患を系統的にスクリーニングします。
+      </div>
+      <span class="tool-tag">7ステップ / 12疾患鑑別</span>
+    </a>
+
+    <a class="tool-card" href="abducens_palsy.html">
+      <div class="tool-emoji">👁️</div>
+      <div class="tool-name">外転神経麻痺 鑑別診断ツール</div>
+      <div class="tool-desc">
+        麻痺の特徴（片側/両側）、発症様式、疼痛評価、神経学的検査、背景・リスク因子、画像・検査所見から
+        虚血性・腫瘍性・炎症性・感染性・頭蓋内圧亢進・重症筋無力症など19疾患を系統的に鑑別します。
+      </div>
+      <span class="tool-tag">6ステップ / 19疾患鑑別</span>
+    </a>
+
+    <a class="tool-card" href="headache.html">
+      <div class="tool-emoji">🤕</div>
+      <div class="tool-name">頭痛鑑別診断ツール</div>
+      <div class="tool-desc">
+        発症様式・Red Flags（SNNOOP10）・持続時間・性状・随伴症状・眼症状・増悪因子の7ステップで、
+        危険な二次性頭痛を先に拾い、一次性頭痛を積極的に診断します。ICHD-3・NICE CG150・ACR 2023準拠。
+      </div>
+      <span class="tool-tag">7ステップ / 22疾患鑑別</span>
+    </a>
+
+    <a class="tool-card" href="vertigo.html">
+      <div class="tool-emoji">🌀</div>
+      <div class="tool-name">めまい鑑別診断ツール</div>
+      <div class="tool-desc">
+        症候群分類（AVS/t-EVS/s-EVS/慢性）を入口に、危険徴候・眼振所見・聴覚症状・片頭痛関連・慢性特徴・背景因子の7ステップで、
+        後方循環脳卒中を見逃さず、前庭神経炎・BPPV・前庭性片頭痛・メニエール病・PPPDなど13疾患を系統的に鑑別します。
+      </div>
+      <span class="tool-tag">7ステップ / 13疾患鑑別</span>
+    </a>
+
+    <a class="tool-card" href="consciousness.html">
+      <div class="tool-emoji">🚨</div>
+      <div class="tool-name">意識障害 鑑別診断ツール</div>
+      <div class="tool-desc">
+        発症様式、バイタルサイン、巣症状、瞳孔所見、運動反応パターン、随伴症状、背景・既往歴、経過の8ステップで、
+        脳出血・SAH・NCSE・代謝性脳症・薬物中毒・髄膜炎など20疾患を「4本柱」フレームワークに基づき系統的に鑑別します。
+      </div>
+      <span class="tool-tag">8ステップ / 20疾患鑑別</span>
+    </a>
+
+    <a class="tool-card" href="cceeg.html">
+      <div class="tool-emoji">🧠</div>
+      <div class="tool-name">CCEEG 薬剤調整判断サポートツール</div>
+      <div class="tool-desc">
+        持続脳波モニタリング（CCEEG）の所見に基づき、抗てんかん発作薬の調整判断を支援します。
+        ESz/ESE判定、周期性放電（LPDs/GPDs/BIPDs）、RDA、IICの評価をACNS 2021用語に準拠してガイドします。
+      </div>
+      <span class="tool-tag">分岐型フローチャート / ACNS 2021準拠</span>
+    </a>
+
+    <a class="tool-card" href="fuo.html">
+      <div class="tool-emoji">🌡️</div>
+      <div class="tool-name">不明熱（FUO）鑑別診断ツール</div>
+      <div class="tool-desc">
+        病型分類、発熱パターン、身体所見(PDC)、検査所見、曝露歴、臓器症状、既施行検査の7ステップで、
+        結核・心内膜炎・リンパ腫・Still病・GCA/PMR・薬剤熱・HLH/MASなど16疾患を4病因群に基づき系統的に鑑別します。
+      </div>
+      <span class="tool-tag">7ステップ / 16疾患鑑別</span>
+    </a>
+
+    <a class="tool-card" href="chest_pain.html">
+      <div class="tool-emoji">💔</div>
+      <div class="tool-name">胸痛 鑑別診断ツール</div>
+      <div class="tool-desc">
+        安定性、発症様式、痛みの性質、バイタルサイン、身体所見、随伴症状、背景因子の7ステップで、
+        ACS・PE・AAS・心膜炎・気胸・肺炎など14疾患を6カテゴリに基づき並列除外する実践的アプローチ。
+      </div>
+      <span class="tool-tag">7ステップ / 14疾患鑑別</span>
+    </a>
+
+    <a class="tool-card" href="dyspnea.html">
+      <div class="tool-emoji">🫁</div>
+      <div class="tool-name">呼吸困難 鑑別診断ツール</div>
+      <div class="tool-desc">
+        重症度、時間経過、バイタルサイン、呼吸器所見、循環器所見、随伴症状、背景因子の7ステップで、
+        肺塞栓・気胸・心不全・喘息/COPD増悪・肺炎・ACS・神経筋性呼吸障害など18疾患を5病態群に基づき系統的に鑑別します。
+      </div>
+      <span class="tool-tag">7ステップ / 18疾患鑑別</span>
+    </a>
+
+    <a class="tool-card" href="nerve_localization.html">
+      <div class="tool-emoji">🔍</div>
+      <div class="tool-name">神経障害部位推測ツール</div>
+      <div class="tool-desc">
+        MMT（徒手筋力検査）の結果から、障害されている脊髄レベル・末梢神経を推測します。
+        各筋の神経根レベル重み付けに基づくスコアリングで、上肢(C5-T1)・下肢(L1-S2)・統合解析に対応。
+      </div>
+      <span class="tool-tag">上肢23筋 / 下肢16筋 / 重み付けスコアリング</span>
+    </a>
+
+    <a class="tool-card" href="neurodiagnosis.html">
+      <div class="tool-emoji">🧠</div>
+      <div class="tool-name">多発脳神経障害 局在診断ツール</div>
+      <div class="tool-desc">
+        症状チェックリストから障害脳神経を特定し、病変の解剖学的局在（海綿静脈洞・CPA・頸静脈孔など8部位）を
+        カバレッジ率に基づくスコアリングで推測します。散在的パターンのRed Flag警告機能付き。
+      </div>
+      <span class="tool-tag">14症状 / 8局在 / カバレッジ分析</span>
+    </a>
+
+    <a class="tool-card" href="tremor.html">
+      <div class="tool-emoji">🤲</div>
+      <div class="tool-name">振戦 鑑別診断ツール</div>
+      <div class="tool-desc">
+        振戦の出現タイミング・左右差・リズム・随伴所見・薬剤歴から、本態性振戦・パーキンソン病・ジストニア振戦・
+        小脳性振戦・Holmes振戦・心因性振戦など13疾患を系統的に鑑別します。
+      </div>
+      <span class="tool-tag">7ステップ / 13疾患鑑別</span>
+    </a>
+
+    <a class="tool-card" href="gait_ataxia.html">
+      <div class="tool-emoji">🚶</div>
+      <div class="tool-name">歩行障害・協調運動障害 鑑別診断ツール</div>
+      <div class="tool-desc">
+        発症経過・歩容パターン・視覚依存性・四肢所見・随伴症状・背景因子から、小脳失調・感覚性失調・
+        前庭性失調・パーキンソニズム・iNPH・頚髄症・機能性など13疾患を系統的に鑑別します。
+      </div>
+      <span class="tool-tag">6ステップ / 13疾患鑑別</span>
+    </a>
+
+    <a class="tool-card" href="syncope.html">
+      <div class="tool-emoji">😵</div>
+      <div class="tool-name">意識消失発作（TLOC）鑑別診断ツール</div>
+      <div class="tool-desc">
+        誘因・前駆症状・発作中所見・発作後所見・心原性レッドフラグ・患者背景・家族歴の7ステップで、
+        血管迷走神経性失神・起立性低血圧・心原性失神・GTCS・焦点発作・PNES・SAHなど14疾患を系統的に鑑別します。
+      </div>
+      <span class="tool-tag">7ステップ / 14疾患鑑別</span>
+    </a>
+
+    <a class="tool-card" href="vestibular_neuritis.html">
+      <div class="tool-emoji">🌀</div>
+      <div class="tool-name">前庭神経炎 鑑別診断ツール</div>
+      <div class="tool-desc">
+        発症様式・眼振の性状・Head Impulse Test・Skew deviation・聴覚症状・神経所見・リスク因子の7ステップで、
+        前庭神経炎（AUVP）・BPPV・メニエール病・前庭性片頭痛・脳幹小脳梗塞など6疾患を系統的に鑑別します。
+      </div>
+      <span class="tool-tag">7ステップ / 6疾患鑑別</span>
+    </a>
+
+    <a class="tool-card" href="vestibular_migraine.html">
+      <div class="tool-emoji">💜</div>
+      <div class="tool-name">前庭性片頭痛 セルフチェック</div>
+      <div class="tool-desc">
+        Bárány Society / IHS 2021 診断基準（A〜D項目）に基づくセルフチェックツール。
+        片頭痛歴・めまい発作の特徴・随伴症状・鑑別所見・トリガーの8ステップで、Definite VM / Probable VM の判定と、
+        メニエール病・BPPV・PPPDなど鑑別すべき疾患を提示します。
+      </div>
+      <span class="tool-tag">8ステップ / Bárány基準ベース</span>
+    </a>
+
+    <a class="tool-card" href="thyroid_dysfunction.html">
+      <div class="tool-emoji">🦋</div>
+      <div class="tool-name">甲状腺機能異常 鑑別診断ツール</div>
+      <div class="tool-desc">
+        TSH・FT4/FT3パターン、症状、身体所見、自己抗体、画像所見、臨床背景の7ステップで、
+        バセドウ病・橋本病・亜急性甲状腺炎・薬剤性・中枢性低下症・NTISなど25疾患を系統的に鑑別します。
+      </div>
+      <span class="tool-tag">7ステップ / 25疾患鑑別</span>
+    </a>
+
+    <a class="tool-card" href="hemichorea.html">
+      <div class="tool-emoji">🧠</div>
+      <div class="tool-name">片側性舞踏病 鑑別診断ツール</div>
+      <div class="tool-desc">
+        不随意運動の性状・発症様式・血糖/HbA1c・画像所見・薬剤歴・自己免疫の6ステップで、
+        血管性hemichorea・高血糖性舞踏病・薬剤性・自己免疫性・遺伝性の5疾患群を優先順位付きで鑑別します。
+      </div>
+      <span class="tool-tag">6ステップ / 5疾患群鑑別</span>
+    </a>
+
+    <a class="tool-card" href="stroke_reperfusion.html">
+      <div class="tool-emoji">🩺</div>
+      <div class="tool-name">脳梗塞 再灌流療法 適応判定</div>
+      <div class="tool-desc">
+        rt-PA静注療法と機械的血栓回収術の適応を「時・血・画・出・偽」の7ステップで判定。禁忌チェック・ブリッジング/direct EVTの推奨アクションを表示します。
+      </div>
+      <span class="tool-tag">7ステップ / rt-PA + EVT判定</span>
+    </a>
+
+    <a class="tool-card" href="hypoactive_delirium.html">
+      <div class="tool-emoji">🤫</div>
+      <div class="tool-name">低活動性せん妄 スクリーニング＆原因検索</div>
+      <div class="tool-desc">
+        「静かなせん妄」を見逃さない。HYPO-D（臨床像）・CAM（スクリーニング）・DELIRIUM（原因検索）の3フレームワークで系統的に評価し、推奨対応を表示します。
+      </div>
+      <span class="tool-tag">6ステップ / CAM判定 + 原因検索</span>
+    </a>
+
+    <a class="tool-card" href="glim_nutrition.html" style="border-left-color:#2C6E49;">
+      <div class="tool-emoji">🥗</div>
+      <div class="tool-name">GLIM基準 低栄養診断ツール</div>
+      <div class="tool-desc">
+        表現型基準3項目（意図しない体重減少・低BMI・筋肉量減少）と病因基準2項目（食事摂取量減少/消化吸収・疾患負荷/炎症）を入力すると、「表現型1つ以上＋病因1つ以上」で低栄養の有無を判定。BMIは身長体重から自動計算（年齢70歳で区切り）。重症度（中等度/重度）は体重減少で判定し、日本人カットオフ未確定のBMI研究値は参考表示。記録用サマリのコピーまで一画面で（JSPEN 2024 / 2025 5年アップデート対応）。
+      </div>
+      <span class="tool-tag">表現型×病因の自動判定 + 重症度</span>
+    </a>
+
+    <a class="tool-card" href="news2_calculator.html" style="border-left-color:#0B5563;">
+      <div class="tool-emoji">🚨</div>
+      <div class="tool-name">NEWS2 計算ツール（早期警告スコア）</div>
+      <div class="tool-desc">
+        呼吸数・SpO2（Scale 1/2）・酸素投与・血圧・脈拍・意識（ACVPU）・体温を入力すると、NEWS2合計点を自動計算。単項目3点の警戒フラグ、リスク区分とエスカレーション基準（RRS起動トリガー）、記録用サマリのコピーまで一画面で確認できます（RCP 2017準拠）。
+      </div>
+      <span class="tool-tag">NEWS2自動採点 + 起動基準判定</span>
+    </a>
+
+    <a class="tool-card" href="dex_calculator.html">
+      <div class="tool-emoji">💉</div>
+      <div class="tool-name">デクスメデトミジン投与量計算機（RASS連動）</div>
+      <div class="tool-desc">
+        体重・患者属性・目標RASSから 200μg/50mLシリンジの mL/hr を自動計算。徐脈・低血圧リスク警告、コピー可能な指示テンプレ、増減ロジック、中止基準まで一画面で確認できます。
+      </div>
+      <span class="tool-tag">体重別早見表 + 指示テンプレ生成</span>
+    </a>
+
+    <a class="tool-card" href="nad_calculator.html" style="border-left-color:#A02335;">
+      <div class="tool-emoji">🩸</div>
+      <div class="tool-name">ノルアドレナリン投与量計算機（γ⇄mL/hr）</div>
+      <div class="tool-desc">
+        標準調製「3A＋生食47mL（0.06 mg/mL）」のγ⇄mL/hr換算。体重・投与経路・併用状況からMAP 65目標の漸増テンプレ、末梢ライン安全ルール、バソプレシン/ハイドロコルチゾン併用基準、ウィーニング順序を一画面で。
+      </div>
+      <span class="tool-tag">体重別γ早見表 + SSC 2021準拠</span>
+    </a>
+
+    <a class="tool-card" href="ivig_calculator.html">
+      <div class="tool-emoji">🧬</div>
+      <div class="tool-name">免疫グロブリン投与支援（IVIG/SCIG）</div>
+      <div class="tool-desc">
+        適応疾患を選ぶと使用可能製剤を自動フィルタ。製剤×適応マトリクスをもとに、体重から総投与量・1日量・必要バイアル数・概算液量を計算し、製剤別の段階的投与速度プロトコルと副作用モニタリング/前投薬チェックリストまで一画面で確認できます。
+      </div>
+      <span class="tool-tag">国内IVIG/SCIG製剤網羅 / 製剤別レジメン・速度</span>
+    </a>
+
+  </div>
+
+  <div style="margin-top:40px; padding-top:28px; border-top:2px solid #d0d8e0;">
+    <h2 style="font-size:1.25em; color:#1B3A5C; text-align:center; margin-bottom:18px;">🗣️ コミュニケーション支援</h2>
+    <div class="tool-grid">
+      <a class="tool-card" href="spikes_explainer.html" style="border-left-color:#14746F;">
+        <div class="tool-emoji">🗣️</div>
+        <div class="tool-name">SPIKES 病状説明アシスタント</div>
+        <div class="tool-desc">
+          疾患・場面・患者さんの理解度などを入力すると、SPIKESプロトコル（場の設定→認識確認→情報希望→情報提供→感情対応→方針）に沿った病状説明の流れと、症例別の言葉がけ例文を生成。さらに、ご契約中のAI（ChatGPT・Claude等）に貼るだけで病状説明と疾患説明書を完成できるプロンプトを出力します（患者名などの個人情報はAIに渡さない設計）。
+        </div>
+        <span class="tool-tag">SPIKES 6ステップ / 説明フロー＋AIプロンプト生成</span>
+      </a>
+    </div>
+  </div>
+
+  <div style="margin-top:40px; padding-top:28px; border-top:2px solid #d0d8e0;">
+    <h2 style="font-size:1.25em; color:#1B3A5C; text-align:center; margin-bottom:18px;">🔬 解剖学習ツール</h2>
+    <div class="tool-grid">
+      <a class="tool-card" href="cavernous_sinus.html" style="border-left-color:#2C5AA0;">
+        <div class="tool-emoji">🧬</div>
+        <div class="tool-name">海綿静脈洞 解剖エクスプローラー</div>
+        <div class="tool-desc">
+          海綿静脈洞の断面図・側面図をインタラクティブに探索。各脳神経・血管の位置関係を確認でき、THSモードでTolosa-Hunt症候群時の障害パターンを可視化します。
+        </div>
+        <span class="tool-tag">2ビュー / 8構造 / THSモード</span>
+      </a>
+    </div>
+  </div>
+
+  <div style="margin-top:40px; padding-top:28px; border-top:2px solid #d0d8e0;">
+    <h2 style="font-size:1.25em; color:#1B3A5C; text-align:center; margin-bottom:18px;">📊 インフォグラフィック</h2>
+    <div class="tool-grid">
+      <a class="tool-card" href="infographics/tolosa_hunt.html" style="border-left-color:#6a1b9a;">
+        <div class="tool-emoji">🧠</div>
+        <div class="tool-name">Tolosa-Hunt症候群</div>
+        <div class="tool-desc">
+          有痛性眼筋麻痺の代表疾患であるTolosa-Hunt症候群の疫学・解剖・ICHD-3診断基準・鑑別診断・治療を視覚的にまとめたインフォグラフィック。
+        </div>
+        <span class="tool-tag">インフォグラフィック</span>
+      </a>
+    </div>
+  </div>
+
+  <footer>
+    本ツールは臨床判断の補助を目的としており、確定診断を行うものではありません。<br>
+    実臨床では総合的な臨床判断が必要です。
+  </footer>
+</div>
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
+    .then(function(reg) { reg.update(); })
+    .catch(function() {});
+}
+
+(function() {
+  var input = document.getElementById('searchInput');
+  var grid = document.getElementById('toolGrid');
+  var countEl = document.getElementById('searchCount');
+  var noResults = document.getElementById('noResults');
+  var cards = grid.querySelectorAll('.tool-card');
+  var total = cards.length;
+
+  input.addEventListener('input', function() {
+    var query = input.value.trim().toLowerCase();
+    var visible = 0;
+
+    for (var i = 0; i < cards.length; i++) {
+      var text = cards[i].textContent.toLowerCase();
+      if (!query || text.indexOf(query) !== -1) {
+        cards[i].classList.remove('hidden');
+        visible++;
+      } else {
+        cards[i].classList.add('hidden');
+      }
+    }
+
+    if (query) {
+      countEl.textContent = total + ' 件中 ' + visible + ' 件を表示';
+      countEl.style.display = 'block';
+    } else {
+      countEl.style.display = 'none';
+    }
+    noResults.style.display = (query && visible === 0) ? 'block' : 'none';
+  });
+})();
+</script>
+</body>
+</html>

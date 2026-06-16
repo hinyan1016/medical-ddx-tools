@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A5276">
+<meta name="description" content="医学教育インフォグラフィック一覧。診断・治療・生活のポイントを1枚にまとめた、拡大しても鮮明なHTML図解集。医療従事者向け・一般向け。">
+<title>インフォグラフィック一覧｜医知創造ラボ</title>
+<style>
+  :root{--navy:#1A5276;--navy-ink:#10324a;--blue:#2C5AA0;--accent:#FF7A59;--bg:#F4F6F8;--white:#fff;--text:#222;--muted:#667;--line:#e2e8ef;--shadow:0 2px 12px rgba(16,50,74,.12);--radius:12px;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0 0 60px;line-height:1.6;}
+  header{background:linear-gradient(135deg,var(--navy-ink),var(--blue));color:#fff;padding:42px 20px 34px;text-align:center;box-shadow:0 4px 16px rgba(16,50,74,.18);position:relative;overflow:hidden;}
+  header::after{content:"";position:absolute;right:-80px;top:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle at 30% 30%,rgba(255,122,89,.45),transparent 65%);}
+  header .brand{font-size:.9em;font-weight:700;opacity:.9;}
+  header .brand .cross{color:var(--accent);}
+  header h1{font-size:1.8em;font-weight:800;letter-spacing:.02em;margin-top:8px;}
+  header p{font-size:.95em;margin-top:10px;opacity:.9;}
+  .container{max-width:1000px;margin:0 auto;padding:26px 16px;}
+  .search-box{position:relative;margin-bottom:14px;}
+  .search-input{width:100%;padding:12px 14px 12px 42px;border:2px solid #d1d5db;border-radius:var(--radius);font-size:1em;font-family:inherit;background:#fff;box-shadow:var(--shadow);outline:none;}
+  .search-input:focus{border-color:var(--blue);}
+  .search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#9aa7b4;}
+  .count{font-size:.84em;color:var(--muted);margin:0 2px 16px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px;}
+  .card{background:#fff;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;transition:transform .12s,box-shadow .12s;}
+  .card:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(16,50,74,.18);}
+  .thumb{display:block;aspect-ratio:16/9;overflow:hidden;background:linear-gradient(135deg,var(--navy-ink),var(--blue));}
+  .thumb img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;}
+  .thumb--noimg{display:flex;align-items:center;justify-content:center;color:#fff;font-size:2em;text-decoration:none;}
+  .body{padding:15px 17px;flex:1;display:flex;flex-direction:column;}
+  .title{font-size:1.04em;font-weight:800;color:var(--navy);line-height:1.4;}
+  .title a{color:inherit;text-decoration:none;}
+  .title a:hover{text-decoration:underline;}
+  .desc{font-size:.85em;color:#556;line-height:1.55;margin-top:7px;flex:1;}
+  .meta{display:flex;gap:9px;align-items:center;margin-top:11px;flex-wrap:wrap;}
+  .tag{font-size:.74em;font-weight:700;border-radius:999px;padding:3px 11px;}
+  .aud-gen{background:#fdeee9;color:#c2410c;}
+  .aud-pro{background:#e8f2fb;color:var(--blue);}
+  .date{font-size:.76em;color:var(--muted);}
+  .links{display:flex;gap:8px;margin-top:13px;flex-wrap:wrap;}
+  .lnk{font-size:.82em;font-weight:700;text-decoration:none;padding:7px 13px;border-radius:8px;}
+  .lnk--main{background:var(--navy);color:#fff;}
+  .lnk--main:hover{background:var(--blue);}
+  .lnk:not(.lnk--main){color:var(--blue);border:1px solid var(--line);}
+  .lnk.lnk--yt{background:#C0392B;color:#fff;border:1px solid #C0392B;}
+  .lnk.lnk--yt:hover{background:#a93226;}
+  .empty{text-align:center;color:var(--muted);padding:40px 0;display:none;}
+  footer{text-align:center;color:var(--muted);font-size:.8em;margin-top:34px;}
+  footer a{color:var(--blue);}
+  @media(max-width:640px){.grid{grid-template-columns:1fr;}header h1{font-size:1.45em;}}
+</style>
+</head>
+<body>
+<nav id="ics-globalnav" style="background:#15324E;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
+<div style="max-width:1040px;margin:0 auto;padding:9px 16px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+<a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;">医知創造ラボ</a>
+<a href="https://ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">ホーム</a>
+<a href="https://blog.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">ブログ</a>
+<a href="https://tools.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">ツール</a>
+<a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">YouTube</a>
+</div>
+</nav>
+
+<header>
+  <div class="brand"><span class="cross">✚</span> 医知創造ラボ</div>
+  <h1>インフォグラフィック一覧</h1>
+  <p>診断・治療・生活のポイントを1枚に。拡大しても鮮明なHTML図解集です。</p>
+</header>
+<div class="container">
+  <div class="search-box">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" id="q" type="search" placeholder="キーワードで絞り込み（例：頻尿、骨、てんかん、幸せ）" oninput="filt()">
+  </div>
+  <p class="count">12 件の図解</p>
+  <div class="grid" id="grid">
+  <article class="card" data-search="その頭痛、貧血のサインかも 鉄不足で頭痛が起こる仕組み・セルフチェック・受診の目安と危険サイン・鉄剤の自己判断はNG。 一般向け">
+    <a class="thumb" href="anemia-headache/" aria-label="その頭痛、貧血のサインかも"><img src="anemia-headache/thumb.png" alt="その頭痛、貧血のサインかも サムネイル" loading="lazy"></a>
+    <div class="body">
+      <h2 class="title"><a href="anemia-headache/">その頭痛、貧血のサインかも</a></h2>
+      <p class="desc">鉄不足で頭痛が起こる仕組み・セルフチェック・受診の目安と危険サイン・鉄剤の自己判断はNG。</p>
+      <div class="meta"><span class="tag aud-gen">一般向け</span><span class="date">2026-06-16</span></div>
+      <div class="links"><a class="lnk lnk--main" href="anemia-headache/">📊 図を開く</a><a class="lnk" href="anemia-headache/infographic.png" target="_blank" rel="noopener">🖼️ 画像</a><a class="lnk lnk--yt" href="https://youtu.be/9_Zlkl3eCX0" target="_blank" rel="noopener">▶ 動画</a><a class="lnk" href="https://blog.ichisouzo-lab.com/entry/2026/06/16/125940" target="_blank" rel="noopener">解説記事</a></div>
+    </div>
+  </article>
+  <article class="card" data-search="カタトニア（緊張病）の診断と治療｜BFCRS・ロラゼパムテスト・ECT・悪性カタトニア カタトニアの診断(BFCRS/DSM-5)・治療(ロラゼパム/ECT)・悪性カタトニア鑑別・抗NMDA受容体脳炎を1枚に整理 医療従事者向け">
+    <a class="thumb" href="catatonia/" aria-label="カタトニア（緊張病）の診断と治療｜BFCRS・ロラゼパムテスト・ECT・悪性カタトニア"><img src="catatonia/thumb.png" alt="カタトニア（緊張病）の診断と治療｜BFCRS・ロラゼパムテスト・ECT・悪性カタトニア サムネイル" loading="lazy"></a>
+    <div class="body">
+      <h2 class="title"><a href="catatonia/">カタトニア（緊張病）の診断と治療｜BFCRS・ロラゼパムテスト・ECT・悪性カタトニア</a></h2>
+      <p class="desc">カタトニアの診断(BFCRS/DSM-5)・治療(ロラゼパム/ECT)・悪性カタトニア鑑別・抗NMDA受容体脳炎を1枚に整理</p>
+      <div class="meta"><span class="tag aud-pro">医療従事者向け</span><span class="date">2026-06-16</span></div>
+      <div class="links"><a class="lnk lnk--main" href="catatonia/">📊 図を開く</a><a class="lnk" href="catatonia/infographic.png" target="_blank" rel="noopener">🖼️ 画像</a><a class="lnk lnk--yt" href="https://youtu.be/98OJlDYfUnc" target="_blank" rel="noopener">▶ 動画</a><a class="lnk" href="https://blog.ichisouzo-lab.com/entry/2026/06/16/003501" target="_blank" rel="noopener">解説記事</a></div>
+    </div>
+  </article>
+  <article class="card" data-search="コレステロールの下げ方 結果票の4つの数字・下げ方の優先順位・薬の境目・家族性の3点セルフチェック。 一般向け">
+    <a class="thumb" href="lowering-cholesterol/" aria-label="コレステロールの下げ方"><img src="lowering-cholesterol/thumb.png" alt="コレステロールの下げ方 サムネイル" loading="lazy"></a>
+    <div class="body">
+      <h2 class="title"><a href="lowering-cholesterol/">コレステロールの下げ方</a></h2>
+      <p class="desc">結果票の4つの数字・下げ方の優先順位・薬の境目・家族性の3点セルフチェック。</p>
+      <div class="meta"><span class="tag aud-gen">一般向け</span><span class="date">2026-06-11</span></div>
+      <div class="links"><a class="lnk lnk--main" href="lowering-cholesterol/">📊 図を開く</a><a class="lnk" href="lowering-cholesterol/infographic.png" target="_blank" rel="noopener">🖼️ 画像</a><a class="lnk lnk--yt" href="https://youtu.be/0bt7fcl1dAo" target="_blank" rel="noopener">▶ 動画</a><a class="lnk" href="https://blog.ichisouzo-lab.com/entry/2026/06/11/105426" target="_blank" rel="noopener">解説記事</a></div>
+    </div>
+  </article>
+  <article class="card" data-search="幸せとは何か｜脳科学の答え 3種類の幸せ・50-10-40の法則・ヘドニック適応・人間関係の力・5つの行動。 一般向け">
+    <a class="thumb" href="what-is-happiness/" aria-label="幸せとは何か｜脳科学の答え"><img src="what-is-happiness/thumb.png" alt="幸せとは何か｜脳科学の答え サムネイル" loading="lazy"></a>
+    <div class="body">
+      <h2 class="title"><a href="what-is-happiness/">幸せとは何か｜脳科学の答え</a></h2>
+      <p class="desc">3種類の幸せ・50-10-40の法則・ヘドニック適応・人間関係の力・5つの行動。</p>
+      <div class="meta"><span class="tag aud-gen">一般向け</span><span class="date">2026-06-14</span></div>
+      <div class="links"><a class="lnk lnk--main" href="what-is-happiness/">📊 図を開く</a><a class="lnk" href="what-is-happiness/infographic.png" target="_blank" rel="noopener">🖼️ 画像</a><a class="lnk lnk--yt" href="https://youtu.be/9cmNL89JkXg" target="_blank" rel="noopener">▶ 動画</a><a class="lnk" href="https://blog.ichisouzo-lab.com/entry/2026/06/14/113004" target="_blank" rel="noopener">解説記事</a></div>
+    </div>
+  </article>
+  <article class="card" data-search="院外での発作対応とレスキュー薬 見守る→時間→頓用薬→救急車の手順・5分ルール・3つのレスキュー薬の使い分け。 一般向け">
+    <a class="thumb" href="seizure-rescue-home/" aria-label="院外での発作対応とレスキュー薬"><img src="seizure-rescue-home/thumb.png" alt="院外での発作対応とレスキュー薬 サムネイル" loading="lazy"></a>
+    <div class="body">
+      <h2 class="title"><a href="seizure-rescue-home/">院外での発作対応とレスキュー薬</a></h2>
+      <p class="desc">見守る→時間→頓用薬→救急車の手順・5分ルール・3つのレスキュー薬の使い分け。</p>
+      <div class="meta"><span class="tag aud-gen">一般向け</span><span class="date">2026-06-14</span></div>
+      <div class="links"><a class="lnk lnk--main" href="seizure-rescue-home/">📊 図を開く</a><a class="lnk" href="seizure-rescue-home/infographic.png" target="_blank" rel="noopener">🖼️ 画像</a><a class="lnk lnk--yt" href="https://youtu.be/lCVOLYCDwb0" target="_blank" rel="noopener">▶ 動画</a><a class="lnk" href="https://blog.ichisouzo-lab.com/entry/2026/06/14/013938" target="_blank" rel="noopener">解説記事</a></div>
+    </div>
+  </article>
+  <article class="card" data-search="脳と神経のブレイクスルー7選 遺伝子・核酸医薬、日本発のiPS治療、進行型MS・脳腫瘍・脳梗塞の新選択肢（2025-2026）。 一般向け">
+    <a class="thumb" href="neuro-breakthroughs-2025-2026/" aria-label="脳と神経のブレイクスルー7選"><img src="neuro-breakthroughs-2025-2026/thumb.png" alt="脳と神経のブレイクスルー7選 サムネイル" loading="lazy"></a>
+    <div class="body">
+      <h2 class="title"><a href="neuro-breakthroughs-2025-2026/">脳と神経のブレイクスルー7選</a></h2>
+      <p class="desc">遺伝子・核酸医薬、日本発のiPS治療、進行型MS・脳腫瘍・脳梗塞の新選択肢（2025-2026）。</p>
+      <div class="meta"><span class="tag aud-gen">一般向け</span><span class="date">2026-06-07</span></div>
+      <div class="links"><a class="lnk lnk--main" href="neuro-breakthroughs-2025-2026/">📊 図を開く</a><a class="lnk" href="neuro-breakthroughs-2025-2026/infographic.png" target="_blank" rel="noopener">🖼️ 画像</a><a class="lnk lnk--yt" href="https://youtu.be/ipjjp5mY-qs" target="_blank" rel="noopener">▶ 動画</a><a class="lnk" href="https://blog.ichisouzo-lab.com/entry/2026/06/07/143148" target="_blank" rel="noopener">解説記事</a></div>
+    </div>
+  </article>
+  <article class="card" data-search="中枢神経系シェーグレン症候群 脊髄炎・視神経炎でAQP4/MOG必須、NMOSDとの鑑別、診断基準と治療。 医療従事者向け">
+    <a class="thumb" href="cns-sjogren/" aria-label="中枢神経系シェーグレン症候群"><img src="cns-sjogren/thumb.png" alt="中枢神経系シェーグレン症候群 サムネイル" loading="lazy"></a>
+    <div class="body">
+      <h2 class="title"><a href="cns-sjogren/">中枢神経系シェーグレン症候群</a></h2>
+      <p class="desc">脊髄炎・視神経炎でAQP4/MOG必須、NMOSDとの鑑別、診断基準と治療。</p>
+      <div class="meta"><span class="tag aud-pro">医療従事者向け</span><span class="date">2026-06-13</span></div>
+      <div class="links"><a class="lnk lnk--main" href="cns-sjogren/">📊 図を開く</a><a class="lnk" href="cns-sjogren/infographic.png" target="_blank" rel="noopener">🖼️ 画像</a><a class="lnk lnk--yt" href="https://youtu.be/2kZStXYA28Q" target="_blank" rel="noopener">▶ 動画</a><a class="lnk" href="https://blog.ichisouzo-lab.com/entry/2026/06/13/002950" target="_blank" rel="noopener">解説記事</a></div>
+    </div>
+  </article>
+  <article class="card" data-search="過活動膀胱と神経の病気 尿意切迫感が中心・受診の目安・神経因性膀胱・行動療法から始める治療。 一般向け">
+    <a class="thumb" href="overactive-bladder/" aria-label="過活動膀胱と神経の病気"><img src="overactive-bladder/thumb.png" alt="過活動膀胱と神経の病気 サムネイル" loading="lazy"></a>
+    <div class="body">
+      <h2 class="title"><a href="overactive-bladder/">過活動膀胱と神経の病気</a></h2>
+      <p class="desc">尿意切迫感が中心・受診の目安・神経因性膀胱・行動療法から始める治療。</p>
+      <div class="meta"><span class="tag aud-gen">一般向け</span><span class="date">2026-06-12</span></div>
+      <div class="links"><a class="lnk lnk--main" href="overactive-bladder/">📊 図を開く</a><a class="lnk" href="overactive-bladder/infographic.png" target="_blank" rel="noopener">🖼️ 画像</a><a class="lnk lnk--yt" href="https://youtu.be/XSsYidO14CM" target="_blank" rel="noopener">▶ 動画</a><a class="lnk" href="https://blog.ichisouzo-lab.com/entry/2026/06/12/003506" target="_blank" rel="noopener">解説記事</a></div>
+    </div>
+  </article>
+  <article class="card" data-search="骨粗鬆症の検査・薬・FLS DXA・YAM・Tスコア、薬の2グループと順序療法、二次骨折を防ぐFLS。 一般向け">
+    <a class="thumb" href="osteoporosis/" aria-label="骨粗鬆症の検査・薬・FLS"><img src="osteoporosis/thumb.png" alt="骨粗鬆症の検査・薬・FLS サムネイル" loading="lazy"></a>
+    <div class="body">
+      <h2 class="title"><a href="osteoporosis/">骨粗鬆症の検査・薬・FLS</a></h2>
+      <p class="desc">DXA・YAM・Tスコア、薬の2グループと順序療法、二次骨折を防ぐFLS。</p>
+      <div class="meta"><span class="tag aud-gen">一般向け</span><span class="date">2026-06-12</span></div>
+      <div class="links"><a class="lnk lnk--main" href="osteoporosis/">📊 図を開く</a><a class="lnk" href="osteoporosis/infographic.png" target="_blank" rel="noopener">🖼️ 画像</a><a class="lnk lnk--yt" href="https://youtu.be/bo-S9pGiAhA" target="_blank" rel="noopener">▶ 動画</a><a class="lnk" href="https://blog.ichisouzo-lab.com/entry/2026/06/12/003440" target="_blank" rel="noopener">解説記事</a></div>
+    </div>
+  </article>
+  <article class="card" data-search="坐骨神経痛・足腰のしびれ 馬尾症候群の危険サイン、ヘルニアと脊柱管狭窄症の見分け、受診とMRIの考え方。 一般向け">
+    <a class="thumb" href="sciatica-leg-pain/" aria-label="坐骨神経痛・足腰のしびれ"><img src="sciatica-leg-pain/thumb.png" alt="坐骨神経痛・足腰のしびれ サムネイル" loading="lazy"></a>
+    <div class="body">
+      <h2 class="title"><a href="sciatica-leg-pain/">坐骨神経痛・足腰のしびれ</a></h2>
+      <p class="desc">馬尾症候群の危険サイン、ヘルニアと脊柱管狭窄症の見分け、受診とMRIの考え方。</p>
+      <div class="meta"><span class="tag aud-gen">一般向け</span><span class="date">2026-06-10</span></div>
+      <div class="links"><a class="lnk lnk--main" href="sciatica-leg-pain/">📊 図を開く</a><a class="lnk" href="sciatica-leg-pain/infographic.png" target="_blank" rel="noopener">🖼️ 画像</a><a class="lnk lnk--yt" href="https://youtu.be/mPF3Ti2UF_A" target="_blank" rel="noopener">▶ 動画</a><a class="lnk" href="https://blog.ichisouzo-lab.com/entry/2026/06/10/094015" target="_blank" rel="noopener">解説記事</a></div>
+    </div>
+  </article>
+  <article class="card" data-search="核間性眼筋麻痺（INO）の診かた 古典像・病側の決め方・三大原因・動眼神経麻痺や偽性INOとの鑑別。 医療従事者向け">
+    <a class="thumb" href="internuclear-ophthalmoplegia/" aria-label="核間性眼筋麻痺（INO）の診かた"><img src="internuclear-ophthalmoplegia/thumb.png" alt="核間性眼筋麻痺（INO）の診かた サムネイル" loading="lazy"></a>
+    <div class="body">
+      <h2 class="title"><a href="internuclear-ophthalmoplegia/">核間性眼筋麻痺（INO）の診かた</a></h2>
+      <p class="desc">古典像・病側の決め方・三大原因・動眼神経麻痺や偽性INOとの鑑別。</p>
+      <div class="meta"><span class="tag aud-pro">医療従事者向け</span><span class="date">2026-06-13</span></div>
+      <div class="links"><a class="lnk lnk--main" href="internuclear-ophthalmoplegia/">📊 図を開く</a><a class="lnk" href="internuclear-ophthalmoplegia/infographic.png" target="_blank" rel="noopener">🖼️ 画像</a><a class="lnk lnk--yt" href="https://youtu.be/LZSI5LjNreg" target="_blank" rel="noopener">▶ 動画</a><a class="lnk" href="https://blog.ichisouzo-lab.com/entry/2026/06/13/194741" target="_blank" rel="noopener">解説記事</a></div>
+    </div>
+  </article>
+  <article class="card" data-search="細胞外液補充液（生食 vs リンゲル液） 病態別の第一選択・組成の違い・緩衝剤・Fluid Stewardship。 医療従事者向け">
+    <a class="thumb" href="extracellular-fluid/" aria-label="細胞外液補充液（生食 vs リンゲル液）"><img src="extracellular-fluid/thumb.png" alt="細胞外液補充液（生食 vs リンゲル液） サムネイル" loading="lazy"></a>
+    <div class="body">
+      <h2 class="title"><a href="extracellular-fluid/">細胞外液補充液（生食 vs リンゲル液）</a></h2>
+      <p class="desc">病態別の第一選択・組成の違い・緩衝剤・Fluid Stewardship。</p>
+      <div class="meta"><span class="tag aud-pro">医療従事者向け</span><span class="date">2026-03-29</span></div>
+      <div class="links"><a class="lnk lnk--main" href="extracellular-fluid/">📊 図を開く</a><a class="lnk" href="extracellular-fluid/infographic.png" target="_blank" rel="noopener">🖼️ 画像</a><a class="lnk lnk--yt" href="https://youtu.be/8YX6YaV0uD8" target="_blank" rel="noopener">▶ 動画</a><a class="lnk" href="https://blog.ichisouzo-lab.com/entry/2026/03/29/063210" target="_blank" rel="noopener">解説記事</a></div>
+    </div>
+  </article>
+  </div>
+  <p class="empty" id="empty">該当する図解が見つかりませんでした。</p>
+  <footer>※各図は教育・情報提供を目的とした要約であり、診断・治療を代替しません。｜<a href="https://tools.ichisouzo-lab.com/slides/">スライド資料一覧はこちら</a></footer>
+</div>
+<script>
+function filt(){var q=document.getElementById('q').value.trim().toLowerCase();var n=0;
+  document.querySelectorAll('.card').forEach(function(c){var hit=c.getAttribute('data-search').toLowerCase().indexOf(q)>=0;c.style.display=hit?'':'none';if(hit)n++;});
+  document.getElementById('empty').style.display=n?'none':'block';}
+</script>
+</body>
+</html>
