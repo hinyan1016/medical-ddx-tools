@@ -37,7 +37,46 @@ def load_manifest():
         return json.load(f)
 
 
-def render_viewer(deck: dict, slide_count: int) -> str:
+import re
+
+# 編集用パネル（tweaks）と React/Babel ローダを除去するパターン。
+# 公開ビュアーではスライド送り（deck-stage.js）だけ残し、編集UIは出さない。
+_DEV_PANEL_PATTERNS = [
+    re.compile(r'\s*<div id="tweaks-root"></div>', re.IGNORECASE),
+    re.compile(r'\s*<script[^>]*src="https://unpkg\.com/[^"]*"[^>]*></script>', re.IGNORECASE),
+    re.compile(r'\s*<script[^>]*type="text/babel"[^>]*></script>', re.IGNORECASE),
+]
+
+
+def strip_dev_panel(html: str) -> str:
+    """デッキHTMLから編集用パネル(tweaks)とReact/Babel CDNローダを取り除く。"""
+    for pat in _DEV_PANEL_PATTERNS:
+        html = pat.sub("", html)
+    return html
+
+
+def copy_html_deck(src, dst) -> bool:
+    """source_dir の親フォルダにある <フォルダ名>.html を deck.html として配置し、
+    依存アセット(css/js)も同梱する。配置できたら True。"""
+    deck_dir = src.parent
+    deck_src = deck_dir / f"{deck_dir.name}.html"
+    if not deck_src.exists():
+        cands = [p for p in deck_dir.glob("*.html")
+                 if p.name not in ("index.html",)
+                 and not p.name.endswith("_source.html")]
+        deck_src = cands[0] if cands else None
+    if not deck_src or not deck_src.exists():
+        return False
+    html = strip_dev_panel(deck_src.read_text(encoding="utf-8"))
+    (dst / "deck.html").write_text(html, encoding="utf-8", newline="\n")
+    for asset in ("colors_and_type.css", "deck-stage.js", "image-slot.js"):
+        a = deck_dir / asset
+        if a.exists():
+            shutil.copy2(a, dst / asset)
+    return True
+
+
+def render_viewer(deck: dict, slide_count: int, has_deck: bool = False) -> str:
     template = (TEMPLATE_DIR / "viewer.html").read_text(encoding="utf-8")
 
     cards_html = []
@@ -68,7 +107,7 @@ def render_viewer(deck: dict, slide_count: int) -> str:
         )
 
     html_deck_button = ""
-    if deck.get("html_deck"):
+    if has_deck:
         html_deck_button = (
             '    <a class="btn btn-deck" href="deck.html" target="_blank" rel="noopener">\n'
             '      🖥 インタラクティブ版（HTMLスライド）\n'
@@ -161,11 +200,20 @@ def build_deck(deck: dict, dry_run: bool = False) -> bool:
     # Copy PDF (rename to slides.pdf for stable URL)
     shutil.copy2(pdf_src, dst / "slides.pdf")
 
+    # Copy interactive HTML deck (+ assets) if requested. ボタンは配置成功時のみ出す。
+    has_deck = False
+    if deck.get("html_deck"):
+        has_deck = copy_html_deck(src, dst)
+        if not has_deck:
+            print(f"  [WARN] html_deck=true だが deck HTML が見つからずインタラクティブ版を省略: {slug}",
+                  file=sys.stderr)
+
     # Write viewer
-    viewer_html = render_viewer(deck, slide_count)
+    viewer_html = render_viewer(deck, slide_count, has_deck)
     (dst / "index.html").write_text(viewer_html, encoding="utf-8", newline="\n")
 
-    print(f"  [OK] {slug} ({slide_count}枚 + PDF)")
+    extra = " + deck.html" if has_deck else ""
+    print(f"  [OK] {slug} ({slide_count}枚 + PDF{extra})")
     return True
 
 
