@@ -76,7 +76,8 @@ def copy_html_deck(src, dst) -> bool:
     return True
 
 
-def render_viewer(deck: dict, slide_count: int, has_deck: bool = False) -> str:
+def render_viewer(deck: dict, slide_count: int, has_deck: bool = False,
+                  has_infographic: bool = False) -> str:
     template = (TEMPLATE_DIR / "viewer.html").read_text(encoding="utf-8")
 
     cards_html = []
@@ -114,8 +115,17 @@ def render_viewer(deck: dict, slide_count: int, has_deck: bool = False) -> str:
             '    </a>'
         )
 
+    infographic_button = ""
+    if has_infographic:
+        infographic_button = (
+            '    <a class="btn btn-info" href="infographic.png" target="_blank" rel="noopener">\n'
+            '      🖼 インフォグラフィック（1枚図解）\n'
+            '    </a>'
+        )
+
     replacements = {
         "{{HTML_DECK_BUTTON}}": html_deck_button,
+        "{{INFOGRAPHIC_BUTTON}}": infographic_button,
         "{{TITLE}}": deck["title"],
         "{{SUBTITLE}}": deck.get("subtitle", ""),
         "{{DESCRIPTION}}": deck.get("description", deck["title"]),
@@ -208,8 +218,19 @@ def build_deck(deck: dict, dry_run: bool = False) -> bool:
             print(f"  [WARN] html_deck=true だが deck HTML が見つからずインタラクティブ版を省略: {slug}",
                   file=sys.stderr)
 
+    # Copy infographic (single-image figure) if requested.
+    has_infographic = False
+    if deck.get("infographic"):
+        info_src = src.parent / "infographic.png"
+        if info_src.exists():
+            shutil.copy2(info_src, dst / "infographic.png")
+            has_infographic = True
+        else:
+            print(f"  [WARN] infographic=true だが infographic.png が無い: {slug}",
+                  file=sys.stderr)
+
     # Write viewer
-    viewer_html = render_viewer(deck, slide_count, has_deck)
+    viewer_html = render_viewer(deck, slide_count, has_deck, has_infographic)
     (dst / "index.html").write_text(viewer_html, encoding="utf-8", newline="\n")
 
     extra = " + deck.html" if has_deck else ""
