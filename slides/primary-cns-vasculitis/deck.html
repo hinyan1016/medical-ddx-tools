@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>中枢神経原発血管炎（PACNS / PCNSV）</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* warm accent (tweakable) */
+  --accent: #FF7A59;
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, #ffffff);
+  --accent-line: color-mix(in srgb, var(--accent) 60%, #ffffff);
+  --accent-ink: color-mix(in srgb, var(--accent) 70%, #5a2418);
+
+  /* type scale — multiply all via --type-mult */
+  --type-mult: 1.38;
+  --type-display: calc(96px * var(--type-mult));
+  --type-title:   calc(82px * var(--type-mult));
+  --type-heading: calc(60px * var(--type-mult));
+  --type-subtitle:calc(44px * var(--type-mult));
+  --type-body:    calc(38px * var(--type-mult));
+  --type-small:   calc(30px * var(--type-mult));
+  --type-label:   calc(27px * var(--type-mult));
+  --type-chapter: calc(210px * var(--type-mult));
+  --type-stat:    calc(150px * var(--type-mult));
+
+  --pad-x: 112px;
+  --pad-top: 58px;
+  --pad-bottom: 80px;
+  --gap-title: 24px;
+  --gap-item: 22px;
+
+  --grad-navy: linear-gradient(135deg, #1B3A5C 0%, #2C5AA0 100%);
+}
+
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#0c1622; }
+
+/* ---------- base slide ---------- */
+.slide{
+  box-sizing:border-box;
+  display:flex; flex-direction:column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--font-ja);
+  overflow:hidden;
+  position:relative;
+}
+.slide--navy{ background: var(--grad-navy); color: var(--white); }
+.slide--soft{ background: var(--bg-alt); }
+
+/* eyebrow — shared header marker across content slides */
+.eyebrow{
+  display:flex; align-items:center; gap:16px;
+  font-size: var(--type-label); font-weight:700; color: var(--blue);
+  letter-spacing:.04em;
+}
+.eyebrow::before{
+  content:""; width:18px; height:18px; border-radius:4px;
+  background: var(--accent); flex:none;
+}
+.eyebrow .num{ font-family: var(--font-en); color: var(--accent-ink); }
+
+.s-title{
+  font-size: var(--type-heading); line-height:1.22; color: var(--navy);
+  margin: var(--gap-title) 0 0; font-weight:700; letter-spacing:.01em;
+  text-wrap: pretty;
+}
+.slide--navy .s-title{ color:#fff; }
+
+.lead{
+  font-size: var(--type-body); line-height:1.7; color: var(--ink-2);
+  margin:0; text-wrap: pretty;
+}
+.muted{ color: var(--gray); }
+
+/* footer band w/ channel + page */
+.slide__foot{
+  position:absolute; left: var(--pad-x); right: var(--pad-x); bottom: 40px;
+  display:flex; align-items:center; justify-content:space-between;
+  font-size: calc(24px * var(--type-mult)); color: var(--gray);
+  font-family: var(--font-ja);
+}
+.slide__foot .ch{ display:flex; align-items:center; gap:10px; }
+.slide__foot .cross{ color: var(--accent); font-weight:700; }
+.slide--navy .slide__foot{ color: rgba(255,255,255,.65); }
+.slide--navy .slide__foot .cross{ color:#fff; }
+
+/* ============ COVER ============ */
+.cover{ justify-content:center; }
+.cover__badge{
+  display:inline-flex; align-items:center; gap:14px; align-self:flex-start;
+  background: rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.28);
+  color:#fff; padding:14px 26px; border-radius:999px;
+  font-size: var(--type-label); font-weight:700;
+}
+.cover__badge .cross{ color: var(--accent); font-size:1.2em; }
+.cover__title{
+  font-size: var(--type-display); line-height:1.18; color:#fff; font-weight:700;
+  margin:42px 0 0; letter-spacing:.01em; text-wrap:balance; max-width:24ch;
+}
+.cover__title .hl{ color: var(--accent); }
+.cover__sub{
+  font-size: var(--type-subtitle); color: rgba(255,255,255,.82);
+  margin:34px 0 0; font-weight:400;
+}
+.cover__meta{
+  display:flex; gap:34px; align-items:center; margin-top:60px;
+  font-size: var(--type-small); color: rgba(255,255,255,.78);
+}
+.cover__meta .ep{
+  font-family: var(--font-en); font-weight:700; color:#fff;
+  background: var(--accent); padding:8px 20px; border-radius:8px;
+}
+.cover__blob{
+  position:absolute; right:-160px; top:-160px; width:620px; height:620px;
+  border-radius:50%; background: radial-gradient(circle at 30% 30%, rgba(255,122,89,.5), rgba(255,122,89,0) 70%);
+  pointer-events:none;
+}
+
+/* ============ THEME / CONCLUSION ============ */
+.theme__body{ display:flex; flex-direction:column; gap: var(--gap-title); margin-top: 22px; flex:1; justify-content:center; }
+.theme__q{ font-size: var(--type-heading); line-height:1.25; color: var(--navy); font-weight:700; max-width:30ch; text-wrap:balance; }
+.theme__q .hl{ color: var(--accent-ink); border-bottom: 8px solid var(--accent-line); }
+.concl{
+  display:flex; align-items:flex-start; gap:28px;
+  background: var(--accent-soft); border-left: 12px solid var(--accent);
+  border-radius: 10px; padding: 26px 40px;
+}
+.concl__tag{
+  flex:none; background: var(--accent); color:#fff; font-weight:700;
+  font-size: var(--type-small); padding:10px 22px; border-radius:8px;
+}
+.concl__list{ margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:14px; }
+.concl__list li{ font-size: var(--type-subtitle); line-height:1.4; color: var(--navy-ink); font-weight:700; }
+.concl__list li .n{ color: var(--accent-ink); }
+
+/* ============ AGENDA ============ */
+.agenda__list{ display:flex; flex-direction:column; gap:18px; margin-top:26px; }
+.agenda__item{
+  display:flex; align-items:center; gap:30px;
+  background: var(--white); border:2px solid var(--line); border-left:8px solid var(--blue);
+  border-radius:10px; padding: 18px 40px; box-shadow: var(--shadow-sm);
+}
+.agenda__num{
+  flex:none; width:70px; height:70px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background: var(--blue-soft); color: var(--blue);
+  font-family: var(--font-en); font-size: calc(50px * var(--type-mult)); font-weight:700;
+}
+.agenda__item:nth-child(3) .agenda__num{ background: var(--accent-soft); color: var(--accent-ink); }
+.agenda__txt{ font-size: var(--type-subtitle); color: var(--navy); font-weight:700; }
+.agenda__txt small{ display:block; font-size: var(--type-small); color: var(--gray); font-weight:400; margin-top:6px; }
+
+/* ============ CHAPTER (used as header band on content) ============ */
+.chapter-ghost{
+  position:absolute; top: 30px; right: var(--pad-x);
+  font-family: var(--font-en); font-weight:700; line-height:.8;
+  font-size: calc(150px * var(--type-mult)); color: var(--navy);
+  opacity:.06; pointer-events:none; user-select:none;
+}
+.slide--navy .chapter-ghost{ color:#fff; opacity:.10; }
+
+/* eyebrow english label */
+.eyebrow .en{ font-family: var(--font-en); color: var(--accent-ink); letter-spacing:.15em; text-transform:uppercase; }
+.slide--navy .eyebrow{ color: rgba(255,255,255,.85); }
+.slide--navy .eyebrow .en{ color:#fff; }
+
+.hairline{ height:1px; background: var(--navy); opacity:.25; margin: 16px 0 0; border:0; }
+.slide--navy .hairline{ background:#fff; opacity:.3; }
+.hl-underline{ border-bottom: 6px solid var(--accent-line); }
+
+/* chapter-tag (small chapter marker on content slides) */
+.chapter-tag{
+  display:inline-block; font-family: var(--font-en); font-weight:700;
+  background: var(--navy); color:#fff; font-size: var(--type-label);
+  padding:6px 18px; border-radius:8px; letter-spacing:.06em;
+}
+
+/* ============ BODY 1 COLUMN ============ */
+.body1__main{ margin-top: 22px; max-width: 1680px; display:flex; flex-direction:column; gap:18px; }
+.important-box.lg{
+  background: var(--blue-tint); border-left: 12px solid var(--blue);
+  border-radius: 10px; padding: 22px 40px; margin:0;
+}
+.important-box.lg .ttl{ display:flex; align-items:center; gap:14px; font-size: var(--type-small); font-weight:700; color: var(--blue); margin-bottom:8px; }
+.important-box.lg p{ font-size: var(--type-body); line-height:1.55; color: var(--ink-2); margin:0; }
+.important-box.accent{ background: var(--accent-soft); border-left-color: var(--accent); }
+.important-box.accent .ttl{ color: var(--accent-ink); }
+
+.point-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:14px; }
+.point-list li{ display:flex; align-items:flex-start; gap:20px; font-size: var(--type-body); color: var(--ink-2); line-height:1.45; }
+.point-list li::before{ content:"✓"; flex:none; width:44px; height:44px; border-radius:50%; background: var(--accent-soft); color: var(--accent-ink); font-weight:700; display:flex; align-items:center; justify-content:center; font-size:.8em; margin-top:2px; }
+
+/* ============ COMPARISON TABLE ============ */
+.tablewrap{ margin-top:22px; flex:1; }
+table.cmp{ width:100%; border-collapse:collapse; font-size: var(--type-small); }
+table.cmp th, table.cmp td{ text-align:left; padding:14px 24px; vertical-align:middle; line-height:1.35; }
+table.cmp thead th{ background: var(--navy); color:#fff; font-weight:700; font-size: var(--type-body); }
+table.cmp thead th:first-child{ border-top-left-radius:10px; }
+table.cmp thead th:last-child{ border-top-right-radius:10px; }
+table.cmp tbody td{ border-bottom:1px solid var(--line); color: var(--ink-2); }
+table.cmp tbody tr:nth-child(even){ background: var(--bg-muted); }
+table.cmp tbody td:first-child{ font-weight:700; color: var(--navy); white-space:nowrap; }
+table.cmp .pill{ display:inline-block; font-size: calc(24px * var(--type-mult)); font-weight:700; padding:6px 16px; border-radius:999px; }
+.pill--easy{ background: var(--green-soft); color:#1c7a3a; }
+.pill--mid{ background: var(--accent-soft); color: var(--accent-ink); }
+
+/* ============ STAT HERO ============ */
+.stathero{ justify-content:center; align-items:center; text-align:center; }
+.stathero__num{ font-family: var(--font-en); font-size: var(--type-stat); font-weight:900; color: var(--accent); line-height:.95; }
+.stathero__num .unit{ font-size:.34em; color: var(--navy); font-weight:700; margin-left:.1em; }
+.stathero__msg{ font-size: var(--type-heading); color: var(--navy); font-weight:700; margin:24px 0 0; max-width:24ch; text-wrap:balance; }
+.stathero__sub{ font-size: var(--type-subtitle); color: var(--ink-2); margin:22px 0 0; font-weight:700; }
+.stathero__src{ font-size: var(--type-small); color: var(--gray); margin-top:24px; }
+
+/* ============ Q&A / MYTH ============ */
+.qa{ display:flex; flex-direction:column; gap:28px; margin-top:24px; flex:1; justify-content:center; }
+.qa__row{ display:flex; align-items:flex-start; gap:28px; border-radius:14px; padding:30px 44px; }
+.qa__row.myth{ background: var(--red-soft); border-left:12px solid var(--red); }
+.qa__row.fact{ background: var(--green-soft); border-left:12px solid var(--green); }
+.qa__mark{ flex:none; font-size: var(--type-heading); font-weight:900; line-height:1; }
+.qa__row.myth .qa__mark{ color: var(--red); }
+.qa__row.fact .qa__mark{ color: var(--green); }
+.qa__txt{ font-size: var(--type-subtitle); color: var(--ink-2); font-weight:700; line-height:1.4; margin:0; }
+.qa__txt small{ display:block; font-size: var(--type-small); color: var(--gray); font-weight:400; margin-top:8px; }
+
+/* ============ CHECKLIST ============ */
+.check{ display:flex; flex-direction:column; gap:18px; margin-top:24px; flex:1; justify-content:center; max-width:1600px; }
+.check__item{ display:flex; align-items:center; gap:28px; font-size: var(--type-subtitle); color: var(--ink-2); font-weight:700; }
+.check__box{ flex:none; width:56px; height:56px; border-radius:10px; border:4px solid var(--line-soft); display:flex; align-items:center; justify-content:center; font-size: calc(40px * var(--type-mult)); color:#fff; }
+.check__item.on .check__box{ background: var(--blue); border-color: var(--blue); }
+.check__verdict{ margin-top:12px; background: var(--accent-soft); border-left:12px solid var(--accent); border-radius:10px; padding:22px 40px; font-size: var(--type-body); color: var(--navy); font-weight:700; }
+
+/* ============ IMPORTANT / WARNING BOX (危険な模倣) ============ */
+.warnstack{ display:flex; flex-direction:column; gap:18px; margin-top:22px; flex:1; justify-content:center; }
+.warnrow{ display:flex; align-items:flex-start; gap:24px; border-radius:12px; padding:22px 36px; background: var(--red-soft); border-left:12px solid var(--red); }
+.warnrow .ic{ flex:none; font-size: calc(46px * var(--type-mult)); line-height:1; }
+.warnrow .tt{ font-size: var(--type-subtitle); font-weight:700; color: var(--navy-ink); }
+.warnrow .ds{ font-size: var(--type-small); color: var(--ink-2); margin:6px 0 0; line-height:1.4; }
+
+/* ============ SUMMARY ============ */
+.sum__list{ display:grid; grid-template-columns: repeat(3,1fr); gap:30px; margin-top:30px; flex:1; }
+.sum__card{
+  background:#fff; border:2px solid var(--line); border-top:10px solid var(--blue);
+  border-radius:12px; padding:34px 32px; display:flex; flex-direction:column; gap:18px;
+  box-shadow: var(--shadow-sm);
+}
+.sum__card:nth-child(2){ border-top-color: var(--accent); }
+.sum__n{ font-family: var(--font-en); font-size: calc(56px * var(--type-mult)); font-weight:700; color: var(--blue-soft); line-height:1; }
+.sum__card:nth-child(2) .sum__n{ color: var(--accent-soft); }
+.sum__h{ font-size: var(--type-subtitle); font-weight:700; color: var(--navy); line-height:1.3; }
+.sum__p{ font-size: var(--type-small); color: var(--ink-2); line-height:1.5; margin:0; }
+.sum__brand{ text-align:center; margin-top:24px; font-size: var(--type-small); color: var(--gray); }
+.sum__brand .cross{ color: var(--accent); font-weight:700; }
+.sum__disc{ text-align:center; margin-top:10px; font-size: calc(24px * var(--type-mult)); color: var(--gray); }
+
+/* ============ SVG DIAGRAMS ============ */
+.diag{ margin-top:24px; flex:1; display:flex; align-items:center; justify-content:center; }
+.diag__svg{ width:100%; height:100%; max-height:740px; }
+.diag__svg text{ font-family: var(--font-ja); }
+
+/* entrance animation */
+@media (prefers-reduced-motion:no-preference){
+  [data-deck-active] .anim{ animation: fade-up .5s both; }
+  [data-deck-active] .anim2{ animation: fade-up .5s .12s both; }
+  [data-deck-active] .anim3{ animation: fade-up .5s .24s both; }
+}
+@keyframes fade-up{ from{ opacity:0; transform: translateY(16px);} to{ opacity:1; transform:none;} }
+
+/* tweaks mount */
+#tweaks-root{ position:fixed; inset:0; pointer-events:none; z-index:9999; }
+#tweaks-root > *{ pointer-events:auto; }
+</style>
+</head>
+<body style="font-size: 8px">
+
+<deck-stage width="1920" height="1080">
+
+  <!-- ===== 1. 表紙 (cover) ===== -->
+  <section data-label="表紙" data-screen-label="01 表紙" class="slide slide--navy cover">
+    <div class="cover__blob"></div>
+    <div class="cover__badge anim"><span class="cross">✚</span><span>医知創造ラボ</span></div>
+    <h1 class="cover__title anim2">中枢神経<span class="hl">原発血管炎</span><br>（PACNS / PCNSV）</h1>
+    <p class="cover__sub anim3">画像だけで決めない 診断・鑑別・治療【ESO2023 / Rice 2026】</p>
+    <div class="cover__meta anim3">
+      <span class="ep">NEURO</span>
+      <span>医療従事者向け</span>
+    </div>
+  </section>
+
+  <!-- ===== 2. テーマ・結論先出し ===== -->
+  <section data-label="テーマ・結論" data-screen-label="02 テーマ・結論" class="slide">
+    <div class="eyebrow anim">今日のテーマ<span class="en">TODAY'S POINT</span></div>
+    <div class="theme__body">
+      <h2 class="theme__q anim">稀だが治療可能。<br>でも<span class="hl">画像だけ</span>では決まらない？</h2>
+      <div class="concl anim2">
+        <span class="concl__tag">結論</span>
+        <ul class="concl__list">
+          <li><span class="n">①</span> 画像だけで決めない<br>（DSA陽性≠確定・陰性≠除外）</li>
+          <li><span class="n">②</span> 免疫抑制の前にRCVS・感染・腫瘍を除外</li>
+          <li><span class="n">③</span> 稀だが治療可能（維持は少なくとも2年）</li>
+        </ul>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>02</span></div>
+  </section>
+
+  <!-- ===== 3. 目次 (agenda) ===== -->
+  <section data-label="目次" data-screen-label="03 目次" class="slide slide--soft">
+    <div class="eyebrow anim">本日の5つの問い<span class="en">AGENDA</span></div>
+    <h2 class="s-title anim">PACNSを<span class="hl-underline">5つの問い</span>で整理する</h2>
+    <div class="agenda__list">
+      <div class="agenda__item anim"><div class="agenda__num">1</div><div class="agenda__txt">PACNSとは・どう分類するか</div></div>
+      <div class="agenda__item anim"><div class="agenda__num">2</div><div class="agenda__txt">どんな臨床像で疑うか</div></div>
+      <div class="agenda__item anim2"><div class="agenda__num">3</div><div class="agenda__txt">何を"除外"するか（最重要）</div></div>
+      <div class="agenda__item anim2"><div class="agenda__num">4</div><div class="agenda__txt">どう診断を確定するか</div></div>
+      <div class="agenda__item anim3"><div class="agenda__num">5</div><div class="agenda__txt">どう治療し、予後はどうか</div></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>03</span></div>
+  </section>
+
+  <!-- ===== 4. 章① 扉 ===== -->
+  <section data-label="章①扉" data-screen-label="04 章①扉" class="slide slide--navy cover">
+    <div class="cover__blob"></div>
+    <div class="eyebrow anim"><span class="en">CHAPTER 01</span></div>
+    <h2 class="cover__title anim2" style="font-size:var(--type-title); max-width:22ch;">① PACNSとは・<br>どう分類するか</h2>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>04</span></div>
+  </section>
+
+  <!-- ===== 5. 概念（一次 vs 二次） ===== -->
+  <section data-label="概念" data-screen-label="05 概念" class="slide">
+    <div class="chapter-ghost">01</div>
+    <div class="eyebrow anim">概念と前提<span class="en">SECTION 01 — CONCEPT</span></div>
+    <h2 class="s-title anim">脳・脊髄・髄膜の血管壁に<br><span class="hl-underline">限局する炎症</span></h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <p class="lead anim2">まず<strong>一次性 vs 二次性</strong>を分ける。二次性を一つずつ外して初めて一次性（PACNS）と診断できます。</p>
+      <div class="important-box lg anim3">
+        <div class="ttl">📋 二次性として外すべきもの</div>
+        <p>全身性血管炎・膠原病／感染（VZV・結核・梅毒・HIV・真菌）／感染性心内膜炎／薬剤（コカイン等）／腫瘍。<strong>一次性＝他に原因がないこと</strong>。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>05</span></div>
+  </section>
+
+  <!-- ===== 6. 分類の3軸（比較表） ===== -->
+  <section data-label="分類3軸" data-screen-label="06 分類3軸" class="slide slide--soft">
+    <div class="chapter-ghost">01</div>
+    <div class="eyebrow anim">分類<span class="en">CLASSIFICATION</span></div>
+    <h2 class="s-title anim">分類の<span class="hl-underline">3軸</span>で捉える</h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2">
+      <table class="cmp">
+        <thead>
+          <tr><th>軸</th><th>内容</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>血管径</td><td>大／中血管型＝DSAで見えやすい（angiography-positive）／小血管型＝DSA陰性でも生検陽性になりやすい</td></tr>
+          <tr><td>病理</td><td>肉芽腫性58％・リンパ球性28％・壊死性14％（肉芽腫の一部はβA4沈着＝ABRA）</td></tr>
+          <tr><td>特殊型</td><td>ABRA・腫瘤様・片側再発</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="important-box accent lg anim3" style="margin-top:20px;">
+      <div class="ttl">⚠️ 注意</div>
+      <p>病理型だけで治療を変えない（ESO2023）。</p>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>06</span></div>
+  </section>
+
+  <!-- ===== 7. 疫学（数値ヒーロー） ===== -->
+  <section data-label="疫学" data-screen-label="07 疫学" class="slide stathero">
+    <div class="chapter-ghost">01</div>
+    <div class="eyebrow anim"><span class="en">EPIDEMIOLOGY</span></div>
+    <div class="stathero__num anim2">2.4<span class="unit">/100万人・年</span></div>
+    <p class="stathero__msg anim2">年間発症率は約2.4／100万人・年と<span class="hl-underline">稀</span></p>
+    <p class="stathero__sub anim3">発症年齢中央値は約50歳（Mayoは48歳）／性差は一定しない</p>
+    <p class="stathero__src anim3">どの年齢でも起こりうる</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>07</span></div>
+  </section>
+
+  <!-- ===== 8. 章② 扉 ===== -->
+  <section data-label="章②扉" data-screen-label="08 章②扉" class="slide slide--navy cover">
+    <div class="cover__blob"></div>
+    <div class="eyebrow anim"><span class="en">CHAPTER 02</span></div>
+    <h2 class="cover__title anim2" style="font-size:var(--type-title); max-width:22ch;">② どんな臨床像で<br>疑うか</h2>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>08</span></div>
+  </section>
+
+  <!-- ===== 9. 臨床像 ===== -->
+  <section data-label="臨床像" data-screen-label="09 臨床像" class="slide">
+    <div class="chapter-ghost">02</div>
+    <div class="eyebrow anim">臨床像<span class="en">SECTION 02 — PRESENTATION</span></div>
+    <h2 class="s-title anim">典型症状は<span class="hl-underline">ない</span></h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <ul class="point-list anim2">
+        <li>頭痛・認知機能低下が背景に多い</li>
+        <li>脳卒中（局所神経脱落）・失語・片麻痺・視覚障害・けいれん</li>
+        <li>これらが多彩に組み合わさる</li>
+        <li>経過は急性〜慢性、再発寛解もとる</li>
+      </ul>
+      <div class="important-box accent lg anim3">
+        <div class="ttl">📋 ここがポイント</div>
+        <p>「片麻痺だけ」「頭痛だけ」では捉えられない。<br>多彩さと経過の幅で疑う。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>09</span></div>
+  </section>
+
+  <!-- ===== 10. MRIの4パターン（チェックリスト） ===== -->
+  <section data-label="MRI4パターン" data-screen-label="10 MRI4パターン" class="slide slide--soft">
+    <div class="chapter-ghost">02</div>
+    <div class="eyebrow anim">画像所見<span class="en">MRI PATTERNS</span></div>
+    <h2 class="s-title anim">MRIの<span class="hl-underline">4パターン</span></h2>
+    <hr class="hairline">
+    <div class="check">
+      <div class="check__item on anim"><div class="check__box">✓</div>多発虚血病変（新旧混在DWI）</div>
+      <div class="check__item on anim"><div class="check__box">✓</div>非特異的白質病変（T2／FLAIR・約1／3で髄膜増強）</div>
+      <div class="check__item on anim2"><div class="check__box">✓</div>造影病変・髄膜増強（点状／線状／結節状）</div>
+      <div class="check__item on anim2"><div class="check__box">✓</div>出血性病変（SWI微小出血）</div>
+      <div class="check__verdict anim3">生検陽性56例：SWI出血96.4％・造影病変96.3％・dot-linear 87％（小血管型のヒント）</div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>10</span></div>
+  </section>
+
+  <!-- ===== 11. 章③ 扉 ===== -->
+  <section data-label="章③扉" data-screen-label="11 章③扉" class="slide slide--navy cover">
+    <div class="cover__blob"></div>
+    <div class="eyebrow anim"><span class="en">CHAPTER 03</span></div>
+    <h2 class="cover__title anim2" style="font-size:var(--type-title); max-width:22ch;">③ 何を<span class="hl">"除外"</span>するか<br>（最重要）</h2>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>11</span></div>
+  </section>
+
+  <!-- ===== 12. 最重要鑑別＝RCVS（Q&A） ===== -->
+  <section data-label="RCVS" data-screen-label="12 RCVS" class="slide">
+    <div class="chapter-ghost">03</div>
+    <div class="eyebrow anim">最重要鑑別<span class="en">RCVS</span></div>
+    <h2 class="s-title anim">最重要鑑別は<span class="hl-underline">RCVS</span></h2>
+    <hr class="hairline">
+    <div class="qa">
+      <div class="qa__row myth anim"><div class="qa__mark">RCVS</div><p class="qa__txt">雷鳴頭痛・女性優位・産後／血管作動薬<small>数週〜3ヶ月で可逆。髄液は概ね正常。</small></p></div>
+      <div class="qa__row fact anim2"><div class="qa__mark">PACNS</div><p class="qa__txt">持続性病変／髄液異常が出やすい<small>注：HRVWI単独で診断しない（ESO2023）。</small></p></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>12</span></div>
+  </section>
+
+  <!-- ===== 13. 危険な模倣＝感染・腫瘍 ===== -->
+  <section data-label="危険な模倣" data-screen-label="13 危険な模倣" class="slide slide--soft">
+    <div class="chapter-ghost">03</div>
+    <div class="eyebrow anim">危険な模倣<span class="en">DANGEROUS MIMICS</span></div>
+    <h2 class="s-title anim">免疫抑制の前に<span class="hl-underline">外す</span></h2>
+    <hr class="hairline">
+    <div class="warnstack">
+      <div class="warnrow anim"><div class="ic">🫀</div><div><div class="tt">感染性心内膜炎</div><p class="ds">血液培養＋心エコーを省くと誤る。</p></div></div>
+      <div class="warnrow anim2"><div class="ic">🦠</div><div><div class="tt">VZV vasculopathy・他の感染</div><p class="ds">皮疹なしでも起こる（CSF VZV IgG index／PCR）。<br>結核・梅毒・HIV・真菌も意識。</p></div></div>
+      <div class="warnrow anim3"><div class="ic">🧠</div><div><div class="tt">腫瘤様型</div><p class="ds">gliomaやリンパ腫と誤認しうる。だからこそ生検の意義が高い。</p></div></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>13</span></div>
+  </section>
+
+  <!-- ===== 14. 鑑別比較表 ===== -->
+  <section data-label="鑑別比較表" data-screen-label="14 鑑別比較表" class="slide">
+    <div class="chapter-ghost">03</div>
+    <div class="eyebrow anim">鑑別の整理<span class="en">DIFFERENTIAL</span></div>
+    <h2 class="s-title anim">主要鑑別の<span class="hl-underline">早見表</span></h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2">
+      <table class="cmp">
+        <thead>
+          <tr><th>疾患</th><th>手掛かり</th><th>髄液</th><th>決め手</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>RCVS</td><td>雷鳴頭痛・可逆</td><td>正常</td><td>数週〜3ヶ月で改善・<br>免疫抑制不要</td></tr>
+          <tr><td>感染性心内膜炎</td><td>心雑音・塞栓</td><td>非特異</td><td>血培・経食道心エコー</td></tr>
+          <tr><td>CAA関連／ABRA</td><td>高齢・認知変動・微小出血</td><td>軽度炎症</td><td>生検でAβ</td></tr>
+          <tr><td>中枢神経リンパ腫</td><td>亜急性・腫瘤効果</td><td>細胞診</td><td>生検</td></tr>
+          <tr><td>Susac</td><td>網膜分枝閉塞・難聴・脳梁病変</td><td>軽度</td><td>脳梁中心病変</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>14</span></div>
+  </section>
+
+  <!-- ===== 15. 章④＋検査の読み方 ===== -->
+  <section data-label="検査の読み方" data-screen-label="15 検査の読み方" class="slide">
+    <div class="chapter-ghost">04</div>
+    <div class="eyebrow anim"><span class="chapter-tag">CHAPTER 04</span><span class="en"> — 診断を確定する</span></div>
+    <h2 class="s-title anim">検査の<span class="hl-underline">読み方</span></h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2">
+      <table class="cmp">
+        <thead>
+          <tr><th>検査</th><th>読み方</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>MRI</td><td>90％超で異常だが非特異的</td></tr>
+          <tr><td>髄液</td><td>80〜90％異常だが除外目的（正常でも否定不可）</td></tr>
+          <tr><td>DSA</td><td>beadingは感度特異度に限界。陽性≠確定・陰性≠除外</td></tr>
+          <tr><td>HRVWI</td><td>同心円状壁造影は補助的（標準化不十分）</td></tr>
+          <tr><td>生検</td><td>確定の基準。陽性率約63％（感度50〜70％）。<br>skip lesionで陰性でも除外不可。MRI異常／造影／髄膜増強をターゲットに皮質＋軟膜を採る</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>15</span></div>
+  </section>
+
+  <!-- ===== 16. 診断基準の変遷＋アルゴリズム（判断フロー） ===== -->
+  <section data-label="診断基準とアルゴリズム" data-screen-label="16 診断基準とアルゴリズム" class="slide slide--soft">
+    <div class="chapter-ghost">04</div>
+    <div class="eyebrow anim">診断基準の変遷<span class="en">CRITERIA & ALGORITHM</span></div>
+    <h2 class="s-title anim">基準の<span class="hl-underline">変遷</span>と実践</h2>
+    <hr class="hairline">
+    <div class="diag anim2">
+      <svg class="diag__svg" viewBox="0 0 1280 560" preserveAspectRatio="xMidYMid meet">
+        <!-- timeline of criteria -->
+        <rect x="20" y="60" width="380" height="130" rx="14" fill="var(--navy)"/>
+        <text x="210" y="112" fill="#fff" font-size="28" text-anchor="middle">Calabrese &amp; Mallek</text>
+        <text x="210" y="154" fill="#fff" font-size="28" text-anchor="middle">1988（古典）</text>
+        <rect x="450" y="60" width="380" height="130" rx="14" fill="var(--blue)"/>
+        <text x="640" y="112" fill="#fff" font-size="28" text-anchor="middle">Birnbaum &amp; Hellmann</text>
+        <text x="640" y="154" fill="#fff" font-size="26" text-anchor="middle">2009 definite / probable</text>
+        <rect x="880" y="60" width="380" height="130" rx="14" fill="var(--accent)"/>
+        <text x="1070" y="112" fill="#fff" font-size="28" text-anchor="middle">Rice &amp; Scolding</text>
+        <text x="1070" y="154" fill="#fff" font-size="26" text-anchor="middle">definite=組織 / possible</text>
+        <!-- caution -->
+        <text x="640" y="252" fill="var(--accent-ink)" font-size="32" text-anchor="middle" font-weight="700">安易にdefiniteと読まない</text>
+        <!-- practice 3 points -->
+        <rect x="120" y="300" width="1040" height="220" rx="16" fill="#fff" stroke="var(--blue)" stroke-width="4"/>
+        <text x="640" y="352" fill="var(--navy)" font-size="34" text-anchor="middle" font-weight="700">実践3点（ESO2023）</text>
+        <text x="640" y="412" fill="var(--ink-2)" font-size="32" text-anchor="middle">① 感染除外を先に</text>
+        <text x="640" y="460" fill="var(--ink-2)" font-size="32" text-anchor="middle">② MRA正常でもDSA</text>
+        <text x="640" y="508" fill="var(--ink-2)" font-size="32" text-anchor="middle">③ 小血管型は生検へ</text>
+      </svg>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>16</span></div>
+  </section>
+
+  <!-- ===== 17. 章⑤ 治療 ===== -->
+  <section data-label="治療" data-screen-label="17 治療" class="slide">
+    <div class="chapter-ghost">05</div>
+    <div class="eyebrow anim"><span class="chapter-tag">CHAPTER 05</span><span class="en"> — 治療と予後</span></div>
+    <h2 class="s-title anim">治療は<span class="hl-underline">導入→維持</span></h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <ul class="point-list anim2">
+        <li>導入：mPSL 1g×3日 → PSL 1mg/kg（±cyclophosphamide／MMF）</li>
+        <li>感染が否定できないうちは免疫抑制を急がない</li>
+        <li>維持：AZA／MTX／MMFで少なくとも2年</li>
+        <li>難治・再発：rituximab</li>
+      </ul>
+      <div class="important-box accent lg anim3">
+        <div class="ttl">📊 反応・再発</div>
+        <p>良好反応：PSL単独85％／併用80％。再発27％。<br><strong>PSL単独は再発が多い</strong>。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>17</span></div>
+  </section>
+
+  <!-- ===== 18. まとめ＋エンディング ===== -->
+  <section data-label="まとめ" data-screen-label="18 まとめ" class="slide">
+    <div class="chapter-ghost">18</div>
+    <div class="eyebrow anim">まとめ<span class="en">SUMMARY</span></div>
+    <h2 class="s-title anim">3つの<span class="hl-underline">キーメッセージ</span></h2>
+    <hr class="hairline">
+    <div class="sum__list">
+      <div class="sum__card anim"><div class="sum__n">01</div><div class="sum__h">画像だけで決めない</div><p class="sum__p">DSA陽性≠確定・陰性≠除外。HRVWI単独でも診断しない。</p></div>
+      <div class="sum__card anim2"><div class="sum__n">02</div><div class="sum__h">先にRCVS・感染・腫瘍を除外</div><p class="sum__p">免疫抑制の前に、感染性心内膜炎やVZVを必ず外す。</p></div>
+      <div class="sum__card anim3"><div class="sum__n">03</div><div class="sum__h">稀だが治療可能</div><p class="sum__p">導入後の維持は少なくとも2年。難治・再発はrituximab。</p></div>
+    </div>
+    <p class="sum__brand anim3"><span class="cross">✚</span> 医知創造ラボ</p>
+    <p class="sum__disc">本スライドは医療従事者向けの情報提供であり、個々の診療判断に代わるものではありません。</p>
+  </section>
+
+</deck-stage>
+
+<script src="deck-stage.js"></script>
+<script src="image-slot.js"></script>
+
+</body>
+</html>
