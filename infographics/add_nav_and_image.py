@@ -41,7 +41,10 @@ def process(item: dict, do_png: bool):
         print("  png:", slug, "OK" if out.exists() else "FAIL", (r.stderr or "").strip()[:100])
     s = f.read_text(encoding="utf-8")
     # body を縦並び中央寄せに（旧版で未変更なら）
-    s = s.replace("display:flex;justify-content:center;", "display:flex;flex-direction:column;align-items:center;")
+    # 末尾セミコロンの有無どちらにも対応（HTMLデッキ版は `...center}` で `;` が無く、
+    # 旧 .replace() では置換漏れ→bodyが横並びflexのまま、ナビと本体がモバイルで左右に潰れる不具合があった）
+    s = re.sub(r"display:flex;\s*justify-content:center;?",
+               "display:flex;flex-direction:column;align-items:center;", s)
     # 既存ナビ（旧版含む）を除去してから新ナビを挿入（冪等・差し替え可能）
     s = re.sub(r"\n?<nav data-ig-nav[^>]*>.*?</nav>", "", s, flags=re.S)
     s = re.sub(r"(<body[^>]*>)", r"\1\n" + build_nav(yid, "0", "12px"), s, count=1)
