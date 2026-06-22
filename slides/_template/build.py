@@ -77,7 +77,8 @@ def copy_html_deck(src, dst) -> bool:
 
 
 def render_viewer(deck: dict, slide_count: int, has_deck: bool = False,
-                  has_infographic: bool = False) -> str:
+                  has_infographic: bool = False,
+                  has_infographic_html: bool = False) -> str:
     template = (TEMPLATE_DIR / "viewer.html").read_text(encoding="utf-8")
 
     cards_html = []
@@ -117,8 +118,10 @@ def render_viewer(deck: dict, slide_count: int, has_deck: bool = False,
 
     infographic_button = ""
     if has_infographic:
+        # HTML版があればそちらへ（画像ではなくWebページの図解）。無ければPNG。
+        info_href = "infographic.html" if has_infographic_html else "infographic.png"
         infographic_button = (
-            '    <a class="btn btn-info" href="infographic.png" target="_blank" rel="noopener">\n'
+            f'    <a class="btn btn-info" href="{info_href}" target="_blank" rel="noopener">\n'
             '      🖼 インフォグラフィック（1枚図解）\n'
             '    </a>'
         )
@@ -220,6 +223,7 @@ def build_deck(deck: dict, dry_run: bool = False) -> bool:
 
     # Copy infographic (single-image figure) if requested.
     has_infographic = False
+    has_infographic_html = False
     if deck.get("infographic"):
         info_src = src.parent / "infographic.png"
         if info_src.exists():
@@ -228,9 +232,15 @@ def build_deck(deck: dict, dry_run: bool = False) -> bool:
         else:
             print(f"  [WARN] infographic=true だが infographic.png が無い: {slug}",
                   file=sys.stderr)
+        # HTML版インフォグラフィック（あれば同梱しボタンをそちらへ向ける）
+        info_html = src.parent / "infographic.html"
+        if info_html.exists():
+            shutil.copy2(info_html, dst / "infographic.html")
+            has_infographic_html = True
 
     # Write viewer
-    viewer_html = render_viewer(deck, slide_count, has_deck, has_infographic)
+    viewer_html = render_viewer(deck, slide_count, has_deck, has_infographic,
+                                has_infographic_html)
     (dst / "index.html").write_text(viewer_html, encoding="utf-8", newline="\n")
 
     extra = " + deck.html" if has_deck else ""
