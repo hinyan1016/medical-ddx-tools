@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1B3A5C">
+<meta name="robots" content="index,follow">
+<title>サプリとの上手な付き合い方 インフォグラフィック｜効果・害・7つのルール ― 医知創造ラボ</title>
+<meta name="description" content="サプリメントは医薬品ではなく食品。保健機能食品の3分類（トクホ・栄養機能食品・機能性表示食品）の違い、健康な人の予防効果は乏しい（USPSTF・VITAL）、β-カロテンで肺がん（CARET）・ビタミンEで前立腺がん（SELECT）の事実、薬との飲み合わせ、賢く付き合う7つのルールを1ページに整理。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1B3A5C; --navy-ink:#122438; --blue:#2C5AA0; --blue-soft:#E8F2FB;
+    --accent:#FF7A59; --accent-soft:#FDEEE9;
+    --green:#2C6E49; --green-soft:#E7F6EC;
+    --red:#C0392B; --red-soft:#FDECEA;
+    --amber:#7a5000; --amber-soft:#fef3cd; --amber-border:#f0c040;
+    --ink:#22323f; --ink2:#3c4d5a; --line:#dce4ea; --paper:#f4f7fa;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    background:#eef2f6;
+    font-family:"BIZ UDPGothic","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo","Noto Sans JP","Segoe UI",sans-serif;
+    color:var(--ink);
+    padding:16px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  /* ───── グローバルナビ ───── */
+  #ics-globalnav{background:#15324E;font-family:"Yu Gothic","游ゴシック","Segoe UI",sans-serif;font-size:14px;line-height:1.4;width:100%;}
+  #ics-globalnav>div{max-width:1040px;margin:0 auto;padding:9px 16px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
+  #ics-globalnav a.brand{color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;}
+  #ics-globalnav a.nav-item{color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;}
+
+  /* ───── ページナビ ───── */
+  .ig-nav{width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;}
+  .ig-nav a{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:clamp(12px,1.8vw,14px);padding:9px 15px;border-radius:8px;}
+  .ig-nav .btn-list{background:var(--navy);color:#fff;}
+  .ig-nav .btn-yt{background:var(--red);color:#fff;}
+  .ig-nav .btn-png{background:#fff;color:var(--navy);border:1px solid #cfdae6;}
+
+  /* ───── インフォグラフィック外枠 ───── */
+  .ig{width:100%;max-width:1080px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 6px 24px rgba(18,36,56,.12);}
+
+  /* ───── ヘッダー ───── */
+  .hd{
+    background:linear-gradient(135deg,var(--navy-ink) 0%,var(--navy) 50%,var(--blue) 100%);
+    color:#fff;
+    padding:clamp(22px,4.2vw,56px) clamp(20px,4.5vw,64px) clamp(20px,3.6vw,50px);
+    position:relative;overflow:hidden;
+  }
+  .hd::after{content:"";position:absolute;right:-90px;top:-90px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle at 30% 30%,rgba(255,122,89,.5),transparent 62%);}
+  .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);padding:6px 18px;border-radius:999px;font-size:clamp(13px,1.9vw,23px);font-weight:700;position:relative;z-index:2;}
+  .badge .x{color:var(--accent);}
+  .hd h1{font-size:clamp(22px,4.4vw,52px);line-height:1.22;margin-top:14px;font-weight:700;position:relative;z-index:2;}
+  .hd h1 .hl{color:var(--accent);}
+  .hd .sub{font-size:clamp(13px,2.3vw,25px);margin-top:11px;opacity:.9;font-weight:400;line-height:1.5;position:relative;z-index:2;}
+
+  /* ───── セクション共通 ───── */
+  .sec{padding:clamp(20px,3.4vw,48px) clamp(18px,4.5vw,64px) 0;}
+  .sec:last-of-type{padding-bottom:clamp(20px,3vw,48px);}
+  .sec-h{display:flex;align-items:center;gap:clamp(10px,1.6vw,16px);font-size:clamp(17px,2.8vw,32px);font-weight:700;color:var(--navy);margin-bottom:clamp(12px,2vw,20px);}
+  .sec-n{flex:none;width:clamp(36px,5vw,52px);height:clamp(36px,5vw,52px);border-radius:clamp(8px,1.2vw,14px);background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:clamp(18px,2.6vw,28px);font-weight:700;}
+
+  /* ───── ① 3分類 ───── */
+  .classif{display:flex;flex-direction:column;gap:clamp(8px,1.4vw,12px);}
+  .classif-row{border:2px solid var(--line);border-radius:clamp(8px,1.4vw,14px);overflow:hidden;}
+  .classif-hd{display:flex;align-items:center;gap:clamp(8px,1.4vw,14px);padding:clamp(10px,1.6vw,14px) clamp(14px,2vw,22px);font-size:clamp(14px,2.3vw,25px);font-weight:700;color:#fff;}
+  .classif-row.tokho .classif-hd{background:linear-gradient(135deg,var(--navy),var(--blue));}
+  .classif-row.eiyou .classif-hd{background:linear-gradient(135deg,#2C6E49,#4C956C);}
+  .classif-row.kinou .classif-hd{background:linear-gradient(135deg,#6B3A3A,#A0502C);}
+  .classif-tag{font-size:clamp(11px,1.5vw,18px);padding:3px clamp(8px,1.2vw,12px);border-radius:999px;background:rgba(255,255,255,.25);font-weight:700;margin-left:auto;white-space:nowrap;}
+  .classif-bd{padding:clamp(10px,1.6vw,12px) clamp(14px,2vw,22px) clamp(12px,1.8vw,16px);background:var(--paper);font-size:clamp(13px,2vw,22px);line-height:1.6;color:var(--ink2);}
+  .classif-bd b{color:var(--navy);}
+  .classif-bd .warn{color:var(--red);font-weight:700;}
+
+  /* ───── ② エビデンス ───── */
+  .evidence{display:flex;gap:clamp(8px,1.4vw,16px);}
+  .ev-card{flex:1;border:2px solid var(--line);border-radius:clamp(8px,1.4vw,14px);overflow:hidden;}
+  .ev-hd{padding:clamp(10px,1.5vw,13px) clamp(14px,2vw,20px);font-size:clamp(13px,1.9vw,22px);font-weight:700;color:#fff;background:linear-gradient(135deg,#1A5276,var(--blue));}
+  .ev-body{padding:clamp(10px,1.6vw,14px) clamp(14px,2vw,20px);font-size:clamp(13px,1.9vw,21px);line-height:1.55;color:var(--ink2);background:var(--paper);}
+  .ev-body b{color:var(--navy);}
+  .ev-body .ng{color:var(--red);font-weight:700;}
+
+  /* ───── ③ 害 ───── */
+  .harm{display:flex;flex-direction:column;gap:clamp(8px,1.4vw,14px);}
+  .harm-row{border:2px solid var(--line);border-radius:clamp(8px,1.4vw,14px);display:flex;overflow:hidden;align-items:stretch;}
+  .harm-icon{flex:none;width:clamp(50px,6.5vw,72px);display:flex;align-items:center;justify-content:center;font-size:clamp(22px,3.2vw,34px);background:var(--paper);}
+  .harm-main{flex:1;padding:clamp(10px,1.6vw,14px) clamp(14px,2vw,20px);}
+  .harm-t{font-size:clamp(14px,2.2vw,24px);font-weight:700;color:var(--navy);margin-bottom:4px;}
+  .harm-d{font-size:clamp(12px,1.8vw,21px);line-height:1.55;color:var(--ink2);}
+  .harm-d b{color:var(--navy);}
+  .harm-d .rd{color:var(--red);font-weight:700;}
+  .harm-label{display:inline-block;background:var(--accent);color:#fff;font-size:clamp(10px,1.4vw,17px);font-weight:700;padding:2px clamp(6px,1vw,10px);border-radius:999px;margin-right:6px;}
+  .noji-box{margin-top:clamp(10px,1.6vw,14px);background:var(--amber-soft);border:2px solid var(--amber-border);border-radius:clamp(8px,1.2vw,12px);padding:clamp(12px,1.8vw,16px) clamp(14px,2vw,22px);font-size:clamp(13px,1.9vw,22px);line-height:1.6;color:var(--ink);}
+  .noji-box b{color:var(--amber);}
+
+  /* ───── ④ 役立つ場面 ───── */
+  .useful{display:flex;gap:clamp(8px,1.4vw,16px);}
+  .use-card{flex:1;border:2px solid var(--line);border-radius:clamp(8px,1.4vw,14px);overflow:hidden;}
+  .use-hd{padding:clamp(10px,1.5vw,13px) clamp(14px,2vw,20px);font-size:clamp(13px,1.9vw,22px);font-weight:700;color:#fff;background:linear-gradient(135deg,var(--green),#4C956C);}
+  .use-body{padding:clamp(10px,1.6vw,14px) clamp(14px,2vw,20px);font-size:clamp(13px,1.9vw,21px);line-height:1.55;color:var(--ink2);background:var(--paper);}
+  .use-body b{color:var(--navy);}
+  .use-note{margin-top:clamp(10px,1.6vw,12px);background:var(--green-soft);border:2px solid #b5d9bb;border-radius:clamp(6px,1vw,10px);padding:clamp(10px,1.6vw,14px) clamp(14px,2vw,20px);font-size:clamp(13px,1.9vw,21px);line-height:1.55;color:var(--ink2);}
+  .use-note b{color:var(--green);}
+
+  /* ───── ⑤ 7つのルール ───── */
+  .rules{display:grid;grid-template-columns:1fr 1fr;gap:clamp(8px,1.4vw,12px);}
+  .rule{border:2px solid var(--line);border-radius:clamp(8px,1.2vw,12px);padding:clamp(12px,1.8vw,16px) clamp(14px,2vw,18px);display:flex;align-items:flex-start;gap:clamp(10px,1.4vw,14px);background:var(--paper);}
+  .rule.full{grid-column:1 / -1;}
+  .rule-n{flex:none;width:clamp(28px,3.8vw,38px);height:clamp(28px,3.8vw,38px);border-radius:clamp(6px,1vw,10px);background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:clamp(14px,2vw,20px);font-weight:700;}
+  .rule-t{font-size:clamp(14px,2.1vw,22px);font-weight:700;color:var(--navy);line-height:1.3;}
+  .rule-d{font-size:clamp(12px,1.7vw,19px);color:var(--ink2);margin-top:4px;line-height:1.45;}
+
+  /* ───── フッター ───── */
+  .ft{background:var(--paper);border-top:2px solid var(--line);padding:clamp(14px,2.2vw,26px) clamp(18px,4vw,64px);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-top:clamp(20px,3vw,48px);}
+  .ft .src{font-size:clamp(11px,1.5vw,15px);color:#67788c;line-height:1.5;}
+  .ft .logo{font-size:clamp(15px,2vw,22px);font-weight:700;color:var(--navy);white-space:nowrap;}
+  .ft .logo .x{color:var(--accent);}
+  .disc{font-size:clamp(10px,1.4vw,14px);color:#8090a0;padding:clamp(10px,1.5vw,16px) clamp(18px,4vw,64px) clamp(16px,2.4vw,28px);line-height:1.5;}
+  .disc a{color:var(--blue);}
+
+  /* ───── レスポンシブ ───── */
+  @media(max-width:720px){
+    .evidence{flex-direction:column;}
+    .useful{flex-direction:column;}
+    .rules{grid-template-columns:1fr;}
+    .rule.full{grid-column:auto;}
+  }
+  @media(max-width:480px){
+    .harm-icon{width:44px;font-size:20px;}
+  }
+</style>
+</head>
+<body>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="https://youtu.be/k9VoBCnRZVQ" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#C0392B;color:#fff;">▶ 解説動画（YouTube）</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+
+<!-- グローバルナビ -->
+<nav id="ics-globalnav">
+  <div>
+    <a class="brand" href="https://ichisouzo-lab.com/">医知創造ラボ</a>
+    <a class="nav-item" href="https://ichisouzo-lab.com/">ホーム</a>
+    <a class="nav-item" href="https://blog.ichisouzo-lab.com/">ブログ</a>
+    <a class="nav-item" href="https://tools.ichisouzo-lab.com/">ツール</a>
+    <a class="nav-item" href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ">YouTube</a>
+  </div>
+</nav>
+
+<!-- ページナビ（上） -->
+
+<!-- インフォグラフィック本体 -->
+<div class="ig">
+
+  <!-- ヘッダー -->
+  <div class="hd">
+    <span class="badge"><span class="x">✚</span>神経内科医がやさしく整理</span>
+    <h1><span class="hl">サプリメント</span>との上手な付き合い方</h1>
+    <p class="sub">食品・効果・害・役立つ場面・7つのルール ― 飲む前に知っておきたいこと</p>
+  </div>
+
+  <!-- ① サプリは「食品」 -->
+  <div class="sec">
+    <div class="sec-h">
+      <span class="sec-n">1</span>サプリは「食品」― 保健機能食品の3分類
+    </div>
+    <div class="classif">
+      <div class="classif-row tokho">
+        <div class="classif-hd">🏅 特定保健用食品（トクホ）<span class="classif-tag">1991年〜</span></div>
+        <div class="classif-bd"><b>国が個別に審査・許可。</b>製品ごとにヒト試験で機能性・安全性を確認。3分類で最も審査が厳しい。</div>
+      </div>
+      <div class="classif-row eiyou">
+        <div class="classif-hd">🌿 栄養機能食品<span class="classif-tag">2001年〜</span></div>
+        <div class="classif-bd">規格基準型で届出不要。<b>ビタミン・ミネラル等20成分</b>が対象。国が定めた基準を満たせば表示可能。</div>
+      </div>
+      <div class="classif-row kinou">
+        <div class="classif-hd">📋 機能性表示食品<span class="classif-tag">2015年〜</span></div>
+        <div class="classif-bd"><span class="warn">国の審査なし・事業者の届出制。</span>関与成分の<b>文献調査が主な根拠</b>（製品自体のヒト試験は必須でない）。「国のお墨付き」ではない。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ② 健康な人の予防効果は乏しい -->
+  <div class="sec">
+    <div class="sec-h">
+      <span class="sec-n">2</span>健康な人の予防効果は「意外と乏しい」
+    </div>
+    <div class="evidence">
+      <div class="ev-card">
+        <div class="ev-hd">📋 USPSTF 2022（米国予防医学タスクフォース）</div>
+        <div class="ev-body"><b>β-カロテン・ビタミンEは推奨しない</b>（Dグレード＝害が利益を上回る）。<br>マルチビタミンは証拠が不十分で<span class="ng">「効く」とも「効かない」とも言い切れない</span>。</div>
+      </div>
+      <div class="ev-card">
+        <div class="ev-hd">📋 VITAL試験（25,871人）</div>
+        <div class="ev-body">ビタミンD（2000 IU/日）も<b>がん・心血管イベントともに有意差なし。</b><br>魚油（オメガ3, 1g/日）も主要心血管イベントを有意には減らさず。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ 害 -->
+  <div class="sec">
+    <div class="sec-h">
+      <span class="sec-n">3</span>サプリで「害」が出ることがある
+    </div>
+    <div class="harm">
+      <div class="harm-row">
+        <div class="harm-icon">⚠️</div>
+        <div class="harm-main">
+          <div class="harm-t">過剰摂取リスク（脂溶性ビタミン）</div>
+          <div class="harm-d">ビタミン<b>A・D・E・K</b>は体に蓄積しやすく、過剰摂取で害が出やすい。水溶性ビタミンは比較的尿に出るが、脂溶性は要注意。</div>
+        </div>
+      </div>
+      <div class="harm-row">
+        <div class="harm-icon">🚬</div>
+        <div class="harm-main">
+          <div class="harm-t">β-カロテンで肺がん増加（CARET試験）</div>
+          <div class="harm-d"><span class="harm-label">研究</span>喫煙者・アスベスト曝露者が対象。<b>肺がんの過剰発生のため予定より21か月早く中止。</b>心血管死も増加傾向（相対リスク 1.26）。「天然成分＝安全」とは限らない。</div>
+        </div>
+      </div>
+      <div class="harm-row">
+        <div class="harm-icon">🩺</div>
+        <div class="harm-main">
+          <div class="harm-t">ビタミンEで前立腺がん増加（SELECT試験）</div>
+          <div class="harm-d"><span class="harm-label">研究</span>健康な男性35,533人。ビタミンE（400 IU/日）群で<b class="rd">前立腺がんリスクが有意に上昇</b>（ハザード比 1.17）。抗酸化＝体に良いとは限らない典型例。</div>
+        </div>
+      </div>
+      <div class="harm-row">
+        <div class="harm-icon">🍵</div>
+        <div class="harm-main">
+          <div class="harm-t">肝障害 ― 緑茶抽出物・ガルシニア</div>
+          <div class="harm-d">緑茶抽出物（EGCG）の高用量で肝細胞性の肝障害の報告（USP系統的レビュー）。<br>ダイエット系サプリ「ガルシニア」では<b>22例中1例死亡・1例肝移植・91%入院</b>（DILIN）。</div>
+        </div>
+      </div>
+      <div class="harm-row">
+        <div class="harm-icon">💊</div>
+        <div class="harm-main">
+          <div class="harm-t">薬との飲み合わせ</div>
+          <div class="harm-d">ワルファリン（抗凝固薬）×<b>ビタミンK・納豆・青汁・クロレラ</b>は効果を弱める。<br><b>セントジョーンズワート</b>（セイヨウオトギリソウ）は多くの薬の血中濃度を下げる。</div>
+        </div>
+      </div>
+    </div>
+    <div class="noji-box">🔴 <b>2024年 紅麹サプリ</b>：腎障害等の健康被害が社会問題化。これを受け2024年9月1日施行で健康被害情報の報告義務化・GMPの要件化など制度が改正された。</div>
+  </div>
+
+  <!-- ④ 役立つ場面 -->
+  <div class="sec">
+    <div class="sec-h">
+      <span class="sec-n">4</span>サプリが「役立つ場面」もある
+    </div>
+    <div class="useful">
+      <div class="use-card">
+        <div class="use-hd">✅ 欠乏の補正</div>
+        <div class="use-body">食事で摂れていない栄養素を<b>補充する目的</b>ではサプリが有益な場合がある。検査で欠乏が確認されているときは主治医と相談を。</div>
+      </div>
+      <div class="use-card">
+        <div class="use-hd">✅ 妊娠初期の葉酸</div>
+        <div class="use-body"><b>神経管閉鎖障害の予防</b>に有益と確認されているサプリの代表例。妊娠を希望する女性・妊娠初期に推奨されている。</div>
+      </div>
+    </div>
+    <div class="use-note">⚠️ <b>大前提：</b>サプリは食事の代わりにはならない。健康で食べられている人の「万能予防薬」ではなく、<b>目的を絞った補助</b>として考える。</div>
+  </div>
+
+  <!-- ⑤ 賢い7つのルール -->
+  <div class="sec">
+    <div class="sec-h">
+      <span class="sec-n">5</span>賢く付き合う 7つのルール
+    </div>
+    <div class="rules">
+      <div class="rule">
+        <span class="rule-n">1</span>
+        <div>
+          <div class="rule-t">「何のために」を決める</div>
+          <div class="rule-d">目的が言えないサプリは一度見直す</div>
+        </div>
+      </div>
+      <div class="rule">
+        <span class="rule-n">2</span>
+        <div>
+          <div class="rule-t">主治医・薬剤師に伝える</div>
+          <div class="rule-d">お薬手帳に書く。飲み合わせチェック</div>
+        </div>
+      </div>
+      <div class="rule">
+        <span class="rule-n">3</span>
+        <div>
+          <div class="rule-t">成分名と「1日量」を見る</div>
+          <div class="rule-d">複数サプリで成分が重複しないか確認</div>
+        </div>
+      </div>
+      <div class="rule">
+        <span class="rule-n">4</span>
+        <div>
+          <div class="rule-t">過剰摂取を避ける</div>
+          <div class="rule-d">特に脂溶性ビタミン（A・D・E・K）</div>
+        </div>
+      </div>
+      <div class="rule">
+        <span class="rule-n">5</span>
+        <div>
+          <div class="rule-t">体調変化で中止して受診</div>
+          <div class="rule-d">だるさ・黄疸・尿の色・発疹など肝障害サインに注意</div>
+        </div>
+      </div>
+      <div class="rule">
+        <span class="rule-n">6</span>
+        <div>
+          <div class="rule-t">目安はトクホ／GMPマーク</div>
+          <div class="rule-d">「機能性表示食品＝国のお墨付き」ではないと知る</div>
+        </div>
+      </div>
+      <div class="rule full">
+        <span class="rule-n">7</span>
+        <div>
+          <div class="rule-t">手術・出産・持病があるときは必ず申告</div>
+          <div class="rule-d">手術前は中止が必要なサプリもある。持病・妊娠中・服薬中の対応は主治医・薬剤師に相談</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- フッター -->
+  <div class="ft">
+    <div class="src">監修：今村久司（神経内科専門医指導医・医学博士）｜消費者庁・USPSTF・VITAL・SELECT・CARET・DILIN等に基づく一般向け要約</div>
+    <div class="logo"><span class="x">✚</span> 医知創造ラボ</div>
+  </div>
+  <p class="disc">※本図は一般向けの教育・情報提供であり、診断・治療を目的とした医療行為ではありません。サプリの中止や変更は主治医・薬剤師にご相談ください。<br>解説記事：<a href="https://blog.ichisouzo-lab.com/">サプリとの上手な付き合い方 ― 医知創造ラボ</a></p>
+</div>
+
+<!-- ページナビ（下） -->
+
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px auto 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="https://youtu.be/k9VoBCnRZVQ" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#C0392B;color:#fff;">▶ 解説動画（YouTube）</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+</body>
+</html>
