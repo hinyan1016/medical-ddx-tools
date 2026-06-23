@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>グルコサミンとアルツハイマー — 医知創造ラボ</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* warm accent (tweakable) */
+  --accent: #FF7A59;
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, #ffffff);
+  --accent-line: color-mix(in srgb, var(--accent) 60%, #ffffff);
+  --accent-ink: color-mix(in srgb, var(--accent) 70%, #5a2418);
+
+  /* type scale — multiply all via --type-mult (base enlarged for mobile readability) */
+  --type-mult: 1.38;
+  --type-display: calc(96px * var(--type-mult));
+  --type-title:   calc(82px * var(--type-mult));
+  --type-heading: calc(60px * var(--type-mult));
+  --type-subtitle:calc(44px * var(--type-mult));
+  --type-body:    calc(38px * var(--type-mult));
+  --type-small:   calc(30px * var(--type-mult));
+  --type-label:   calc(27px * var(--type-mult));
+  --type-chapter: calc(210px * var(--type-mult));
+  --type-stat:    calc(150px * var(--type-mult));
+
+  --pad-x: 112px;
+  --pad-top: 58px;
+  --pad-bottom: 80px;
+  --gap-title: 24px;
+  --gap-item: 22px;
+
+  --grad-navy: linear-gradient(135deg, #1B3A5C 0%, #2C5AA0 100%);
+}
+
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#0c1622; }
+
+/* ---------- base slide ---------- */
+.slide{
+  box-sizing:border-box;
+  display:flex; flex-direction:column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--font-ja);
+  overflow:hidden;
+  position:relative;
+}
+.slide--navy{ background: var(--grad-navy); color: var(--white); }
+.slide--soft{ background: var(--bg-alt); }
+
+/* eyebrow — shared header marker across content slides */
+.eyebrow{
+  display:flex; align-items:center; gap:16px;
+  font-size: var(--type-label); font-weight:700; color: var(--blue);
+  letter-spacing:.04em;
+}
+.eyebrow::before{
+  content:""; width:18px; height:18px; border-radius:4px;
+  background: var(--accent); flex:none;
+}
+.eyebrow .num{ font-family: var(--font-en); color: var(--accent-ink); }
+
+.s-title{
+  font-size: var(--type-heading); line-height:1.22; color: var(--navy);
+  margin: var(--gap-title) 0 0; font-weight:700; letter-spacing:.01em;
+  text-wrap: pretty;
+}
+.slide--navy .s-title{ color:#fff; }
+
+.lead{
+  font-size: var(--type-body); line-height:1.7; color: var(--ink-2);
+  margin:0; text-wrap: pretty;
+}
+.muted{ color: var(--gray); }
+
+/* footer band w/ channel + page (decorative, consistent) */
+.slide__foot{
+  position:absolute; left: var(--pad-x); right: var(--pad-x); bottom: 40px;
+  display:flex; align-items:center; justify-content:space-between;
+  font-size: calc(24px * var(--type-mult)); color: var(--gray);
+  font-family: var(--font-ja);
+}
+.slide__foot .ch{ display:flex; align-items:center; gap:10px; }
+.slide__foot .cross{ color: var(--accent); font-weight:700; }
+.slide--navy .slide__foot{ color: rgba(255,255,255,.65); }
+.slide--navy .slide__foot .cross{ color:#fff; }
+
+/* ============ 1. COVER ============ */
+.cover{ justify-content:center; }
+.cover__badge{
+  display:inline-flex; align-items:center; gap:14px; align-self:flex-start;
+  background: rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.28);
+  color:#fff; padding:14px 26px; border-radius:999px;
+  font-size: var(--type-label); font-weight:700;
+}
+.cover__badge .cross{ color: var(--accent); font-size:1.2em; }
+.cover__title{
+  font-size: var(--type-display); line-height:1.18; color:#fff; font-weight:700;
+  margin:42px 0 0; letter-spacing:.01em; text-wrap:balance; max-width:24ch;
+}
+.cover__title .hl{ color: var(--accent); }
+.cover__sub{
+  font-size: var(--type-subtitle); color: rgba(255,255,255,.82);
+  margin:34px 0 0; font-weight:400;
+}
+.cover__meta{
+  display:flex; gap:34px; align-items:center; margin-top:60px;
+  font-size: var(--type-small); color: rgba(255,255,255,.78);
+}
+.cover__meta .ep{
+  font-family: var(--font-en); font-weight:700; color:#fff;
+  background: var(--accent); padding:8px 20px; border-radius:8px;
+}
+.cover__blob{
+  position:absolute; right:-160px; top:-160px; width:620px; height:620px;
+  border-radius:50%; background: radial-gradient(circle at 30% 30%, rgba(255,122,89,.5), rgba(255,122,89,0) 70%);
+  pointer-events:none;
+}
+
+/* ============ 2. THEME / CONCLUSION FIRST ============ */
+.theme__body{ display:flex; flex-direction:column; gap: var(--gap-title); margin-top: 28px; flex:1; justify-content:center; }
+.theme__q{ font-size: var(--type-title); line-height:1.25; color: var(--navy); font-weight:700; max-width:22ch; text-wrap:balance; }
+.theme__q .hl{ color: var(--accent-ink); border-bottom: 8px solid var(--accent-line); }
+.concl{
+  display:flex; align-items:flex-start; gap:28px;
+  background: var(--accent-soft); border-left: 12px solid var(--accent);
+  border-radius: 10px; padding: 32px 44px;
+}
+.concl__tag{
+  flex:none; background: var(--accent); color:#fff; font-weight:700;
+  font-size: var(--type-small); padding:10px 22px; border-radius:8px;
+}
+.concl__text{ font-size: var(--type-subtitle); line-height:1.5; color: var(--navy-ink); font-weight:700; margin:0; }
+
+/* ============ 3. AGENDA ============ */
+.agenda__list{ display:flex; flex-direction:column; gap:9px; margin-top:14px; }
+.agenda__item{
+  display:flex; align-items:center; gap:24px;
+  background: var(--white); border:2px solid var(--line); border-left:8px solid var(--blue);
+  border-radius:10px; padding: 8px 34px; box-shadow: var(--shadow-sm);
+}
+.agenda__num{
+  flex:none; width:54px; height:54px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background: var(--blue-soft); color: var(--blue);
+  font-family: var(--font-en); font-size: calc(40px * var(--type-mult)); font-weight:700;
+}
+.agenda__item:nth-child(2) .agenda__num{ background: var(--accent-soft); color: var(--accent-ink); }
+.agenda__txt{ font-size: calc(40px * var(--type-mult)); color: var(--navy); font-weight:700; line-height:1.2; }
+.agenda__txt small{ display:block; font-size: var(--type-small); color: var(--gray); font-weight:400; margin-top:4px; }
+
+/* ============ 4. CHAPTER DIVIDER ============ */
+.chapter{ justify-content:center; }
+.chapter__num{
+  font-family: var(--font-en); font-size: var(--type-chapter); line-height:.9;
+  font-weight:700; color: var(--accent); margin:0;
+}
+.chapter__kicker{ font-size: var(--type-subtitle); color: rgba(255,255,255,.75); font-weight:700; letter-spacing:.1em; }
+.chapter__title{ font-size: var(--type-title); color:#fff; font-weight:700; margin:18px 0 0; max-width:20ch; text-wrap:balance; }
+.chapter__rule{ width:120px; height:8px; background: var(--accent); border-radius:4px; margin-top:40px; }
+
+/* ============ 5. BODY 1 COLUMN ============ */
+.body1__main{ margin-top: 26px; max-width: 1640px; }
+.body1 .lead{ margin-bottom: 20px; }
+.important-box.lg{
+  background: var(--blue-tint); border-left: 12px solid var(--blue);
+  border-radius: 10px; padding: 26px 40px; margin:0;
+}
+.important-box.lg .ttl{ display:flex; align-items:center; gap:14px; font-size: var(--type-small); font-weight:700; color: var(--blue); margin-bottom:8px; }
+.important-box.lg p{ font-size: var(--type-body); line-height:1.6; color: var(--ink-2); margin:0; }
+/* warning variant — 病態依存・注意喚起（黄） */
+.important-box.lg.warn{ background:#fdf6e3; border-left-color: var(--yellow); }
+.important-box.lg.warn .ttl{ color:#a9791b; }
+
+/* ============ 7. BODY MECHANISM DIAGRAM (糖鎖の材料 模式) ============ */
+.diagram{ margin-top:30px; flex:1; display:flex; flex-direction:column; }
+.vessels{ display:grid; grid-template-columns:1fr auto 1fr; gap:50px; align-items:center; flex:1; }
+.vessel-card{ display:flex; flex-direction:column; align-items:center; gap:28px; }
+.vessel{ position:relative; width:340px; height:340px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+.vessel--normal{ background: #d9e6f5; box-shadow: inset 0 0 0 6px var(--blue); }
+.vessel--hbp{ background: #f3d6cf; box-shadow: inset 0 0 0 6px var(--accent); }
+.vessel-card .v-label{ font-size: var(--type-subtitle); font-weight:700; color: var(--navy); }
+.vessel-card .v-sub{ font-size: var(--type-small); color: var(--gray); text-align:center; line-height:1.5; margin-top:-12px; }
+.diagram__arrow{ font-family: var(--font-en); font-size: calc(90px * var(--type-mult)); color: var(--gray-2); font-weight:300; }
+.diagram__cap{ margin-top:30px; text-align:center; font-size: var(--type-small); color: var(--gray); }
+.diagram__cap .em{ color: var(--accent-ink); font-weight:700; }
+/* 糖鎖の「丸が連なる飾り」抽象模式 */
+.glyco{ display:flex; align-items:center; gap:12px; justify-content:center; }
+.glyco .bead{ width:46px; height:46px; border-radius:50%; flex:none; }
+.glyco--mat .bead{ background: var(--blue); }
+.glyco--chain .bead{ background: var(--accent); }
+.glyco .link{ width:30px; height:8px; border-radius:4px; background: var(--gray-2); flex:none; }
+
+/* 糖鎖の材料フロー（3段：部品 → 連なって糖鎖 → タンパク質に付く） */
+.matflow{ display:grid; grid-template-columns:1fr auto 1fr auto 1fr; align-items:center; column-gap:16px; row-gap:22px; flex:1; margin-top:30px; }
+.matflow__viz{ height:230px; border-radius:22px; display:flex; align-items:center; justify-content:center; }
+.matflow__viz.mv1{ background:#dde9f7; box-shadow: inset 0 0 0 5px var(--blue); }
+.matflow__viz.mv2{ background:#f7ddd4; box-shadow: inset 0 0 0 5px var(--accent); }
+.matflow__viz.mv3{ background:#e3f0e4; box-shadow: inset 0 0 0 5px var(--green); }
+.matflow__arrow{ font-family: var(--font-en); font-size: calc(64px * var(--type-mult)); color: var(--gray-2); font-weight:300; text-align:center; }
+.matflow__cap{ text-align:center; }
+.matflow__cap .l{ display:block; font-size: var(--type-subtitle); font-weight:700; color: var(--navy); }
+.matflow__cap .s{ display:block; font-size: var(--type-small); color: var(--gray); line-height:1.5; margin-top:8px; }
+.bead-solo{ width:92px; height:92px; border-radius:50%; background: var(--blue); }
+.protein{ display:flex; flex-direction:column; align-items:center; gap:0; }
+.protein__chain{ display:flex; align-items:center; gap:8px; }
+.protein__chain .b{ width:34px; height:34px; border-radius:50%; background: var(--accent); }
+.protein__chain .lk{ width:16px; height:6px; border-radius:3px; background: var(--gray-2); }
+.protein__stem{ width:8px; height:18px; background: var(--gray-2); }
+.protein__body{ background:#c4d0dd; color: var(--navy); font-weight:700; font-size: var(--type-small); padding:24px 50px; border-radius:46px/34px; }
+
+/* ============ 13. STAT HERO ============ */
+.stathero{ justify-content:center; align-items:center; text-align:center; }
+.stathero__num{ font-family: var(--font-en); font-size: var(--type-stat); font-weight:900; color: var(--accent); line-height:.95; }
+.stathero__num .unit{ font-size:.4em; color: var(--navy); font-weight:700; margin-left:.1em; }
+.stathero__msg{ font-size: var(--type-heading); color: var(--navy); font-weight:700; margin:24px 0 0; max-width:24ch; text-wrap:balance; }
+.stathero__sub{ font-size: var(--type-subtitle); color: var(--ink-2); font-weight:700; margin:18px 0 0; }
+.stathero__src{ font-size: var(--type-small); color: var(--gray); margin-top:24px; }
+
+/* ============ 16. TRIAGE 3-TIER ============ */
+.triage{ display:flex; flex-direction:column; gap:10px; margin-top:14px; }
+.triage__row{ display:flex; align-items:center; gap:24px; border-radius:12px; padding:10px 32px; }
+.triage__row .ic{ flex:none; font-size: calc(44px * var(--type-mult)); line-height:1; }
+.triage__row .tt{ font-size: calc(38px * var(--type-mult)); font-weight:700; }
+.triage__row .ds{ font-size: var(--type-small); color: var(--ink-2); margin:2px 0 0; line-height:1.35; }
+.triage--er{ background:#fdf0f1; border-left:14px solid var(--red); }
+.triage--er .tt{ color: var(--red); }
+.triage--soon{ background: var(--orange-soft); border-left:14px solid var(--orange); }
+.triage--soon .tt{ color: var(--orange); }
+.triage--watch{ background: var(--green-soft); border-left:14px solid var(--green); }
+.triage--watch .tt{ color:#1c7a3a; }
+.triage--info{ background: var(--blue-tint); border-left:14px solid var(--blue); }
+.triage--info .tt{ color: var(--blue); }
+
+/* ============ 20. BEFORE / AFTER (マウス実験) ============ */
+.ba{ display:flex; align-items:stretch; gap:32px; margin-top:30px; flex:1; }
+.ba__col{ flex:1; border-radius:16px; padding:40px 38px; display:flex; flex-direction:column; gap:18px; }
+.ba__col.before{ background: var(--green-soft); border:3px solid var(--green); }
+.ba__col.after{ background: #fdf0f1; border:3px solid var(--red); }
+.ba__tag{ align-self:flex-start; font-size: var(--type-small); font-weight:700; letter-spacing:.06em; padding:8px 22px; border-radius:8px; }
+.ba__col.before .ba__tag{ background: var(--green); color:#fff; }
+.ba__col.after .ba__tag{ background: var(--red); color:#fff; }
+.ba__h{ font-size: var(--type-subtitle); font-weight:700; margin:0; line-height:1.3; }
+.ba__col.before .ba__h{ color:#1c7a3a; }
+.ba__col.after .ba__h{ color: var(--red); }
+.ba__txt{ font-size: var(--type-body); color: var(--ink-2); line-height:1.5; font-weight:700; margin:0; }
+
+/* ============ 11. SUMMARY ============ */
+.sum__list{ display:grid; grid-template-columns: repeat(3,1fr); gap:32px; margin-top:36px; flex:1; }
+.sum__card{
+  background:#fff; border:2px solid var(--line); border-top:10px solid var(--blue);
+  border-radius:12px; padding:38px 34px; display:flex; flex-direction:column; gap:20px;
+  box-shadow: var(--shadow-sm);
+}
+.sum__card:nth-child(2){ border-top-color: var(--accent); }
+.sum__n{ font-family: var(--font-en); font-size: calc(60px * var(--type-mult)); font-weight:700; color: var(--blue-soft); line-height:1; }
+.sum__card:nth-child(2) .sum__n{ color: var(--accent-soft); }
+.sum__h{ font-size: var(--type-subtitle); font-weight:700; color: var(--navy); line-height:1.3; }
+.sum__p{ font-size: var(--type-small); color: var(--ink-2); line-height:1.6; margin:0; }
+.sum__cta{ margin-top:30px; text-align:center; font-size: var(--type-body); color: var(--navy); font-weight:700; }
+.sum__cta .cross{ color: var(--accent); }
+.sum__cta b{ color: var(--accent-ink); }
+
+/* ============ 24. TREND LINE (Braak推移・SVG) ============ */
+.trend{ margin-top:30px; flex:1; display:flex; flex-direction:column; min-height:0; overflow:hidden; }
+.trend__svg{ width:100%; flex:1; min-height:0; max-height:480px; }
+.trend__cap{ margin-top:14px; font-size: var(--type-small); color: var(--gray); text-align:center; flex:none; }
+
+/* editorial polish */
+.eyebrow .en{ font-family: var(--font-en); color: var(--accent-ink); letter-spacing:.15em; text-transform:uppercase; }
+.slide--navy .eyebrow{ color: rgba(255,255,255,.85); }
+.slide--navy .eyebrow .en{ color:#fff; }
+.hairline{ height:1px; background: var(--navy); opacity:.25; margin: 18px 0 0; border:0; }
+.slide--navy .hairline{ background:#fff; opacity:.3; }
+.chapter-ghost{
+  position:absolute; top: 30px; right: var(--pad-x);
+  font-family: var(--font-en); font-weight:700; line-height:.8;
+  font-size: calc(150px * var(--type-mult)); color: var(--navy);
+  opacity:.06; pointer-events:none; user-select:none;
+}
+.slide--navy .chapter-ghost{ color:#fff; opacity:.10; }
+.hl-underline{ border-bottom: 6px solid var(--accent-line); }
+
+/* entrance animation — fade-up を上位互換で拡張 */
+@media (prefers-reduced-motion:no-preference){
+  [data-deck-active] .anim{ animation: fade-up .5s both; }
+  [data-deck-active] .anim2{ animation: fade-up .5s .12s both; }
+  [data-deck-active] .anim3{ animation: fade-up .5s .24s both; }
+  [data-deck-active] .anim4{ animation: fade-up .5s .36s both; }
+  [data-deck-active] .anim5{ animation: fade-up .5s .48s both; }
+  [data-deck-active] .anim6{ animation: fade-up .5s .60s both; }
+  [data-deck-active] .anim-i{ animation: fade-up .5s both; animation-delay: calc(var(--i,0) * .1s); }
+  [data-deck-active] .a-fade { animation-name: a-fade; }
+  [data-deck-active] .a-up   { animation-name: fade-up; }
+  [data-deck-active] .a-down { animation-name: a-down; }
+  [data-deck-active] .a-right{ animation-name: a-right; }
+  [data-deck-active] .a-left { animation-name: a-left; }
+  [data-deck-active] .a-zoom { animation-name: a-zoom; }
+  [data-deck-active] .a-pop  { animation-name: a-pop; animation-timing-function: cubic-bezier(.34,1.56,.64,1); }
+  [data-deck-active] .a-blur { animation-name: a-blur; }
+  [data-deck-active] .grow-y { transform-origin:bottom center; animation: grow-y .7s .2s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .grow-x { transform-origin:left center;   animation: grow-x .55s .25s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .nudge-x{ animation: nudge-x .9s .35s ease-in-out both; }
+}
+.grow-y{ transform-origin:bottom center; } .grow-x{ transform-origin:left center; }
+@keyframes fade-up{ from{ opacity:0; transform: translateY(16px);} to{ opacity:1; transform:none;} }
+@keyframes a-fade { from{ opacity:0; } to{ opacity:1; } }
+@keyframes a-down { from{ opacity:0; transform: translateY(-16px);} to{ opacity:1; transform:none; } }
+@keyframes a-right{ from{ opacity:0; transform: translateX(-28px);} to{ opacity:1; transform:none; } }
+@keyframes a-left { from{ opacity:0; transform: translateX(28px); } to{ opacity:1; transform:none; } }
+@keyframes a-zoom { from{ opacity:0; transform: scale(.94);       } to{ opacity:1; transform:none; } }
+@keyframes a-pop  { from{ opacity:0; transform: scale(.8);        } to{ opacity:1; transform:none; } }
+@keyframes a-blur { from{ opacity:0; filter: blur(12px); transform: translateY(10px);} to{ opacity:1; filter: blur(0); transform:none; } }
+@keyframes grow-y { from{ transform: scaleY(0);} to{ transform: scaleY(1);} }
+@keyframes grow-x { from{ transform: scaleX(0);} to{ transform: scaleX(1);} }
+@keyframes nudge-x{ 0%{ transform:none;} 55%{ transform: translateX(10px);} 100%{ transform:none;} }
+
+/* tweaks mount */
+#tweaks-root{ position:fixed; inset:0; pointer-events:none; z-index:9999; }
+#tweaks-root > *{ pointer-events:auto; }
+</style>
+</head>
+<body style="font-size: 8px">
+
+<deck-stage width="1920" height="1080">
+
+  <!-- ===== 1. 表紙 ===== -->
+  <section data-label="表紙" data-screen-label="01 表紙" class="slide slide--navy cover">
+    <div class="cover__blob"></div>
+    <div class="cover__badge anim"><span class="cross">✚</span><span>医知創造ラボ</span></div>
+    <h1 class="cover__title anim2 a-blur">関節サプリ「<span class="hl">グルコサミン</span>」と<br>アルツハイマー病の新しい話</h1>
+    <p class="cover__sub anim3">飲んでいる人が知っておきたい「気をつけたい人」</p>
+    <div class="cover__meta anim3">
+      <span class="ep">健康のはなし</span>
+      <span>監修：今村久司</span>
+      <span>所要 約9分</span>
+    </div>
+  </section>
+
+  <!-- ===== 2. テーマ・結論先出し ===== -->
+  <section data-label="テーマ・結論" data-screen-label="02 テーマ・結論" class="slide">
+    <div class="eyebrow anim">今日のテーマ<span class="en">TODAY'S POINT</span></div>
+    <div class="theme__body">
+      <h2 class="theme__q anim">身近な関節サプリが、<br>もしかして<span class="hl">脳の話</span>に？</h2>
+      <div class="concl anim2" data-cue="認知症や前段階のある人">
+        <span class="concl__tag">結論</span>
+        <p class="concl__text">新しい研究で、<strong>認知症やその前段階のある人</strong>では<br>進行・死亡リスク上昇と<strong>「関連」</strong>が示されました。<br>ただし健常な人への影響は示されておらず、心配なら主治医に相談を。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>02</span></div>
+  </section>
+
+  <!-- ===== 3. 目次（5つの疑問） ===== -->
+  <section data-label="目次" data-screen-label="03 目次" class="slide slide--soft">
+    <div class="eyebrow anim">この動画でわかること<span class="en">AGENDA</span></div>
+    <h2 class="s-title anim" style="margin-top:14px">5つの疑問で、<span class="hl-underline">すっきり理解</span></h2>
+    <div class="agenda__list">
+      <div class="agenda__item anim a-right"><div class="agenda__num">1</div><div class="agenda__txt">グルコサミンって何？<small>なぜ関節サプリが脳の話に出てくるの？</small></div></div>
+      <div class="agenda__item anim2 a-right"><div class="agenda__num">2</div><div class="agenda__txt">アルツハイマーの脳で何が？<small>糖の飾りが「付きすぎ」ていた</small></div></div>
+      <div class="agenda__item anim3 a-right"><div class="agenda__num">3</div><div class="agenda__txt">それは原因？結果？<small>マウスが出したヒント</small></div></div>
+      <div class="agenda__item anim4 a-right"><div class="agenda__num">4</div><div class="agenda__txt">人間のデータは？<small>5万人のカルテが示したこと</small></div></div>
+      <div class="agenda__item anim5 a-right"><div class="agenda__num">5</div><div class="agenda__txt">で、私はどうすれば？<small>怖がらず、心配なら相談</small></div></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>03</span></div>
+  </section>
+
+  <!-- ===== 4. 章扉① ===== -->
+  <section data-label="章扉1" data-screen-label="04 章扉1" class="slide slide--navy chapter">
+    <div class="cover__blob"></div>
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num anim a-pop">01</h2>
+    <h3 class="chapter__title anim2">そもそも<span class="hl-underline">グルコサミン</span>って何？</h3>
+    <div class="chapter__rule anim3 grow-x"></div>
+  </section>
+
+  <!-- ===== 5. グルコサミン＝糖鎖の材料 図解 ===== -->
+  <section data-label="図解_糖鎖の材料" data-screen-label="05 図解" class="slide slide--soft">
+    <div class="eyebrow anim">体の仕組み<span class="en">MECHANISM</span></div>
+    <h2 class="s-title anim" style="margin-bottom:0">グルコサミンは、体の中では<span class="hl-underline">「糖の飾り」の材料</span></h2>
+    <hr class="hairline">
+    <div class="diagram">
+      <div class="matflow">
+        <div class="matflow__viz mv1 anim2"><div class="bead-solo"></div></div>
+        <div class="matflow__arrow anim2">➜</div>
+        <div class="matflow__viz mv2 anim3"><div class="glyco glyco--chain"><span class="bead"></span><span class="link"></span><span class="bead"></span><span class="link"></span><span class="bead"></span><span class="link"></span><span class="bead"></span></div></div>
+        <div class="matflow__arrow anim3">➜</div>
+        <div class="matflow__viz mv3 anim4"><div class="protein"><div class="protein__chain"><span class="b"></span><span class="lk"></span><span class="b"></span><span class="lk"></span><span class="b"></span></div><div class="protein__stem"></div><div class="protein__body">タンパク質</div></div></div>
+
+        <div class="matflow__cap anim2"><span class="l">グルコサミン</span><span class="s">関節サプリの成分。<br>糖の「部品」1個</span></div>
+        <div></div>
+        <div class="matflow__cap anim3"><span class="l">つながって糖鎖に</span><span class="s">部品が連なった<br>「糖の飾り」</span></div>
+        <div></div>
+        <div class="matflow__cap anim4"><span class="l">タンパク質に付く</span><span class="s">脳のタンパク質に<br>「飾り付け」される</span></div>
+      </div>
+      <p class="diagram__cap anim4">だから関節サプリの成分が、<span class="em">脳のタンパク質の「飾り付け」</span>とも関わってくるのです。</p>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>05</span></div>
+  </section>
+
+  <!-- ===== 6. 章扉② ===== -->
+  <section data-label="章扉2" data-screen-label="06 章扉2" class="slide slide--navy chapter">
+    <div class="cover__blob"></div>
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num anim a-pop">02</h2>
+    <h3 class="chapter__title anim2">アルツハイマーの脳で<br><span class="hl-underline">何が起きていた？</span></h3>
+    <div class="chapter__rule anim3 grow-x"></div>
+  </section>
+
+  <!-- ===== 7. ハイパーグリコシル化＝糖の飾りの付きすぎ（Braak推移 / layout 24） ===== -->
+  <section data-label="推移_Braak" data-screen-label="07 推移" class="slide">
+    <div class="chapter-ghost">07</div>
+    <div class="eyebrow anim">病気の脳で<span class="en">OVER TIME</span></div>
+    <h2 class="s-title anim">糖の飾りは、病気が進むほど<span class="hl-underline">増えていく</span></h2>
+    <hr class="hairline">
+    <div class="trend">
+      <svg class="trend__svg anim2 a-zoom" data-cue="病気が進むほど" viewBox="0 0 1000 440" preserveAspectRatio="xMidYMid meet">
+        <line x1="100" y1="40" x2="100" y2="360" stroke="var(--line)" stroke-width="3"/>
+        <line x1="100" y1="360" x2="960" y2="360" stroke="var(--line)" stroke-width="3"/>
+        <text x="60" y="60" text-anchor="middle" font-size="28" fill="var(--gray)">多</text>
+        <text x="60" y="355" text-anchor="middle" font-size="28" fill="var(--gray)">少</text>
+        <polyline points="170,320 360,250 560,180 760,90" fill="none" stroke="var(--accent)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="170" cy="320" r="12" fill="var(--navy)"/>
+        <circle cx="360" cy="250" r="12" fill="var(--navy)"/>
+        <circle cx="560" cy="180" r="12" fill="var(--navy)"/>
+        <circle cx="760" cy="90" r="14" fill="var(--accent)"/>
+        <text x="170" y="400" text-anchor="middle" font-size="28" fill="var(--gray)">初期</text>
+        <text x="360" y="400" text-anchor="middle" font-size="28" fill="var(--gray)">やや進む</text>
+        <text x="560" y="400" text-anchor="middle" font-size="28" fill="var(--gray)">進む</text>
+        <text x="760" y="400" text-anchor="middle" font-size="28" fill="var(--accent-ink)" font-weight="700">かなり進む</text>
+      </svg>
+      <p class="trend__cap" data-cue="共通する特徴">脳に付く「糖の飾り」の量は、病気の進み具合（Braakの段階）とともに段階的に増えていた</p>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>07</span></div>
+  </section>
+
+  <!-- ===== 8. 章扉③ ===== -->
+  <section data-label="章扉3" data-screen-label="08 章扉3" class="slide slide--navy chapter">
+    <div class="cover__blob"></div>
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num anim a-pop">03</h2>
+    <h3 class="chapter__title anim2">それは<span class="hl-underline">原因</span>？<br>それとも結果？</h3>
+    <div class="chapter__rule anim3 grow-x"></div>
+  </section>
+
+  <!-- ===== 9. マウス実験 Before/After（減らす→改善 ／ 足す→悪化） ===== -->
+  <section data-label="マウス比較" data-screen-label="09 マウス比較" class="slide">
+    <div class="chapter-ghost">09</div>
+    <div class="eyebrow anim">マウス実験<span class="en">MOUSE STUDY</span></div>
+    <h2 class="s-title anim">糖の飾りを<span class="hl-underline">減らす</span>と改善、<span class="hl-underline">足す</span>と悪化</h2>
+    <hr class="hairline">
+    <div class="ba">
+      <div class="ba__col before anim" data-cue="「減らす」と、アルツハイマー">
+        <span class="ba__tag">減らすと</span>
+        <p class="ba__h">記憶が改善</p>
+        <p class="ba__txt">糖の飾りの合成を抑えると、アルツハイマーのマウスで「相手を覚えている力」が良くなった。</p>
+      </div>
+      <div class="ba__col after anim2" data-cue="逆にグルコサミンを「足す」">
+        <span class="ba__tag">足すと</span>
+        <p class="ba__h">記憶が悪化</p>
+        <p class="ba__txt">グルコサミンを与えると、脳の糖の飾りが増えて、同じ記憶の力が悪くなった。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>09</span></div>
+  </section>
+
+  <!-- ===== 10. 健常マウスでは悪化しない＝病態依存（重要な但し書き） ===== -->
+  <section data-label="病態依存" data-screen-label="10 病態依存" class="slide">
+    <div class="chapter-ghost">10</div>
+    <div class="eyebrow anim">大事な但し書き<span class="en">KEY CAVEAT</span></div>
+    <h2 class="s-title anim">ただし、<span class="hl-underline">健康なマウス</span>では悪くならなかった</h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <p class="lead anim2" data-cue="健康なマウスに与えても">同じ量のグルコサミンを<strong>健康なマウス</strong>に与えても、糖の飾りは増えず、記憶も悪くなりませんでした。</p>
+      <div class="important-box lg warn anim3" data-cue="アルツハイマー的な状態の脳だけ">
+        <div class="ttl">⚠️ ここがポイント</div>
+        <p>悪い影響が出たのは<strong>アルツハイマー的な状態の脳だけ</strong>。健康な脳には、それを抑える仕組みがあるようです。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>10</span></div>
+  </section>
+
+  <!-- ===== 11. 章扉④ ===== -->
+  <section data-label="章扉4" data-screen-label="11 章扉4" class="slide slide--navy chapter">
+    <div class="cover__blob"></div>
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num anim a-pop">04</h2>
+    <h3 class="chapter__title anim2">人間のデータは<br><span class="hl-underline">どうだった？</span></h3>
+    <div class="chapter__rule anim3 grow-x"></div>
+  </section>
+
+  <!-- ===== 12. 数値ヒーロー：ADRD死亡リスク約25%増 ＋ MCI→AD 25%増 ===== -->
+  <section data-label="数値ヒーロー" data-screen-label="12 数値ヒーロー" class="slide stathero slide--soft">
+    <div class="eyebrow anim"><span class="en">KEY NUMBER</span></div>
+    <div class="stathero__num anim2 a-pop" data-cue="死亡リスクの上昇と関連">約25<span class="unit">%</span></div>
+    <p class="stathero__msg anim3">認知症のある人では、<br><span class="hl-underline">死亡リスクの上昇</span>と関連</p>
+    <p class="stathero__sub anim3" data-cue="認知症へ進む割合も">前段階（MCI）から認知症への進行も、約25%増と関連</p>
+    <p class="stathero__src anim3">5万人超の電子カルテ解析（死亡リスク P=0.0023／進行 P&lt;0.001）</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>12</span></div>
+  </section>
+
+  <!-- ===== 13. でも健常者では差なし／約8%が使用・100万人規模（注意ボックス） ===== -->
+  <section data-label="観察研究の但し書き" data-screen-label="13 但し書き" class="slide">
+    <div class="chapter-ghost">13</div>
+    <div class="eyebrow anim">読み解くときの注意<span class="en">HOW TO READ</span></div>
+    <h2 class="s-title anim">「関連」は<span class="hl-underline">「原因」とは限らない</span></h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <p class="lead anim2" data-cue="観察研究">これはカルテをさかのぼって調べた<strong>観察研究</strong>。「一緒に起きやすい」という関連であって、グルコサミンが<strong>原因と証明されたわけではありません</strong>。</p>
+      <div class="important-box lg warn anim3" data-cue="使っていた人は各群で約8%">
+        <div class="ttl">⚠️ おさえておきたい3点</div>
+        <p>① 使っていた人は各群で<strong>約8%</strong>　② 前段階（MCI）だけでは死亡リスクに<strong>差はなかった</strong>　③ あくまで<strong>認知症などの病態がある人</strong>での関連で、健常な人の発症を示したものではありません。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>13</span></div>
+  </section>
+
+  <!-- ===== 14. 章扉⑤ ===== -->
+  <section data-label="章扉5" data-screen-label="14 章扉5" class="slide slide--navy chapter">
+    <div class="cover__blob"></div>
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num anim a-pop">05</h2>
+    <h3 class="chapter__title anim2">で、私は<br><span class="hl-underline">どうすればいい？</span></h3>
+    <div class="chapter__rule anim3 grow-x"></div>
+  </section>
+
+  <!-- ===== 15. 行動トリアージ ===== -->
+  <section data-label="行動トリアージ" data-screen-label="15 行動トリアージ" class="slide" style="padding-bottom:130px">
+    <div class="chapter-ghost">15</div>
+    <div class="eyebrow anim">どう行動する？<span class="en">WHAT TO DO</span></div>
+    <h2 class="s-title anim">あわてず、<span class="hl-underline">この順番</span>で</h2>
+    <hr class="hairline">
+    <div class="triage">
+      <div class="triage__row triage--watch anim"><div class="ic">🙆</div><div><div class="tt">怖がりすぎない</div><p class="ds">健康な人での発症は示されていません。過度に不安にならなくて大丈夫。</p></div></div>
+      <div class="triage__row triage--info anim2"><div class="ic">✋</div><div><div class="tt">自己判断でやめない</div><p class="ds">飲んでいる薬やサプリを、急に自分の判断で止めないでください。</p></div></div>
+      <div class="triage__row triage--soon anim3"><div class="ic">🩺</div><div><div class="tt">心配なら主治医に相談</div><p class="ds">認知症が心配・該当する家族がいるなら、かかりつけ医に相談を。</p></div></div>
+      <div class="triage__row triage--er anim4"><div class="ic">🔬</div><div><div class="tt">今後の研究を待つ</div><p class="ds">本当に害があるかは、これからの臨床試験で確かめられていきます。</p></div></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>15</span></div>
+  </section>
+
+  <!-- ===== 16. まとめ3カード → エンディング（医知創造ラボ・次回予告） ===== -->
+  <section data-label="まとめ" data-screen-label="16 まとめ" class="slide">
+    <div class="chapter-ghost">16</div>
+    <div class="eyebrow anim">まとめ<span class="en">SUMMARY</span></div>
+    <h2 class="s-title anim">今日の3つの<span class="hl-underline">持ち帰り</span>ポイント</h2>
+    <hr class="hairline">
+    <div class="sum__list">
+      <div class="sum__card anim" data-cue="糖の飾りの付きすぎ"><div class="sum__n">01</div><div class="sum__h">脳では「糖の飾りの付きすぎ」</div><p class="sum__p">アルツハイマーの脳で起き、病気を進める側かもしれない、という手がかりが出ました。</p></div>
+      <div class="sum__card anim2" data-cue="認知症のある人では進行"><div class="sum__n">02</div><div class="sum__h">病態がある人で「関連」</div><p class="sum__p">5万人のカルテで、認知症のある人の進行・死亡リスク上昇と関連。健常者では影響なし・因果は未確定。</p></div>
+      <div class="sum__card anim3" data-cue="怖がって急にやめる"><div class="sum__n">03</div><div class="sum__h">怖がらず、相談を</div><p class="sum__p">急にやめる必要はなし。心配なら、自己判断せずかかりつけ医に相談しましょう。</p></div>
+    </div>
+    <p class="sum__cta anim3" style="margin-bottom:64px">次回は <b>「サプリとの上手なつき合い方」</b></p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>16</span></div>
+  </section>
+
+</deck-stage>
+
+<script src="deck-stage.js"></script>
+<script src="image-slot.js"></script>
+
+</body>
+</html>
