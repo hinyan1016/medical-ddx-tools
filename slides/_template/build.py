@@ -76,9 +76,34 @@ def copy_html_deck(src, dst) -> bool:
     return True
 
 
+def copy_jc_deck(jc_dir, dst) -> bool:
+    """抄読会用デッキ(deck.html + 依存アセット + extracted図 + slides.pdf)を
+    <slug>/jc/ に配置する。jc_dir は medical-content 配下の paper-prep フォルダ。"""
+    deck_src = jc_dir / "deck.html"
+    if not deck_src.exists():
+        return False
+    jc_dst = dst / "jc"
+    jc_dst.mkdir(parents=True, exist_ok=True)
+    html = strip_dev_panel(deck_src.read_text(encoding="utf-8"))
+    (jc_dst / "deck.html").write_text(html, encoding="utf-8", newline="\n")
+    for asset in ("colors_and_type.css", "deck-stage.js", "image-slot.js"):
+        a = jc_dir / asset
+        if a.exists():
+            shutil.copy2(a, jc_dst / asset)
+    ex_src = jc_dir / "extracted"
+    if ex_src.exists():
+        (jc_dst / "extracted").mkdir(exist_ok=True)
+        for fig in ex_src.glob("fig*.png"):
+            shutil.copy2(fig, jc_dst / "extracted" / fig.name)
+    if (jc_dir / "slides.pdf").exists():
+        shutil.copy2(jc_dir / "slides.pdf", jc_dst / "slides.pdf")
+    return True
+
+
 def render_viewer(deck: dict, slide_count: int, has_deck: bool = False,
                   has_infographic: bool = False,
-                  has_infographic_html: bool = False) -> str:
+                  has_infographic_html: bool = False,
+                  has_jc: bool = False) -> str:
     template = (TEMPLATE_DIR / "viewer.html").read_text(encoding="utf-8")
 
     cards_html = []
@@ -126,9 +151,18 @@ def render_viewer(deck: dict, slide_count: int, has_deck: bool = False,
             '    </a>'
         )
 
+    jc_deck_button = ""
+    if has_jc:
+        jc_deck_button = (
+            '    <a class="btn btn-jc" href="jc/deck.html" target="_blank" rel="noopener">\n'
+            '      🩺 抄読会用デッキ（医療者向け・図表入り）\n'
+            '    </a>'
+        )
+
     replacements = {
         "{{HTML_DECK_BUTTON}}": html_deck_button,
         "{{INFOGRAPHIC_BUTTON}}": infographic_button,
+        "{{JC_DECK_BUTTON}}": jc_deck_button,
         "{{TITLE}}": deck["title"],
         "{{SUBTITLE}}": deck.get("subtitle", ""),
         "{{DESCRIPTION}}": deck.get("description", deck["title"]),
@@ -238,12 +272,21 @@ def build_deck(deck: dict, dry_run: bool = False) -> bool:
             shutil.copy2(info_html, dst / "infographic.html")
             has_infographic_html = True
 
+    # Copy 抄読会用デッキ (paper-prep) if requested.
+    has_jc = False
+    if deck.get("jc_deck") and deck.get("jc_source"):
+        jc_dir = WORKSPACE / "medical-content" / deck["jc_source"]
+        has_jc = copy_jc_deck(jc_dir, dst)
+        if not has_jc:
+            print(f"  [WARN] jc_deck=true だが deck.html が無い: {jc_dir}", file=sys.stderr)
+
     # Write viewer
     viewer_html = render_viewer(deck, slide_count, has_deck, has_infographic,
-                                has_infographic_html)
+                                has_infographic_html, has_jc)
     (dst / "index.html").write_text(viewer_html, encoding="utf-8", newline="\n")
 
     extra = " + deck.html" if has_deck else ""
+    extra += " + jc" if has_jc else ""
     print(f"  [OK] {slug} ({slide_count}枚 + PDF{extra})")
     return True
 
