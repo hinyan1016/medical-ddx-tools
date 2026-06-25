@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>後天性脳損傷のあとのてんかん｜インフォグラフィック</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#15324d; --navy2:#1A5276; --blue:#2E86C1; --blue-soft:#EAF2FA;
+    --accent:#E8772E; --accent-soft:#FCEEE2; --accent-ink:#9c4b13;
+    --red:#C0392B; --red-soft:#FBEAE8; --green:#1E8449; --green-soft:#E6F4EA;
+    --yellow:#F39C12; --yellow-soft:#FEF5E3; --ink:#222; --ink2:#3d4b57; --gray:#7c8a96;
+    --line:#dce5ec; --card:#ffffff;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:#0c1622;
+    font-family:"BIZ UDPGothic","Yu Gothic","Meiryo",sans-serif;
+    color:var(--ink); line-height:1.6;
+    display:flex;flex-direction:column;align-items:center; padding:24px 12px;
+  }
+  .ig{ width:1040px; max-width:100%; background:#f5f8fb; border-radius:18px; overflow:hidden; box-shadow:0 18px 60px rgba(0,0,0,.45); }
+
+  /* ===== header ===== */
+  .hd{ background:linear-gradient(135deg,#15324d 0%,#2E86C1 100%); color:#fff; padding:40px 44px 34px; position:relative; overflow:hidden; }
+  .hd::after{ content:""; position:absolute; right:-120px; top:-120px; width:380px; height:380px; border-radius:50%; background:radial-gradient(circle at 30% 30%, rgba(232,119,46,.45), rgba(232,119,46,0) 70%); }
+  .hd .kicker{ display:inline-flex; align-items:center; gap:10px; font-size:15px; font-weight:700; letter-spacing:.04em; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); padding:7px 16px; border-radius:999px; }
+  .hd h1{ font-size:40px; line-height:1.28; margin:18px 0 0; font-weight:700; max-width:24ch; }
+  .hd h1 .hl{ color:#ffd9a8; }
+  .hd .cite{ margin:18px 0 0; font-size:15px; color:rgba(255,255,255,.85); }
+  .hd .cite b{ color:#fff; }
+
+  .body{ padding:30px 36px 16px; }
+  .sec{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:24px 26px; margin-bottom:22px; box-shadow:0 3px 10px rgba(20,50,77,.05); }
+  .sec__t{ display:flex; align-items:center; gap:12px; font-size:22px; font-weight:700; color:var(--navy2); margin:0 0 16px; }
+  .sec__t .n{ flex:none; width:38px; height:38px; border-radius:10px; background:var(--blue); color:#fff; display:flex; align-items:center; justify-content:center; font-size:20px; }
+  .sec__t.acc .n{ background:var(--accent); }
+  .lead{ font-size:16px; color:var(--ink2); margin:0 0 4px; }
+
+  /* OR cards */
+  .orgrid{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+  .orc{ border-radius:12px; padding:18px 14px; text-align:center; background:var(--blue-soft); border:1px solid #cfe1f1; position:relative; }
+  .orc.peak{ background:var(--accent-soft); border-color:#f3cfa9; }
+  .orc .ico{ font-size:30px; line-height:1; }
+  .orc .nm{ font-size:15px; font-weight:700; color:var(--navy); margin-top:6px; }
+  .orc .nm small{ display:block; font-weight:400; color:var(--gray); font-size:12px; }
+  .orc .or{ font-size:34px; font-weight:700; color:var(--blue); margin-top:8px; letter-spacing:.01em; }
+  .orc.peak .or{ color:var(--accent-ink); }
+  .orc .ci{ font-size:12px; color:var(--gray); margin-top:2px; }
+  .orc .tag{ position:absolute; top:-10px; left:50%; transform:translateX(-50%); font-size:11px; font-weight:700; background:var(--accent); color:#fff; padding:3px 12px; border-radius:999px; white-space:nowrap; }
+
+  /* location > etiology */
+  .vs{ display:flex; align-items:stretch; gap:16px; }
+  .vscol{ flex:1; border-radius:12px; padding:18px; }
+  .vscol.bad{ background:var(--red-soft); border:1px solid #f0c9c4; }
+  .vscol.good{ background:var(--green-soft); border:1px solid #bfe4cd; }
+  .vscol h4{ margin:0 0 10px; font-size:16px; }
+  .vscol.bad h4{ color:var(--red); }
+  .vscol.good h4{ color:var(--green); }
+  .vscol ul{ margin:0; padding-left:18px; font-size:14px; color:var(--ink2); }
+  .vscol li{ margin:5px 0; }
+  .vscol .pos{ color:var(--green); font-weight:700; }
+  .vscol .neg{ color:var(--gray); }
+  .vsarrow{ align-self:center; font-size:30px; color:var(--accent); font-weight:700; }
+  .keymsg{ margin-top:16px; background:var(--navy2); color:#fff; border-radius:10px; padding:14px 20px; font-size:18px; font-weight:700; text-align:center; }
+  .keymsg .hl{ color:#ffd9a8; }
+
+  /* infection bars */
+  .bars{ display:flex; flex-direction:column; gap:12px; }
+  .bar{ display:flex; align-items:center; gap:14px; }
+  .bar .bnm{ flex:none; width:230px; font-size:15px; font-weight:700; color:var(--navy); text-align:right; }
+  .bar .btrack{ flex:1; height:30px; background:#eef3f7; border-radius:0 6px 6px 0; overflow:hidden; }
+  .bar .bfill{ height:100%; background:var(--blue); border-radius:0 6px 6px 0; }
+  .bar.hot .bfill{ background:var(--accent); }
+  .bar .bval{ flex:none; width:64px; font-size:20px; font-weight:700; color:var(--navy); }
+  .bar.hot .bval{ color:var(--accent-ink); }
+  .note{ margin-top:14px; background:var(--yellow-soft); border-left:5px solid var(--yellow); border-radius:8px; padding:12px 16px; font-size:14px; color:var(--ink2); }
+  .note b{ color:var(--accent-ink); }
+
+  /* caveats */
+  .cav{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .cavc{ background:var(--red-soft); border:1px solid #f0c9c4; border-radius:10px; padding:14px 16px; font-size:14px; color:var(--ink2); }
+  .cavc b{ display:block; color:var(--red); font-size:15px; margin-bottom:3px; }
+
+  /* take home */
+  .th{ background:linear-gradient(135deg,#1E8449 0%,#27AE60 100%); color:#fff; }
+  .th .sec__t{ color:#fff; }
+  .th .sec__t .n{ background:rgba(255,255,255,.22); }
+  .th ul{ margin:0; padding-left:20px; font-size:16px; }
+  .th li{ margin:9px 0; }
+  .th b{ color:#fff5d9; }
+
+  .ft{ background:var(--navy); color:rgba(255,255,255,.85); padding:20px 36px; font-size:13px; display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; }
+  .ft .brand{ font-weight:700; color:#fff; font-size:15px; }
+  .ft .src{ max-width:62%; }
+  @media(max-width:680px){
+    .orgrid{ grid-template-columns:repeat(2,1fr); }
+    .vs{ flex-direction:column; } .vsarrow{ transform:rotate(90deg); }
+    .cav{ grid-template-columns:1fr; }
+    .bar .bnm{ width:130px; font-size:13px; }
+    .hd h1{ font-size:30px; }
+  }
+</style>
+</head>
+<body>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+<div class="ig">
+
+  <!-- header -->
+  <div class="hd">
+    <span class="kicker">✚ 論文インフォグラフィック</span>
+    <h1>後天性脳損傷のあとに<br><span class="hl">てんかん</span>はどれだけ起こるか</h1>
+    <p class="cite">外傷・出血・虚血・感染の<b>4タイプ</b>を横断比較した <b>120研究のメタ解析</b><br>Thompson J, Vasefi M. <b>Epilepsy Research 2026;225:107824</b></p>
+  </div>
+
+  <div class="body">
+
+    <!-- 1. four types -->
+    <div class="sec">
+      <div class="sec__t"><span class="n">1</span>4タイプすべてで、てんかんリスクが有意に上昇</div>
+      <p class="lead">後天性脳損傷（ABI）4タイプは、いずれも「その後のてんかん」と有意に関連した（統合オッズ比）。</p>
+      <div class="orgrid">
+        <div class="orc"><div class="ico">🤕</div><div class="nm">TBI<small>外傷</small></div><div class="or">2.28</div><div class="ci">2.14–2.43</div></div>
+        <div class="orc"><div class="ico">🩸</div><div class="nm">HBI<small>出血</small></div><div class="or">1.53</div><div class="ci">1.43–1.63</div></div>
+        <div class="orc peak"><span class="tag">全体で最強</span><div class="ico">🧠</div><div class="nm">IBI<small>虚血・梗塞</small></div><div class="or">2.40</div><div class="ci">2.17–2.65</div></div>
+        <div class="orc"><div class="ico">🦠</div><div class="nm">IrBI<small>感染・免疫</small></div><div class="or">1.19</div><div class="ci">1.14–1.25</div></div>
+      </div>
+    </div>
+
+    <!-- 2. location > etiology -->
+    <div class="sec">
+      <div class="sec__t acc"><span class="n">2</span>最大のメッセージ：「病因」より「部位」</div>
+      <p class="lead">虚血では <b>原因の分類は効かず、病変の場所（皮質に及ぶか）</b> がリスクを決めた。</p>
+      <div class="vs">
+        <div class="vscol bad">
+          <h4>✗ 病因別（TOAST）— すべて非有意</h4>
+          <ul>
+            <li><span class="neg">ラクナ／小血管 1.68</span></li>
+            <li><span class="neg">心原性塞栓 0.80</span></li>
+            <li><span class="neg">大血管アテローム 1.52</span></li>
+          </ul>
+        </div>
+        <div class="vsarrow">→</div>
+        <div class="vscol good">
+          <h4>✓ 部位別 — 皮質に及ぶほど高リスク</h4>
+          <ul>
+            <li><span class="pos">皮質 2.99</span>／ACA 1.77／MCA 1.50（有意）</li>
+            <li><span class="neg">PCA 0.95（非有意）</span></li>
+            <li>出血も同様：<span class="pos">ICH 2.03・SAH 1.47・SDH 1.54</span>／<span class="neg">IVH・EDH は非有意</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="keymsg">鍵は <span class="hl">「損傷が大脳皮質に及ぶか」</span> ── 深部（IVH・EDH・PCA・ラクナ）は相対的に低い</div>
+    </div>
+
+    <!-- 3. infection subtypes -->
+    <div class="sec">
+      <div class="sec__t"><span class="n">3</span>感染は「サブタイプ」で桁違い</div>
+      <p class="lead">全体ORは1.19と低く見えるが、中身を分けると一部が突出して高い。</p>
+      <div class="bars">
+        <div class="bar hot"><div class="bnm">ウイルス性脳炎</div><div class="btrack"><div class="bfill" style="width:100%"></div></div><div class="bval">7.37</div></div>
+        <div class="bar hot"><div class="bnm">脳膿瘍</div><div class="btrack"><div class="bfill" style="width:75%"></div></div><div class="bval">5.54</div></div>
+        <div class="bar"><div class="bnm">頭蓋内感染</div><div class="btrack"><div class="bfill" style="width:45%"></div></div><div class="bval">3.30</div></div>
+        <div class="bar"><div class="bnm">細菌性髄膜炎</div><div class="btrack"><div class="bfill" style="width:29%"></div></div><div class="bval">2.15</div></div>
+      </div>
+      <div class="note">⚠ 全体OR 1.19 は <b>巨大な行政データ（OR≒1）が重みを独占</b> した平均値。「感染は弱い」と丸めて読むと、ウイルス性脳炎・脳膿瘍の高リスクを見落とす。</div>
+    </div>
+
+    <!-- 4. caveats -->
+    <div class="sec">
+      <div class="sec__t" style="color:var(--red)"><span class="n" style="background:var(--red)">!</span>数字を読むときの注意</div>
+      <div class="cav">
+        <div class="cavc"><b>予測区間はどれも1をまたぐ</b>研究間のばらつきが大きく（I²≈91%）、次の1研究では「関連なし」もありうる。</div>
+        <div class="cavc"><b>オッズ比は上振れしやすい</b>てんかんのように頻度が高い（最大80%）と、ORは相対リスクを大きめに見せる。</div>
+        <div class="cavc"><b>出版バイアスあり</b>出血・梗塞・感染で非対称が有意。推定値はやや高めの可能性。</div>
+        <div class="cavc"><b>サブ層別は研究数が少ない</b>2〜8研究と薄く、同じ研究が重複登場。「部位＞病因」は魅力的だが確定ではない。</div>
+      </div>
+    </div>
+
+    <!-- 5. take home -->
+    <div class="sec th">
+      <div class="sec__t"><span class="n">🩺</span>臨床のテイクホーム</div>
+      <ul>
+        <li><b>皮質に及ぶ脳梗塞・脳出血、SAH／SDH、ウイルス性脳炎、脳膿瘍</b>は、長期のてんかんサーベイランス対象。</li>
+        <li>後天性脳損傷は「急性イベント」ではなく <b>長期のてんかんリスクマーカー</b>。退院時に「数か月〜数年あとに発作が出ることがある」と本人・家族へ共有を。</li>
+        <li>数字は確定値ではなく、<b>「誰を追跡すべきか」の地図</b> として使う。</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="ft">
+    <span class="brand">医知創造ラボ</span>
+    <span class="src">出典：Thompson J, Vasefi M. Epilepsy following acquired brain injury: A systematic review and meta-analysis. Epilepsy Research 2026;225:107824. doi:10.1016/j.eplepsyres.2026.107824</span>
+  </div>
+
+</div>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px auto 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+</body>
+</html>
