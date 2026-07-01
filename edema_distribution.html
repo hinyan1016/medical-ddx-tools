@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1B3A5C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>浮腫 分布・左右差から原因鑑別ツール</title>
+<style>
+  :root {
+    --navy: #1B3A5C;
+    --blue: #2C5AA0;
+    --light-blue: #E8F0FE;
+    --red: #DC3545;
+    --yellow: #F5C518;
+    --green: #28A745;
+    --orange: #E8850C;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(27,58,92,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #E8F0FE 0%, #F4F6F8 100%);
+    color: #222;
+    min-height: 100vh;
+    padding: 0 0 40px;
+  }
+  header {
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    padding: 14px 20px 18px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(27,58,92,0.18);
+  }
+  .back-bar { display: flex; align-items: center; margin-bottom: 8px; }
+  .back-bar a {
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    font-size: 0.85em;
+    display: flex; align-items: center; gap: 4px;
+    padding: 4px 8px; border-radius: 6px;
+    transition: background 0.2s;
+  }
+  .back-bar a:active { background: rgba(255,255,255,0.15); }
+  header h1 { font-size: 1.55em; font-weight: 700; letter-spacing: 0.03em; }
+  header p { font-size: 0.9em; margin-top: 6px; opacity: 0.85; }
+
+  .container { max-width: 820px; margin: 0 auto; padding: 24px 16px; }
+
+  .step-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+    overflow: hidden;
+    transition: opacity 0.3s;
+  }
+  .step-card.inactive { opacity: 0.45; pointer-events: none; }
+  .step-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 18px;
+    background: var(--light-blue);
+    border-bottom: 2px solid var(--blue);
+    cursor: pointer;
+  }
+  .step-number {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--blue); color: var(--white);
+    font-weight: 700; font-size: 0.95em; flex-shrink: 0;
+  }
+  .step-number.done { background: var(--green); }
+  .step-title { font-weight: 700; font-size: 1.05em; color: var(--navy); }
+  .step-body { padding: 18px; }
+
+  .option-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .option-btn {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 16px;
+    border: 2px solid #D0D8E4; border-radius: 8px;
+    background: var(--white); font-size: 0.97em;
+    cursor: pointer; transition: all 0.18s;
+    text-align: left; color: #222; font-family: inherit; width: 100%;
+  }
+  .option-btn:hover { border-color: var(--blue); background: var(--light-blue); }
+  .option-btn.selected { border-color: var(--blue); background: var(--light-blue); font-weight: 700; }
+  .option-btn .icon { font-size: 1.2em; flex-shrink: 0; width: 24px; text-align: center; }
+  .option-btn .sub { display:block; font-size:0.8em; color:var(--gray); font-weight:400; margin-top:2px; }
+
+  .checklist { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .check-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; border-radius: 8px;
+    background: var(--light-gray); cursor: pointer;
+    transition: background 0.15s; user-select: none; font-size: 0.95em;
+  }
+  .check-item:hover { background: #E0E8F0; }
+  .check-item input[type="checkbox"] {
+    width: 18px; height: 18px; accent-color: var(--blue);
+    flex-shrink: 0; cursor: pointer;
+  }
+  .check-item label { cursor: pointer; flex: 1; }
+
+  .result-panel {
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(27,58,92,0.15);
+    overflow: hidden; margin-top: 24px; display: none;
+  }
+  .result-panel.show { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .result-header {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white); font-weight: 700; font-size: 1.15em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .result-body { padding: 20px; }
+
+  /* レッドフラッグ バナー */
+  .redflag-banner {
+    background: #FFF0F0; border: 2px solid var(--red);
+    border-radius: 10px; padding: 14px 16px; margin-bottom: 18px;
+  }
+  .redflag-banner .rf-title {
+    color: var(--red); font-weight: 800; font-size: 1.02em;
+    display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+  }
+  .redflag-banner ul { margin: 0 0 0 4px; padding: 0; list-style: none; }
+  .redflag-banner li {
+    font-size: 0.9em; color: #7a1f27; line-height: 1.6;
+    padding: 4px 0 4px 22px; position: relative;
+  }
+  .redflag-banner li::before { content: "🚑"; position: absolute; left: 0; }
+  .redflag-banner li strong { color: var(--red); }
+
+  .dx-card {
+    border: 2px solid transparent; border-radius: 8px;
+    padding: 16px; margin-bottom: 12px; position: relative; transition: all 0.2s;
+  }
+  .dx-card.high { border-color: var(--red); background: #FFF5F5; }
+  .dx-card.medium { border-color: var(--orange); background: #FFF8F0; }
+  .dx-card.low { border-color: var(--gray); background: var(--light-gray); }
+  .dx-card .dx-name {
+    font-weight: 700; font-size: 1.08em;
+    display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap;
+  }
+  .dx-card .prob-badge {
+    display: inline-block; padding: 2px 10px; border-radius: 12px;
+    font-size: 0.78em; font-weight: 700; color: var(--white);
+  }
+  .dx-card.high .prob-badge { background: var(--red); }
+  .dx-card.medium .prob-badge { background: var(--orange); }
+  .dx-card.low .prob-badge { background: var(--gray); }
+  .dx-card .rf-tag {
+    display:inline-block; padding:2px 8px; border-radius:10px;
+    font-size:0.72em; font-weight:700; background:var(--red); color:#fff;
+  }
+  .dx-card .dx-cat { font-size:0.76em; color:var(--gray); font-weight:600; }
+  .dx-card .dx-detail { font-size: 0.9em; color: #444; line-height: 1.6; }
+  .dx-card .dx-detail strong { color: var(--navy); }
+  .dx-card .dx-workup {
+    margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ccc;
+    font-size: 0.88em; color: var(--blue);
+  }
+
+  .next-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 14px; padding: 10px 22px;
+    background: var(--blue); color: var(--white); border: none;
+    border-radius: 8px; font-size: 0.95em; font-weight: 600;
+    cursor: pointer; transition: background 0.15s; font-family: inherit;
+  }
+  .next-btn:hover { background: var(--navy); }
+  .next-btn:disabled { background: #B0BEC5; cursor: not-allowed; }
+  .reset-btn {
+    display: block; margin: 24px auto 0; padding: 10px 32px;
+    background: var(--white); color: var(--red); border: 2px solid var(--red);
+    border-radius: 8px; font-size: 0.95em; font-weight: 600;
+    cursor: pointer; font-family: inherit; transition: all 0.15s;
+  }
+  .reset-btn:hover { background: var(--red); color: var(--white); }
+  .hint { font-size: 0.85em; color: var(--gray); margin-top: 6px; line-height: 1.5; }
+  .divider { height: 1px; background: #D0D8E4; margin: 14px 0; }
+
+  @media (max-width: 600px) {
+    header { padding: 12px 14px 14px; }
+    header h1 { font-size: 1.2em; }
+    header p { font-size: 0.82em; }
+    .container { padding: 14px 10px; }
+    .step-header { padding: 12px 14px; }
+    .step-body, .result-body { padding: 14px; }
+    .dx-card { padding: 12px; }
+    .option-btn { min-height: 44px; font-size: 0.92em; -webkit-tap-highlight-color: transparent; }
+    .step-card { margin-bottom: 14px; }
+  }
+</style>
+</head>
+<body>
+<nav id="ics-globalnav" style="background:#15324E;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
+<div style="max-width:1040px;margin:0 auto;padding:9px 16px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+<a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;">医知創造ラボ</a>
+<a href="https://ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">ホーム</a>
+<a href="https://blog.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">ブログ</a>
+<a href="https://tools.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">ツール</a>
+<a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">YouTube</a>
+</div>
+</nav>
+
+<header>
+  <div class="back-bar"><a href="index.html">‹ ツール一覧</a></div>
+  <h1>浮腫 分布・左右差から原因鑑別</h1>
+  <p>浮腫の「分布（全身性／片側性／顔面）」と経過から系統的に原因を絞り込む</p>
+</header>
+
+<div class="container" id="app"></div>
+
+<script>
+// ===== データ定義（分布・左右差ベース） =====
+// dist: 主たる分布カテゴリ  bilateral=両側/全身性, unilateral=片側性, face=顔面・上半身
+var DISEASES = {
+  // ---- 片側性（unilateral） ----
+  dvt: {
+    name: "深部静脈血栓症（DVT）", emoji: "🩸", category: "血管・緊急", dist: "unilateral", redFlag: true,
+    keyFindings: ["片側性の急な下腿腫脹", "疼痛・把握痛", "表在静脈の怒張", "Wells スコア高値", "がん・術後・長期臥床・エストロゲン"],
+    workup: "D-ダイマー、下肢静脈エコー（圧迫法）、Wells スコア。肺塞栓を示唆する所見（呼吸困難・胸痛・SpO2低下）があればCT肺動脈造影",
+    detail: "片側性の急性下腿腫脹＋疼痛では第一に除外する。Homans 徴候は感度・特異度とも低く頼らない。肺塞栓の前段階であり緊急度が高い。左下肢優位なら May-Thurner（腸骨静脈圧迫）も考慮。"
+  },
+  cellulitis: {
+    name: "蜂窩織炎", emoji: "🔥", category: "感染・緊急", dist: "unilateral", redFlag: true,
+    keyFindings: ["片側性の発赤・熱感・圧痛", "境界不明瞭な紅斑", "発熱・CRP上昇", "皮膚の侵入門戸（白癬・創傷）"],
+    workup: "血液検査（WBC/CRP）、血液培養（重症時）、皮膚所見の観察。壊死性軟部組織感染（激痛・水疱・皮膚壊死・全身状態不良）の除外",
+    detail: "片側性で発赤・熱感・疼痛・発熱を伴う。両側同時の「赤い脚」はむしろうっ滞性皮膚炎のことが多く、両側蜂窩織炎の過剰診断に注意。急激な激痛・水疱・握雪感は壊死性筋膜炎を疑い外科緊急。"
+  },
+  lymphedema: {
+    name: "リンパ浮腫", emoji: "🧦", category: "リンパ", dist: "unilateral",
+    keyFindings: ["非圧痕性（後期）", "Stemmer 徴候陽性", "足背・足趾の腫脹", "がん治療後（郭清・放射線）", "無痛性・慢性"],
+    workup: "病歴（悪性腫瘍・手術・放射線・渡航歴）、Stemmer 徴候、リンパシンチグラフィ。二次性（続発性）が多く原疾患検索",
+    detail: "慢性・無痛性で足背〜足趾に及ぶ。第2趾基部の皮膚をつまめない（Stemmer 徴候陽性）が特徴。二次性はリンパ節郭清・放射線・悪性腫瘍・フィラリア。後期は非圧痕性となる。"
+  },
+  venous_insuff: {
+    name: "慢性静脈不全", emoji: "🦵", category: "血管", dist: "unilateral",
+    keyFindings: ["夕方・立位で増悪", "色素沈着（ヘモジデリン）", "静脈瘤", "内果部の潰瘍", "皮膚硬化（脂肪皮膚硬化症）"],
+    workup: "下肢静脈エコー（逆流評価）、CEAP 分類。両側性のこともあり全身性浮腫との鑑別を要する",
+    detail: "片側または両側。夕方増悪・立位増悪・色素沈着・静脈瘤・内果部潰瘍が手がかり。深部静脈血栓後遺症（血栓後症候群）でも同様の像。"
+  },
+  bakers_cyst: {
+    name: "ベーカー嚢胞破裂", emoji: "💥", category: "整形・鑑別", dist: "unilateral",
+    keyFindings: ["膝窩の腫瘤・違和感の先行", "急な下腿の腫脹・疼痛", "変形性膝関節症・関節リウマチの既往"],
+    workup: "下肢エコー（DVT除外を兼ねる）、膝関節評価",
+    detail: "膝窩嚢胞の破裂は急性下腿腫脹をきたし DVT に酷似（偽性血栓性静脈炎）。エコーで血栓の有無と嚢胞を同時に評価する。"
+  },
+  // ---- 顔面・上半身（face） ----
+  angioedema: {
+    name: "血管性浮腫（アンジオエデマ）", emoji: "🫧", category: "アレルギー・緊急", dist: "face", redFlag: true,
+    keyFindings: ["口唇・舌・眼瞼の限局性腫脹", "非圧痕性", "ACE阻害薬内服", "反復性・蕁麻疹の有無", "咽頭絞扼感・嗄声（気道）"],
+    workup: "病歴（ACE阻害薬・反復歴・家族歴）、蕁麻疹の有無、補体（C4・C1-INH）。気道評価を最優先",
+    detail: "非圧痕性で顔面・口唇・舌に限局。舌・喉頭に及べば気道閉塞の緊急。ACE阻害薬性（ブラジキニン性・内服開始から年単位経過後も発症）、遺伝性（C1-INH欠損・蕁麻疹を伴わず反復）、アレルギー性（蕁麻疹を伴う）を鑑別。"
+  },
+  svc_syndrome: {
+    name: "上大静脈症候群（SVC症候群）", emoji: "⬆️", category: "腫瘍・緊急", dist: "face", redFlag: true,
+    keyFindings: ["顔面・頸部・上肢の浮腫", "頸部・胸壁の側副静脈怒張", "前屈で増悪・顔面紅潮", "肺がん・悪性リンパ腫", "呼吸困難・嗄声"],
+    workup: "造影CT（胸部）、原因検索（悪性腫瘍・カテーテル/デバイス血栓）。呼吸・気道症状があれば緊急",
+    detail: "上半身（顔・頸・上肢）に限局する浮腫＋胸壁側副血行＋前屈増悪が特徴。原因の多くは悪性腫瘍（肺がん・縦隔リンパ腫）。中心静脈カテーテル・ペースメーカリードの血栓も原因となる。"
+  },
+  // ---- 両側性・全身性（bilateral/systemic） ----
+  heart_failure: {
+    name: "心不全", emoji: "❤️", category: "心臓", dist: "bilateral",
+    keyFindings: ["両側下腿の圧痕性浮腫", "頸静脈怒張", "起座呼吸・発作性夜間呼吸困難", "肺うっ血（ラ音）", "BNP/NT-proBNP上昇"],
+    workup: "BNP/NT-proBNP、心エコー、胸部X線、心電図",
+    detail: "両側対称性の圧痕性浮腫＋頸静脈怒張＋肺うっ血が三徴。BNP≧100pg/mL または NT-proBNP≧300pg/mL で疑う。"
+  },
+  cirrhosis: {
+    name: "肝硬変", emoji: "🫘", category: "肝臓", dist: "bilateral",
+    keyFindings: ["腹水", "黄疸", "くも状血管腫・手掌紅斑", "脾腫", "低アルブミン血症"],
+    workup: "肝機能、アルブミン、PT-INR、腹部エコー、腹水穿刺（SAAG≧1.1で門脈圧亢進性）",
+    detail: "門脈圧亢進＋低アルブミン血症による。腹部優位（腹水）で下腿にも及ぶ。腹水＋黄疸＋くも状血管腫がそろえば強く疑う。"
+  },
+  nephrotic: {
+    name: "ネフローゼ症候群", emoji: "🔬", category: "腎臓", dist: "bilateral",
+    keyFindings: ["高度蛋白尿（≧3.5g/日）", "低アルブミン血症（＜3.0g/dL）", "顔面・眼瞼浮腫（朝方優位）", "脂質異常症", "泡立つ尿"],
+    workup: "尿蛋白定量、血清アルブミン、脂質、腎生検",
+    detail: "大量蛋白尿→低アルブミン血症→膠質浸透圧低下が機序。朝方の眼瞼・顔面浮腫が特徴的で、進行すると全身性（anasarca）となる。"
+  },
+  renal_failure: {
+    name: "腎不全（体液過剰）", emoji: "💧", category: "腎臓", dist: "bilateral",
+    keyFindings: ["乏尿・無尿", "Cr/BUN上昇", "高K血症", "代謝性アシドーシス", "高血圧"],
+    workup: "Cr、BUN、電解質、血液ガス、腎エコー、尿検査",
+    detail: "GFR低下による Na・水排泄障害で体液貯留。急性・慢性いずれも全身性浮腫をきたしうる。"
+  },
+  hypothyroid: {
+    name: "甲状腺機能低下症（粘液水腫）", emoji: "🦋", category: "内分泌", dist: "bilateral",
+    keyFindings: ["非圧痕性浮腫（粘液水腫）", "寒がり・低体温", "便秘", "体重増加", "嗄声", "徐脈"],
+    workup: "TSH、FT4（TSH高値＋FT4低値で確定）",
+    detail: "ムコ多糖蓄積による非圧痕性浮腫。顔面（眼瞼周囲）・下腿に生じ、圧痕を残さない点が他の全身性浮腫と異なる。"
+  },
+  malnutrition: {
+    name: "低栄養・低アルブミン血症", emoji: "🍽️", category: "栄養", dist: "bilateral",
+    keyFindings: ["るい痩", "低アルブミン血症", "食事摂取不良", "蛋白漏出性胃腸症", "吸収不良"],
+    workup: "血清アルブミン、プレアルブミン、総蛋白、栄養評価、（疑えば）便中α1アンチトリプシン",
+    detail: "アルブミン低下による膠質浸透圧低下。高齢者のフレイル・悪性腫瘍・吸収不良・蛋白漏出性胃腸症が背景。"
+  },
+  drug_induced: {
+    name: "薬剤性浮腫", emoji: "💊", category: "薬剤", dist: "bilateral",
+    keyFindings: ["Ca拮抗薬（ジヒドロピリジン系）", "NSAIDs", "ステロイド", "ピオグリタゾン", "プレガバリン/ガバペンチン"],
+    workup: "薬剤歴の確認、被疑薬の中止・変更後の経過観察",
+    detail: "両側下腿の圧痕性浮腫が典型。Ca拮抗薬（アムロジピン等）が最多。NSAIDsはNa貯留、ピオグリタゾンは水貯留。薬剤開始・増量との時間的関連を確認。"
+  },
+  idiopathic: {
+    name: "特発性浮腫", emoji: "❓", category: "その他", dist: "bilateral",
+    keyFindings: ["若年〜中年女性", "日内変動（起立性増悪）", "月経周期との関連", "他疾患の除外"],
+    workup: "除外診断（心・肝・腎・甲状腺・薬剤を除外）",
+    detail: "20〜50歳代女性に多い。立位で増悪し臥位で改善。利尿薬乱用が悪化因子。除外診断が前提。"
+  }
+};
+
+// ===== ステップ定義 =====
+var STEPS = [
+  {
+    id: "dist", title: "分布・左右差", type: "single",
+    question: "浮腫の主たる分布はどれに最も近いですか？",
+    hint: "最初の分岐です。優位な部位・左右差で大きく方向づけられます",
+    options: [
+      { label: "両側性・対称性（下腿〜全身）", sub: "左右ほぼ同等・全身性を含む", value: "bilateral", icon: "🧍" },
+      { label: "片側性（左右差あり）", sub: "片方の下肢・上肢が優位に腫れる", value: "unilateral", icon: "🦵" },
+      { label: "顔面・眼瞼・上半身優位", sub: "顔・口唇・頸部・上肢", value: "face", icon: "😐" }
+    ]
+  },
+  {
+    id: "onset", title: "経過（発症の速さ）", type: "single",
+    question: "浮腫はどのくらいの経過で出現しましたか？",
+    hint: "急性の片側・顔面は緊急疾患を示唆します",
+    options: [
+      { label: "急性（数時間〜3日）", value: "acute", icon: "⚡" },
+      { label: "亜急性（数日〜数週）", value: "subacute", icon: "📈" },
+      { label: "慢性（数ヶ月以上）", value: "chronic", icon: "🕰️" }
+    ]
+  },
+  {
+    id: "pitting", title: "圧痕性", type: "single",
+    question: "浮腫は圧痕性（pitting）ですか？",
+    hint: "母指で10秒圧迫し、くぼみが残るか確認",
+    options: [
+      { label: "圧痕性（pitting）", value: "pitting", icon: "👆" },
+      { label: "非圧痕性（non-pitting）", value: "non_pitting", icon: "✋" },
+      { label: "判断困難", value: "uncertain", icon: "🤔" }
+    ]
+  },
+  {
+    id: "local", title: "局所所見・皮膚所見", type: "multi",
+    question: "該当する局所所見をすべて選択",
+    options: [
+      { label: "発赤・熱感・強い圧痛（片側）", value: "inflamed", tag: "cellulitis" },
+      { label: "把握痛・表在静脈怒張（片側下腿）", value: "dvt_sign", tag: "dvt" },
+      { label: "Stemmer 徴候陽性・足背/足趾の腫脹", value: "stemmer", tag: "lymphedema" },
+      { label: "色素沈着・静脈瘤・内果部潰瘍", value: "venous_skin", tag: "venous_insuff" },
+      { label: "膝窩の腫瘤・違和感が先行", value: "popliteal", tag: "bakers_cyst" },
+      { label: "口唇・舌・眼瞼の限局腫脹（非圧痕）", value: "lip_tongue", tag: "angioedema" },
+      { label: "頸部・胸壁の側副静脈怒張・前屈で増悪", value: "collateral", tag: "svc_syndrome" },
+      { label: "特記すべき局所所見なし", value: "none", tag: "none" }
+    ]
+  },
+  {
+    id: "systemic", title: "随伴・全身所見", type: "multi",
+    question: "該当する随伴所見をすべて選択",
+    options: [
+      { label: "頸静脈怒張（JVD）", value: "jvd", tag: "heart_failure" },
+      { label: "起座呼吸・労作時呼吸困難", value: "dyspnea", tag: "heart_failure" },
+      { label: "腹水・黄疸・くも状血管腫", value: "liver_sx", tag: "cirrhosis" },
+      { label: "泡立つ尿・朝の眼瞼浮腫", value: "nephro_sx", tag: "nephrotic" },
+      { label: "乏尿・尿量低下", value: "oliguria", tag: "renal_failure" },
+      { label: "寒がり・便秘・徐脈・嗄声", value: "hypo_sx", tag: "hypothyroid" },
+      { label: "るい痩・食事摂取不良", value: "malnutri_sx", tag: "malnutrition" },
+      { label: "がん治療歴・リンパ節郭清・放射線", value: "cancer_tx", tag: "lymphedema" },
+      { label: "咽頭絞扼感・嗄声・呼吸困難（急性）", value: "airway", tag: "angioedema" },
+      { label: "該当なし", value: "none", tag: "none" }
+    ]
+  },
+  {
+    id: "labs", title: "検査所見", type: "multi",
+    question: "把握している検査所見をすべて選択",
+    hint: "未施行の項目は選択不要です",
+    options: [
+      { label: "BNP≧100（NT-proBNP≧300）", value: "bnp", tag: "heart_failure" },
+      { label: "血清アルブミン ＜3.0 g/dL", value: "low_alb", tag: "low_alb" },
+      { label: "尿蛋白 ≧3.5 g/日（3+以上）", value: "proteinuria", tag: "nephrotic" },
+      { label: "Cr上昇 / eGFR＜30", value: "renal", tag: "renal_failure" },
+      { label: "AST/ALT上昇・PT-INR延長", value: "liver", tag: "cirrhosis" },
+      { label: "TSH高値", value: "tsh", tag: "hypothyroid" },
+      { label: "D-ダイマー上昇・エコーで血栓", value: "ddimer", tag: "dvt" },
+      { label: "検査未施行 / 不明", value: "unknown", tag: "none" }
+    ]
+  },
+  {
+    id: "drugs", title: "薬剤歴", type: "multi",
+    question: "使用中の薬剤で該当するものを選択",
+    options: [
+      { label: "Ca拮抗薬（アムロジピン等）", value: "ccb", tag: "drug_induced" },
+      { label: "NSAIDs", value: "nsaid", tag: "drug_induced" },
+      { label: "ステロイド", value: "steroid", tag: "drug_induced" },
+      { label: "ピオグリタゾン", value: "pio", tag: "drug_induced" },
+      { label: "プレガバリン / ガバペンチン", value: "pregabalin", tag: "drug_induced" },
+      { label: "ACE阻害薬（血管性浮腫の被疑薬）", value: "acei", tag: "angioedema" },
+      { label: "該当薬剤なし", value: "none", tag: "none" }
+    ]
+  }
+];
+
+// ===== スコアリングエンジン =====
+function calcScores(answers) {
+  var scores = {};
+  Object.keys(DISEASES).forEach(function(k){ scores[k] = 0; });
+
+  // Step 1: 分布（最重要・分布不一致は大きく減点）
+  var dist = answers.dist;
+  Object.keys(DISEASES).forEach(function(k){
+    if (DISEASES[k].dist === dist) { scores[k] += 4; }
+    else { scores[k] -= 4; }
+  });
+  // ネフローゼ・甲状腺低下は顔面にも出るため補正
+  if (dist === "face") { scores.nephrotic += 3; scores.hypothyroid += 3; }
+
+  // Step 2: 経過
+  var onset = answers.onset;
+  if (onset === "acute") {
+    scores.dvt += 3; scores.cellulitis += 3; scores.angioedema += 3; scores.bakers_cyst += 2;
+    scores.lymphedema -= 2; scores.venous_insuff -= 1;
+  } else if (onset === "chronic") {
+    scores.lymphedema += 3; scores.venous_insuff += 2; scores.hypothyroid += 1;
+    scores.dvt -= 2; scores.cellulitis -= 2; scores.angioedema -= 1;
+  }
+
+  // Step 3: 圧痕性
+  var pit = answers.pitting;
+  if (pit === "non_pitting") {
+    scores.lymphedema += 4; scores.hypothyroid += 4; scores.angioedema += 3;
+    scores.heart_failure -= 2; scores.cirrhosis -= 2; scores.nephrotic -= 2; scores.drug_induced -= 1;
+  } else if (pit === "pitting") {
+    scores.heart_failure += 2; scores.cirrhosis += 2; scores.nephrotic += 2;
+    scores.renal_failure += 2; scores.malnutrition += 2; scores.drug_induced += 2; scores.dvt += 1;
+    scores.lymphedema -= 1;
+  }
+
+  // Step 4: 局所所見
+  (answers.local || []).forEach(function(v){
+    if (v === "inflamed") scores.cellulitis += 5;
+    if (v === "dvt_sign") scores.dvt += 5;
+    if (v === "stemmer") scores.lymphedema += 5;
+    if (v === "venous_skin") scores.venous_insuff += 5;
+    if (v === "popliteal") scores.bakers_cyst += 5;
+    if (v === "lip_tongue") scores.angioedema += 5;
+    if (v === "collateral") scores.svc_syndrome += 6;
+  });
+
+  // Step 5: 随伴・全身所見
+  (answers.systemic || []).forEach(function(v){
+    if (v === "jvd") scores.heart_failure += 4;
+    if (v === "dyspnea") scores.heart_failure += 3;
+    if (v === "liver_sx") scores.cirrhosis += 5;
+    if (v === "nephro_sx") scores.nephrotic += 4;
+    if (v === "oliguria") scores.renal_failure += 4;
+    if (v === "hypo_sx") scores.hypothyroid += 4;
+    if (v === "malnutri_sx") scores.malnutrition += 4;
+    if (v === "cancer_tx") { scores.lymphedema += 4; scores.svc_syndrome += 2; }
+    if (v === "airway") scores.angioedema += 4;
+  });
+
+  // Step 6: 検査
+  (answers.labs || []).forEach(function(v){
+    if (v === "bnp") scores.heart_failure += 5;
+    if (v === "low_alb") { scores.cirrhosis += 3; scores.nephrotic += 3; scores.malnutrition += 4; }
+    if (v === "proteinuria") scores.nephrotic += 5;
+    if (v === "renal") scores.renal_failure += 5;
+    if (v === "liver") scores.cirrhosis += 4;
+    if (v === "tsh") scores.hypothyroid += 6;
+    if (v === "ddimer") scores.dvt += 5;
+  });
+
+  // Step 7: 薬剤
+  (answers.drugs || []).forEach(function(v){
+    if (v === "ccb" || v === "nsaid" || v === "steroid" || v === "pio" || v === "pregabalin") scores.drug_induced += 3;
+    if (v === "acei") scores.angioedema += 4;
+  });
+
+  // 特発性：両側かつ他が低い場合に浮上
+  if (dist === "bilateral") {
+    var others = ["heart_failure","cirrhosis","nephrotic","renal_failure","hypothyroid","malnutrition","drug_induced","venous_insuff"];
+    var mx = 0; others.forEach(function(k){ if (scores[k] > mx) mx = scores[k]; });
+    if (mx < 6) scores.idiopathic += 4;
+  }
+
+  return scores;
+}
+
+function rankDiseases(scores) {
+  return Object.keys(scores).map(function(key){
+    var d = {}; for (var p in DISEASES[key]) d[p] = DISEASES[key][p];
+    d.key = key; d.score = scores[key]; return d;
+  }).filter(function(d){ return d.score > 0; })
+    .sort(function(a,b){ return b.score - a.score; });
+}
+
+function getProbLevel(score, maxScore) {
+  var ratio = score / Math.max(maxScore, 1);
+  if (ratio >= 0.7) return { level: "high", label: "可能性 高" };
+  if (ratio >= 0.4) return { level: "medium", label: "可能性 中" };
+  return { level: "low", label: "可能性 低" };
+}
+
+// ===== UIレンダリング =====
+var currentStep = 0;
+var answers = {};
+
+function render() {
+  var app = document.getElementById("app");
+  var html = "";
+
+  STEPS.forEach(function(step, i){
+    var state = i < currentStep ? "completed" : i === currentStep ? "" : "inactive";
+    var numClass = i < currentStep ? "done" : "";
+    html += '<div class="step-card ' + state + '" id="step-' + i + '">';
+    html += '<div class="step-header"><span class="step-number ' + numClass + '">' + (i < currentStep ? "✓" : (i + 1)) + '</span><span class="step-title">' + step.title + '</span></div>';
+
+    if (i <= currentStep) {
+      html += '<div class="step-body">';
+      html += '<p style="font-weight:600; margin-bottom:4px;">' + step.question + '</p>';
+      if (step.hint) html += '<p class="hint">' + step.hint + '</p>';
+
+      if (step.type === "single") {
+        html += '<div class="option-group">';
+        step.options.forEach(function(opt){
+          var sel = answers[step.id] === opt.value ? "selected" : "";
+          var sub = opt.sub ? '<span class="sub">' + opt.sub + '</span>' : '';
+          html += '<button class="option-btn ' + sel + '" onclick="selectOption(\'' + step.id + '\',\'' + opt.value + '\',' + i + ')"><span class="icon">' + opt.icon + '</span> <span>' + opt.label + sub + '</span></button>';
+        });
+        html += '</div>';
+      } else {
+        html += '<div class="checklist">';
+        var checked = answers[step.id] || [];
+        step.options.forEach(function(opt){
+          var isC = checked.indexOf(opt.value) >= 0;
+          html += '<div class="check-item" onclick="toggleCheck(\'' + step.id + '\',\'' + opt.value + '\')"><input type="checkbox" ' + (isC ? "checked" : "") + ' tabindex="-1"><label>' + opt.label + '</label></div>';
+        });
+        html += '</div>';
+        if (i === currentStep) {
+          var has = checked.length > 0;
+          html += '<button class="next-btn" onclick="nextStep(' + i + ')" ' + (has ? "" : "disabled") + '>次へ ▶</button>';
+        }
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+  });
+
+  if (currentStep >= STEPS.length) {
+    var scores = calcScores(answers);
+    var ranked = rankDiseases(scores);
+    var maxScore = ranked.length > 0 ? ranked[0].score : 1;
+
+    html += '<div class="result-panel show">';
+    html += '<div class="result-header">📊 鑑別診断結果</div>';
+    html += '<div class="result-body">';
+
+    // レッドフラッグ バナー（上位に緊急疾患があれば警告）
+    var rfHits = ranked.filter(function(d){ return d.redFlag && getProbLevel(d.score, maxScore).level !== "low"; });
+    if (rfHits.length > 0) {
+      html += '<div class="redflag-banner"><div class="rf-title">🚩 レッドフラッグ ― 緊急対応を検討</div><ul>';
+      rfHits.forEach(function(d){
+        var msg = "";
+        if (d.key === "dvt") msg = "<strong>DVT疑い</strong>：肺塞栓リスク。エコー・D-ダイマーで早急に評価を。";
+        else if (d.key === "cellulitis") msg = "<strong>蜂窩織炎疑い</strong>：激痛・水疱・全身状態不良なら壊死性軟部組織感染を除外。";
+        else if (d.key === "angioedema") msg = "<strong>血管性浮腫</strong>：舌・喉頭に及べば気道緊急。ACE阻害薬の即時中止を検討。";
+        else if (d.key === "svc_syndrome") msg = "<strong>SVC症候群疑い</strong>：造影CTで原因（多くは悪性腫瘍）検索。呼吸・気道症状は緊急。";
+        html += '<li>' + msg + '</li>';
+      });
+      html += '</ul></div>';
+    }
+
+    html += '<p style="margin-bottom:14px; color:#555; font-size:0.9em;">入力された分布・経過・所見に基づく鑑別優先度です。確定診断には追加検査が必要です。</p>';
+
+    ranked.forEach(function(d){
+      var prob = getProbLevel(d.score, maxScore);
+      var rfTag = d.redFlag ? ' <span class="rf-tag">🚑 緊急鑑別</span>' : '';
+      html += '<div class="dx-card ' + prob.level + '"><div class="dx-name">' + d.emoji + ' ' + d.name + ' <span class="prob-badge">' + prob.label + '</span>' + rfTag + '</div>';
+      html += '<div class="dx-cat">分類: ' + d.category + '</div>';
+      html += '<div class="dx-detail">' + d.detail + '</div>';
+      html += '<div class="dx-workup">🔍 <strong>追加検査:</strong> ' + d.workup + '</div></div>';
+    });
+
+    html += '<div class="divider"></div>';
+    html += '<p style="font-size:0.82em; color:#888; line-height:1.6;">⚠️ 本ツールは臨床判断の補助を目的としており、確定診断を行うものではありません。<br>実臨床では病歴・身体所見・検査を総合した判断が必要です。</p>';
+    html += '</div></div>';
+  }
+
+  html += '<button class="reset-btn" onclick="resetAll()">🔄 最初からやり直す</button>';
+  app.innerHTML = html;
+
+  if (currentStep < STEPS.length) {
+    var el = document.getElementById("step-" + currentStep);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+  } else {
+    var panel = document.querySelector(".result-panel");
+    if (panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+function selectOption(stepId, value, stepIndex) {
+  answers[stepId] = value;
+  currentStep = stepIndex + 1;
+  render();
+}
+
+function toggleCheck(stepId, value) {
+  if (!answers[stepId]) answers[stepId] = [];
+  var arr = answers[stepId];
+  var idx = arr.indexOf(value);
+  if (value === "none" || value === "unknown") {
+    answers[stepId] = idx >= 0 ? [] : [value];
+  } else {
+    var ni = arr.indexOf("none"); if (ni >= 0) arr.splice(ni, 1);
+    var ui = arr.indexOf("unknown"); if (ui >= 0) arr.splice(ui, 1);
+    if (idx >= 0) arr.splice(idx, 1); else arr.push(value);
+  }
+  render();
+}
+
+function nextStep(stepIndex) { currentStep = stepIndex + 1; render(); }
+
+function resetAll() {
+  currentStep = 0;
+  Object.keys(answers).forEach(function(k){ delete answers[k]; });
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+render();
+</script>
+</body>
+</html>

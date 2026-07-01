@@ -1,9 +1,10 @@
-const CACHE_NAME = 'ddx-tools-v50';
+const CACHE_NAME = 'ddx-tools-v51';
 const ASSETS = [
   './',
   './index.html',
   './aki.html',
   './edema.html',
+  './edema_distribution.html',
   './hyponatremia.html',
   './hypernatremia.html',
   './hyperckemia.html',
