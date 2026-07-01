@@ -1,0 +1,683 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>むくみ（浮腫）の分布から原因を鑑別する</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* warm accent (tweakable) */
+  --accent: #FF7A59;
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, #ffffff);
+  --accent-line: color-mix(in srgb, var(--accent) 60%, #ffffff);
+  --accent-ink: color-mix(in srgb, var(--accent) 70%, #5a2418);
+
+  /* type scale — multiply all via --type-mult (base enlarged for mobile readability) */
+  --type-mult: 1.38;
+  --type-display: calc(96px * var(--type-mult));
+  --type-title:   calc(82px * var(--type-mult));
+  --type-heading: calc(60px * var(--type-mult));
+  --type-subtitle:calc(44px * var(--type-mult));
+  --type-body:    calc(38px * var(--type-mult));
+  --type-small:   calc(30px * var(--type-mult));
+  --type-label:   calc(27px * var(--type-mult));
+  --type-chapter: calc(210px * var(--type-mult));
+  --type-stat:    calc(150px * var(--type-mult));
+
+  --pad-x: 112px;
+  --pad-top: 58px;
+  --pad-bottom: 80px;
+  --gap-title: 24px;
+  --gap-item: 22px;
+
+  --grad-navy: linear-gradient(135deg, #1B3A5C 0%, #2C5AA0 100%);
+}
+
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#0c1622; }
+
+/* ---------- base slide ---------- */
+.slide{
+  box-sizing:border-box;
+  display:flex; flex-direction:column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--font-ja);
+  overflow:hidden;
+  position:relative;
+}
+.slide--navy{ background: var(--grad-navy); color: var(--white); }
+.slide--soft{ background: var(--bg-alt); }
+
+/* eyebrow — shared header marker across content slides */
+.eyebrow{
+  display:flex; align-items:center; gap:16px;
+  font-size: var(--type-label); font-weight:700; color: var(--blue);
+  letter-spacing:.04em;
+}
+.eyebrow::before{
+  content:""; width:18px; height:18px; border-radius:4px;
+  background: var(--accent); flex:none;
+}
+.eyebrow .num{ font-family: var(--font-en); color: var(--accent-ink); }
+
+.s-title{
+  font-size: var(--type-heading); line-height:1.22; color: var(--navy);
+  margin: var(--gap-title) 0 0; font-weight:700; letter-spacing:.01em;
+  text-wrap: pretty;
+}
+.slide--navy .s-title{ color:#fff; }
+
+.lead{
+  font-size: var(--type-body); line-height:1.7; color: var(--ink-2);
+  margin:0; text-wrap: pretty;
+}
+.muted{ color: var(--gray); }
+
+/* footer band w/ channel + page (decorative, consistent) */
+.slide__foot{
+  position:absolute; left: var(--pad-x); right: var(--pad-x); bottom: 40px;
+  display:flex; align-items:center; justify-content:space-between;
+  font-size: calc(24px * var(--type-mult)); color: var(--gray);
+  font-family: var(--font-ja);
+}
+.slide__foot .ch{ display:flex; align-items:center; gap:10px; }
+.slide__foot .cross{ color: var(--accent); font-weight:700; }
+.slide--navy .slide__foot{ color: rgba(255,255,255,.65); }
+.slide--navy .slide__foot .cross{ color:#fff; }
+
+/* ============ 1. COVER ============ */
+.cover{ justify-content:center; }
+.cover__badge{
+  display:inline-flex; align-items:center; gap:14px; align-self:flex-start;
+  background: rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.28);
+  color:#fff; padding:14px 26px; border-radius:999px;
+  font-size: var(--type-label); font-weight:700;
+}
+.cover__badge .cross{ color: var(--accent); font-size:1.2em; }
+.cover__title{
+  font-size: var(--type-display); line-height:1.18; color:#fff; font-weight:700;
+  margin:42px 0 0; letter-spacing:.01em; text-wrap:balance; max-width:24ch;
+}
+.cover__title .hl{ color: var(--accent); }
+.cover__sub{
+  font-size: var(--type-subtitle); color: rgba(255,255,255,.82);
+  margin:34px 0 0; font-weight:400;
+}
+.cover__meta{
+  display:flex; gap:34px; align-items:center; margin-top:60px;
+  font-size: var(--type-small); color: rgba(255,255,255,.78);
+}
+.cover__meta .ep{
+  font-family: var(--font-en); font-weight:700; color:#fff;
+  background: var(--accent); padding:8px 20px; border-radius:8px;
+}
+.cover__blob{
+  position:absolute; right:-160px; top:-160px; width:620px; height:620px;
+  border-radius:50%; background: radial-gradient(circle at 30% 30%, rgba(255,122,89,.5), rgba(255,122,89,0) 70%);
+  pointer-events:none;
+}
+
+/* ============ 2. THEME / CONCLUSION FIRST ============ */
+.theme__body{ display:flex; flex-direction:column; gap: var(--gap-title); margin-top: 28px; flex:1; justify-content:center; }
+.theme__q{ font-size: var(--type-title); line-height:1.25; color: var(--navy); font-weight:700; max-width:22ch; text-wrap:balance; }
+.theme__q .hl{ color: var(--accent-ink); border-bottom: 8px solid var(--accent-line); }
+.concl{
+  display:flex; align-items:flex-start; gap:28px;
+  background: var(--accent-soft); border-left: 12px solid var(--accent);
+  border-radius: 10px; padding: 32px 44px;
+}
+.concl__tag{
+  flex:none; background: var(--accent); color:#fff; font-weight:700;
+  font-size: var(--type-small); padding:10px 22px; border-radius:8px;
+}
+.concl__text{ font-size: var(--type-subtitle); line-height:1.5; color: var(--navy-ink); font-weight:700; margin:0; }
+
+/* ============ 3. AGENDA ============ */
+.agenda__list{ display:flex; flex-direction:column; gap:20px; margin-top:30px; }
+.agenda__item{
+  display:flex; align-items:center; gap:30px;
+  background: var(--white); border:2px solid var(--line); border-left:8px solid var(--blue);
+  border-radius:10px; padding: 22px 40px; box-shadow: var(--shadow-sm);
+}
+.agenda__num{
+  flex:none; width:70px; height:70px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background: var(--blue-soft); color: var(--blue);
+  font-family: var(--font-en); font-size: calc(50px * var(--type-mult)); font-weight:700;
+}
+.agenda__item:nth-child(2) .agenda__num{ background: var(--accent-soft); color: var(--accent-ink); }
+.agenda__txt{ font-size: var(--type-subtitle); color: var(--navy); font-weight:700; }
+.agenda__txt small{ display:block; font-size: var(--type-small); color: var(--gray); font-weight:400; margin-top:8px; }
+
+/* ============ 4. CHAPTER DIVIDER ============ */
+.chapter{ justify-content:center; }
+.chapter__num{
+  font-family: var(--font-en); font-size: var(--type-chapter); line-height:.9;
+  font-weight:700; color: var(--accent); margin:0;
+}
+.chapter__kicker{ font-size: var(--type-subtitle); color: rgba(255,255,255,.75); font-weight:700; letter-spacing:.1em; }
+.chapter__title{ font-size: var(--type-title); color:#fff; font-weight:700; margin:18px 0 0; max-width:20ch; text-wrap:balance; }
+.chapter__rule{ width:120px; height:8px; background: var(--accent); border-radius:4px; margin-top:40px; }
+
+/* ============ 5. BODY 1 COLUMN ============ */
+.body1{ }
+.body1__main{ margin-top: 26px; max-width: 1640px; }
+.body1 .lead{ margin-bottom: 20px; }
+.important-box.lg{
+  background: var(--blue-tint); border-left: 12px solid var(--blue);
+  border-radius: 10px; padding: 26px 40px; margin:0;
+}
+.important-box.lg .ttl{ display:flex; align-items:center; gap:14px; font-size: var(--type-small); font-weight:700; color: var(--blue); margin-bottom:8px; }
+.important-box.lg p{ font-size: var(--type-body); line-height:1.6; color: var(--ink-2); margin:0; }
+
+/* ============ 6. BODY + ILLUSTRATION 2COL ============ */
+.cols2{ display:grid; grid-template-columns: 1.28fr 0.72fr; gap:54px; align-items:center; margin-top:24px; flex:1; }
+.cols2__text{ display:flex; flex-direction:column; gap: 18px; }
+.cols2__text .lead{ font-size: var(--type-body); }
+.point-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:18px; }
+.point-list li{ display:flex; align-items:flex-start; gap:20px; font-size: var(--type-body); color: var(--ink-2); line-height:1.5; }
+.point-list li::before{ content:"✓"; flex:none; width:44px; height:44px; border-radius:50%; background: var(--accent-soft); color: var(--accent-ink); font-weight:700; display:flex; align-items:center; justify-content:center; font-size:.8em; margin-top:2px; }
+.cols2 image-slot{ width:100%; height:460px; border:3px dashed var(--line-soft); border-radius:14px; }
+
+/* ============ 7. BODY MECHANISM DIAGRAM ============ */
+.diagram{ margin-top:30px; flex:1; display:flex; flex-direction:column; }
+.vessels{ display:grid; grid-template-columns:1fr auto 1fr; gap:50px; align-items:center; flex:1; }
+.vessel-card{ display:flex; flex-direction:column; align-items:center; gap:28px; }
+.vessel{ position:relative; width:340px; height:340px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+.vessel--normal{ background: #d9e6f5; box-shadow: inset 0 0 0 6px var(--blue); }
+.vessel--normal .lumen{ width:230px; height:230px; }
+.vessel--hbp{ background: #f3d6cf; box-shadow: inset 0 0 0 6px var(--accent); }
+.vessel--hbp .wall2{ position:absolute; width:300px; height:300px; border-radius:50%; background:#e8b8ac; }
+.vessel--hbp .lumen{ width:130px; height:130px; z-index:1; }
+.lumen{ border-radius:50%; background: radial-gradient(circle at 35% 30%, #e2564e, #c0392b); box-shadow:0 4px 14px rgba(192,57,43,.35); }
+.vessel-card .v-label{ font-size: var(--type-subtitle); font-weight:700; color: var(--navy); }
+.vessel-card .v-sub{ font-size: var(--type-small); color: var(--gray); text-align:center; line-height:1.5; margin-top:-12px; }
+.vessel-card .v-label .dot{ color: var(--accent); }
+.diagram__arrow{ font-family: var(--font-en); font-size: calc(90px * var(--type-mult)); color: var(--gray-2); font-weight:300; }
+.diagram__cap{ margin-top:30px; text-align:center; font-size: var(--type-small); color: var(--gray); }
+.diagram__cap .em{ color: var(--accent-ink); font-weight:700; }
+
+/* ============ 8. COMPARISON TABLE ============ */
+.tablewrap{ margin-top:26px; flex:1; }
+table.cmp{ width:100%; border-collapse:collapse; font-size: var(--type-small); }
+table.cmp th, table.cmp td{ text-align:left; padding:16px 28px; vertical-align:middle; line-height:1.4; }
+table.cmp thead th{ background: var(--navy); color:#fff; font-weight:700; font-size: var(--type-body); }
+table.cmp thead th:first-child{ border-top-left-radius:10px; }
+table.cmp thead th:last-child{ border-top-right-radius:10px; }
+table.cmp tbody td{ border-bottom:1px solid var(--line); color: var(--ink-2); }
+table.cmp tbody tr:nth-child(even){ background: var(--bg-muted); }
+table.cmp tbody td:first-child{ font-weight:700; color: var(--navy); font-size: var(--type-body); white-space:nowrap; }
+table.cmp .pill{ display:inline-block; font-size: calc(24px * var(--type-mult)); font-weight:700; padding:6px 16px; border-radius:999px; }
+.pill--easy{ background: var(--green-soft); color:#1c7a3a; }
+.pill--mid{ background: var(--accent-soft); color: var(--accent-ink); }
+
+/* ============ 9. DATA / CHART ============ */
+.chart{ margin-top:40px; flex:1; display:flex; flex-direction:column; }
+.chart__plot{ flex:1; display:flex; align-items:flex-end; justify-content:space-between; gap:40px; padding: 30px 20px 0; border-bottom:3px solid var(--line); }
+.bar{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; gap:18px; }
+.bar__val{ font-family: var(--font-en); font-size: var(--type-subtitle); font-weight:700; color: var(--navy); }
+.bar__col{ width:100%; max-width:150px; border-radius:10px 10px 0 0; background: var(--blue); transition: height .3s; }
+.bar--peak .bar__col{ background: var(--accent); }
+.bar--peak .bar__val{ color: var(--accent-ink); }
+.chart__labels{ display:flex; justify-content:space-between; gap:40px; margin-top:22px; }
+.chart__labels span{ flex:1; text-align:center; font-size: var(--type-small); color: var(--ink-2); font-weight:700; max-width:150px; margin:0 auto; }
+.chart__note{ margin-top:26px; font-size: calc(24px * var(--type-mult)); color: var(--gray); }
+
+/* ============ 10. DISCLAIMER ============ */
+.disc{ justify-content:center; align-items:center; text-align:center; background: var(--bg-alt); }
+.disc__icon{ font-size: calc(96px * var(--type-mult)); line-height:1; }
+.disc__tag{ font-size: var(--type-subtitle); font-weight:700; color: var(--navy); margin:28px 0 0; letter-spacing:.06em; }
+.disc__box{
+  margin-top:38px; max-width:1180px; background:#fff; border:2px solid var(--line);
+  border-top: 10px solid var(--yellow); border-radius:12px; padding:48px 56px;
+  box-shadow: var(--shadow-md);
+}
+.disc__box p{ font-size: var(--type-body); line-height:1.7; color: var(--ink-2); margin:0; text-wrap:pretty; }
+.disc__box .strong{ color: var(--navy); font-weight:700; }
+
+/* ============ 11. SUMMARY ============ */
+.sum__list{ display:grid; grid-template-columns: repeat(3,1fr); gap:36px; margin-top:54px; flex:1; }
+.sum__card{
+  background:#fff; border:2px solid var(--line); border-top:10px solid var(--blue);
+  border-radius:12px; padding:42px 36px; display:flex; flex-direction:column; gap:22px;
+  box-shadow: var(--shadow-sm);
+}
+.sum__card:nth-child(2){ border-top-color: var(--accent); }
+.sum__n{ font-family: var(--font-en); font-size: calc(60px * var(--type-mult)); font-weight:700; color: var(--blue-soft); line-height:1; }
+.sum__card:nth-child(2) .sum__n{ color: var(--accent-soft); }
+.sum__h{ font-size: var(--type-subtitle); font-weight:700; color: var(--navy); line-height:1.3; }
+.sum__p{ font-size: var(--type-small); color: var(--ink-2); line-height:1.6; margin:0; }
+
+/* ============ 12. ENDING / CTA ============ */
+.end{ justify-content:center; align-items:center; text-align:center; }
+.end__cross{ font-size: var(--type-subtitle); color: var(--accent); font-weight:700; }
+.end__h{ font-size: var(--type-title); color:#fff; font-weight:700; margin:18px 0 0; text-wrap:balance; }
+.end__sub{ font-size: var(--type-subtitle); color: rgba(255,255,255,.82); margin:26px 0 0; font-weight:400; }
+.end__cta{ display:flex; gap:30px; margin-top:64px; }
+.btn{ display:inline-flex; align-items:center; gap:16px; font-size: var(--type-subtitle); font-weight:700; padding:24px 48px; border-radius:999px; }
+.btn--sub{ background: var(--accent); color:#fff; }
+.btn--like{ background: rgba(255,255,255,.14); color:#fff; border:2px solid rgba(255,255,255,.4); }
+.end__next{ margin-top:56px; font-size: var(--type-small); color: rgba(255,255,255,.7); }
+.end__next b{ color:#fff; }
+
+/* ============ EDITORIAL POLISH (shared utilities / 2026-06-11) ============ */
+.eyebrow .en{ font-family: var(--font-en); color: var(--accent-ink); letter-spacing:.15em; text-transform:uppercase; }
+.slide--navy .eyebrow{ color: rgba(255,255,255,.85); }
+.slide--navy .eyebrow .en{ color:#fff; }
+
+.hairline{ height:1px; background: var(--navy); opacity:.25; margin: 18px 0 0; border:0; }
+.slide--navy .hairline{ background:#fff; opacity:.3; }
+
+.chapter-ghost{
+  position:absolute; top: 30px; right: var(--pad-x);
+  font-family: var(--font-en); font-weight:700; line-height:.8;
+  font-size: calc(150px * var(--type-mult)); color: var(--navy);
+  opacity:.06; pointer-events:none; user-select:none;
+}
+.slide--navy .chapter-ghost{ color:#fff; opacity:.10; }
+
+.hl-underline{ border-bottom: 6px solid var(--accent-line); }
+
+/* ============ 13. STAT HERO ============ */
+.stathero{ justify-content:center; align-items:center; text-align:center; }
+.stathero__num{ font-family: var(--font-en); font-size: var(--type-stat); font-weight:900; color: var(--accent); line-height:.95; }
+.stathero__num .unit{ font-size:.4em; color: var(--navy); font-weight:700; margin-left:.1em; }
+.stathero__msg{ font-size: var(--type-heading); color: var(--navy); font-weight:700; margin:24px 0 0; max-width:24ch; text-wrap:balance; }
+.stathero__src{ font-size: var(--type-small); color: var(--gray); margin-top:30px; }
+
+/* ============ 14. Q&A / MYTH ============ */
+.qa{ display:flex; flex-direction:column; gap:34px; margin-top:30px; flex:1; justify-content:center; }
+.qa__row{ display:flex; align-items:flex-start; gap:28px; border-radius:14px; padding:34px 44px; }
+.qa__row.myth{ background: var(--red-soft); border-left:12px solid var(--red); }
+.qa__row.fact{ background: var(--green-soft); border-left:12px solid var(--green); }
+.qa__mark{ flex:none; font-size: var(--type-heading); font-weight:900; line-height:1; }
+.qa__row.myth .qa__mark{ color: var(--red); }
+.qa__row.fact .qa__mark{ color: var(--green); }
+.qa__txt{ font-size: var(--type-subtitle); color: var(--ink-2); font-weight:700; line-height:1.4; margin:0; }
+
+/* ============ 16. TRIAGE 3-TIER ============ */
+.triage{ display:flex; flex-direction:column; gap:18px; margin-top:24px; flex:1; justify-content:center; }
+.triage__row{ display:flex; align-items:center; gap:28px; border-radius:12px; padding:22px 36px; }
+.triage__row .ic{ flex:none; font-size: calc(60px * var(--type-mult)); line-height:1; }
+.triage__row .tt{ font-size: var(--type-subtitle); font-weight:700; }
+.triage__row .ds{ font-size: var(--type-small); color: var(--ink-2); margin:6px 0 0; }
+.triage--er{ background:#fdf0f1; border-left:14px solid var(--red); }
+.triage--er .tt{ color: var(--red); }
+.triage--soon{ background: var(--orange-soft); border-left:14px solid var(--orange); }
+.triage--soon .tt{ color: var(--orange); }
+.triage--watch{ background: var(--green-soft); border-left:14px solid var(--green); }
+.triage--watch .tt{ color:#1c7a3a; }
+
+/* ============ 25-29. SVG DIAGRAMS (shared) ============ */
+.diag{ margin-top:30px; flex:1; display:flex; align-items:center; justify-content:center; }
+.diag__svg{ width:100%; height:100%; max-height:760px; }
+.diag__svg text{ font-family: var(--font-ja); }
+
+/* entrance animation — fade-up を上位互換で拡張 */
+@media (prefers-reduced-motion:no-preference){
+  [data-deck-active] .anim{ animation: fade-up .5s both; }
+  [data-deck-active] .anim2{ animation: fade-up .5s .12s both; }
+  [data-deck-active] .anim3{ animation: fade-up .5s .24s both; }
+  [data-deck-active] .anim4{ animation: fade-up .5s .36s both; }
+  [data-deck-active] .anim5{ animation: fade-up .5s .48s both; }
+  [data-deck-active] .anim6{ animation: fade-up .5s .60s both; }
+  [data-deck-active] .anim-i{ animation: fade-up .5s both; animation-delay: calc(var(--i,0) * .1s); }
+  [data-deck-active] .a-fade { animation-name: a-fade; }
+  [data-deck-active] .a-up   { animation-name: fade-up; }
+  [data-deck-active] .a-down { animation-name: a-down; }
+  [data-deck-active] .a-right{ animation-name: a-right; }
+  [data-deck-active] .a-left { animation-name: a-left; }
+  [data-deck-active] .a-zoom { animation-name: a-zoom; }
+  [data-deck-active] .a-pop  { animation-name: a-pop; animation-timing-function: cubic-bezier(.34,1.56,.64,1); }
+  [data-deck-active] .a-blur { animation-name: a-blur; }
+  [data-deck-active] .grow-y { transform-origin:bottom center; animation: grow-y .7s .2s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .grow-x { transform-origin:left center;   animation: grow-x .55s .25s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .nudge-x{ animation: nudge-x .9s .35s ease-in-out both; }
+}
+.grow-y{ transform-origin:bottom center; } .grow-x{ transform-origin:left center; }
+@keyframes fade-up{ from{ opacity:0; transform: translateY(16px);} to{ opacity:1; transform:none;} }
+@keyframes a-fade { from{ opacity:0; } to{ opacity:1; } }
+@keyframes a-down { from{ opacity:0; transform: translateY(-16px);} to{ opacity:1; transform:none; } }
+@keyframes a-right{ from{ opacity:0; transform: translateX(-28px);} to{ opacity:1; transform:none; } }
+@keyframes a-left { from{ opacity:0; transform: translateX(28px); } to{ opacity:1; transform:none; } }
+@keyframes a-zoom { from{ opacity:0; transform: scale(.94);       } to{ opacity:1; transform:none; } }
+@keyframes a-pop  { from{ opacity:0; transform: scale(.8);        } to{ opacity:1; transform:none; } }
+@keyframes a-blur { from{ opacity:0; filter: blur(12px); transform: translateY(10px);} to{ opacity:1; filter: blur(0); transform:none; } }
+@keyframes grow-y { from{ transform: scaleY(0);} to{ transform: scaleY(1);} }
+@keyframes grow-x { from{ transform: scaleX(0);} to{ transform: scaleX(1);} }
+@keyframes nudge-x{ 0%{ transform:none;} 55%{ transform: translateX(10px);} 100%{ transform:none;} }
+
+/* tweaks mount */
+#tweaks-root{ position:fixed; inset:0; pointer-events:none; z-index:9999; }
+#tweaks-root > *{ pointer-events:auto; }
+</style>
+</head>
+<body style="font-size: 8px">
+
+<deck-stage width="1920" height="1080">
+
+  <!-- ===== 1. 表紙（フック） ===== -->
+  <section data-label="表紙" data-screen-label="01 表紙" class="slide slide--navy cover">
+    <div class="cover__blob"></div>
+    <div class="cover__badge anim"><span class="cross">✚</span><span>医知創造ラボ</span></div>
+    <h1 class="cover__title anim2 a-blur">片側？両側？顔？<br>むくみの原因を<span class="hl">"分布"</span>から見分ける</h1>
+    <p class="cover__sub anim3">どこが腫れているかで、鑑別リストは大きく絞れる</p>
+    <div class="cover__meta anim3">
+      <span class="ep">浮腫の鑑別</span>
+      <span>監修：神経内科専門医</span>
+      <span>研修医・総合内科向け</span>
+    </div>
+  </section>
+
+  <!-- ===== 2. テーマ・結論先出し ===== -->
+  <section data-label="テーマ・結論" data-screen-label="02 テーマ・結論" class="slide">
+    <div class="eyebrow anim">今日のテーマ<span class="en">TODAY'S POINT</span></div>
+    <div class="theme__body">
+      <h2 class="theme__q anim">そのむくみ、<br><span class="hl-underline">どこが腫れている</span>？</h2>
+      <div class="concl anim2" data-cue="この分布と左右差に、「急に出たのか」">
+        <span class="concl__tag">結論</span>
+        <p class="concl__text"><strong>分布と左右差</strong>に<strong>「急性か」</strong>を足すだけで、<br>原因の当たりがつく。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>02</span></div>
+  </section>
+
+  <!-- ===== 3. この動画でわかること（目次・5つ） ===== -->
+  <section data-label="目次" data-screen-label="03 目次" class="slide slide--soft">
+    <div class="eyebrow anim" style="margin-top:0;">この動画でわかること<span class="en">AGENDA</span></div>
+    <h2 class="s-title anim" style="font-size:52px; margin-top:14px;">5つの視点で、<span class="hl-underline">むくみを整理</span></h2>
+    <div class="agenda__list" style="gap:9px; margin-top:14px;">
+      <div style="display:contents">
+        <div class="agenda__item anim-i a-right" style="--i:1; padding:11px 32px; gap:24px;"><div class="agenda__num" style="width:50px;height:50px;font-size:38px;">1</div><div class="agenda__txt" style="font-size:44px;">なぜ分布で分けるのか<small style="margin-top:1px;font-size:28px;">4つの機序が分布に現れる</small></div></div>
+        <div class="agenda__item anim-i a-right" style="--i:2; padding:11px 32px; gap:24px;"><div class="agenda__num" style="width:50px;height:50px;font-size:38px;">2</div><div class="agenda__txt" style="font-size:44px;">両側性・全身性の浮腫<small style="margin-top:1px;font-size:28px;">心・肝・腎・甲状腺・薬剤</small></div></div>
+      </div>
+      <div style="display:contents">
+        <div class="agenda__item anim-i a-right" style="--i:3; padding:11px 32px; gap:24px;"><div class="agenda__num" style="width:50px;height:50px;font-size:38px;">3</div><div class="agenda__txt" style="font-size:44px;">片側性の浮腫の詰め方<small style="margin-top:1px;font-size:28px;">DVT・蜂窩織炎・リンパ浮腫</small></div></div>
+        <div class="agenda__item anim-i a-right" style="--i:4; padding:11px 32px; gap:24px;"><div class="agenda__num" style="width:50px;height:50px;font-size:38px;">4</div><div class="agenda__txt" style="font-size:44px;">顔面・上半身の浮腫<small style="margin-top:1px;font-size:28px;">血管性浮腫・上大静脈症候群</small></div></div>
+        <div class="agenda__item anim-i a-right" style="--i:5; padding:11px 32px; gap:24px;"><div class="agenda__num" style="width:50px;height:50px;font-size:38px;">5</div><div class="agenda__txt" style="font-size:44px;">修飾因子とレッドフラッグ<small style="margin-top:1px;font-size:28px;">圧痕性・経過・薬剤・緊急</small></div></div>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>03</span></div>
+  </section>
+
+  <!-- ===== 4. 章扉① ===== -->
+  <section data-label="章扉①" data-screen-label="04 章扉①" class="slide slide--navy chapter">
+    <div class="cover__blob"></div>
+    <div class="eyebrow anim"><span class="en">CHAPTER 01</span></div>
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num anim a-pop">01</h2>
+    <h3 class="chapter__title anim2">なぜ分布で<span class="hl-underline">分ける</span>のか</h3>
+    <div class="chapter__rule anim3 grow-x"></div>
+  </section>
+
+  <!-- ===== 5. ① 浮腫の4機序（本文＋強調ボックス） ===== -->
+  <section data-label="4機序" data-screen-label="05 4機序" class="slide">
+    <div class="chapter-ghost">05</div>
+    <div class="eyebrow anim">浮腫が生じるしくみ<span class="en">MECHANISM</span></div>
+    <h2 class="s-title anim">むくみは<span class="hl-underline">4つの機序</span>から生まれる</h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <p class="lead anim2" data-cue="むくみは、毛細血管での濾過が">毛細血管での濾過が、リンパによる排液を上回ると浮腫が生じます。その背景には次の4つの機序があります。</p>
+      <div class="important-box lg anim3" data-cue="一つ目は静水圧の上昇で、心不全">
+        <div class="ttl">💧 4つの機序</div>
+        <p>① 静水圧の上昇（心不全・静脈閉塞）／② 膠質浸透圧の低下（低アルブミン：肝硬変・ネフローゼ・低栄養）／③ 血管透過性の亢進（炎症・血管性浮腫）／④ リンパ流の障害（リンパ浮腫）。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>05</span></div>
+  </section>
+
+  <!-- ===== 6. ① 分布3分岐マップ（SVG） ===== -->
+  <section data-label="分布3分岐" data-screen-label="06 分布3分岐" class="slide slide--soft">
+    <div class="chapter-ghost">06</div>
+    <div class="eyebrow anim">分布という最初の分岐<span class="en">DISTRIBUTION MAP</span></div>
+    <h2 class="s-title anim">「どこが腫れているか」で<span class="hl-underline">3方向</span>へ</h2>
+    <hr class="hairline">
+    <div class="diag">
+      <svg class="diag__svg anim2 a-zoom" data-cue="機序の違いは、そのまま分布の違いとして" viewBox="0 0 1200 620" preserveAspectRatio="xMidYMid meet">
+        <rect x="426" y="20" width="348" height="96" rx="18" fill="var(--navy)"/>
+        <text x="600" y="64" fill="#fff" font-size="36" text-anchor="middle" font-weight="700">浮腫の分布は？</text>
+        <text x="600" y="102" fill="#cdd8e6" font-size="28" text-anchor="middle">左右差・部位を見る</text>
+        <line x1="600" y1="116" x2="200" y2="210" stroke="var(--line-soft)" stroke-width="4"/>
+        <line x1="600" y1="116" x2="600" y2="210" stroke="var(--line-soft)" stroke-width="4"/>
+        <line x1="600" y1="116" x2="1000" y2="210" stroke="var(--line-soft)" stroke-width="4"/>
+        <rect x="40" y="210" width="320" height="110" rx="16" fill="#dbe9fb" stroke="var(--blue)" stroke-width="3"/>
+        <text x="200" y="258" fill="var(--navy)" font-size="36" text-anchor="middle" font-weight="700">両側性・対称性</text>
+        <text x="200" y="298" fill="var(--navy)" font-size="30" text-anchor="middle">＝全身性を考える</text>
+        <rect x="440" y="210" width="320" height="110" rx="16" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="3"/>
+        <text x="600" y="258" fill="var(--accent-ink)" font-size="36" text-anchor="middle" font-weight="700">片側性（左右差）</text>
+        <text x="600" y="298" fill="var(--accent-ink)" font-size="30" text-anchor="middle">＝局所性を考える</text>
+        <rect x="840" y="210" width="320" height="110" rx="16" fill="#eaf7f0" stroke="var(--green)" stroke-width="3"/>
+        <text x="1000" y="258" fill="#20603f" font-size="36" text-anchor="middle" font-weight="700">顔面・上半身</text>
+        <text x="1000" y="298" fill="#20603f" font-size="30" text-anchor="middle">＝上大静脈系を考える</text>
+        <text x="200" y="382" fill="var(--ink-2)" font-size="30" text-anchor="middle">心・肝・腎・甲状腺</text>
+        <text x="200" y="424" fill="var(--ink-2)" font-size="30" text-anchor="middle">低栄養・薬剤・特発性</text>
+        <text x="600" y="382" fill="var(--ink-2)" font-size="30" text-anchor="middle">DVT・蜂窩織炎</text>
+        <text x="600" y="424" fill="var(--ink-2)" font-size="30" text-anchor="middle">リンパ浮腫・静脈不全</text>
+        <text x="1000" y="382" fill="var(--ink-2)" font-size="30" text-anchor="middle">血管性浮腫・SVC</text>
+        <text x="1000" y="424" fill="var(--ink-2)" font-size="30" text-anchor="middle">ネフローゼ・粘液水腫</text>
+        <rect x="356" y="486" width="488" height="66" rx="12" fill="var(--red-soft)" stroke="var(--red)" stroke-width="3"/>
+        <text x="600" y="528" fill="var(--red)" font-size="30" text-anchor="middle" font-weight="700">🚩 急性・喉頭・上半身は緊急</text>
+      </svg>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>06</span></div>
+  </section>
+
+  <!-- ===== 7. 章扉② ===== -->
+  <section data-label="章扉②" data-screen-label="07 章扉②" class="slide slide--navy chapter">
+    <div class="cover__blob"></div>
+    <div class="eyebrow anim"><span class="en">CHAPTER 02</span></div>
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num anim a-pop">02</h2>
+    <h3 class="chapter__title anim2">両側性・全身性の<span class="hl-underline">浮腫</span></h3>
+    <div class="chapter__rule anim3 grow-x"></div>
+  </section>
+
+  <!-- ===== 8. ② 両側性の比較表 ===== -->
+  <section data-label="両側性比較表" data-screen-label="08 両側性比較表" class="slide slide--soft">
+    <div class="chapter-ghost">08</div>
+    <div class="eyebrow anim">両側対称なら全身性<span class="en">SYSTEMIC CAUSES</span></div>
+    <h2 class="s-title anim">手がかりと、<span class="hl-underline">次の一手</span></h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2">
+      <table class="cmp">
+        <thead>
+          <tr><th>疾患</th><th>手がかり</th><th>次の一手</th></tr>
+        </thead>
+        <tbody>
+          <tr data-cue="心不全なら、JVD・起座呼吸"><td>心不全</td><td>JVD・起座呼吸・肺うっ血</td><td><span class="pill pill--mid">BNP・心エコー</span></td></tr>
+          <tr data-cue="肝硬変なら、腹水が優位"><td>肝硬変</td><td>腹水優位・黄疸・脾腫</td><td><span class="pill pill--easy">Alb・腹部エコー</span></td></tr>
+          <tr data-cue="ネフローゼなら、朝の眼瞼"><td>ネフローゼ</td><td>朝の眼瞼・顔面・泡沫尿</td><td><span class="pill pill--mid">尿蛋白・Alb</span></td></tr>
+          <tr data-cue="甲状腺低下なら、非圧痕性"><td>甲状腺低下</td><td>非圧痕性・寒がり・徐脈</td><td><span class="pill pill--easy">TSH・FT4</span></td></tr>
+          <tr data-cue="薬剤性なら、両側下腿で"><td>薬剤性</td><td>両側下腿・薬剤開始と時間的関連</td><td><span class="pill pill--mid">薬剤歴・被疑薬中止</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="chart__note anim3" style="margin-top:22px;">基本検査：血算・尿・電解質・Cr・血糖・TSH・Alb（Ely 2006）</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>08</span></div>
+  </section>
+
+  <!-- ===== 9. ② 見落とし（Q&A） ===== -->
+  <section data-label="両側の見落とし" data-screen-label="09 両側の見落とし" class="slide">
+    <div class="chapter-ghost">09</div>
+    <div class="eyebrow anim">見落とされやすい2つ<span class="en">EASY TO MISS</span></div>
+    <h2 class="s-title anim">両側性で<span class="hl-underline">忘れがちな原因</span></h2>
+    <hr class="hairline">
+    <div class="qa" style="margin-top:24px; gap:26px;">
+      <div class="qa__row fact anim" data-cue="閉塞性睡眠時無呼吸、OSAです"><div class="qa__mark">◯</div><p class="qa__txt">OSAは肺高血圧がなくても、両側下腿浮腫を起こしうる</p></div>
+      <div class="qa__row fact anim2" data-cue="月経から閉経の時期の女性でもっとも多い"><div class="qa__mark">◯</div><p class="qa__txt">月経〜閉経期の女性で最多の両側浮腫は特発性浮腫<br>（立位で増悪・除外診断）</p></div>
+    </div>
+    <p class="chart__note anim3" style="margin-top:24px;">Trayes 2013（OSA）／Ely 2006（特発性浮腫・見落とされやすい肺高血圧）</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>09</span></div>
+  </section>
+
+  <!-- ===== 10. 章扉③ ===== -->
+  <section data-label="章扉③" data-screen-label="10 章扉③" class="slide slide--navy chapter">
+    <div class="cover__blob"></div>
+    <div class="eyebrow anim"><span class="en">CHAPTER 03</span></div>
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num anim a-pop">03</h2>
+    <h3 class="chapter__title anim2">片側性の浮腫の<span class="hl-underline">詰め方</span></h3>
+    <div class="chapter__rule anim3 grow-x"></div>
+  </section>
+
+  <!-- ===== 11. ③ DVT 数値ヒーロー ===== -->
+  <section data-label="DVT数値" data-screen-label="11 DVT数値" class="slide stathero slide--soft">
+    <div class="eyebrow"><span class="en">KEY NUMBER — DVT</span></div>
+    <div class="stathero__num anim a-pop" data-cue="片側で、急に出た腫れを見たら">71<span class="unit">%</span></div>
+    <p class="stathero__msg anim2" data-cue="DVTでは、腫れが手がかりになる">片側急性はまずDVT。<br><span class="hl-underline">腫脹が71%</span>・引きつれ様不快感が53%</p>
+    <p class="stathero__src anim2" data-cue="評価は、Wellsスコアと">Wells＋D-ダイマー＋圧迫エコーで評価<br>Chopard R, et al. JAMA. 2020</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>11</span></div>
+  </section>
+
+  <!-- ===== 12. ③ 蜂窩織炎の誤解（Q&A） ===== -->
+  <section data-label="蜂窩織炎の誤解" data-screen-label="12 蜂窩織炎の誤解" class="slide">
+    <div class="chapter-ghost">12</div>
+    <div class="eyebrow anim">よくある誤解<span class="en">RED LEG</span></div>
+    <h2 class="s-title anim">「両側の赤い脚」＝<span class="hl-underline">両側蜂窩織炎ではない</span></h2>
+    <hr class="hairline">
+    <div class="qa" style="margin-top:24px; gap:26px;">
+      <div class="qa__row myth anim" data-cue="「両側の赤い脚だから、両側の蜂窩織炎だ」"><div class="qa__mark">✕</div><p class="qa__txt">両下腿が赤い＝両側蜂窩織炎として抗菌薬を開始</p></div>
+      <div class="qa__row fact anim2" data-cue="蜂窩織炎と診断された症例のおよそ3分の1"><div class="qa__mark">◯</div><p class="qa__txt">蜂窩織炎の約1/3は偽蜂窩織炎。<br>両側の赤い脚はまずうっ滞性皮膚炎を考える</p></div>
+    </div>
+    <p class="chart__note anim3" style="margin-top:24px;">Garcia 2021（蜂窩織炎診断の約1/3が偽蜂窩織炎）</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>12</span></div>
+  </section>
+
+  <!-- ===== 13. ③ リンパ浮腫・静脈不全（本文） ===== -->
+  <section data-label="リンパ浮腫" data-screen-label="13 リンパ浮腫" class="slide slide--soft">
+    <div class="chapter-ghost">13</div>
+    <div class="eyebrow anim">慢性の片側腫脹<span class="en">CHRONIC UNILATERAL</span></div>
+    <h2 class="s-title anim">リンパ浮腫と<span class="hl-underline">慢性静脈不全</span></h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <div class="important-box lg anim2" data-cue="一つはリンパ浮腫です。慢性で" style="margin-bottom:22px;">
+        <div class="ttl">🦶 リンパ浮腫</div>
+        <p>慢性・無痛性・非圧痕性。起点はStemmer徴候（感度92%・特異度57%）。陽性は有力だが、陰性でも除外はできない。</p>
+      </div>
+      <div class="important-box lg anim3" data-cue="もう一つは慢性静脈不全です" style="border-left-color:var(--accent); background:var(--accent-soft);">
+        <div class="ttl" style="color:var(--accent-ink)">🌆 慢性静脈不全</div>
+        <p>夕方・立位で増悪し、色素沈着・静脈瘤を伴う。高齢者の下肢浮腫で最も多い原因。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>13</span></div>
+  </section>
+
+  <!-- ===== 14. 章扉④ ===== -->
+  <section data-label="章扉④" data-screen-label="14 章扉④" class="slide slide--navy chapter">
+    <div class="cover__blob"></div>
+    <div class="eyebrow anim"><span class="en">CHAPTER 04</span></div>
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num anim a-pop">04</h2>
+    <h3 class="chapter__title anim2">顔面・上半身の<span class="hl-underline">浮腫</span></h3>
+    <div class="chapter__rule anim3 grow-x"></div>
+  </section>
+
+  <!-- ===== 15. ④ 顔面の緊急（トリアージ） ===== -->
+  <section data-label="顔面の緊急" data-screen-label="15 顔面の緊急" class="slide">
+    <div class="chapter-ghost">15</div>
+    <div class="eyebrow anim">顔面・上半身のレッドフラッグ<span class="en">EMERGENCY</span></div>
+    <h2 class="s-title anim">見逃すと危ない<span class="hl-underline">2つの緊急</span></h2>
+    <hr class="hairline">
+    <div class="triage" style="margin-top:20px;">
+      <div class="triage__row triage--er anim" data-cue="一つ目は血管性浮腫です。口唇">
+        <div class="ic">🚨</div>
+        <div><div class="tt">血管性浮腫（気道の緊急）</div><p class="ds">口唇・舌・喉頭に及べば気道閉塞。ACE阻害薬は年単位経過後でも発症し、通常のアレルギー治療が効きにくい。</p></div>
+      </div>
+      <div class="triage__row triage--soon anim2" data-cue="二つ目は上大静脈症候群、SVCです">
+        <div class="ic">⚠️</div>
+        <div><div class="tt">上大静脈症候群（SVC）</div><p class="ds">顔・頸・上肢の浮腫＋胸壁の側副血行＋前屈増悪。多くは悪性腫瘍で腫瘍緊急症。</p></div>
+      </div>
+    </div>
+    <p class="chart__note anim3" style="margin-top:16px;">Baram 2013（ACE阻害薬性血管性浮腫）／Wright 2023（悪性SVC症候群）</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>15</span></div>
+  </section>
+
+  <!-- ===== 16. ④ 薬剤性（Ca拮抗薬・本文） ===== -->
+  <section data-label="薬剤性" data-screen-label="16 薬剤性" class="slide slide--soft">
+    <div class="chapter-ghost">16</div>
+    <div class="eyebrow anim">修飾因子：薬剤歴<span class="en">DRUG-INDUCED</span></div>
+    <h2 class="s-title anim">両側下腿の圧痕性なら<span class="hl-underline">薬剤を疑う</span></h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <p class="lead anim2" data-cue="とくにジヒドロピリジン系のCa拮抗薬">ジヒドロピリジン系Ca拮抗薬は末梢浮腫の代表です。</p>
+      <div class="important-box lg anim3" data-cue="ニフェジピンがもっともむくみを起こしやすく">
+        <div class="ttl">💊 Ca拮抗薬の浮腫（Liang 2022）</div>
+        <p>71研究・56,283例のメタ解析で、ニフェジピンが最も浮腫を起こしやすく、ラシジピンが最少。ACE阻害薬/ARBの併用で浮腫リスクが低減する。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>16</span></div>
+  </section>
+
+  <!-- ===== 17. まとめ表（分布→疾患→次の一手） ===== -->
+  <section data-label="鑑別まとめ表" data-screen-label="17 鑑別まとめ表" class="slide">
+    <div class="chapter-ghost">17</div>
+    <div class="eyebrow anim">分布からの鑑別まとめ<span class="en">SUMMARY TABLE</span></div>
+    <h2 class="s-title anim">分布 → 疾患 → <span class="hl-underline">次の一手</span></h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2">
+      <table class="cmp">
+        <thead>
+          <tr><th>分布・左右差</th><th>まず考える疾患</th><th>次の一手</th></tr>
+        </thead>
+        <tbody>
+          <tr data-cue="両側・全身なら、心・腎・肝"><td>両側・全身</td><td>心・腎・肝・甲状腺・薬剤・OSA</td><td>JVD＋基本検査セット</td></tr>
+          <tr data-cue="片側・急性なら、DVTや蜂窩織炎"><td>片側・急性</td><td>DVT・蜂窩織炎</td><td>Wells＋Dダイマー＋エコー</td></tr>
+          <tr data-cue="片側・慢性なら、リンパ浮腫や静脈不全"><td>片側・慢性</td><td>リンパ浮腫・静脈不全</td><td>Stemmer徴候・色素沈着</td></tr>
+          <tr data-cue="顔面なら、血管性浮腫やネフローゼ"><td>顔面</td><td>血管性浮腫・ネフローゼ</td><td>気道評価・ACE阻害薬歴</td></tr>
+          <tr data-cue="上半身なら、上大静脈症候群を考え"><td>上半身</td><td>上大静脈症候群</td><td>側副血行の確認・造影CT</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>17</span></div>
+  </section>
+
+  <!-- ===== 18. 免責事項 ===== -->
+  <section data-label="免責" data-screen-label="18 免責" class="slide disc">
+    <div class="disc__icon anim">⚖️</div>
+    <p class="disc__tag anim">ご視聴にあたって</p>
+    <div class="disc__box anim2">
+      <p>本動画は<span class="strong">医療従事者向けの教育・知識整理</span>を目的とした情報提供であり、特定の患者の診断・治療方針を保証するものではありません。数値・比率は各コホート研究・総説に基づく目安です。個別の判断は、最新のガイドラインと各症例の病歴・身体所見・検査に基づいて行ってください。</p>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>18</span></div>
+  </section>
+
+  <!-- ===== 19. まとめ（Take Home 3点） ===== -->
+  <section data-label="まとめ" data-screen-label="19 まとめ" class="slide">
+    <div class="chapter-ghost">19</div>
+    <div class="eyebrow anim">まとめ<span class="en">TAKE HOME</span></div>
+    <h2 class="s-title anim">今日の3つの<span class="hl-underline">持ち帰り</span>ポイント</h2>
+    <hr class="hairline">
+    <div class="sum__list">
+      <div class="sum__card anim" data-cue="分布と経過を言語化すること"><div class="sum__n">01</div><div class="sum__h">分布と経過を言語化</div><p class="sum__p">「両側か・片側か・顔か」「急性か・慢性か」を言葉にするだけで、鑑別リストは大きく絞れる。</p></div>
+      <div class="sum__card anim2" data-cue="片側急性・喉頭・上半身は緊急ということ"><div class="sum__n">02</div><div class="sum__h">片側急性・喉頭・上半身は緊急</div><p class="sum__p">片側急性はDVT、口唇・喉頭は血管性浮腫、上半身＋側副血行はSVC症候群を最優先で除外する。</p></div>
+      <div class="sum__card anim3" data-cue="両側慢性は全身精査ということ"><div class="sum__n">03</div><div class="sum__h">両側慢性は全身精査</div><p class="sum__p">心・肝・腎・甲状腺・低栄養・薬剤・OSAを、基本検査セットで系統的に振り分ける。</p></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>19</span></div>
+  </section>
+
+  <!-- ===== 20. エンディング ===== -->
+  <section data-label="エンディング" data-screen-label="20 エンディング" class="slide slide--navy end">
+    <div class="cover__blob"></div>
+    <p class="end__cross anim">✚ 医知創造ラボ</p>
+    <h2 class="end__h anim2">役に立ったら、応援お願いします</h2>
+    <p class="end__sub anim2">医療現場と暮らしに役立つ医学の話をお届けしています</p>
+    <div class="end__cta anim3">
+      <span class="btn btn--sub">🔔 チャンネル登録</span>
+      <span class="btn btn--like">👍 高評価</span>
+    </div>
+    <p class="end__next anim3">コメントで<b>「あなたの現場での詰め方」</b>もぜひ教えてください</p>
+  </section>
+
+</deck-stage>
+
+<script src="deck-stage.js"></script>
+<script src="image-slot.js"></script>
+
+</body>
+</html>
