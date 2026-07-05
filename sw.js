@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v51';
+const CACHE_NAME = 'ddx-tools-v52';
 const ASSETS = [
   './',
   './index.html',
@@ -45,6 +45,7 @@ const ASSETS = [
   './news2_calculator.html',
   './glim_nutrition.html',
   './infographics/tolosa_hunt.html',
+  './handouts/stroke-secondary-prevention/index.html',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png'
