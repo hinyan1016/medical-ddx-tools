@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#012360; --blue:#1D4189; --accent:#F27E03; --yellow:#FFD60A;
+  --red:#C0392B; --green:#2C6E49; --ink:#22323f; --ink2:#3c4d5a;
+  --line:#dce4ea; --bg:#f4f7fa;
+  --font:"BIZ UDPGothic","Yu Gothic","Meiryo",sans-serif;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:var(--font); background:#fff;}
+.info{width:1080px; background:#fff; color:var(--ink); padding:0 0 56px;}
+
+.info__head{background:linear-gradient(135deg,#001B4D 0%,#012360 50%,#1D4189 100%); color:#fff;
+  padding:52px 60px 46px; position:relative; overflow:hidden;}
+.info__head::after{content:""; position:absolute; right:-100px; top:-100px; width:340px; height:340px;
+  border-radius:50%; background:radial-gradient(circle at 30% 30%, rgba(242,126,3,.5), rgba(242,126,3,0) 70%);}
+.info__badge{display:inline-flex; align-items:center; gap:10px;
+  background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3);
+  border-radius:999px; padding:8px 22px; font-size:22px; font-weight:700; position:relative; z-index:2;}
+.info__badge .x{color:var(--accent);}
+.info__title{font-size:50px; font-weight:700; line-height:1.22; margin-top:18px; position:relative; z-index:2;}
+.info__title .hl{color:var(--accent);}
+.info__title .yl{color:var(--yellow);}
+.info__sub{font-size:23px; color:rgba(255,255,255,.85); margin-top:12px; position:relative; z-index:2; line-height:1.5;}
+
+.sec{padding:40px 60px 0;}
+.sec__h{display:flex; align-items:center; gap:18px; margin-bottom:24px;}
+.sec__n{flex:none; width:50px; height:50px; border-radius:14px; background:var(--accent);
+  color:#fff; font-size:28px; font-weight:700; display:flex; align-items:center; justify-content:center;}
+.sec__t{font-size:32px; font-weight:700; color:var(--navy);}
+
+/* 2カラム split */
+.split{display:grid; grid-template-columns:1fr 1fr; gap:24px;}
+.card{border:2px solid var(--line); border-radius:16px; padding:26px 28px; background:var(--bg);}
+.card.left{border-top:8px solid var(--accent);}
+.card.right{border-top:8px solid var(--blue);}
+.card__tag{display:inline-block; font-size:21px; font-weight:700; color:#fff; padding:6px 18px; border-radius:8px; margin-bottom:14px;}
+.card.left .card__tag{background:var(--accent);}
+.card.right .card__tag{background:var(--blue);}
+.card__word{font-size:34px; font-weight:700; color:var(--navy); line-height:1.2;}
+.card__word b{color:var(--accent);}
+.card.right .card__word b{color:var(--blue);}
+.card__list{list-style:none; margin:16px 0 0; display:flex; flex-direction:column; gap:10px;}
+.card__list li{font-size:23px; color:var(--ink2); line-height:1.45; padding-left:28px; position:relative;}
+.card__list li::before{content:"•"; position:absolute; left:6px; color:var(--accent); font-weight:700;}
+.card.right .card__list li::before{color:var(--blue);}
+
+/* 決定的な質問バナー */
+.qbanner{margin:30px 60px 0; background:var(--navy); color:#fff; border-radius:16px;
+  padding:26px 34px; display:flex; align-items:center; gap:24px;}
+.qbanner__q{flex:none; width:64px; height:64px; border-radius:14px; background:var(--accent);
+  font-size:38px; font-weight:700; display:flex; align-items:center; justify-content:center;}
+.qbanner__t{font-size:29px; font-weight:700; line-height:1.4;}
+.qbanner__t .u{border-bottom:4px solid var(--yellow);}
+
+/* テーブル */
+.tbl{width:100%; border-collapse:collapse; font-size:22px; border-radius:12px; overflow:hidden; border:2px solid var(--line);}
+.tbl th, .tbl td{padding:14px 20px; text-align:left; line-height:1.4;}
+.tbl thead th{background:var(--navy); color:#fff; font-weight:700; font-size:23px;}
+.tbl tbody td{border-bottom:1px solid var(--line); color:var(--ink2);}
+.tbl tbody tr:nth-child(even){background:var(--bg);}
+.tbl tbody td:first-child{font-weight:700; color:var(--navy); white-space:nowrap;}
+
+/* プリズム二義性 */
+.prism{display:grid; grid-template-columns:1fr 1fr; gap:24px;}
+.prism__c{border:2px solid var(--line); border-radius:16px; padding:24px 26px;}
+.prism__c.a{border-left:10px solid var(--accent);}
+.prism__c.b{border-left:10px solid var(--blue);}
+.prism__h{font-size:26px; font-weight:700; color:var(--navy);}
+.prism__k{font-size:22px; color:var(--ink2); margin-top:10px; line-height:1.5;}
+.prism__k b{color:var(--accent);}
+.prism__c.b .prism__k b{color:var(--blue);}
+
+.info__foot{margin:40px 60px 0; border-top:2px solid var(--line); padding-top:20px;
+  font-size:20px; color:#8a97a2; line-height:1.6;}
+.info__foot b{color:var(--navy);}
+</style>
+</head>
+<body>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="https://youtu.be/iocz6DfTXrA" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#C0392B;color:#fff;">▶ 解説動画（YouTube）</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+<div class="info">
+  <div class="info__head">
+    <span class="info__badge"><span class="x">✚</span>医知創造ラボ</span>
+    <div class="info__title"><span class="hl">「見えない」</span>のか<span class="yl">「気づかない」</span>のか<br>同名半盲と半側空間無視</div>
+    <div class="info__sub">似て見えて別の障害 — ベッドサイドでの見分け方とリハビリの考え方</div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">1</span><span class="sec__t">2つの障害の正体</span></div>
+    <div class="split">
+      <div class="card left">
+        <span class="card__tag">同名半盲</span>
+        <div class="card__word">視覚そのものが<b>「見えない」</b></div>
+        <ul class="card__list">
+          <li>本態：視覚入力の欠損</li>
+          <li>病巣：視索〜視放線〜後頭葉（視覚路）</li>
+          <li>病識：ありやすい（自覚できる）</li>
+        </ul>
+      </div>
+      <div class="card right">
+        <span class="card__tag">半側空間無視</span>
+        <div class="card__word">見えているのに<b>「気づかない」</b></div>
+        <ul class="card__list">
+          <li>本態：空間性注意の障害</li>
+          <li>病巣：右半球・側頭頭頂接合部</li>
+          <li>病識：乏しい（病態失認）</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="qbanner">
+    <span class="qbanner__q">Q</span>
+    <div class="qbanner__t">決め手は1問 ——「見えて<span class="u">いない</span>のか、見えているのに<span class="u">気づかない</span>のか」</div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">2</span><span class="sec__t">ベッドサイドで見分ける</span></div>
+    <table class="tbl">
+      <thead><tr><th>検査</th><th>同名半盲</th><th>半側空間無視</th></tr></thead>
+      <tbody>
+        <tr><td>対座法・視野計</td><td>境界の明瞭な欠損</td><td>正常なことが多い</td></tr>
+        <tr><td>線分二等分</td><td>ほぼ正中</td><td>健側へ偏る</td></tr>
+        <tr><td>抹消試験</td><td>探せば拾える</td><td>患側を消し残す</td></tr>
+        <tr><td>模写・描画</td><td>おおむね保たれる</td><td>患側が欠ける</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">3</span><span class="sec__t">「プリズム」は両者で意味が正反対</span></div>
+    <div class="prism">
+      <div class="prism__c a">
+        <div class="prism__h">同名半盲のプリズム</div>
+        <div class="prism__k">位置づけ：<b>置換</b>（substitution）<br>像を見える側へ光学的に動かす</div>
+      </div>
+      <div class="prism__c b">
+        <div class="prism__h">半側空間無視のプリズム</div>
+        <div class="prism__k">位置づけ：<b>順応</b>（adaptation）<br>ずれた正中を戻し、注意を再較正</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info__foot">
+    <b>リハビリの目標</b>は「視野や注意を完全に戻す」ことより、<b>「ぶつかる・読めない・見落とす頻度を減らす」</b>こと。<br>
+    ※ 本図は一般的な情報提供です。個別の診断・治療は医療機関にご相談ください。
+  </div>
+</div>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px auto 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="https://youtu.be/iocz6DfTXrA" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#C0392B;color:#fff;">▶ 解説動画（YouTube）</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+</body>
+</html>
