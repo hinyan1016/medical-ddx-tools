@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v60';
+const CACHE_NAME = 'ddx-tools-v61';
 const ASSETS = [
   './',
   './index.html',
@@ -54,6 +54,7 @@ const ASSETS = [
   './handouts/hypertension-lifestyle-guidance/index.html',
   './handouts/chronic-dizziness-guidance/index.html',
   './handouts/type2-diabetes-lifestyle-guidance/index.html',
+  './handouts/epilepsy-lifestyle-guidance/index.html',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png'
