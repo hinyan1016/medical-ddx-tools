@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1565C0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="2型糖尿病の食事・運動・血糖自己測定（SMBG）を無理なく続けるための生活のポイント。食べる順番・量と質・食後に動く・血糖の見える化・シックデイ（体調の悪い日）の備えをA4一枚にまとめた患者さん向け配布資料です。">
+<title>糖尿病と上手に付き合う 生活の6つのポイント｜患者さん向け配布資料</title>
+<style>
+  :root{
+    --navy:#0D47A1;
+    --blue:#1565C0;
+    --accent:#C0392B;
+    --light:#E4EEF9;
+    --line:#c2d5ec;
+    --ink:#1a1a1a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    font-family:"Yu Gothic","游ゴシック","Hiragino Kaku Gothic ProN","Segoe UI",sans-serif;
+    color:var(--ink);
+    background:#eef1f5;
+    line-height:1.6;
+    padding:16px;
+  }
+  .sheet{
+    background:#fff;
+    max-width:820px;
+    margin:0 auto 20px;
+    padding:22px 26px 26px;
+    box-shadow:0 2px 14px rgba(0,0,0,.12);
+  }
+  .head{
+    display:flex;align-items:flex-start;gap:14px;
+    border-bottom:3px solid var(--navy);
+    padding-bottom:12px;margin-bottom:14px;
+  }
+  .head-main{flex:1;}
+  .kicker{
+    display:inline-block;background:var(--navy);color:#fff;
+    font-size:12px;font-weight:700;letter-spacing:.06em;
+    padding:3px 10px;border-radius:3px;margin-bottom:7px;
+  }
+  h1{font-size:22px;font-weight:800;color:var(--navy);line-height:1.35;letter-spacing:.01em;}
+  .lead{font-size:13.5px;color:#333;margin-top:8px;}
+  .lead b{color:var(--accent);}
+  .qr{
+    width:104px;flex:0 0 104px;text-align:center;
+    border:1px solid var(--line);border-radius:8px;padding:7px 6px 5px;
+  }
+  .qr svg{width:78px;height:78px;display:block;margin:0 auto;}
+  .qr .qr-cap{font-size:9.5px;color:#555;line-height:1.35;margin-top:4px;}
+  h2{
+    font-size:15px;font-weight:800;color:#fff;background:var(--blue);
+    padding:5px 12px;border-radius:4px;margin:14px 0 9px;
+    display:flex;align-items:center;gap:8px;
+  }
+  h2 .num{
+    background:#fff;color:var(--blue);font-size:12.5px;font-weight:800;
+    width:21px;height:21px;border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;flex:0 0 21px;
+  }
+  ul.checks{list-style:none;}
+  ul.checks li{
+    display:flex;gap:9px;align-items:flex-start;
+    padding:4.5px 2px;border-bottom:1px dashed var(--line);
+    font-size:13px;
+  }
+  ul.checks li:last-child{border-bottom:none;}
+  ul.checks .box{
+    flex:0 0 17px;width:17px;height:17px;margin-top:1px;
+    border:2px solid var(--navy);border-radius:3px;
+  }
+  ul.checks li b{color:var(--navy);}
+  ul.checks .why{color:#555;font-size:11.5px;}
+  .cols{display:flex;gap:20px;}
+  .cols > div{flex:1;}
+  .alert{
+    border:2.5px solid var(--accent);border-radius:8px;
+    padding:11px 14px;margin-top:6px;background:#fdf3f2;
+  }
+  .alert .at{color:var(--accent);font-weight:800;font-size:15px;margin-bottom:6px;}
+  .fast{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;}
+  .fast div{
+    flex:1 1 44%;font-size:12.5px;background:#fff;border:1px solid #e3b7b2;
+    border-radius:6px;padding:6px 9px;
+  }
+  .fast .l{color:var(--accent);font-weight:800;font-size:13.5px;margin-right:5px;}
+  .alert .call{
+    margin-top:8px;font-size:13px;font-weight:800;color:var(--accent);text-align:center;
+  }
+  .alert .daily{
+    margin-top:8px;font-size:12px;color:#555;border-top:1px dashed #e3b7b2;padding-top:7px;
+  }
+  .alert .daily b{color:var(--navy);}
+  .memo{
+    border:1.5px solid var(--line);border-radius:8px;padding:10px 13px;margin-top:14px;
+    font-size:12.5px;
+  }
+  .memo .mrow{display:flex;gap:6px;align-items:baseline;padding:5px 0;}
+  .memo .mlabel{flex:0 0 190px;font-weight:700;color:var(--navy);}
+  .memo .mline{flex:1;border-bottom:1px solid #aab4c2;min-height:18px;}
+  .foot{
+    margin-top:16px;padding-top:10px;border-top:1px solid var(--line);
+    font-size:11px;color:#666;line-height:1.5;
+  }
+  .foot .brand{font-weight:700;color:var(--navy);}
+  .noprint{margin:0 auto 18px;max-width:820px;text-align:center;}
+  .pbtn{
+    display:inline-block;background:var(--navy);color:#fff;text-decoration:none;
+    font-size:14px;font-weight:700;padding:10px 24px;border-radius:24px;border:none;cursor:pointer;
+    box-shadow:0 2px 10px rgba(13,71,161,.25);
+  }
+  .pbtn:active{transform:scale(.98);}
+  .noprint p{font-size:12px;color:#777;margin-top:8px;}
+
+  @page{size:A4 portrait;margin:10mm 12mm;}
+  @media print{
+    body{background:#fff;padding:0;font-size:10.5pt;}
+    .sheet{box-shadow:none;margin:0;max-width:none;padding:0;}
+    .noprint{display:none !important;}
+    h1{font-size:18pt;}
+    h2{font-size:12pt;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .kicker,.alert,.fast div,.qr{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    ul.checks li{font-size:10pt;padding:3px 2px;}
+    .lead{font-size:10pt;}
+    .alert{padding:7px 12px;}
+    a[href]{color:inherit;text-decoration:none;}
+  }
+  @media (max-width:560px){
+    body{padding:8px;}
+    .sheet{padding:16px 15px 20px;}
+    .head{flex-direction:column;align-items:center;text-align:center;}
+    h1{font-size:19px;}
+    .cols{flex-direction:column;gap:0;}
+    .fast div{flex:1 1 100%;}
+    .memo .mlabel{flex:0 0 140px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="noprint">
+  <button class="pbtn" id="printBtn">&#x1F5A8;&#xFE0F; この資料を印刷する（A4）</button>
+  <p>外来で患者さんに印刷してお渡しいただけます。スマホで見る方はQRコードから。</p>
+</div>
+
+<div class="sheet">
+
+  <div class="head">
+    <div class="head-main">
+      <span class="kicker">2型糖尿病とつきあう方へ</span>
+      <h1>糖尿病と上手に付き合う<br>生活の 6つのポイント</h1>
+      <p class="lead">生活の工夫は、薬の<b>「代わり」ではなく「上乗せ」</b>です。
+      食事・運動・血糖の見える化を無理なく続けると、体調も検査の数字も確実に良くなります。大切なのは<b>「完璧」より「続けられること」</b>。今日できる一つから始めましょう。</p>
+    </div>
+    <div class="qr">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 41 41" shape-rendering="crispEdges" role="img" aria-label="QR&#12467;&#12540;&#12489;"><rect width="41" height="41" fill="#fff"/><path d="M2 2h1v1h-1zM3 2h1v1h-1zM4 2h1v1h-1zM5 2h1v1h-1zM6 2h1v1h-1zM7 2h1v1h-1zM8 2h1v1h-1zM11 2h1v1h-1zM12 2h1v1h-1zM15 2h1v1h-1zM17 2h1v1h-1zM18 2h1v1h-1zM20 2h1v1h-1zM24 2h1v1h-1zM25 2h1v1h-1zM30 2h1v1h-1zM32 2h1v1h-1zM33 2h1v1h-1zM34 2h1v1h-1zM35 2h1v1h-1zM36 2h1v1h-1zM37 2h1v1h-1zM38 2h1v1h-1zM2 3h1v1h-1zM8 3h1v1h-1zM12 3h1v1h-1zM13 3h1v1h-1zM14 3h1v1h-1zM15 3h1v1h-1zM16 3h1v1h-1zM17 3h1v1h-1zM20 3h1v1h-1zM23 3h1v1h-1zM24 3h1v1h-1zM27 3h1v1h-1zM29 3h1v1h-1zM30 3h1v1h-1zM32 3h1v1h-1zM38 3h1v1h-1zM2 4h1v1h-1zM4 4h1v1h-1zM5 4h1v1h-1zM6 4h1v1h-1zM8 4h1v1h-1zM10 4h1v1h-1zM12 4h1v1h-1zM13 4h1v1h-1zM14 4h1v1h-1zM15 4h1v1h-1zM17 4h1v1h-1zM18 4h1v1h-1zM23 4h1v1h-1zM25 4h1v1h-1zM28 4h1v1h-1zM29 4h1v1h-1zM32 4h1v1h-1zM34 4h1v1h-1zM35 4h1v1h-1zM36 4h1v1h-1zM38 4h1v1h-1zM2 5h1v1h-1zM4 5h1v1h-1zM5 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM11 5h1v1h-1zM13 5h1v1h-1zM15 5h1v1h-1zM18 5h1v1h-1zM19 5h1v1h-1zM24 5h1v1h-1zM26 5h1v1h-1zM27 5h1v1h-1zM28 5h1v1h-1zM32 5h1v1h-1zM34 5h1v1h-1zM35 5h1v1h-1zM36 5h1v1h-1zM38 5h1v1h-1zM2 6h1v1h-1zM4 6h1v1h-1zM5 6h1v1h-1zM6 6h1v1h-1zM8 6h1v1h-1zM10 6h1v1h-1zM11 6h1v1h-1zM12 6h1v1h-1zM16 6h1v1h-1zM19 6h1v1h-1zM20 6h1v1h-1zM21 6h1v1h-1zM22 6h1v1h-1zM23 6h1v1h-1zM25 6h1v1h-1zM30 6h1v1h-1zM32 6h1v1h-1zM34 6h1v1h-1zM35 6h1v1h-1zM36 6h1v1h-1zM38 6h1v1h-1zM2 7h1v1h-1zM8 7h1v1h-1zM10 7h1v1h-1zM11 7h1v1h-1zM18 7h1v1h-1zM19 7h1v1h-1zM23 7h1v1h-1zM24 7h1v1h-1zM27 7h1v1h-1zM28 7h1v1h-1zM29 7h1v1h-1zM30 7h1v1h-1zM32 7h1v1h-1zM38 7h1v1h-1zM2 8h1v1h-1zM3 8h1v1h-1zM4 8h1v1h-1zM5 8h1v1h-1zM6 8h1v1h-1zM7 8h1v1h-1zM8 8h1v1h-1zM10 8h1v1h-1zM12 8h1v1h-1zM14 8h1v1h-1zM16 8h1v1h-1zM18 8h1v1h-1zM20 8h1v1h-1zM22 8h1v1h-1zM24 8h1v1h-1zM26 8h1v1h-1zM28 8h1v1h-1zM30 8h1v1h-1zM32 8h1v1h-1zM33 8h1v1h-1zM34 8h1v1h-1zM35 8h1v1h-1zM36 8h1v1h-1zM37 8h1v1h-1zM38 8h1v1h-1zM10 9h1v1h-1zM11 9h1v1h-1zM15 9h1v1h-1zM16 9h1v1h-1zM17 9h1v1h-1zM18 9h1v1h-1zM19 9h1v1h-1zM20 9h1v1h-1zM23 9h1v1h-1zM24 9h1v1h-1zM29 9h1v1h-1zM2 10h1v1h-1zM4 10h1v1h-1zM5 10h1v1h-1zM6 10h1v1h-1zM7 10h1v1h-1zM8 10h1v1h-1zM14 10h1v1h-1zM15 10h1v1h-1zM16 10h1v1h-1zM18 10h1v1h-1zM21 10h1v1h-1zM24 10h1v1h-1zM25 10h1v1h-1zM26 10h1v1h-1zM27 10h1v1h-1zM28 10h1v1h-1zM32 10h1v1h-1zM33 10h1v1h-1zM34 10h1v1h-1zM35 10h1v1h-1zM36 10h1v1h-1zM2 11h1v1h-1zM4 11h1v1h-1zM5 11h1v1h-1zM6 11h1v1h-1zM9 11h1v1h-1zM10 11h1v1h-1zM12 11h1v1h-1zM17 11h1v1h-1zM19 11h1v1h-1zM20 11h1v1h-1zM23 11h1v1h-1zM25 11h1v1h-1zM27 11h1v1h-1zM30 11h1v1h-1zM33 11h1v1h-1zM37 11h1v1h-1zM3 12h1v1h-1zM5 12h1v1h-1zM7 12h1v1h-1zM8 12h1v1h-1zM15 12h1v1h-1zM16 12h1v1h-1zM17 12h1v1h-1zM18 12h1v1h-1zM19 12h1v1h-1zM22 12h1v1h-1zM23 12h1v1h-1zM29 12h1v1h-1zM31 12h1v1h-1zM32 12h1v1h-1zM34 12h1v1h-1zM37 12h1v1h-1zM38 12h1v1h-1zM3 13h1v1h-1zM5 13h1v1h-1zM10 13h1v1h-1zM11 13h1v1h-1zM12 13h1v1h-1zM13 13h1v1h-1zM14 13h1v1h-1zM17 13h1v1h-1zM20 13h1v1h-1zM21 13h1v1h-1zM22 13h1v1h-1zM23 13h1v1h-1zM24 13h1v1h-1zM29 13h1v1h-1zM30 13h1v1h-1zM32 13h1v1h-1zM35 13h1v1h-1zM38 13h1v1h-1zM2 14h1v1h-1zM3 14h1v1h-1zM4 14h1v1h-1zM7 14h1v1h-1zM8 14h1v1h-1zM9 14h1v1h-1zM10 14h1v1h-1zM11 14h1v1h-1zM16 14h1v1h-1zM17 14h1v1h-1zM18 14h1v1h-1zM19 14h1v1h-1zM21 14h1v1h-1zM24 14h1v1h-1zM25 14h1v1h-1zM26 14h1v1h-1zM27 14h1v1h-1zM28 14h1v1h-1zM31 14h1v1h-1zM32 14h1v1h-1zM33 14h1v1h-1zM34 14h1v1h-1zM36 14h1v1h-1zM37 14h1v1h-1zM38 14h1v1h-1zM4 15h1v1h-1zM12 15h1v1h-1zM13 15h1v1h-1zM14 15h1v1h-1zM15 15h1v1h-1zM16 15h1v1h-1zM18 15h1v1h-1zM20 15h1v1h-1zM21 15h1v1h-1zM22 15h1v1h-1zM25 15h1v1h-1zM26 15h1v1h-1zM30 15h1v1h-1zM33 15h1v1h-1zM7 16h1v1h-1zM8 16h1v1h-1zM9 16h1v1h-1zM11 16h1v1h-1zM15 16h1v1h-1zM16 16h1v1h-1zM17 16h1v1h-1zM18 16h1v1h-1zM20 16h1v1h-1zM22 16h1v1h-1zM23 16h1v1h-1zM28 16h1v1h-1zM29 16h1v1h-1zM31 16h1v1h-1zM32 16h1v1h-1zM33 16h1v1h-1zM34 16h1v1h-1zM35 16h1v1h-1zM37 16h1v1h-1zM38 16h1v1h-1zM2 17h1v1h-1zM6 17h1v1h-1zM7 17h1v1h-1zM11 17h1v1h-1zM13 17h1v1h-1zM14 17h1v1h-1zM15 17h1v1h-1zM18 17h1v1h-1zM21 17h1v1h-1zM22 17h1v1h-1zM23 17h1v1h-1zM24 17h1v1h-1zM25 17h1v1h-1zM28 17h1v1h-1zM30 17h1v1h-1zM31 17h1v1h-1zM32 17h1v1h-1zM33 17h1v1h-1zM34 17h1v1h-1zM38 17h1v1h-1zM3 18h1v1h-1zM4 18h1v1h-1zM6 18h1v1h-1zM7 18h1v1h-1zM8 18h1v1h-1zM9 18h1v1h-1zM10 18h1v1h-1zM11 18h1v1h-1zM13 18h1v1h-1zM14 18h1v1h-1zM15 18h1v1h-1zM20 18h1v1h-1zM21 18h1v1h-1zM24 18h1v1h-1zM25 18h1v1h-1zM26 18h1v1h-1zM27 18h1v1h-1zM28 18h1v1h-1zM31 18h1v1h-1zM32 18h1v1h-1zM34 18h1v1h-1zM36 18h1v1h-1zM38 18h1v1h-1zM3 19h1v1h-1zM4 19h1v1h-1zM9 19h1v1h-1zM11 19h1v1h-1zM12 19h1v1h-1zM13 19h1v1h-1zM14 19h1v1h-1zM15 19h1v1h-1zM17 19h1v1h-1zM18 19h1v1h-1zM21 19h1v1h-1zM23 19h1v1h-1zM25 19h1v1h-1zM26 19h1v1h-1zM27 19h1v1h-1zM28 19h1v1h-1zM30 19h1v1h-1zM31 19h1v1h-1zM33 19h1v1h-1zM35 19h1v1h-1zM37 19h1v1h-1zM3 20h1v1h-1zM4 20h1v1h-1zM7 20h1v1h-1zM8 20h1v1h-1zM11 20h1v1h-1zM14 20h1v1h-1zM15 20h1v1h-1zM16 20h1v1h-1zM22 20h1v1h-1zM29 20h1v1h-1zM30 20h1v1h-1zM31 20h1v1h-1zM33 20h1v1h-1zM35 20h1v1h-1zM36 20h1v1h-1zM37 20h1v1h-1zM38 20h1v1h-1zM2 21h1v1h-1zM3 21h1v1h-1zM6 21h1v1h-1zM10 21h1v1h-1zM11 21h1v1h-1zM12 21h1v1h-1zM18 21h1v1h-1zM20 21h1v1h-1zM22 21h1v1h-1zM23 21h1v1h-1zM28 21h1v1h-1zM29 21h1v1h-1zM30 21h1v1h-1zM31 21h1v1h-1zM35 21h1v1h-1zM38 21h1v1h-1zM4 22h1v1h-1zM8 22h1v1h-1zM9 22h1v1h-1zM10 22h1v1h-1zM14 22h1v1h-1zM15 22h1v1h-1zM19 22h1v1h-1zM26 22h1v1h-1zM27 22h1v1h-1zM28 22h1v1h-1zM31 22h1v1h-1zM32 22h1v1h-1zM34 22h1v1h-1zM35 22h1v1h-1zM36 22h1v1h-1zM2 23h1v1h-1zM3 23h1v1h-1zM4 23h1v1h-1zM5 23h1v1h-1zM7 23h1v1h-1zM9 23h1v1h-1zM12 23h1v1h-1zM15 23h1v1h-1zM19 23h1v1h-1zM20 23h1v1h-1zM21 23h1v1h-1zM23 23h1v1h-1zM25 23h1v1h-1zM28 23h1v1h-1zM35 23h1v1h-1zM37 23h1v1h-1zM2 24h1v1h-1zM5 24h1v1h-1zM6 24h1v1h-1zM8 24h1v1h-1zM14 24h1v1h-1zM17 24h1v1h-1zM18 24h1v1h-1zM19 24h1v1h-1zM22 24h1v1h-1zM23 24h1v1h-1zM24 24h1v1h-1zM26 24h1v1h-1zM27 24h1v1h-1zM29 24h1v1h-1zM30 24h1v1h-1zM31 24h1v1h-1zM32 24h1v1h-1zM33 24h1v1h-1zM34 24h1v1h-1zM35 24h1v1h-1zM37 24h1v1h-1zM38 24h1v1h-1zM4 25h1v1h-1zM10 25h1v1h-1zM11 25h1v1h-1zM13 25h1v1h-1zM19 25h1v1h-1zM20 25h1v1h-1zM22 25h1v1h-1zM23 25h1v1h-1zM25 25h1v1h-1zM26 25h1v1h-1zM28 25h1v1h-1zM32 25h1v1h-1zM33 25h1v1h-1zM34 25h1v1h-1zM37 25h1v1h-1zM38 25h1v1h-1zM2 26h1v1h-1zM5 26h1v1h-1zM6 26h1v1h-1zM8 26h1v1h-1zM11 26h1v1h-1zM13 26h1v1h-1zM14 26h1v1h-1zM15 26h1v1h-1zM17 26h1v1h-1zM18 26h1v1h-1zM21 26h1v1h-1zM24 26h1v1h-1zM25 26h1v1h-1zM26 26h1v1h-1zM27 26h1v1h-1zM28 26h1v1h-1zM29 26h1v1h-1zM31 26h1v1h-1zM32 26h1v1h-1zM34 26h1v1h-1zM36 26h1v1h-1zM2 27h1v1h-1zM7 27h1v1h-1zM9 27h1v1h-1zM11 27h1v1h-1zM13 27h1v1h-1zM14 27h1v1h-1zM15 27h1v1h-1zM16 27h1v1h-1zM17 27h1v1h-1zM19 27h1v1h-1zM20 27h1v1h-1zM21 27h1v1h-1zM22 27h1v1h-1zM25 27h1v1h-1zM28 27h1v1h-1zM33 27h1v1h-1zM36 27h1v1h-1zM2 28h1v1h-1zM5 28h1v1h-1zM6 28h1v1h-1zM7 28h1v1h-1zM8 28h1v1h-1zM12 28h1v1h-1zM13 28h1v1h-1zM14 28h1v1h-1zM15 28h1v1h-1zM17 28h1v1h-1zM18 28h1v1h-1zM19 28h1v1h-1zM22 28h1v1h-1zM24 28h1v1h-1zM26 28h1v1h-1zM27 28h1v1h-1zM29 28h1v1h-1zM30 28h1v1h-1zM31 28h1v1h-1zM33 28h1v1h-1zM37 28h1v1h-1zM38 28h1v1h-1zM2 29h1v1h-1zM5 29h1v1h-1zM13 29h1v1h-1zM14 29h1v1h-1zM17 29h1v1h-1zM21 29h1v1h-1zM23 29h1v1h-1zM28 29h1v1h-1zM31 29h1v1h-1zM34 29h1v1h-1zM37 29h1v1h-1zM2 30h1v1h-1zM5 30h1v1h-1zM8 30h1v1h-1zM10 30h1v1h-1zM12 30h1v1h-1zM14 30h1v1h-1zM15 30h1v1h-1zM16 30h1v1h-1zM17 30h1v1h-1zM18 30h1v1h-1zM19 30h1v1h-1zM24 30h1v1h-1zM25 30h1v1h-1zM27 30h1v1h-1zM28 30h1v1h-1zM29 30h1v1h-1zM30 30h1v1h-1zM31 30h1v1h-1zM32 30h1v1h-1zM33 30h1v1h-1zM34 30h1v1h-1zM35 30h1v1h-1zM36 30h1v1h-1zM10 31h1v1h-1zM12 31h1v1h-1zM14 31h1v1h-1zM15 31h1v1h-1zM18 31h1v1h-1zM21 31h1v1h-1zM22 31h1v1h-1zM23 31h1v1h-1zM25 31h1v1h-1zM30 31h1v1h-1zM34 31h1v1h-1zM35 31h1v1h-1zM37 31h1v1h-1zM2 32h1v1h-1zM3 32h1v1h-1zM4 32h1v1h-1zM5 32h1v1h-1zM6 32h1v1h-1zM7 32h1v1h-1zM8 32h1v1h-1zM13 32h1v1h-1zM17 32h1v1h-1zM20 32h1v1h-1zM22 32h1v1h-1zM23 32h1v1h-1zM28 32h1v1h-1zM30 32h1v1h-1zM32 32h1v1h-1zM34 32h1v1h-1zM36 32h1v1h-1zM37 32h1v1h-1zM38 32h1v1h-1zM2 33h1v1h-1zM8 33h1v1h-1zM10 33h1v1h-1zM13 33h1v1h-1zM14 33h1v1h-1zM17 33h1v1h-1zM18 33h1v1h-1zM21 33h1v1h-1zM22 33h1v1h-1zM23 33h1v1h-1zM24 33h1v1h-1zM30 33h1v1h-1zM34 33h1v1h-1zM35 33h1v1h-1zM38 33h1v1h-1zM2 34h1v1h-1zM4 34h1v1h-1zM5 34h1v1h-1zM6 34h1v1h-1zM8 34h1v1h-1zM10 34h1v1h-1zM11 34h1v1h-1zM14 34h1v1h-1zM16 34h1v1h-1zM17 34h1v1h-1zM20 34h1v1h-1zM21 34h1v1h-1zM24 34h1v1h-1zM26 34h1v1h-1zM27 34h1v1h-1zM28 34h1v1h-1zM29 34h1v1h-1zM30 34h1v1h-1zM31 34h1v1h-1zM32 34h1v1h-1zM33 34h1v1h-1zM34 34h1v1h-1zM36 34h1v1h-1zM37 34h1v1h-1zM38 34h1v1h-1zM2 35h1v1h-1zM4 35h1v1h-1zM5 35h1v1h-1zM6 35h1v1h-1zM8 35h1v1h-1zM10 35h1v1h-1zM12 35h1v1h-1zM13 35h1v1h-1zM14 35h1v1h-1zM15 35h1v1h-1zM17 35h1v1h-1zM18 35h1v1h-1zM21 35h1v1h-1zM22 35h1v1h-1zM23 35h1v1h-1zM25 35h1v1h-1zM27 35h1v1h-1zM28 35h1v1h-1zM29 35h1v1h-1zM31 35h1v1h-1zM32 35h1v1h-1zM34 35h1v1h-1zM38 35h1v1h-1zM2 36h1v1h-1zM4 36h1v1h-1zM5 36h1v1h-1zM6 36h1v1h-1zM8 36h1v1h-1zM10 36h1v1h-1zM11 36h1v1h-1zM12 36h1v1h-1zM14 36h1v1h-1zM15 36h1v1h-1zM27 36h1v1h-1zM28 36h1v1h-1zM30 36h1v1h-1zM35 36h1v1h-1zM37 36h1v1h-1zM38 36h1v1h-1zM2 37h1v1h-1zM8 37h1v1h-1zM12 37h1v1h-1zM13 37h1v1h-1zM14 37h1v1h-1zM15 37h1v1h-1zM18 37h1v1h-1zM21 37h1v1h-1zM22 37h1v1h-1zM23 37h1v1h-1zM24 37h1v1h-1zM26 37h1v1h-1zM28 37h1v1h-1zM30 37h1v1h-1zM31 37h1v1h-1zM32 37h1v1h-1zM34 37h1v1h-1zM38 37h1v1h-1zM2 38h1v1h-1zM3 38h1v1h-1zM4 38h1v1h-1zM5 38h1v1h-1zM6 38h1v1h-1zM7 38h1v1h-1zM8 38h1v1h-1zM10 38h1v1h-1zM12 38h1v1h-1zM13 38h1v1h-1zM14 38h1v1h-1zM18 38h1v1h-1zM19 38h1v1h-1zM21 38h1v1h-1zM24 38h1v1h-1zM25 38h1v1h-1zM27 38h1v1h-1zM28 38h1v1h-1zM31 38h1v1h-1zM32 38h1v1h-1zM34 38h1v1h-1zM35 38h1v1h-1zM36 38h1v1h-1zM37 38h1v1h-1zM38 38h1v1h-1z" fill="#0D47A1"/></svg>
+      <div class="qr-cap">動画・くわしい解説はこちら</div>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div>
+      <h2><span class="num">1</span>生活の工夫は「薬の上乗せ」</h2>
+      <ul class="checks">
+        <li><span class="box"></span><span><b>処方された薬は、自己判断でやめない</b><br><span class="why">→ 生活の工夫は薬の代わりではなく、効果を後押しする「土台」です</span></span></li>
+        <li><span class="box"></span><span><b>「完璧」より「続けられること」。今日できる一つから</b></span></li>
+      </ul>
+
+      <h2><span class="num">2</span>食べる順番を変える</h2>
+      <ul class="checks">
+        <li><span class="box"></span><span><b>野菜・きのこ → おかず（肉・魚・卵）→ ごはん・パンの順で</b><br><span class="why">→ 食後の血糖の急な上がりをやわらげます。簡単で続けやすい工夫です</span></span></li>
+        <li><span class="box"></span><span><b>ゆっくり、よくかんで食べる</b></span></li>
+      </ul>
+
+      <h2><span class="num">3</span>量と質を整える</h2>
+      <ul class="checks">
+        <li><span class="box"></span><span><b>腹八分目。甘い飲み物・ジュース・お菓子は控えめに</b><br><span class="why">→ 「これだけ禁止」より、続けられる範囲で減らす工夫を</span></span></li>
+        <li><span class="box"></span><span><b>主食は食物繊維の多いもの（野菜・海藻・豆）と一緒に</b></span></li>
+      </ul>
+    </div>
+
+    <div>
+      <h2><span class="num">4</span>体を動かす</h2>
+      <ul class="checks">
+        <li><span class="box"></span><span><b>食後に軽く歩く／座りっぱなしを30分ごとに切る</b><br><span class="why">→ まず「今より少し多く」。できれば週2回、軽い筋トレも</span></span></li>
+        <li><span class="box"></span><span><b>合併症のある方は、運動の種類を主治医と相談する</b></span></li>
+      </ul>
+
+      <h2><span class="num">5</span>血糖を「見える化」して活かす</h2>
+      <ul class="checks">
+        <li><span class="box"></span><span><b>測るだけで終わらせず、食事・運動の振り返りに使う</b><br><span class="why">→ ただ毎日測るだけでは数字は変わりません。行動につなげて</span></span></li>
+        <li><span class="box"></span><span><b>インスリン・SU薬の方は、ブドウ糖を持ち歩く</b></span></li>
+      </ul>
+
+      <h2><span class="num">6</span>体調の悪い日（シックデイ）の備え</h2>
+      <ul class="checks">
+        <li><span class="box"></span><span><b>発熱・嘔吐・下痢・食欲不振のときは、水分をこまめに</b><br><span class="why">→ 薬を全部自己判断でやめず、早めにかかりつけへ連絡を</span></span></li>
+        <li><span class="box"></span><span><b>食べられない日の薬の飲み方を、前もって主治医に確認</b></span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="alert">
+    <div class="at">&#x26A0;&#xFE0F; こんな時は、すぐ対応・受診を</div>
+    <div class="fast">
+      <div><span class="l">低血糖</span>冷や汗・手のふるえ・動悸・強い空腹感 → すぐブドウ糖を10〜15g</div>
+      <div><span class="l">意識</span>意識がもうろう・けいれん → 迷わず119番</div>
+      <div><span class="l">高血糖</span>強いのどの渇き・大量の尿・ぐったり・吐き気が続く → 早めに受診</div>
+      <div><span class="l">足</span>足の傷・赤み・水ぶくれに気づいたら早めに相談</div>
+    </div>
+    <div class="call">※ 低血糖でブドウ糖を摂っても回復しない・意識がおかしいときは、ためらわず119番を。</div>
+    <div class="daily">日常でも、次のときは早めに主治医・かかりつけに相談を：<b>食べられない日が続く／薬の飲み方に迷う／血糖が普段と大きく違う</b></div>
+  </div>
+
+  <div class="memo">
+    <div class="mrow"><span class="mlabel">今日から続ける一つ</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">低血糖が起きたとき</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">次の受診日・相談先</span><span class="mline"></span></div>
+  </div>
+
+  <div class="foot">
+    <span class="brand">医知創造ラボ</span>｜糖尿病と上手に付き合う 生活の6つのポイント（患者さん向け配布資料）<br>
+    この資料は一般的な情報です。目標の血糖値や、食事・運動・薬・血糖測定のことは、必ず主治医・かかりつけの指示に従ってください。
+    くわしい解説は <b>tools.ichisouzo-lab.com</b>（QRコード）から。
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var btn=document.getElementById('printBtn');
+  if(btn){btn.addEventListener('click',function(){window.print();});}
+})();
+</script>
+
+</body>
+</html>
