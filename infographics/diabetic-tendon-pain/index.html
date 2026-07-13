@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A5276">
+<title>糖尿病患者の下肢腱障害｜なぜ硬く・痛むのか — インフォグラフィック</title>
+<style>
+  :root{
+    --navy:#1A5276; --navy2:#21618C; --blue:#2E86C1; --blue-l:#EBF5FB;
+    --ink:#243746; --sub:#5B6B78; --line:#D4E6F3;
+    --green:#1E8449; --green-l:#EAFAF1; --red:#C0392B; --red-l:#FDECEA;
+    --amber:#CA6F1E; --amber-l:#FEF5E7; --paper:#FFFFFF; --gold:#FFD873;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Hiragino Sans','Noto Sans JP',sans-serif;
+    background:linear-gradient(160deg,#eef4f9 0%,#e3edf5 100%);
+    color:var(--ink); line-height:1.6; padding:20px 12px; display:flex; flex-direction:column; align-items:center; -webkit-font-smoothing:antialiased;
+  }
+  .sheet{ max-width:780px; margin:0 auto; background:var(--paper); border-radius:18px; overflow:hidden; box-shadow:0 12px 40px rgba(26,82,118,.18); }
+  .hd{ background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%); color:#fff; padding:26px 24px 22px; position:relative; }
+  .hd .kicker{ font-size:.78rem; letter-spacing:.12em; color:#BFE0F5; font-weight:700; }
+  .hd h1{ font-size:1.5rem; line-height:1.34; margin:8px 0 6px; font-weight:800; }
+  .hd h1 .hl{ color:var(--gold); }
+  .hd p{ font-size:.9rem; color:#DCEAF6; }
+  .hd .tag{ position:absolute; top:22px; right:22px; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); border-radius:999px; padding:5px 12px; font-size:.72rem; font-weight:700; }
+  @media(max-width:560px){ .hd .tag{ display:none; } .hd h1{ font-size:1.24rem; } }
+
+  .pad{ padding:22px 24px; }
+  @media(max-width:560px){ .pad{ padding:18px 14px; } }
+  .sec-t{ font-size:.72rem; font-weight:800; letter-spacing:.12em; color:var(--blue); margin:24px 0 10px; padding-left:10px; border-left:4px solid var(--blue); }
+  .sec-t:first-child{ margin-top:2px; }
+
+  /* four-factor grid */
+  .grid4{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  @media(max-width:560px){ .grid4{ grid-template-columns:1fr; } }
+  .fac{ background:var(--blue-l); border:1px solid var(--line); border-radius:12px; padding:12px 14px; }
+  .fac b{ color:var(--navy); font-size:.92rem; }
+  .fac p{ font-size:.8rem; color:var(--sub); margin-top:2px; }
+
+  /* paradox highlight */
+  .para{ background:var(--amber-l); border:1.5px solid #EBCBA0; border-left:5px solid var(--amber); border-radius:0 12px 12px 0; padding:14px 16px; margin-top:6px; }
+  .para .h{ font-weight:800; color:var(--amber); font-size:.98rem; margin-bottom:8px; }
+  .stats{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+  @media(max-width:560px){ .stats{ grid-template-columns:1fr; } }
+  .stat{ background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px 10px; text-align:center; }
+  .stat .big{ font-size:1.42rem; font-weight:900; color:var(--navy); line-height:1.1; }
+  .stat .big span{ font-size:.82rem; }
+  .stat .up{ color:var(--red); } .stat .dn{ color:var(--green); }
+  .stat .cap{ font-size:.72rem; color:var(--sub); margin-top:5px; }
+  .para .note{ font-size:.78rem; color:#7a5a2a; margin-top:9px; }
+
+  /* epi bars */
+  .epi{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  @media(max-width:560px){ .epi{ grid-template-columns:1fr; } }
+  .epic{ background:var(--blue-l); border:1px solid var(--line); border-radius:12px; padding:13px 14px; }
+  .epic .t{ font-size:.82rem; color:var(--navy); font-weight:700; margin-bottom:6px; }
+  .cmp{ display:flex; align-items:baseline; gap:8px; }
+  .cmp .dm{ font-size:1.3rem; font-weight:900; color:var(--red); }
+  .cmp .vs{ font-size:.74rem; color:var(--sub); }
+  .cmp .ct{ font-size:1.05rem; font-weight:800; color:var(--navy2); }
+  .epic .cap{ font-size:.72rem; color:var(--sub); margin-top:4px; }
+
+  /* key message */
+  .key{ background:var(--navy); color:#eaf3fb; border-radius:14px; padding:16px 18px; margin-top:4px; }
+  .key .h{ font-size:1rem; font-weight:800; color:var(--gold); margin-bottom:6px; }
+  .key .row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media(max-width:560px){ .key .row{ grid-template-columns:1fr; } }
+  .key .row b{ color:#fff; }
+  .key .row p{ font-size:.82rem; color:#cfe3f2; margin-top:2px; }
+
+  /* dx flow */
+  .dx{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .dxs{ background:var(--green-l); border:1.5px solid #A9D8BC; border-radius:10px; padding:9px 13px; font-size:.84rem; color:#20603f; font-weight:700; }
+  .dxs b{ color:var(--green); }
+  .dxa{ color:var(--navy2); font-weight:900; font-size:1.1rem; }
+
+  /* do / dont */
+  .dd{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media(max-width:560px){ .dd{ grid-template-columns:1fr; } }
+  .card{ border-radius:12px; padding:13px 15px; }
+  .card.do{ background:var(--green-l); border:1.5px solid #A9D8BC; }
+  .card.dont{ background:var(--red-l); border:1.5px solid #E5B4AE; }
+  .card h4{ font-size:.9rem; margin-bottom:7px; }
+  .card.do h4{ color:var(--green); } .card.dont h4{ color:var(--red); }
+  .card ul{ list-style:none; }
+  .card li{ font-size:.82rem; margin-bottom:6px; padding-left:20px; position:relative; color:#33413a; }
+  .card.do li:before{ content:'✓'; position:absolute; left:0; color:var(--green); font-weight:900; }
+  .card.dont li{ color:#5a3a35; } .card.dont li:before{ content:'✕'; position:absolute; left:0; color:var(--red); font-weight:900; }
+
+  .ft{ background:var(--navy); color:#cfe3f2; padding:16px 24px; font-size:.7rem; line-height:1.55; }
+  .ft b{ color:#fff; }
+  .ft .brand{ font-weight:800; color:var(--gold); }
+</style>
+</head>
+<body>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+<div class="sheet ig">
+
+  <div class="hd">
+    <span class="tag">医療従事者向け</span>
+    <div class="kicker">糖尿病 × 下肢腱障害（アキレス腱・足底腱膜）</div>
+    <h1>なぜ腱は<span class="hl">硬く・厚く・痛む</span>のか</h1>
+    <p>― 「炎症」でも「神経障害だけ」でもない。糖化・微小循環・荷重が重なる</p>
+  </div>
+
+  <div class="pad">
+
+    <!-- PATHOPHYSIOLOGY -->
+    <div class="sec-t">病態 ─ 単なる炎症ではなく、多因子性の変性</div>
+    <div class="grid4">
+      <div class="fac"><b>① 糖化（AGEs架橋）</b><p>コラーゲン線維の滑走性低下 → しなやかさが失われる</p></div>
+      <div class="fac"><b>② 微小循環の低下</b><p>腱のvascularity低下 → 変性が進みやすい</p></div>
+      <div class="fac"><b>③ 治癒能の低下</b><p>コラーゲン・GAG合成障害 → 傷んでも治りにくい</p></div>
+      <div class="fac"><b>④ 神経障害の荷重異常</b><p>保護的感覚↓＋前足部荷重↑で腱ストレス増</p></div>
+    </div>
+
+    <!-- PARADOX -->
+    <div class="sec-t">一見矛盾 ─ 「厚いのに、軟らかく見える」</div>
+    <div class="para">
+      <div class="h">⚖ 測っている物理量が違うだけ（矛盾ではない）</div>
+      <div class="stats">
+        <div class="stat"><div class="big up">+54<span>%</span></div><div class="cap">アキレス腱の<br>材料剛性（modulus）</div></div>
+        <div class="stat"><div class="big">5.66<span> vs 4.61mm</span></div><div class="cap">アキレス腱 厚<br>（糖尿病 vs 対照）</div></div>
+        <div class="stat"><div class="big dn">5.53<span> vs 7.25</span></div><div class="cap">shear wave速度 m/s<br>（＝SWV低下＝softening）</div></div>
+      </div>
+      <p class="note">負荷下の <b>材料剛性は上昇</b>、画像の <b>SWV（elasticity）は低下</b>。エラストの数値だけで硬さを断定しない。</p>
+    </div>
+
+    <!-- EPIDEMIOLOGY -->
+    <div class="sec-t">疫学 ─ 無症候でも高頻度、早期から進む</div>
+    <div class="epi">
+      <div class="epic">
+        <div class="t">無症候性アキレス腱異常</div>
+        <div class="cmp"><span class="dm">25.7%</span><span class="vs">vs</span><span class="ct">11.7%</span></div>
+        <div class="cap">糖尿病 vs 非糖尿病（超音波・無症候例）</div>
+      </div>
+      <div class="epic">
+        <div class="t">末梢神経障害の<b>ない</b>2型でも付着部異常</div>
+        <div class="cmp"><span class="dm">26.7%</span><span class="vs">vs</span><span class="ct">2.5%</span></div>
+        <div class="cap">付着部の低エコー化（2型 vs 対照）</div>
+      </div>
+    </div>
+
+    <!-- KEY MESSAGE -->
+    <div class="sec-t">臨床の核心 ─ 神経障害だけで片づけない</div>
+    <div class="key">
+      <div class="h">🧩 小径線維DPN ＋ 局所の腱・付着部病変が重なる</div>
+      <div class="row">
+        <div><b>神経の所見</b><p>温痛覚・触覚が低下／振動覚・位置覚は保たれる</p></div>
+        <div><b>腱の所見</b><p>足関節<b>背屈でアキレス腱痛</b> → 挿入部腱症を疑う（局所で再現する痛み）</p></div>
+      </div>
+    </div>
+
+    <!-- DIAGNOSIS -->
+    <div class="sec-t">診断 ─ 触診で局在、そして超音波を第一選択に</div>
+    <div class="dx">
+      <div class="dxs">触診・局在<br><b>感度84% / 特異度73%</b></div>
+      <div class="dxa">→</div>
+      <div class="dxs">超音波（第一選択）<br><b>厚み・低エコー・付着部・bursa・部分断裂</b></div>
+      <div class="dxa">→</div>
+      <div class="dxs">必要時 MRI / NCS / ABI</div>
+    </div>
+
+    <!-- TREATMENT -->
+    <div class="sec-t">治療 ─ 病型で分ける（土台は血糖の最適化）</div>
+    <div class="dd">
+      <div class="card do">
+        <h4>すること</h4>
+        <ul>
+          <li><b>中部</b>：段階的な負荷運動が第一選択（痛み5/10以下・翌朝悪化なし）</li>
+          <li><b>挿入部</b>：床面のheel raise＋短期heel liftから</li>
+          <li>血糖の最適化（EDIC：強化療法で足潰瘍 HR 0.77）</li>
+        </ul>
+      </div>
+      <div class="card dont">
+        <h4>避けること</h4>
+        <ul>
+          <li><b>挿入部痛</b>で初期の深い背屈ストレッチ・stepからのheel-drop（compression）</li>
+          <li>腱内へのステロイド注射（糖尿病では注射後の高血糖に注意）</li>
+          <li>PRPをroutineに先行させる</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="ft">
+    <b>主な出典（PubMed収載）：</b> Couppé C, et al. J Appl Physiol 2016;120:130（材料剛性+54%）／ Saroha A, et al. J Med Ultrasound 2023;31:282（腱厚・SWV）／ Abate M, et al. Foot Ankle Int 2013;35:44（無症候25.7% vs 11.7%）／ Ursini F, et al. J Am Podiatr Med Assoc 2016;107:99（付着部異常）／ Hutchison AM, et al. Foot Ankle Surg 2013;19:112（触診 感度84%/特異度73%）／ Pringels L, et al. Br J Sports Med 2025;59:640（compression回避リハ）／ Martin RL, et al. JOSPT 2018;48:A1（中部CPG）／ Boyko EJ, et al. Diabetes Care 2022;45:357（EDIC・足潰瘍 HR0.77）.<br>
+    ※ 糖尿病特異的な腱障害の診療基準は未確立。実際の判断は最新GL・各症例に基づく。&nbsp; 作成：<span class="brand">医知創造ラボ</span>
+  </div>
+
+</div>
+</body>
+</html>
