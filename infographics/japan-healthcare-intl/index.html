@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1B3A5C; --navy-dark:#122A45; --navy-soft:#EAF1F8; --blue:#2E86C1;
+  --orange:#E67E22; --orange-soft:#FEF5E7; --ink:#20303f; --ink2:#3d4d5c;
+  --line:#d5e0ec; --bg:#f3f7fb;
+  --font:"BIZ UDPGothic","Yu Gothic","Meiryo",sans-serif;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:var(--font); background:#fff;}
+.info{width:1080px; background:#fff; color:var(--ink); padding:0 0 56px;}
+
+.info__head{background:linear-gradient(135deg,#122A45 0%,#1B3A5C 55%,#224973 100%); color:#fff;
+  padding:52px 60px 46px; position:relative; overflow:hidden;}
+.info__head::after{content:""; position:absolute; right:-90px; top:-90px; width:320px; height:320px;
+  border-radius:50%; background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.28), rgba(255,255,255,0) 70%);}
+.info__badge{display:inline-flex; align-items:center; gap:10px;
+  background:rgba(255,255,255,.15); border:1px solid rgba(255,255,255,.34);
+  border-radius:999px; padding:8px 22px; font-size:22px; font-weight:700; position:relative; z-index:2;}
+.info__badge .x{color:#F4D03F;}
+.info__title{font-size:54px; font-weight:700; line-height:1.18; margin-top:20px; position:relative; z-index:2;}
+.info__title .hl{color:#F4D03F;}
+.info__sub{font-size:24px; color:rgba(255,255,255,.92); margin-top:14px; position:relative; z-index:2; line-height:1.45;}
+.info__src0{font-size:17px; color:rgba(255,255,255,.72); margin-top:12px; position:relative; z-index:2;}
+
+.sec{padding:0 60px; margin-top:44px;}
+.sec__h{display:flex; align-items:center; gap:15px; font-size:31px; font-weight:700;
+  color:var(--navy); margin-bottom:18px; line-height:1.3;}
+.sec__n{flex:none; width:52px; height:52px; border-radius:13px; background:var(--navy);
+  color:#fff; display:flex; align-items:center; justify-content:center; font-size:27px; font-weight:700;}
+
+/* 4点セット */
+.pillars{display:flex; flex-direction:column; gap:12px;}
+.pillar{border:2px solid var(--line); border-radius:14px; display:flex; overflow:hidden; align-items:stretch; background:var(--bg);}
+.pillar__icon{flex:none; width:78px; display:flex; align-items:center; justify-content:center; font-size:34px; background:#fff;}
+.pillar__main{flex:1; padding:14px 22px;}
+.pillar__t{font-size:24px; font-weight:700; color:var(--navy); margin-bottom:4px;}
+.pillar__d{font-size:20px; line-height:1.5; color:var(--ink2);}
+
+/* 比較表 */
+.ctable{width:100%; border-collapse:collapse; border:2px solid var(--line); border-radius:12px; overflow:hidden;}
+.ctable th, .ctable td{padding:14px 16px; font-size:22px; text-align:center; border-bottom:1px solid var(--line);}
+.ctable thead th{background:var(--navy); color:#fff; font-weight:700; font-size:23px;}
+.ctable tbody th{text-align:left; background:var(--navy-soft); color:var(--navy); font-weight:700; font-size:21px;}
+.ctable .jp{color:var(--navy); font-weight:700; font-size:26px;}
+.ctable .oecd{color:#6b7b8a; font-weight:700;}
+.ctable tbody tr:last-child td, .ctable tbody tr:last-child th{border-bottom:none;}
+.note{margin-top:14px; background:var(--navy-soft); border-left:6px solid var(--blue); border-radius:0 12px 12px 0;
+  padding:16px 22px; font-size:22px; line-height:1.5; color:var(--navy); font-weight:700;}
+
+/* パラドックス */
+.para{display:flex; gap:16px; align-items:stretch; margin-bottom:14px;}
+.para__box{flex:1; border:2px solid var(--line); border-radius:14px; background:var(--bg); padding:18px 20px; text-align:center;}
+.para__lbl{font-size:20px; color:var(--ink2); font-weight:700; margin-bottom:6px;}
+.para__num{font-size:40px; font-weight:700; color:var(--navy); line-height:1.1;}
+.para__num small{font-size:22px;}
+.para__sub{font-size:18px; color:#6b7b8a; margin-top:5px;}
+.para__vs{flex:none; align-self:center; width:56px; height:56px; border-radius:50%; background:var(--blue);
+  color:#fff; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:700;}
+.para__base{background:var(--navy-soft); border:2px solid var(--line); border-radius:12px; padding:12px 20px;
+  font-size:20px; color:var(--navy); font-weight:700; text-align:center;}
+
+/* 3か国比較 */
+.tri{display:flex; flex-direction:column; gap:12px; margin-top:20px;}
+.tri__row{border:2px solid var(--line); border-radius:14px; display:flex; overflow:hidden; align-items:stretch; background:#fff;}
+.tri__flag{flex:none; width:150px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  background:var(--navy-soft); color:var(--navy); font-weight:700; font-size:23px; padding:10px; text-align:center; line-height:1.25;}
+.tri__d{flex:1; padding:14px 22px; font-size:20px; line-height:1.5; color:var(--ink2);}
+.tri__d b{color:var(--navy);}
+
+/* 警告バッジ */
+.warn{margin:26px 60px 0; background:var(--orange-soft); border:2px solid var(--orange); border-radius:14px;
+  padding:18px 24px; display:flex; align-items:center; gap:16px;}
+.warn__i{flex:none; width:56px; height:56px; border-radius:12px; background:var(--orange); color:#fff;
+  display:flex; align-items:center; justify-content:center; font-size:30px; font-weight:700;}
+.warn__t{font-size:22px; font-weight:700; color:#a35a12; line-height:1.45;}
+
+/* 行動3層 */
+.acts{display:flex; flex-direction:column; gap:12px;}
+.act{border:2px solid var(--line); border-left:8px solid var(--blue); border-radius:12px; background:var(--bg);
+  padding:15px 22px;}
+.act__t{font-size:23px; font-weight:700; color:var(--navy); margin-bottom:4px;}
+.act__d{font-size:20px; line-height:1.5; color:var(--ink2);}
+.act-note{margin-top:14px; text-align:center; font-size:21px; font-weight:700; color:var(--navy);}
+
+.info__foot{margin-top:48px; padding:24px 60px 0; border-top:2px solid var(--line);
+  display:flex; align-items:center; justify-content:space-between; font-size:22px; color:#7a8a96; font-weight:700;}
+.info__foot .x{color:var(--blue);}
+.info__src{padding:0 60px; margin-top:18px; font-size:15px; line-height:1.5; color:#9aa8b2;}
+</style>
+</head>
+<body>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="https://youtu.be/bb_QHowiqSI" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#C0392B;color:#fff;">▶ 解説動画（YouTube）</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+<div class="info">
+  <div class="info__head">
+    <span class="info__badge"><span class="x">✚</span>医療従事者・一般の方にやさしく解説</span>
+    <div class="info__title">日本の医療制度を<span class="hl">海外と徹底比較</span></div>
+    <div class="info__sub">国民皆保険は本当に世界一か？ OECD最新データ2025で読み解く</div>
+    <div class="info__src0">出典: OECD Health at a Glance 2025（2025年11月公表）ほか</div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">1</span>1961年達成・国民皆保険の4点セット</div>
+    <div class="pillars">
+      <div class="pillar">
+        <div class="pillar__icon">🛡️</div>
+        <div class="pillar__main">
+          <div class="pillar__t">① 国民皆保険（1961年〜）</div>
+          <div class="pillar__d">原則すべての人が公的医療保険に加入する。</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar__icon">🏥</div>
+        <div class="pillar__main">
+          <div class="pillar__t">② フリーアクセス</div>
+          <div class="pillar__d">紹介状がなくても、自分で選んだ医療機関を受診できる。</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar__icon">💴</div>
+        <div class="pillar__main">
+          <div class="pillar__t">③ 全国同一の診療報酬</div>
+          <div class="pillar__d">同じ医療行為は、どこでも同じ公定価格（診療報酬）。</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar__icon">🧾</div>
+        <div class="pillar__main">
+          <div class="pillar__t">④ 高額療養費制度</div>
+          <div class="pillar__d">月の自己負担に、所得に応じた上限が設けられている。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">2</span>OECD最新データ2025 日本 vs OECD平均</div>
+    <table class="ctable">
+      <thead><tr><th>指標</th><th>日本</th><th>OECD平均</th></tr></thead>
+      <tbody>
+        <tr><th>平均寿命</th><td class="jp">84.1年</td><td class="oecd">81.1年（＋3.0年）</td></tr>
+        <tr><th>医療費 対GDP比</th><td class="jp">10.6%</td><td class="oecd">9.3%</td></tr>
+        <tr><th>一人当たり医療費</th><td class="jp">5,790ドル</td><td class="oecd">5,967ドル</td></tr>
+        <tr><th>公的・強制保険のカバー率</th><td class="jp">85%</td><td class="oecd">75%</td></tr>
+      </tbody>
+    </table>
+    <div class="note">一人当たりコストは平均以下なのに、寿命は最長水準。</div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">3</span>医師2.6人で受診12.1回のパラドックス</div>
+    <div class="para">
+      <div class="para__box">
+        <div class="para__lbl">医師の数は少ない</div>
+        <div class="para__num">2.6<small>人/千人</small></div>
+        <div class="para__sub">OECD 38か国中 35位</div>
+      </div>
+      <div class="para__vs">≠</div>
+      <div class="para__box">
+        <div class="para__lbl">でも受診は多い</div>
+        <div class="para__num">12.1<small>回/年</small></div>
+        <div class="para__sub">OECD最高水準</div>
+      </div>
+    </div>
+    <div class="para__base">病床 12.5床/千人 ／ 看護師 12.2人/千人 が下支え</div>
+
+    <div class="tri">
+      <div class="tri__row">
+        <div class="tri__flag">日本</div>
+        <div class="tri__d">社会保険方式・フリーアクセス。<b>自己負担は総医療費の12.2%</b>と軽い。</div>
+      </div>
+      <div class="tri__row">
+        <div class="tri__flag">イギリス<br>（NHS）</div>
+        <div class="tri__d">税方式・原則無料・GP登録制。<b>待機リスト約711万件</b>、18週以内治療 65.3%（2026年3月時点）。</div>
+      </div>
+      <div class="tri__row">
+        <div class="tri__flag">アメリカ</div>
+        <div class="tri__d">民間保険中心。<b>無保険者 約2,600万人</b>。支出は最大でも総合評価は最下位（Commonwealth Fund 2024・日本は同調査の対象外）。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="warn">
+    <span class="warn__i">!</span>
+    <span class="warn__t">⚠ 2026年8月から、高額療養費の自己負担上限額が段階的に引き上げ（年間上限も新設）</span>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">4</span>皆保険を守る、私たちの3つの行動</div>
+    <div class="acts">
+      <div class="act">
+        <div class="act__t">① かかりつけ医を持つ</div>
+        <div class="act__d">重複受診・重複検査を減らし、必要なときは専門医へ紹介してもらう。</div>
+      </div>
+      <div class="act">
+        <div class="act__t">② 救急外来の適正利用</div>
+        <div class="act__d">迷ったら #7119 などの救急相談窓口へ。本当に必要な人に救急を残す。</div>
+      </div>
+      <div class="act">
+        <div class="act__t">③ 予防・健診に参加する</div>
+        <div class="act__d">「治せる死」をさらに減らすための投資。早期発見が費用も体も守る。</div>
+      </div>
+    </div>
+    <div class="act-note">※ 必要な受診を我慢することではありません。</div>
+  </div>
+
+  <div class="info__src">出典: OECD Health at a Glance 2025 ／ Lancet 2011（日本の皆保険）／ Glob Health Med 2026 ／ 厚生労働省（高額療養費・専門委員会資料）／ NHS England ／ Commonwealth Fund 2024</div>
+
+  <div class="info__foot">
+    <span><span class="x">✚</span> 医知創造ラボ（脳神経内科専門医監修）</span>
+    <span>tools.ichisouzo-lab.com</span>
+  </div>
+</div>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px auto 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="https://youtu.be/bb_QHowiqSI" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#C0392B;color:#fff;">▶ 解説動画（YouTube）</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+</body>
+</html>
