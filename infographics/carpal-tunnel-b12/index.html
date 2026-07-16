@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A5276">
+<title>手根管症候群にビタミンB12は効くのか — インフォグラフィック</title>
+<style>
+  :root{
+    --navy:#1A5276; --navy2:#21618C; --blue:#2E86C1; --blue-l:#EBF5FB;
+    --ink:#243746; --sub:#5B6B78; --line:#D4E6F3;
+    --green:#1E8449; --green-l:#EAFAF1; --red:#C0392B; --red-l:#FDECEA;
+    --amber:#CA6F1E; --amber-l:#FEF5E7; --paper:#FFFFFF; --gold:#FFD873;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Hiragino Sans','Noto Sans JP',sans-serif;
+    background:linear-gradient(160deg,#eef4f9 0%,#e3edf5 100%);
+    color:var(--ink); line-height:1.6; padding:20px 12px; display:flex; flex-direction:column; align-items:center; -webkit-font-smoothing:antialiased;
+  }
+  .sheet{ max-width:780px; margin:0 auto; background:var(--paper); border-radius:18px; overflow:hidden; box-shadow:0 12px 40px rgba(26,82,118,.18); }
+  .hd{ background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%); color:#fff; padding:26px 24px 22px; position:relative; }
+  .hd .kicker{ font-size:.78rem; letter-spacing:.10em; color:#BFE0F5; font-weight:700; }
+  .hd h1{ font-size:1.5rem; line-height:1.34; margin:8px 0 6px; font-weight:800; }
+  .hd h1 .hl{ color:var(--gold); }
+  .hd p{ font-size:.9rem; color:#DCEAF6; }
+  .hd .tag{ position:absolute; top:22px; right:22px; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); border-radius:999px; padding:5px 12px; font-size:.72rem; font-weight:700; }
+  @media(max-width:560px){ .hd .tag{ display:none; } .hd h1{ font-size:1.24rem; } }
+
+  .pad{ padding:22px 24px; }
+  @media(max-width:560px){ .pad{ padding:18px 14px; } }
+  .sec-t{ font-size:.72rem; font-weight:800; letter-spacing:.10em; color:var(--blue); margin:24px 0 10px; padding-left:10px; border-left:4px solid var(--blue); }
+  .sec-t:first-child{ margin-top:2px; }
+
+  /* three distinctions */
+  .grid3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+  @media(max-width:560px){ .grid3{ grid-template-columns:1fr; } }
+  .fac{ background:var(--blue-l); border:1px solid var(--line); border-radius:12px; padding:12px 14px; }
+  .fac b{ color:var(--navy); font-size:.9rem; }
+  .fac p{ font-size:.79rem; color:var(--sub); margin-top:4px; }
+  .fac .vs{ color:var(--amber); font-weight:800; }
+
+  /* direct-evidence key */
+  .key{ background:var(--navy); color:#eaf3fb; border-radius:14px; padding:16px 18px; margin-top:4px; }
+  .key .h{ font-size:1rem; font-weight:800; color:var(--gold); margin-bottom:6px; }
+  .key p{ font-size:.86rem; color:#cfe3f2; }
+  .key p b{ color:#fff; }
+
+  /* paradox / combo stats */
+  .para{ background:var(--amber-l); border:1.5px solid #EBCBA0; border-left:5px solid var(--amber); border-radius:0 12px 12px 0; padding:14px 16px; margin-top:6px; }
+  .para .h{ font-weight:800; color:var(--amber); font-size:.98rem; margin-bottom:10px; }
+  .split{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  @media(max-width:560px){ .split{ grid-template-columns:1fr; } }
+  .col{ background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px 12px; }
+  .col .lab{ font-size:.74rem; font-weight:800; letter-spacing:.04em; margin-bottom:6px; }
+  .col.moves .lab{ color:var(--amber); }
+  .col.still .lab{ color:var(--navy); }
+  .col ul{ list-style:none; }
+  .col li{ font-size:.8rem; margin-bottom:5px; padding-left:16px; position:relative; color:#3a4a55; }
+  .col.moves li:before{ content:'△'; position:absolute; left:0; color:var(--amber); font-weight:900; font-size:.8rem; }
+  .col.still li:before{ content:'＝'; position:absolute; left:0; color:var(--navy2); font-weight:900; font-size:.8rem; }
+  .para .note{ font-size:.78rem; color:#7a5a2a; margin-top:10px; }
+
+  /* guideline: brace vs B6 */
+  .epi{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  @media(max-width:560px){ .epi{ grid-template-columns:1fr; } }
+  .epic{ border-radius:12px; padding:13px 14px; }
+  .epic.ok{ background:var(--green-l); border:1.5px solid #A9D8BC; }
+  .epic.ng{ background:var(--red-l); border:1.5px solid #E5B4AE; }
+  .epic .t{ font-size:.84rem; font-weight:800; margin-bottom:5px; }
+  .epic.ok .t{ color:var(--green); }
+  .epic.ng .t{ color:var(--red); }
+  .epic .d{ font-size:.8rem; color:#3a4a55; }
+  .epic .mk{ font-size:1.1rem; font-weight:900; }
+
+  /* do / dont */
+  .dd{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media(max-width:560px){ .dd{ grid-template-columns:1fr; } }
+  .card{ border-radius:12px; padding:13px 15px; }
+  .card.do{ background:var(--green-l); border:1.5px solid #A9D8BC; }
+  .card.dont{ background:var(--red-l); border:1.5px solid #E5B4AE; }
+  .card h4{ font-size:.9rem; margin-bottom:7px; }
+  .card.do h4{ color:var(--green); } .card.dont h4{ color:var(--red); }
+  .card ul{ list-style:none; }
+  .card li{ font-size:.82rem; margin-bottom:6px; padding-left:20px; position:relative; color:#33413a; }
+  .card.do li:before{ content:'✓'; position:absolute; left:0; color:var(--green); font-weight:900; }
+  .card.dont li{ color:#5a3a35; } .card.dont li:before{ content:'✕'; position:absolute; left:0; color:var(--red); font-weight:900; }
+
+  .ft{ background:var(--navy); color:#cfe3f2; padding:16px 24px; font-size:.7rem; line-height:1.55; }
+  .ft b{ color:#fff; }
+  .ft .brand{ font-weight:800; color:var(--gold); }
+</style>
+</head>
+<body>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+<div class="sheet ig">
+
+  <div class="hd">
+    <span class="tag">医療従事者向け</span>
+    <div class="kicker">手根管症候群 × ビタミンB12（メコバラミン／メチコバール）</div>
+    <h1>B12は<span class="hl">「効く」のか</span></h1>
+    <p>― 「神経のビタミン＋安静」の根拠を、一次文献で検証する</p>
+  </div>
+
+  <div class="pad">
+
+    <!-- 3 DISTINCTIONS -->
+    <div class="sec-t">まず3つを分ける ─ ここを混同すると議論がぶれる</div>
+    <div class="grid3">
+      <div class="fac"><b>機序 <span class="vs">vs</span> 有効性</b><p>「神経によい」ことと「CTSに効く」ことは別</p></div>
+      <div class="fac"><b>B12単独 <span class="vs">vs</span> 複合製剤</b><p>効果を語る研究の中身は、ほぼ複合製剤</p></div>
+      <div class="fac"><b>欠乏の補正 <span class="vs">vs</span> 疾患治療</b><p>欠乏を直すことと、CTSを治すことは別</p></div>
+    </div>
+
+    <!-- DIRECT EVIDENCE -->
+    <div class="sec-t">直接エビデンス ─ B12単独のRCTは実質存在しない</div>
+    <div class="key">
+      <div class="h">🔍 「効かない」ではなく「検証されていない」</div>
+      <p>典型的な特発性CTSに対する<b>ビタミンB12単独の信頼できるRCTは確認できない</b>。よく引用される研究も、実体は<b>複合製剤</b>か<b>対照群のない観察研究</b>（ウリジン＋葉酸＋B12：n=48・非対照）にすぎない。</p>
+    </div>
+
+    <!-- COMBO RCT PATTERN -->
+    <div class="sec-t">複合製剤RCTの成績 ─ 「痛みは動くが、機能・神経伝導は動かない」</div>
+    <div class="para">
+      <div class="h">⚖ 最良の二重盲検RCT（Zainal 2025・ALA＋メチコバラミン等・n=70・6か月）</div>
+      <div class="split">
+        <div class="col moves">
+          <div class="lab">動いた（主観指標）</div>
+          <ul>
+            <li>VAS（痛み）は有意に改善</li>
+          </ul>
+        </div>
+        <div class="col still">
+          <div class="lab">動かない（客観指標）</div>
+          <ul>
+            <li>BCTQ（症状・機能）有意差なし</li>
+            <li>SF-36 有意差なし</li>
+            <li>神経伝導検査（NCS）有意差なし</li>
+          </ul>
+        </div>
+      </div>
+      <p class="note">別のRCT（D'Orio 2023・複合栄養剤・n=147）でも <b>BCTQ機能サブスケールは有意差なし</b>、著者は <b>「機能回復のgold standardは手術」</b> と結論。複合製剤ゆえ <b>B12単独の寄与は分離できない</b>。</p>
+    </div>
+
+    <!-- GUIDELINE -->
+    <div class="sec-t">体系的レビュー ─ 装具は◯、ビタミンは×</div>
+    <div class="epi">
+      <div class="epic ok">
+        <div class="t"><span class="mk">◯</span> 夜間の中間位スプリント</div>
+        <div class="d">Cochrane：症状（WMD −1.07）・機能（WMD −0.55）を<b>有意に改善</b></div>
+      </div>
+      <div class="epic ng">
+        <div class="t"><span class="mk">×</span> ビタミンB6</div>
+        <div class="d">Cochrane：2試験50例で<b>全般症状を有意に改善せず</b>（B群療法全般への示唆）</div>
+      </div>
+    </div>
+
+    <!-- DO / DONT -->
+    <div class="sec-t">外来でどうするか ─ 柱は「B12」ではなく「装具」</div>
+    <div class="dd">
+      <div class="card do">
+        <h4>すること</h4>
+        <ul>
+          <li><b>夜間の中間位スプリント</b>を保存療法の柱に据える</li>
+          <li>B12は<b>欠乏・併存ニューロパチーの補正</b>として位置づける</li>
+          <li><b>母指球萎縮・持続感覚脱失・筋力低下</b>→ 手術適応を評価</li>
+        </ul>
+      </div>
+      <div class="card dont">
+        <h4>避けること</h4>
+        <ul>
+          <li>欠乏の有無を問わず<b>CTS治療目的でB12をルーチン</b>投与</li>
+          <li>「ビタミンB12で手根管が<b>治る</b>」と患者に説明する</li>
+          <li>効果の不確実なB12・安静で<b>手術のタイミングを遅らせる</b></li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="ft">
+    <b>主な出典（PubMed収載）：</b> Zainal NA, et al. BMC Neurol 2025;26:7（二重盲検RCT・VASのみ有意）／ D'Orio M, et al. Acta Biomed 2023;94(S2):e2023050（複合栄養剤RCT・機能は非有意）／ Di Geronimo G, et al. Eur Rev Med Pharmacol Sci 2009;13:133（B群はALA/GLAに劣位）／ Negrão L, et al. Pain Manag 2016;6:25（非対照観察研究）／ O'Connor D, et al. Cochrane Database Syst Rev 2003;CD003219（装具◯・B6×）／ Padua L, et al. Lancet Neurol 2016;15:1273（エビデンスは乏しい）.<br>
+    ※ 本図は「B12全否定」ではなく、<b>欠乏の補正</b>と<b>CTSの疾患修飾治療</b>を分けるための整理。実際の判断は最新GL・各症例に基づく。&nbsp; 作成：<span class="brand">医知創造ラボ</span>
+  </div>
+
+</div>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px auto 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+</body>
+</html>
