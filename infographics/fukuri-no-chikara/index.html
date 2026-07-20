@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1080">
+<meta name="description" content="複利はお金だけの話ではありません。毎日1%の改善は1年で約37.8倍、毎日1%の後退は約0.03倍。多くの人が挫折する「停滞期」は複利曲線の性質上むしろ正常であること、習慣の自動化には平均66日(個人差18〜254日)かかり1日抜けても損なわれないこと、1日約5,800歩で総死亡リスク40%低下・1日4.5分の激しい生活活動でがんリスク約20%低下という健康データ、そして借金や悪習慣という逆回転の複利までを1枚に整理。脳神経内科専門医監修。">
+<title>毎日1%の積み重ねが1年で37倍に？お金・習慣・健康に効く「複利の力」を1枚に（インフォグラフィック）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#012360; --blue:#1D4189; --accent:#F27E03; --yellow:#FFD60A;
+  --red:#DC3323; --green:#2C6E49; --ink:#22323f; --ink2:#3c4d5a;
+  --line:#dce4ea; --bg:#f4f7fa;
+  --font:"BIZ UDPGothic","Yu Gothic","Meiryo",sans-serif;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:var(--font); background:#fff;}
+.info{width:1080px; background:#fff; color:var(--ink); padding:0 0 60px;}
+
+.info__head{background:linear-gradient(135deg,#001B4D 0%,#012360 50%,#1D4189 100%); color:#fff;
+  padding:56px 64px 50px; position:relative; overflow:hidden;}
+.info__head::after{content:""; position:absolute; right:-100px; top:-100px; width:340px; height:340px;
+  border-radius:50%; background:radial-gradient(circle at 30% 30%, rgba(242,126,3,.5), rgba(242,126,3,0) 70%);}
+.info__badge{display:inline-flex; align-items:center; gap:10px;
+  background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3);
+  border-radius:999px; padding:8px 22px; font-size:23px; font-weight:700; position:relative; z-index:2;}
+.info__badge .x{color:var(--accent);}
+.info__title{font-size:44px; font-weight:700; line-height:1.28; margin-top:20px; position:relative; z-index:2;}
+.info__title .hl{color:var(--accent);}
+.info__sub{font-size:23px; color:rgba(255,255,255,.85); margin-top:14px; position:relative; z-index:2; line-height:1.5;}
+
+.lead{padding:0 64px; margin-top:34px;}
+.lead__box{background:var(--bg); border-left:6px solid var(--accent); border-radius:0 12px 12px 0;
+  padding:20px 26px; font-size:22px; line-height:1.55; color:var(--ink2);}
+.lead__box b{color:var(--navy);}
+
+.sec{padding:0 64px; margin-top:46px;}
+.sec__h{display:flex; align-items:center; gap:16px; font-size:32px; font-weight:700;
+  color:var(--navy); margin-bottom:20px;}
+.sec__n{flex:none; width:52px; height:52px; border-radius:14px; background:var(--accent);
+  color:#fff; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:700;}
+
+.cmpwrap{border:2px solid var(--line); border-radius:14px; overflow:hidden;}
+table.cmp{width:100%; border-collapse:collapse; font-size:20px;}
+table.cmp th, table.cmp td{text-align:left; padding:16px 24px; vertical-align:middle; line-height:1.4;}
+table.cmp thead th{background:var(--navy); color:#fff; font-weight:700; font-size:22px;}
+table.cmp tbody td{border-bottom:1px solid var(--line); color:var(--ink2);}
+table.cmp tbody tr:nth-child(even){background:var(--bg);}
+table.cmp tbody td:first-child{font-weight:700; color:var(--navy); white-space:nowrap;}
+.pill{display:inline-block; font-size:17px; font-weight:700; padding:4px 14px; border-radius:999px;}
+.pill--ok{background:#e5f2ea; color:var(--green);}
+.pill--warn{background:#fdeee0; color:var(--accent);}
+.pill--ng{background:#fbe9e7; color:var(--red);}
+
+.chartbox{border:2px solid var(--line); border-radius:14px; padding:22px 26px 16px; background:#fff;}
+.chartbox svg{width:100%; height:auto; display:block;}
+.chartlegend{display:flex; gap:32px; justify-content:center; margin-top:8px; font-size:18px; font-weight:700;}
+.chartlegend .exp{color:#7a8a96;}
+.chartlegend .real{color:var(--accent);}
+
+.pillars{display:flex; flex-direction:column; gap:13px; margin-top:24px;}
+.pillar{border:2px solid var(--line); border-radius:14px; display:flex; overflow:hidden; align-items:stretch; background:var(--bg);}
+.pillar__num{flex:none; width:56px; display:flex; align-items:center; justify-content:center; font-size:30px; font-weight:700; color:#fff; background:var(--navy);}
+.pillar__icon{flex:none; width:82px; display:flex; align-items:center; justify-content:center; font-size:36px; background:#fff;}
+.pillar__main{flex:1; padding:15px 22px;}
+.pillar__t{font-size:24px; font-weight:700; color:var(--navy); margin-bottom:5px;}
+.pillar__d{font-size:20px; line-height:1.5; color:var(--ink2);}
+.pillar__d b{color:var(--navy);}
+.pillar__d .rd{color:var(--red); font-weight:700;}
+
+.warnbox{margin:22px 64px 0; background:#fbe9e7; border:2.5px solid var(--red); border-radius:14px;
+  padding:20px 28px; display:flex; align-items:flex-start; gap:18px;}
+.warnbox__ic{flex:none; font-size:34px; line-height:1;}
+.warnbox__t{font-size:22px; font-weight:700; color:var(--red); margin-bottom:6px;}
+.warnbox__d{font-size:19px; line-height:1.55; color:var(--ink2);}
+.warnbox__d b{color:var(--red);}
+
+.info__foot{margin-top:52px; padding:26px 64px 0; border-top:2px solid var(--line);
+  display:flex; align-items:center; justify-content:space-between; font-size:22px; color:#7a8a96; font-weight:700;}
+.info__foot .x{color:var(--accent);}
+.info__src{padding:0 64px; margin-top:20px; font-size:16px; line-height:1.5; color:#9aa8b2;}
+.info__disc{padding:0 64px; margin-top:10px; font-size:15px; line-height:1.5; color:#9aa8b2;}
+</style>
+</head>
+<body>
+<div class="info ig">
+  <div class="info__head hd">
+    <span class="info__badge"><span class="x">✚</span>医師がやさしく解説</span>
+    <div class="info__title">毎日1％の積み重ねが、<br>1年で<span class="hl">37倍</span>に？</div>
+    <div class="info__sub">お金・習慣・健康に効く「複利の力」 ― そして、なぜ途中でやめてしまうのか</div>
+  </div>
+
+  <div class="lead">
+    <div class="lead__box"><b>結論:</b> 複利とは<b>利息に利息がつく</b>雪だるま式の仕組み。その最大の武器は金利の高さではなく、<b>「時間」と「続けること」</b>です。</div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">1</span>毎日1％を1年続けると</div>
+    <div class="cmpwrap">
+      <table class="cmp">
+        <thead><tr><th>経過日数</th><th>毎日1％の改善</th><th>毎日1％の後退</th></tr></thead>
+        <tbody>
+          <tr><td>100日</td><td>約2.7倍</td><td>約0.37倍</td></tr>
+          <tr><td>200日</td><td>約7.3倍</td><td>約0.13倍</td></tr>
+          <tr><td>365日</td><td><span class="pill pill--ok">約37.8倍</span></td><td><span class="pill pill--ng">約0.03倍</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="info__disc" style="padding:0; margin-top:10px;">※ 能力が毎日1％ずつ伸びる実証ではなく、複利のイメージをつかむための思考モデルです。</div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">2</span>多くの人がやめる「停滞期」の正体</div>
+    <div class="chartbox">
+      <svg viewBox="0 0 1000 420" role="img" aria-label="複利の成長曲線と期待の直線の比較">
+        <rect x="130" y="40" width="337" height="310" fill="#012360" opacity="0.07"/>
+        <text x="150" y="92" font-size="28" font-weight="700" fill="#012360">停滞期</text>
+        <text x="150" y="128" font-size="20" fill="#012360">「効果がない」と感じる時期</text>
+        <line x1="130" y1="350" x2="960" y2="350" stroke="#dce4ea" stroke-width="3"/>
+        <line x1="130" y1="40" x2="130" y2="350" stroke="#dce4ea" stroke-width="3"/>
+        <path d="M130,350 L950,62" fill="none" stroke="#7a8a96" stroke-width="5" stroke-dasharray="14 12"/>
+        <path d="M130,350 L242,345 L355,338 L467,324 L579,302 L692,265 L759,232 L826,187 L894,128 L950,62" fill="none" stroke="#F27E03" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="950" cy="62" r="11" fill="#F27E03"/>
+        <text x="950" y="32" font-size="26" font-weight="700" fill="#F27E03" text-anchor="end">37.8倍</text>
+        <text x="114" y="358" font-size="20" fill="#9aa8b2" text-anchor="end">1倍</text>
+        <text x="114" y="288" font-size="20" fill="#9aa8b2" text-anchor="end">10倍</text>
+        <text x="114" y="208" font-size="20" fill="#9aa8b2" text-anchor="end">20倍</text>
+        <text x="114" y="130" font-size="20" fill="#9aa8b2" text-anchor="end">30倍</text>
+        <text x="130" y="388" font-size="20" fill="#9aa8b2" text-anchor="middle">0日</text>
+        <text x="355" y="388" font-size="20" fill="#9aa8b2" text-anchor="middle">100日</text>
+        <text x="579" y="388" font-size="20" fill="#9aa8b2" text-anchor="middle">200日</text>
+        <text x="804" y="388" font-size="20" fill="#9aa8b2" text-anchor="middle">300日</text>
+        <text x="950" y="388" font-size="20" fill="#9aa8b2" text-anchor="middle">365日</text>
+      </svg>
+      <div class="chartlegend"><span class="exp">－－ 期待（直線的に出るはず）</span><span class="real">━━ 現実（複利の曲線）</span></div>
+    </div>
+    <div class="info__disc" style="padding:0; margin-top:10px;">曲線の前半はほぼ水平。「効果がない」と感じるのは異常ではなく、複利の性質上むしろ正常です。</div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">3</span>科学が示す「続け方」</div>
+    <div class="pillars">
+      <div class="pillar">
+        <div class="pillar__num">1</div>
+        <div class="pillar__icon">📅</div>
+        <div class="pillar__main">
+          <div class="pillar__t">自動化までは平均66日</div>
+          <div class="pillar__d">行動が「考えなくてもできる」ようになるまでの期間は<b>平均66日</b>。ただし個人差が大きく<b>18〜254日</b>の幅があります。「21日で習慣になる」より、実際は長くかかります。</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar__num">2</div>
+        <div class="pillar__icon">🧠</div>
+        <div class="pillar__main">
+          <div class="pillar__t">1日抜けても台無しにはならない</div>
+          <div class="pillar__d">同じ研究で、<b>1日くらい抜けても習慣形成は大きく損なわれない</b>ことが示されています。繰り返された行動は<b>大脳基底核</b>の回路に引き継がれ、「自動運転モード」に移っていきます。</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar__num">3</div>
+        <div class="pillar__icon">🚶</div>
+        <div class="pillar__main">
+          <div class="pillar__t">健康にも複利は効く</div>
+          <div class="pillar__d">1日約3,500歩の群に比べ約5,800歩の群で<b>総死亡リスクが40％低下</b>。運動習慣のない人でも、1分未満の激しい生活活動が<b>1日合計4.5分</b>あると<b>がんの発症リスクが約20％低い</b>と報告されています。</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar__num">4</div>
+        <div class="pillar__icon">✅</div>
+        <div class="pillar__main">
+          <div class="pillar__t">続けるための4つの工夫</div>
+          <div class="pillar__d">① ばかばかしいほど小さく始める ／ ② 毎日必ず起きる行動にくっつける ／ ③ 記録して「見えない蓄積」を見える化する ／ ④ <b>2日連続では休まない</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="warnbox">
+    <span class="warnbox__ic">⚠️</span>
+    <div>
+      <div class="warnbox__t">複利は逆回転もする</div>
+      <div class="warnbox__d">複利は増える方向だけでなく、膨らむ方向にも同じ力で働きます。年15％で借りたお金を返さずにいると、72の法則どおり<b>およそ5年で残高が2倍</b>になる計算です。喫煙・飲みすぎ・夜更かしといった悪習慣も、同じカーブを描いて健康という残高を静かに減らしていきます。</div>
+    </div>
+  </div>
+
+  <div class="info__src">出典: Lally P, et al. Eur J Soc Psychol. 2010;40:998-1009／Gardner B, et al. Br J Gen Pract. 2012;62(605):664-6 (PMID 23211256)／Graybiel AM. Annu Rev Neurosci. 2008;31:359-87 (PMID 18558860)／Paluch AE, et al. Lancet Public Health. 2022;7(3):e219-e228 (PMID 35247352)／Stamatakis E, et al. JAMA Oncol. 2023;9(9):1255-1259 (PMID 37498576)／野村證券 証券用語解説集「72の法則」</div>
+  <div class="info__disc">※本図は複利という仕組みと健康習慣に関する一般的な解説であり、特定の金融商品の勧誘・推奨や、個別の投資助言・医学的助言を行うものではありません。資産運用は金融機関・専門家に、健康上の心配はかかりつけ医にご相談ください。なお「複利はアインシュタインが人類最大の発明と呼んだ」という逸話に確かな出典はなく、俗説とされています。</div>
+
+  <div class="info__foot">
+    <span><span class="x">✚</span> 医知創造ラボ</span>
+    <span>tools.ichisouzo-lab.com</span>
+  </div>
+</div>
+</body>
+</html>
