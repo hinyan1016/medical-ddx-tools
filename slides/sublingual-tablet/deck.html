@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>舌下錠の正しい使い方 — スライド</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* warm accent (tweakable) */
+  --accent: #FF7A59;
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, #ffffff);
+  --accent-line: color-mix(in srgb, var(--accent) 60%, #ffffff);
+  --accent-ink: color-mix(in srgb, var(--accent) 70%, #5a2418);
+
+  /* type scale — multiply all via --type-mult (base enlarged for mobile readability) */
+  --type-mult: 1.38;
+  --type-display: calc(96px * var(--type-mult));
+  --type-title:   calc(82px * var(--type-mult));
+  --type-heading: calc(60px * var(--type-mult));
+  --type-subtitle:calc(44px * var(--type-mult));
+  --type-body:    calc(38px * var(--type-mult));
+  --type-small:   calc(30px * var(--type-mult));
+  --type-label:   calc(27px * var(--type-mult));
+  --type-chapter: calc(210px * var(--type-mult));
+  --type-stat:    calc(150px * var(--type-mult));
+
+  --pad-x: 112px;
+  --pad-top: 58px;
+  --pad-bottom: 80px;
+  --gap-title: 24px;
+  --gap-item: 22px;
+
+  --grad-navy: linear-gradient(135deg, #1B3A5C 0%, #2C5AA0 100%);
+}
+
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#0c1622; }
+
+/* ---------- base slide ---------- */
+.slide{
+  box-sizing:border-box;
+  display:flex; flex-direction:column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--font-ja);
+  overflow:hidden;
+  position:relative;
+}
+.slide--navy{ background: var(--grad-navy); color: var(--white); }
+.slide--soft{ background: var(--bg-alt); }
+
+/* eyebrow — shared header marker across content slides */
+.eyebrow{
+  display:flex; align-items:center; gap:16px;
+  font-size: var(--type-label); font-weight:700; color: var(--blue);
+  letter-spacing:.04em;
+}
+.eyebrow::before{
+  content:""; width:18px; height:18px; border-radius:4px;
+  background: var(--accent); flex:none;
+}
+.eyebrow .num{ font-family: var(--font-en); color: var(--accent-ink); }
+
+.s-title{
+  font-size: var(--type-heading); line-height:1.22; color: var(--navy);
+  margin: var(--gap-title) 0 0; font-weight:700; letter-spacing:.01em;
+  text-wrap: pretty;
+}
+.slide--navy .s-title{ color:#fff; }
+
+.lead{
+  font-size: var(--type-body); line-height:1.7; color: var(--ink-2);
+  margin:0; text-wrap: pretty;
+}
+.muted{ color: var(--gray); }
+
+/* footer band w/ channel + page (decorative, consistent) */
+.slide__foot{
+  position:absolute; left: var(--pad-x); right: var(--pad-x); bottom: 40px;
+  display:flex; align-items:center; justify-content:space-between;
+  font-size: calc(24px * var(--type-mult)); color: var(--gray);
+  font-family: var(--font-ja);
+}
+.slide__foot .ch{ display:flex; align-items:center; gap:10px; }
+.slide__foot .cross{ color: var(--accent); font-weight:700; }
+.slide--navy .slide__foot{ color: rgba(255,255,255,.65); }
+.slide--navy .slide__foot .cross{ color:#fff; }
+
+/* ============ 1. COVER ============ */
+.cover{ justify-content:center; }
+.cover__badge{
+  display:inline-flex; align-items:center; gap:14px; align-self:flex-start;
+  background: rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.28);
+  color:#fff; padding:14px 26px; border-radius:999px;
+  font-size: var(--type-label); font-weight:700;
+}
+.cover__badge .cross{ color: var(--accent); font-size:1.2em; }
+.cover__title{
+  font-size: var(--type-display); line-height:1.18; color:#fff; font-weight:700;
+  margin:42px 0 0; letter-spacing:.01em; text-wrap:balance; max-width:24ch;
+}
+.cover__title .hl{ color: var(--accent); }
+.cover__sub{
+  font-size: var(--type-subtitle); color: rgba(255,255,255,.82);
+  margin:34px 0 0; font-weight:400;
+}
+.cover__meta{
+  display:flex; gap:34px; align-items:center; margin-top:60px;
+  font-size: var(--type-small); color: rgba(255,255,255,.78);
+}
+.cover__meta .ep{
+  font-family: var(--font-en); font-weight:700; color:#fff;
+  background: var(--accent); padding:8px 20px; border-radius:8px;
+}
+.cover__blob{
+  position:absolute; right:-160px; top:-160px; width:620px; height:620px;
+  border-radius:50%; background: radial-gradient(circle at 30% 30%, rgba(255,122,89,.5), rgba(255,122,89,0) 70%);
+  pointer-events:none;
+}
+
+/* ============ 2. THEME / CONCLUSION FIRST ============ */
+.theme__body{ display:flex; flex-direction:column; gap: var(--gap-title); margin-top: 28px; flex:1; justify-content:center; }
+.theme__q{ font-size: var(--type-title); line-height:1.25; color: var(--navy); font-weight:700; max-width:22ch; text-wrap:balance; }
+.theme__q .hl{ color: var(--accent-ink); border-bottom: 8px solid var(--accent-line); }
+.concl{
+  display:flex; align-items:flex-start; gap:28px;
+  background: var(--accent-soft); border-left: 12px solid var(--accent);
+  border-radius: 10px; padding: 32px 44px;
+}
+.concl__tag{
+  flex:none; background: var(--accent); color:#fff; font-weight:700;
+  font-size: var(--type-small); padding:10px 22px; border-radius:8px;
+}
+.concl__text{ font-size: var(--type-subtitle); line-height:1.5; color: var(--navy-ink); font-weight:700; margin:0; }
+
+/* ============ 3. AGENDA ============ */
+.agenda__list{ display:flex; flex-direction:column; gap:14px; margin-top:22px; }
+.agenda__item{
+  display:flex; align-items:center; gap:30px;
+  background: var(--white); border:2px solid var(--line); border-left:8px solid var(--blue);
+  border-radius:10px; padding: 22px 40px; box-shadow: var(--shadow-sm);
+}
+.agenda__num{
+  flex:none; width:70px; height:70px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background: var(--blue-soft); color: var(--blue);
+  font-family: var(--font-en); font-size: calc(50px * var(--type-mult)); font-weight:700;
+}
+.agenda__item:nth-child(2) .agenda__num{ background: var(--accent-soft); color: var(--accent-ink); }
+.agenda__txt{ font-size: var(--type-subtitle); color: var(--navy); font-weight:700; }
+.agenda__txt small{ display:block; font-size: var(--type-small); color: var(--gray); font-weight:400; margin-top:8px; }
+
+/* ============ 4. CHAPTER DIVIDER ============ */
+.chapter{ justify-content:center; }
+.chapter__num{
+  font-family: var(--font-en); font-size: var(--type-chapter); line-height:.9;
+  font-weight:700; color: var(--accent); margin:0;
+}
+.chapter__kicker{ font-size: var(--type-subtitle); color: rgba(255,255,255,.75); font-weight:700; letter-spacing:.1em; }
+.chapter__title{ font-size: var(--type-title); color:#fff; font-weight:700; margin:18px 0 0; max-width:20ch; text-wrap:balance; }
+.chapter__rule{ width:120px; height:8px; background: var(--accent); border-radius:4px; margin-top:40px; }
+
+/* ============ 5. BODY 1 COLUMN ============ */
+.body1{ }
+.body1__main{ margin-top: 26px; max-width: 1640px; }
+.body1 .lead{ margin-bottom: 20px; }
+.important-box.lg{
+  background: var(--blue-tint); border-left: 12px solid var(--blue);
+  border-radius: 10px; padding: 20px 36px; margin:0;
+}
+.important-box.lg .ttl{ display:flex; align-items:center; gap:14px; font-size: var(--type-small); font-weight:700; color: var(--blue); margin-bottom:4px; }
+.important-box.lg p{ font-size: calc(var(--type-body) * 0.92); line-height:1.45; color: var(--ink-2); margin:0; }
+
+/* ============ 8. COMPARISON TABLE ============ */
+.tablewrap{ margin-top:18px; flex:1; }
+table.cmp{ width:100%; border-collapse:collapse; font-size: calc(var(--type-small) * 0.8); }
+table.cmp th, table.cmp td{ text-align:left; padding:12px 22px; vertical-align:middle; line-height:1.3; }
+table.cmp thead th{ background: var(--navy); color:#fff; font-weight:700; font-size: calc(var(--type-body) * 0.8); }
+table.cmp thead th:first-child{ border-top-left-radius:10px; }
+table.cmp thead th:last-child{ border-top-right-radius:10px; }
+table.cmp tbody td{ border-bottom:1px solid var(--line); color: var(--ink-2); }
+table.cmp tbody tr:nth-child(even){ background: var(--bg-muted); }
+table.cmp tbody td:first-child{ font-weight:700; color: var(--navy); font-size: calc(var(--type-body) * 0.8); white-space:nowrap; }
+table.cmp .pill{ display:inline-block; font-size: calc(24px * var(--type-mult)); font-weight:700; padding:6px 16px; border-radius:999px; }
+.pill--easy{ background: var(--green-soft); color:#1c7a3a; }
+.pill--mid{ background: var(--accent-soft); color: var(--accent-ink); }
+
+/* ============ 10. DISCLAIMER ============ */
+.disc{ justify-content:center; align-items:center; text-align:center; background: var(--bg-alt); }
+.disc__icon{ font-size: calc(96px * var(--type-mult)); line-height:1; }
+.disc__tag{ font-size: var(--type-subtitle); font-weight:700; color: var(--navy); margin:28px 0 0; letter-spacing:.06em; }
+.disc__box{
+  margin-top:38px; max-width:1180px; background:#fff; border:2px solid var(--line);
+  border-top: 10px solid var(--yellow); border-radius:12px; padding:48px 56px;
+  box-shadow: var(--shadow-md);
+}
+.disc__box p{ font-size: calc(var(--type-body) * 0.85); line-height:1.5; color: var(--ink-2); margin:0; text-wrap:pretty; }
+.disc__box .strong{ color: var(--navy); font-weight:700; }
+
+/* ============ 11. SUMMARY ============ */
+.sum__list{ display:grid; grid-template-columns: repeat(3,1fr); gap:36px; margin-top:54px; flex:1; }
+.sum__card{
+  background:#fff; border:2px solid var(--line); border-top:10px solid var(--blue);
+  border-radius:12px; padding:42px 36px; display:flex; flex-direction:column; gap:22px;
+  box-shadow: var(--shadow-sm);
+}
+.sum__card:nth-child(2){ border-top-color: var(--accent); }
+.sum__n{ font-family: var(--font-en); font-size: calc(60px * var(--type-mult)); font-weight:700; color: var(--blue-soft); line-height:1; }
+.sum__card:nth-child(2) .sum__n{ color: var(--accent-soft); }
+.sum__h{ font-size: var(--type-subtitle); font-weight:700; color: var(--navy); line-height:1.3; }
+.sum__p{ font-size: var(--type-small); color: var(--ink-2); line-height:1.6; margin:0; }
+
+/* ============ 12. ENDING / CTA ============ */
+.end{ justify-content:center; align-items:center; text-align:center; }
+.end__cross{ font-size: var(--type-subtitle); color: var(--accent); font-weight:700; }
+.end__h{ font-size: var(--type-title); color:#fff; font-weight:700; margin:18px 0 0; text-wrap:balance; }
+.end__sub{ font-size: var(--type-subtitle); color: rgba(255,255,255,.82); margin:26px 0 0; font-weight:400; }
+.end__cta{ display:flex; gap:30px; margin-top:64px; }
+.btn{ display:inline-flex; align-items:center; gap:16px; font-size: var(--type-subtitle); font-weight:700; padding:24px 48px; border-radius:999px; }
+.btn--sub{ background: var(--accent); color:#fff; }
+.btn--like{ background: rgba(255,255,255,.14); color:#fff; border:2px solid rgba(255,255,255,.4); }
+.end__next{ margin-top:56px; font-size: var(--type-small); color: rgba(255,255,255,.7); }
+.end__next b{ color:#fff; }
+
+/* ============ EDITORIAL POLISH (shared utilities / 2026-06-11) ============ */
+/* 英字セクションラベル（eyebrowの英字版・24px下限維持） */
+.eyebrow .en{ font-family: var(--font-en); color: var(--accent-ink); letter-spacing:.15em; text-transform:uppercase; }
+.slide--navy .eyebrow{ color: rgba(255,255,255,.85); }
+.slide--navy .eyebrow .en{ color:#fff; }
+
+/* 見出し下の細罫線 */
+.hairline{ height:1px; background: var(--navy); opacity:.25; margin: 18px 0 0; border:0; }
+.slide--navy .hairline{ background:#fff; opacity:.3; }
+
+/* 右上の薄い大章番号（装飾・背面） */
+.chapter-ghost{
+  position:absolute; top: 30px; right: var(--pad-x);
+  font-family: var(--font-en); font-weight:700; line-height:.8;
+  font-size: calc(150px * var(--type-mult)); color: var(--navy);
+  opacity:.06; pointer-events:none; user-select:none;
+}
+.slide--navy .chapter-ghost{ color:#fff; opacity:.10; }
+
+/* 汎用 下線ハイライト（cover/theme 個別定義はそのまま温存） */
+.hl-underline{ border-bottom: 6px solid var(--accent-line); }
+
+/* ============ 19. QUOTE / GUIDELINE ============ */
+.quote{ justify-content:center; align-items:center; text-align:center; }
+.quote__box{ position:relative; max-width:1400px; background: var(--bg-alt); border-left:12px solid var(--navy); border-radius:14px; padding:64px 70px 48px; }
+.quote__mark{ position:absolute; top:-30px; left:40px; font-family: var(--font-en); font-size: calc(140px * var(--type-mult)); color: var(--accent); line-height:1; font-weight:900; }
+.quote__text{ font-size: var(--type-heading); color: var(--navy-ink); font-weight:700; line-height:1.45; margin:0; text-wrap:pretty; }
+.quote__src{ font-size: var(--type-small); color: var(--gray); margin:30px 0 0; }
+
+/* ============ 20. BEFORE / AFTER ============ */
+.ba{ display:flex; align-items:stretch; gap:32px; margin-top:34px; flex:1; }
+.ba__col{ flex:1; border-radius:16px; padding:44px 40px; display:flex; flex-direction:column; gap:22px; }
+.ba__col.before{ background: var(--bg-alt); border:2px solid var(--line); }
+.ba__col.after{ background: var(--accent-soft); border:3px solid var(--accent); }
+.ba__tag{ align-self:flex-start; font-family: var(--font-en); font-size: var(--type-small); font-weight:700; letter-spacing:.1em; padding:8px 22px; border-radius:8px; }
+.ba__col.before .ba__tag{ background: var(--gray); color:#fff; }
+.ba__col.after .ba__tag{ background: var(--accent); color:#fff; }
+.ba__txt{ font-size: var(--type-body); color: var(--ink-2); line-height:1.5; font-weight:700; margin:0; }
+.ba__arrow{ flex:none; align-self:center; font-family: var(--font-en); font-size: calc(80px * var(--type-mult)); color: var(--accent); }
+
+/* ============ 31. 用語解説 (handoff2) ============ */
+.term__card{
+  margin-top:28px; background:#fff; border:2px solid var(--line); border-top:10px solid var(--blue);
+  border-radius:14px; padding:38px 52px; box-shadow: var(--shadow-md);
+  display:flex; flex-direction:column; gap:22px; flex:0 1 auto;
+}
+.term__word{ display:flex; align-items:baseline; gap:26px; }
+.term__word .w{ font-size: var(--type-title); font-weight:700; color: var(--navy); }
+.term__word .r{ font-size: var(--type-small); color: var(--gray); }
+.term__def{ font-size: var(--type-body); line-height:1.55; color: var(--ink-2); margin:0; }
+.term__analogy{
+  display:flex; align-items:flex-start; gap:20px;
+  background: var(--accent-soft); border-radius:10px; padding:22px 32px;
+}
+.term__analogy .tag{ flex:none; background: var(--accent); color:#fff; font-size: var(--type-label); font-weight:700; padding:8px 20px; border-radius:8px; }
+.term__analogy p{ font-size: var(--type-small); color: var(--ink-2); line-height:1.55; margin:0; font-weight:700; }
+
+/* ============ 35. 参考文献・出典 (handoff2) ============ */
+.refs__list{ display:grid; grid-template-columns: 1fr 1fr; gap:16px 56px; margin-top:28px; }
+.refs__item{
+  display:flex; align-items:baseline; gap:18px;
+  border-bottom:1px solid var(--line); padding-bottom:14px;
+}
+.refs__num{ flex:none; font-family: var(--font-en); font-size: calc(var(--type-small) * 0.75); font-weight:700; color: var(--accent-ink); }
+.refs__item p{ font-size: calc(var(--type-body) * 0.55); color: var(--ink-2); line-height:1.4; margin:0; }
+.refs__item p small{ display:block; font-size: calc(var(--type-label) * 0.78); color: var(--gray); margin-top:4px; }
+.refs__note{ margin-top:22px; font-size: calc(var(--type-label) * 0.85); color: var(--gray); }
+
+/* entrance animation — fade-up を上位互換で拡張（deck-anim キット / 詳細は _anim_library/） */
+@media (prefers-reduced-motion:no-preference){
+  /* タイミング基底（動きの既定は fade-up） */
+  [data-deck-active] .anim{ animation: fade-up .5s both; }
+  [data-deck-active] .anim2{ animation: fade-up .5s .12s both; }
+  [data-deck-active] .anim3{ animation: fade-up .5s .24s both; }
+  [data-deck-active] .anim4{ animation: fade-up .5s .36s both; }
+  [data-deck-active] .anim5{ animation: fade-up .5s .48s both; }
+  [data-deck-active] .anim6{ animation: fade-up .5s .60s both; }
+  [data-deck-active] .anim-i{ animation: fade-up .5s both; animation-delay: calc(var(--i,0) * .1s); }
+  /* モーション variant（animation-name のみ上書き＝1要素1アニメ維持・data-cue 安全） */
+  [data-deck-active] .a-fade { animation-name: a-fade; }
+  [data-deck-active] .a-up   { animation-name: fade-up; }
+  [data-deck-active] .a-down { animation-name: a-down; }
+  [data-deck-active] .a-right{ animation-name: a-right; }
+  [data-deck-active] .a-left { animation-name: a-left; }
+  [data-deck-active] .a-zoom { animation-name: a-zoom; }
+  [data-deck-active] .a-pop  { animation-name: a-pop; animation-timing-function: cubic-bezier(.34,1.56,.64,1); }
+  [data-deck-active] .a-blur { animation-name: a-blur; }
+  /* コンテンツ・モーション */
+  [data-deck-active] .grow-y { transform-origin:bottom center; animation: grow-y .7s .2s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .grow-x { transform-origin:left center;   animation: grow-x .55s .25s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .nudge-x{ animation: nudge-x .9s .35s ease-in-out both; }
+}
+.grow-y{ transform-origin:bottom center; } .grow-x{ transform-origin:left center; }
+@keyframes fade-up{ from{ opacity:0; transform: translateY(16px);} to{ opacity:1; transform:none;} }
+@keyframes a-fade { from{ opacity:0; } to{ opacity:1; } }
+@keyframes a-down { from{ opacity:0; transform: translateY(-16px);} to{ opacity:1; transform:none; } }
+@keyframes a-right{ from{ opacity:0; transform: translateX(-28px);} to{ opacity:1; transform:none; } }
+@keyframes a-left { from{ opacity:0; transform: translateX(28px); } to{ opacity:1; transform:none; } }
+@keyframes a-zoom { from{ opacity:0; transform: scale(.94);       } to{ opacity:1; transform:none; } }
+@keyframes a-pop  { from{ opacity:0; transform: scale(.8);        } to{ opacity:1; transform:none; } }
+@keyframes a-blur { from{ opacity:0; filter: blur(12px); transform: translateY(10px);} to{ opacity:1; filter: blur(0); transform:none; } }
+@keyframes grow-y { from{ transform: scaleY(0);} to{ transform: scaleY(1);} }
+@keyframes grow-x { from{ transform: scaleX(0);} to{ transform: scaleX(1);} }
+@keyframes nudge-x{ 0%{ transform:none;} 55%{ transform: translateX(10px);} 100%{ transform:none;} }
+
+/* tweaks mount */
+#tweaks-root{ position:fixed; inset:0; pointer-events:none; z-index:9999; }
+#tweaks-root > *{ pointer-events:auto; }
+</style>
+</head>
+<body style="font-size: 8px">
+
+<deck-stage width="1920" height="1080">
+
+  <!-- ===== 01. 表紙 ===== -->
+  <section data-label="表紙" data-screen-label="01 表紙" class="slide slide--navy cover">
+    <div class="cover__blob"></div>
+    <div class="cover__badge anim"><span class="cross">✚</span><span>医知創造ラボ</span></div>
+    <h1 class="cover__title anim2 a-blur">舌下錠、うっかり<span class="hl">飲み込んで</span>しまったら？</h1>
+    <p class="cover__sub anim3">ニトロペン・シクレスト・OD錠……正しい使い方を一気に整理</p>
+    <div class="cover__meta anim3">
+      <span>監修：脳神経内科専門医・指導医</span>
+    </div>
+  </section>
+
+  <!-- ===== 02. テーマ・結論先出し ===== -->
+  <section data-label="テーマ・結論" data-screen-label="02 テーマ・結論" class="slide">
+    <div class="eyebrow anim">今日のテーマ<span class="en">TODAY'S POINT</span></div>
+    <div class="theme__body">
+      <h2 class="theme__q anim">舌下錠を<span class="hl-underline">飲み込んでしまった</span>ら？</h2>
+      <div class="concl anim2">
+        <span class="concl__tag">結論</span>
+        <p class="concl__text">ニトロペンやシクレストのような舌下錠は「飲み込むと効かない薬」。対応は薬の役割によって正反対になります。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>02</span></div>
+  </section>
+
+  <!-- ===== 03. 目次 ===== -->
+  <section data-label="目次" data-screen-label="03 目次" class="slide slide--soft">
+    <div class="eyebrow anim">この動画でわかること<span class="en">AGENDA</span></div>
+    <h2 class="s-title anim">3つのポイントで、<span class="hl-underline">飲み込んだ後まで</span>わかる</h2>
+    <div class="agenda__list">
+      <div class="agenda__item anim a-right"><div class="agenda__num">1</div><div class="agenda__txt">舌下錠とOD錠は何が違うのか<small>似ているようで、使い方は正反対</small></div></div>
+      <div class="agenda__item anim2 a-right"><div class="agenda__num">2</div><div class="agenda__txt">ニトロペンとシクレスト、対応の違い<small>「発作を止める薬」と「毎日続ける薬」の違い</small></div></div>
+      <div class="agenda__item anim3 a-right"><div class="agenda__num">3</div><div class="agenda__txt">効かない・溶けないときの対処<small>保管と取り出し方のコツ</small></div></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>03</span></div>
+  </section>
+
+  <!-- ===== 04. 章扉 01 ===== -->
+  <section data-label="章扉01" data-screen-label="04 章扉" class="slide slide--navy chapter">
+    <div class="cover__blob"></div>
+    <div class="eyebrow anim"><span class="en">CHAPTER 01</span></div>
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num anim a-pop">01</h2>
+    <h3 class="chapter__title anim2">そもそも<span class="hl-underline">舌下錠</span>とは？</h3>
+    <div class="chapter__rule grow-x"></div>
+  </section>
+
+  <!-- ===== 05. 本文1カラム：なぜ舌の下か ===== -->
+  <section data-label="本文1カラム" data-screen-label="05 本文1カラム" class="slide">
+    <div class="chapter-ghost">05</div>
+    <div class="eyebrow anim">基礎知識<span class="en">SECTION 01 — KEY POINT</span></div>
+    <h2 class="s-title anim">なぜ<span class="hl-underline">舌の下</span>で溶かすの？</h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <p class="lead anim2">舌の下で溶かすと、口の中の粘膜から直接吸収されて、速やかに効果があらわれます。</p>
+      <div class="important-box lg anim3">
+        <div class="ttl">📋 ここだけ覚えればOK</div>
+        <p>だから、舌下錠は飲み込んでしまうと十分な効果が出ません。<br>「舌の下に置いて溶かす」が使い方の基本です。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>05</span></div>
+  </section>
+
+  <!-- ===== 06. 引用：添付文書 ===== -->
+  <section data-label="引用" data-screen-label="06 引用" class="slide slide--soft quote">
+    <div class="eyebrow"><span class="en">GUIDELINE</span></div>
+    <div class="quote__box anim">
+      <div class="quote__mark">"</div>
+      <p class="quote__text">本剤は舌下で溶解させ、<br>口腔粘膜より吸収されて<br>速やかに効果を<br>発現するもので、<br>内服では効果がない。</p>
+      <p class="quote__src">— ニトロペン舌下錠0.3mg 添付文書（適用上の注意／2023年8月改訂）</p>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>06</span></div>
+  </section>
+
+  <!-- ===== 07. 章扉 02 ===== -->
+  <section data-label="章扉02" data-screen-label="07 章扉" class="slide slide--navy chapter">
+    <div class="cover__blob"></div>
+    <div class="eyebrow anim"><span class="en">CHAPTER 02</span></div>
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num anim a-pop">02</h2>
+    <h3 class="chapter__title anim2"><span class="hl-underline">OD錠</span>・免疫療法錠と<br>何が違うの？</h3>
+    <div class="chapter__rule grow-x"></div>
+  </section>
+
+  <!-- ===== 08. 比較表（目玉） ===== -->
+  <section data-label="比較表" data-screen-label="08 比較表" class="slide">
+    <div class="chapter-ghost">08</div>
+    <div class="eyebrow anim">最も混同されている<span class="en">COMPARISON</span></div>
+    <h2 class="s-title anim">「舌下」と名の付く薬、<span class="hl-underline">使い方は別々</span></h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2">
+      <table class="cmp">
+        <thead>
+          <tr><th>剤形</th><th>どこに入れる</th><th>飲み込んでよいか</th><th>水は必要か</th><th>代表例</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>舌下錠</td><td>舌の下</td><td>✕ 飲み込まない</td><td>水なしで使用</td><td>ニトロペン・<br>シクレスト</td></tr>
+          <tr><td>免疫療法錠</td><td>舌の下</td><td>○ 1分間保持後に<br>飲み込む</td><td>添付文書に<br>水の記載なし</td><td>シダキュア</td></tr>
+          <tr><td>OD錠</td><td>舌の上</td><td>○ 唾液や水で<br>飲み込む</td><td>水がなくても<br>服用可</td><td>（多数あり）</td></tr>
+          <tr><td>普通の錠剤</td><td>口から飲む</td><td>○ 水で飲み込む</td><td>水で服用</td><td>一般的な内服薬</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>08</span></div>
+  </section>
+
+  <!-- ===== 09. 用語解説：舌下免疫療法（第三のパターン） ===== -->
+  <section data-label="用語解説" data-screen-label="09 用語解説" class="slide slide--soft">
+    <div class="eyebrow anim">同じ「舌下」でも<span class="en">THE THIRD PATTERN</span></div>
+    <h2 class="s-title anim">舌下免疫療法錠は<span class="hl-underline">第三のパターン</span></h2>
+    <div class="term__card anim2">
+      <div class="term__word"><span class="w">舌下免疫療法錠</span><span class="r">シダキュア等</span></div>
+      <p class="term__def">「舌下にて1分間保持した後、飲み込む。その後5分間は、うがいや飲食を控える」（シダキュアスギ花粉舌下錠 添付文書）</p>
+      <div class="term__analogy anim-i a-pop" style="--i:5"><span class="tag">注意</span><p>「舌下＝絶対に飲み込まない」と一律に覚えると、このタイプで誤ります。同じ「舌下」でも、飲み込むタイミングが決まっている薬があります。</p></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>09</span></div>
+  </section>
+
+  <!-- ===== 10. 章扉 03 ===== -->
+  <section data-label="章扉03" data-screen-label="10 章扉" class="slide slide--navy chapter">
+    <div class="cover__blob"></div>
+    <div class="eyebrow anim"><span class="en">CHAPTER 03</span></div>
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num anim a-pop">03</h2>
+    <h3 class="chapter__title anim2"><span class="hl-underline">ニトログリセリン</span>を<br>飲み込んでしまったら</h3>
+    <div class="chapter__rule grow-x"></div>
+  </section>
+
+  <!-- ===== 11. 本文1カラム：ニトロペン編 ===== -->
+  <section data-label="本文1カラム" data-screen-label="11 本文1カラム" class="slide">
+    <div class="chapter-ghost">11</div>
+    <div class="eyebrow anim">発作を止める薬<span class="en">NITROGLYCERIN</span></div>
+    <h2 class="s-title anim">狭心症の発作を、その場で止める薬</h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <p class="lead anim2">ニトロペンは、狭心症の発作時に使う即効性の薬。通常0.3〜0.6mg（1〜2錠）を舌下投与し、数分たっても効果が出なければ<br>追加投与できます（添付文書）。</p>
+      <div class="important-box lg anim3">
+        <div class="ttl">⚠️ 使うときの注意</div>
+        <p>追加してよい回数は、あらかじめ主治医と決めておきましょう。必ず座って服用します。ED治療薬や肺高血圧症の薬（シルデナフィル、リオシグアト等）との併用はできません。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>11</span></div>
+  </section>
+
+  <!-- ===== 12. 章扉 04 ===== -->
+  <section data-label="章扉04" data-screen-label="12 章扉" class="slide slide--navy chapter">
+    <div class="cover__blob"></div>
+    <div class="eyebrow anim"><span class="en">CHAPTER 04</span></div>
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num anim a-pop">04</h2>
+    <h3 class="chapter__title anim2"><span class="hl-underline">アセナピン</span>（シクレスト）を<br>飲み込んでしまったら</h3>
+    <div class="chapter__rule grow-x"></div>
+  </section>
+
+  <!-- ===== 13. 本文1カラム：シクレスト編 ===== -->
+  <section data-label="本文1カラム" data-screen-label="13 本文1カラム" class="slide">
+    <div class="chapter-ghost">13</div>
+    <div class="eyebrow anim">毎日続ける薬<span class="en">ASENAPINE</span></div>
+    <h2 class="s-title anim">シクレストは"うっかり"に厳しい薬</h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <p class="lead anim2">シクレストは1日2回、舌下で使う統合失調症の治療薬。舌下では約35%が吸収されるのに対し、飲み込んでしまうと2%未満しか<br>吸収されません（Citrome L, 2009）。</p>
+      <div class="important-box lg anim3">
+        <div class="ttl">⚠️ 使うときの注意</div>
+        <p>使用後10分は飲食を控え、決して2回分を一度に使用しない。<br>添付文書に追加服用の指示はないため、<br>飲み込んでしまっても自己判断で追加せず、<br>主治医・薬剤師に連絡しましょう。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>13</span></div>
+  </section>
+
+  <!-- ===== 14. 対比：対応は正反対（核心） ===== -->
+  <section data-label="対比" data-screen-label="14 対比" class="slide slide--soft">
+    <div class="chapter-ghost">14</div>
+    <div class="eyebrow anim">本記事の核心<span class="en">THE KEY DIFFERENCE</span></div>
+    <h2 class="s-title anim">飲み込んだ後の<span class="hl-underline">対応は正反対</span></h2>
+    <hr class="hairline">
+    <div class="ba">
+      <div class="ba__col before anim"><span class="ba__tag">ニトロペン（発作止め）</span><p class="ba__txt">追加投与が用法に<br>組み込まれている。<br>回数は主治医と事前に相談。</p></div>
+      <div class="ba__arrow">⇔</div>
+      <div class="ba__col after anim2"><span class="ba__tag">シクレスト（毎日続ける薬）</span><p class="ba__txt">添付文書に追加服用の指示はない。飲み込んでしまっても、自己判断で追加しない。</p></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>14</span></div>
+  </section>
+
+  <!-- ===== 15. 本文1カラム：効かない・溶けないとき ===== -->
+  <section data-label="本文1カラム" data-screen-label="15 本文1カラム" class="slide">
+    <div class="chapter-ghost">15</div>
+    <div class="eyebrow anim">こんなときは<span class="en">WHEN IT DOESN'T WORK</span></div>
+    <h2 class="s-title anim">正しく使っているのに<span class="hl-underline">効かない・溶けない</span>とき</h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <p class="lead anim2">シクレストは吸湿性があるため、使用直前に乾いた手でブリスターシートから取り出し、すぐに舌の下に入れます（患者向医薬品ガイド）。</p>
+      <div class="important-box lg anim3">
+        <div class="ttl">📋 ここだけ覚えればOK</div>
+        <p>シートを剥がさずに押し出すと、薬が割れることがあります。<br>割れても、全量を舌の下に入れれば大丈夫です。<br>溶けにくいときは、自己判断せず薬剤師に相談しましょう。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>15</span></div>
+  </section>
+
+  <!-- ===== 16. まとめ（Take Home 3メッセージ） ===== -->
+  <section data-label="まとめ" data-screen-label="16 まとめ" class="slide">
+    <div class="chapter-ghost">16</div>
+    <div class="eyebrow anim">まとめ<span class="en">TAKE HOME</span></div>
+    <h2 class="s-title anim">今日の3つの<span class="hl-underline">持ち帰り</span>ポイント</h2>
+    <hr class="hairline">
+    <div class="sum__list">
+      <div class="sum__card anim"><div class="sum__n">01</div><div class="sum__h">舌下錠とOD錠</div><p class="sum__p">舌下錠は<br>飲み込むと効かない。<br>OD錠は逆に、<br>飲み込んでよい薬。</p></div>
+      <div class="sum__card anim2"><div class="sum__n">02</div><div class="sum__h">正反対の対応</div><p class="sum__p">飲み込んでしまった<br>後の対応は、<br>「発作を止める薬」か<br>「毎日続ける薬」かで<br>正反対になる。</p></div>
+      <div class="sum__card anim3"><div class="sum__n">03</div><div class="sum__h">自己判断NG</div><p class="sum__p">自己判断で<br>追加しない。<br>追加してよいかは、<br>あらかじめ主治医と<br>決めておく。</p></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>16</span></div>
+  </section>
+
+  <!-- ===== 17. 参考文献・出典 ===== -->
+  <section data-label="参考文献" data-screen-label="17 参考文献" class="slide slide--soft">
+    <div class="eyebrow anim">参考文献・出典<span class="en">REFERENCES</span></div>
+    <h2 class="s-title anim">この動画の参考資料</h2>
+    <div class="refs__list">
+      <div class="refs__item anim2"><span class="refs__num">[1]</span><p>ニトロペン舌下錠0.3mg 添付文書（日本化薬）<small>2023年8月改訂・PMDA</small></p></div>
+      <div class="refs__item anim3"><span class="refs__num">[2]</span><p>シクレスト舌下錠 患者向医薬品ガイド<small>2023年9月更新・PMDA</small></p></div>
+      <div class="refs__item anim4"><span class="refs__num">[3]</span><p>Citrome L. Int J Clin Pract. 2009;<span style="white-space:nowrap">63(12):1762-84.</span><small>PMID 19840150</small></p></div>
+      <div class="refs__item anim5"><span class="refs__num">[4]</span><p>Burk BG, et al. Ther Adv Psychopharmacol. 2024;14.<small>PMID 39070776</small></p></div>
+      <div class="refs__item anim6"><span class="refs__num">[5]</span><p>第一三共エスファ OD錠 患者向け資材<small>2023年5月作成</small></p></div>
+      <div class="refs__item anim-i" style="--i:7"><span class="refs__num">[6]</span><p>シダキュアスギ花粉舌下錠 添付文書<small>KEGG/JAPIC収載</small></p></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>17</span></div>
+  </section>
+
+  <!-- ===== 18. 免責事項 ===== -->
+  <section data-label="免責事項" data-screen-label="18 免責事項" class="slide disc">
+    <div class="disc__icon">⚠️</div>
+    <p class="disc__tag">ご視聴にあたってのお願い</p>
+    <div class="disc__box">
+      <p>この動画は<span class="strong">一般的な医薬品情報の解説</span>であり、<br>個別の患者さんの服薬指示に<br>優先するものではありません。<br>実際の服用方法は必ず<br><span class="strong">処方医・薬剤師の指示</span>に従ってください。<br>狭心症の発作が15〜20分以上続く場合や、<br>いつもと違う強い胸痛があるときは、<br>救急要請を検討してください。</p>
+    </div>
+  </section>
+
+  <!-- ===== 19. エンディング ===== -->
+  <section data-label="エンディング" data-screen-label="19 エンディング" class="slide slide--navy end">
+    <div class="cover__blob"></div>
+    <p class="end__cross anim">✚ 医知創造ラボ</p>
+    <h2 class="end__h anim2">役に立ったら、応援お願いします</h2>
+    <p class="end__sub anim2">毎週、暮らしに役立つ健康の話をお届けしています</p>
+    <div class="end__cta anim3">
+      <span class="btn btn--sub">🔔 チャンネル登録</span>
+      <span class="btn btn--like">👍 高評価</span>
+    </div>
+    <p class="end__next anim3">薬に関する疑問は、自己判断せず<b>主治医・薬剤師にご相談ください</b>。</p>
+  </section>
+
+</deck-stage>
+
+<script src="deck-stage.js"></script>
+<script src="image-slot.js"></script>
+
+</body>
+</html>
