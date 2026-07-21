@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1080">
+<meta name="description" content="CAR-T細胞療法・二重特異性抗体後の意識障害をICANS（免疫エフェクター細胞関連神経毒性症候群）と決めつけないための1枚。ICANSは除外診断で、CRSの先行がなければまず他を疑う。ICEスコア（10点）とASTCTグレード、最終グレードを決める5ドメイン、除外すべき5病態（敗血症性脳症・中枢神経浸潤・HHV-6脳炎・代謝薬剤性脳症・脳血管障害/PRES）、頭部MRIは正常が典型で脳波を撮らなければ非けいれん性てんかん重積(NCSE)を見逃す点まで整理。脳神経内科専門医監修。">
+<title>ICANS（免疫エフェクター細胞関連神経毒性症候群）を1枚に｜ICEスコア・ASTCT分類・除外診断（インフォグラフィック）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#012360; --blue:#1D4189; --accent:#F27E03; --yellow:#FFD60A;
+  --red:#DC3323; --green:#2C6E49; --ink:#22323f; --ink2:#3c4d5a;
+  --line:#dce4ea; --bg:#f4f7fa;
+  --font:"BIZ UDPGothic","Yu Gothic","Meiryo",sans-serif;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:var(--font); background:#fff;}
+.info{width:1080px; background:#fff; color:var(--ink); padding:0 0 60px;}
+
+.info__head{background:linear-gradient(135deg,#001B4D 0%,#012360 50%,#1D4189 100%); color:#fff;
+  padding:56px 64px 50px; position:relative; overflow:hidden;}
+.info__head::after{content:""; position:absolute; right:-100px; top:-100px; width:340px; height:340px;
+  border-radius:50%; background:radial-gradient(circle at 30% 30%, rgba(242,126,3,.5), rgba(242,126,3,0) 70%);}
+.info__badge{display:inline-flex; align-items:center; gap:10px;
+  background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3);
+  border-radius:999px; padding:8px 22px; font-size:23px; font-weight:700; position:relative; z-index:2;}
+.info__badge .x{color:var(--accent);}
+.info__title{font-size:44px; font-weight:700; line-height:1.28; margin-top:20px; position:relative; z-index:2;}
+.info__title .hl{color:var(--accent);}
+.info__sub{font-size:23px; color:rgba(255,255,255,.85); margin-top:14px; position:relative; z-index:2; line-height:1.5;}
+
+.lead{padding:0 64px; margin-top:34px;}
+.lead__box{background:var(--bg); border-left:6px solid var(--accent); border-radius:0 12px 12px 0;
+  padding:20px 26px; font-size:22px; line-height:1.55; color:var(--ink2);}
+.lead__box b{color:var(--navy);}
+
+.sec{padding:0 64px; margin-top:46px;}
+.sec__h{display:flex; align-items:center; gap:16px; font-size:32px; font-weight:700;
+  color:var(--navy); margin-bottom:20px;}
+.sec__n{flex:none; width:52px; height:52px; border-radius:14px; background:var(--accent);
+  color:#fff; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:700;}
+
+.cmpwrap{border:2px solid var(--line); border-radius:14px; overflow:hidden;}
+table.cmp{width:100%; border-collapse:collapse; font-size:20px;}
+table.cmp th, table.cmp td{text-align:left; padding:16px 24px; vertical-align:middle; line-height:1.4;}
+table.cmp thead th{background:var(--navy); color:#fff; font-weight:700; font-size:22px;}
+table.cmp tbody td{border-bottom:1px solid var(--line); color:var(--ink2);}
+table.cmp tbody tr:nth-child(even){background:var(--bg);}
+table.cmp tbody td:first-child{font-weight:700; color:var(--navy); white-space:nowrap;}
+.pill{display:inline-block; font-size:17px; font-weight:700; padding:4px 14px; border-radius:999px;}
+.pill--ok{background:#e5f2ea; color:var(--green);}
+.pill--warn{background:#fdeee0; color:var(--accent);}
+.pill--ng{background:#fbe9e7; color:var(--red);}
+
+.pillars{display:flex; flex-direction:column; gap:13px; margin-top:24px;}
+.pillar{border:2px solid var(--line); border-radius:14px; display:flex; overflow:hidden; align-items:stretch; background:var(--bg);}
+.pillar__num{flex:none; width:56px; display:flex; align-items:center; justify-content:center; font-size:30px; font-weight:700; color:#fff; background:var(--navy);}
+.pillar__icon{flex:none; width:82px; display:flex; align-items:center; justify-content:center; font-size:36px; background:#fff;}
+.pillar__main{flex:1; padding:15px 22px;}
+.pillar__t{font-size:24px; font-weight:700; color:var(--navy); margin-bottom:5px;}
+.pillar__d{font-size:20px; line-height:1.5; color:var(--ink2);}
+.pillar__d b{color:var(--navy);}
+.pillar__d .rd{color:var(--red); font-weight:700;}
+
+.warnbox{margin:22px 64px 0; background:#fbe9e7; border:2.5px solid var(--red); border-radius:14px;
+  padding:20px 28px; display:flex; align-items:flex-start; gap:18px;}
+.warnbox__ic{flex:none; font-size:34px; line-height:1;}
+.warnbox__t{font-size:22px; font-weight:700; color:var(--red); margin-bottom:6px;}
+.warnbox__d{font-size:19px; line-height:1.55; color:var(--ink2);}
+.warnbox__d b{color:var(--red);}
+
+.info__foot{margin-top:52px; padding:26px 64px 0; border-top:2px solid var(--line);
+  display:flex; align-items:center; justify-content:space-between; font-size:22px; color:#7a8a96; font-weight:700;}
+.info__foot .x{color:var(--accent);}
+.info__src{padding:0 64px; margin-top:20px; font-size:16px; line-height:1.5; color:#9aa8b2;}
+.info__disc{padding:0 64px; margin-top:10px; font-size:15px; line-height:1.5; color:#9aa8b2;}
+</style>
+</head>
+<body>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+<div class="info ig">
+  <div class="info__head hd">
+    <span class="info__badge"><span class="x">✚</span>医療従事者向け</span>
+    <div class="info__title">その意識障害、<br>本当に<span class="hl">ICANS</span>ですか？</div>
+    <div class="info__sub">ICANS（免疫エフェクター細胞関連神経毒性症候群）<br>ICEスコア・ASTCT分類・除外診断を1枚に</div>
+  </div>
+
+  <div class="lead">
+    <div class="lead__box"><b>結論:</b> ICANSは<b>除外診断</b>です。CRS（サイトカイン放出症候群）の先行がなければ、まず他の原因を疑ってください。発症は輸注後<b>中央値4〜6日</b>、持続は<b>1〜2週間</b>が典型です。</div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">1</span>ICEスコアとグレード</div>
+    <div class="cmpwrap">
+      <table class="cmp">
+        <thead>
+          <tr><th>ICEスコア</th><th>ICEドメインのグレード</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>7〜9点</td><td><span class="pill pill--ok">Grade 1</span></td></tr>
+          <tr><td>3〜6点</td><td><span class="pill pill--warn">Grade 2</span></td></tr>
+          <tr><td>0〜2点</td><td><span class="pill pill--ng">Grade 3</span></td></tr>
+          <tr><td>0点かつ覚醒不能でICE施行不能</td><td><span class="pill pill--ng">Grade 4</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="lead" style="padding:0; margin-top:16px;">
+      <div class="lead__box"><b>ICEの配点（合計10点）:</b> 見当識 4点（年・月・場所・病院）／呼称 3点（3つの物品）／従命 1点／書字 1点（1文を書く）／注意 1点（100から10ずつ減算）</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">2</span>最終グレードは5ドメインの最重症で決まる</div>
+    <div class="pillars">
+      <div class="pillar"><div class="pillar__num">1</div><div class="pillar__icon">📝</div><div class="pillar__main"><div class="pillar__t">ICEスコア</div><div class="pillar__d">見当識・呼称・従命・書字・注意の10点満点</div></div></div>
+      <div class="pillar"><div class="pillar__num">2</div><div class="pillar__icon">💤</div><div class="pillar__main"><div class="pillar__t">意識レベル</div><div class="pillar__d">覚醒の程度。<b>覚醒不能ならGrade 4</b></div></div></div>
+      <div class="pillar"><div class="pillar__num">3</div><div class="pillar__icon">🤲</div><div class="pillar__main"><div class="pillar__t">運動症状</div><div class="pillar__d">深部の筋力低下など。<b>ICEスコアとは独立に評価</b></div></div></div>
+      <div class="pillar"><div class="pillar__num">4</div><div class="pillar__icon">⚡</div><div class="pillar__main"><div class="pillar__t">けいれん</div><div class="pillar__d"><span class="rd">臨床的でも脳波上のみでもGrade 3</span>。5分以上遷延・反復で基線に戻らなければGrade 4</div></div></div>
+      <div class="pillar"><div class="pillar__num">5</div><div class="pillar__icon">🧠</div><div class="pillar__main"><div class="pillar__t">頭蓋内圧亢進・脳浮腫</div><div class="pillar__d">局所性浮腫・びまん性脳浮腫の有無</div></div></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">3</span>除外すべき5つの病態</div>
+    <div class="pillars">
+      <div class="pillar"><div class="pillar__num">1</div><div class="pillar__icon">🦠</div><div class="pillar__main"><div class="pillar__t">敗血症性脳症・全身感染症</div><div class="pillar__d">深いリンパ球減少と低ガンマグロブリン血症を背景に、<b>感染は常に鑑別の上位</b></div></div></div>
+      <div class="pillar"><div class="pillar__num">2</div><div class="pillar__icon">🔬</div><div class="pillar__main"><div class="pillar__t">中枢神経浸潤・再発</div><div class="pillar__d">原疾患そのものによる中枢神経病変</div></div></div>
+      <div class="pillar"><div class="pillar__num">3</div><div class="pillar__icon">🧫</div><div class="pillar__main"><div class="pillar__t">感染性脳炎（特にHHV-6）</div><div class="pillar__d">辺縁系脳炎の像をとりうる。<b>ICANSとの鑑別が問題になる</b></div></div></div>
+      <div class="pillar"><div class="pillar__num">4</div><div class="pillar__icon">💊</div><div class="pillar__main"><div class="pillar__t">代謝性・薬剤性脳症</div><div class="pillar__d">電解質異常・肝腎機能・鎮静薬やオピオイドの影響</div></div></div>
+      <div class="pillar"><div class="pillar__num">5</div><div class="pillar__icon">🩸</div><div class="pillar__main"><div class="pillar__t">脳血管障害・PRES</div><div class="pillar__d">凝固異常・血小板減少を伴う時期であり、<b>出血性病変も念頭に</b></div></div></div>
+    </div>
+  </div>
+
+  <div class="warnbox">
+    <div class="warnbox__ic">⚠️</div>
+    <div>
+      <div class="warnbox__t">画像と脳波は「逆」になる ― 脳波を撮らなければGrade 3を見逃す</div>
+      <div class="warnbox__d">頭部MRIは<b>典型的には正常</b>です。「MRIが正常だからICANSではない」という論法は誤りで、<b>局所徴候があるのにMRIが正常</b>という組み合わせは、むしろICANSらしい所見です。一方、脳波はびまん性徐波化が最頻で重症度と相関し、<b>非けいれん性てんかん重積（NCSE）</b>が見つかることがあります。意識障害が遷延する・ステロイドに反応しないときは脳波を検討してください。</div>
+    </div>
+  </div>
+
+  <div class="info__foot">
+    <span>ICANS ― CAR-T・二重特異性抗体後の神経毒性</span>
+    <span><span class="x">✚</span> 医知創造ラボ</span>
+  </div>
+  <div class="info__src">
+    主な出典: Lee DW, et al. ASTCT Consensus Grading for Cytokine Release Syndrome and Neurologic Toxicity. Biol Blood Marrow Transplant. 2019;25(4):625-638. ／ Karschnia P, et al. Blood. 2019;133(20):2212-2221. ／ Santomasso BD, et al. Cancer Discov. 2018;8(8):958-971. ほか（詳細は本文の参考文献一覧を参照）
+  </div>
+  <div class="info__disc">
+    本図は医療従事者向けの情報提供であり、個別の診断・治療方針を定めるものではありません。<br>実際の運用は、各施設の規定と最新の添付文書に従ってください。
+  </div>
+</div>
+</body>
+</html>
