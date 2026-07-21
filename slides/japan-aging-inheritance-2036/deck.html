@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2036年の日本、大相続時代と「消費なき相続」 スライド（医知創造ラボ）</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   テーマ「セミナー紺」— お金の安心シリーズ／複利の力.html からスタイルブロックを踏襲
+   ===================================================================== */
+:root{
+  --navy:#012360;
+  --navy-ink:#001B4D;
+  --accent:#F27E03;
+  --accent-soft: color-mix(in srgb, var(--accent) 11%, #ffffff);
+  --accent-line: color-mix(in srgb, var(--accent) 62%, #ffffff);
+  --accent-ink: color-mix(in srgb, var(--accent) 74%, #4a2604);
+  --danger:#DC3323;
+  --danger-soft: color-mix(in srgb, var(--danger) 9%, #ffffff);
+  --bg:#FDFDFD;
+  --blue:#1D4189;
+  --blue-soft:#E9EEF8;
+  --blue-tint:#EEF2FA;
+  --red: var(--danger);
+  --red-soft: var(--danger-soft);
+  --orange: var(--accent);
+  --orange-soft: var(--accent-soft);
+  --line:#D8DDE6;
+  --line-soft:#C9D2DF;
+  --bg-muted:#F8F8F8;
+  --bg-alt:#F6F6F6;
+  --navy-line: color-mix(in srgb, var(--navy) 22%, #ffffff);
+  --type-mult: 1.30;
+  --type-display: calc(96px * var(--type-mult));
+  --type-title:   calc(82px * var(--type-mult));
+  --type-heading: calc(60px * var(--type-mult));
+  --type-subtitle:calc(44px * var(--type-mult));
+  --type-body:    calc(38px * var(--type-mult));
+  --type-small:   calc(30px * var(--type-mult));
+  --type-label:   calc(27px * var(--type-mult));
+  --type-chapter: calc(210px * var(--type-mult));
+  --type-stat:    calc(150px * var(--type-mult));
+  --pad-x: 112px;
+  --pad-top: 58px;
+  --pad-bottom: 80px;
+  --gap-title: 24px;
+  --gap-item: 22px;
+  --font-ja: "Noto Sans JP", "BIZ UDPGothic", "Yu Gothic", "Meiryo", sans-serif;
+  --font-serif: var(--font-ja);
+  --grad-navy: linear-gradient(160deg, #012360 0%, #001B4D 100%);
+}
+.serif{ font-family: var(--font-serif); font-weight:800; letter-spacing:.02em; }
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#0a1430; }
+.slide{ box-sizing:border-box; display:flex; flex-direction:column; padding: var(--pad-top) var(--pad-x) var(--pad-bottom); background: var(--bg); color: var(--ink); font-family: var(--font-ja); overflow:hidden; position:relative; }
+.slide::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:10px; background: var(--navy); pointer-events:none; }
+.slide--navy{ background: var(--grad-navy); color: var(--white); }
+.slide--navy::after{ background: var(--accent); }
+.slide--soft{ background: var(--bg-alt); }
+.eyebrow{ display:flex; align-items:center; gap:18px; font-size: var(--type-label); font-weight:700; color: var(--navy); letter-spacing:.04em; }
+.eyebrow::before{ content:""; width:12px; height:44px; border-radius:3px; background: linear-gradient(180deg, var(--navy) 0 68%, var(--accent) 68% 100%); flex:none; }
+.eyebrow .num{ font-family: var(--font-en); color: var(--accent-ink); }
+.eyebrow .en{ font-family: var(--font-en); color: var(--accent-ink); letter-spacing:.15em; text-transform:uppercase; }
+.slide--navy .eyebrow{ color: rgba(255,255,255,.88); }
+.slide--navy .eyebrow .en{ color:#fff; }
+.slide--navy .eyebrow::before{ background: linear-gradient(180deg, #fff 0 68%, var(--accent) 68% 100%); }
+.s-title{ font-size: var(--type-heading); line-height:1.22; color: var(--navy); margin: var(--gap-title) 0 0; font-weight:800; letter-spacing:.01em; text-wrap: pretty; }
+.slide--navy .s-title{ color:#fff; }
+.lead{ font-size: var(--type-body); line-height:1.7; color: var(--ink-2); margin:0; text-wrap: pretty; }
+.muted{ color: var(--gray); }
+.hairline{ height:4px; border:0; margin:20px 0 0; background: linear-gradient(90deg, var(--accent) 0 150px, var(--navy) 150px); opacity:1; }
+.slide--navy .hairline{ background: linear-gradient(90deg, var(--accent) 0 150px, rgba(255,255,255,.85) 150px); }
+.chapter-ghost{ position:absolute; top: 30px; right: var(--pad-x); font-family: var(--font-en); font-weight:700; line-height:.8; font-size: calc(150px * var(--type-mult)); color: var(--navy); opacity:.05; pointer-events:none; user-select:none; }
+.slide--navy .chapter-ghost{ color:#fff; opacity:.10; }
+.hl-underline{ border-bottom: 6px solid var(--accent-line); }
+.badge-danger{ display:inline-block; background: var(--danger); color:#fff; font-weight:800; padding: 4px 26px; border-radius:10px; line-height:1.35; }
+.slide__foot{ position:absolute; left: var(--pad-x); right: var(--pad-x); bottom: 36px; display:flex; align-items:center; justify-content:space-between; font-size: calc(24px * var(--type-mult)); color: var(--gray); font-family: var(--font-ja); }
+.slide__foot .ch{ display:flex; align-items:center; gap:10px; font-weight:700; color: var(--navy); }
+.slide__foot .cross{ color: var(--accent); font-weight:700; }
+.slide--navy .slide__foot{ color: rgba(255,255,255,.65); }
+.slide--navy .slide__foot .ch{ color:#fff; }
+.slide--navy .slide__foot .cross{ color: var(--accent); }
+.cover{ justify-content:center; }
+.cover__geo{ position:absolute; right: 70px; top: 48px; width: 380px; height: 380px; pointer-events:none; }
+.cover__badge{ display:inline-flex; align-items:center; gap:14px; align-self:flex-start; background:#fff; border:2px solid var(--navy-line); color: var(--navy); padding:12px 26px; border-radius:999px; font-size: var(--type-label); font-weight:700; }
+.cover__badge .cross{ color: var(--accent); font-size:1.2em; }
+.cover__title{ font-family: var(--font-serif); font-size: calc(70px * var(--type-mult)); line-height:1.32; color: var(--navy); font-weight:800; margin:42px 0 0; letter-spacing:.02em; max-width:1500px; }
+.cover__title .hl{ color: var(--accent); }
+.cover__rule{ width: 1500px; max-width:100%; height:3px; background: var(--navy); margin-top:36px; }
+.cover__sub{ font-size: var(--type-subtitle); color: var(--ink-2); margin:34px 0 0; font-weight:700; }
+.cover__sub .badge-danger{ margin: 0 6px; }
+.cover__meta{ display:flex; gap:30px; align-items:center; margin-top:64px; font-size: var(--type-small); color: var(--gray); }
+.cover__avatar{ flex:none; width:84px; height:84px; border-radius:50%; background: var(--accent-soft); border:3px solid var(--accent); display:flex; align-items:center; justify-content:center; }
+.cover__avatar svg{ width:56%; height:56%; }
+.cover__meta .name{ font-weight:800; color: var(--navy); font-size: var(--type-small); }
+.cover__meta .vline{ width:2px; height:52px; background: var(--line); }
+.theme__body{ display:flex; flex-direction:column; gap: var(--gap-title); margin-top: 28px; flex:1; justify-content:center; }
+.theme__q{ font-family: var(--font-serif); font-size: var(--type-title); line-height:1.28; color: var(--navy); font-weight:800; max-width:22ch; text-wrap:balance; }
+.theme__q .hl{ color: var(--accent-ink); border-bottom: 8px solid var(--accent-line); }
+.concl{ display:flex; align-items:flex-start; gap:28px; background:#fff; border:3px solid var(--accent); border-radius: 12px; padding: 32px 44px; position:relative; }
+.concl::before{ content:"\201C"; position:absolute; top:-58px; left:26px; font-family: var(--font-en); font-size: calc(110px * var(--type-mult)); color: var(--accent); font-weight:900; line-height:1; }
+.concl__tag{ flex:none; background: var(--navy); color:#fff; font-weight:700; font-size: var(--type-small); padding:10px 24px; border-radius:8px; }
+.concl__text{ font-size: var(--type-subtitle); line-height:1.5; color: var(--navy); font-weight:700; margin:0; }
+.body1{ }
+.body1__main{ margin-top: 26px; max-width: 1640px; }
+.body1 .lead{ margin-bottom: 20px; }
+.important-box.lg{ background:#fff; border:2px solid var(--navy-line); border-left: 12px solid var(--accent); border-radius: 12px; padding: 26px 40px; margin:0; box-shadow: var(--shadow-sm); }
+.important-box.lg .ttl{ display:flex; align-items:center; gap:14px; font-size: var(--type-small); font-weight:700; color: var(--accent-ink); margin-bottom:8px; }
+.important-box.lg p{ font-size: var(--type-body); line-height:1.6; color: var(--ink-2); margin:0; }
+.point-box{ background:#fff; border:2px solid var(--navy-line); border-left:12px solid var(--navy); border-radius:12px; padding:28px 40px; box-shadow: var(--shadow-sm); }
+.point-box .ttl{ display:flex; align-items:center; gap:14px; font-size: var(--type-small); font-weight:700; color: var(--navy); margin-bottom:10px; }
+.point-box p{ font-size: var(--type-body); line-height:1.65; color: var(--ink-2); margin:0; }
+.tablewrap{ margin-top:26px; flex:1; }
+table.cmp{ width:100%; border-collapse:collapse; font-size: var(--type-small); }
+table.cmp th, table.cmp td{ text-align:left; padding:16px 28px; vertical-align:middle; line-height:1.4; }
+table.cmp thead th{ background: var(--navy); color:#fff; font-weight:700; font-size: var(--type-body); }
+table.cmp thead th:first-child{ border-top-left-radius:10px; }
+table.cmp thead th:last-child{ border-top-right-radius:10px; }
+table.cmp tbody td{ border-bottom:1px solid var(--line); color: var(--ink-2); }
+table.cmp tbody tr:nth-child(even){ background: var(--bg-muted); }
+table.cmp tbody td:first-child{ font-weight:700; color: var(--navy); font-size: var(--type-body); white-space:nowrap; }
+table.cmp .pill{ display:inline-block; font-size: calc(24px * var(--type-mult)); font-weight:700; padding:6px 16px; border-radius:999px; }
+.pill--easy{ background: var(--green-soft); color:#1c7a3a; }
+.pill--mid{ background: var(--accent-soft); color: var(--accent-ink); }
+.pill--hard{ background: var(--danger-soft); color: var(--danger); }
+table.cmp--dense th, table.cmp--dense td{ padding:9px 24px; font-size: calc(24px * var(--type-mult)); }
+table.cmp--dense thead th{ font-size: calc(27px * var(--type-mult)); }
+table.cmp--dense tbody td:first-child{ font-size: calc(24px * var(--type-mult)); white-space:normal; }
+.disc{ justify-content:center; align-items:center; text-align:center; background: var(--bg-alt); }
+.disc__icon{ font-size: calc(96px * var(--type-mult)); line-height:1; }
+.disc__tag{ font-family: var(--font-serif); font-size: var(--type-subtitle); font-weight:700; color: var(--navy); margin:28px 0 0; letter-spacing:.08em; }
+.disc__box{ margin-top:38px; max-width:1180px; background:#fff; border:2px solid var(--navy-line); border-top: 10px solid var(--accent); border-radius:12px; padding:48px 56px; box-shadow: var(--shadow-md); }
+.disc__box p{ font-size: var(--type-body); line-height:1.7; color: var(--ink-2); margin:0; text-wrap:pretty; }
+.disc__box .strong{ color: var(--navy); font-weight:700; }
+.sum__list{ display:grid; grid-template-columns: repeat(3,1fr); gap:40px; margin-top:70px; flex:1; align-content:start; }
+.sum__card{ position:relative; background:#fff; border:2px solid var(--navy-line); border-radius:14px; padding:64px 36px 40px; display:flex; flex-direction:column; gap:20px; box-shadow: var(--shadow-md); text-align:center; align-items:center; }
+.sum__n{ position:absolute; top:-38px; left:50%; margin-left:-38px; width:76px; height:76px; border-radius:50%; background: var(--navy); color:#fff; font-family: var(--font-en); font-size: calc(34px * var(--type-mult)); font-weight:800; display:flex; align-items:center; justify-content:center; line-height:1; box-shadow: var(--shadow-md); }
+.sum__h{ font-size: var(--type-subtitle); font-weight:800; color: var(--navy); line-height:1.3; text-wrap:balance; }
+.sum__h::after{ content:""; display:block; width:120px; height:4px; background: var(--accent); margin:16px auto 0; border-radius:2px; }
+.sum__p{ font-size: var(--type-small); color: var(--ink-2); line-height:1.6; margin:0; }
+.end{ justify-content:center; align-items:center; text-align:center; }
+.end__h{ font-family: var(--font-serif); font-size: var(--type-title); color: var(--navy); font-weight:800; margin:0; text-wrap:balance; }
+.end__rule{ width:1500px; max-width:100%; height:4px; margin-top:30px; background: linear-gradient(90deg, var(--navy) 0 44%, var(--accent) 44% 56%, var(--navy) 56%); }
+.end__cards{ display:grid; grid-template-columns:repeat(3,1fr); gap:36px; margin-top:70px; width:100%; max-width:1640px; }
+.end__card{ background:#fff; border:2px solid var(--navy-line); border-radius:14px; padding:34px 30px; display:flex; align-items:center; gap:24px; text-align:left; box-shadow: var(--shadow-sm); }
+.end__ic{ flex:none; width:88px; height:88px; border-radius:50%; background: var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-size: calc(40px * var(--type-mult)); }
+.end__card h3{ font-size: var(--type-small); font-weight:800; color: var(--navy); margin:0 0 6px; }
+.end__card p{ font-size: var(--type-label); color: var(--ink-2); line-height:1.5; margin:0; }
+.end__note{ margin-top:60px; max-width:1400px; background:#fff; border:2.5px solid var(--accent); border-radius:12px; padding:30px 60px; font-family: var(--font-serif); font-size: var(--type-small); color: var(--navy); font-weight:700; line-height:1.8; }
+.stathero{ justify-content:center; align-items:center; text-align:center; }
+.stathero__num{ font-family: var(--font-en); font-size: var(--type-stat); font-weight:900; color: var(--navy); line-height:.95; }
+.stathero__num .unit{ font-size:.4em; color: var(--navy); font-weight:700; margin-left:.1em; }
+.stathero__warn{ display:inline-flex; align-items:center; gap:14px; margin-top:26px; background: var(--danger); color:#fff; font-weight:800; font-size: var(--type-small); padding:12px 34px; border-radius:999px; }
+.stathero__msg{ font-size: var(--type-heading); color: var(--navy); font-weight:800; margin:30px 0 0; max-width:24ch; text-wrap:balance; }
+.stathero__src{ font-size: var(--type-small); color: var(--gray); margin-top:30px; }
+.qa{ display:flex; flex-direction:column; gap:34px; margin-top:30px; flex:1; justify-content:center; }
+.qa__row{ display:flex; align-items:flex-start; gap:28px; border-radius:14px; padding:34px 44px; }
+.qa__row.myth{ background:#fff; border:2px solid var(--navy-line); border-left:14px solid var(--danger); box-shadow: var(--shadow-sm); }
+.qa__row.fact{ background: var(--accent-soft); border:2px solid var(--accent-line); border-left:14px solid var(--accent); }
+.qa__mark{ flex:none; font-size: var(--type-heading); font-weight:900; line-height:1; }
+.qa__row.myth .qa__mark{ color: var(--danger); }
+.qa__row.fact .qa__mark{ color: var(--green); }
+.qa__txt{ font-size: var(--type-subtitle); color: var(--navy); font-weight:700; line-height:1.4; margin:0; }
+.ba{ display:flex; align-items:stretch; gap:32px; margin-top:34px; flex:1; }
+.ba__col{ flex:1; border-radius:16px; padding:44px 40px; display:flex; flex-direction:column; gap:22px; }
+.ba__col.before{ background: var(--bg-alt); border:2px solid var(--line); }
+.ba__col.after{ background: var(--accent-soft); border:3px solid var(--accent); }
+.ba__tag{ align-self:flex-start; font-family: var(--font-en); font-size: var(--type-small); font-weight:800; letter-spacing:.1em; padding:8px 24px; border-radius:8px; }
+.ba__col.before .ba__tag{ background: var(--gray); color:#fff; }
+.ba__col.after .ba__tag{ background: var(--accent); color:#fff; }
+.ba__txt{ font-size: var(--type-body); color: var(--navy); line-height:1.5; font-weight:700; margin:0; }
+.ba__list{ margin:0; padding-left:1.2em; display:flex; flex-direction:column; gap:16px; }
+.ba__list li{ font-size: var(--type-small); color: var(--navy); font-weight:700; line-height:1.5; }
+.ba__arrow{ flex:none; align-self:center; font-family: var(--font-en); font-size: calc(80px * var(--type-mult)); color: var(--navy); }
+.numpair{ display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:36px; margin-top:34px; flex:1; }
+.numpair__col{ background:#fff; border:2px solid var(--navy-line); border-radius:16px; padding:44px 30px; text-align:center; box-shadow: var(--shadow-md); }
+.numpair__col.up{ border-top:12px solid var(--accent); }
+.numpair__col.down{ border-top:12px solid var(--danger); }
+.numpair__lbl{ font-size: var(--type-small); font-weight:700; color: var(--gray); }
+.numpair__v{ font-family: var(--font-en); font-size: calc(100px * var(--type-mult)); font-weight:900; line-height:1; margin-top:16px; }
+.numpair__col.up .numpair__v{ color: var(--accent-ink); }
+.numpair__col.down .numpair__v{ color: var(--danger); }
+.numpair__cap{ font-size: var(--type-small); color: var(--ink-2); margin-top:18px; line-height:1.5; }
+.numpair__vs{ font-family: var(--font-en); font-size: calc(56px * var(--type-mult)); font-weight:800; color: var(--navy); }
+.hbar{ display:flex; flex-direction:column; gap:24px; margin-top:34px; flex:1; justify-content:center; }
+.hbar__row{ display:flex; align-items:center; gap:24px; }
+.hbar__name{ flex:none; width:420px; text-align:right; font-size: var(--type-small); color: var(--navy); font-weight:700; }
+.hbar__track{ flex:1; height:48px; background: var(--bg-muted); border-radius:0 8px 8px 0; }
+.hbar__fill{ height:100%; border-radius:0 8px 8px 0; background: var(--navy); }
+.hbar__row:first-child .hbar__fill{ background: var(--accent); }
+.hbar__val{ flex:none; width:280px; font-family: var(--font-en); font-size: var(--type-small); font-weight:700; color: var(--navy); }
+.trend{ margin-top:30px; flex:1; display:flex; flex-direction:column; min-height:0; overflow:hidden; }
+.trend__svg{ width:100%; flex:1; min-height:0; max-height:580px; }
+.trend__cap{ margin-top:10px; font-size: var(--type-small); color: var(--gray); text-align:center; flex:none; }
+.optlist{ display:flex; flex-direction:column; gap:18px; margin-top:30px; flex:1; justify-content:center; }
+.optlist__item{ display:flex; align-items:center; gap:30px; background:#fff; border:2px solid var(--navy-line); border-radius:14px; padding:24px 34px; box-shadow: var(--shadow-sm); }
+.optlist__num{ flex:none; width:64px; height:64px; border-radius:12px; display:flex; align-items:center; justify-content:center; background: var(--navy); color:#fff; font-family: var(--font-en); font-size: calc(36px * var(--type-mult)); font-weight:800; }
+.optlist__txt{ font-size: var(--type-small); color: var(--navy); font-weight:700; line-height:1.5; }
+@media (prefers-reduced-motion:no-preference){
+  [data-deck-active] .anim{ animation: fade-up .5s both; }
+  [data-deck-active] .anim2{ animation: fade-up .5s .12s both; }
+  [data-deck-active] .anim3{ animation: fade-up .5s .24s both; }
+  [data-deck-active] .anim4{ animation: fade-up .5s .36s both; }
+  [data-deck-active] .anim5{ animation: fade-up .5s .48s both; }
+  [data-deck-active] .anim6{ animation: fade-up .5s .60s both; }
+  [data-deck-active] .anim-i{ animation: fade-up .5s both; animation-delay: calc(var(--i,0) * .1s); }
+  [data-deck-active] .a-fade { animation-name: a-fade; }
+  [data-deck-active] .a-up   { animation-name: fade-up; }
+  [data-deck-active] .a-down { animation-name: a-down; }
+  [data-deck-active] .a-right{ animation-name: a-right; }
+  [data-deck-active] .a-left { animation-name: a-left; }
+  [data-deck-active] .a-zoom { animation-name: a-zoom; }
+  [data-deck-active] .a-pop  { animation-name: a-pop; animation-timing-function: cubic-bezier(.34,1.56,.64,1); }
+  [data-deck-active] .a-blur { animation-name: a-blur; }
+  [data-deck-active] .grow-y { transform-origin:bottom center; animation: grow-y .7s .2s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .grow-x { transform-origin:left center;   animation: grow-x .55s .25s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .nudge-x{ animation: nudge-x .9s .35s ease-in-out both; }
+}
+.grow-y{ transform-origin:bottom center; } .grow-x{ transform-origin:left center; }
+@keyframes fade-up{ from{ opacity:0; transform: translateY(16px);} to{ opacity:1; transform:none;} }
+@keyframes a-fade { from{ opacity:0; } to{ opacity:1; } }
+@keyframes a-down { from{ opacity:0; transform: translateY(-16px);} to{ opacity:1; transform:none; } }
+@keyframes a-right{ from{ opacity:0; transform: translateX(-28px);} to{ opacity:1; transform:none; } }
+@keyframes a-left { from{ opacity:0; transform: translateX(28px); } to{ opacity:1; transform:none; } }
+@keyframes a-zoom { from{ opacity:0; transform: scale(.94);       } to{ opacity:1; transform:none; } }
+@keyframes a-pop  { from{ opacity:0; transform: scale(.8);        } to{ opacity:1; transform:none; } }
+@keyframes a-blur { from{ opacity:0; filter: blur(12px); transform: translateY(10px);} to{ opacity:1; filter: blur(0); transform:none; } }
+@keyframes grow-y { from{ transform: scaleY(0);} to{ transform: scaleY(1);} }
+@keyframes grow-x { from{ transform: scaleX(0);} to{ transform: scaleX(1);} }
+@keyframes nudge-x{ 0%{ transform:none;} 55%{ transform: translateX(10px);} 100%{ transform:none;} }
+#tweaks-root{ position:fixed; inset:0; pointer-events:none; z-index:9999; }
+#tweaks-root > *{ pointer-events:auto; }
+</style>
+</head>
+<body style="font-size: 8px">
+
+<deck-stage width="1920" height="1080">
+
+  <!-- ===== 01. 表紙 ===== -->
+  <section data-label="表紙" data-screen-label="01 表紙" class="slide cover">
+    <svg class="cover__geo anim2 a-zoom" viewBox="0 0 200 200" aria-hidden="true">
+      <path d="M60 0 A140 140 0 0 1 200 140" fill="none" stroke="var(--navy-line)" stroke-width="4"/>
+      <path d="M95 0 A105 105 0 0 1 200 105" fill="none" stroke="var(--accent)" stroke-width="5"/>
+      <path d="M128 0 A72 72 0 0 1 200 72" fill="none" stroke="var(--navy)" stroke-width="4"/>
+      <g fill="var(--navy-line)">
+        <circle cx="26" cy="120" r="3.4"/><circle cx="52" cy="120" r="3.4"/><circle cx="78" cy="120" r="3.4"/>
+        <circle cx="26" cy="146" r="3.4"/><circle cx="52" cy="146" r="3.4"/><circle cx="78" cy="146" r="3.4"/>
+        <circle cx="26" cy="172" r="3.4"/><circle cx="52" cy="172" r="3.4"/><circle cx="78" cy="172" r="3.4"/>
+      </g>
+      <circle cx="78" cy="146" r="3.8" fill="var(--accent)"/>
+    </svg>
+    <div class="cover__badge anim"><span class="cross">✚</span><span>医知創造ラボ</span></div>
+    <h1 class="cover__title anim2 a-blur">2036年の日本、<br><span class="hl">大相続時代</span>と<br>「消費なき相続」</h1>
+    <p class="cover__sub anim3">人口・家計金融資産・相続税の<span class="badge-danger">公的統計</span>から読み解く</p>
+    <div class="cover__meta anim3">
+      <span class="cover__avatar"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4.6" fill="var(--accent)"/><path d="M2.5 22.5 C2.5 16.5 7 14.2 12 14.2 C17 14.2 21.5 16.5 21.5 22.5 Z" fill="var(--accent)"/></svg></span>
+      <span class="name">医知創造ラボ</span>
+      <span class="vline"></span>
+      <span>監修：脳神経内科専門医</span>
+      <span class="vline"></span>
+      <span>2026年7月</span>
+    </div>
+  </section>
+
+  <!-- ===== 02. 冒頭の問い・結論先出し ===== -->
+  <section data-label="テーマ・結論" data-screen-label="02 テーマ・結論" class="slide">
+    <div class="eyebrow anim">2036年、何が変わるのか<span class="en">TODAY'S POINT</span></div>
+    <div class="theme__body">
+      <h2 class="theme__q anim">2036年、日本で<br><span class="hl-underline">本当に増えるもの</span>は何か</h2>
+      <div class="concl anim2">
+        <span class="concl__tag">結論</span>
+        <p class="concl__text">相続は<strong>「若者」への移転ではありません</strong>。80〜90代の親から、すでに高齢になった50〜70代の子へ資産が移り、<strong>消費されないまま</strong>積み上がっていきます。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>02</span></div>
+  </section>
+
+  <!-- ===== 03. 現役世代の急減（4指標比較表） ===== -->
+  <section data-label="比較表" data-screen-label="03 現役世代の急減" class="slide">
+    <div class="chapter-ghost">03</div>
+    <div class="eyebrow anim">高齢者の急増より重い変化<span class="en">POPULATION 2026-2036</span></div>
+    <h2 class="s-title anim">現役世代が<span class="hl-underline">約647万人</span>減ります</h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2">
+      <table class="cmp">
+        <thead>
+          <tr><th>人口指標</th><th>2026年</th><th>2036年</th><th>10年間の変化</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>総人口</td><td>約1億2,266万人</td><td>約1億1,590万人</td><td>約676万人減</td></tr>
+          <tr><td>15〜64歳人口</td><td>約7,274万人</td><td>約6,627万人</td><td>約647万人減</td></tr>
+          <tr><td>65歳以上人口</td><td>約3,656万人</td><td>約3,803万人</td><td>約147万人増</td></tr>
+          <tr><td>高齢化率</td><td>約29.8%</td><td>約32.8%</td><td>約3ポイント上昇</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="muted" style="font-size:var(--type-small); margin-top:20px">出所：国立社会保障・人口問題研究所「日本の将来推計人口（令和5年推計）」出生中位・死亡中位推計</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>03</span></div>
+  </section>
+
+  <!-- ===== 04. 死亡数トレンド（推移・折れ線） ===== -->
+  <section data-label="推移" data-screen-label="04 死亡数の増加トレンド" class="slide slide--soft">
+    <div class="chapter-ghost">04</div>
+    <div class="eyebrow anim">「横ばい」ではない<span class="en">DEATHS ARE RISING</span></div>
+    <h2 class="s-title anim">死亡数は<span class="hl-underline">増加トレンド</span>が続きます</h2>
+    <hr class="hairline">
+    <div class="trend">
+      <svg class="trend__svg anim2" viewBox="0 0 1000 300" preserveAspectRatio="xMidYMid meet">
+        <line x1="70" y1="22" x2="70" y2="248" stroke="var(--line)" stroke-width="3"/>
+        <line x1="70" y1="248" x2="970" y2="248" stroke="var(--line)" stroke-width="3"/>
+        <polyline points="100,196 315,136 530,83 745,61 960,88" fill="none" stroke="var(--accent)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="100" cy="196" r="9" fill="var(--navy)"/>
+        <circle cx="315" cy="136" r="9" fill="var(--navy)"/>
+        <circle cx="530" cy="83" r="9" fill="var(--navy)"/>
+        <circle cx="745" cy="61" r="12" fill="var(--accent)"/>
+        <circle cx="960" cy="88" r="9" fill="var(--navy)"/>
+        <text x="100" y="182" text-anchor="middle" font-size="25" font-weight="700" fill="var(--navy)">154.1万人</text>
+        <text x="315" y="122" text-anchor="middle" font-size="25" font-weight="700" fill="var(--navy)">159.6万人</text>
+        <text x="530" y="69" text-anchor="middle" font-size="25" font-weight="700" fill="var(--navy)">164.5万人</text>
+        <text x="745" y="40" text-anchor="middle" font-size="27" font-weight="800" fill="var(--accent-ink)">166.5万人（ピーク）</text>
+        <text x="960" y="74" text-anchor="end" font-size="25" font-weight="700" fill="var(--navy)">164.0万人</text>
+        <text x="100" y="277" text-anchor="middle" font-size="24" fill="var(--gray)">2026年</text>
+        <text x="315" y="277" text-anchor="middle" font-size="24" fill="var(--gray)">2030年</text>
+        <text x="530" y="277" text-anchor="middle" font-size="24" fill="var(--gray)">2035年</text>
+        <text x="745" y="277" text-anchor="middle" font-size="24" fill="var(--gray)">2040年頃</text>
+        <text x="960" y="277" text-anchor="middle" font-size="24" fill="var(--gray)">2045年</text>
+      </svg>
+      <p class="trend__cap">出所：国立社会保障・人口問題研究所「日本の将来推計人口（令和5年推計）」表1-5</p>
+    </div>
+    <div class="point-box anim3" style="margin-top:6px;padding:20px 36px;">
+      <p>2024年の実測は<strong>約160.5万人</strong>で過去最多。同年の推計値 約150.8万人を約10万人上回り、増加ペースは推計より速い可能性。</p>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>04</span></div>
+  </section>
+
+  <!-- ===== 05. 家計金融資産2,386兆円の内訳（横棒） ===== -->
+  <section data-label="横棒ランキング" data-screen-label="05 家計金融資産2386兆円" class="slide">
+    <div class="chapter-ghost">05</div>
+    <div class="eyebrow anim">人口減少だけでは消えない<span class="en">HOUSEHOLD ASSETS</span></div>
+    <h2 class="s-title anim">家計金融資産は<span class="hl-underline">2,386兆円</span></h2>
+    <hr class="hairline">
+    <div class="hbar">
+      <div class="hbar__row anim"><div class="hbar__name">現金・預金</div><div class="hbar__track"><div class="hbar__fill" style="width:100%"></div></div><div class="hbar__val">1,126兆円</div></div>
+      <div class="hbar__row anim2"><div class="hbar__name">保険・年金・定型保証</div><div class="hbar__track"><div class="hbar__fill" style="width:52%"></div></div><div class="hbar__val">584兆円</div></div>
+      <div class="hbar__row anim3"><div class="hbar__name">株式等</div><div class="hbar__track"><div class="hbar__fill" style="width:35%"></div></div><div class="hbar__val">398兆円</div></div>
+      <div class="hbar__row anim4"><div class="hbar__name">投資信託</div><div class="hbar__track"><div class="hbar__fill" style="width:15%"></div></div><div class="hbar__val">165兆円</div></div>
+      <div class="hbar__row anim5"><div class="hbar__name">その他</div><div class="hbar__track"><div class="hbar__fill" style="width:7%"></div></div><div class="hbar__val">75兆円</div></div>
+    </div>
+    <p class="muted" style="font-size:var(--type-small); margin-top:18px">出所：日本銀行「資金循環統計（速報）」2026年3月末・前年比+7.1%。株価上昇など評価変動を含み、2036年へ単純延長はできません</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>05</span></div>
+  </section>
+
+  <!-- ===== 06. 高齢期も資産は減らない（比較表） ===== -->
+  <section data-label="比較表" data-screen-label="06 高齢期も資産は減らない" class="slide slide--soft">
+    <div class="chapter-ghost">06</div>
+    <div class="eyebrow anim">「使い切らずに残す」構造<span class="en">ASSETS BY AGE</span></div>
+    <h2 class="s-title anim">80歳以上でも<span class="hl-underline">資産は急減しません</span></h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2">
+      <table class="cmp">
+        <thead>
+          <tr><th>世帯主の年代</th><th>平均金融資産残高</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>60歳代</td><td>約1,896万円</td></tr>
+          <tr><td>70歳代</td><td>約1,734万円</td></tr>
+          <tr><td>80歳以上</td><td>約1,619万円</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="muted" style="font-size:var(--type-small); margin-top:20px">出所：総務省統計局「2019年全国家計構造調査」表I-6（総世帯・単身世帯を含む。金融資産を保有しない世帯も含めた平均値）</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>06</span></div>
+  </section>
+
+  <!-- ===== 07. 老老相続（相続人・被相続人の年齢構成） ===== -->
+  <section data-label="数値ペア" data-screen-label="07 老老相続" class="slide">
+    <div class="chapter-ghost">07</div>
+    <div class="eyebrow anim">「90歳から60歳へ」<span class="en">OLD-TO-OLD INHERITANCE</span></div>
+    <h2 class="s-title anim">相続の中心は<span class="hl-underline">老老相続</span>です</h2>
+    <hr class="hairline">
+    <div class="numpair">
+      <div class="numpair__col up anim2">
+        <div class="numpair__lbl">相続人等の年齢構成（2022年）</div>
+        <div class="numpair__v">79.1<span style="font-size:.5em">%</span></div>
+        <div class="numpair__cap">が50歳以上<br>（60歳以上52.1%＋50代27.0%）</div>
+      </div>
+      <div class="numpair__vs anim">＋</div>
+      <div class="numpair__col up anim3">
+        <div class="numpair__lbl">被相続人の年齢構成（2019年）</div>
+        <div class="numpair__v">72<span style="font-size:.5em">%</span></div>
+        <div class="numpair__cap">が80歳以上</div>
+      </div>
+    </div>
+    <p class="muted" style="font-size:var(--type-small); margin-top:20px">出所：内閣府「令和6年度 年次経済財政報告」第3章（相続税の申告データに基づく）</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>07</span></div>
+  </section>
+
+  <!-- ===== 08. 母集団に関する注記（独立スライド） ===== -->
+  <section data-label="注記" data-screen-label="08 母集団に関する注記" class="slide slide--soft">
+    <div class="chapter-ghost">08</div>
+    <div class="eyebrow anim">見落とされやすい前提<span class="en">IMPORTANT NOTE</span></div>
+    <h2 class="s-title anim">前ページの数字は<span class="hl-underline">相続全体ではありません</span></h2>
+    <hr class="hairline">
+    <div class="point-box anim2" style="margin-top:16px;padding:20px 36px;">
+      <div class="ttl">⚠ 母集団に関する重要な注意</div>
+      <p>52.1%や72%の母集団は「相続税の申告があった相続」に限られます。2024年の死亡者<strong>160万5,378人</strong>のうち、申告対象の被相続人は<strong>16万6,730人</strong>、課税割合は<strong>10.4%</strong>でした。</p>
+    </div>
+    <div class="important-box lg anim3" style="margin-top:16px;padding:18px 36px;">
+      <div class="ttl">📋 まとめると</div>
+      <p>相続税の対象は全体のおよそ<strong>1割</strong>。「被相続人の72%が80歳以上」という一般化はできず、まとまった資産が動く相続に限った話です。</p>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>08</span></div>
+  </section>
+
+  <!-- ===== 09. 200兆円規模（数値ヒーロー＋目安の注記） ===== -->
+  <section data-label="数値ヒーロー" data-screen-label="09 10年で200兆円規模" class="slide slide--soft">
+    <div class="eyebrow"><span class="en">A ROUGH ORDER OF MAGNITUDE</span></div>
+    <div class="stathero__num anim a-pop">200<span class="unit">兆円規模</span></div>
+    <div class="stathero__warn anim2">⚠ 公的予測ではなく、筆者による算術上の目安</div>
+    <p class="stathero__msg anim2">今後10年で<span class="hl-underline">所有者を変えうる</span><br>家計金融資産の規模感</p>
+    <p class="stathero__src anim2">三井住友信託銀行・財務省財務総合政策研究所の30年試算（644兆円）を単純に3等分（644÷3≒約215兆円）</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>09</span></div>
+  </section>
+
+  <!-- ===== 10. 地方から都市へ（資産移動） ===== -->
+  <section data-label="数値ペア" data-screen-label="10 地方から都市へ" class="slide">
+    <div class="chapter-ghost">10</div>
+    <div class="eyebrow anim">相続で資産の地理が動く<span class="en">REGIONAL SHIFT</span></div>
+    <h2 class="s-title anim">資産は<span class="hl-underline">地方から都市へ</span>動きます</h2>
+    <hr class="hairline">
+    <div class="numpair">
+      <div class="numpair__col up anim2">
+        <div class="numpair__lbl">東京圏への純流入（30年試算）</div>
+        <div class="numpair__v" style="font-size:calc(72px * var(--type-mult))">38.1<span style="font-size:.5em">兆円</span></div>
+        <div class="numpair__cap">流入57.8兆円－流出19.7兆円</div>
+      </div>
+      <div class="numpair__vs anim">→</div>
+      <div class="numpair__col up anim3">
+        <div class="numpair__lbl">東京圏の家計金融資産シェア</div>
+        <div class="numpair__v" style="font-size:calc(64px * var(--type-mult))">36.4→41.0<span style="font-size:.5em">%</span></div>
+        <div class="numpair__cap">相続に伴う資産移動の結果</div>
+      </div>
+    </div>
+    <p class="muted" style="font-size:var(--type-small); margin-top:20px">出所：三井住友信託銀行「相続に伴う家計金融資産の地域間移動」（2022年）。地域をまたいで動く金融資産は約124.5兆円と試算</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>10</span></div>
+  </section>
+
+  <!-- ===== 11. 流動資産は動く／不動産は動かない（Before/After） ===== -->
+  <section data-label="Before/After" data-screen-label="11 流動資産と不動産" class="slide slide--soft">
+    <div class="chapter-ghost">11</div>
+    <div class="eyebrow anim">動くもの・動かないもの<span class="en">LIQUID VS FIXED</span></div>
+    <h2 class="s-title anim">動く資産、<span class="hl-underline">動かない実家</span></h2>
+    <hr class="hairline">
+    <div class="ba">
+      <div class="ba__col before anim2">
+        <span class="ba__tag">動く</span>
+        <p class="ba__txt">預金・上場株式・投資信託</p>
+        <p style="font-size:var(--type-small); color:var(--ink-2); margin:0;">口座を移すだけで、相続人の居住地（都市部）へ移りやすい</p>
+      </div>
+      <div class="ba__arrow anim3">⇄</div>
+      <div class="ba__col after anim4">
+        <span class="ba__tag">動かない</span>
+        <p class="ba__txt">地方の実家・空き地・山林・墓</p>
+        <p style="font-size:var(--type-small); color:var(--ink-2); margin:0;">固定資産税・草刈り・修繕・解体・相続登記という管理負担が地方に残る</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>11</span></div>
+  </section>
+
+  <!-- ===== 12. なぜ消費されないのか（Q&A） ===== -->
+  <section data-label="Q&A" data-screen-label="12 なぜ消費されないか" class="slide">
+    <div class="chapter-ghost">12</div>
+    <div class="eyebrow"><span class="en">WHY IT DOESN'T BOOST SPENDING</span></div>
+    <h2 class="s-title anim">相続はなぜ<span class="hl-underline">消費に回りにくい</span>のか</h2>
+    <hr class="hairline">
+    <div class="qa">
+      <div class="qa__row myth anim"><div class="qa__mark">✕</div><p class="qa__txt">まとまった資産が入れば、<br>消費や景気が押し上げられるはず</p></div>
+      <div class="qa__row fact anim2"><div class="qa__mark">◯</div><p class="qa__txt">受け取るのは老後不安を抱える60代。<br>納税・住宅ローン返済・口座集約・再投資に向かい、<span class="hl-underline">老後資金として再び保有</span>されやすい</p></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>12</span></div>
+  </section>
+
+  <!-- ===== 13. 同世代内の相続格差（比較表） ===== -->
+  <section data-label="Before/After" data-screen-label="13 同世代内の相続格差" class="slide slide--soft">
+    <div class="chapter-ghost">13</div>
+    <div class="eyebrow anim">世代間より深刻な線引き<span class="en">WITHIN-GENERATION GAP</span></div>
+    <h2 class="s-title anim">広がるのは<span class="hl-underline">同じ60代の中の差</span></h2>
+    <hr class="hairline">
+    <div class="ba" style="margin-top:24px;">
+      <div class="ba__col before anim2">
+        <span class="ba__tag" style="background:var(--navy)">相続した60代</span>
+        <ul class="ba__list">
+          <li>住居費が小さく、資産に余裕がある</li>
+          <li>医療・介護の予備資金を確保しやすい</li>
+          <li>子や孫の住宅・教育を援助できる</li>
+          <li>配当や値上がり益を再投資できる</li>
+        </ul>
+      </div>
+      <div class="ba__col after anim4">
+        <span class="ba__tag">相続しなかった60代</span>
+        <ul class="ba__list">
+          <li>家賃・住宅ローンが老後も残る</li>
+          <li>不安から貯蓄を取り崩しにくい</li>
+          <li>次世代への援助余力が乏しい</li>
+          <li>主に賃金・年金から資産形成する</li>
+        </ul>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>13</span></div>
+  </section>
+
+  <!-- ===== 14. 2036年の基準シナリオ（表） ===== -->
+  <section data-label="比較表" data-screen-label="14 2036年の基準シナリオ" class="slide">
+    <div class="chapter-ghost">14</div>
+    <div class="eyebrow anim">確度つきで整理すると<span class="en">BASELINE SCENARIO</span></div>
+    <h2 class="s-title anim">2036年の<span class="hl-underline">基準シナリオ</span></h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2">
+      <table class="cmp cmp--dense">
+        <thead>
+          <tr><th>論点</th><th>2036年に起こりやすい姿</th><th>確度</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>相続の中心</td><td>80〜90代から50〜70代への老老相続</td><td><span class="pill pill--easy">高い</span></td></tr>
+          <tr><td>資産の使途</td><td>消費より再保有・再投資・債務返済</td><td><span class="pill pill--easy">高い</span></td></tr>
+          <tr><td>地域移動</td><td>地方の流動資産が都市圏へ移る</td><td><span class="pill pill--mid">中〜高</span></td></tr>
+          <tr><td>金融機関</td><td>大手・信託・ネットの存在感が上昇</td><td><span class="pill pill--mid">中程度</span></td></tr>
+          <tr><td>格差</td><td>同世代内・家系間・地域間で資産差が拡大</td><td><span class="pill pill--mid">中〜高</span></td></tr>
+          <tr><td>消費</td><td>全国的な相続消費ブームは起きにくい</td><td><span class="pill pill--mid">中〜高</span></td></tr>
+          <tr><td>地方</td><td>空き家等の管理負担が残りやすい</td><td><span class="pill pill--easy">高い</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="muted" style="font-size:calc(22px * var(--type-mult)); margin-top:14px">注：確度は本稿で確認した統計・試算をもとに整理した定性的な評価で、公式の予測値ではありません</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>14</span></div>
+  </section>
+
+  <!-- ===== 15. 社会の選択肢（5つの打ち手） ===== -->
+  <section data-label="リスト" data-screen-label="15 社会の選択肢" class="slide slide--soft">
+    <div class="chapter-ghost">15</div>
+    <div class="eyebrow anim">未来は固定されていない<span class="en">WHAT WE CAN DO</span></div>
+    <h2 class="s-title anim">資産を<span class="hl-underline">必要な時期・地域</span>へ</h2>
+    <hr class="hairline">
+    <div class="optlist">
+      <div class="optlist__item anim"><div class="optlist__num">1</div><div class="optlist__txt">医療・介護・年金の見通しを分かりやすくし、過剰な予備的貯蓄を和らげる</div></div>
+      <div class="optlist__item anim2"><div class="optlist__num">2</div><div class="optlist__txt">若年期の住宅・教育・子育て・起業へ届く生前贈与の仕組みを整える</div></div>
+      <div class="optlist__item anim3"><div class="optlist__num">3</div><div class="optlist__txt">地域金融機関が相続・空き家・事業承継を一体で支援する</div></div>
+      <div class="optlist__item anim4"><div class="optlist__num">4</div><div class="optlist__txt">少額から長期分散投資へ参加できる環境を整える</div></div>
+      <div class="optlist__item anim5"><div class="optlist__num">5</div><div class="optlist__txt">所有者不明土地・管理困難不動産を市場や公共利用へ早期に移す</div></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>15</span></div>
+  </section>
+
+  <!-- ===== 16. まとめ（3メッセージ再掲） ===== -->
+  <section data-label="まとめ" data-screen-label="16 まとめ" class="slide">
+    <div class="chapter-ghost">16</div>
+    <div class="eyebrow anim">まとめ<span class="en">SUMMARY</span></div>
+    <h2 class="s-title serif anim">今日の3つの持ち帰りポイント</h2>
+    <hr class="hairline">
+    <div class="sum__list">
+      <div class="sum__card anim"><div class="sum__n">01</div><div class="sum__h">相続は<br>若者への移転ではない</div><p class="sum__p">資産のある相続は、老親から高齢の子への老老相続が中心です。</p></div>
+      <div class="sum__card anim2"><div class="sum__n">02</div><div class="sum__h">相続しても<br>消費は増えにくい</div><p class="sum__p">老後不安を抱える60代が受け取るため、再保有・再投資に向かいやすい。</p></div>
+      <div class="sum__card anim3"><div class="sum__n">03</div><div class="sum__h">広がるのは<br>同世代内の格差</div><p class="sum__p">相続の有無が、住まい・介護の備え・次世代への援助力を分ける。</p></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>16</span></div>
+  </section>
+
+  <!-- ===== 17. 免責事項 ===== -->
+  <section data-label="免責事項" data-screen-label="17 免責事項" class="slide disc">
+    <div class="disc__icon">⚠️</div>
+    <p class="disc__tag">ご視聴にあたってのお願い</p>
+    <div class="disc__box">
+      <p>この動画は<span class="strong">公的統計に基づく解説</span>であり、<span class="strong">特定の資産運用・相続対策の推奨ではありません</span>。<br>個別の相続・税務・投資のご判断は、<span class="strong">税理士・弁護士・金融機関</span>など専門家にご相談ください。</p>
+    </div>
+  </section>
+
+  <!-- ===== 18. エンディング ===== -->
+  <section data-label="エンディング" data-screen-label="18 エンディング" class="slide end">
+    <h2 class="end__h anim">ご視聴ありがとうございました</h2>
+    <div class="end__rule grow-x"></div>
+    <div class="end__cards">
+      <div class="end__card anim2"><span class="end__ic">📄</span><div><h3>概要欄をチェック</h3><p><b>参考資料</b>を掲載中</p></div></div>
+      <div class="end__card anim3"><span class="end__ic">🔔</span><div><h3>チャンネル登録</h3><p>役立つ話題を<br>お届けします</p></div></div>
+      <div class="end__card anim4"><span class="end__ic">👍</span><div><h3>高評価で応援</h3><p>次回も<b>お楽しみに</b></p></div></div>
+    </div>
+    <div class="end__note anim5">お金の置き場所については、預金の保護と個人向け国債の動画、<br>複利の力の動画でも解説しています。概要欄からどうぞ。</div>
+  </section>
+
+</deck-stage>
+
+<script src="deck-stage.js"></script>
+<script src="image-slot.js"></script>
+
+</body>
+</html>
