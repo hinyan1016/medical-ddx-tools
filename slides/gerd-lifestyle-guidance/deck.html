@@ -1,0 +1,880 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>医療チャンネル スライドテンプレート（セミナー紺・GERD）</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   テーマ「セミナー紺」— 参照: docs/specs/2026-07-05-slide-theme-seminar-navy-design.md
+   濃紺 #012360 × ディープオレンジ #D84315（濃 #8C2F0D）× 警告レッド #DC3323
+   外来患者指導シリーズ第18弾＝逆流性食道炎（GERD）の生活指導。ブログ本文の差し色（#D84315/#8C2F0D）に合わせて
+   第17弾のインディゴ系差し色(#F27E03)を置換。全文Noto Sans JPで統一（可読性優先・明朝混植は廃止）
+   クラス設計・セクション番号は 医療スライドテンプレート.html と互換
+   ===================================================================== */
+:root{
+  /* palette (PDF実測値) */
+  --navy:#012360;
+  --navy-ink:#001B4D;
+  --accent:#D84315;
+  --accent-soft: color-mix(in srgb, var(--accent) 11%, #ffffff);
+  --accent-line: color-mix(in srgb, var(--accent) 62%, #ffffff);
+  --accent-ink: #8C2F0D;
+  --danger:#DC3323;
+  --danger-soft: color-mix(in srgb, var(--danger) 9%, #ffffff);
+  --bg:#FDFDFD;
+
+  /* 継承トークンの上書き（colors_and_type.css の値を紺×ディープオレンジ系に寄せる） */
+  --blue:#1D4189;
+  --blue-soft:#E9EEF8;
+  --blue-tint:#EEF2FA;
+  --red: var(--danger);
+  --red-soft: var(--danger-soft);
+  --orange: var(--accent);
+  --orange-soft: var(--accent-soft);
+  --line:#D8DDE6;
+  --line-soft:#C9D2DF;
+  --bg-muted:#F8F8F8;
+  --bg-alt:#F6F6F6;
+  --navy-line: color-mix(in srgb, var(--navy) 22%, #ffffff);
+
+  /* type scale — multiply all via --type-mult (既存テンプレと同値) */
+  --type-mult: 1.38;
+  --type-display: calc(96px * var(--type-mult));
+  --type-title:   calc(82px * var(--type-mult));
+  --type-heading: calc(60px * var(--type-mult));
+  --type-subtitle:calc(44px * var(--type-mult));
+  --type-body:    calc(38px * var(--type-mult));
+  --type-small:   calc(30px * var(--type-mult));
+  --type-label:   calc(27px * var(--type-mult));
+  --type-chapter: calc(210px * var(--type-mult));
+  --type-stat:    calc(150px * var(--type-mult));
+
+  --pad-x: 112px;
+  --pad-top: 58px;
+  --pad-bottom: 80px;
+  --gap-title: 24px;
+  --gap-item: 22px;
+
+  /* このテーマ内は本文・見出しともNoto Sans JPに統一（colors_and_type.css の --font-ja を上書き。他ファイルには影響しない） */
+  --font-ja: "Noto Sans JP", "BIZ UDPGothic", "Yu Gothic", "Meiryo", sans-serif;
+  --font-serif: var(--font-ja);
+  --grad-navy: linear-gradient(160deg, #012360 0%, #001B4D 100%);
+}
+.serif{ font-family: var(--font-serif); font-weight:800; letter-spacing:.02em; }
+
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#0a1430; }
+
+/* ---------- base slide ---------- */
+.slide{
+  box-sizing:border-box;
+  display:flex; flex-direction:column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-ja);
+  overflow:hidden;
+  position:relative;
+}
+/* 下端の紺帯（PDF全ページ共通の締め） */
+.slide::after{
+  content:""; position:absolute; left:0; right:0; bottom:0; height:10px;
+  background: var(--navy); pointer-events:none;
+}
+.slide--navy{ background: var(--grad-navy); color: var(--white); }
+.slide--navy::after{ background: var(--accent); }
+.slide--soft{ background: var(--bg-alt); }
+
+/* eyebrow — 紺の縦帯（下端オレンジ）＋ラベル */
+.eyebrow{
+  display:flex; align-items:center; gap:18px;
+  font-size: var(--type-label); font-weight:700; color: var(--navy);
+  letter-spacing:.04em;
+}
+.eyebrow::before{
+  content:""; width:12px; height:44px; border-radius:3px;
+  background: linear-gradient(180deg, var(--navy) 0 68%, var(--accent) 68% 100%);
+  flex:none;
+}
+.eyebrow .num{ font-family: var(--font-en); color: var(--accent-ink); }
+.eyebrow .en{ font-family: var(--font-en); color: var(--accent-ink); letter-spacing:.15em; text-transform:uppercase; }
+.slide--navy .eyebrow{ color: rgba(255,255,255,.88); }
+.slide--navy .eyebrow .en{ color:#fff; }
+.slide--navy .eyebrow::before{ background: linear-gradient(180deg, #fff 0 68%, var(--accent) 68% 100%); }
+
+.s-title{
+  font-size: var(--type-heading); line-height:1.22; color: var(--navy);
+  margin: var(--gap-title) 0 0; font-weight:800; letter-spacing:.01em;
+  text-wrap: pretty;
+}
+.slide--navy .s-title{ color:#fff; }
+
+.lead{
+  font-size: var(--type-body); line-height:1.7; color: var(--ink-2);
+  margin:0; text-wrap: pretty;
+}
+.muted{ color: var(--gray); }
+
+/* 見出し下罫線 — 紺の実線＋左端オレンジ短セグメント（PDF見出し様式） */
+.hairline{
+  height:4px; border:0; margin:20px 0 0;
+  background: linear-gradient(90deg, var(--accent) 0 150px, var(--navy) 150px);
+  opacity:1;
+}
+.slide--navy .hairline{ background: linear-gradient(90deg, var(--accent) 0 150px, rgba(255,255,255,.85) 150px); }
+
+/* 右上の薄い大章番号（装飾・背面） */
+.chapter-ghost{
+  position:absolute; top: 30px; right: var(--pad-x);
+  font-family: var(--font-en); font-weight:700; line-height:.8;
+  font-size: calc(150px * var(--type-mult)); color: var(--navy);
+  opacity:.05; pointer-events:none; user-select:none;
+}
+.slide--navy .chapter-ghost{ color:#fff; opacity:.10; }
+
+/* 汎用 下線ハイライト */
+.hl-underline{ border-bottom: 6px solid var(--accent-line); }
+
+/* 赤バッジ（PDF p1「7/7まで」様式・インライン強調） */
+.badge-danger{
+  display:inline-block; background: var(--danger); color:#fff;
+  font-weight:800; padding: 4px 26px; border-radius:10px;
+  line-height:1.35;
+}
+
+/* footer band */
+.slide__foot{
+  position:absolute; left: var(--pad-x); right: var(--pad-x); bottom: 36px;
+  display:flex; align-items:center; justify-content:space-between;
+  font-size: calc(24px * var(--type-mult)); color: var(--gray);
+  font-family: var(--font-ja);
+}
+.slide__foot .ch{ display:flex; align-items:center; gap:10px; font-weight:700; color: var(--navy); }
+.slide__foot .cross{ color: var(--accent); font-weight:700; }
+.slide--navy .slide__foot{ color: rgba(255,255,255,.65); }
+.slide--navy .slide__foot .ch{ color:#fff; }
+.slide--navy .slide__foot .cross{ color: var(--accent); }
+
+/* ============ 1. COVER（白背景・右上に幾何アクセント） ============ */
+.cover{ justify-content:center; }
+.cover__geo{
+  position:absolute; right: 70px; top: 48px; width: 380px; height: 380px;
+  pointer-events:none;
+}
+.cover__badge{
+  display:inline-flex; align-items:center; gap:14px; align-self:flex-start;
+  background:#fff; border:2px solid var(--navy-line);
+  color: var(--navy); padding:12px 26px; border-radius:999px;
+  font-size: var(--type-label); font-weight:700;
+}
+.cover__badge .cross{ color: var(--accent); font-size:1.2em; }
+.cover__title{
+  font-family: var(--font-serif);
+  font-size: calc(76px * var(--type-mult)); line-height:1.3; color: var(--navy); font-weight:800;
+  margin:42px 0 0; letter-spacing:.02em; max-width:1400px;
+}
+.cover__title .hl{ color: var(--accent); }
+.cover__rule{ width: 1500px; max-width:100%; height:3px; background: var(--navy); margin-top:36px; }
+.cover__sub{
+  font-size: var(--type-subtitle); color: var(--ink-2);
+  margin:34px 0 0; font-weight:700;
+}
+.cover__sub .badge-danger{ margin: 0 6px; }
+.cover__meta{
+  display:flex; gap:30px; align-items:center; margin-top:64px;
+  font-size: var(--type-small); color: var(--gray);
+}
+.cover__avatar{
+  flex:none; width:84px; height:84px; border-radius:50%;
+  background: var(--accent-soft); border:3px solid var(--accent);
+  display:flex; align-items:center; justify-content:center;
+}
+.cover__avatar svg{ width:56%; height:56%; }
+.cover__meta .name{ font-weight:800; color: var(--navy); font-size: var(--type-small); }
+.cover__meta .vline{ width:2px; height:52px; background: var(--line); }
+/* 旧テーマ互換（コーラル版からコピーした装飾を無効化） */
+.cover__blob{ display:none; }
+
+/* ============ 2. THEME / CONCLUSION FIRST ============ */
+.theme__body{ display:flex; flex-direction:column; gap: var(--gap-title); margin-top: 28px; flex:1; justify-content:center; }
+.theme__q{ font-family: var(--font-serif); font-size: var(--type-title); line-height:1.28; color: var(--navy); font-weight:800; max-width:22ch; text-wrap:balance; }
+.theme__q .hl{ color: var(--accent-ink); border-bottom: 8px solid var(--accent-line); }
+.concl{
+  display:flex; align-items:flex-start; gap:28px;
+  background:#fff; border:3px solid var(--accent);
+  border-radius: 12px; padding: 32px 44px;
+  position:relative;
+}
+.concl::before{
+  content:"“"; position:absolute; top:-58px; left:26px;
+  font-family: var(--font-en); font-size: calc(110px * var(--type-mult));
+  color: var(--accent); font-weight:900; line-height:1;
+}
+.concl__tag{
+  flex:none; background: var(--navy); color:#fff; font-weight:700;
+  font-size: var(--type-small); padding:10px 24px; border-radius:8px;
+}
+.concl__text{ font-size: var(--type-subtitle); line-height:1.5; color: var(--navy); font-weight:700; margin:0; }
+
+/* ============ 3. AGENDA（紺角チップ＋オレンジ縦罫） ============ */
+.agenda__list{ display:flex; flex-direction:column; gap:26px; margin-top:36px; }
+.agenda__item{ display:flex; align-items:center; gap:32px; }
+.agenda__num{
+  flex:none; width:76px; height:76px; border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+  background: var(--navy); color:#fff;
+  font-family: var(--font-en); font-size: calc(46px * var(--type-mult)); font-weight:800;
+}
+.agenda__txt{
+  font-size: var(--type-subtitle); color: var(--navy); font-weight:700;
+  border-left: 5px solid var(--accent); padding-left: 30px;
+}
+.agenda__txt small{ display:block; font-size: var(--type-small); color: var(--gray); font-weight:400; margin-top:8px; }
+
+/* ============ 4. CHAPTER DIVIDER（全面紺・白明朝・中央） ============ */
+.chapter{ justify-content:center; align-items:center; text-align:center; }
+.chapter__kicker{
+  font-family: var(--font-en); font-size: var(--type-label); color: rgba(255,255,255,.55);
+  font-weight:700; letter-spacing:.4em; text-transform:uppercase;
+}
+.chapter__num{
+  font-family: var(--font-serif); font-size: calc(150px * var(--type-mult)); line-height:1.05;
+  font-weight:800; color:#fff; margin:10px 0 0; letter-spacing:.04em;
+}
+.chapter__rule{ width:560px; height:6px; background: var(--accent); border-radius:3px; margin-top:44px; }
+.chapter__title{ font-size: var(--type-subtitle); color:#fff; font-weight:700; margin:44px 0 0; max-width:26ch; text-wrap:balance; letter-spacing:.06em; }
+
+/* ============ 5. BODY 1 COLUMN ============ */
+.body1{ }
+.body1__main{ margin-top: 26px; max-width: 1640px; }
+.body1 .lead{ margin-bottom: 20px; }
+.important-box.lg{
+  background:#fff; border:2px solid var(--navy-line); border-left: 12px solid var(--accent);
+  border-radius: 12px; padding: 26px 40px; margin:0;
+  box-shadow: var(--shadow-sm);
+}
+.important-box.lg .ttl{ display:flex; align-items:center; gap:14px; font-size: var(--type-small); font-weight:700; color: var(--accent-ink); margin-bottom:8px; }
+.important-box.lg p{ font-size: var(--type-body); line-height:1.6; color: var(--ink-2); margin:0; }
+
+/* point list（cols2以外の単独利用にも対応） */
+.point-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:18px; }
+.point-list li{ display:flex; align-items:flex-start; gap:20px; font-size: var(--type-body); color: var(--ink-2); line-height:1.5; }
+.point-list li::before{ content:"✓"; flex:none; width:44px; height:44px; border-radius:50%; background: var(--navy); color:#fff; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:.8em; margin-top:2px; }
+
+/* ============ 8. COMPARISON TABLE ============ */
+.tablewrap{ margin-top:26px; flex:1; }
+table.cmp{ width:100%; border-collapse:collapse; font-size: var(--type-small); }
+table.cmp th, table.cmp td{ text-align:left; padding:16px 28px; vertical-align:middle; line-height:1.4; }
+table.cmp thead th{ background: var(--navy); color:#fff; font-weight:700; font-size: var(--type-body); }
+table.cmp thead th:first-child{ border-top-left-radius:10px; }
+table.cmp thead th:last-child{ border-top-right-radius:10px; }
+table.cmp tbody td{ border-bottom:1px solid var(--line); color: var(--ink-2); }
+table.cmp tbody tr:nth-child(even){ background: var(--bg-muted); }
+table.cmp tbody td:first-child{ font-weight:700; color: var(--navy); font-size: var(--type-body); white-space:nowrap; }
+table.cmp .pill{ display:inline-block; font-size: calc(24px * var(--type-mult)); font-weight:700; padding:6px 16px; border-radius:999px; }
+.pill--easy{ background: var(--green-soft); color:#1c7a3a; }
+.pill--mid{ background: var(--accent-soft); color: var(--accent-ink); }
+
+/* ============ 10. DISCLAIMER ============ */
+.disc{ justify-content:center; align-items:center; text-align:center; background: var(--bg-alt); }
+.disc__icon{ font-size: calc(96px * var(--type-mult)); line-height:1; }
+.disc__tag{ font-family: var(--font-serif); font-size: var(--type-subtitle); font-weight:700; color: var(--navy); margin:28px 0 0; letter-spacing:.08em; }
+.disc__box{
+  margin-top:38px; max-width:1180px; background:#fff; border:2px solid var(--navy-line);
+  border-top: 10px solid var(--accent); border-radius:12px; padding:48px 56px;
+  box-shadow: var(--shadow-md);
+}
+.disc__box p{ font-size: var(--type-body); line-height:1.7; color: var(--ink-2); margin:0; text-wrap:pretty; }
+.disc__box .strong{ color: var(--navy); font-weight:700; }
+
+/* ============ 11. SUMMARY（PDF p3 3カードゴール様式） ============ */
+.sum__list{ display:grid; grid-template-columns: repeat(3,1fr); gap:40px; margin-top:70px; flex:1; align-content:start; }
+.sum__card{
+  position:relative; background:#fff; border:2px solid var(--navy-line);
+  border-radius:14px; padding:64px 36px 40px; display:flex; flex-direction:column; gap:20px;
+  box-shadow: var(--shadow-md); text-align:center; align-items:center;
+}
+.sum__n{
+  position:absolute; top:-38px; left:50%; margin-left:-38px;
+  width:76px; height:76px; border-radius:50%;
+  background: var(--navy); color:#fff;
+  font-family: var(--font-en); font-size: calc(34px * var(--type-mult)); font-weight:800;
+  display:flex; align-items:center; justify-content:center; line-height:1;
+  box-shadow: var(--shadow-md);
+}
+.sum__h{ font-size: var(--type-subtitle); font-weight:800; color: var(--navy); line-height:1.3; text-wrap:balance; }
+.sum__h::after{ content:""; display:block; width:120px; height:4px; background: var(--accent); margin:16px auto 0; border-radius:2px; }
+.sum__p{ font-size: var(--type-small); color: var(--ink-2); line-height:1.6; margin:0; }
+
+/* ============ 12. ENDING（白背景・明朝・PDF p17様式） ============ */
+.end{ justify-content:center; align-items:center; text-align:center; }
+.end__h{
+  font-family: var(--font-serif);
+  font-size: var(--type-title); color: var(--navy); font-weight:800; margin:0; text-wrap:balance;
+}
+.end__rule{
+  width:1500px; max-width:100%; height:4px; margin-top:30px;
+  background: linear-gradient(90deg, var(--navy) 0 44%, var(--accent) 44% 56%, var(--navy) 56%);
+}
+.end__cards{ display:grid; grid-template-columns:repeat(3,1fr); gap:36px; margin-top:70px; width:100%; max-width:1640px; }
+.end__card{
+  background:#fff; border:2px solid var(--navy-line); border-radius:14px;
+  padding:34px 30px; display:flex; align-items:center; gap:24px; text-align:left;
+  box-shadow: var(--shadow-sm);
+}
+.end__ic{
+  flex:none; width:88px; height:88px; border-radius:50%;
+  background: var(--accent); color:#fff; display:flex; align-items:center; justify-content:center;
+  font-size: calc(40px * var(--type-mult));
+}
+.end__card h3{ font-size: var(--type-small); font-weight:800; color: var(--navy); margin:0 0 6px; }
+.end__card h3 u{ text-decoration:none; border-bottom:3px solid var(--accent); }
+.end__card p{ font-size: var(--type-label); color: var(--ink-2); line-height:1.5; margin:0; }
+.end__card p b{ color: var(--accent-ink); }
+.end__note{
+  margin-top:60px; max-width:1400px; background:#fff;
+  border:2.5px solid var(--accent); border-radius:12px; padding:30px 60px;
+  font-family: var(--font-serif); font-size: var(--type-small); color: var(--navy);
+  font-weight:700; line-height:1.8;
+}
+.end__note b{ color: var(--accent-ink); }
+
+/* ============ 14. Q&A / MYTH ============ */
+.qa{ display:flex; flex-direction:column; gap:22px; margin-top:24px; flex:1; justify-content:center; }
+.qa__row{ display:flex; align-items:flex-start; gap:28px; border-radius:14px; padding:26px 40px; }
+.qa__row.myth{ background:#fff; border:2px solid var(--navy-line); border-left:14px solid var(--danger); box-shadow: var(--shadow-sm); }
+.qa__row.fact{ background: var(--accent-soft); border:2px solid var(--accent-line); border-left:14px solid var(--accent); }
+.qa__mark{ flex:none; font-size: var(--type-heading); font-weight:900; line-height:1; }
+.qa__row.myth .qa__mark{ color: var(--danger); }
+.qa__row.fact .qa__mark{ color: var(--green); }
+.qa__txt{ font-size: calc(32px * var(--type-mult)); color: var(--navy); font-weight:700; line-height:1.4; margin:0; }
+
+/* ============ 15. STEPS（PDF p16 縦フロー・丸数字＋点線リーダー） ============ */
+.steps{ display:flex; flex-direction:column; gap:0; margin-top:40px; flex:none; }
+.step{ display:flex; align-items:center; gap:34px; }
+.step__n{
+  flex:none; width:88px; height:88px; border-radius:50%;
+  background: var(--accent); color:#fff;
+  font-family: var(--font-en); font-size: calc(46px * var(--type-mult)); font-weight:800;
+  display:flex; align-items:center; justify-content:center;
+}
+.step.is-now .step__n{ background: var(--navy); }
+.step__card{
+  flex:1; display:flex; align-items:center; gap:28px;
+  background:#fff; border:2px solid var(--navy-line); border-radius:14px;
+  padding:24px 40px; box-shadow: var(--shadow-sm);
+}
+.step.is-now .step__card{ border-color: var(--accent); border-width:3px; background: var(--accent-soft); }
+.step__ic{ flex:none; font-size: calc(52px * var(--type-mult)); line-height:1; }
+.step__label{
+  flex:none; font-family: var(--font-en); font-size: var(--type-small); font-weight:800;
+  color: var(--navy); letter-spacing:.05em;
+}
+.step__label small{ display:block; font-size: calc(24px * var(--type-mult)); color: var(--accent-ink); font-weight:700; letter-spacing:0; }
+.step__vr{ flex:none; width:2px; align-self:stretch; background: var(--line); }
+.step__t{ font-size: var(--type-small); color: var(--ink-2); font-weight:700; line-height:1.5; }
+.steps__dots{
+  flex:none; width:0; height:34px; margin-left:43px;
+  border-left:5px dotted var(--accent);
+}
+.steps__arrow{ display:none; }
+
+/* ============ 30. 危険サイン（PDF p15 4象限白カード様式） ============ */
+.eyebrow--red{ color: var(--danger); }
+.eyebrow--red::before{ background: linear-gradient(180deg, var(--danger) 0 68%, var(--navy) 68% 100%); }
+.danger .s-title{ font-family: var(--font-serif); color: var(--navy); }
+.danger__list{ display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:30px; flex:1; align-content:center; }
+.danger__item{
+  display:flex; align-items:flex-start; gap:26px;
+  background:#fff; border:2px solid var(--navy-line); border-radius:14px;
+  padding:28px 34px; box-shadow: var(--shadow-sm);
+}
+.danger__item .ic{ display:none; }
+.danger__tri{ flex:none; width:76px; height:70px; margin-top:4px; }
+.danger__bd h3{
+  display:flex; align-items:center; gap:16px;
+  font-size: var(--type-subtitle); font-weight:800; color: var(--navy); margin:0;
+  padding-bottom:12px; border-bottom:4px solid var(--danger);
+}
+.danger__bd .dnum{
+  flex:none; width:52px; height:52px; border-radius:50%;
+  background: var(--danger); color:#fff;
+  font-family: var(--font-en); font-size: calc(28px * var(--type-mult)); font-weight:800;
+  display:flex; align-items:center; justify-content:center;
+}
+.danger__bd p{ font-size: var(--type-small); color: var(--ink-2); line-height:1.55; margin:14px 0 0; font-weight:700; }
+.danger{ padding-bottom:150px; }
+.danger__call{
+  margin-top:24px; margin-bottom:0; display:flex; align-items:center; justify-content:center; gap:22px;
+  background: var(--danger); color:#fff; border-radius:12px; padding:20px 40px;
+  font-size: var(--type-small); font-weight:800;
+}
+
+/* ============ 20. BEFORE / AFTER ============ */
+.ba{ display:flex; align-items:stretch; gap:32px; margin-top:34px; flex:1; }
+.ba__col{ flex:1; border-radius:16px; padding:44px 40px; display:flex; flex-direction:column; gap:22px; }
+.ba__col.before{ background: var(--bg-alt); border:2px solid var(--line); }
+.ba__col.after{ background: var(--accent-soft); border:3px solid var(--accent); }
+.ba__tag{ align-self:flex-start; font-family: var(--font-en); font-size: var(--type-small); font-weight:800; letter-spacing:.1em; padding:8px 24px; border-radius:8px; }
+.ba__col.before .ba__tag{ background: var(--gray); color:#fff; }
+.ba__col.after .ba__tag{ background: var(--accent); color:#fff; }
+.ba__txt{ font-size: var(--type-body); color: var(--navy); line-height:1.5; font-weight:700; margin:0; }
+.ba__arrow{ flex:none; align-self:center; font-family: var(--font-en); font-size: calc(80px * var(--type-mult)); color: var(--navy); }
+
+/* ============ 35. 参考文献・出典 ============ */
+.refs__list{ display:flex; flex-direction:column; gap:26px; margin-top:48px; }
+.refs__item{
+  display:flex; align-items:baseline; gap:26px;
+  border-bottom:1px solid var(--line); padding-bottom:26px;
+}
+.refs__num{ flex:none; font-family: var(--font-en); font-size: var(--type-small); font-weight:700; color: var(--accent-ink); }
+.refs__item p{ font-size: var(--type-body); color: var(--ink-2); line-height:1.6; margin:0; }
+.refs__item p small{ display:block; font-size: var(--type-label); color: var(--gray); margin-top:6px; }
+.refs__note{ margin-top:36px; font-size: var(--type-label); color: var(--gray); }
+
+/* entrance animation — fade-up を上位互換で拡張（deck-anim キット / 詳細は _anim_library/） */
+@media (prefers-reduced-motion:no-preference){
+  /* タイミング基底（動きの既定は fade-up） */
+  [data-deck-active] .anim{ animation: fade-up .5s both; }
+  [data-deck-active] .anim2{ animation: fade-up .5s .12s both; }
+  [data-deck-active] .anim3{ animation: fade-up .5s .24s both; }
+  [data-deck-active] .anim4{ animation: fade-up .5s .36s both; }
+  [data-deck-active] .anim5{ animation: fade-up .5s .48s both; }
+  [data-deck-active] .anim6{ animation: fade-up .5s .60s both; }
+  [data-deck-active] .anim-i{ animation: fade-up .5s both; animation-delay: calc(var(--i,0) * .1s); }
+  /* モーション variant（animation-name のみ上書き＝1要素1アニメ維持・data-cue 安全） */
+  [data-deck-active] .a-fade { animation-name: a-fade; }
+  [data-deck-active] .a-up   { animation-name: fade-up; }
+  [data-deck-active] .a-down { animation-name: a-down; }
+  [data-deck-active] .a-right{ animation-name: a-right; }
+  [data-deck-active] .a-left { animation-name: a-left; }
+  [data-deck-active] .a-zoom { animation-name: a-zoom; }
+  [data-deck-active] .a-pop  { animation-name: a-pop; animation-timing-function: cubic-bezier(.34,1.56,.64,1); }
+  [data-deck-active] .a-blur { animation-name: a-blur; }
+  /* コンテンツ・モーション */
+  [data-deck-active] .grow-y { transform-origin:bottom center; animation: grow-y .7s .2s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .grow-x { transform-origin:left center;   animation: grow-x .55s .25s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .nudge-x{ animation: nudge-x .9s .35s ease-in-out both; }
+}
+.grow-y{ transform-origin:bottom center; } .grow-x{ transform-origin:left center; }
+@keyframes fade-up{ from{ opacity:0; transform: translateY(16px);} to{ opacity:1; transform:none;} }
+@keyframes a-fade { from{ opacity:0; } to{ opacity:1; } }
+@keyframes a-down { from{ opacity:0; transform: translateY(-16px);} to{ opacity:1; transform:none; } }
+@keyframes a-right{ from{ opacity:0; transform: translateX(-28px);} to{ opacity:1; transform:none; } }
+@keyframes a-left { from{ opacity:0; transform: translateX(28px); } to{ opacity:1; transform:none; } }
+@keyframes a-zoom { from{ opacity:0; transform: scale(.94);       } to{ opacity:1; transform:none; } }
+@keyframes a-pop  { from{ opacity:0; transform: scale(.8);        } to{ opacity:1; transform:none; } }
+@keyframes a-blur { from{ opacity:0; filter: blur(12px); transform: translateY(10px);} to{ opacity:1; filter: blur(0); transform:none; } }
+@keyframes grow-y { from{ transform: scaleY(0);} to{ transform: scaleY(1);} }
+@keyframes grow-x { from{ transform: scaleX(0);} to{ transform: scaleX(1);} }
+@keyframes nudge-x{ 0%{ transform:none;} 55%{ transform: translateX(10px);} 100%{ transform:none;} }
+
+/* tweaks mount */
+#tweaks-root{ position:fixed; inset:0; pointer-events:none; z-index:9999; }
+#tweaks-root > *{ pointer-events:auto; }
+</style>
+</head>
+<body style="font-size: 8px">
+
+<deck-stage width="1920" height="1080">
+
+
+  <!-- ===== 01. 表紙 ===== -->
+  <section data-label="表紙" data-screen-label="01 表紙" class="slide cover">
+    <svg class="cover__geo anim2 a-zoom" viewBox="0 0 200 200" aria-hidden="true">
+      <path d="M60 0 A140 140 0 0 1 200 140" fill="none" stroke="var(--navy-line)" stroke-width="4"/>
+      <path d="M95 0 A105 105 0 0 1 200 105" fill="none" stroke="var(--accent)" stroke-width="5"/>
+      <path d="M128 0 A72 72 0 0 1 200 72" fill="none" stroke="var(--navy)" stroke-width="4"/>
+      <g fill="var(--navy-line)">
+        <circle cx="26" cy="120" r="3.4"/><circle cx="52" cy="120" r="3.4"/><circle cx="78" cy="120" r="3.4"/>
+        <circle cx="26" cy="146" r="3.4"/><circle cx="52" cy="146" r="3.4"/><circle cx="78" cy="146" r="3.4"/>
+        <circle cx="26" cy="172" r="3.4"/><circle cx="52" cy="172" r="3.4"/><circle cx="78" cy="172" r="3.4"/>
+      </g>
+      <circle cx="78" cy="146" r="3.8" fill="var(--accent)"/>
+    </svg>
+    <div class="cover__badge anim"><span class="cross">✚</span><span>外来患者指導シリーズ第18弾</span></div>
+    <h1 class="cover__title anim2 a-blur">逆流性食道炎の<span class="hl">生活指導</span><br>テンプレート</h1>
+    <div class="cover__rule grow-x"></div>
+    <p class="cover__sub anim3">一律の食事禁止リストより、根拠のある減量・就寝関連と<br>“個別トリガー方式”の外来トーク例</p>
+    <div class="cover__meta anim3">
+      <span class="cover__avatar"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4.6" fill="var(--accent)"/><path d="M2.5 22.5 C2.5 16.5 7 14.2 12 14.2 C17 14.2 21.5 16.5 21.5 22.5 Z" fill="var(--accent)"/></svg></span>
+      <span class="name">医知創造ラボ</span>
+      <span class="vline"></span>
+      <span>監修：今村久司（脳神経内科専門医・総合内科専門医）</span>
+      <span class="vline"></span>
+      <span>外来指導シリーズ #18</span>
+    </div>
+  </section>
+
+  <!-- ===== 02. テーマ・結論先出し ===== -->
+  <section data-label="テーマ・結論" data-screen-label="02 テーマ・結論" class="slide">
+    <div class="eyebrow anim">今日のテーマ<span class="en">TODAY'S POINT</span></div>
+    <div class="theme__body">
+      <h2 class="theme__q anim">食事を全部我慢すれば、<br>逆流は<span class="hl-underline">治りますか？</span></h2>
+      <div class="concl anim2">
+        <span class="concl__tag">結論</span>
+        <p class="concl__text">根拠が強いのは<span style="white-space:nowrap">減量・就寝関連</span>。食事は<span style="white-space:nowrap">「個別トリガー方式」</span>に絞るのが答え</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>02</span></div>
+  </section>
+
+  <!-- ===== 03. 目次 ===== -->
+  <section data-label="目次" data-screen-label="03 目次" class="slide slide--soft">
+    <div class="eyebrow anim">この動画でわかること<span class="en">AGENDA</span></div>
+    <h2 class="s-title serif anim">本日のアジェンダ</h2>
+    <hr class="hairline">
+    <div class="agenda__list">
+      <div class="agenda__item anim a-right" data-cue="1つ、なぜ"><div class="agenda__num">1</div><div class="agenda__txt">なぜ一律の食事禁止リストをやめるのか<small>Kaltenbach 2006の総説に基づく整理</small></div></div>
+      <div class="agenda__item anim2 a-right" data-cue="2つ、減量"><div class="agenda__num">2</div><div class="agenda__txt">生活指導の柱<small>減量・就寝関連・禁煙・食事の個別トリガー・腹圧</small></div></div>
+      <div class="agenda__item anim3 a-right" data-cue="3つ、見逃して"><div class="agenda__num">3</div><div class="agenda__txt">危険サインと薬の一般論<small>内視鏡・専門医紹介の目安／PPI・P-CABの飲み方</small></div></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>03</span></div>
+  </section>
+
+  <!-- ===== 04. 章扉① なぜ一律の食事禁止リストをやめるのか ===== -->
+  <section data-label="章扉①" data-screen-label="04 章扉①" class="slide slide--navy chapter">
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num serif anim a-pop">第1章</h2>
+    <div class="chapter__rule grow-x"></div>
+    <h3 class="chapter__title anim3">なぜ一律の食事禁止リストをやめるのか</h3>
+  </section>
+
+  <!-- ===== 05. 本文1カラム：食事の一律禁止は根拠が乏しい ===== -->
+  <section data-label="本文1カラム" data-screen-label="05 本文1カラム" class="slide">
+    <div class="chapter-ghost">05</div>
+    <div class="eyebrow anim">エビデンスの核心<span class="en">SECTION 05 — KEY POINT</span></div>
+    <h2 class="s-title anim">食事の一律禁止は、<br><span class="hl-underline">根拠が乏しい</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="margin-top:16px">
+      <p class="lead anim2">タバコ・アルコール・チョコ・脂っこい食事は下部食道括約筋の圧を下げますが、一律にやめて症状が良くなるという証拠はありません（Kaltenbach 2006）。</p>
+      <div class="important-box lg anim3" style="margin-top:14px; padding:18px 40px">
+        <div class="ttl">📋 ここだけ覚えればOK</div>
+        <p>効果が確認されているのは<strong>減量と頭位挙上</strong>。禁止リストでなく<strong>根拠のはっきりした柱</strong>に絞るのが誠実な設計です。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>05</span></div>
+  </section>
+
+  <!-- ===== 06. 比較表：5本柱と一次文献 ===== -->
+  <section data-label="比較表" data-screen-label="06 比較表" class="slide slide--soft">
+    <div class="chapter-ghost">06</div>
+    <div class="eyebrow anim">エビデンスの一覧<span class="en">EVIDENCE OVERVIEW</span></div>
+    <h2 class="s-title anim">生活指導5本柱と、<span class="hl-underline">一次文献</span></h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2" style="margin-top:14px; --type-body:calc(25px * var(--type-mult)); --type-small:calc(20px * var(--type-mult))">
+      <table class="cmp" style="table-layout:fixed">
+        <colgroup><col style="width:16%"><col style="width:56%"><col style="width:28%"></colgroup>
+        <thead>
+          <tr><th>柱</th><th>骨子・外来での位置づけ</th><th>一次文献</th></tr>
+        </thead>
+        <tbody>
+          <tr><td style="padding:9px 20px; white-space:normal">①減量</td><td style="padding:9px 20px">体重増加と逆流は量反応関係。減量で症状消失・薬の効きも改善</td><td style="padding:9px 20px">Jacobson／Ness-Jensen 2013</td></tr>
+          <tr style="background:var(--accent-soft);"><td style="padding:9px 20px; white-space:normal">②就寝関連</td><td style="padding:9px 20px">夕食後の時間・頭位挙上・左側臥位で夜間の酸曝露が減りうる</td><td style="padding:9px 20px">Fujiwara／Hamilton／Schuitenmaker</td></tr>
+          <tr><td style="padding:9px 20px; white-space:normal">③禁煙</td><td style="padding:9px 20px">改善は正常体重の一部に限定的。全身の益から当然勧める</td><td style="padding:9px 20px">Ness-Jensen 2014</td></tr>
+          <tr style="background:var(--accent-soft);"><td style="padding:9px 20px; white-space:normal">④食事</td><td style="padding:9px 20px">一律制限の根拠は乏しい。症状の出る食品だけ本人が減らす</td><td style="padding:9px 20px">Kaltenbach 2006</td></tr>
+          <tr><td style="padding:9px 20px; white-space:normal">⑤腹圧</td><td style="padding:9px 20px">前かがみ・締め付け・食後すぐの臥位を避ける</td><td style="padding:9px 20px">総説の枠組み</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>06</span></div>
+  </section>
+
+  <!-- ===== 07. 章扉② 生活指導の柱 ===== -->
+  <section data-label="章扉②" data-screen-label="07 章扉②" class="slide slide--navy chapter">
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num serif anim a-pop">第2章</h2>
+    <div class="chapter__rule grow-x"></div>
+    <h3 class="chapter__title anim3">生活指導の柱</h3>
+  </section>
+
+  <!-- ===== 08. 減量——最も根拠がはっきりした柱 ===== -->
+  <section data-label="本文：減量" data-screen-label="08 本文：減量" class="slide">
+    <div class="chapter-ghost">08</div>
+    <div class="eyebrow anim">①減量——最も根拠のはっきりした柱<span class="en">WEIGHT LOSS</span></div>
+    <h2 class="s-title anim">まず体重、<span class="hl-underline">それから食事</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(30px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:18px">
+      <p class="lead anim2" style="margin-bottom:12px">生活指導のなかで、最も一貫した根拠が得られているのが減量です。</p>
+      <ul class="point-list" style="gap:12px">
+        <li class="anim-i" data-cue="体重が増えるほど" style="--i:1"><span><strong>体重が増えるほど逆流症状が増える</strong>——量反応関係（Jacobson 2006）</span></li>
+        <li class="anim-i" data-cue="体重が減った人ほど" style="--i:2"><span><strong>体重が減った人ほど症状消失が多い</strong>——薬の効きも改善（Ness-Jensen 2013）</span></li>
+        <li class="anim-i" data-cue="正常体重の範囲内でも" style="--i:3"><span><strong>正常体重の範囲内でも</strong>、体重増加は症状リスクに関わりうる</span></li>
+      </ul>
+      <div class="important-box lg anim4" data-cue="食べ物を我慢する前に" style="margin-top:12px; padding:14px 36px">
+        <div class="ttl">📋 外来トーク例</div>
+        <p>「食べ物を我慢する前に、まず体重を数キロ落とすのが有力な一手です」</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>08</span></div>
+  </section>
+
+  <!-- ===== 09. ステップ手順：就寝関連 ===== -->
+  <section data-label="ステップ手順：就寝関連" data-screen-label="09 ステップ手順：就寝関連" class="slide slide--soft">
+    <div class="chapter-ghost">09</div>
+    <div class="eyebrow anim">②就寝関連——具体的に取れる柱<span class="en">SLEEP-RELATED</span></div>
+    <h2 class="s-title anim">夜間の逆流、<span class="hl-underline">3つの工夫</span></h2>
+    <hr class="hairline">
+    <div class="steps" style="margin-top:22px">
+      <div class="step is-now anim" data-cue="1つ、夕食は">
+        <div class="step__n" style="width:66px;height:66px;font-size:calc(30px * var(--type-mult))">1</div>
+        <div class="step__card" style="padding:12px 30px">
+          <span class="step__ic" style="font-size:calc(34px * var(--type-mult))">🍽️</span>
+          <span class="step__label" style="font-size:calc(18px * var(--type-mult))">STEP 1</span>
+          <span class="step__vr"></span>
+          <div class="step__t" style="font-size:calc(23px * var(--type-mult))">夕食は寝る3時間前までに——就寝直前の食事は夜間の逆流を増やしやすい<span style="white-space:nowrap">（Fujiwara 2005）</span></div>
+        </div>
+      </div>
+      <div class="steps__dots" style="height:14px"></div>
+      <div class="step is-now anim2" data-cue="2つ、上体を">
+        <div class="step__n" style="width:66px;height:66px;font-size:calc(30px * var(--type-mult))">2</div>
+        <div class="step__card" style="padding:12px 30px">
+          <span class="step__ic" style="font-size:calc(34px * var(--type-mult))">🛏️</span>
+          <span class="step__label" style="font-size:calc(18px * var(--type-mult))">STEP 2</span>
+          <span class="step__vr"></span>
+          <div class="step__t" style="font-size:calc(23px * var(--type-mult))">上体を高くして寝る——枕でなくベッドの頭側全体を上げるかウェッジを使う<span style="white-space:nowrap">（Hamilton 1988）</span></div>
+        </div>
+      </div>
+      <div class="steps__dots" style="height:14px"></div>
+      <div class="step is-now anim3" data-cue="3つ、左を下に">
+        <div class="step__n" style="width:66px;height:66px;font-size:calc(30px * var(--type-mult))">3</div>
+        <div class="step__card" style="padding:12px 30px">
+          <span class="step__ic" style="font-size:calc(34px * var(--type-mult))">↩️</span>
+          <span class="step__label" style="font-size:calc(18px * var(--type-mult))">STEP 3</span>
+          <span class="step__vr"></span>
+          <div class="step__t" style="font-size:calc(23px * var(--type-mult))">左を下にして寝る——右向き・仰向けより酸の曝露が短い（Schuitenmaker 2022）。<span style="white-space:nowrap">詳細は</span>左向き寝の記事へ</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>09</span></div>
+  </section>
+
+  <!-- ===== 10. Q&A誤解：頭位挙上・薬の中止 ===== -->
+  <section data-label="Q&A・誤解" data-screen-label="10 Q&A・誤解" class="slide">
+    <div class="chapter-ghost">10</div>
+    <div class="eyebrow anim">外来で訂正したい誤解<span class="en">COMMON MYTH</span></div>
+    <h2 class="s-title anim">その思い込み、<span class="hl-underline">大丈夫？</span></h2>
+    <hr class="hairline">
+    <div class="qa">
+      <div class="qa__row myth anim" data-cue="上体を高くするには"><div class="qa__mark">✕</div><p class="qa__txt">上体を高くするには、枕を高くすればよい</p></div>
+      <div class="qa__row fact anim2" data-cue="枕を重ねて首だけ"><div class="qa__mark">◯</div><p class="qa__txt">枕で首だけ曲げても効果は乏しい。ベッドの頭側全体を上げるかウェッジを使う</p></div>
+      <div class="qa__row myth anim3" data-cue="薬が効いてきたので"><div class="qa__mark">✕</div><p class="qa__txt">薬が効いてきたので、自分でやめてよい</p></div>
+      <div class="qa__row fact anim4" data-cue="症状が良くなっても"><div class="qa__mark">◯</div><p class="qa__txt">自己判断で中止しない。用法・中止は主治医の指示に従う</p></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>10</span></div>
+  </section>
+
+  <!-- ===== 11. 禁煙の効果と限界（Before/After） ===== -->
+  <section data-label="禁煙の効果と限界" data-screen-label="11 禁煙の効果と限界" class="slide slide--soft">
+    <div class="chapter-ghost">11</div>
+    <div class="eyebrow anim">③禁煙——効果と限界<span class="en">SMOKING CESSATION</span></div>
+    <h2 class="s-title anim">「全身の益」で勧め、<span class="hl-underline">逆流は"おまけ"</span></h2>
+    <hr class="hairline">
+    <div class="ba">
+      <div class="ba__col before anim" data-cue="禁煙で重度の逆流"><span class="ba__tag">分かっていること</span><p class="ba__txt" style="font-size:calc(28px * var(--type-mult))">禁煙で重度の逆流症状が改善したのは、<span style="white-space:nowrap">正常体重で制酸薬を</span>使っている一部の層に限られました（Ness-Jensen 2014）。</p></div>
+      <div class="ba__arrow">＋</div>
+      <div class="ba__col after anim2" data-cue="タバコは心臓・肺"><span class="ba__tag">外来での伝え方</span><p class="ba__txt" style="font-size:calc(28px * var(--type-mult))">タバコは心臓・肺・がんの観点から<span style="white-space:nowrap">必ずやめた方がよい</span>。逆流の改善は"おまけ"と考えます。</p></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>11</span></div>
+  </section>
+
+  <!-- ===== 12. ステップ手順：食事は個別トリガー方式 ===== -->
+  <section data-label="ステップ手順：個別トリガー" data-screen-label="12 ステップ手順：個別トリガー" class="slide">
+    <div class="chapter-ghost">12</div>
+    <div class="eyebrow anim">④食事——一律禁止をやめる<span class="en">INDIVIDUAL TRIGGER</span></div>
+    <h2 class="s-title anim">食事は、<span class="hl-underline">「個別トリガー方式」</span>で</h2>
+    <hr class="hairline">
+    <div class="steps" style="margin-top:22px">
+      <div class="step is-now anim" data-cue="1つ、症状日記を">
+        <div class="step__n" style="width:66px;height:66px;font-size:calc(30px * var(--type-mult))">1</div>
+        <div class="step__card" style="padding:12px 30px">
+          <span class="step__ic" style="font-size:calc(34px * var(--type-mult))">📝</span>
+          <span class="step__label" style="font-size:calc(18px * var(--type-mult))">STEP 1</span>
+          <span class="step__vr"></span>
+          <div class="step__t" style="font-size:calc(23px * var(--type-mult))">症状日記をつける——1〜2週間、食べた物と胸やけが出たタイミングをメモ</div>
+        </div>
+      </div>
+      <div class="steps__dots" style="height:14px"></div>
+      <div class="step is-now anim2" data-cue="2つ、自分のトリガー">
+        <div class="step__n" style="width:66px;height:66px;font-size:calc(30px * var(--type-mult))">2</div>
+        <div class="step__card" style="padding:12px 30px">
+          <span class="step__ic" style="font-size:calc(34px * var(--type-mult))">🔍</span>
+          <span class="step__label" style="font-size:calc(18px * var(--type-mult))">STEP 2</span>
+          <span class="step__vr"></span>
+          <div class="step__t" style="font-size:calc(23px * var(--type-mult))">自分のトリガーを見つける——アルコール・カフェイン・炭酸・脂っこい食事・<span style="white-space:nowrap">食べ過ぎは</span>個人差の大きい候補</div>
+        </div>
+      </div>
+      <div class="steps__dots" style="height:14px"></div>
+      <div class="step is-now anim3" data-cue="3つ、その食品だけ">
+        <div class="step__n" style="width:66px;height:66px;font-size:calc(30px * var(--type-mult))">3</div>
+        <div class="step__card" style="padding:12px 30px">
+          <span class="step__ic" style="font-size:calc(34px * var(--type-mult))">🥗</span>
+          <span class="step__label" style="font-size:calc(18px * var(--type-mult))">STEP 3</span>
+          <span class="step__vr"></span>
+          <div class="step__t" style="font-size:calc(23px * var(--type-mult))">その食品だけ減らす——「全部禁止」ではなく、症状を悪くする物だけに絞る（Kaltenbach 2006）</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>12</span></div>
+  </section>
+
+  <!-- ===== 13. 章扉③ 腹圧・薬の一般論と危険サイン ===== -->
+  <section data-label="章扉③" data-screen-label="13 章扉③" class="slide slide--navy chapter">
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num serif anim a-pop">第3章</h2>
+    <div class="chapter__rule grow-x"></div>
+    <h3 class="chapter__title anim3">腹圧・薬の一般論と危険サイン</h3>
+  </section>
+
+  <!-- ===== 14. 本文1カラム：腹圧を上げない工夫・薬の飲み方 ===== -->
+  <section data-label="本文：腹圧・薬" data-screen-label="14 本文：腹圧・薬" class="slide">
+    <div class="chapter-ghost">14</div>
+    <div class="eyebrow anim">⑤腹圧を上げない工夫／薬の一般論<span class="en">ABDOMINAL PRESSURE</span></div>
+    <h2 class="s-title anim">腹圧を上げない工夫と、<br><span class="hl-underline">薬の飲み方</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(30px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:18px">
+      <p class="lead anim2" style="margin-bottom:12px">お腹に強い圧がかかると、胃の内容が食道へ押し戻されやすくなります。</p>
+      <ul class="point-list" style="gap:12px">
+        <li class="anim-i" data-cue="ベルトやコルセットで" style="--i:1"><span><strong>ベルトやコルセットで腹部を締め付けない</strong></span></li>
+        <li class="anim-i" data-cue="前かがみの姿勢や" style="--i:2"><span><strong>前かがみ・重い物の持ち上げを続けない</strong></span></li>
+        <li class="anim-i" data-cue="食後すぐに横に" style="--i:3"><span><strong>食後すぐに横にならない・便秘を放置しない</strong></span></li>
+      </ul>
+      <div class="important-box lg anim4" data-cue="薬については" style="margin-top:12px; padding:14px 36px">
+        <div class="ttl">💊 薬（PPI・P-CAB）の飲み方——一般論</div>
+        <p>PPIは一般に<strong>食前服用</strong>が勧められるが用法は薬剤ごとに異なる。<span style="white-space:nowrap"><strong>自己判断で中止しない</strong>。</span></p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>14</span></div>
+  </section>
+
+  <!-- ===== 15. 危険サイン ===== -->
+  <section data-label="危険サイン" data-screen-label="15 危険サイン" class="slide danger">
+    <div class="eyebrow eyebrow--red anim">生活指導だけで様子を見てはいけないサイン<span class="en">RED FLAGS</span></div>
+    <h2 class="s-title anim">見逃してはいけない危険サイン</h2>
+    <div class="danger__list" style="margin-top:18px">
+      <div class="danger__item anim-i a-pop" style="--i:1; padding:18px 28px" data-cue="飲み込みにくい">
+        <svg class="danger__tri" viewBox="0 0 24 22"><path d="M12 1 L23 21 H1 Z" fill="var(--danger)"/><rect x="10.9" y="8" width="2.2" height="7" rx="1.1" fill="#fff"/><circle cx="12" cy="18" r="1.5" fill="#fff"/></svg>
+        <div class="danger__bd"><h3><span class="dnum">1</span>嚥下困難・つかえ感</h3><p>食道癌・狭窄などを疑う</p></div>
+      </div>
+      <div class="danger__item anim-i a-pop" style="--i:2; padding:18px 28px" data-cue="意図しない体重">
+        <svg class="danger__tri" viewBox="0 0 24 22"><path d="M12 1 L23 21 H1 Z" fill="var(--danger)"/><rect x="10.9" y="8" width="2.2" height="7" rx="1.1" fill="#fff"/><circle cx="12" cy="18" r="1.5" fill="#fff"/></svg>
+        <div class="danger__bd"><h3><span class="dnum">2</span>意図しない体重減少</h3><p>悪性疾患の精査が必要</p></div>
+      </div>
+      <div class="danger__item anim-i a-pop" style="--i:3; padding:18px 28px" data-cue="吐血や黒い便">
+        <svg class="danger__tri" viewBox="0 0 24 22"><path d="M12 1 L23 21 H1 Z" fill="var(--danger)"/><rect x="10.9" y="8" width="2.2" height="7" rx="1.1" fill="#fff"/><circle cx="12" cy="18" r="1.5" fill="#fff"/></svg>
+        <div class="danger__bd"><h3><span class="dnum">3</span>吐血・黒色便・貧血</h3><p>消化管出血のサイン</p></div>
+      </div>
+      <div class="danger__item anim-i a-pop" style="--i:4; padding:18px 28px" data-cue="そして、じっと">
+        <svg class="danger__tri" viewBox="0 0 24 22"><path d="M12 1 L23 21 H1 Z" fill="var(--danger)"/><rect x="10.9" y="8" width="2.2" height="7" rx="1.1" fill="#fff"/><circle cx="12" cy="18" r="1.5" fill="#fff"/></svg>
+        <div class="danger__bd"><h3><span class="dnum">4</span>胸痛・薬が効かない</h3><p>まず心疾患の除外を優先</p></div>
+      </div>
+    </div>
+    <div class="danger__call">📞 これらは胸やけとは別の病気のサイン — 内視鏡・専門医紹介を検討</div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>15</span></div>
+  </section>
+
+  <!-- ===== 16. まとめ ===== -->
+  <section data-label="まとめ" data-screen-label="16 まとめ" class="slide">
+    <div class="chapter-ghost">16</div>
+    <div class="eyebrow anim">まとめ<span class="en">SUMMARY</span></div>
+    <h2 class="s-title serif anim">今日の3つの持ち帰りポイント</h2>
+    <hr class="hairline">
+    <div class="sum__list">
+      <div class="sum__card anim" data-cue="1つ、根拠の強さ"><div class="sum__n">01</div><div class="sum__h" style="font-size:calc(32px * var(--type-mult))">根拠の強さで<br>仕分ける</div><p class="sum__p" style="font-size:calc(24px * var(--type-mult))">一律の食事制限より<span style="white-space:nowrap">減量・就寝関連</span>の方が<span style="white-space:nowrap">根拠がはっきり</span></p></div>
+      <div class="sum__card anim2" data-cue="2つ、食事は個別"><div class="sum__n">02</div><div class="sum__h" style="font-size:calc(32px * var(--type-mult))">食事は個別<br>トリガー方式</div><p class="sum__p" style="font-size:calc(24px * var(--type-mult))">症状を悪くする<span style="white-space:nowrap">物だけを</span>本人が見つけて<span style="white-space:nowrap">減らす</span></p></div>
+      <div class="sum__card anim3" data-cue="3つ、危険サインは"><div class="sum__n">03</div><div class="sum__h" style="font-size:calc(32px * var(--type-mult))">危険サインは<br>生活指導の外</div><p class="sum__p" style="font-size:calc(24px * var(--type-mult))">見逃してはいけない<span style="white-space:nowrap">サインがあれば</span><span style="white-space:nowrap">内視鏡・専門医へ</span></p></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>16</span></div>
+  </section>
+
+  <!-- ===== 17. 免責事項 ===== -->
+  <section data-label="免責事項" data-screen-label="17 免責事項" class="slide disc">
+    <div class="disc__icon">⚠️</div>
+    <p class="disc__tag">ご視聴にあたってのお願い</p>
+    <div class="disc__box">
+      <p>この動画は<span class="strong">一般的な情報提供</span>であり、診断・治療の代わりにはなりません。<br>症状がある場合は<span class="strong">医療機関を受診してください</span>。</p>
+    </div>
+  </section>
+
+  <!-- ===== 18. 参考文献・出典 ===== -->
+  <section data-label="参考文献" data-screen-label="18 参考文献" class="slide slide--soft">
+    <div class="eyebrow anim">参考文献・出典<span class="en">REFERENCES</span></div>
+    <h2 class="s-title anim">この動画の参考資料</h2>
+    <div class="refs__list" style="display:grid; grid-template-columns:1fr 1fr; gap:10px 44px; margin-top:26px;">
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[1]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Kaltenbach 2006</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[2]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Jacobson 2006</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[3]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Ness-Jensen 2013</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[4]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Ness-Jensen 2016</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[5]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Fujiwara 2005</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[6]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Hamilton 1988</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[7]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Schuitenmaker 2022</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[8]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Schuitenmaker 2023</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[9]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Ness-Jensen 2014</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[10]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Mehta 2021</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[11]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Hallan 2015</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[12]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">日本消化器病学会 GL2021</p>
+      </div>
+    </div>
+    <p class="refs__note" style="margin-top:16px; font-size:var(--type-label)">出典はPMID・DOIを含め概要欄をご確認ください。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>18</span></div>
+  </section>
+
+  <!-- ===== 19. エンディング ===== -->
+  <section data-label="エンディング" data-screen-label="19 エンディング" class="slide end">
+    <h2 class="end__h anim">食事より、まずできることから</h2>
+    <div class="end__rule grow-x"></div>
+    <div class="end__cards">
+      <div class="end__card anim2"><span class="end__ic">📄</span><div><h3>詳しい解説はブログへ</h3><p>概要欄から<b style="white-space:nowrap">ブログ記事</b>を<span style="white-space:nowrap">ご覧</span>ください</p></div></div>
+      <div class="end__card anim3"><span class="end__ic">📋</span><div><h3 style="white-space:nowrap">患者配布用ハンドアウト</h3><p>外来でそのまま使える<br><b>配布資料</b>を用意しています</p></div></div>
+      <div class="end__card anim4"><span class="end__ic">👍</span><div><h3>高評価・<span style="white-space:nowrap">チャンネル登録</span></h3><p>次回も<b style="white-space:nowrap">お楽しみに</b></p></div></div>
+    </div>
+    <div class="end__note anim5">最後までご視聴いただきありがとうございました。<br>役に立ったと<span style="white-space:nowrap">感じたら</span>、高評価とチャンネル登録を<br>いただけると<span style="white-space:nowrap">励みになります</span>。</div>
+  </section>
+
+</deck-stage>
+
+<script src="deck-stage.js"></script>
+<script src="image-slot.js"></script>
+
+</body>
+</html>
