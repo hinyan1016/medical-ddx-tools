@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#5C6BC0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="検査で異常がないのに不安でいろいろなことが気になってしまう方への生活指導をA4一枚に。不安が体に症状を作るしくみ、見直したい飲み物・嗜好品、眠りを整える、体を動かす、その場でできる呼吸法、決まった医療機関で経過をみることの大切さ、をやさしく解説。こころの専門医へ相談する目安つき。患者さん・ご家族向け配布資料です。">
+<title>検査で異常がないのに気になってしまうあなたへ｜患者さん向け配布資料</title>
+<style>
+  :root{
+    --navy:#28306B;
+    --blue:#5C6BC0;
+    --accent:#D0473E;
+    --light:#EAECF7;
+    --line:#C9CEEA;
+    --ink:#1a1a1a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    font-family:"Yu Gothic","游ゴシック","Hiragino Kaku Gothic ProN","Segoe UI",sans-serif;
+    color:var(--ink);
+    background:#eef1f5;
+    line-height:1.6;
+    padding:16px;
+  }
+  .sheet{
+    background:#fff;
+    max-width:820px;
+    margin:0 auto 20px;
+    padding:22px 26px 26px;
+    box-shadow:0 2px 14px rgba(0,0,0,.12);
+  }
+  .head{
+    display:flex;align-items:flex-start;gap:14px;
+    border-bottom:3px solid var(--navy);
+    padding-bottom:12px;margin-bottom:14px;
+  }
+  .head-main{flex:1;}
+  .kicker{
+    display:inline-block;background:var(--navy);color:#fff;
+    font-size:12px;font-weight:700;letter-spacing:.06em;
+    padding:3px 10px;border-radius:3px;margin-bottom:7px;
+  }
+  h1{font-size:22px;font-weight:800;color:var(--navy);line-height:1.35;letter-spacing:.01em;}
+  .sub{font-size:12.5px;color:var(--blue);font-weight:700;margin-top:6px;}
+  .lead{font-size:13.5px;color:#333;margin-top:8px;}
+  .lead b{color:var(--accent);}
+  .qr{
+    width:104px;flex:0 0 104px;text-align:center;
+    border:1px solid var(--line);border-radius:8px;padding:7px 6px 5px;
+  }
+  .qr svg{width:78px;height:78px;display:block;margin:0 auto;}
+  .qr .qr-cap{font-size:9.5px;color:#555;line-height:1.35;margin-top:4px;}
+  h2{
+    font-size:15px;font-weight:800;color:#fff;background:var(--blue);
+    padding:5px 12px;border-radius:4px;margin:14px 0 9px;
+    display:flex;align-items:center;gap:8px;
+  }
+  h2 .num{
+    background:#fff;color:var(--blue);font-size:12.5px;font-weight:800;
+    width:21px;height:21px;border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;flex:0 0 21px;
+  }
+  ul.checks{list-style:none;}
+  ul.checks li{
+    display:flex;gap:9px;align-items:flex-start;
+    padding:4.5px 2px;border-bottom:1px dashed var(--line);
+    font-size:13px;
+  }
+  ul.checks li:last-child{border-bottom:none;}
+  ul.checks .box{
+    flex:0 0 17px;width:17px;height:17px;margin-top:1px;
+    border:2px solid var(--navy);border-radius:3px;
+  }
+  ul.checks li b{color:var(--navy);}
+  ul.checks .why{color:#555;font-size:11.5px;}
+  .cols{display:flex;gap:20px;}
+  .cols > div{flex:1;}
+  .fh{
+    border:2.5px solid var(--navy);border-radius:8px;
+    padding:11px 14px;margin-top:14px;background:var(--light);
+  }
+  .fh .ft{color:var(--navy);font-weight:800;font-size:14.5px;margin-bottom:7px;}
+  .fh .fitems{display:flex;gap:8px;flex-wrap:wrap;}
+  .fh .fitems div{
+    flex:1 1 30%;font-size:12.5px;background:#fff;border:1px solid var(--line);
+    border-radius:6px;padding:7px 10px;
+  }
+  .fh .fitems .l{color:var(--navy);font-weight:800;display:block;margin-bottom:2px;}
+  .fh .fnote{
+    margin-top:8px;font-size:12.5px;color:#333;border-top:1px dashed var(--line);padding-top:7px;
+  }
+  .fh .fnote b{color:var(--accent);}
+  .alert{
+    border:2.5px solid var(--accent);border-radius:8px;
+    padding:11px 14px;margin-top:14px;background:#fbeeec;
+  }
+  .alert .at{color:var(--accent);font-weight:800;font-size:15px;margin-bottom:6px;}
+  .fast{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;}
+  .fast div{
+    flex:1 1 44%;font-size:12.5px;background:#fff;border:1px solid #e6c3bf;
+    border-radius:6px;padding:6px 9px;
+  }
+  .fast .l{color:var(--accent);font-weight:800;font-size:13px;margin-right:5px;}
+  .alert2{
+    border:2.5px solid var(--blue);border-radius:8px;
+    padding:11px 14px;margin-top:12px;background:var(--light);
+  }
+  .alert2 .at{color:var(--navy);font-weight:800;font-size:15px;margin-bottom:6px;}
+  .fast2{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;}
+  .fast2 div{
+    flex:1 1 44%;font-size:12.5px;background:#fff;border:1px solid var(--line);
+    border-radius:6px;padding:6px 9px;
+  }
+  .fast2 .l{color:var(--navy);font-weight:800;font-size:13px;margin-right:5px;}
+  .alert .daily{
+    margin-top:8px;font-size:12px;color:#555;border-top:1px dashed #e6c3bf;padding-top:7px;
+  }
+  .alert .daily b{color:var(--navy);}
+  .memo{
+    border:1.5px solid var(--line);border-radius:8px;padding:10px 13px;margin-top:14px;
+    font-size:12.5px;
+  }
+  .memo .mrow{display:flex;gap:6px;align-items:baseline;padding:5px 0;}
+  .memo .mlabel{flex:0 0 210px;font-weight:700;color:var(--navy);}
+  .memo .mline{flex:1;border-bottom:1px solid #aab4c2;min-height:18px;}
+  .foot{
+    margin-top:16px;padding-top:10px;border-top:1px solid var(--line);
+    font-size:11px;color:#666;line-height:1.5;
+  }
+  .foot .brand{font-weight:700;color:var(--navy);}
+  .noprint{margin:0 auto 18px;max-width:820px;text-align:center;}
+  .pbtn{
+    display:inline-block;background:var(--navy);color:#fff;text-decoration:none;
+    font-size:14px;font-weight:700;padding:10px 24px;border-radius:24px;border:none;cursor:pointer;
+    box-shadow:0 2px 10px rgba(40,48,107,.25);
+  }
+  .pbtn:active{transform:scale(.98);}
+  .noprint p{font-size:12px;color:#777;margin-top:8px;}
+
+  @page{size:A4 portrait;margin:10mm 12mm;}
+  @media print{
+    body{background:#fff;padding:0;font-size:10.5pt;}
+    .sheet{box-shadow:none;margin:0;max-width:none;padding:0;}
+    .noprint{display:none !important;}
+    h1{font-size:18pt;}
+    h2{font-size:12pt;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .kicker,.alert,.alert2,.fh,.fh .fitems div,.fast div,.fast2 div,.qr{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    ul.checks li{font-size:10pt;padding:3px 2px;}
+    .lead{font-size:10pt;}
+    .alert,.alert2,.fh{padding:7px 12px;}
+    a[href]{color:inherit;text-decoration:none;}
+  }
+  @media (max-width:560px){
+    body{padding:8px;}
+    .sheet{padding:16px 15px 20px;}
+    .head{flex-direction:column;align-items:center;text-align:center;}
+    h1{font-size:19px;}
+    .cols{flex-direction:column;gap:0;}
+    .fh .fitems div{flex:1 1 100%;}
+    .fast div{flex:1 1 100%;}
+    .fast2 div{flex:1 1 100%;}
+    .memo .mlabel{flex:0 0 150px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="noprint">
+  <button class="pbtn" id="printBtn">&#x1F5A8;&#xFE0F; この資料を印刷する（A4）</button>
+  <p>外来で患者さん・ご家族に印刷してお渡しいただけます。スマホで見る方はQRコードから。</p>
+</div>
+
+<div class="sheet">
+
+  <div class="head">
+    <div class="head-main">
+      <span class="kicker">検査で異常がないと言われた方へ</span>
+      <h1>不安でいろいろなことが<br>気になってしまうときの生活のポイント</h1>
+      <p class="sub">検査で「異常なし」は、実は「悪い病気の可能性が低い」という良い知らせです。</p>
+      <p class="lead">動悸・息苦しさ・めまい・しびれ・頭痛……検査で異常が見つからなくても、症状そのものは本物です。
+      <b>体と心はつながっており、不安が体の症状として現れる</b>ことがあります。「気のせい」ではありません。
+      薬の前に、生活の中でできることから始めましょう。</p>
+    </div>
+    <div class="qr">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 41 41" shape-rendering="crispEdges" role="img" aria-label="QR&#12467;&#12540;&#12489;"><rect width="41" height="41" fill="#fff"/><path d="M2 2h7v1h-7zM10 2h5v1h-5zM17 2h5v1h-5zM24 2h1v1h-1zM26 2h3v1h-3zM30 2h1v1h-1zM32 2h7v1h-7zM2 3h1v1h-1zM8 3h1v1h-1zM10 3h1v1h-1zM12 3h1v1h-1zM14 3h1v1h-1zM16 3h1v1h-1zM18 3h1v1h-1zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM28 3h1v1h-1zM30 3h1v1h-1zM32 3h1v1h-1zM38 3h1v1h-1zM2 4h1v1h-1zM4 4h3v1h-3zM8 4h1v1h-1zM10 4h3v1h-3zM14 4h2v1h-2zM22 4h3v1h-3zM27 4h3v1h-3zM32 4h1v1h-1zM34 4h3v1h-3zM38 4h1v1h-1zM2 5h1v1h-1zM4 5h3v1h-3zM8 5h1v1h-1zM11 5h1v1h-1zM15 5h3v1h-3zM19 5h1v1h-1zM21 5h3v1h-3zM26 5h2v1h-2zM30 5h1v1h-1zM32 5h1v1h-1zM34 5h3v1h-3zM38 5h1v1h-1zM2 6h1v1h-1zM4 6h3v1h-3zM8 6h1v1h-1zM10 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM19 6h3v1h-3zM27 6h2v1h-2zM30 6h1v1h-1zM32 6h1v1h-1zM34 6h3v1h-3zM38 6h1v1h-1zM2 7h1v1h-1zM8 7h1v1h-1zM11 7h3v1h-3zM18 7h3v1h-3zM23 7h1v1h-1zM25 7h1v1h-1zM28 7h1v1h-1zM32 7h1v1h-1zM38 7h1v1h-1zM2 8h7v1h-7zM10 8h1v1h-1zM12 8h1v1h-1zM14 8h1v1h-1zM16 8h1v1h-1zM18 8h1v1h-1zM20 8h1v1h-1zM22 8h1v1h-1zM24 8h1v1h-1zM26 8h1v1h-1zM28 8h1v1h-1zM30 8h1v1h-1zM32 8h7v1h-7zM12 9h4v1h-4zM18 9h1v1h-1zM21 9h2v1h-2zM24 9h1v1h-1zM27 9h1v1h-1zM2 10h1v1h-1zM5 10h7v1h-7zM14 10h2v1h-2zM17 10h2v1h-2zM20 10h1v1h-1zM22 10h5v1h-5zM28 10h1v1h-1zM30 10h2v1h-2zM34 10h1v1h-1zM36 10h3v1h-3zM2 11h1v1h-1zM4 11h2v1h-2zM7 11h1v1h-1zM10 11h3v1h-3zM15 11h2v1h-2zM19 11h1v1h-1zM22 11h1v1h-1zM24 11h2v1h-2zM27 11h3v1h-3zM33 11h2v1h-2zM37 11h1v1h-1zM2 12h1v1h-1zM4 12h2v1h-2zM7 12h3v1h-3zM12 12h1v1h-1zM23 12h1v1h-1zM25 12h1v1h-1zM28 12h2v1h-2zM32 12h3v1h-3zM38 12h1v1h-1zM2 13h4v1h-4zM12 13h1v1h-1zM14 13h4v1h-4zM19 13h2v1h-2zM26 13h1v1h-1zM31 13h2v1h-2zM34 13h5v1h-5zM2 14h1v1h-1zM5 14h1v1h-1zM8 14h1v1h-1zM10 14h1v1h-1zM12 14h1v1h-1zM15 14h1v1h-1zM18 14h1v1h-1zM21 14h2v1h-2zM25 14h2v1h-2zM30 14h1v1h-1zM32 14h1v1h-1zM35 14h1v1h-1zM38 14h1v1h-1zM2 15h1v1h-1zM4 15h1v1h-1zM7 15h1v1h-1zM10 15h1v1h-1zM12 15h1v1h-1zM14 15h1v1h-1zM16 15h5v1h-5zM25 15h6v1h-6zM34 15h2v1h-2zM2 16h1v1h-1zM8 16h2v1h-2zM11 16h2v1h-2zM14 16h4v1h-4zM19 16h1v1h-1zM21 16h4v1h-4zM28 16h5v1h-5zM34 16h5v1h-5zM2 17h1v1h-1zM4 17h1v1h-1zM6 17h2v1h-2zM9 17h1v1h-1zM11 17h1v1h-1zM13 17h1v1h-1zM15 17h3v1h-3zM19 17h3v1h-3zM24 17h2v1h-2zM29 17h1v1h-1zM33 17h1v1h-1zM35 17h2v1h-2zM38 17h1v1h-1zM2 18h2v1h-2zM5 18h2v1h-2zM8 18h3v1h-3zM14 18h2v1h-2zM18 18h2v1h-2zM21 18h3v1h-3zM26 18h2v1h-2zM32 18h1v1h-1zM36 18h2v1h-2zM3 19h1v1h-1zM10 19h3v1h-3zM16 19h1v1h-1zM18 19h3v1h-3zM22 19h1v1h-1zM24 19h1v1h-1zM27 19h3v1h-3zM31 19h1v1h-1zM33 19h1v1h-1zM35 19h2v1h-2zM7 20h2v1h-2zM11 20h3v1h-3zM15 20h1v1h-1zM17 20h1v1h-1zM19 20h1v1h-1zM22 20h1v1h-1zM24 20h6v1h-6zM33 20h2v1h-2zM36 20h1v1h-1zM38 20h1v1h-1zM4 21h1v1h-1zM6 21h2v1h-2zM10 21h3v1h-3zM15 21h1v1h-1zM20 21h1v1h-1zM25 21h1v1h-1zM27 21h1v1h-1zM31 21h1v1h-1zM35 21h1v1h-1zM38 21h1v1h-1zM2 22h1v1h-1zM6 22h5v1h-5zM13 22h1v1h-1zM16 22h4v1h-4zM24 22h3v1h-3zM28 22h1v1h-1zM30 22h5v1h-5zM4 23h1v1h-1zM7 23h1v1h-1zM11 23h1v1h-1zM13 23h3v1h-3zM17 23h2v1h-2zM20 23h6v1h-6zM29 23h2v1h-2zM34 23h1v1h-1zM36 23h2v1h-2zM7 24h3v1h-3zM14 24h2v1h-2zM17 24h4v1h-4zM24 24h3v1h-3zM29 24h2v1h-2zM32 24h2v1h-2zM35 24h1v1h-1zM38 24h1v1h-1zM2 25h2v1h-2zM5 25h1v1h-1zM9 25h3v1h-3zM17 25h3v1h-3zM22 25h3v1h-3zM26 25h1v1h-1zM28 25h3v1h-3zM32 25h6v1h-6zM2 26h2v1h-2zM5 26h1v1h-1zM7 26h3v1h-3zM13 26h1v1h-1zM16 26h5v1h-5zM23 26h1v1h-1zM26 26h1v1h-1zM29 26h1v1h-1zM32 26h2v1h-2zM2 27h2v1h-2zM9 27h1v1h-1zM13 27h2v1h-2zM18 27h2v1h-2zM21 27h3v1h-3zM25 27h1v1h-1zM27 27h5v1h-5zM34 27h2v1h-2zM2 28h2v1h-2zM6 28h3v1h-3zM10 28h1v1h-1zM12 28h1v1h-1zM14 28h3v1h-3zM18 28h2v1h-2zM21 28h2v1h-2zM29 28h3v1h-3zM35 28h4v1h-4zM2 29h1v1h-1zM4 29h1v1h-1zM9 29h1v1h-1zM11 29h1v1h-1zM13 29h1v1h-1zM15 29h1v1h-1zM17 29h1v1h-1zM22 29h1v1h-1zM24 29h1v1h-1zM26 29h1v1h-1zM31 29h1v1h-1zM33 29h1v1h-1zM35 29h2v1h-2zM38 29h1v1h-1zM2 30h1v1h-1zM5 30h4v1h-4zM11 30h2v1h-2zM14 30h2v1h-2zM18 30h1v1h-1zM22 30h1v1h-1zM24 30h2v1h-2zM27 30h1v1h-1zM29 30h6v1h-6zM36 30h1v1h-1zM38 30h1v1h-1zM10 31h5v1h-5zM17 31h1v1h-1zM21 31h2v1h-2zM24 31h1v1h-1zM27 31h1v1h-1zM29 31h2v1h-2zM34 31h1v1h-1zM36 31h2v1h-2zM2 32h7v1h-7zM10 32h3v1h-3zM14 32h1v1h-1zM17 32h2v1h-2zM21 32h1v1h-1zM23 32h3v1h-3zM27 32h2v1h-2zM30 32h1v1h-1zM32 32h1v1h-1zM34 32h1v1h-1zM38 32h1v1h-1zM2 33h1v1h-1zM8 33h1v1h-1zM10 33h2v1h-2zM13 33h2v1h-2zM18 33h3v1h-3zM24 33h1v1h-1zM27 33h1v1h-1zM29 33h2v1h-2zM34 33h1v1h-1zM37 33h2v1h-2zM2 34h1v1h-1zM4 34h3v1h-3zM8 34h1v1h-1zM10 34h2v1h-2zM13 34h3v1h-3zM17 34h1v1h-1zM23 34h2v1h-2zM26 34h1v1h-1zM28 34h7v1h-7zM38 34h1v1h-1zM2 35h1v1h-1zM4 35h3v1h-3zM8 35h1v1h-1zM10 35h1v1h-1zM13 35h3v1h-3zM18 35h1v1h-1zM20 35h1v1h-1zM25 35h1v1h-1zM27 35h2v1h-2zM30 35h3v1h-3zM38 35h1v1h-1zM2 36h1v1h-1zM4 36h3v1h-3zM8 36h1v1h-1zM17 36h3v1h-3zM21 36h2v1h-2zM25 36h3v1h-3zM30 36h2v1h-2zM34 36h1v1h-1zM38 36h1v1h-1zM2 37h1v1h-1zM8 37h1v1h-1zM11 37h2v1h-2zM14 37h3v1h-3zM18 37h2v1h-2zM21 37h2v1h-2zM25 37h1v1h-1zM28 37h2v1h-2zM31 37h2v1h-2zM34 37h1v1h-1zM36 37h3v1h-3zM2 38h7v1h-7zM10 38h2v1h-2zM14 38h2v1h-2zM17 38h1v1h-1zM22 38h1v1h-1zM25 38h1v1h-1zM30 38h1v1h-1zM33 38h1v1h-1zM35 38h1v1h-1zM38 38h1v1h-1z" fill="#28306B"/></svg>
+      <div class="qr-cap">動画・くわしい解説はこちら</div>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div>
+      <h2><span class="num">1</span>不安が体に症状を作るしくみを知る</h2>
+      <ul class="checks">
+        <li><span class="box"></span><span><b>動悸・息苦しさ・めまい・しびれは「本物の症状」</b><br><span class="why">→ 不安になると自律神経が働き、実際に体の反応として現れます。「気のせい」ではありません</span></span></li>
+        <li><span class="box"></span><span><b>検査で異常がないことは「悪い病気の可能性が低い」という良い知らせ</b><br><span class="why">→ 命に関わる病気は既に確認済み。次は「体と心のつながり」に目を向ける番です</span></span></li>
+      </ul>
+
+      <h2><span class="num">2</span>見直したい飲み物・嗜好品</h2>
+      <ul class="checks">
+        <li><span class="box"></span><span><b>コーヒー・エナジードリンクなどカフェインを減らしてみる</b><br><span class="why">→ 動悸・そわそわ感を強める人がいます。まず1〜2週間、量を控えて様子を見ましょう</span></span></li>
+        <li><span class="box"></span><span><b>「寝る前の一杯」はやめる</b><br><span class="why">→ お酒は楽になっても、夜中に不安が戻りやすくなります</span></span></li>
+      </ul>
+
+      <h2><span class="num">3</span>眠りを整える</h2>
+      <ul class="checks">
+        <li><span class="box"></span><span><b>毎日同じくらいの時間に寝起きする</b><br><span class="why">→ 不安と不眠はお互いを悪化させる悪循環になりやすいものです</span></span></li>
+        <li><span class="box"></span><span><b>眠れない日があっても気にしすぎない</b><br><span class="why">→ 「眠れないこと」を新たな心配のタネにしないことが大切です</span></span></li>
+      </ul>
+    </div>
+
+    <div>
+      <h2><span class="num">4</span>体を動かす</h2>
+      <ul class="checks">
+        <li><span class="box"></span><span><b>ウォーキングなど軽い運動を続ける</b><br><span class="why">→ 不安の症状をやわらげる効果が報告されています。無理のない範囲で毎日少しずつ</span></span></li>
+        <li><span class="box"></span><span><b>運動だけで治そうと気負わない</b><br><span class="why">→ 運動は生活の柱のひとつ。薬や相談の代わりにはなりません</span></span></li>
+      </ul>
+
+      <h2><span class="num">5</span>その場でできる呼吸のしかた</h2>
+      <ul class="checks">
+        <li><span class="box"></span><span><b>吸うより吐く方を長く、ゆっくり呼吸する</b><br><span class="why">→ 4秒吸って、6〜8秒かけて吐く。1分続けるだけで気持ちが落ち着きやすくなります</span></span></li>
+        <li><span class="box"></span><span><b>肩や手に力を入れて→ゆるめるを繰り返す</b><br><span class="why">→ 体の力を抜くと、こころの緊張もゆるみやすくなります</span></span></li>
+      </ul>
+
+      <h2><span class="num">6</span>決まった医療機関で経過をみる</h2>
+      <ul class="checks">
+        <li><span class="box"></span><span><b>心配で病院を渡り歩くより、決まった主治医に定期的にかかる</b><br><span class="why">→ 検査を重ねることは安心が長続きせず、かえって不安を強めてしまうことがあります</span></span></li>
+        <li><span class="box"></span><span><b>新しい症状が出たら、次の受診でまとめて相談する</b><br><span class="why">→ 決して「様子を見て放置」ではありません。同じ主治医が継続して診ることが安全な近道です</span></span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="fh">
+    <div class="ft">&#x1F50D; ここが誤解されがち</div>
+    <div class="fitems">
+      <div><span class="l">気のせい？</span>いいえ。不安は自律神経を通じて本物の体の症状を作ります。「気のせい」ではありません</div>
+      <div><span class="l">また検査？</span>すでに異常なしの検査を繰り返しても、安心は長く続かず不安を強めやすいことがあります</div>
+      <div><span class="l">運動で治る？</span>運動は症状をやわらげる助けにはなりますが、それだけで不安症を治す治療ではありません</div>
+    </div>
+    <div class="fnote">大切なのは、次々に病院を変えることではなく、<b>決まった医療機関で経過をみながら、生活の柱を整えること</b>。下の目安も確認してください。</div>
+  </div>
+
+  <div class="alert">
+    <div class="at">&#x26A0;&#xFE0F; すぐに相談・受診を ― 見逃してはいけないサイン</div>
+    <div class="fast">
+      <div><span class="l">体重</span>思い当たる理由がないのに体重が減ってきた</div>
+      <div><span class="l">発熱</span>続く発熱がある</div>
+      <div><span class="l">胸の痛み</span>安静時にも続く胸の痛み・強い動悸がある</div>
+      <div><span class="l">神経症状</span>手足の麻痺・しびれが進んでいく</div>
+      <div><span class="l">出血</span>血便・血尿など、これまでなかった出血がある</div>
+    </div>
+    <div class="daily"><b>これらは不安症状とは別に、体の病気の可能性を考えて早めに主治医に相談すべきサインです。</b></div>
+  </div>
+
+  <div class="alert2">
+    <div class="at">&#x1F4AC; こころの専門医（精神科・心療内科）への相談を考える目安</div>
+    <div class="fast2">
+      <div><span class="l">最優先</span>死にたい・消えてしまいたいという気持ちがある</div>
+      <div><span class="l">生活への影響</span>仕事・家事・外出に大きな支障が続く</div>
+      <div><span class="l">発作</span>動悸や息苦しさの強い発作をくり返す</div>
+      <div><span class="l">気分の落ち込み</span>気分の落ち込み・興味の喪失を伴う</div>
+      <div><span class="l">お酒・市販薬</span>お酒や市販薬で不安をまぎらわす</div>
+      <div><span class="l">改善なし</span>生活の工夫を2〜3か月続けても改善しない</div>
+    </div>
+  </div>
+
+  <div class="memo">
+    <div class="mrow"><span class="mlabel">気になる症状が出る場面・きっかけ</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">今のカフェイン・お酒の量</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">睡眠の状態（寝つき・途中で目が覚めるか）</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">次回受診日・相談したいこと</span><span class="mline"></span></div>
+  </div>
+
+  <div class="foot">
+    <span class="brand">医知創造ラボ</span>｜不安でいろいろなことが気になってしまうときの生活のポイント（患者さん・ご家族向け配布資料）<br>
+    この資料は一般的な情報です。症状の背景には見極めが必要な体の病気が隠れていることもあるため、自己判断で医療機関の受診をやめないでください。つらさが続く・強いときは、必ず主治医にご相談ください。
+    くわしい解説は <b>tools.ichisouzo-lab.com</b>（QRコード）から。
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var btn=document.getElementById('printBtn');
+  if(btn){btn.addEventListener('click',function(){window.print();});}
+})();
+</script>
+
+</body>
+</html>
