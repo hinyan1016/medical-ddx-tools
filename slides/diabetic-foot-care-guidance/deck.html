@@ -1,0 +1,820 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>医療チャンネル スライドテンプレート（セミナー紺・糖尿病フットケア）</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   テーマ「セミナー紺」— 参照: docs/specs/2026-07-05-slide-theme-seminar-navy-design.md
+   濃紺 #012360 × オリーブグリーン #558B2F（濃 #33691E）× 警告レッド #DC3323
+   外来患者指導シリーズ第19弾＝糖尿病性末梢神経障害のフットケア指導。第18弾（GERD・ディープオレンジ）の
+   差し色を全数置換し、本弾はオリーブグリーン系（ブログ本文の差し色 #558B2F/#33691E）に合わせる。
+   全文Noto Sans JPで統一（可読性優先・明朝混植は廃止）
+   クラス設計・セクション番号は 医療スライドテンプレート.html と互換
+   ===================================================================== */
+:root{
+  /* palette (PDF実測値) */
+  --navy:#012360;
+  --navy-ink:#001B4D;
+  --accent:#558B2F;
+  --accent-soft: color-mix(in srgb, var(--accent) 11%, #ffffff);
+  --accent-line: color-mix(in srgb, var(--accent) 62%, #ffffff);
+  --accent-ink: #33691E;
+  --danger:#DC3323;
+  --danger-soft: color-mix(in srgb, var(--danger) 9%, #ffffff);
+  --bg:#FDFDFD;
+
+  /* 継承トークンの上書き（colors_and_type.css の値を紺×オリーブグリーン系に寄せる） */
+  --blue:#1D4189;
+  --blue-soft:#E9EEF8;
+  --blue-tint:#EEF2FA;
+  --red: var(--danger);
+  --red-soft: var(--danger-soft);
+  --orange: var(--accent);
+  --orange-soft: var(--accent-soft);
+  --line:#D8DDE6;
+  --line-soft:#C9D2DF;
+  --bg-muted:#F8F8F8;
+  --bg-alt:#F6F6F6;
+  --navy-line: color-mix(in srgb, var(--navy) 22%, #ffffff);
+
+  /* type scale — multiply all via --type-mult (既存テンプレと同値) */
+  --type-mult: 1.38;
+  --type-display: calc(96px * var(--type-mult));
+  --type-title:   calc(82px * var(--type-mult));
+  --type-heading: calc(60px * var(--type-mult));
+  --type-subtitle:calc(44px * var(--type-mult));
+  --type-body:    calc(38px * var(--type-mult));
+  --type-small:   calc(30px * var(--type-mult));
+  --type-label:   calc(27px * var(--type-mult));
+  --type-chapter: calc(210px * var(--type-mult));
+  --type-stat:    calc(150px * var(--type-mult));
+
+  --pad-x: 112px;
+  --pad-top: 58px;
+  --pad-bottom: 80px;
+  --gap-title: 24px;
+  --gap-item: 22px;
+
+  /* このテーマ内は本文・見出しともNoto Sans JPに統一（colors_and_type.css の --font-ja を上書き。他ファイルには影響しない） */
+  --font-ja: "Noto Sans JP", "BIZ UDPGothic", "Yu Gothic", "Meiryo", sans-serif;
+  --font-serif: var(--font-ja);
+  --grad-navy: linear-gradient(160deg, #012360 0%, #001B4D 100%);
+}
+.serif{ font-family: var(--font-serif); font-weight:800; letter-spacing:.02em; }
+
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#0a1430; }
+
+/* ---------- base slide ---------- */
+.slide{
+  box-sizing:border-box;
+  display:flex; flex-direction:column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-ja);
+  overflow:hidden;
+  position:relative;
+}
+/* 下端の紺帯（PDF全ページ共通の締め） */
+.slide::after{
+  content:""; position:absolute; left:0; right:0; bottom:0; height:10px;
+  background: var(--navy); pointer-events:none;
+}
+.slide--navy{ background: var(--grad-navy); color: var(--white); }
+.slide--navy::after{ background: var(--accent); }
+.slide--soft{ background: var(--bg-alt); }
+
+/* eyebrow — 紺の縦帯（下端オレンジ）＋ラベル */
+.eyebrow{
+  display:flex; align-items:center; gap:18px;
+  font-size: var(--type-label); font-weight:700; color: var(--navy);
+  letter-spacing:.04em;
+}
+.eyebrow::before{
+  content:""; width:12px; height:44px; border-radius:3px;
+  background: linear-gradient(180deg, var(--navy) 0 68%, var(--accent) 68% 100%);
+  flex:none;
+}
+.eyebrow .num{ font-family: var(--font-en); color: var(--accent-ink); }
+.eyebrow .en{ font-family: var(--font-en); color: var(--accent-ink); letter-spacing:.15em; text-transform:uppercase; }
+.slide--navy .eyebrow{ color: rgba(255,255,255,.88); }
+.slide--navy .eyebrow .en{ color:#fff; }
+.slide--navy .eyebrow::before{ background: linear-gradient(180deg, #fff 0 68%, var(--accent) 68% 100%); }
+
+.s-title{
+  font-size: var(--type-heading); line-height:1.22; color: var(--navy);
+  margin: var(--gap-title) 0 0; font-weight:800; letter-spacing:.01em;
+  text-wrap: pretty;
+}
+.slide--navy .s-title{ color:#fff; }
+
+.lead{
+  font-size: var(--type-body); line-height:1.7; color: var(--ink-2);
+  margin:0; text-wrap: pretty;
+}
+.muted{ color: var(--gray); }
+
+/* 見出し下罫線 — 紺の実線＋左端オレンジ短セグメント（PDF見出し様式） */
+.hairline{
+  height:4px; border:0; margin:20px 0 0;
+  background: linear-gradient(90deg, var(--accent) 0 150px, var(--navy) 150px);
+  opacity:1;
+}
+.slide--navy .hairline{ background: linear-gradient(90deg, var(--accent) 0 150px, rgba(255,255,255,.85) 150px); }
+
+/* 右上の薄い大章番号（装飾・背面） */
+.chapter-ghost{
+  position:absolute; top: 30px; right: var(--pad-x);
+  font-family: var(--font-en); font-weight:700; line-height:.8;
+  font-size: calc(150px * var(--type-mult)); color: var(--navy);
+  opacity:.05; pointer-events:none; user-select:none;
+}
+.slide--navy .chapter-ghost{ color:#fff; opacity:.10; }
+
+/* 汎用 下線ハイライト */
+.hl-underline{ border-bottom: 6px solid var(--accent-line); }
+
+/* 赤バッジ（PDF p1「7/7まで」様式・インライン強調） */
+.badge-danger{
+  display:inline-block; background: var(--danger); color:#fff;
+  font-weight:800; padding: 4px 26px; border-radius:10px;
+  line-height:1.35;
+}
+
+/* footer band */
+.slide__foot{
+  position:absolute; left: var(--pad-x); right: var(--pad-x); bottom: 36px;
+  display:flex; align-items:center; justify-content:space-between;
+  font-size: calc(24px * var(--type-mult)); color: var(--gray);
+  font-family: var(--font-ja);
+}
+.slide__foot .ch{ display:flex; align-items:center; gap:10px; font-weight:700; color: var(--navy); }
+.slide__foot .cross{ color: var(--accent); font-weight:700; }
+.slide--navy .slide__foot{ color: rgba(255,255,255,.65); }
+.slide--navy .slide__foot .ch{ color:#fff; }
+.slide--navy .slide__foot .cross{ color: var(--accent); }
+
+/* ============ 1. COVER（白背景・右上に幾何アクセント） ============ */
+.cover{ justify-content:center; }
+.cover__geo{
+  position:absolute; right: 70px; top: 48px; width: 380px; height: 380px;
+  pointer-events:none;
+}
+.cover__badge{
+  display:inline-flex; align-items:center; gap:14px; align-self:flex-start;
+  background:#fff; border:2px solid var(--navy-line);
+  color: var(--navy); padding:12px 26px; border-radius:999px;
+  font-size: var(--type-label); font-weight:700;
+}
+.cover__badge .cross{ color: var(--accent); font-size:1.2em; }
+.cover__title{
+  font-family: var(--font-serif);
+  font-size: calc(76px * var(--type-mult)); line-height:1.3; color: var(--navy); font-weight:800;
+  margin:42px 0 0; letter-spacing:.02em; max-width:1400px;
+}
+.cover__title .hl{ color: var(--accent); }
+.cover__rule{ width: 1500px; max-width:100%; height:3px; background: var(--navy); margin-top:36px; }
+.cover__sub{
+  font-size: var(--type-subtitle); color: var(--ink-2);
+  margin:34px 0 0; font-weight:700;
+}
+.cover__sub .badge-danger{ margin: 0 6px; }
+.cover__meta{
+  display:flex; gap:30px; align-items:center; margin-top:64px;
+  font-size: var(--type-small); color: var(--gray);
+}
+.cover__avatar{
+  flex:none; width:84px; height:84px; border-radius:50%;
+  background: var(--accent-soft); border:3px solid var(--accent);
+  display:flex; align-items:center; justify-content:center;
+}
+.cover__avatar svg{ width:56%; height:56%; }
+.cover__meta .name{ font-weight:800; color: var(--navy); font-size: var(--type-small); }
+.cover__meta .vline{ width:2px; height:52px; background: var(--line); }
+/* 旧テーマ互換（コーラル版からコピーした装飾を無効化） */
+.cover__blob{ display:none; }
+
+/* ============ 2. THEME / CONCLUSION FIRST ============ */
+.theme__body{ display:flex; flex-direction:column; gap: var(--gap-title); margin-top: 28px; flex:1; justify-content:center; }
+.theme__q{ font-family: var(--font-serif); font-size: var(--type-title); line-height:1.28; color: var(--navy); font-weight:800; max-width:22ch; text-wrap:balance; }
+.theme__q .hl{ color: var(--accent-ink); border-bottom: 8px solid var(--accent-line); }
+.concl{
+  display:flex; align-items:flex-start; gap:28px;
+  background:#fff; border:3px solid var(--accent);
+  border-radius: 12px; padding: 32px 44px;
+  position:relative;
+}
+.concl::before{
+  content:"“"; position:absolute; top:-58px; left:26px;
+  font-family: var(--font-en); font-size: calc(110px * var(--type-mult));
+  color: var(--accent); font-weight:900; line-height:1;
+}
+.concl__tag{
+  flex:none; background: var(--navy); color:#fff; font-weight:700;
+  font-size: var(--type-small); padding:10px 24px; border-radius:8px;
+}
+.concl__text{ font-size: var(--type-subtitle); line-height:1.5; color: var(--navy); font-weight:700; margin:0; }
+
+/* ============ 3. AGENDA（紺角チップ＋オレンジ縦罫） ============ */
+.agenda__list{ display:flex; flex-direction:column; gap:26px; margin-top:36px; }
+.agenda__item{ display:flex; align-items:center; gap:32px; }
+.agenda__num{
+  flex:none; width:76px; height:76px; border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+  background: var(--navy); color:#fff;
+  font-family: var(--font-en); font-size: calc(46px * var(--type-mult)); font-weight:800;
+}
+.agenda__txt{
+  font-size: var(--type-subtitle); color: var(--navy); font-weight:700;
+  border-left: 5px solid var(--accent); padding-left: 30px;
+}
+.agenda__txt small{ display:block; font-size: var(--type-small); color: var(--gray); font-weight:400; margin-top:8px; }
+
+/* ============ 4. CHAPTER DIVIDER（全面紺・白明朝・中央） ============ */
+.chapter{ justify-content:center; align-items:center; text-align:center; }
+.chapter__kicker{
+  font-family: var(--font-en); font-size: var(--type-label); color: rgba(255,255,255,.55);
+  font-weight:700; letter-spacing:.4em; text-transform:uppercase;
+}
+.chapter__num{
+  font-family: var(--font-serif); font-size: calc(150px * var(--type-mult)); line-height:1.05;
+  font-weight:800; color:#fff; margin:10px 0 0; letter-spacing:.04em;
+}
+.chapter__rule{ width:560px; height:6px; background: var(--accent); border-radius:3px; margin-top:44px; }
+.chapter__title{ font-size: var(--type-subtitle); color:#fff; font-weight:700; margin:44px 0 0; max-width:26ch; text-wrap:balance; letter-spacing:.06em; }
+
+/* ============ 5. BODY 1 COLUMN ============ */
+.body1{ }
+.body1__main{ margin-top: 26px; max-width: 1640px; }
+.body1 .lead{ margin-bottom: 20px; }
+.important-box.lg{
+  background:#fff; border:2px solid var(--navy-line); border-left: 12px solid var(--accent);
+  border-radius: 12px; padding: 26px 40px; margin:0;
+  box-shadow: var(--shadow-sm);
+}
+.important-box.lg .ttl{ display:flex; align-items:center; gap:14px; font-size: var(--type-small); font-weight:700; color: var(--accent-ink); margin-bottom:8px; }
+.important-box.lg p{ font-size: var(--type-body); line-height:1.6; color: var(--ink-2); margin:0; }
+
+/* point list（cols2以外の単独利用にも対応） */
+.point-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:18px; }
+.point-list li{ display:flex; align-items:flex-start; gap:20px; font-size: var(--type-body); color: var(--ink-2); line-height:1.5; }
+.point-list li::before{ content:"✓"; flex:none; width:44px; height:44px; border-radius:50%; background: var(--navy); color:#fff; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:.8em; margin-top:2px; }
+
+/* ============ 8. COMPARISON TABLE ============ */
+.tablewrap{ margin-top:26px; flex:1; }
+table.cmp{ width:100%; border-collapse:collapse; font-size: var(--type-small); }
+table.cmp th, table.cmp td{ text-align:left; padding:16px 28px; vertical-align:middle; line-height:1.4; }
+table.cmp thead th{ background: var(--navy); color:#fff; font-weight:700; font-size: var(--type-body); }
+table.cmp thead th:first-child{ border-top-left-radius:10px; }
+table.cmp thead th:last-child{ border-top-right-radius:10px; }
+table.cmp tbody td{ border-bottom:1px solid var(--line); color: var(--ink-2); }
+table.cmp tbody tr:nth-child(even){ background: var(--bg-muted); }
+table.cmp tbody td:first-child{ font-weight:700; color: var(--navy); font-size: var(--type-body); white-space:nowrap; }
+table.cmp .pill{ display:inline-block; font-size: calc(24px * var(--type-mult)); font-weight:700; padding:6px 16px; border-radius:999px; }
+.pill--easy{ background: var(--green-soft); color:#1c7a3a; }
+.pill--mid{ background: var(--accent-soft); color: var(--accent-ink); }
+
+/* ============ 10. DISCLAIMER ============ */
+.disc{ justify-content:center; align-items:center; text-align:center; background: var(--bg-alt); }
+.disc__icon{ font-size: calc(96px * var(--type-mult)); line-height:1; }
+.disc__tag{ font-family: var(--font-serif); font-size: var(--type-subtitle); font-weight:700; color: var(--navy); margin:28px 0 0; letter-spacing:.08em; }
+.disc__box{
+  margin-top:38px; max-width:1180px; background:#fff; border:2px solid var(--navy-line);
+  border-top: 10px solid var(--accent); border-radius:12px; padding:48px 56px;
+  box-shadow: var(--shadow-md);
+}
+.disc__box p{ font-size: var(--type-body); line-height:1.7; color: var(--ink-2); margin:0; text-wrap:pretty; }
+.disc__box .strong{ color: var(--navy); font-weight:700; }
+
+/* ============ 11. SUMMARY（PDF p3 3カードゴール様式） ============ */
+.sum__list{ display:grid; grid-template-columns: repeat(3,1fr); gap:40px; margin-top:70px; flex:1; align-content:start; }
+.sum__card{
+  position:relative; background:#fff; border:2px solid var(--navy-line);
+  border-radius:14px; padding:64px 36px 40px; display:flex; flex-direction:column; gap:20px;
+  box-shadow: var(--shadow-md); text-align:center; align-items:center;
+}
+.sum__n{
+  position:absolute; top:-38px; left:50%; margin-left:-38px;
+  width:76px; height:76px; border-radius:50%;
+  background: var(--navy); color:#fff;
+  font-family: var(--font-en); font-size: calc(34px * var(--type-mult)); font-weight:800;
+  display:flex; align-items:center; justify-content:center; line-height:1;
+  box-shadow: var(--shadow-md);
+}
+.sum__h{ font-size: var(--type-subtitle); font-weight:800; color: var(--navy); line-height:1.3; text-wrap:balance; }
+.sum__h::after{ content:""; display:block; width:120px; height:4px; background: var(--accent); margin:16px auto 0; border-radius:2px; }
+.sum__p{ font-size: var(--type-small); color: var(--ink-2); line-height:1.6; margin:0; }
+
+/* ============ 12. ENDING（白背景・明朝・PDF p17様式） ============ */
+.end{ justify-content:center; align-items:center; text-align:center; }
+.end__h{
+  font-family: var(--font-serif);
+  font-size: var(--type-title); color: var(--navy); font-weight:800; margin:0; text-wrap:balance;
+}
+.end__rule{
+  width:1500px; max-width:100%; height:4px; margin-top:30px;
+  background: linear-gradient(90deg, var(--navy) 0 44%, var(--accent) 44% 56%, var(--navy) 56%);
+}
+.end__cards{ display:grid; grid-template-columns:repeat(3,1fr); gap:36px; margin-top:70px; width:100%; max-width:1640px; }
+.end__card{
+  background:#fff; border:2px solid var(--navy-line); border-radius:14px;
+  padding:34px 30px; display:flex; align-items:center; gap:24px; text-align:left;
+  box-shadow: var(--shadow-sm);
+}
+.end__ic{
+  flex:none; width:88px; height:88px; border-radius:50%;
+  background: var(--accent); color:#fff; display:flex; align-items:center; justify-content:center;
+  font-size: calc(40px * var(--type-mult));
+}
+.end__card h3{ font-size: var(--type-small); font-weight:800; color: var(--navy); margin:0 0 6px; }
+.end__card h3 u{ text-decoration:none; border-bottom:3px solid var(--accent); }
+.end__card p{ font-size: var(--type-label); color: var(--ink-2); line-height:1.5; margin:0; }
+.end__card p b{ color: var(--accent-ink); }
+.end__note{
+  margin-top:60px; max-width:1400px; background:#fff;
+  border:2.5px solid var(--accent); border-radius:12px; padding:30px 60px;
+  font-family: var(--font-serif); font-size: var(--type-small); color: var(--navy);
+  font-weight:700; line-height:1.8;
+}
+.end__note b{ color: var(--accent-ink); }
+
+/* ============ 14. Q&A / MYTH ============ */
+.qa{ display:flex; flex-direction:column; gap:22px; margin-top:24px; flex:1; justify-content:center; }
+.qa__row{ display:flex; align-items:flex-start; gap:28px; border-radius:14px; padding:26px 40px; }
+.qa__row.myth{ background:#fff; border:2px solid var(--navy-line); border-left:14px solid var(--danger); box-shadow: var(--shadow-sm); }
+.qa__row.fact{ background: var(--accent-soft); border:2px solid var(--accent-line); border-left:14px solid var(--accent); }
+.qa__mark{ flex:none; font-size: var(--type-heading); font-weight:900; line-height:1; }
+.qa__row.myth .qa__mark{ color: var(--danger); }
+.qa__row.fact .qa__mark{ color: var(--green); }
+.qa__txt{ font-size: calc(32px * var(--type-mult)); color: var(--navy); font-weight:700; line-height:1.4; margin:0; }
+
+/* ============ 15. STEPS（PDF p16 縦フロー・丸数字＋点線リーダー） ============ */
+.steps{ display:flex; flex-direction:column; gap:0; margin-top:40px; flex:none; }
+.step{ display:flex; align-items:center; gap:34px; }
+.step__n{
+  flex:none; width:88px; height:88px; border-radius:50%;
+  background: var(--accent); color:#fff;
+  font-family: var(--font-en); font-size: calc(46px * var(--type-mult)); font-weight:800;
+  display:flex; align-items:center; justify-content:center;
+}
+.step.is-now .step__n{ background: var(--navy); }
+.step__card{
+  flex:1; display:flex; align-items:center; gap:28px;
+  background:#fff; border:2px solid var(--navy-line); border-radius:14px;
+  padding:24px 40px; box-shadow: var(--shadow-sm);
+}
+.step.is-now .step__card{ border-color: var(--accent); border-width:3px; background: var(--accent-soft); }
+.step__ic{ flex:none; font-size: calc(52px * var(--type-mult)); line-height:1; }
+.step__label{
+  flex:none; font-family: var(--font-en); font-size: var(--type-small); font-weight:800;
+  color: var(--navy); letter-spacing:.05em;
+}
+.step__label small{ display:block; font-size: calc(24px * var(--type-mult)); color: var(--accent-ink); font-weight:700; letter-spacing:0; }
+.step__vr{ flex:none; width:2px; align-self:stretch; background: var(--line); }
+.step__t{ font-size: var(--type-small); color: var(--ink-2); font-weight:700; line-height:1.5; }
+.steps__dots{
+  flex:none; width:0; height:34px; margin-left:43px;
+  border-left:5px dotted var(--accent);
+}
+.steps__arrow{ display:none; }
+
+/* ============ 30. 危険サイン（PDF p15 4象限白カード様式） ============ */
+.eyebrow--red{ color: var(--danger); }
+.eyebrow--red::before{ background: linear-gradient(180deg, var(--danger) 0 68%, var(--navy) 68% 100%); }
+.danger .s-title{ font-family: var(--font-serif); color: var(--navy); }
+.danger__list{ display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:30px; flex:1; align-content:center; }
+.danger__item{
+  display:flex; align-items:flex-start; gap:26px;
+  background:#fff; border:2px solid var(--navy-line); border-radius:14px;
+  padding:28px 34px; box-shadow: var(--shadow-sm);
+}
+.danger__item .ic{ display:none; }
+.danger__tri{ flex:none; width:76px; height:70px; margin-top:4px; }
+.danger__bd h3{
+  display:flex; align-items:center; gap:16px;
+  font-size: var(--type-subtitle); font-weight:800; color: var(--navy); margin:0;
+  padding-bottom:12px; border-bottom:4px solid var(--danger);
+}
+.danger__bd .dnum{
+  flex:none; width:52px; height:52px; border-radius:50%;
+  background: var(--danger); color:#fff;
+  font-family: var(--font-en); font-size: calc(28px * var(--type-mult)); font-weight:800;
+  display:flex; align-items:center; justify-content:center;
+}
+.danger__bd p{ font-size: var(--type-small); color: var(--ink-2); line-height:1.55; margin:14px 0 0; font-weight:700; }
+.danger{ padding-bottom:150px; }
+.danger__call{
+  margin-top:24px; margin-bottom:0; display:flex; align-items:center; justify-content:center; gap:22px;
+  background: var(--danger); color:#fff; border-radius:12px; padding:20px 40px;
+  font-size: var(--type-small); font-weight:800;
+}
+
+/* ============ 20. BEFORE / AFTER ============ */
+.ba{ display:flex; align-items:stretch; gap:24px; margin-top:34px; flex:1; }
+.ba__col{ flex:1; border-radius:16px; padding:40px 30px; display:flex; flex-direction:column; gap:22px; }
+.ba__col.before{ background: var(--bg-alt); border:2px solid var(--line); }
+.ba__col.after{ background: var(--accent-soft); border:3px solid var(--accent); }
+.ba__tag{ align-self:flex-start; font-family: var(--font-en); font-size: var(--type-small); font-weight:800; letter-spacing:.1em; padding:8px 24px; border-radius:8px; }
+.ba__col.before .ba__tag{ background: var(--gray); color:#fff; }
+.ba__col.after .ba__tag{ background: var(--accent); color:#fff; }
+.ba__txt{ font-size: var(--type-body); color: var(--navy); line-height:1.5; font-weight:700; margin:0; }
+.ba__arrow{ flex:none; align-self:center; font-family: var(--font-en); font-size: calc(80px * var(--type-mult)); color: var(--navy); }
+
+/* ============ 35. 参考文献・出典 ============ */
+.refs__list{ display:flex; flex-direction:column; gap:26px; margin-top:48px; }
+.refs__item{
+  display:flex; align-items:baseline; gap:26px;
+  border-bottom:1px solid var(--line); padding-bottom:26px;
+}
+.refs__num{ flex:none; font-family: var(--font-en); font-size: var(--type-small); font-weight:700; color: var(--accent-ink); }
+.refs__item p{ font-size: var(--type-body); color: var(--ink-2); line-height:1.6; margin:0; }
+.refs__item p small{ display:block; font-size: var(--type-label); color: var(--gray); margin-top:6px; }
+.refs__note{ margin-top:36px; font-size: var(--type-label); color: var(--gray); }
+
+/* entrance animation — fade-up を上位互換で拡張（deck-anim キット / 詳細は _anim_library/） */
+@media (prefers-reduced-motion:no-preference){
+  /* タイミング基底（動きの既定は fade-up） */
+  [data-deck-active] .anim{ animation: fade-up .5s both; }
+  [data-deck-active] .anim2{ animation: fade-up .5s .12s both; }
+  [data-deck-active] .anim3{ animation: fade-up .5s .24s both; }
+  [data-deck-active] .anim4{ animation: fade-up .5s .36s both; }
+  [data-deck-active] .anim5{ animation: fade-up .5s .48s both; }
+  [data-deck-active] .anim6{ animation: fade-up .5s .60s both; }
+  [data-deck-active] .anim-i{ animation: fade-up .5s both; animation-delay: calc(var(--i,0) * .1s); }
+  /* モーション variant（animation-name のみ上書き＝1要素1アニメ維持・data-cue 安全） */
+  [data-deck-active] .a-fade { animation-name: a-fade; }
+  [data-deck-active] .a-up   { animation-name: fade-up; }
+  [data-deck-active] .a-down { animation-name: a-down; }
+  [data-deck-active] .a-right{ animation-name: a-right; }
+  [data-deck-active] .a-left { animation-name: a-left; }
+  [data-deck-active] .a-zoom { animation-name: a-zoom; }
+  [data-deck-active] .a-pop  { animation-name: a-pop; animation-timing-function: cubic-bezier(.34,1.56,.64,1); }
+  [data-deck-active] .a-blur { animation-name: a-blur; }
+  /* コンテンツ・モーション */
+  [data-deck-active] .grow-y { transform-origin:bottom center; animation: grow-y .7s .2s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .grow-x { transform-origin:left center;   animation: grow-x .55s .25s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .nudge-x{ animation: nudge-x .9s .35s ease-in-out both; }
+}
+.grow-y{ transform-origin:bottom center; } .grow-x{ transform-origin:left center; }
+@keyframes fade-up{ from{ opacity:0; transform: translateY(16px);} to{ opacity:1; transform:none;} }
+@keyframes a-fade { from{ opacity:0; } to{ opacity:1; } }
+@keyframes a-down { from{ opacity:0; transform: translateY(-16px);} to{ opacity:1; transform:none; } }
+@keyframes a-right{ from{ opacity:0; transform: translateX(-28px);} to{ opacity:1; transform:none; } }
+@keyframes a-left { from{ opacity:0; transform: translateX(28px); } to{ opacity:1; transform:none; } }
+@keyframes a-zoom { from{ opacity:0; transform: scale(.94);       } to{ opacity:1; transform:none; } }
+@keyframes a-pop  { from{ opacity:0; transform: scale(.8);        } to{ opacity:1; transform:none; } }
+@keyframes a-blur { from{ opacity:0; filter: blur(12px); transform: translateY(10px);} to{ opacity:1; filter: blur(0); transform:none; } }
+@keyframes grow-y { from{ transform: scaleY(0);} to{ transform: scaleY(1);} }
+@keyframes grow-x { from{ transform: scaleX(0);} to{ transform: scaleX(1);} }
+@keyframes nudge-x{ 0%{ transform:none;} 55%{ transform: translateX(10px);} 100%{ transform:none;} }
+
+/* tweaks mount */
+#tweaks-root{ position:fixed; inset:0; pointer-events:none; z-index:9999; }
+#tweaks-root > *{ pointer-events:auto; }
+</style>
+</head>
+<body style="font-size: 8px">
+
+<deck-stage width="1920" height="1080">
+
+
+  <!-- ===== 01. 表紙 ===== -->
+  <section data-label="表紙" data-screen-label="01 表紙" class="slide cover">
+    <svg class="cover__geo anim2 a-zoom" viewBox="0 0 200 200" aria-hidden="true">
+      <path d="M60 0 A140 140 0 0 1 200 140" fill="none" stroke="var(--navy-line)" stroke-width="4"/>
+      <path d="M95 0 A105 105 0 0 1 200 105" fill="none" stroke="var(--accent)" stroke-width="5"/>
+      <path d="M128 0 A72 72 0 0 1 200 72" fill="none" stroke="var(--navy)" stroke-width="4"/>
+      <g fill="var(--navy-line)">
+        <circle cx="26" cy="120" r="3.4"/><circle cx="52" cy="120" r="3.4"/><circle cx="78" cy="120" r="3.4"/>
+        <circle cx="26" cy="146" r="3.4"/><circle cx="52" cy="146" r="3.4"/><circle cx="78" cy="146" r="3.4"/>
+        <circle cx="26" cy="172" r="3.4"/><circle cx="52" cy="172" r="3.4"/><circle cx="78" cy="172" r="3.4"/>
+      </g>
+      <circle cx="78" cy="146" r="3.8" fill="var(--accent)"/>
+    </svg>
+    <div class="cover__badge anim"><span class="cross">✚</span><span>外来患者指導シリーズ第19弾</span></div>
+    <h1 class="cover__title anim2 a-blur">糖尿病性末梢神経障害の<br><span class="hl">フットケア指導</span></h1>
+    <div class="cover__rule grow-x"></div>
+    <p class="cover__sub anim3">「痛みを感じない足」をどう守るか——<br>教育単独ではなく“統合ケア”で予防する</p>
+    <div class="cover__meta anim3">
+      <span class="cover__avatar"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4.6" fill="var(--accent)"/><path d="M2.5 22.5 C2.5 16.5 7 14.2 12 14.2 C17 14.2 21.5 16.5 21.5 22.5 Z" fill="var(--accent)"/></svg></span>
+      <span class="name">医知創造ラボ</span>
+      <span class="vline"></span>
+      <span>監修：今村久司（脳神経内科専門医・総合内科専門医）</span>
+      <span class="vline"></span>
+      <span>外来指導シリーズ #19</span>
+    </div>
+  </section>
+
+  <!-- ===== 02. テーマ・結論先出し ===== -->
+  <section data-label="テーマ・結論" data-screen-label="02 テーマ・結論" class="slide">
+    <div class="eyebrow anim">今日のテーマ<span class="en">TODAY'S POINT</span></div>
+    <div class="theme__body">
+      <h2 class="theme__q anim">足が痛くないのは、<br>良い兆候<span class="hl-underline">ですか？</span></h2>
+      <div class="concl anim2">
+        <span class="concl__tag">結論</span>
+        <p class="concl__text">いいえ。<span style="white-space:nowrap">痛みという警報が壊れている</span>、<span style="white-space:nowrap">いちばん危険なサイン</span>です</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>02</span></div>
+  </section>
+
+  <!-- ===== 03. 目次 ===== -->
+  <section data-label="目次" data-screen-label="03 目次" class="slide slide--soft">
+    <div class="eyebrow anim">この動画でわかること<span class="en">AGENDA</span></div>
+    <h2 class="s-title serif anim">本日のアジェンダ</h2>
+    <hr class="hairline">
+    <div class="agenda__list">
+      <div class="agenda__item anim a-right" data-cue="1つ、なぜ"><div class="agenda__num">1</div><div class="agenda__txt">なぜ「痛くない足」がいちばん危険か<small>防御知覚の消失（LOPS）という病態</small></div></div>
+      <div class="agenda__item anim2 a-right" data-cue="2つ、患者さんに"><div class="agenda__num">2</div><div class="agenda__txt">患者さんに伝えるセルフフットケア5つの習慣<small>毎日見る・靴・自己処置回避・低温やけど・生活習慣</small></div></div>
+      <div class="agenda__item anim3 a-right" data-cue="3つ、医師向け"><div class="agenda__num">3</div><div class="agenda__txt">医師向け：教育単独は弱い／リスク層別化／危険サイン<small>統合ケアの設計と受診トリガー</small></div></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>03</span></div>
+  </section>
+
+  <!-- ===== 04. 章扉① なぜ「痛くない足」がいちばん危険か ===== -->
+  <section data-label="章扉①" data-screen-label="04 章扉①" class="slide slide--navy chapter">
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num serif anim a-pop">第1章</h2>
+    <div class="chapter__rule grow-x"></div>
+    <h3 class="chapter__title anim3">なぜ「痛くない足」がいちばん危険か</h3>
+  </section>
+
+  <!-- ===== 05. 本文1カラム：LOPSの説明 ===== -->
+  <section data-label="本文1カラム：LOPS" data-screen-label="05 本文1カラム：LOPS" class="slide">
+    <div class="chapter-ghost">05</div>
+    <div class="eyebrow anim">病態の核心<span class="en">SECTION 05 — KEY POINT</span></div>
+    <h2 class="s-title anim">痛み・熱さ・圧迫という「警報」が、<br><span class="hl-underline">働かなくなる</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(30px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:16px">
+      <p class="lead anim2">糖尿病性末梢神経障害が進むと、防御知覚の消失（LOPS）に至ります。痛み・熱さ・圧迫を感じる力が失われると、靴擦れ・低温やけど・深爪・異物が無痛のまま潰瘍化し、感染から切断へ静かに進むことがあります（Boulton 2005／Armstrong 2017）。</p>
+      <div class="important-box lg anim3" style="margin-top:14px; padding:18px 40px">
+        <div class="ttl">📋 ここだけ覚えればOK</div>
+        <p>「痛くないから見なくていい」ではなく、<strong>「痛くないからこそ、毎日見る」</strong>。この視点の転換が指導の肝です。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>05</span></div>
+  </section>
+
+  <!-- ===== 06. 章扉② 患者に伝えるセルフフットケア5つの習慣 ===== -->
+  <section data-label="章扉②" data-screen-label="06 章扉②" class="slide slide--navy chapter">
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num serif anim a-pop">第2章</h2>
+    <div class="chapter__rule grow-x"></div>
+    <h3 class="chapter__title anim3">患者に伝えるセルフフットケア5つの習慣</h3>
+  </section>
+
+  <!-- ===== 07. ①毎日足を見る・触って点検する ===== -->
+  <section data-label="本文：毎日点検" data-screen-label="07 本文：毎日点検" class="slide">
+    <div class="chapter-ghost">07</div>
+    <div class="eyebrow anim">①毎日、足を見て・触る<span class="en">DAILY FOOT CHECK</span></div>
+    <h2 class="s-title anim">壊れた警報の代わりを、<span class="hl-underline">目と手で</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(30px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:18px">
+      <p class="lead anim2" style="margin-bottom:12px">感覚が失われた足は、傷や熱による損傷を無痛のまま受けます。だからこそ、視覚と触覚で毎日代わりに点検します。</p>
+      <ul class="point-list" style="gap:12px">
+        <li class="anim-i" data-cue="毎日、決まった" style="--i:1"><span><strong>毎日、決まったタイミング</strong>（入浴後など）で点検する習慣を</span></li>
+        <li class="anim-i" data-cue="足の甲・裏・指の間" style="--i:2"><span><strong>足の甲・裏・指の間・かかと・爪</strong>を見て、触って確認</span></li>
+        <li class="anim-i" data-cue="見えない足裏は" style="--i:3"><span><strong>見えない足裏は鏡か、ご家族に</strong>依頼する</span></li>
+      </ul>
+      <div class="important-box lg anim4" data-cue="外来でのトーク" style="margin-top:12px; padding:14px 36px">
+        <div class="ttl">📋 外来トーク例</div>
+        <p>「痛くないからこそ、足は毎日見てください。痛みで気づけない傷を、目で見つけるためです」</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>07</span></div>
+  </section>
+
+  <!-- ===== 08. ②素足回避・靴確認 ===== -->
+  <section data-label="本文：靴・素足" data-screen-label="08 本文：靴・素足" class="slide slide--soft">
+    <div class="chapter-ghost">08</div>
+    <div class="eyebrow anim">②足を守る環境<span class="en">FOOTWEAR &amp; NO BAREFOOT</span></div>
+    <h2 class="s-title anim">素足を避け、<span class="hl-underline">靴の中を確かめる</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(30px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:18px">
+      <p class="lead anim2" style="margin-bottom:12px">画鋲や小石、熱源を無痛のまま踏み込んでしまうため、屋内でも素足は避けます。</p>
+      <ul class="point-list" style="gap:12px">
+        <li class="anim-i" data-cue="屋内でも素足で" style="--i:1"><span><strong>屋内でも素足で歩かない</strong></span></li>
+        <li class="anim-i" data-cue="靴を履く前に" style="--i:2"><span><strong>靴を履く前に手を入れて異物を確認</strong>する</span></li>
+        <li class="anim-i" data-cue="足に合う靴を選び" style="--i:3"><span><strong>足に合う靴</strong>を選び、新しい靴は短時間から慣らす</span></li>
+        <li class="anim-i" data-cue="そして、治療靴" style="--i:4"><span>治療靴・免荷インソールは<strong>高リスク例では医療者の処方で</strong></span></li>
+      </ul>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>08</span></div>
+  </section>
+
+  <!-- ===== 09. ③たこ・魚の目・深爪の自己処置回避 ===== -->
+  <section data-label="本文：自己処置回避" data-screen-label="09 本文：自己処置回避" class="slide">
+    <div class="chapter-ghost">09</div>
+    <div class="eyebrow anim">③自己処置をしない<span class="en">NO SELF-TREATMENT</span></div>
+    <h2 class="s-title anim">たこ・魚の目・深爪は、<br><span class="hl-underline">自分で処置しない</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(30px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:18px">
+      <p class="lead anim2" style="margin-bottom:12px">感覚が鈍った足を自分で削ると、無痛のまま皮膚を傷つけ、潰瘍の入口になります。</p>
+      <ul class="point-list" style="gap:12px">
+        <li class="anim-i" data-cue="爪は深爪せず" style="--i:1"><span><strong>爪は深爪せず、直線的に</strong>切る</span></li>
+        <li class="anim-i" data-cue="たこ・魚の目を" style="--i:2"><span><strong>たこ・魚の目をカミソリや市販薬で自分で削らない</strong>——医療機関・フットケア外来で</span></li>
+        <li class="anim-i" data-cue="乾燥・ひび割れは" style="--i:3"><span>乾燥・ひび割れは保湿を（<strong>指の間は蒸れに注意</strong>）</span></li>
+      </ul>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>09</span></div>
+  </section>
+
+  <!-- ===== 10. ④低温やけど対策 ===== -->
+  <section data-label="本文：低温やけど" data-screen-label="10 本文：低温やけど" class="slide slide--soft">
+    <div class="chapter-ghost">10</div>
+    <div class="eyebrow anim">④低温やけどを防ぐ<span class="en">LOW-TEMPERATURE BURNS</span></div>
+    <h2 class="s-title anim">「熱くない」温度でも、<br><span class="hl-underline">無痛のままやけどする</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(30px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:18px">
+      <p class="lead anim2" style="margin-bottom:12px">熱さの防御知覚が低下しているため、「熱くない」と感じる温度でも、長時間で<span style="white-space:nowrap">低温やけど</span>が起こります。</p>
+      <ul class="point-list" style="gap:12px">
+        <li class="anim-i" data-cue="湯たんぽ・こたつ" style="--i:1"><span><strong>湯たんぽ・こたつ・電気毛布・カイロを直接足に長時間当てない</strong></span></li>
+        <li class="anim-i" data-cue="足浴・入浴は" style="--i:2"><span>足浴・入浴は<strong>温度計や手（またはご家族）で湯温を確認</strong>する</span></li>
+        <li class="anim-i" data-cue="これは冬季に" style="--i:3"><span>冬季に多い注意点として、繰り返し伝える</span></li>
+      </ul>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>10</span></div>
+  </section>
+
+  <!-- ===== 11. ⑤清潔・禁煙・血糖コントロール ===== -->
+  <section data-label="本文：清潔・禁煙・血糖" data-screen-label="11 本文：清潔・禁煙・血糖" class="slide">
+    <div class="chapter-ghost">11</div>
+    <div class="eyebrow anim">⑤足を守る生活習慣<span class="en">HYGIENE / SMOKING / GLYCEMIC</span></div>
+    <h2 class="s-title anim">清潔に保ち、禁煙し、<br><span class="hl-underline">血糖をコントロールする</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(30px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:18px">
+      <ul class="point-list" style="gap:12px">
+        <li class="anim-i" data-cue="足を清潔に保ち" style="--i:1"><span><strong>足を清潔に保ち</strong>、指の間の蒸れ・水虫を放置しない</span></li>
+        <li class="anim-i" data-cue="禁煙は血流を守る" style="--i:2"><span><strong>禁煙は血流を守る</strong>——末梢動脈疾患（PAD）による治癒遅延・切断リスクを避けるために重要</span></li>
+        <li class="anim-i" data-cue="血糖コントロールは" style="--i:3"><span>血糖コントロールは神経障害の管理の土台。生活指導の詳細は第8弾へ</span></li>
+      </ul>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>11</span></div>
+  </section>
+
+  <!-- ===== 12. Q&A誤解：痛くないから大丈夫は逆 ===== -->
+  <section data-label="Q&A・誤解" data-screen-label="12 Q&A・誤解" class="slide slide--soft">
+    <div class="chapter-ghost">12</div>
+    <div class="eyebrow anim">外来で訂正したい誤解<span class="en">COMMON MYTH</span></div>
+    <h2 class="s-title anim">その思い込み、<span class="hl-underline">大丈夫？</span></h2>
+    <hr class="hairline">
+    <div class="qa">
+      <div class="qa__row myth anim" data-cue="痛くないから、まだ"><div class="qa__mark">✕</div><p class="qa__txt">痛くないから、まだ大丈夫</p></div>
+      <div class="qa__row fact anim2" data-cue="痛くないからこそ"><div class="qa__mark">◯</div><p class="qa__txt">痛くないからこそ、傷に気づけない——だから毎日見る</p></div>
+      <div class="qa__row myth anim3" data-cue="たこや魚の目は"><div class="qa__mark">✕</div><p class="qa__txt">たこや魚の目は、家で削れば早く治る</p></div>
+      <div class="qa__row fact anim4" data-cue="感覚が鈍った足を"><div class="qa__mark">◯</div><p class="qa__txt">感覚が鈍った足を自分で削ると、無痛のまま潰瘍の入口になる</p></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>12</span></div>
+  </section>
+
+  <!-- ===== 13. Before/After：教育単独は弱い→統合ケアで有効（医師向け） ===== -->
+  <section data-label="本文：教育単独と統合ケア" data-screen-label="13 本文：教育単独と統合ケア" class="slide">
+    <div class="chapter-ghost">13</div>
+    <div class="eyebrow anim">医師向け——エビデンスの機微<span class="en">EDUCATION ALONE IS NOT ENOUGH</span></div>
+    <h2 class="s-title anim">「指導すれば防げる」と、<span class="hl-underline">言い切れるか</span></h2>
+    <hr class="hairline">
+    <div class="ba">
+      <div class="ba__col before anim" data-cue="患者教育プログラムを"><span class="ba__tag">分かっていること</span><p class="ba__txt" style="font-size:calc(26px * var(--type-mult))">患者教育プログラムの<span style="white-space:nowrap">コクラン・レビュー</span>では、<span style="white-space:nowrap">潰瘍・切断の発生を</span><span style="white-space:nowrap">報告した</span>試験は少なく、<span style="white-space:nowrap">教育「単独」が</span><span style="white-space:nowrap">それら</span>を確実に減らすという<span style="white-space:nowrap">頑健なエビデンスは</span>不十分でした（Dorresteijn 2014）。</p></div>
+      <div class="ba__arrow">＋</div>
+      <div class="ba__col after anim2" data-cue="教育は、予防の柱"><span class="ba__tag">外来での設計</span><p class="ba__txt" style="font-size:calc(26px * var(--type-mult))">教育は予防の柱の1本。<span style="white-space:nowrap">定期診察・適切な履物・</span><span style="white-space:nowrap">（高リスクでは）</span><span style="white-space:nowrap">統合的フットケアと</span>セットで<span style="white-space:nowrap">初めて</span>有効です（Hoogeveen 2015／IWGDF 2023）。</p></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>13</span></div>
+  </section>
+
+  <!-- ===== 14. リスク層別化と点検頻度（＋診察・血流） ===== -->
+  <section data-label="本文：リスク層別化" data-screen-label="14 本文：リスク層別化" class="slide slide--soft">
+    <div class="chapter-ghost">14</div>
+    <div class="eyebrow anim">医師向け——診察と頻度<span class="en">RISK STRATIFICATION</span></div>
+    <h2 class="s-title anim">リスクに応じて、<span class="hl-underline">点検の頻度を変える</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(30px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:18px">
+      <p class="lead anim2" style="margin-bottom:12px">IWGDF 2023予防ガイドラインは、足のリスクに応じて診察の間隔を変えることを推奨しています。感覚も血流も保たれていればスクリーニング頻度は低く、感覚低下・変形・潰瘍や切断の既往があるほど頻度を上げる、という原則です。</p>
+      <div class="important-box lg anim3" data-cue="外来診察のポイントは" style="margin-top:12px; padding:16px 40px">
+        <div class="ttl">🩺 外来診察のポイント</div>
+        <p><strong>10gモノフィラメント＋128Hz音叉</strong>でLOPSを客観的に拾い、<strong>足背・後脛骨動脈の触知</strong>で血流（PAD）も評価します（Boulton 2008／Singh 2005）。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>14</span></div>
+  </section>
+
+  <!-- ===== 15. 危険サイン4カード ===== -->
+  <section data-label="危険サイン" data-screen-label="15 危険サイン" class="slide danger">
+    <div class="eyebrow eyebrow--red anim">生活指導だけで様子を見てはいけないサイン<span class="en">RED FLAGS</span></div>
+    <h2 class="s-title anim">見逃してはいけない危険サイン</h2>
+    <div class="danger__list" style="margin-top:18px; --type-subtitle:calc(34px * var(--type-mult)); --type-small:calc(24px * var(--type-mult))">
+      <div class="danger__item anim-i" style="--i:1; padding:18px 28px" data-cue="治らない傷・水疱">
+        <svg class="danger__tri" viewBox="0 0 24 22"><path d="M12 1 L23 21 H1 Z" fill="var(--danger)"/><rect x="10.9" y="8" width="2.2" height="7" rx="1.1" fill="#fff"/><circle cx="12" cy="18" r="1.5" fill="#fff"/></svg>
+        <div class="danger__bd"><h3><span class="dnum">1</span>治らない傷・水疱</h3><p>ひび割れも含め、数日〜1週間で改善しない</p></div>
+      </div>
+      <div class="danger__item anim-i" style="--i:2; padding:18px 28px" data-cue="赤み・腫れ・熱感">
+        <svg class="danger__tri" viewBox="0 0 24 22"><path d="M12 1 L23 21 H1 Z" fill="var(--danger)"/><rect x="10.9" y="8" width="2.2" height="7" rx="1.1" fill="#fff"/><circle cx="12" cy="18" r="1.5" fill="#fff"/></svg>
+        <div class="danger__bd"><h3><span class="dnum">2</span>赤み・腫れ・熱感・膿</h3><p>悪臭を含む感染徴候。早急な評価を</p></div>
+      </div>
+      <div class="danger__item anim-i" style="--i:3; padding:18px 28px" data-cue="皮膚の色の変化">
+        <svg class="danger__tri" viewBox="0 0 24 22"><path d="M12 1 L23 21 H1 Z" fill="var(--danger)"/><rect x="10.9" y="8" width="2.2" height="7" rx="1.1" fill="#fff"/><circle cx="12" cy="18" r="1.5" fill="#fff"/></svg>
+        <div class="danger__bd"><h3><span class="dnum">3</span>皮膚の色の変化（黒ずみ・紫・蒼白）</h3><p>壊死・虚血を疑う。PAD合併は特に急ぐ</p></div>
+      </div>
+      <div class="danger__item anim-i" style="--i:4; padding:18px 28px" data-cue="足全体の急な">
+        <svg class="danger__tri" viewBox="0 0 24 22"><path d="M12 1 L23 21 H1 Z" fill="var(--danger)"/><rect x="10.9" y="8" width="2.2" height="7" rx="1.1" fill="#fff"/><circle cx="12" cy="18" r="1.5" fill="#fff"/></svg>
+        <div class="danger__bd"><h3><span class="dnum">4</span>足全体の急な発赤・熱感・腫脹</h3><p>急性シャルコー足を疑う</p></div>
+      </div>
+    </div>
+    <div class="danger__call">📞 無痛でも受診を——糖尿病・形成外科・血管外科・皮膚科・整形外科へ</div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>15</span></div>
+  </section>
+
+  <!-- ===== 16. まとめ ===== -->
+  <section data-label="まとめ" data-screen-label="16 まとめ" class="slide">
+    <div class="chapter-ghost">16</div>
+    <div class="eyebrow anim">まとめ<span class="en">SUMMARY</span></div>
+    <h2 class="s-title serif anim">今日の3つの持ち帰りポイント</h2>
+    <hr class="hairline">
+    <div class="sum__list">
+      <div class="sum__card anim" data-cue="1つ、痛くないからこそ"><div class="sum__n">01</div><div class="sum__h" style="font-size:calc(32px * var(--type-mult))">痛くないからこそ<br>毎日見る</div><p class="sum__p" style="font-size:calc(24px * var(--type-mult))">壊れた<span style="white-space:nowrap">痛みの警報を</span>目と手の点検で<span style="white-space:nowrap">代わりにする</span></p></div>
+      <div class="sum__card anim2" data-cue="2つ、教育は統合ケアの"><div class="sum__n">02</div><div class="sum__h" style="font-size:calc(32px * var(--type-mult))">教育は<br>統合ケアの一部</div><p class="sum__p" style="font-size:calc(24px * var(--type-mult))">定期診察・履物・<span style="white-space:nowrap">チーム医療と</span>セットで<span style="white-space:nowrap">初めて有効</span></p></div>
+      <div class="sum__card anim3" data-cue="3つ、危険サインは無痛でも"><div class="sum__n">03</div><div class="sum__h" style="font-size:calc(32px * var(--type-mult))">危険サインは<br>無痛でも受診</div><p class="sum__p" style="font-size:calc(24px * var(--type-mult))">治らない傷・<span style="white-space:nowrap">色調の変化は</span>様子見せずに<span style="white-space:nowrap">評価を</span></p></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>16</span></div>
+  </section>
+
+  <!-- ===== 17. 免責事項 ===== -->
+  <section data-label="免責事項" data-screen-label="17 免責事項" class="slide disc">
+    <div class="disc__icon">⚠️</div>
+    <p class="disc__tag">ご視聴にあたってのお願い</p>
+    <div class="disc__box">
+      <p>この動画は<span class="strong">一般的な情報提供</span>であり、診断・治療の代わりにはなりません。<br>症状がある場合は<span class="strong">医療機関を受診してください</span>。</p>
+    </div>
+  </section>
+
+  <!-- ===== 18. 参考文献・出典 ===== -->
+  <section data-label="参考文献" data-screen-label="18 参考文献" class="slide slide--soft">
+    <div class="eyebrow anim">参考文献・出典<span class="en">REFERENCES</span></div>
+    <h2 class="s-title anim">この動画の参考資料</h2>
+    <div class="refs__list" style="display:grid; grid-template-columns:1fr 1fr; gap:10px 44px; margin-top:26px;">
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[1]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Dorresteijn 2014 (Cochrane)</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[2]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Hoogeveen 2015 (Cochrane)</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[3]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Bus SA 2023（IWGDF予防GL）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[4]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Schaper NC 2023（IWGDF実践GL）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[5]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Armstrong 2017 (NEJM)</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[6]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Singh 2005 (JAMA)</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[7]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Boulton 2008 (Phys Ther)</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[8]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Boulton 2005 (ADA声明)</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[9]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Lavery 2007（皮膚温モニタリング）</p>
+      </div>
+    </div>
+    <p class="refs__note" style="margin-top:16px; font-size:var(--type-label)">出典はPMID・DOIを含め概要欄をご確認ください。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>18</span></div>
+  </section>
+
+  <!-- ===== 19. エンディング ===== -->
+  <section data-label="エンディング" data-screen-label="19 エンディング" class="slide end">
+    <h2 class="end__h anim">今日から、足を見る習慣を</h2>
+    <div class="end__rule grow-x"></div>
+    <div class="end__cards">
+      <div class="end__card anim2"><span class="end__ic">📄</span><div><h3>詳しい解説はブログへ</h3><p>概要欄から<b style="white-space:nowrap">ブログ記事</b>を<span style="white-space:nowrap">ご覧</span>ください</p></div></div>
+      <div class="end__card anim3"><span class="end__ic">📋</span><div><h3 style="white-space:nowrap">患者配布用ハンドアウト</h3><p>外来でそのまま使える<br><b>配布資料</b>を用意しています</p></div></div>
+      <div class="end__card anim4"><span class="end__ic">👍</span><div><h3>高評価・<span style="white-space:nowrap">チャンネル登録</span></h3><p>次回も<b style="white-space:nowrap">お楽しみに</b></p></div></div>
+    </div>
+    <div class="end__note anim5">最後までご視聴いただきありがとうございました。<br>役に立ったと<span style="white-space:nowrap">感じたら</span>、高評価とチャンネル登録を<br>いただけると<span style="white-space:nowrap">励みになります</span>。</div>
+  </section>
+
+</deck-stage>
+
+<script src="deck-stage.js"></script>
+<script src="image-slot.js"></script>
+
+</body>
+</html>
