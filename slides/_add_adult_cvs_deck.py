@@ -23,7 +23,7 @@ DECK = {
         "一次文献に基づき脳神経内科専門医監修で全21スライドに整理。医療従事者向け。"
     ),
     "youtube_id": "K1P1P-LRyXE",
-    "blog_url": "",
+    "blog_url": "https://blog.ichisouzo-lab.com/entry/2026/07/23/142835",
     "source_dir": "adult_cvs/generated",
     "slide_prefix": "slide_",
     "pdf_filename": "slides.pdf",
