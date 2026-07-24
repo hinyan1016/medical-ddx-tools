@@ -23,7 +23,7 @@ DECK = {
         "特定の国・政党・政権への支持や批判、投資判断や渡航判断を推奨するものではありません。"
     ),
     "youtube_id": "3mSczYTVCnk",
-    "blog_url": "https://blog.ichisouzo-lab.com/entry/2026/07/24/194101",
+    "blog_url": "https://blog.ichisouzo-lab.com/entry/2026/07/24/195005",
     "source_dir": "米中日関係/generated",
     "slide_prefix": "slide_",
     "pdf_filename": "slides.pdf",
