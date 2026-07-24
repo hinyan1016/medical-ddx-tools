@@ -1,0 +1,802 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>医療チャンネル スライドテンプレート（セミナー紺・慢性便秘の生活指導）</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   テーマ「セミナー紺」— 参照: docs/specs/2026-07-05-slide-theme-seminar-navy-design.md
+   濃紺 #012360 × ティール青緑 #26A69A（濃 #00695C）× 警告レッド #DC3323
+   外来患者指導シリーズ第20弾＝慢性便秘の生活指導。第19弾（糖尿病フットケア・オリーブグリーン）の
+   差し色を全数置換し、本弾はティール青緑系（ブログ本文の差し色 #26A69A/#00695C）に合わせる。
+   核心=①「毎日出ない＝便秘」ではない（Rome IV・Bristol） ②サイリウムを少量から漸増・排便姿勢（足台）
+   ③運動・水分・マッサージ・プロバイオは補助/限定的 ④便秘は薬剤性・パーキンソン病など神経のサインのことがある
+   ⑤生活指導で治らない便秘・危険サインは受診。数値（%・n・効果量）は使用しない（全文未照合のため）。
+   全文Noto Sans JPで統一（可読性優先・明朝混植は廃止）
+   クラス設計・セクション番号は 医療スライドテンプレート.html と互換
+   ===================================================================== */
+:root{
+  /* palette (PDF実測値) */
+  --navy:#012360;
+  --navy-ink:#001B4D;
+  --accent:#26A69A;
+  --accent-soft: color-mix(in srgb, var(--accent) 11%, #ffffff);
+  --accent-line: color-mix(in srgb, var(--accent) 62%, #ffffff);
+  --accent-ink: #00695C;
+  --danger:#DC3323;
+  --danger-soft: color-mix(in srgb, var(--danger) 9%, #ffffff);
+  --bg:#FDFDFD;
+
+  /* 継承トークンの上書き（colors_and_type.css の値を紺×ティール青緑系に寄せる） */
+  --blue:#1D4189;
+  --blue-soft:#E9EEF8;
+  --blue-tint:#EEF2FA;
+  --red: var(--danger);
+  --red-soft: var(--danger-soft);
+  --orange: var(--accent);
+  --orange-soft: var(--accent-soft);
+  --line:#D8DDE6;
+  --line-soft:#C9D2DF;
+  --bg-muted:#F8F8F8;
+  --bg-alt:#F6F6F6;
+  --navy-line: color-mix(in srgb, var(--navy) 22%, #ffffff);
+
+  /* type scale — multiply all via --type-mult (既存テンプレと同値) */
+  --type-mult: 1.38;
+  --type-display: calc(96px * var(--type-mult));
+  --type-title:   calc(82px * var(--type-mult));
+  --type-heading: calc(60px * var(--type-mult));
+  --type-subtitle:calc(44px * var(--type-mult));
+  --type-body:    calc(38px * var(--type-mult));
+  --type-small:   calc(30px * var(--type-mult));
+  --type-label:   calc(27px * var(--type-mult));
+  --type-chapter: calc(210px * var(--type-mult));
+  --type-stat:    calc(150px * var(--type-mult));
+
+  --pad-x: 112px;
+  --pad-top: 58px;
+  --pad-bottom: 80px;
+  --gap-title: 24px;
+  --gap-item: 22px;
+
+  /* このテーマ内は本文・見出しともNoto Sans JPに統一（colors_and_type.css の --font-ja を上書き。他ファイルには影響しない） */
+  --font-ja: "Noto Sans JP", "BIZ UDPGothic", "Yu Gothic", "Meiryo", sans-serif;
+  --font-serif: var(--font-ja);
+  --grad-navy: linear-gradient(160deg, #012360 0%, #001B4D 100%);
+}
+.serif{ font-family: var(--font-serif); font-weight:800; letter-spacing:.02em; }
+
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#0a1430; }
+
+/* ---------- base slide ---------- */
+.slide{
+  box-sizing:border-box;
+  display:flex; flex-direction:column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-ja);
+  overflow:hidden;
+  position:relative;
+}
+/* 下端の紺帯（PDF全ページ共通の締め） */
+.slide::after{
+  content:""; position:absolute; left:0; right:0; bottom:0; height:10px;
+  background: var(--navy); pointer-events:none;
+}
+.slide--navy{ background: var(--grad-navy); color: var(--white); }
+.slide--navy::after{ background: var(--accent); }
+.slide--soft{ background: var(--bg-alt); }
+
+/* eyebrow — 紺の縦帯（下端ティール）＋ラベル */
+.eyebrow{
+  display:flex; align-items:center; gap:18px;
+  font-size: var(--type-label); font-weight:700; color: var(--navy);
+  letter-spacing:.04em;
+}
+.eyebrow::before{
+  content:""; width:12px; height:44px; border-radius:3px;
+  background: linear-gradient(180deg, var(--navy) 0 68%, var(--accent) 68% 100%);
+  flex:none;
+}
+.eyebrow .num{ font-family: var(--font-en); color: var(--accent-ink); }
+.eyebrow .en{ font-family: var(--font-en); color: var(--accent-ink); letter-spacing:.15em; text-transform:uppercase; }
+.slide--navy .eyebrow{ color: rgba(255,255,255,.88); }
+.slide--navy .eyebrow .en{ color:#fff; }
+.slide--navy .eyebrow::before{ background: linear-gradient(180deg, #fff 0 68%, var(--accent) 68% 100%); }
+
+.s-title{
+  font-size: var(--type-heading); line-height:1.22; color: var(--navy);
+  margin: var(--gap-title) 0 0; font-weight:800; letter-spacing:.01em;
+  text-wrap: pretty;
+}
+.slide--navy .s-title{ color:#fff; }
+
+.lead{
+  font-size: var(--type-body); line-height:1.7; color: var(--ink-2);
+  margin:0; text-wrap: pretty;
+}
+.muted{ color: var(--gray); }
+
+/* 見出し下罫線 — 紺の実線＋左端ティール短セグメント（PDF見出し様式） */
+.hairline{
+  height:4px; border:0; margin:20px 0 0;
+  background: linear-gradient(90deg, var(--accent) 0 150px, var(--navy) 150px);
+  opacity:1;
+}
+.slide--navy .hairline{ background: linear-gradient(90deg, var(--accent) 0 150px, rgba(255,255,255,.85) 150px); }
+
+/* 右上の薄い大章番号（装飾・背面） */
+.chapter-ghost{
+  position:absolute; top: 30px; right: var(--pad-x);
+  font-family: var(--font-en); font-weight:700; line-height:.8;
+  font-size: calc(150px * var(--type-mult)); color: var(--navy);
+  opacity:.05; pointer-events:none; user-select:none;
+}
+.slide--navy .chapter-ghost{ color:#fff; opacity:.10; }
+
+/* 汎用 下線ハイライト */
+.hl-underline{ border-bottom: 6px solid var(--accent-line); }
+
+/* 赤バッジ（インライン強調） */
+.badge-danger{
+  display:inline-block; background: var(--danger); color:#fff;
+  font-weight:800; padding: 4px 26px; border-radius:10px;
+  line-height:1.35;
+}
+
+/* footer band */
+.slide__foot{
+  position:absolute; left: var(--pad-x); right: var(--pad-x); bottom: 36px;
+  display:flex; align-items:center; justify-content:space-between;
+  font-size: calc(24px * var(--type-mult)); color: var(--gray);
+  font-family: var(--font-ja);
+}
+.slide__foot .ch{ display:flex; align-items:center; gap:10px; font-weight:700; color: var(--navy); }
+.slide__foot .cross{ color: var(--accent); font-weight:700; }
+.slide--navy .slide__foot{ color: rgba(255,255,255,.65); }
+.slide--navy .slide__foot .ch{ color:#fff; }
+.slide--navy .slide__foot .cross{ color: var(--accent); }
+
+/* ============ 1. COVER（白背景・右上に幾何アクセント） ============ */
+.cover{ justify-content:center; }
+.cover__geo{
+  position:absolute; right: 70px; top: 48px; width: 380px; height: 380px;
+  pointer-events:none;
+}
+.cover__badge{
+  display:inline-flex; align-items:center; gap:14px; align-self:flex-start;
+  background:#fff; border:2px solid var(--navy-line);
+  color: var(--navy); padding:12px 26px; border-radius:999px;
+  font-size: var(--type-label); font-weight:700;
+}
+.cover__badge .cross{ color: var(--accent); font-size:1.2em; }
+.cover__title{
+  font-family: var(--font-serif);
+  font-size: calc(76px * var(--type-mult)); line-height:1.3; color: var(--navy); font-weight:800;
+  margin:42px 0 0; letter-spacing:.02em; max-width:1400px;
+}
+.cover__title .hl{ color: var(--accent); }
+.cover__rule{ width: 1500px; max-width:100%; height:3px; background: var(--navy); margin-top:36px; }
+.cover__sub{
+  font-size: var(--type-subtitle); color: var(--ink-2);
+  margin:34px 0 0; font-weight:700;
+}
+.cover__sub .badge-danger{ margin: 0 6px; }
+.cover__meta{
+  display:flex; gap:30px; align-items:center; margin-top:64px;
+  font-size: var(--type-small); color: var(--gray);
+}
+.cover__avatar{
+  flex:none; width:84px; height:84px; border-radius:50%;
+  background: var(--accent-soft); border:3px solid var(--accent);
+  display:flex; align-items:center; justify-content:center;
+}
+.cover__avatar svg{ width:56%; height:56%; }
+.cover__meta .name{ font-weight:800; color: var(--navy); font-size: var(--type-small); }
+.cover__meta .vline{ width:2px; height:52px; background: var(--line); }
+.cover__blob{ display:none; }
+
+/* ============ 2. THEME / CONCLUSION FIRST ============ */
+.theme__body{ display:flex; flex-direction:column; gap: var(--gap-title); margin-top: 28px; flex:1; justify-content:center; }
+.theme__q{ font-family: var(--font-serif); font-size: var(--type-title); line-height:1.28; color: var(--navy); font-weight:800; max-width:22ch; text-wrap:balance; }
+.theme__q .hl{ color: var(--accent-ink); border-bottom: 8px solid var(--accent-line); }
+.concl{
+  display:flex; align-items:flex-start; gap:28px;
+  background:#fff; border:3px solid var(--accent);
+  border-radius: 12px; padding: 32px 44px;
+  position:relative;
+}
+.concl::before{
+  content:"“"; position:absolute; top:-58px; left:26px;
+  font-family: var(--font-en); font-size: calc(110px * var(--type-mult));
+  color: var(--accent); font-weight:900; line-height:1;
+}
+.concl__tag{
+  flex:none; background: var(--navy); color:#fff; font-weight:700;
+  font-size: var(--type-small); padding:10px 24px; border-radius:8px;
+}
+.concl__text{ font-size: var(--type-subtitle); line-height:1.5; color: var(--navy); font-weight:700; margin:0; }
+
+/* ============ 3. AGENDA（紺角チップ＋ティール縦罫） ============ */
+.agenda__list{ display:flex; flex-direction:column; gap:26px; margin-top:36px; }
+.agenda__item{ display:flex; align-items:center; gap:32px; }
+.agenda__num{
+  flex:none; width:76px; height:76px; border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+  background: var(--navy); color:#fff;
+  font-family: var(--font-en); font-size: calc(46px * var(--type-mult)); font-weight:800;
+}
+.agenda__txt{
+  font-size: var(--type-subtitle); color: var(--navy); font-weight:700;
+  border-left: 5px solid var(--accent); padding-left: 30px;
+}
+.agenda__txt small{ display:block; font-size: var(--type-small); color: var(--gray); font-weight:400; margin-top:8px; }
+
+/* ============ 4. CHAPTER DIVIDER（全面紺・白明朝・中央） ============ */
+.chapter{ justify-content:center; align-items:center; text-align:center; }
+.chapter__kicker{
+  font-family: var(--font-en); font-size: var(--type-label); color: rgba(255,255,255,.55);
+  font-weight:700; letter-spacing:.4em; text-transform:uppercase;
+}
+.chapter__num{
+  font-family: var(--font-serif); font-size: calc(150px * var(--type-mult)); line-height:1.05;
+  font-weight:800; color:#fff; margin:10px 0 0; letter-spacing:.04em;
+}
+.chapter__rule{ width:560px; height:6px; background: var(--accent); border-radius:3px; margin-top:44px; }
+.chapter__title{ font-size: var(--type-subtitle); color:#fff; font-weight:700; margin:44px 0 0; max-width:26ch; text-wrap:balance; letter-spacing:.06em; }
+
+/* ============ 5. BODY 1 COLUMN ============ */
+.body1{ }
+.body1__main{ margin-top: 26px; max-width: 1640px; }
+.body1 .lead{ margin-bottom: 20px; }
+.important-box.lg{
+  background:#fff; border:2px solid var(--navy-line); border-left: 12px solid var(--accent);
+  border-radius: 12px; padding: 26px 40px; margin:0;
+  box-shadow: var(--shadow-sm);
+}
+.important-box.lg .ttl{ display:flex; align-items:center; gap:14px; font-size: var(--type-small); font-weight:700; color: var(--accent-ink); margin-bottom:8px; }
+.important-box.lg p{ font-size: var(--type-body); line-height:1.6; color: var(--ink-2); margin:0; }
+
+/* point list（cols2以外の単独利用にも対応） */
+.point-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:18px; }
+.point-list li{ display:flex; align-items:flex-start; gap:20px; font-size: var(--type-body); color: var(--ink-2); line-height:1.5; }
+.point-list li::before{ content:"✓"; flex:none; width:44px; height:44px; border-radius:50%; background: var(--navy); color:#fff; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:.8em; margin-top:2px; }
+
+/* ============ 6. BRISTOL SCALE ROW ============ */
+.bristol{ display:grid; grid-template-columns:repeat(7,1fr); gap:16px; margin-top:30px; }
+.bristol__card{
+  background:#fff; border:2px solid var(--navy-line); border-radius:12px;
+  padding:22px 10px 18px; text-align:center; display:flex; flex-direction:column;
+  align-items:center; gap:10px; box-shadow: var(--shadow-sm);
+}
+.bristol__card.goal{ border-color: var(--accent); border-width:3px; background: var(--accent-soft); }
+.bristol__n{
+  flex:none; width:60px; height:60px; border-radius:50%;
+  background: var(--navy); color:#fff; display:flex; align-items:center; justify-content:center;
+  font-family: var(--font-en); font-weight:800; font-size: calc(28px * var(--type-mult));
+}
+.bristol__card.goal .bristol__n{ background: var(--accent); }
+.bristol__label{ font-size: calc(20px * var(--type-mult)); font-weight:700; color: var(--navy); line-height:1.35; min-height:2.7em; }
+.bristol__tag{ font-size: calc(18px * var(--type-mult)); color: var(--gray); font-weight:700; }
+.bristol__card.goal .bristol__tag{ color: var(--accent-ink); }
+
+/* ============ 10. DISCLAIMER ============ */
+.disc{ justify-content:center; align-items:center; text-align:center; background: var(--bg-alt); }
+.disc__icon{ font-size: calc(96px * var(--type-mult)); line-height:1; }
+.disc__tag{ font-family: var(--font-serif); font-size: var(--type-subtitle); font-weight:700; color: var(--navy); margin:28px 0 0; letter-spacing:.08em; }
+.disc__box{
+  margin-top:38px; max-width:1180px; background:#fff; border:2px solid var(--navy-line);
+  border-top: 10px solid var(--accent); border-radius:12px; padding:48px 56px;
+  box-shadow: var(--shadow-md);
+}
+.disc__box p{ font-size: var(--type-body); line-height:1.7; color: var(--ink-2); margin:0; text-wrap:pretty; }
+.disc__box .strong{ color: var(--navy); font-weight:700; }
+
+/* ============ 11. SUMMARY（3カードゴール様式） ============ */
+.sum__list{ display:grid; grid-template-columns: repeat(3,1fr); gap:40px; margin-top:70px; flex:1; align-content:start; }
+.sum__card{
+  position:relative; background:#fff; border:2px solid var(--navy-line);
+  border-radius:14px; padding:64px 36px 40px; display:flex; flex-direction:column; gap:20px;
+  box-shadow: var(--shadow-md); text-align:center; align-items:center;
+}
+.sum__n{
+  position:absolute; top:-38px; left:50%; margin-left:-38px;
+  width:76px; height:76px; border-radius:50%;
+  background: var(--navy); color:#fff;
+  font-family: var(--font-en); font-size: calc(34px * var(--type-mult)); font-weight:800;
+  display:flex; align-items:center; justify-content:center; line-height:1;
+  box-shadow: var(--shadow-md);
+}
+.sum__h{ font-size: var(--type-subtitle); font-weight:800; color: var(--navy); line-height:1.3; text-wrap:balance; }
+.sum__h::after{ content:""; display:block; width:120px; height:4px; background: var(--accent); margin:16px auto 0; border-radius:2px; }
+.sum__p{ font-size: var(--type-small); color: var(--ink-2); line-height:1.6; margin:0; }
+
+/* ============ 12. ENDING（白背景・明朝） ============ */
+.end{ justify-content:center; align-items:center; text-align:center; }
+.end__h{
+  font-family: var(--font-serif);
+  font-size: var(--type-title); color: var(--navy); font-weight:800; margin:0; text-wrap:balance;
+}
+.end__rule{
+  width:1500px; max-width:100%; height:4px; margin-top:30px;
+  background: linear-gradient(90deg, var(--navy) 0 44%, var(--accent) 44% 56%, var(--navy) 56%);
+}
+.end__cards{ display:grid; grid-template-columns:repeat(3,1fr); gap:36px; margin-top:70px; width:100%; max-width:1640px; }
+.end__card{
+  background:#fff; border:2px solid var(--navy-line); border-radius:14px;
+  padding:34px 30px; display:flex; align-items:center; gap:24px; text-align:left;
+  box-shadow: var(--shadow-sm);
+}
+.end__ic{
+  flex:none; width:88px; height:88px; border-radius:50%;
+  background: var(--accent); color:#fff; display:flex; align-items:center; justify-content:center;
+  font-size: calc(40px * var(--type-mult));
+}
+.end__card h3{ font-size: var(--type-small); font-weight:800; color: var(--navy); margin:0 0 6px; }
+.end__card h3 u{ text-decoration:none; border-bottom:3px solid var(--accent); }
+.end__card p{ font-size: var(--type-label); color: var(--ink-2); line-height:1.5; margin:0; }
+.end__card p b{ color: var(--accent-ink); }
+.end__note{
+  margin-top:60px; max-width:1400px; background:#fff;
+  border:2.5px solid var(--accent); border-radius:12px; padding:30px 60px;
+  font-family: var(--font-serif); font-size: var(--type-small); color: var(--navy);
+  font-weight:700; line-height:1.8;
+}
+.end__note b{ color: var(--accent-ink); }
+
+/* ============ 30. 危険サイン（4象限白カード様式） ============ */
+.eyebrow--red{ color: var(--danger); }
+.eyebrow--red::before{ background: linear-gradient(180deg, var(--danger) 0 68%, var(--navy) 68% 100%); }
+.danger .s-title{ font-family: var(--font-serif); color: var(--navy); }
+.danger__list{ display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:30px; flex:1; align-content:center; }
+.danger__item{
+  display:flex; align-items:flex-start; gap:26px;
+  background:#fff; border:2px solid var(--navy-line); border-radius:14px;
+  padding:28px 34px; box-shadow: var(--shadow-sm);
+}
+.danger__item .ic{ display:none; }
+.danger__tri{ flex:none; width:76px; height:70px; margin-top:4px; }
+.danger__bd h3{
+  display:flex; align-items:center; gap:16px;
+  font-size: var(--type-subtitle); font-weight:800; color: var(--navy); margin:0;
+  padding-bottom:12px; border-bottom:4px solid var(--danger);
+}
+.danger__bd .dnum{
+  flex:none; width:52px; height:52px; border-radius:50%;
+  background: var(--danger); color:#fff;
+  font-family: var(--font-en); font-size: calc(28px * var(--type-mult)); font-weight:800;
+  display:flex; align-items:center; justify-content:center;
+}
+.danger__bd p{ font-size: var(--type-small); color: var(--ink-2); line-height:1.55; margin:14px 0 0; font-weight:700; }
+.danger{ padding-bottom:150px; }
+.danger__call{
+  margin-top:24px; margin-bottom:0; display:flex; align-items:center; justify-content:center; gap:22px;
+  background: var(--danger); color:#fff; border-radius:12px; padding:20px 40px;
+  font-size: var(--type-small); font-weight:800;
+}
+
+/* ============ 35. 参考文献・出典 ============ */
+.refs__list{ display:flex; flex-direction:column; gap:26px; margin-top:48px; }
+.refs__item{
+  display:flex; align-items:baseline; gap:26px;
+  border-bottom:1px solid var(--line); padding-bottom:26px;
+}
+.refs__num{ flex:none; font-family: var(--font-en); font-size: var(--type-small); font-weight:700; color: var(--accent-ink); }
+.refs__item p{ font-size: var(--type-body); color: var(--ink-2); line-height:1.6; margin:0; }
+.refs__item p small{ display:block; font-size: var(--type-label); color: var(--gray); margin-top:6px; }
+.refs__note{ margin-top:36px; font-size: var(--type-label); color: var(--gray); }
+
+/* entrance animation — fade-up を上位互換で拡張（deck-anim キット） */
+@media (prefers-reduced-motion:no-preference){
+  [data-deck-active] .anim{ animation: fade-up .5s both; }
+  [data-deck-active] .anim2{ animation: fade-up .5s .12s both; }
+  [data-deck-active] .anim3{ animation: fade-up .5s .24s both; }
+  [data-deck-active] .anim4{ animation: fade-up .5s .36s both; }
+  [data-deck-active] .anim5{ animation: fade-up .5s .48s both; }
+  [data-deck-active] .anim6{ animation: fade-up .5s .60s both; }
+  [data-deck-active] .anim-i{ animation: fade-up .5s both; animation-delay: calc(var(--i,0) * .1s); }
+  [data-deck-active] .a-fade { animation-name: a-fade; }
+  [data-deck-active] .a-up   { animation-name: fade-up; }
+  [data-deck-active] .a-down { animation-name: a-down; }
+  [data-deck-active] .a-right{ animation-name: a-right; }
+  [data-deck-active] .a-left { animation-name: a-left; }
+  [data-deck-active] .a-zoom { animation-name: a-zoom; }
+  [data-deck-active] .a-pop  { animation-name: a-pop; animation-timing-function: cubic-bezier(.34,1.56,.64,1); }
+  [data-deck-active] .a-blur { animation-name: a-blur; }
+  [data-deck-active] .grow-y { transform-origin:bottom center; animation: grow-y .7s .2s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .grow-x { transform-origin:left center;   animation: grow-x .55s .25s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .nudge-x{ animation: nudge-x .9s .35s ease-in-out both; }
+}
+.grow-y{ transform-origin:bottom center; } .grow-x{ transform-origin:left center; }
+@keyframes fade-up{ from{ opacity:0; transform: translateY(16px);} to{ opacity:1; transform:none;} }
+@keyframes a-fade { from{ opacity:0; } to{ opacity:1; } }
+@keyframes a-down { from{ opacity:0; transform: translateY(-16px);} to{ opacity:1; transform:none; } }
+@keyframes a-right{ from{ opacity:0; transform: translateX(-28px);} to{ opacity:1; transform:none; } }
+@keyframes a-left { from{ opacity:0; transform: translateX(28px); } to{ opacity:1; transform:none; } }
+@keyframes a-zoom { from{ opacity:0; transform: scale(.94);       } to{ opacity:1; transform:none; } }
+@keyframes a-pop  { from{ opacity:0; transform: scale(.8);        } to{ opacity:1; transform:none; } }
+@keyframes a-blur { from{ opacity:0; filter: blur(12px); transform: translateY(10px);} to{ opacity:1; filter: blur(0); transform:none; } }
+@keyframes grow-y { from{ transform: scaleY(0);} to{ transform: scaleY(1);} }
+@keyframes grow-x { from{ transform: scaleX(0);} to{ transform: scaleX(1);} }
+@keyframes nudge-x{ 0%{ transform:none;} 55%{ transform: translateX(10px);} 100%{ transform:none;} }
+
+/* tweaks mount */
+#tweaks-root{ position:fixed; inset:0; pointer-events:none; z-index:9999; }
+#tweaks-root > *{ pointer-events:auto; }
+</style>
+</head>
+<body style="font-size: 8px">
+
+<deck-stage width="1920" height="1080">
+
+
+  <!-- ===== 01. 表紙 ===== -->
+  <section data-label="表紙" data-screen-label="01 表紙" class="slide cover">
+    <svg class="cover__geo anim2 a-zoom" viewBox="0 0 200 200" aria-hidden="true">
+      <path d="M60 0 A140 140 0 0 1 200 140" fill="none" stroke="var(--navy-line)" stroke-width="4"/>
+      <path d="M95 0 A105 105 0 0 1 200 105" fill="none" stroke="var(--accent)" stroke-width="5"/>
+      <path d="M128 0 A72 72 0 0 1 200 72" fill="none" stroke="var(--navy)" stroke-width="4"/>
+      <g fill="var(--navy-line)">
+        <circle cx="26" cy="120" r="3.4"/><circle cx="52" cy="120" r="3.4"/><circle cx="78" cy="120" r="3.4"/>
+        <circle cx="26" cy="146" r="3.4"/><circle cx="52" cy="146" r="3.4"/><circle cx="78" cy="146" r="3.4"/>
+        <circle cx="26" cy="172" r="3.4"/><circle cx="52" cy="172" r="3.4"/><circle cx="78" cy="172" r="3.4"/>
+      </g>
+      <circle cx="78" cy="146" r="3.8" fill="var(--accent)"/>
+    </svg>
+    <div class="cover__badge anim"><span class="cross">✚</span><span>外来患者指導シリーズ第20弾</span></div>
+    <h1 class="cover__title anim2 a-blur">慢性便秘の<br><span class="hl">生活指導</span></h1>
+    <div class="cover__rule grow-x"></div>
+    <p class="cover__sub anim3">「毎日出ない＝便秘」ではない——<br>生活処方を「効く・弱い」で仕分ける</p>
+    <div class="cover__meta anim3">
+      <span class="cover__avatar"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4.6" fill="var(--accent)"/><path d="M2.5 22.5 C2.5 16.5 7 14.2 12 14.2 C17 14.2 21.5 16.5 21.5 22.5 Z" fill="var(--accent)"/></svg></span>
+      <span class="name">医知創造ラボ</span>
+      <span class="vline"></span>
+      <span>監修：今村久司（脳神経内科専門医・総合内科専門医）</span>
+      <span class="vline"></span>
+      <span>外来指導シリーズ #20</span>
+    </div>
+  </section>
+
+  <!-- ===== 02. テーマ・結論先出し ===== -->
+  <section data-label="テーマ・結論" data-screen-label="02 テーマ・結論" class="slide">
+    <div class="eyebrow anim">今日のテーマ<span class="en">TODAY'S POINT</span></div>
+    <div class="theme__body">
+      <h2 class="theme__q anim">毎日出ないと、<br>便秘<span class="hl-underline">なんですか？</span></h2>
+      <div class="concl anim2">
+        <span class="concl__tag">結論</span>
+        <p class="concl__text">いいえ。<span style="white-space:nowrap">回数だけでなく</span>、<span style="white-space:nowrap">硬さ・いきみ・</span><span style="white-space:nowrap">残便感を合わせて</span>見極めます</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>02</span></div>
+  </section>
+
+  <!-- ===== 03. 目次 ===== -->
+  <section data-label="目次" data-screen-label="03 目次" class="slide slide--soft">
+    <div class="eyebrow anim">この動画でわかること<span class="en">AGENDA</span></div>
+    <h2 class="s-title serif anim">本日のアジェンダ</h2>
+    <hr class="hairline">
+    <div class="agenda__list">
+      <div class="agenda__item anim a-right" data-cue="1つ、「毎日出ない"><div class="agenda__num">1</div><div class="agenda__txt">「毎日出ない＝便秘」ではない<small>Bristol便形状スケールで硬さ・いきみを捉える</small></div></div>
+      <div class="agenda__item anim2 a-right" data-cue="2つ、生活処方を"><div class="agenda__num">2</div><div class="agenda__txt">生活処方を「効く・弱い」で仕分ける<small>サイリウム・排便姿勢は要／運動・水分・マッサージ・プロバイオは補助</small></div></div>
+      <div class="agenda__item anim3 a-right" data-cue="3つ、見逃せない便秘"><div class="agenda__num">3</div><div class="agenda__txt">見逃せない便秘——二次性便秘と受診サイン<small>薬剤性・パーキンソン病のサイン、危険徴候</small></div></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>03</span></div>
+  </section>
+
+  <!-- ===== 04. 章扉①「毎日出ない＝便秘」ではない ===== -->
+  <section data-label="章扉①" data-screen-label="04 章扉①" class="slide slide--navy chapter">
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num serif anim a-pop">第1章</h2>
+    <div class="chapter__rule grow-x"></div>
+    <h3 class="chapter__title anim3">「毎日出ない＝便秘」ではない</h3>
+  </section>
+
+  <!-- ===== 05. 本文1カラム：便秘の定義 ===== -->
+  <section data-label="本文1カラム：便秘の定義" data-screen-label="05 本文1カラム：便秘の定義" class="slide">
+    <div class="chapter-ghost">05</div>
+    <div class="eyebrow anim">便秘の定義を見直す<span class="en">DEFINITION OF CONSTIPATION</span></div>
+    <h2 class="s-title anim">「毎日出ない」だけでは、<br><span class="hl-underline">便秘と言い切れない</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(30px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:16px">
+      <p class="lead anim2">便秘は排便回数だけで決まる病態ではありません。国際的な機能性消化管疾患の診断基準（Rome IV）は、いきみ・硬い便・残便感・閉塞感・用手的な排便補助・排便回数などを合わせて便秘を捉えます。</p>
+      <ul class="point-list" style="gap:12px; margin-top:14px">
+        <li class="anim-i" data-cue="2〜3日に1回でも" style="--i:1"><span>2〜3日に1回でも、<strong>いきまずすっきり出ていれば</strong>便秘とは限らない</span></li>
+        <li class="anim-i" data-cue="毎日出ていても" style="--i:2"><span>毎日出ていても、<strong>硬い・いきむ・残便感があれば</strong>便秘的</span></li>
+        <li class="anim-i" data-cue="ゴールは" style="--i:3"><span>ゴールは<strong>「毎日出す」ではなく「いきまず、すっきり」</strong></span></li>
+      </ul>
+      <div class="important-box lg anim4" data-cue="ここだけ覚え" style="margin-top:14px; padding:18px 40px">
+        <div class="ttl">📋 ここだけ覚えればOK</div>
+        <p>「回数」ではなく<strong>「硬さ・いきみ・残便感」</strong>で伝える。これが指導の出発点です。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>05</span></div>
+  </section>
+
+  <!-- ===== 06. Bristol便形状スケール ===== -->
+  <section data-label="本文：Bristol便形状スケール" data-screen-label="06 本文：Bristol便形状スケール" class="slide slide--soft">
+    <div class="chapter-ghost">06</div>
+    <div class="eyebrow anim">患者と共有する共通言語<span class="en">BRISTOL STOOL FORM SCALE</span></div>
+    <h2 class="s-title anim">便の硬さで話す——<br><span class="hl-underline">Bristol便形状スケール</span></h2>
+    <hr class="hairline">
+    <p class="lead anim2" style="--type-body:calc(28px * var(--type-mult)); margin-top:18px">Type1〜7で便の硬さを表し、腸管の通過時間の目安にもなります。「回数」より「硬さ」で伝えると理解されやすくなります。</p>
+    <div class="bristol anim3">
+      <div class="bristol__card"><div class="bristol__n">1</div><div class="bristol__label">コロコロ<br>（兎糞状）</div><div class="bristol__tag">便秘寄り</div></div>
+      <div class="bristol__card"><div class="bristol__n">2</div><div class="bristol__label">硬い<br>塊状</div><div class="bristol__tag">便秘寄り</div></div>
+      <div class="bristol__card goal"><div class="bristol__n">3</div><div class="bristol__label">ひび割れの<br>ソーセージ状</div><div class="bristol__tag">目標</div></div>
+      <div class="bristol__card goal"><div class="bristol__n">4</div><div class="bristol__label">なめらかな<br>ソーセージ状</div><div class="bristol__tag">目標</div></div>
+      <div class="bristol__card"><div class="bristol__n">5</div><div class="bristol__label">やわらかい<br>塊状</div><div class="bristol__tag">やや軟便</div></div>
+      <div class="bristol__card"><div class="bristol__n">6</div><div class="bristol__label">泥状・<br>不定形</div><div class="bristol__tag">下痢寄り</div></div>
+      <div class="bristol__card"><div class="bristol__n">7</div><div class="bristol__label">水様</div><div class="bristol__tag">下痢寄り</div></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>06</span></div>
+  </section>
+
+  <!-- ===== 07. 章扉② 効果が確からしい生活処方 ===== -->
+  <section data-label="章扉②" data-screen-label="07 章扉②" class="slide slide--navy chapter">
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num serif anim a-pop">第2章</h2>
+    <div class="chapter__rule grow-x"></div>
+    <h3 class="chapter__title anim3">効果が確からしい生活処方</h3>
+  </section>
+
+  <!-- ===== 08. 本文：食物繊維（サイリウム） ===== -->
+  <section data-label="本文：食物繊維" data-screen-label="08 本文：食物繊維" class="slide">
+    <div class="chapter-ghost">08</div>
+    <div class="eyebrow anim">食物繊維は「サイリウムを少量から」<span class="en">SOLUBLE FIBER — PSYLLIUM</span></div>
+    <h2 class="s-title anim">繊維なら何でもよいわけではなく、<br><span class="hl-underline">水溶性を少量から</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(30px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:16px">
+      <p class="lead anim2">慢性便秘に対する食物繊維サプリメントのメタ解析では、水溶性で粘性のある<strong>サイリウム（オオバコ）</strong>が最も一貫して支持されています。不溶性繊維（ふすま等）はかえって腹部膨満・ガスを招くことがあります。</p>
+      <ul class="point-list" style="gap:12px; margin-top:14px">
+        <li class="anim-i" data-cue="水に溶けてゼリー状になる" style="--i:1"><span>水に溶けてゼリー状になるタイプ（<strong>サイリウム</strong>）を選ぶ</span></li>
+        <li class="anim-i" data-cue="急に増やさず" style="--i:2"><span>急に増やさず、<strong>数日〜数週間かけて少量から漸増</strong>する</span></li>
+        <li class="anim-i" data-cue="効果が出るまで" style="--i:3"><span>効果が出るまで<strong>日〜週単位かかる</strong>ことをあらかじめ伝える</span></li>
+      </ul>
+      <div class="important-box lg anim4" data-cue="外来でのトーク例" style="margin-top:14px; padding:16px 40px">
+        <div class="ttl">📋 外来トーク例</div>
+        <p>「繊維は水に溶けてゼリーになるタイプを、少しずつ増やしてください」</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>08</span></div>
+  </section>
+
+  <!-- ===== 09. 本文：排便姿勢 ===== -->
+  <section data-label="本文：排便姿勢" data-screen-label="09 本文：排便姿勢" class="slide slide--soft">
+    <div class="chapter-ghost">09</div>
+    <div class="eyebrow anim">低コスト・低リスクで試せる工夫<span class="en">DEFECATION POSTURE</span></div>
+    <h2 class="s-title anim">足台で膝を上げ、<br><span class="hl-underline">前かがみにしゃがむ</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(30px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:16px">
+      <p class="lead anim2">座位よりしゃがみ姿勢に近づけると、いきむ時間や努力が減る方向が示されています。足台で膝を股関節より高くする姿勢は、排便所要時間や排便完了感の改善も報告されています（いずれも小規模研究）。</p>
+      <ul class="point-list" style="gap:12px; margin-top:14px">
+        <li class="anim-i" data-cue="トイレの足元に" style="--i:1"><span><strong>トイレの足元に小さな台</strong>を置く</span></li>
+        <li class="anim-i" data-cue="上体を少し前かがみ" style="--i:2"><span>上体を少し<strong>前かがみ</strong>にする</span></li>
+        <li class="anim-i" data-cue="和式でしゃがむような" style="--i:3"><span>和式でしゃがむような<strong>角度に近づける</strong></span></li>
+      </ul>
+      <div class="important-box lg anim4" data-cue="足台で膝を少し" style="margin-top:14px; padding:16px 40px">
+        <div class="ttl">📋 外来トーク例</div>
+        <p>「足台で膝を少し高くし、前かがみに。費用も害もない工夫です」</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>09</span></div>
+  </section>
+
+  <!-- ===== 10. 本文：排便習慣 ===== -->
+  <section data-label="本文：排便習慣" data-screen-label="10 本文：排便習慣" class="slide">
+    <div class="chapter-ghost">10</div>
+    <div class="eyebrow anim">胃結腸反射を活かす<span class="en">BOWEL HABIT TRAINING</span></div>
+    <h2 class="s-title anim">起床後・食後は、<br><span class="hl-underline">お通じのゴールデンタイム</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(30px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:16px">
+      <p class="lead anim2">起床時や食後は胃結腸反射で大腸の動きが高まりやすく、この時間帯にトイレへ座る習慣づけが理にかなっています。便意を繰り返し我慢すると直腸の感覚が鈍り、便秘を助長します。</p>
+      <ul class="point-list" style="gap:12px; margin-top:14px">
+        <li class="anim-i" data-cue="朝食のあとに" style="--i:1"><span><strong>朝食のあとにトイレに座る時間</strong>を数分確保する</span></li>
+        <li class="anim-i" data-cue="便意を感じたら" style="--i:2"><span><strong>便意を感じたら我慢せず</strong>に行く</span></li>
+        <li class="anim-i" data-cue="出ないのに長時間" style="--i:3"><span>出ないのに<strong>長時間強くいきみ続けるのは逆効果</strong></span></li>
+      </ul>
+      <div class="important-box lg anim4" data-cue="起きた後や食後に" style="margin-top:14px; padding:16px 40px">
+        <div class="ttl">📋 外来トーク例</div>
+        <p>「起きた後や食後にトイレに座る習慣を。便意は我慢しないでください」</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>10</span></div>
+  </section>
+
+  <!-- ===== 11. 章扉③ 補助的・限定的なエビデンス ===== -->
+  <section data-label="章扉③" data-screen-label="11 章扉③" class="slide slide--navy chapter">
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num serif anim a-pop">第3章</h2>
+    <div class="chapter__rule grow-x"></div>
+    <h3 class="chapter__title anim3">補助的・限定的なエビデンス</h3>
+  </section>
+
+  <!-- ===== 12. 本文：運動・水分 ===== -->
+  <section data-label="本文：運動・水分" data-screen-label="12 本文：運動・水分" class="slide">
+    <div class="chapter-ghost">12</div>
+    <div class="eyebrow anim">「補助」であって主役ではない<span class="en">EXERCISE &amp; HYDRATION</span></div>
+    <h2 class="s-title anim">運動と水分は、<br><span class="hl-underline">補助として位置づける</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(30px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:16px">
+      <p class="lead anim2">運動療法は慢性便秘の症状やQOLを改善する方向でメタ解析が支持しますが、効果は中等度以下で単独で重症便秘が治るものではありません。水分は高繊維食への上乗せで意味を持つ効果で、脱水がない人が大量に飲んでも上乗せ効果は乏しいとされます。</p>
+      <ul class="point-list" style="gap:14px; margin-top:14px">
+        <li class="anim-i" data-cue="運動は、ウォーキング" style="--i:1"><span><strong>運動：</strong>ウォーキングなど無理のない有酸素運動を習慣に（補助的）</span></li>
+        <li class="anim-i" data-cue="水分は「不足を補う」" style="--i:2"><span><strong>水分：</strong>「不足を補う」意識で十分。<strong>繊維と合わせて摂ると意味を持つ</strong></span></li>
+      </ul>
+      <div class="important-box lg anim3" data-cue="歩くと出やすく" style="margin-top:14px; padding:16px 40px">
+        <div class="ttl">📋 外来トーク例</div>
+        <p>「歩くと出やすくなる方はいますが、それだけで治るものではありません」</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>12</span></div>
+  </section>
+
+  <!-- ===== 13. 本文：マッサージ・プロバイオ ===== -->
+  <section data-label="本文：マッサージ・プロバイオ" data-screen-label="13 本文：マッサージ・プロバイオ" class="slide slide--soft">
+    <div class="chapter-ghost">13</div>
+    <div class="eyebrow anim">害は少ないが、過度な期待は禁物<span class="en">MASSAGE &amp; PROBIOTICS</span></div>
+    <h2 class="s-title anim">補助として試してよいが、<br><span class="hl-underline">下剤の代わりにはならない</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(30px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:16px">
+      <p class="lead anim2">腹部マッサージは便秘症状の緩和に役立ちうるとするRCTがありますが、規模は限られ効果は補助的です。プロバイオティクスは腸管通過時間短縮などのシグナルはあるものの、菌株や試験間のばらつきが大きく、エビデンスは限定的・不確実です。</p>
+      <ul class="point-list" style="gap:14px; margin-top:14px">
+        <li class="anim-i" data-cue="腹部マッサージは、気持ちよく" style="--i:1"><span><strong>腹部マッサージ：</strong>気持ちよく害の少ない補助。<strong>急性腹症等では不可</strong></span></li>
+        <li class="anim-i" data-cue="プロバイオティクスや発酵食品" style="--i:2"><span><strong>プロバイオティクス／発酵食品：</strong>試す価値はあるが<strong>過度な期待は禁物</strong></span></li>
+      </ul>
+      <div class="important-box lg anim3" data-cue="乳酸菌・ヨーグルトは" style="margin-top:14px; padding:16px 40px">
+        <div class="ttl">📋 外来トーク例</div>
+        <p>「乳酸菌・ヨーグルトは試してよいですが、"これで治る"とは言えません」</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>13</span></div>
+  </section>
+
+  <!-- ===== 14. 章扉④ 見逃せない便秘 ===== -->
+  <section data-label="章扉④" data-screen-label="14 章扉④" class="slide slide--navy chapter">
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num serif anim a-pop">第4章</h2>
+    <div class="chapter__rule grow-x"></div>
+    <h3 class="chapter__title anim3">見逃せない便秘</h3>
+  </section>
+
+  <!-- ===== 15. 本文：二次性便秘（薬剤性・パーキンソン病） ===== -->
+  <section data-label="本文：二次性便秘" data-screen-label="15 本文：二次性便秘" class="slide">
+    <div class="chapter-ghost">15</div>
+    <div class="eyebrow anim">便秘は「神経の病気のサイン」のことがある<span class="en">SECONDARY CONSTIPATION</span></div>
+    <h2 class="s-title anim">便秘は生活習慣だけでなく、<br><span class="hl-underline">薬や神経の病気のサイン</span>のことがある</h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(28px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:14px">
+      <p class="lead anim2">オピオイド・抗コリン薬・一部の抗うつ薬・鉄剤・カルシウム拮抗薬などは便秘を起こします。原因薬があれば、生活指導より先に<strong>原因薬の見直しが優先される</strong>ことがあります。</p>
+      <ul class="point-list" style="gap:10px; margin-top:12px">
+        <li class="anim-i" data-cue="内分泌や代謝の面では" style="--i:1"><span><strong>内分泌・代謝：</strong>甲状腺機能低下症、高カルシウム血症、糖尿病（自律神経障害）など</span></li>
+        <li class="anim-i" data-cue="パーキンソン病では、便秘が" style="--i:2"><span><strong>パーキンソン病：</strong>便秘が運動症状に先行する前駆症状のことがある</span></li>
+        <li class="anim-i" data-cue="頑固な便秘に加えて" style="--i:3"><span>頑固な便秘に加えて<strong>動作が遅い・手が震える・立ちくらみ</strong>——神経疾患も念頭に</span></li>
+      </ul>
+      <div class="important-box lg anim3" data-cue="生活を整えても" style="margin-top:12px; padding:14px 36px">
+        <div class="ttl">📋 ここだけ覚えればOK</div>
+        <p>生活を整えても良くならない便秘は、<strong>薬・持病を疑って相談を</strong></p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>15</span></div>
+  </section>
+
+  <!-- ===== 16. 危険サイン4カード ===== -->
+  <section data-label="危険サイン" data-screen-label="16 危険サイン" class="slide danger">
+    <div class="eyebrow eyebrow--red anim">生活指導だけで様子を見てはいけないサイン<span class="en">RED FLAGS</span></div>
+    <h2 class="s-title anim">見逃してはいけない危険サイン</h2>
+    <div class="danger__list" style="margin-top:18px; --type-subtitle:calc(34px * var(--type-mult)); --type-small:calc(24px * var(--type-mult))">
+      <div class="danger__item anim-i" style="--i:1; padding:18px 28px" data-cue="血便や便潜血陽性">
+        <svg class="danger__tri" viewBox="0 0 24 22"><path d="M12 1 L23 21 H1 Z" fill="var(--danger)"/><rect x="10.9" y="8" width="2.2" height="7" rx="1.1" fill="#fff"/><circle cx="12" cy="18" r="1.5" fill="#fff"/></svg>
+        <div class="danger__bd"><h3><span class="dnum">1</span>血便・便潜血陽性</h3><p>原因不明の貧血も含め、大腸がん等の検索を。無症状でも評価を</p></div>
+      </div>
+      <div class="danger__item anim-i" style="--i:2; padding:18px 28px" data-cue="意図しない体重減少">
+        <svg class="danger__tri" viewBox="0 0 24 22"><path d="M12 1 L23 21 H1 Z" fill="var(--danger)"/><rect x="10.9" y="8" width="2.2" height="7" rx="1.1" fill="#fff"/><circle cx="12" cy="18" r="1.5" fill="#fff"/></svg>
+        <div class="danger__bd"><h3><span class="dnum">2</span>意図しない体重減少</h3><p>悪性疾患を含む器質的疾患の可能性</p></div>
+      </div>
+      <div class="danger__item anim-i" style="--i:3; padding:18px 28px" data-cue="便柱狭小化">
+        <svg class="danger__tri" viewBox="0 0 24 22"><path d="M12 1 L23 21 H1 Z" fill="var(--danger)"/><rect x="10.9" y="8" width="2.2" height="7" rx="1.1" fill="#fff"/><circle cx="12" cy="18" r="1.5" fill="#fff"/></svg>
+        <div class="danger__bd"><h3><span class="dnum">3</span>便が細くなる（狭小化）</h3><p>急な便通変化も含め通過障害を疑う。中高年ではとくに注意</p></div>
+      </div>
+      <div class="danger__item anim-i" style="--i:4; padding:18px 28px" data-cue="生活指導で改善しない">
+        <svg class="danger__tri" viewBox="0 0 24 22"><path d="M12 1 L23 21 H1 Z" fill="var(--danger)"/><rect x="10.9" y="8" width="2.2" height="7" rx="1.1" fill="#fff"/><circle cx="12" cy="18" r="1.5" fill="#fff"/></svg>
+        <div class="danger__bd"><h3><span class="dnum">4</span>生活指導で改善しない</h3><p>下剤を尽くしても不変。排便協調障害など病型の違いを疑う</p></div>
+      </div>
+    </div>
+    <div class="danger__call">📞 気になるサインがあれば、年齢に関わらず受診を——消化器内科・かかりつけ医へ</div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>16</span></div>
+  </section>
+
+  <!-- ===== 17. まとめ ===== -->
+  <section data-label="まとめ" data-screen-label="17 まとめ" class="slide">
+    <div class="chapter-ghost">17</div>
+    <div class="eyebrow anim">まとめ<span class="en">SUMMARY</span></div>
+    <h2 class="s-title serif anim">今日の3つの持ち帰りポイント</h2>
+    <hr class="hairline">
+    <div class="sum__list">
+      <div class="sum__card anim" data-cue="1つ、回数でなく"><div class="sum__n">01</div><div class="sum__h" style="font-size:calc(32px * var(--type-mult))">回数でなく<br>硬さ・いきみで見る</div><p class="sum__p" style="font-size:calc(24px * var(--type-mult))">目標は<span style="white-space:nowrap">「いきまず、</span>すっきり」<span style="white-space:nowrap">出るType3〜4の便</span></p></div>
+      <div class="sum__card anim2" data-cue="2つ、効果が確からしい"><div class="sum__n">02</div><div class="sum__h" style="font-size:calc(32px * var(--type-mult))">効果が確からしい<br>ものから始める</div><p class="sum__p" style="font-size:calc(24px * var(--type-mult))">サイリウムの<span style="white-space:nowrap">漸増・足台での</span>排便姿勢と<span style="white-space:nowrap">排便習慣</span></p></div>
+      <div class="sum__card anim3" data-cue="3つ、神経疾患・受診サイン"><div class="sum__n">03</div><div class="sum__h" style="font-size:calc(32px * var(--type-mult))">神経疾患・受診サイン<br>を見逃さない</div><p class="sum__p" style="font-size:calc(24px * var(--type-mult))">薬剤性・<span style="white-space:nowrap">パーキンソン病の</span>サイン、<span style="white-space:nowrap">危険徴候は評価へ</span></p></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>17</span></div>
+  </section>
+
+  <!-- ===== 18. 免責事項 ===== -->
+  <section data-label="免責事項" data-screen-label="18 免責事項" class="slide disc">
+    <div class="disc__icon">⚠️</div>
+    <p class="disc__tag">ご視聴にあたってのお願い</p>
+    <div class="disc__box">
+      <p>この動画は<span class="strong">一般的な情報提供</span>であり、診断・治療の代わりにはなりません。<br>症状がある場合は<span class="strong">医療機関を受診してください</span>。</p>
+    </div>
+  </section>
+
+  <!-- ===== 19. 参考文献・出典 ===== -->
+  <section data-label="参考文献" data-screen-label="19 参考文献" class="slide slide--soft">
+    <div class="eyebrow anim">参考文献・出典<span class="en">REFERENCES</span></div>
+    <h2 class="s-title anim">この動画の参考資料</h2>
+    <div class="refs__list" style="display:grid; grid-template-columns:1fr 1fr; gap:10px 44px; margin-top:26px;">
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[1]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Mearin 2016（Rome IV）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[2]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Lewis &amp; Heaton 1997（Bristol）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[3]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">日本消化管学会 2023（診療GL）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[4]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">van der Schoot 2022（食物繊維）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[5]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Sikirov 2003（排便姿勢）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[6]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Modi 2019（足台）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[7]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Gao 2019（運動療法）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[8]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Lämås 2009（腹部マッサージ）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[9]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Pedrosa Carrasco 2018（PD便秘）</p>
+      </div>
+    </div>
+    <p class="refs__note" style="margin-top:16px; font-size:var(--type-label)">出典はPMID・DOIを含め概要欄をご確認ください。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>19</span></div>
+  </section>
+
+  <!-- ===== 20. エンディング ===== -->
+  <section data-label="エンディング" data-screen-label="20 エンディング" class="slide end">
+    <h2 class="end__h anim">今日から、"硬さ"で見る習慣を</h2>
+    <div class="end__rule grow-x"></div>
+    <div class="end__cards">
+      <div class="end__card anim2"><span class="end__ic">📄</span><div><h3>詳しい解説はブログへ</h3><p>概要欄から<b style="white-space:nowrap">ブログ記事</b>を<span style="white-space:nowrap">ご覧</span>ください</p></div></div>
+      <div class="end__card anim3"><span class="end__ic">📋</span><div><h3 style="white-space:nowrap">患者配布用ハンドアウト</h3><p>外来でそのまま使える<br><b>配布資料</b>を用意しています</p></div></div>
+      <div class="end__card anim4"><span class="end__ic">👍</span><div><h3>高評価・<span style="white-space:nowrap">チャンネル登録</span></h3><p>次回も<b style="white-space:nowrap">お楽しみに</b></p></div></div>
+    </div>
+    <div class="end__note anim5">最後までご視聴いただきありがとうございました。<br>役に立ったと<span style="white-space:nowrap">感じたら</span>、高評価とチャンネル登録を<br>いただけると<span style="white-space:nowrap">励みになります</span>。</div>
+  </section>
+
+</deck-stage>
+
+<script src="deck-stage.js"></script>
+<script src="image-slot.js"></script>
+
+</body>
+</html>
