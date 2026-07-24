@@ -1,0 +1,863 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>医療チャンネル スライドテンプレート（セミナー紺・肥満メタボ減量指導）</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   テーマ「セミナー紺」— 参照: docs/specs/2026-07-05-slide-theme-seminar-navy-design.md
+   濃紺 #012360 × プラム #AB47BC（濃 #6A1B9A・淡 #F3E5F5）× 警告レッド #DC3323
+   外来患者指導シリーズ第21弾＝肥満・メタボリックシンドロームの減量生活指導。
+   第20弾（慢性便秘・ティール青緑）の差し色を全数置換し、本弾はプラム系にする。
+   ※ tweaks-app.jsx の accent 既定値も #AB47BC（実行時に --accent をインライン上書きするため一致必須）
+   核心=①目標はまず3% ②食事法は続けられる方を患者に選ばせる（DIETFITS）
+   ③毎日1回の体重測定を"処方"する ④停滞とリバウンドは生理現象——"先に"伝える
+   ⑤運動は「減らす」より「守る・戻さない」 ⑥「太った」と言われたら処方箋を見る
+   ⑦減量が効く併存症（OSA/IIH/膝OA/脂肪肝） ⑧高齢者は筋トレ併用が前提
+   ⑨Look AHEADで心血管イベントは示せなかった——約束の線引きを正直に。
+   強調してよい数値は 3%/5%/7%/10%/週150分/毎日1回 のみ（n数・kg・95%CIは暗記対象化しない）
+   全文Noto Sans JPで統一（可読性優先・明朝混植は廃止）
+   クラス設計・セクション番号は 医療スライドテンプレート.html と互換
+   ===================================================================== */
+:root{
+  /* palette (PDF実測値) */
+  --navy:#012360;
+  --navy-ink:#001B4D;
+  --accent:#AB47BC;
+  --accent-soft: color-mix(in srgb, var(--accent) 11%, #ffffff);
+  --accent-line: color-mix(in srgb, var(--accent) 62%, #ffffff);
+  --accent-ink: #6A1B9A;
+  --danger:#DC3323;
+  --danger-soft: color-mix(in srgb, var(--danger) 9%, #ffffff);
+  --bg:#FDFDFD;
+
+  /* 継承トークンの上書き（colors_and_type.css の値を紺×プラム系に寄せる） */
+  --blue:#1D4189;
+  --blue-soft:#E9EEF8;
+  --blue-tint:#EEF2FA;
+  --red: var(--danger);
+  --red-soft: var(--danger-soft);
+  --orange: var(--accent);
+  --orange-soft: var(--accent-soft);
+  --line:#D8DDE6;
+  --line-soft:#C9D2DF;
+  --bg-muted:#F8F8F8;
+  --bg-alt:#F6F6F6;
+  --navy-line: color-mix(in srgb, var(--navy) 22%, #ffffff);
+
+  /* type scale — multiply all via --type-mult (既存テンプレと同値) */
+  --type-mult: 1.38;
+  --type-display: calc(96px * var(--type-mult));
+  --type-title:   calc(82px * var(--type-mult));
+  --type-heading: calc(60px * var(--type-mult));
+  --type-subtitle:calc(44px * var(--type-mult));
+  --type-body:    calc(38px * var(--type-mult));
+  --type-small:   calc(30px * var(--type-mult));
+  --type-label:   calc(27px * var(--type-mult));
+  --type-chapter: calc(210px * var(--type-mult));
+  --type-stat:    calc(150px * var(--type-mult));
+
+  --pad-x: 112px;
+  --pad-top: 58px;
+  --pad-bottom: 80px;
+  --gap-title: 24px;
+  --gap-item: 22px;
+
+  /* このテーマ内は本文・見出しともNoto Sans JPに統一（colors_and_type.css の --font-ja を上書き。他ファイルには影響しない） */
+  --font-ja: "Noto Sans JP", "BIZ UDPGothic", "Yu Gothic", "Meiryo", sans-serif;
+  --font-serif: var(--font-ja);
+  --grad-navy: linear-gradient(160deg, #012360 0%, #001B4D 100%);
+}
+.serif{ font-family: var(--font-serif); font-weight:800; letter-spacing:.02em; }
+
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#0a1430; }
+
+/* ---------- base slide ---------- */
+.slide{
+  box-sizing:border-box;
+  display:flex; flex-direction:column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-ja);
+  overflow:hidden;
+  position:relative;
+}
+/* 下端の紺帯（PDF全ページ共通の締め） */
+.slide::after{
+  content:""; position:absolute; left:0; right:0; bottom:0; height:10px;
+  background: var(--navy); pointer-events:none;
+}
+.slide--navy{ background: var(--grad-navy); color: var(--white); }
+.slide--navy::after{ background: var(--accent); }
+.slide--soft{ background: var(--bg-alt); }
+
+/* eyebrow — 紺の縦帯（下端プラム）＋ラベル */
+.eyebrow{
+  display:flex; align-items:center; gap:18px;
+  font-size: var(--type-label); font-weight:700; color: var(--navy);
+  letter-spacing:.04em;
+}
+.eyebrow::before{
+  content:""; width:12px; height:44px; border-radius:3px;
+  background: linear-gradient(180deg, var(--navy) 0 68%, var(--accent) 68% 100%);
+  flex:none;
+}
+.eyebrow .num{ font-family: var(--font-en); color: var(--accent-ink); }
+.eyebrow .en{ font-family: var(--font-en); color: var(--accent-ink); letter-spacing:.15em; text-transform:uppercase; }
+.slide--navy .eyebrow{ color: rgba(255,255,255,.88); }
+.slide--navy .eyebrow .en{ color:#fff; }
+.slide--navy .eyebrow::before{ background: linear-gradient(180deg, #fff 0 68%, var(--accent) 68% 100%); }
+
+.s-title{
+  font-size: var(--type-heading); line-height:1.22; color: var(--navy);
+  margin: var(--gap-title) 0 0; font-weight:800; letter-spacing:.01em;
+  text-wrap: pretty;
+}
+.slide--navy .s-title{ color:#fff; }
+
+.lead{
+  font-size: var(--type-body); line-height:1.7; color: var(--ink-2);
+  margin:0; text-wrap: pretty;
+}
+.muted{ color: var(--gray); }
+
+/* 見出し下罫線 — 紺の実線＋左端プラム短セグメント（PDF見出し様式） */
+.hairline{
+  height:4px; border:0; margin:20px 0 0;
+  background: linear-gradient(90deg, var(--accent) 0 150px, var(--navy) 150px);
+  opacity:1;
+}
+.slide--navy .hairline{ background: linear-gradient(90deg, var(--accent) 0 150px, rgba(255,255,255,.85) 150px); }
+
+/* 右上の薄い大章番号（装飾・背面） */
+.chapter-ghost{
+  position:absolute; top: 30px; right: var(--pad-x);
+  font-family: var(--font-en); font-weight:700; line-height:.8;
+  font-size: calc(150px * var(--type-mult)); color: var(--navy);
+  opacity:.05; pointer-events:none; user-select:none;
+}
+.slide--navy .chapter-ghost{ color:#fff; opacity:.10; }
+
+/* 汎用 下線ハイライト */
+.hl-underline{ border-bottom: 6px solid var(--accent-line); }
+
+/* 赤バッジ（インライン強調） */
+.badge-danger{
+  display:inline-block; background: var(--danger); color:#fff;
+  font-weight:800; padding: 4px 26px; border-radius:10px;
+  line-height:1.35;
+}
+
+/* footer band */
+.slide__foot{
+  position:absolute; left: var(--pad-x); right: var(--pad-x); bottom: 36px;
+  display:flex; align-items:center; justify-content:space-between;
+  font-size: calc(24px * var(--type-mult)); color: var(--gray);
+  font-family: var(--font-ja);
+}
+.slide__foot .ch{ display:flex; align-items:center; gap:10px; font-weight:700; color: var(--navy); }
+.slide__foot .cross{ color: var(--accent); font-weight:700; }
+.slide--navy .slide__foot{ color: rgba(255,255,255,.65); }
+.slide--navy .slide__foot .ch{ color:#fff; }
+.slide--navy .slide__foot .cross{ color: var(--accent); }
+
+/* ============ 1. COVER（白背景・右上に幾何アクセント） ============ */
+.cover{ justify-content:center; }
+.cover__geo{
+  position:absolute; right: 70px; top: 48px; width: 380px; height: 380px;
+  pointer-events:none;
+}
+.cover__badge{
+  display:inline-flex; align-items:center; gap:14px; align-self:flex-start;
+  background:#fff; border:2px solid var(--navy-line);
+  color: var(--navy); padding:12px 26px; border-radius:999px;
+  font-size: var(--type-label); font-weight:700;
+}
+.cover__badge .cross{ color: var(--accent); font-size:1.2em; }
+.cover__title{
+  font-family: var(--font-serif);
+  font-size: calc(76px * var(--type-mult)); line-height:1.3; color: var(--navy); font-weight:800;
+  margin:42px 0 0; letter-spacing:.02em; max-width:1400px;
+}
+.cover__title .hl{ color: var(--accent); }
+.cover__rule{ width: 1500px; max-width:100%; height:3px; background: var(--navy); margin-top:36px; }
+.cover__sub{
+  font-size: var(--type-subtitle); color: var(--ink-2);
+  margin:34px 0 0; font-weight:700;
+}
+.cover__sub .badge-danger{ margin: 0 6px; }
+.cover__meta{
+  display:flex; gap:30px; align-items:center; margin-top:64px;
+  font-size: var(--type-small); color: var(--gray);
+}
+.cover__avatar{
+  flex:none; width:84px; height:84px; border-radius:50%;
+  background: var(--accent-soft); border:3px solid var(--accent);
+  display:flex; align-items:center; justify-content:center;
+}
+.cover__avatar svg{ width:56%; height:56%; }
+.cover__meta .name{ font-weight:800; color: var(--navy); font-size: var(--type-small); }
+.cover__meta .vline{ width:2px; height:52px; background: var(--line); }
+.cover__blob{ display:none; }
+
+/* ============ 2. THEME / CONCLUSION FIRST ============ */
+.theme__body{ display:flex; flex-direction:column; gap: var(--gap-title); margin-top: 28px; flex:1; justify-content:center; }
+.theme__q{ font-family: var(--font-serif); font-size: var(--type-title); line-height:1.28; color: var(--navy); font-weight:800; max-width:22ch; text-wrap:balance; }
+.theme__q .hl{ color: var(--accent-ink); border-bottom: 8px solid var(--accent-line); }
+.concl{
+  display:flex; align-items:flex-start; gap:28px;
+  background:#fff; border:3px solid var(--accent);
+  border-radius: 12px; padding: 32px 44px;
+  position:relative;
+}
+.concl::before{
+  content:"“"; position:absolute; top:-58px; left:26px;
+  font-family: var(--font-en); font-size: calc(110px * var(--type-mult));
+  color: var(--accent); font-weight:900; line-height:1;
+}
+.concl__tag{
+  flex:none; background: var(--navy); color:#fff; font-weight:700;
+  font-size: var(--type-small); padding:10px 24px; border-radius:8px;
+}
+.concl__text{ font-size: var(--type-subtitle); line-height:1.5; color: var(--navy); font-weight:700; margin:0; }
+
+/* ============ 3. AGENDA（紺角チップ＋プラム縦罫） ============ */
+.agenda__list{ display:flex; flex-direction:column; gap:26px; margin-top:36px; }
+.agenda__item{ display:flex; align-items:center; gap:32px; }
+.agenda__num{
+  flex:none; width:76px; height:76px; border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+  background: var(--navy); color:#fff;
+  font-family: var(--font-en); font-size: calc(46px * var(--type-mult)); font-weight:800;
+}
+.agenda__txt{
+  font-size: var(--type-subtitle); color: var(--navy); font-weight:700;
+  border-left: 5px solid var(--accent); padding-left: 30px;
+}
+.agenda__txt small{ display:block; font-size: var(--type-small); color: var(--gray); font-weight:400; margin-top:8px; }
+
+/* ============ 4. CHAPTER DIVIDER（全面紺・白・中央） ============ */
+.chapter{ justify-content:center; align-items:center; text-align:center; }
+.chapter__kicker{
+  font-family: var(--font-en); font-size: var(--type-label); color: rgba(255,255,255,.55);
+  font-weight:700; letter-spacing:.4em; text-transform:uppercase;
+}
+.chapter__num{
+  font-family: var(--font-serif); font-size: calc(150px * var(--type-mult)); line-height:1.05;
+  font-weight:800; color:#fff; margin:10px 0 0; letter-spacing:.04em;
+}
+.chapter__rule{ width:560px; height:6px; background: var(--accent); border-radius:3px; margin-top:44px; }
+.chapter__title{ font-size: var(--type-subtitle); color:#fff; font-weight:700; margin:44px 0 0; max-width:26ch; text-wrap:balance; letter-spacing:.06em; }
+
+/* ============ 5. BODY 1 COLUMN ============ */
+.body1{ }
+.body1__main{ margin-top: 26px; max-width: 1640px; }
+.body1 .lead{ margin-bottom: 20px; }
+.important-box.lg{
+  background:#fff; border:2px solid var(--navy-line); border-left: 12px solid var(--accent);
+  border-radius: 12px; padding: 26px 40px; margin:0;
+  box-shadow: var(--shadow-sm);
+}
+.important-box.lg .ttl{ display:flex; align-items:center; gap:14px; font-size: var(--type-small); font-weight:700; color: var(--accent-ink); margin-bottom:8px; }
+.important-box.lg p{ font-size: var(--type-body); line-height:1.6; color: var(--ink-2); margin:0; }
+
+/* point list（cols2以外の単独利用にも対応） */
+.point-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:18px; }
+.point-list li{ display:flex; align-items:flex-start; gap:20px; font-size: var(--type-body); color: var(--ink-2); line-height:1.5; }
+.point-list li::before{ content:"✓"; flex:none; width:44px; height:44px; border-radius:50%; background: var(--navy); color:#fff; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:.8em; margin-top:2px; }
+/* 否定リスト（言ってはいけないこと） */
+.point-list--x li::before{ content:"✕"; background: var(--danger); }
+
+/* ============ 6. STAIR ROW（減量幅の階段・横並びカード） ============ */
+.stair{ display:grid; grid-template-columns:repeat(4,1fr); gap:24px; margin-top:30px; }
+.stair__card{
+  background:#fff; border:2px solid var(--navy-line); border-radius:12px;
+  padding:24px 16px 20px; text-align:center; display:flex; flex-direction:column;
+  align-items:center; gap:12px; box-shadow: var(--shadow-sm);
+}
+.stair__card.goal{ border-color: var(--accent); border-width:3px; background: var(--accent-soft); }
+.stair__n{
+  flex:none; min-width:110px; height:64px; padding:0 18px; border-radius:32px;
+  background: var(--navy); color:#fff; display:flex; align-items:center; justify-content:center;
+  font-family: var(--font-en); font-weight:800; font-size: calc(30px * var(--type-mult));
+}
+.stair__card.goal .stair__n{ background: var(--accent); }
+.stair__label{ font-size: calc(22px * var(--type-mult)); font-weight:700; color: var(--navy); line-height:1.4; }
+.stair__tag{ font-size: calc(19px * var(--type-mult)); color: var(--gray); font-weight:700; line-height:1.4; }
+.stair__card.goal .stair__tag{ color: var(--accent-ink); }
+
+/* ============ 10. DISCLAIMER ============ */
+.disc{ justify-content:center; align-items:center; text-align:center; background: var(--bg-alt); }
+.disc__icon{ font-size: calc(96px * var(--type-mult)); line-height:1; }
+.disc__tag{ font-family: var(--font-serif); font-size: var(--type-subtitle); font-weight:700; color: var(--navy); margin:28px 0 0; letter-spacing:.08em; }
+.disc__box{
+  margin-top:38px; max-width:1180px; background:#fff; border:2px solid var(--navy-line);
+  border-top: 10px solid var(--accent); border-radius:12px; padding:48px 56px;
+  box-shadow: var(--shadow-md);
+}
+.disc__box p{ font-size: var(--type-body); line-height:1.7; color: var(--ink-2); margin:0; text-wrap:pretty; }
+.disc__box .strong{ color: var(--navy); font-weight:700; }
+
+/* ============ 11. SUMMARY（カードゴール様式） ============ */
+.sum__list{ display:grid; grid-template-columns: repeat(3,1fr); gap:40px; margin-top:70px; flex:1; align-content:start; }
+.sum__card{
+  position:relative; background:#fff; border:2px solid var(--navy-line);
+  border-radius:14px; padding:64px 36px 40px; display:flex; flex-direction:column; gap:20px;
+  box-shadow: var(--shadow-md); text-align:center; align-items:center;
+}
+.sum__n{
+  position:absolute; top:-38px; left:50%; margin-left:-38px;
+  width:76px; height:76px; border-radius:50%;
+  background: var(--navy); color:#fff;
+  font-family: var(--font-en); font-size: calc(34px * var(--type-mult)); font-weight:800;
+  display:flex; align-items:center; justify-content:center; line-height:1;
+  box-shadow: var(--shadow-md);
+}
+.sum__h{ font-size: var(--type-subtitle); font-weight:800; color: var(--navy); line-height:1.3; text-wrap:balance; }
+.sum__h::after{ content:""; display:block; width:120px; height:4px; background: var(--accent); margin:16px auto 0; border-radius:2px; }
+.sum__p{ font-size: var(--type-small); color: var(--ink-2); line-height:1.6; margin:0; }
+
+/* ============ 12. ENDING（白背景） ============ */
+.end{ justify-content:center; align-items:center; text-align:center; }
+.end__h{
+  font-family: var(--font-serif);
+  font-size: var(--type-title); color: var(--navy); font-weight:800; margin:0; text-wrap:balance;
+}
+.end__rule{
+  width:1500px; max-width:100%; height:4px; margin-top:30px;
+  background: linear-gradient(90deg, var(--navy) 0 44%, var(--accent) 44% 56%, var(--navy) 56%);
+}
+.end__cards{ display:grid; grid-template-columns:repeat(3,1fr); gap:36px; margin-top:70px; width:100%; max-width:1640px; }
+.end__card{
+  background:#fff; border:2px solid var(--navy-line); border-radius:14px;
+  padding:34px 30px; display:flex; align-items:flex-start; gap:24px; text-align:left;
+  box-shadow: var(--shadow-sm);
+}
+.end__ic{
+  flex:none; width:88px; height:88px; border-radius:50%;
+  background: var(--accent); color:#fff; display:flex; align-items:center; justify-content:center;
+  font-size: calc(40px * var(--type-mult));
+}
+.end__card h3{ font-size: var(--type-small); font-weight:800; color: var(--navy); margin:0 0 6px; }
+.end__card h3 u{ text-decoration:none; border-bottom:3px solid var(--accent); }
+.end__card p{ font-size: var(--type-label); color: var(--ink-2); line-height:1.5; margin:0; }
+.end__card p b{ color: var(--accent-ink); }
+.end__note{
+  margin-top:60px; max-width:1400px; background:#fff;
+  border:2.5px solid var(--accent); border-radius:12px; padding:30px 60px;
+  font-family: var(--font-serif); font-size: var(--type-small); color: var(--navy);
+  font-weight:700; line-height:1.8;
+}
+.end__note b{ color: var(--accent-ink); }
+
+/* ============ 30. 危険サイン／方針転換（4象限白カード様式） ============ */
+.eyebrow--red{ color: var(--danger); }
+.eyebrow--red::before{ background: linear-gradient(180deg, var(--danger) 0 68%, var(--navy) 68% 100%); }
+.danger .s-title{ font-family: var(--font-serif); color: var(--navy); }
+.danger__list{ display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:30px; flex:1; align-content:center; }
+.danger__item{
+  display:flex; align-items:flex-start; gap:26px;
+  background:#fff; border:2px solid var(--navy-line); border-radius:14px;
+  padding:28px 34px; box-shadow: var(--shadow-sm);
+}
+.danger__item .ic{ display:none; }
+.danger__tri{ flex:none; width:76px; height:70px; margin-top:4px; }
+.danger__bd h3{
+  display:flex; align-items:center; gap:16px;
+  font-size: var(--type-subtitle); font-weight:800; color: var(--navy); margin:0;
+  padding-bottom:12px; border-bottom:4px solid var(--danger);
+}
+.danger__bd .dnum{
+  flex:none; width:52px; height:52px; border-radius:50%;
+  background: var(--danger); color:#fff;
+  font-family: var(--font-en); font-size: calc(28px * var(--type-mult)); font-weight:800;
+  display:flex; align-items:center; justify-content:center;
+}
+.danger__bd p{ font-size: var(--type-small); color: var(--ink-2); line-height:1.55; margin:14px 0 0; font-weight:700; }
+.danger{ padding-bottom:150px; }
+.danger__call{
+  margin-top:24px; margin-bottom:0; display:flex; align-items:center; justify-content:center; gap:22px;
+  background: var(--danger); color:#fff; border-radius:12px; padding:20px 40px;
+  font-size: var(--type-small); font-weight:800;
+}
+
+/* ============ 35. 参考文献・出典 ============ */
+.refs__list{ display:flex; flex-direction:column; gap:26px; margin-top:48px; }
+.refs__item{
+  display:flex; align-items:baseline; gap:26px;
+  border-bottom:1px solid var(--line); padding-bottom:26px;
+}
+.refs__num{ flex:none; font-family: var(--font-en); font-size: var(--type-small); font-weight:700; color: var(--accent-ink); }
+.refs__item p{ font-size: var(--type-body); color: var(--ink-2); line-height:1.6; margin:0; }
+.refs__item p small{ display:block; font-size: var(--type-label); color: var(--gray); margin-top:6px; }
+.refs__note{ margin-top:36px; font-size: var(--type-label); color: var(--gray); }
+
+/* entrance animation — fade-up を上位互換で拡張（deck-anim キット） */
+@media (prefers-reduced-motion:no-preference){
+  [data-deck-active] .anim{ animation: fade-up .5s both; }
+  [data-deck-active] .anim2{ animation: fade-up .5s .12s both; }
+  [data-deck-active] .anim3{ animation: fade-up .5s .24s both; }
+  [data-deck-active] .anim4{ animation: fade-up .5s .36s both; }
+  [data-deck-active] .anim5{ animation: fade-up .5s .48s both; }
+  [data-deck-active] .anim6{ animation: fade-up .5s .60s both; }
+  [data-deck-active] .anim-i{ animation: fade-up .5s both; animation-delay: calc(var(--i,0) * .1s); }
+  [data-deck-active] .a-fade { animation-name: a-fade; }
+  [data-deck-active] .a-up   { animation-name: fade-up; }
+  [data-deck-active] .a-down { animation-name: a-down; }
+  [data-deck-active] .a-right{ animation-name: a-right; }
+  [data-deck-active] .a-left { animation-name: a-left; }
+  [data-deck-active] .a-zoom { animation-name: a-zoom; }
+  [data-deck-active] .a-pop  { animation-name: a-pop; animation-timing-function: cubic-bezier(.34,1.56,.64,1); }
+  [data-deck-active] .a-blur { animation-name: a-blur; }
+  [data-deck-active] .grow-y { transform-origin:bottom center; animation: grow-y .7s .2s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .grow-x { transform-origin:left center;   animation: grow-x .55s .25s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .nudge-x{ animation: nudge-x .9s .35s ease-in-out both; }
+}
+.grow-y{ transform-origin:bottom center; } .grow-x{ transform-origin:left center; }
+@keyframes fade-up{ from{ opacity:0; transform: translateY(16px);} to{ opacity:1; transform:none;} }
+@keyframes a-fade { from{ opacity:0; } to{ opacity:1; } }
+@keyframes a-down { from{ opacity:0; transform: translateY(-16px);} to{ opacity:1; transform:none; } }
+@keyframes a-right{ from{ opacity:0; transform: translateX(-28px);} to{ opacity:1; transform:none; } }
+@keyframes a-left { from{ opacity:0; transform: translateX(28px); } to{ opacity:1; transform:none; } }
+@keyframes a-zoom { from{ opacity:0; transform: scale(.94);       } to{ opacity:1; transform:none; } }
+@keyframes a-pop  { from{ opacity:0; transform: scale(.8);        } to{ opacity:1; transform:none; } }
+@keyframes a-blur { from{ opacity:0; filter: blur(12px); transform: translateY(10px);} to{ opacity:1; filter: blur(0); transform:none; } }
+@keyframes grow-y { from{ transform: scaleY(0);} to{ transform: scaleY(1);} }
+@keyframes grow-x { from{ transform: scaleX(0);} to{ transform: scaleX(1);} }
+@keyframes nudge-x{ 0%{ transform:none;} 55%{ transform: translateX(10px);} 100%{ transform:none;} }
+
+/* tweaks mount */
+#tweaks-root{ position:fixed; inset:0; pointer-events:none; z-index:9999; }
+#tweaks-root > *{ pointer-events:auto; }
+</style>
+</head>
+<body style="font-size: 8px">
+
+<deck-stage width="1920" height="1080">
+
+
+  <!-- ===== 01. 表紙 ===== -->
+  <section data-label="表紙" data-screen-label="01 表紙" class="slide cover">
+    <svg class="cover__geo anim2 a-zoom" viewBox="0 0 200 200" aria-hidden="true">
+      <path d="M60 0 A140 140 0 0 1 200 140" fill="none" stroke="var(--navy-line)" stroke-width="4"/>
+      <path d="M95 0 A105 105 0 0 1 200 105" fill="none" stroke="var(--accent)" stroke-width="5"/>
+      <path d="M128 0 A72 72 0 0 1 200 72" fill="none" stroke="var(--navy)" stroke-width="4"/>
+      <g fill="var(--navy-line)">
+        <circle cx="26" cy="120" r="3.4"/><circle cx="52" cy="120" r="3.4"/><circle cx="78" cy="120" r="3.4"/>
+        <circle cx="26" cy="146" r="3.4"/><circle cx="52" cy="146" r="3.4"/><circle cx="78" cy="146" r="3.4"/>
+        <circle cx="26" cy="172" r="3.4"/><circle cx="52" cy="172" r="3.4"/><circle cx="78" cy="172" r="3.4"/>
+      </g>
+      <circle cx="78" cy="146" r="3.8" fill="var(--accent)"/>
+    </svg>
+    <div class="cover__badge anim"><span class="cross">✚</span><span>外来患者指導シリーズ第21弾</span></div>
+    <h1 class="cover__title anim2 a-blur">肥満・メタボの<br><span class="hl">減量生活指導</span></h1>
+    <div class="cover__rule grow-x"></div>
+    <p class="cover__sub anim3">外来の10分で、何を・どの順番で伝えるか——<br>目標は「まず3%」から組み立てる</p>
+    <div class="cover__meta anim3">
+      <span class="cover__avatar"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4.6" fill="var(--accent)"/><path d="M2.5 22.5 C2.5 16.5 7 14.2 12 14.2 C17 14.2 21.5 16.5 21.5 22.5 Z" fill="var(--accent)"/></svg></span>
+      <span class="name" style="white-space:nowrap">医知創造ラボ</span>
+      <span class="vline"></span>
+      <span style="white-space:nowrap">監修：今村久司（脳神経内科・総合内科専門医）</span>
+    </div>
+  </section>
+
+  <!-- ===== 02. テーマ・結論先出し ===== -->
+  <section data-label="テーマ・結論" data-screen-label="02 テーマ・結論" class="slide">
+    <div class="eyebrow anim">今日のテーマ<span class="en">TODAY'S POINT</span></div>
+    <div class="theme__body">
+      <h2 class="theme__q anim">減量指導が難しいのは、<br>知識<span class="hl-underline">が足りないから？</span></h2>
+      <div class="concl anim2">
+        <span class="concl__tag">結論</span>
+        <p class="concl__text">いいえ。<span style="white-space:nowrap">決めるのは知識ではなく、</span><span style="white-space:nowrap">説明の「順番」です</span></p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>02</span></div>
+  </section>
+
+  <!-- ===== 03. 目次 ===== -->
+  <section data-label="目次" data-screen-label="03 目次" class="slide slide--soft">
+    <div class="eyebrow anim">この動画でわかること<span class="en">AGENDA</span></div>
+    <h2 class="s-title serif anim">本日のアジェンダ</h2>
+    <hr class="hairline">
+    <div class="agenda__list">
+      <div class="agenda__item anim a-right" data-cue="1つ、初診の10分で"><div class="agenda__num">1</div><div class="agenda__txt">初診の10分で決めること<small>目標・食事法・体重測定、そして停滞の予告</small></div></div>
+      <div class="agenda__item anim2 a-right" data-cue="2つ、続けさせる設計"><div class="agenda__num">2</div><div class="agenda__txt">続けさせる設計<small>停滞とリバウンドは生理現象／運動は「減らす」より「守る」</small></div></div>
+      <div class="agenda__item anim3 a-right" data-cue="3つ、見落としを拾う"><div class="agenda__num">3</div><div class="agenda__txt">見落としを拾う<small>薬剤性の体重増加・併存症・高齢者、そして約束の線引き</small></div></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>03</span></div>
+  </section>
+
+  <!-- ===== 04. 章扉① 初診の10分で決めること ===== -->
+  <section data-label="章扉①" data-screen-label="04 章扉①" class="slide slide--navy chapter">
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num serif anim a-pop">第1章</h2>
+    <div class="chapter__rule grow-x"></div>
+    <h3 class="chapter__title anim3">初診の10分で決めること</h3>
+  </section>
+
+  <!-- ===== 05. 本文：目標は「まず3%」＋減量幅の階段 ===== -->
+  <section data-label="本文：目標はまず3%" data-screen-label="05 本文：目標はまず3%" class="slide">
+    <div class="chapter-ghost">05</div>
+    <div class="eyebrow anim">到達できる目標から入る<span class="en">SET THE FIRST TARGET</span></div>
+    <h2 class="s-title anim">目標は「大幅減」ではなく、<br><span class="hl-underline">まず現体重の3%</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(28px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:14px">
+      <p class="lead anim2" data-cue="初診でまずやること">『肥満症診療ガイドライン2022』では、肥満症で3〜6か月を目安に現体重の3%以上、<span style="white-space:nowrap">高度肥満症</span>で5〜10%が目標とされます。</p>
+      <div class="stair anim3" data-cue="3%が入口" style="margin-top:14px">
+        <div class="stair__card goal"><div class="stair__n">3%</div><div class="stair__label">入口</div><div class="stair__tag">血糖・血圧・脂質・<br>尿酸・肝機能が動く</div></div>
+        <div class="stair__card"><div class="stair__n">5%</div><div class="stair__label">脂肪肝炎</div><div class="stair__tag">組織学的な改善が<br>達成しやすくなる</div></div>
+        <div class="stair__card"><div class="stair__n">7%</div><div class="stair__label">糖尿病の発症抑制</div><div class="stair__tag">週150分の運動と<br>合わせた介入目標</div></div>
+        <div class="stair__card"><div class="stair__n">10%〜</div><div class="stair__label">線維化</div><div class="stair__tag">改善の報告あり。<br>全員には課さない</div></div>
+      </div>
+      <div class="important-box lg anim4" data-cue="ただし、この階段を" style="margin-top:16px; padding:16px 40px">
+        <div class="ttl">📋 ここだけ覚えればOK</div>
+        <p>階段を初診で全部見せない。<strong>最初に見せるのは3%だけ</strong>です。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>05</span></div>
+  </section>
+
+  <!-- ===== 06. 本文：食事法は患者に選ばせてよい ===== -->
+  <section data-label="本文：食事法の選び方" data-screen-label="06 本文：食事法の選び方" class="slide slide--soft">
+    <div class="chapter-ghost">06</div>
+    <div class="eyebrow anim">「どちらが痩せるか」論争を降ろす<span class="en">LOW-FAT VS LOW-CARB</span></div>
+    <h2 class="s-title anim">食事法は、<br><span class="hl-underline">続けられる方を選ばせてよい</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(30px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:16px">
+      <p class="lead anim2" data-cue="外来で最も時間を浪費">外来で最も時間を浪費しやすいのが、糖質制限か脂質制限かという議論です。<span style="white-space:nowrap">この論争を</span>診察室から降ろせる無作為化試験があります。</p>
+      <ul class="point-list" style="gap:12px; margin-top:14px">
+        <li class="anim-i" data-cue="糖尿病のない過体重" style="--i:1"><span>健康的な<strong>低脂質食と低炭水化物食</strong>で、12か月の減量に<strong>有意差なし</strong></span></li>
+        <li class="anim-i" data-cue="さらに、遺伝子型でも" style="--i:2"><span>遺伝子型・インスリン分泌能でも<strong>「どちらが向くか」を予測できない</strong></span></li>
+        <li class="anim-i" data-cue="ただし、どちらの群も" style="--i:3"><span>ただし両群とも<strong>食事の質を上げる行動修正</strong>を受けている</span></li>
+      </ul>
+      <div class="important-box lg anim4" data-cue="外来では、こう言え" style="margin-top:14px; padding:16px 40px">
+        <div class="ttl">📋 外来トーク例</div>
+        <p>「どちらでも構いません。<strong>3か月続けられる方</strong>を選んでください」</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>06</span></div>
+  </section>
+
+  <!-- ===== 07. 本文：セルフモニタリングを"処方"する ===== -->
+  <section data-label="本文：体重測定の処方" data-screen-label="07 本文：体重測定の処方" class="slide">
+    <div class="chapter-ghost">07</div>
+    <div class="eyebrow anim">初診で「処方」する行動<span class="en">SELF-WEIGHING AS A PRESCRIPTION</span></div>
+    <h2 class="s-title anim">食事の中身より先に、<br><span class="hl-underline">毎日1回の体重測定</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(28px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:14px">
+      <p class="lead anim2" data-cue="初診で「処方」する">系統的レビューでは、毎日の自己体重測定が体重アウトカムの改善と結びつき、<span style="white-space:nowrap">心理的な悪影響</span>は認められませんでした（因果とは言えません）。</p>
+      <ul class="point-list" style="gap:10px; margin-top:12px">
+        <li class="anim-i" data-cue="1日1回、同じ条件" style="--i:1"><span><strong>1日1回、同じ条件で</strong>（起床後・排尿後・着衣をそろえる）</span></li>
+        <li class="anim-i" data-cue="前日比ではなく" style="--i:2"><span>前日比ではなく<strong>1週間の流れ</strong>を見る</span></li>
+        <li class="anim-i" data-cue="記録は受診時に" style="--i:3"><span>記録は<strong>受診時に持ってくる</strong>（アプリでも手書きでもよい）</span></li>
+        <li class="anim-i" data-cue="増えた日を責めない" style="--i:4"><span>増えた日を責めない——<strong>早く気づけた日</strong>と伝える</span></li>
+      </ul>
+      <div class="important-box lg anim5" data-cue="ただし、摂食障害の" style="margin-top:12px; padding:14px 36px; border-left-color:var(--danger)">
+        <div class="ttl" style="color:var(--danger)">⚠️ 勧めない方</div>
+        <p><strong>摂食障害の既往・傾向がある方</strong>には、毎日の体重測定を勧めない</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>07</span></div>
+  </section>
+
+  <!-- ===== 08. 章扉② 続けさせる設計 ===== -->
+  <section data-label="章扉②" data-screen-label="08 章扉②" class="slide slide--navy chapter">
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num serif anim a-pop">第2章</h2>
+    <div class="chapter__rule grow-x"></div>
+    <h3 class="chapter__title anim3">続けさせる設計</h3>
+  </section>
+
+  <!-- ===== 09. 本文：停滞とリバウンドは生理現象 ===== -->
+  <section data-label="本文：停滞とリバウンド" data-screen-label="09 本文：停滞とリバウンド" class="slide">
+    <div class="chapter-ghost">09</div>
+    <div class="eyebrow anim">止まってから説明するのでは遅い<span class="en">PLATEAU &amp; REGAIN</span></div>
+    <h2 class="s-title anim">停滞とリバウンドは、<br><span class="hl-underline">「先に」伝えておく</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(28px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:14px">
+      <p class="lead anim2" data-cue="ここからが、脱落防止">初診の時点で「必ず止まる時期が来ます。それは体の仕組みです」と予告しておくと、停滞が「失敗の証拠」から「予定どおりの出来事」に変わります。</p>
+      <ul class="point-list" style="gap:12px; margin-top:12px">
+        <li class="anim-i" data-cue="ひとつは代謝適応" style="--i:1"><span><strong>代謝適応：</strong>減量後、安静時の代謝が低いまま長く残ることがある</span></li>
+        <li class="anim-i" data-cue="もうひとつは食欲" style="--i:2"><span><strong>食欲ホルモン：</strong>空腹感の増加が<strong>1年後も元に戻らない</strong></span></li>
+        <li class="anim-i" data-cue="同時に、希望も" style="--i:3"><span><strong>希望：</strong>長期に維持できている方は一定の割合で存在する</span></li>
+      </ul>
+      <div class="important-box lg anim4" data-cue="外来ではこう伝えます" style="margin-top:12px; padding:14px 36px">
+        <div class="ttl">📋 外来トーク例</div>
+        <p>「止まるのは当たり前です。<strong>止まったときこそ来てください</strong>」</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>09</span></div>
+  </section>
+
+  <!-- ===== 10. 本文：運動の役割 ===== -->
+  <section data-label="本文：運動の役割" data-screen-label="10 本文：運動の役割" class="slide slide--soft">
+    <div class="chapter-ghost">10</div>
+    <div class="eyebrow anim">「歩いても減らない」と言われる前に<span class="en">ROLE OF EXERCISE</span></div>
+    <h2 class="s-title anim">運動は「減らす」より、<br><span class="hl-underline">「守る・戻さない」ため</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(28px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:14px">
+      <p class="lead anim2" data-cue="運動を「体重を減らす">運動を「体重を減らす手段」として説明すると、患者さんは「毎日歩いているのに減らない」と失望します。役割で説明しましょう。</p>
+      <ul class="point-list" style="gap:12px; margin-top:12px">
+        <li class="anim-i" data-cue="運動の役割は2つ" style="--i:1"><span>役割は2つ——<strong>戻さないため</strong>と、<strong>筋肉と骨を守るため</strong></span></li>
+        <li class="anim-i" data-cue="維持できている方の" style="--i:2"><span>維持者の高い身体活動は<strong>観察研究＝関連であって因果ではない</strong></span></li>
+        <li class="anim-i" data-cue="関節の負担を下げた" style="--i:3"><span>膝OAでは<strong>負担を下げるのは食事、症状を最もよくするのは食事＋運動</strong></span></li>
+      </ul>
+      <div class="important-box lg anim4" data-cue="体重を減らすのは食事" style="margin-top:12px; padding:14px 36px">
+        <div class="ttl">📋 外来トーク例</div>
+        <p>「運動は<strong>「減らす」より「戻さない・筋肉を守る」</strong>ためのものです」</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>10</span></div>
+  </section>
+
+  <!-- ===== 11. 章扉③ 見落としを拾う ===== -->
+  <section data-label="章扉③" data-screen-label="11 章扉③" class="slide slide--navy chapter">
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num serif anim a-pop">第3章</h2>
+    <div class="chapter__rule grow-x"></div>
+    <h3 class="chapter__title anim3">見落としを拾う</h3>
+  </section>
+
+  <!-- ===== 12. 本文：「太った」と言われたら処方箋を見る ===== -->
+  <section data-label="本文：薬剤性の体重増加" data-screen-label="12 本文：薬剤性の体重増加" class="slide">
+    <div class="chapter-ghost">12</div>
+    <div class="eyebrow anim">この動画のいちばんの実用点<span class="en">DRUG-INDUCED WEIGHT GAIN</span></div>
+    <h2 class="s-title anim">「最近太った」と言われたら、<br>まず<span class="hl-underline">処方箋を見る</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(27px * var(--type-mult)); --type-small:calc(23px * var(--type-mult)); margin-top:12px">
+      <p class="lead anim2" data-cue="外来で「最近太ってきました」">食事や運動を問い詰める前に、処方箋を見てください。メタ解析が、体重増加と関連する薬剤群を示しています。</p>
+      <ul class="point-list" style="gap:10px; margin-top:12px">
+        <li class="anim-i" data-cue="一部の抗うつ薬" style="--i:1"><span><strong>増やしうる：</strong>一部の抗うつ薬・抗精神病薬、ガバペンチン、SU薬、チアゾリジン薬</span></li>
+        <li class="anim-i" data-cue="逆に体重減少と関連" style="--i:2"><span><strong>減少と関連：</strong>メトホルミン、GLP-1受容体作動薬、ゾニサミド、トピラマート</span></li>
+        <li class="anim-i" data-cue="カルバマゼピンと" style="--i:3"><span><strong>抗てんかん薬：</strong>カルバマゼピン等は脂質上昇、バルプロ酸はBMI上昇と関連</span></li>
+        <li class="anim-i" data-cue="一方、ラモトリギン" style="--i:4"><span><strong>代替の候補：</strong>ラモトリギンは成人でLDL低下、レベチラセタムは脂質に中立</span></li>
+      </ul>
+      <div class="important-box lg anim5" data-cue="ただし、これは「その薬" style="margin-top:12px; padding:14px 36px; border-left-color:var(--danger)">
+        <div class="ttl" style="color:var(--danger)">⚠️ 誤解させてはいけない</div>
+        <p><strong>「その薬をやめれば痩せる」ではありません。</strong>原疾患のコントロールが最優先です</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>12</span></div>
+  </section>
+
+  <!-- ===== 13. 本文：減量が"効く"併存症 ===== -->
+  <section data-label="本文：減量が効く併存症" data-screen-label="13 本文：減量が効く併存症" class="slide slide--soft">
+    <div class="chapter-ghost">13</div>
+    <div class="eyebrow anim">動機づけは「今つらい症状」から<span class="en">COMORBIDITIES THAT RESPOND</span></div>
+    <h2 class="s-title anim">減量が「効く」併存症を、<br><span class="hl-underline">意識して拾い上げる</span></h2>
+    <hr class="hairline">
+    <p class="lead anim2" data-cue="減量の動機づけとして" style="--type-body:calc(27px * var(--type-mult)); margin-top:14px">「将来のリスクが下がります」より、「今つらい症状が良くなります」の方が<span style="white-space:nowrap">動機づけとして強い</span></p>
+    <div class="sum__list" style="grid-template-columns:repeat(4,1fr); gap:26px; margin-top:56px">
+      <div class="sum__card anim-i" data-cue="閉塞性睡眠時無呼吸" style="--i:1; padding:52px 22px 28px">
+        <div class="sum__n" style="width:66px; height:66px; margin-left:-33px; top:-33px; font-size:calc(28px * var(--type-mult))">01</div>
+        <div class="sum__h" style="font-size:calc(28px * var(--type-mult))">閉塞性<br>睡眠時無呼吸</div>
+        <p class="sum__p" style="font-size:calc(21px * var(--type-mult))">いびき・日中の眠気・<span style="white-space:nowrap">朝の頭重感</span>を聞く</p>
+      </div>
+      <div class="sum__card anim-i" data-cue="特発性頭蓋内圧亢進症" style="--i:2; padding:52px 22px 28px">
+        <div class="sum__n" style="width:66px; height:66px; margin-left:-33px; top:-33px; font-size:calc(28px * var(--type-mult))">02</div>
+        <div class="sum__h" style="font-size:calc(28px * var(--type-mult))">特発性<br>頭蓋内圧亢進症</div>
+        <p class="sum__p" style="font-size:calc(21px * var(--type-mult))">減量そのものが治療になる<span style="white-space:nowrap">数少ない神経疾患</span></p>
+      </div>
+      <div class="sum__card anim-i" data-cue="変形性膝関節症" style="--i:3; padding:52px 22px 28px">
+        <div class="sum__n" style="width:66px; height:66px; margin-left:-33px; top:-33px; font-size:calc(28px * var(--type-mult))">03</div>
+        <div class="sum__h" style="font-size:calc(28px * var(--type-mult))">変形性<br>膝関節症</div>
+        <p class="sum__p" style="font-size:calc(21px * var(--type-mult))">負担を下げるのは食事、<span style="white-space:nowrap">症状は食事＋運動</span></p>
+      </div>
+      <div class="sum__card anim-i" data-cue="脂肪肝。生検で確定" style="--i:4; padding:52px 22px 28px">
+        <div class="sum__n" style="width:66px; height:66px; margin-left:-33px; top:-33px; font-size:calc(28px * var(--type-mult))">04</div>
+        <div class="sum__h" style="font-size:calc(28px * var(--type-mult))">脂肪肝<br>（NASH／MASH）</div>
+        <p class="sum__p" style="font-size:calc(21px * var(--type-mult))">5%で組織像、<span style="white-space:nowrap">10%以上で線維化の</span>報告</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>13</span></div>
+  </section>
+
+  <!-- ===== 14. 本文：高齢者は減らし方が違う ===== -->
+  <section data-label="本文：高齢者の減らし方" data-screen-label="14 本文：高齢者の減らし方" class="slide">
+    <div class="chapter-ghost">14</div>
+    <div class="eyebrow anim">安全性の核<span class="en">WEIGHT LOSS IN OLDER ADULTS</span></div>
+    <h2 class="s-title anim">高齢者では、<br><span class="hl-underline">筋トレなしの減量を勧めない</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(28px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:14px">
+      <p class="lead anim2" data-cue="ここは安全性の核">減量は加齢に伴う筋肉と骨の減少を加速させ、サルコペニアや骨量減少を招きうるからです。</p>
+      <div class="important-box lg anim3" data-cue="同じだけ体重が減って" style="margin-top:12px; padding:14px 36px">
+        <div class="ttl">📋 ここだけ覚えればOK</div>
+        <p>体重の減り方は同じでも、<strong>筋トレを含む群は除脂肪量と骨密度の低下が小さい</strong></p>
+      </div>
+      <ul class="point-list" style="gap:10px; margin-top:14px">
+        <li class="anim-i" data-cue="ですから、食事制限だけ" style="--i:1"><span><strong>食事制限だけの減量を勧めない</strong>——筋トレの併用を前提にする</span></li>
+        <li class="anim-i" data-cue="評価は体重だけでなく" style="--i:2"><span>評価は体重だけでなく<strong>握力・歩行速度・立ち上がり</strong>も見る</span></li>
+        <li class="anim-i" data-cue="たんぱく質を削らせない" style="--i:3"><span><strong>たんぱく質を削らせない</strong>——主食・主菜の一律カットを避ける</span></li>
+        <li class="anim-i" data-cue="意図しない体重減少" style="--i:4"><span>意図しない体重減少・食欲低下が出たら<strong>方針転換</strong></span></li>
+      </ul>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>14</span></div>
+  </section>
+
+  <!-- ===== 15. 本文：約束してよいこと／いけないこと ===== -->
+  <section data-label="本文：約束の線引き" data-screen-label="15 本文：約束の線引き" class="slide slide--soft">
+    <div class="chapter-ghost">15</div>
+    <div class="eyebrow anim">正直に伝えることが質になる<span class="en">WHAT WE CAN PROMISE</span></div>
+    <h2 class="s-title anim">減量で心血管イベントは<br><span class="hl-underline">減らせたのか</span></h2>
+    <hr class="hairline">
+    <p class="lead anim2" data-cue="最後に、冒頭でお約束" style="--type-body:calc(27px * var(--type-mult)); margin-top:14px">大規模な無作為化試験では、集約的生活介入で減量と検査値は改善したものの、<strong><span style="white-space:nowrap">主要な心血管イベント</span>に有意差はありませんでした</strong>。</p>
+    <p class="lead anim3" data-cue="ただし対照群も" style="--type-body:calc(24px * var(--type-mult)); margin-top:10px; color:var(--gray)">※ 対照群も減量しており「減量は無意味」という誤読も避ける。</p>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:34px; margin-top:18px">
+      <div class="important-box lg anim4" data-cue="言ってよいのは" style="padding:20px 34px">
+        <div class="ttl">○ 言ってよいこと</div>
+        <ul class="point-list" style="gap:8px; margin-top:8px; --type-body:calc(24px * var(--type-mult))">
+          <li><span>検査値が動く（血糖・血圧・脂質など）</span></li>
+          <li><span>いびき・日中の眠気が軽くなりうる</span></li>
+          <li><span>膝の痛みと動きやすさが良くなりうる</span></li>
+          <li><span>脂肪肝の組織像が改善しうる</span></li>
+        </ul>
+      </div>
+      <div class="important-box lg anim5" data-cue="言ってはいけないのは" style="padding:20px 34px; border-left-color:var(--danger)">
+        <div class="ttl" style="color:var(--danger)">✕ 言ってはいけないこと</div>
+        <ul class="point-list point-list--x" style="gap:8px; margin-top:8px; --type-body:calc(24px * var(--type-mult))">
+          <li><span>「減量すれば心筋梗塞や脳卒中を防げる」</span></li>
+          <li><span>「この方法なら必ず痩せる」</span></li>
+          <li><span>「戻るのは意志が弱いから」</span></li>
+          <li><span>「その薬をやめれば痩せます」</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>15</span></div>
+  </section>
+
+  <!-- ===== 16. まとめ ===== -->
+  <section data-label="まとめ" data-screen-label="16 まとめ" class="slide">
+    <div class="chapter-ghost">16</div>
+    <div class="eyebrow anim">まとめ<span class="en">SUMMARY</span></div>
+    <h2 class="s-title serif anim">今日の3つの持ち帰りポイント</h2>
+    <hr class="hairline">
+    <div class="sum__list">
+      <div class="sum__card anim" data-cue="1つ、目標は「まず3%」"><div class="sum__n">01</div><div class="sum__h" style="font-size:calc(32px * var(--type-mult))">目標は<br>「まず3%」</div><p class="sum__p" style="font-size:calc(24px * var(--type-mult))">紙に書いて共有し、<span style="white-space:nowrap">達成したら</span>次を<span style="white-space:nowrap">決め直す</span></p></div>
+      <div class="sum__card anim2" data-cue="2つ、停滞は「先に」"><div class="sum__n">02</div><div class="sum__h" style="font-size:calc(32px * var(--type-mult))">停滞は<br>「先に」予告する</div><p class="sum__p" style="font-size:calc(24px * var(--type-mult))">代謝と食欲ホルモンの<span style="white-space:nowrap">生理現象だと</span><span style="white-space:nowrap">始める前に伝える</span></p></div>
+      <div class="sum__card anim3" data-cue="3つ、「太った」と言われたら"><div class="sum__n">03</div><div class="sum__h" style="font-size:calc(32px * var(--type-mult))">太ったら<br>処方箋を見る</div><p class="sum__p" style="font-size:calc(24px * var(--type-mult))">食事と運動を<span style="white-space:nowrap">問い詰める前に</span><span style="white-space:nowrap">薬を点検する</span></p></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>16</span></div>
+  </section>
+
+  <!-- ===== 17. 免責事項 ===== -->
+  <section data-label="免責事項" data-screen-label="17 免責事項" class="slide disc">
+    <div class="disc__icon">⚠️</div>
+    <p class="disc__tag">ご視聴にあたってのお願い</p>
+    <div class="disc__box">
+      <p>この動画は<span class="strong">一般的な情報提供</span>であり、<span style="white-space:nowrap">診断・治療の代わりにはなりません。</span><br>症状がある場合は<span class="strong">医療機関を受診してください</span>。</p>
+    </div>
+  </section>
+
+  <!-- ===== 18. 参考文献・出典① ===== -->
+  <section data-label="参考文献①" data-screen-label="18 参考文献①" class="slide slide--soft">
+    <div class="eyebrow anim">参考文献・出典<span class="en">REFERENCES 1/2</span></div>
+    <h2 class="s-title anim">目標・食事・行動・維持</h2>
+    <div class="refs__list" style="display:grid; grid-template-columns:1fr 1fr; gap:10px 44px; margin-top:26px;">
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[1]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Muramoto 2014（3%の根拠）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[2]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">日本肥満学会 2022（肥満症GL）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[3]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Knowler 2002（7%＋週150分）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[4]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Vilar-Gomez 2015（5%・10%）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[5]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Gardner 2018（DIETFITS）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[6]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Shieh 2016（自己体重測定）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[7]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Fothergill 2016（代謝適応）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[8]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Sumithran 2011（食欲ホルモン）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[9]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Wing &amp; Phelan 2005（維持期）</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>18</span></div>
+  </section>
+
+  <!-- ===== 19. 参考文献・出典② ===== -->
+  <section data-label="参考文献②" data-screen-label="19 参考文献②" class="slide slide--soft">
+    <div class="eyebrow anim">参考文献・出典<span class="en">REFERENCES 2/2</span></div>
+    <h2 class="s-title anim">薬剤・併存症・高齢者</h2>
+    <div class="refs__list" style="display:grid; grid-template-columns:1fr 1fr; gap:10px 44px; margin-top:26px;">
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[10]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Domecq 2015（薬剤性体重増加）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[11]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Chochoł 2025（抗てんかん薬）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[12]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Foster 2009（睡眠時無呼吸）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[13]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Sinclair 2010（IIH）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[14]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Mollan 2021（IIH）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[15]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Messier 2013（膝OA）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[16]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Villareal 2017（高齢者の運動）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[17]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Look AHEAD 2013（心血管）</p>
+      </div>
+    </div>
+    <p class="refs__note" style="margin-top:16px; font-size:var(--type-label)">全出典はPMID・DOIを含め概要欄に記載しています。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>19</span></div>
+  </section>
+
+  <!-- ===== 20. エンディング ===== -->
+  <section data-label="エンディング" data-screen-label="20 エンディング" class="slide end">
+    <h2 class="end__h anim" style="font-size:calc(74px * var(--type-mult))">今日から、目標は「まず3%」から</h2>
+    <div class="end__rule grow-x"></div>
+    <div class="end__cards">
+      <div class="end__card anim2"><span class="end__ic">📄</span><div><h3>詳しい解説はブログへ</h3><p>概要欄から<b style="white-space:nowrap">ブログ記事</b>を<span style="white-space:nowrap">ご覧</span>ください</p></div></div>
+      <div class="end__card anim3"><span class="end__ic">📋</span><div><h3 style="white-space:nowrap">患者配布用ハンドアウト</h3><p>外来でそのまま使える<br><b>配布資料</b>を用意しています</p></div></div>
+      <div class="end__card anim4"><span class="end__ic">👍</span><div><h3>高評価・<span style="white-space:nowrap">チャンネル登録</span></h3><p>次回も<b style="white-space:nowrap">お楽しみに</b></p></div></div>
+    </div>
+    <div class="end__note anim5">最後までご視聴いただきありがとうございました。<br>役に立ったと<span style="white-space:nowrap">感じたら</span>、高評価とチャンネル登録を<br>いただけると<span style="white-space:nowrap">励みになります</span>。</div>
+  </section>
+
+</deck-stage>
+
+<script src="deck-stage.js"></script>
+<script src="image-slot.js"></script>
+
+</body>
+</html>

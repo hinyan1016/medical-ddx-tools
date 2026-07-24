@@ -1,0 +1,140 @@
+/* ==========================================================================
+   Otsu Red Cross — Medical Education Design System
+   Colors & Type foundation
+   ========================================================================== */
+
+:root {
+  /* ---------- Brand Palette ---------- */
+  --navy:       #1B3A5C;   /* base navy — primary text + headers */
+  --navy-ink:   #12293f;   /* deeper navy for strong contrast */
+  --blue:       #2C5AA0;   /* accent blue — links, CTA, borders */
+  --blue-600:   #264c8a;
+  --blue-soft:  #E8F0FE;   /* pale tint used behind step-headers */
+  --blue-tint:  #e8f4fd;   /* slightly warmer info-box background */
+
+  /* ---------- Semantic (signal) ---------- */
+  --green:       #28A745;  /* positive / 増点 / safe */
+  --green-soft:  #e7f6ee;
+  --red:         #DC3545;  /* negative / 減点 / danger */
+  --red-soft:    #f8d7da;
+  --yellow:      #F5C518;  /* warning / caution */
+  --yellow-soft: #fff3cd;
+  --orange:      #E8850C;  /* medium-priority accent */
+  --orange-soft: #fff8f0;
+
+  /* ---------- Neutrals ---------- */
+  --ink:        #222222;
+  --ink-2:      #333333;
+  --muted:      #555555;
+  --gray:       #5A6169;   /* WCAG AA: #F6F6F6 上で 5.8:1（旧 #6C757D は 4.33:1 で不足） */
+  --gray-2:     #888888;
+  --line:       #dee2e6;
+  --line-soft:  #D0D8E4;
+  --bg-muted:   #F8F9FA;
+  --bg-alt:     #F4F6F8;
+  --white:      #FFFFFF;
+
+  /* ---------- Probability / DDx levels ---------- */
+  --lvl-high-border: var(--red);      --lvl-high-bg: #FFF5F5;
+  --lvl-med-border:  var(--orange);   --lvl-med-bg:  #FFF8F0;
+  --lvl-low-border:  var(--gray);     --lvl-low-bg:  var(--bg-alt);
+
+  /* ---------- Surfaces / spacing / radius / shadow ---------- */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;    /* default card */
+  --radius-xl: 12px;   /* landing cards */
+  --shadow-sm: 0 1px 3px rgba(27,58,92,0.08);
+  --shadow-md: 0 2px 8px rgba(27,58,92,0.10);
+  --shadow-lg: 0 2px 12px rgba(27,58,92,0.12);
+  --shadow-xl: 0 4px 20px rgba(27,58,92,0.15);
+  --shadow-hero:0 4px 16px rgba(27,58,92,0.18);
+
+  /* ---------- Font stacks ---------- */
+  --font-ja: "BIZ UDPGothic", "BIZ UDPゴシック", "Yu Gothic", "游ゴシック", "Meiryo", "Noto Sans JP", sans-serif;
+  --font-en: "Segoe UI", "BIZ UDPGothic", "Yu Gothic", system-ui, sans-serif;
+  --font-base: "BIZ UDPGothic", "BIZ UDPゴシック", "Segoe UI", "Yu Gothic", "游ゴシック", "Meiryo", "Noto Sans JP", sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  /* ---------- Type scale (web minimum 14px / slide minimum 18pt) ---------- */
+  --fs-xs:   12px;
+  --fs-sm:   14px;  /* MIN for web body */
+  --fs-base: 16px;
+  --fs-md:   17px;
+  --fs-lg:   19px;
+  --fs-xl:   22px;
+  --fs-2xl:  26px;
+  --fs-3xl:  30px;
+  --fs-hero: 36px;
+
+  --lh-tight:  1.25;
+  --lh-snug:   1.45;
+  --lh-normal: 1.6;
+  --lh-loose:  1.8;
+
+  /* ---------- Semantic text roles ---------- */
+  --fg-strong: var(--navy);
+  --fg:        var(--ink);
+  --fg-muted:  var(--muted);
+  --fg-inverse:var(--white);
+  --link:      var(--blue);
+}
+
+/* ---------- Base elements ---------- */
+html, body { font-family: var(--font-base); color: var(--fg); background: var(--white); }
+body { font-size: var(--fs-base); line-height: var(--lh-normal); }
+
+h1, h2, h3, h4 { color: var(--fg-strong); font-weight: 700; line-height: var(--lh-tight); letter-spacing: 0.02em; }
+h1 { font-size: var(--fs-hero); }
+h2 { font-size: var(--fs-2xl); }
+h3 { font-size: var(--fs-xl); }
+h4 { font-size: var(--fs-lg); }
+
+p  { font-size: var(--fs-base); line-height: var(--lh-normal); margin: 0 0 1em; }
+small, .small { font-size: var(--fs-sm); color: var(--fg-muted); }
+
+a { color: var(--link); text-decoration: underline; text-underline-offset: 2px; }
+a:hover { color: var(--navy); }
+
+strong, b { font-weight: 700; color: var(--navy); }
+sup { color: var(--red); font-weight: 700; font-size: 0.75em; }
+
+code, kbd, samp, pre { font-family: var(--font-mono); font-size: 0.94em; }
+
+/* ---------- Blog-style semantic headings (from blog stylesheet) ---------- */
+.doc h2 { border-left: 4px solid var(--blue); padding-left: 12px; margin-top: 2rem; font-size: 1.3rem; color: var(--blue); }
+.doc h3 { font-size: 1.1rem; color: #444; margin-top: 1.2rem; }
+.doc h3::before { content: '▶'; color: var(--blue); margin-right: 8px; }
+
+/* ---------- Element patterns (ブランドガイドの要素) ---------- */
+.important-box {
+  background: var(--blue-tint);
+  border-left: 4px solid var(--blue);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  margin: 16px 0;
+}
+.warning-box {
+  background: var(--yellow-soft);
+  border-left: 4px solid var(--yellow);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  margin: 16px 0;
+}
+.emergency-box {
+  background: var(--red-soft);
+  border-left: 4px solid var(--red);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  margin: 16px 0;
+}
+.comparison-card {
+  border-left: 4px solid var(--blue);
+  background: var(--white);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  box-shadow: var(--shadow-sm);
+}
+.comparison-card.positive { border-left-color: var(--green); background: var(--green-soft); }
+.comparison-card.negative { border-left-color: var(--red);   background: var(--red-soft); }
+.comparison-card.neutral  { border-left-color: var(--blue);  background: var(--blue-tint); }
