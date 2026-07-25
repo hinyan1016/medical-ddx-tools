@@ -171,6 +171,7 @@ def render_viewer(deck: dict, slide_count: int, has_deck: bool = False,
         "{{SLIDE_COUNT}}": str(slide_count),
         "{{SLIDE_CARDS}}": "\n".join(cards_html),
         "{{BLOG_BUTTON}}": blog_button,
+        "{{VIEWER_NOTICE}}": deck.get("viewer_notice", "本資料は医療従事者・医療系学生向けの学習教材です。診療判断は必ず最新ガイドライン・主治医判断に従ってください。"),
     }
     html = template
     for k, v in replacements.items():
