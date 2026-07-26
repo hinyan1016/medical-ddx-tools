@@ -1,0 +1,1127 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>医療チャンネル スライドテンプレート（セミナー紺）</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   テーマ「セミナー紺」— 参照: docs/specs/2026-07-05-slide-theme-seminar-navy-design.md
+   濃紺 #012360 × オレンジ #F27E03 × 警告レッド #DC3323 / 全文Noto Sans JPで統一（可読性優先・明朝混植は廃止）
+   クラス設計・セクション番号は 医療スライドテンプレート.html と互換
+   ===================================================================== */
+:root{
+  /* palette (PDF実測値) */
+  --navy:#012360;
+  --navy-ink:#001B4D;
+  --accent:#7CB342;
+  --accent-soft: color-mix(in srgb, var(--accent) 11%, #ffffff);
+  --accent-line: color-mix(in srgb, var(--accent) 62%, #ffffff);
+  --accent-ink: #33691E;
+  --danger:#DC3323;
+  --danger-soft: color-mix(in srgb, var(--danger) 9%, #ffffff);
+  --bg:#FDFDFD;
+
+  /* 継承トークンの上書き（colors_and_type.css の値を紺橙系に寄せる） */
+  --blue:#1D4189;
+  --blue-soft:#E9EEF8;
+  --blue-tint:#EEF2FA;
+  --red: var(--danger);
+  --red-soft: var(--danger-soft);
+  --orange: var(--accent);
+  --orange-soft: var(--accent-soft);
+  --line:#D8DDE6;
+  --line-soft:#C9D2DF;
+  --bg-muted:#F8F8F8;
+  --bg-alt:#F6F6F6;
+  --navy-line: color-mix(in srgb, var(--navy) 22%, #ffffff);
+
+  /* type scale — multiply all via --type-mult (既存テンプレと同値) */
+  --type-mult: 1.38;
+  --type-display: calc(96px * var(--type-mult));
+  --type-title:   calc(82px * var(--type-mult));
+  --type-heading: calc(60px * var(--type-mult));
+  --type-subtitle:calc(44px * var(--type-mult));
+  --type-body:    calc(38px * var(--type-mult));
+  --type-small:   calc(30px * var(--type-mult));
+  --type-label:   calc(27px * var(--type-mult));
+  --type-chapter: calc(210px * var(--type-mult));
+  --type-stat:    calc(150px * var(--type-mult));
+
+  --pad-x: 112px;
+  --pad-top: 58px;
+  --pad-bottom: 80px;
+  --gap-title: 24px;
+  --gap-item: 22px;
+
+  /* このテーマ内は本文・見出しともNoto Sans JPに統一（colors_and_type.css の --font-ja を上書き。他ファイルには影響しない） */
+  --font-ja: "Noto Sans JP", "BIZ UDPGothic", "Yu Gothic", "Meiryo", sans-serif;
+  --font-serif: var(--font-ja);
+  --grad-navy: linear-gradient(160deg, #012360 0%, #001B4D 100%);
+}
+.serif{ font-family: var(--font-serif); font-weight:800; letter-spacing:.02em; }
+
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#0a1430; }
+
+/* ---------- base slide ---------- */
+.slide{
+  box-sizing:border-box;
+  display:flex; flex-direction:column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-ja);
+  overflow:hidden;
+  position:relative;
+}
+/* 下端の紺帯（PDF全ページ共通の締め） */
+.slide::after{
+  content:""; position:absolute; left:0; right:0; bottom:0; height:10px;
+  background: var(--navy); pointer-events:none;
+}
+.slide--navy{ background: var(--grad-navy); color: var(--white); }
+.slide--navy::after{ background: var(--accent); }
+.slide--soft{ background: var(--bg-alt); }
+
+/* eyebrow — 紺の縦帯（下端オレンジ）＋ラベル */
+.eyebrow{
+  display:flex; align-items:center; gap:18px;
+  font-size: var(--type-label); font-weight:700; color: var(--navy);
+  letter-spacing:.04em;
+}
+.eyebrow::before{
+  content:""; width:12px; height:44px; border-radius:3px;
+  background: linear-gradient(180deg, var(--navy) 0 68%, var(--accent) 68% 100%);
+  flex:none;
+}
+.eyebrow .num{ font-family: var(--font-en); color: var(--accent-ink); }
+.eyebrow .en{ font-family: var(--font-en); color: var(--accent-ink); letter-spacing:.15em; text-transform:uppercase; }
+.slide--navy .eyebrow{ color: rgba(255,255,255,.88); }
+.slide--navy .eyebrow .en{ color:#fff; }
+.slide--navy .eyebrow::before{ background: linear-gradient(180deg, #fff 0 68%, var(--accent) 68% 100%); }
+
+.s-title{
+  font-size: var(--type-heading); line-height:1.22; color: var(--navy);
+  margin: var(--gap-title) 0 0; font-weight:800; letter-spacing:.01em;
+  text-wrap: pretty;
+}
+.slide--navy .s-title{ color:#fff; }
+
+.lead{
+  font-size: var(--type-body); line-height:1.7; color: var(--ink-2);
+  margin:0; text-wrap: pretty;
+}
+.muted{ color: var(--gray); }
+
+/* 見出し下罫線 — 紺の実線＋左端オレンジ短セグメント（PDF見出し様式） */
+.hairline{
+  height:4px; border:0; margin:20px 0 0;
+  background: linear-gradient(90deg, var(--accent) 0 150px, var(--navy) 150px);
+  opacity:1;
+}
+.slide--navy .hairline{ background: linear-gradient(90deg, var(--accent) 0 150px, rgba(255,255,255,.85) 150px); }
+
+/* 右上の薄い大章番号（装飾・背面） */
+.chapter-ghost{
+  position:absolute; top: 30px; right: var(--pad-x);
+  font-family: var(--font-en); font-weight:700; line-height:.8;
+  font-size: calc(150px * var(--type-mult)); color: var(--navy);
+  opacity:.05; pointer-events:none; user-select:none;
+}
+.slide--navy .chapter-ghost{ color:#fff; opacity:.10; }
+
+/* 汎用 下線ハイライト */
+.hl-underline{ border-bottom: 6px solid var(--accent-line); }
+
+/* 赤バッジ（PDF p1「7/7まで」様式・インライン強調） */
+.badge-danger{
+  display:inline-block; background: var(--danger); color:#fff;
+  font-weight:800; padding: 4px 26px; border-radius:10px;
+  line-height:1.35;
+}
+
+/* footer band */
+.slide__foot{
+  position:absolute; left: var(--pad-x); right: var(--pad-x); bottom: 36px;
+  display:flex; align-items:center; justify-content:space-between;
+  font-size: calc(24px * var(--type-mult)); color: var(--gray);
+  font-family: var(--font-ja);
+}
+.slide__foot .ch{ display:flex; align-items:center; gap:10px; font-weight:700; color: var(--navy); }
+.slide__foot .cross{ color: var(--accent); font-weight:700; }
+.slide--navy .slide__foot{ color: rgba(255,255,255,.65); }
+.slide--navy .slide__foot .ch{ color:#fff; }
+.slide--navy .slide__foot .cross{ color: var(--accent); }
+
+/* ============ 1. COVER（白背景・右上に幾何アクセント） ============ */
+.cover{ justify-content:center; }
+.cover__geo{
+  position:absolute; right: 70px; top: 48px; width: 380px; height: 380px;
+  pointer-events:none;
+}
+.cover__badge{
+  display:inline-flex; align-items:center; gap:14px; align-self:flex-start;
+  background:#fff; border:2px solid var(--navy-line);
+  color: var(--navy); padding:12px 26px; border-radius:999px;
+  font-size: var(--type-label); font-weight:700;
+}
+.cover__badge .cross{ color: var(--accent); font-size:1.2em; }
+.cover__title{
+  font-family: var(--font-serif);
+  font-size: calc(76px * var(--type-mult)); line-height:1.3; color: var(--navy); font-weight:800;
+  margin:42px 0 0; letter-spacing:.02em; max-width:1400px;
+}
+.cover__title .hl{ color: var(--accent); }
+.cover__rule{ width: 1500px; max-width:100%; height:3px; background: var(--navy); margin-top:36px; }
+.cover__sub{
+  font-size: var(--type-subtitle); color: var(--ink-2);
+  margin:34px 0 0; font-weight:700;
+}
+.cover__sub .badge-danger{ margin: 0 6px; }
+.cover__meta{
+  display:flex; gap:30px; align-items:center; margin-top:64px;
+  font-size: var(--type-small); color: var(--gray);
+}
+.cover__avatar{
+  flex:none; width:84px; height:84px; border-radius:50%;
+  background: var(--accent-soft); border:3px solid var(--accent);
+  display:flex; align-items:center; justify-content:center;
+}
+.cover__avatar svg{ width:56%; height:56%; }
+.cover__meta .name{ font-weight:800; color: var(--navy); font-size: var(--type-small); }
+.cover__meta .vline{ width:2px; height:52px; background: var(--line); }
+/* 旧テーマ互換（コーラル版からコピーした装飾を無効化） */
+.cover__blob{ display:none; }
+
+/* ============ 2. THEME / CONCLUSION FIRST ============ */
+.theme__body{ display:flex; flex-direction:column; gap: var(--gap-title); margin-top: 28px; flex:1; justify-content:center; }
+.theme__q{ font-family: var(--font-serif); font-size: var(--type-title); line-height:1.28; color: var(--navy); font-weight:800; max-width:22ch; text-wrap:balance; }
+.theme__q .hl{ color: var(--accent-ink); border-bottom: 8px solid var(--accent-line); }
+.concl{
+  display:flex; align-items:flex-start; gap:28px;
+  background:#fff; border:3px solid var(--accent);
+  border-radius: 12px; padding: 32px 44px;
+  position:relative;
+}
+.concl::before{
+  content:"“"; position:absolute; top:-58px; left:26px;
+  font-family: var(--font-en); font-size: calc(110px * var(--type-mult));
+  color: var(--accent); font-weight:900; line-height:1;
+}
+.concl__tag{
+  flex:none; background: var(--navy); color:#fff; font-weight:700;
+  font-size: var(--type-small); padding:10px 24px; border-radius:8px;
+}
+.concl__text{ font-size: var(--type-subtitle); line-height:1.5; color: var(--navy); font-weight:700; margin:0; }
+
+/* ============ 3. AGENDA（紺角チップ＋オレンジ縦罫） ============ */
+.agenda__list{ display:flex; flex-direction:column; gap:26px; margin-top:36px; }
+.agenda__item{ display:flex; align-items:center; gap:32px; }
+.agenda__num{
+  flex:none; width:76px; height:76px; border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+  background: var(--navy); color:#fff;
+  font-family: var(--font-en); font-size: calc(46px * var(--type-mult)); font-weight:800;
+}
+.agenda__txt{
+  font-size: var(--type-subtitle); color: var(--navy); font-weight:700;
+  border-left: 5px solid var(--accent); padding-left: 30px;
+}
+.agenda__txt small{ display:block; font-size: var(--type-small); color: var(--gray); font-weight:400; margin-top:8px; }
+
+/* ============ 4. CHAPTER DIVIDER（全面紺・白明朝・中央） ============ */
+.chapter{ justify-content:center; align-items:center; text-align:center; }
+.chapter__kicker{
+  font-family: var(--font-en); font-size: var(--type-label); color: rgba(255,255,255,.55);
+  font-weight:700; letter-spacing:.4em; text-transform:uppercase;
+}
+.chapter__num{
+  font-family: var(--font-serif); font-size: calc(150px * var(--type-mult)); line-height:1.05;
+  font-weight:800; color:#fff; margin:10px 0 0; letter-spacing:.04em;
+}
+.chapter__rule{ width:560px; height:6px; background: var(--accent); border-radius:3px; margin-top:44px; }
+.chapter__title{ font-size: var(--type-subtitle); color:#fff; font-weight:700; margin:44px 0 0; max-width:26ch; text-wrap:balance; letter-spacing:.06em; }
+
+/* ============ 5. BODY 1 COLUMN ============ */
+.body1{ }
+.body1__main{ margin-top: 26px; max-width: 1640px; }
+.body1 .lead{ margin-bottom: 20px; }
+.important-box.lg{
+  background:#fff; border:2px solid var(--navy-line); border-left: 12px solid var(--accent);
+  border-radius: 12px; padding: 26px 40px; margin:0;
+  box-shadow: var(--shadow-sm);
+}
+.important-box.lg .ttl{ display:flex; align-items:center; gap:14px; font-size: var(--type-small); font-weight:700; color: var(--accent-ink); margin-bottom:8px; }
+.important-box.lg p{ font-size: var(--type-body); line-height:1.6; color: var(--ink-2); margin:0; }
+
+/* ============ 6. BODY + ILLUSTRATION 2COL ============ */
+.cols2{ display:grid; grid-template-columns: 1.28fr 0.72fr; gap:54px; align-items:center; margin-top:24px; flex:1; }
+.cols2__text{ display:flex; flex-direction:column; gap: 18px; }
+.cols2__text .lead{ font-size: var(--type-body); }
+.point-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:18px; }
+.point-list li{ display:flex; align-items:flex-start; gap:20px; font-size: var(--type-body); color: var(--ink-2); line-height:1.5; }
+.point-list li::before{ content:"✓"; flex:none; width:44px; height:44px; border-radius:50%; background: var(--navy); color:#fff; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:.8em; margin-top:2px; }
+.cols2 image-slot{ width:100%; height:460px; border:3px dashed var(--line-soft); border-radius:14px; }
+
+/* ============ 7. BODY MECHANISM DIAGRAM ============ */
+.diagram{ margin-top:16px; flex:1; display:flex; flex-direction:column; }
+.vessels{ display:grid; grid-template-columns:1fr auto 1fr; gap:50px; align-items:center; flex:1; }
+.vessel-card{ display:flex; flex-direction:column; align-items:center; gap:20px; }
+.vessel{ position:relative; width:290px; height:290px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+.vessel--normal{ background: #DCE4F2; box-shadow: inset 0 0 0 6px var(--navy); }
+.vessel--normal .lumen{ width:196px; height:196px; }
+.vessel--hbp{ background: #F8E3D2; box-shadow: inset 0 0 0 6px var(--accent); }
+.vessel--hbp .wall2{ position:absolute; width:254px; height:254px; border-radius:50%; background:#EFC5A4; }
+.vessel--hbp .lumen{ width:110px; height:110px; z-index:1; }
+.lumen{ border-radius:50%; background: radial-gradient(circle at 35% 30%, #E2564E, #C0392B); box-shadow:0 4px 14px rgba(192,57,43,.35); }
+.vessel-card .v-label{ font-size: var(--type-subtitle); font-weight:700; color: var(--navy); }
+.vessel-card .v-sub{ font-size: var(--type-small); color: var(--gray); text-align:center; line-height:1.5; margin-top:-12px; }
+.vessel-card .v-label .dot{ color: var(--accent); }
+.diagram__arrow{ font-family: var(--font-en); font-size: calc(90px * var(--type-mult)); color: var(--accent); font-weight:300; }
+.diagram__cap{ margin-top:20px; text-align:center; font-size: var(--type-small); color: var(--gray); line-height:1.4; }
+.diagram__cap .em{ color: var(--accent-ink); font-weight:700; }
+
+/* ============ 8. COMPARISON TABLE ============ */
+.tablewrap{ margin-top:26px; flex:1; }
+table.cmp{ width:100%; border-collapse:collapse; font-size: var(--type-small); }
+table.cmp th, table.cmp td{ text-align:left; padding:16px 28px; vertical-align:middle; line-height:1.4; }
+table.cmp thead th{ background: var(--navy); color:#fff; font-weight:700; font-size: var(--type-body); }
+table.cmp thead th:first-child{ border-top-left-radius:10px; }
+table.cmp thead th:last-child{ border-top-right-radius:10px; }
+table.cmp tbody td{ border-bottom:1px solid var(--line); color: var(--ink-2); }
+table.cmp tbody tr:nth-child(even){ background: var(--bg-muted); }
+table.cmp tbody td:first-child{ font-weight:700; color: var(--navy); font-size: var(--type-body); white-space:nowrap; }
+table.cmp .pill{ display:inline-block; font-size: calc(24px * var(--type-mult)); font-weight:700; padding:6px 16px; border-radius:999px; }
+.pill--easy{ background: var(--green-soft); color:#1c7a3a; }
+.pill--mid{ background: var(--accent-soft); color: var(--accent-ink); }
+
+/* ============ 9. DATA / CHART ============ */
+.chart{ margin-top:40px; flex:1; display:flex; flex-direction:column; }
+.chart__plot{ flex:1; display:flex; align-items:flex-end; justify-content:space-between; gap:40px; padding: 30px 20px 0; border-bottom:3px solid var(--navy-line); }
+.bar{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; gap:18px; }
+.bar__val{ font-family: var(--font-en); font-size: var(--type-subtitle); font-weight:700; color: var(--navy); }
+.bar__col{ width:100%; max-width:150px; border-radius:10px 10px 0 0; background: var(--navy); transition: height .3s; }
+.bar--peak .bar__col{ background: var(--accent); }
+.bar--peak .bar__val{ color: var(--accent-ink); }
+.chart__labels{ display:flex; justify-content:space-between; gap:40px; margin-top:22px; }
+.chart__labels span{ flex:1; text-align:center; font-size: var(--type-small); color: var(--ink-2); font-weight:700; max-width:150px; margin:0 auto; }
+.chart__note{ margin-top:26px; font-size: calc(24px * var(--type-mult)); color: var(--gray); }
+
+/* ============ 10. DISCLAIMER ============ */
+.disc{ justify-content:center; align-items:center; text-align:center; background: var(--bg-alt); }
+.disc__icon{ font-size: calc(96px * var(--type-mult)); line-height:1; }
+.disc__tag{ font-family: var(--font-serif); font-size: var(--type-subtitle); font-weight:700; color: var(--navy); margin:28px 0 0; letter-spacing:.08em; }
+.disc__box{
+  margin-top:38px; max-width:1180px; background:#fff; border:2px solid var(--navy-line);
+  border-top: 10px solid var(--accent); border-radius:12px; padding:48px 56px;
+  box-shadow: var(--shadow-md);
+}
+.disc__box p{ font-size: var(--type-body); line-height:1.7; color: var(--ink-2); margin:0; text-wrap:pretty; }
+.disc__box .strong{ color: var(--navy); font-weight:700; }
+
+/* ============ 11. SUMMARY（PDF p3 3カードゴール様式） ============ */
+.sum__list{ display:grid; grid-template-columns: repeat(3,1fr); gap:40px; margin-top:70px; flex:1; align-content:start; }
+.sum__card{
+  position:relative; background:#fff; border:2px solid var(--navy-line);
+  border-radius:14px; padding:64px 36px 40px; display:flex; flex-direction:column; gap:20px;
+  box-shadow: var(--shadow-md); text-align:center; align-items:center;
+}
+.sum__n{
+  position:absolute; top:-38px; left:50%; margin-left:-38px;
+  width:76px; height:76px; border-radius:50%;
+  background: var(--navy); color:#fff;
+  font-family: var(--font-en); font-size: calc(34px * var(--type-mult)); font-weight:800;
+  display:flex; align-items:center; justify-content:center; line-height:1;
+  box-shadow: var(--shadow-md);
+}
+.sum__h{ font-size: var(--type-subtitle); font-weight:800; color: var(--navy); line-height:1.3; text-wrap:balance; }
+.sum__h::after{ content:""; display:block; width:120px; height:4px; background: var(--accent); margin:16px auto 0; border-radius:2px; }
+.sum__p{ font-size: var(--type-small); color: var(--ink-2); line-height:1.6; margin:0; }
+
+/* ============ 12. ENDING（白背景・明朝・PDF p17様式） ============ */
+.end{ justify-content:center; align-items:center; text-align:center; }
+.end__h{
+  font-family: var(--font-serif);
+  font-size: var(--type-title); color: var(--navy); font-weight:800; margin:0; text-wrap:balance;
+}
+.end__rule{
+  width:1500px; max-width:100%; height:4px; margin-top:30px;
+  background: linear-gradient(90deg, var(--navy) 0 44%, var(--accent) 44% 56%, var(--navy) 56%);
+}
+.end__cards{ display:grid; grid-template-columns:repeat(3,1fr); gap:36px; margin-top:70px; width:100%; max-width:1640px; }
+.end__card{
+  background:#fff; border:2px solid var(--navy-line); border-radius:14px;
+  padding:34px 30px; display:flex; align-items:center; gap:24px; text-align:left;
+  box-shadow: var(--shadow-sm);
+}
+.end__ic{
+  flex:none; width:88px; height:88px; border-radius:50%;
+  background: var(--accent); color:#fff; display:flex; align-items:center; justify-content:center;
+  font-size: calc(40px * var(--type-mult));
+}
+.end__card h3{ font-size: var(--type-small); font-weight:800; color: var(--navy); margin:0 0 6px; }
+.end__card h3 u{ text-decoration:none; border-bottom:3px solid var(--accent); }
+.end__card p{ font-size: var(--type-label); color: var(--ink-2); line-height:1.5; margin:0; }
+.end__card p b{ color: var(--accent-ink); }
+.end__note{
+  margin-top:60px; max-width:1400px; background:#fff;
+  border:2.5px solid var(--accent); border-radius:12px; padding:30px 60px;
+  font-family: var(--font-serif); font-size: var(--type-small); color: var(--navy);
+  font-weight:700; line-height:1.8;
+}
+.end__note b{ color: var(--accent-ink); }
+/* 旧テーマ互換（ピルCTA・コピー流用時も破綻しない） */
+.end__cross{ font-size: var(--type-subtitle); color: var(--accent); font-weight:700; }
+.end__sub{ font-size: var(--type-subtitle); color: var(--ink-2); margin:26px 0 0; font-weight:400; }
+.end__cta{ display:flex; gap:30px; margin-top:64px; }
+.btn{ display:inline-flex; align-items:center; gap:16px; font-size: var(--type-subtitle); font-weight:700; padding:24px 48px; border-radius:999px; }
+.btn--sub{ background: var(--accent); color:#fff; }
+.btn--like{ background:#fff; color: var(--navy); border:2px solid var(--navy); }
+.end__next{ margin-top:56px; font-size: var(--type-small); color: var(--gray); }
+.end__next b{ color: var(--navy); }
+
+/* ============ 13. STAT HERO（紺巨大数字＋赤バッジ） ============ */
+.stathero{ justify-content:center; align-items:center; text-align:center; }
+.stathero__num{ font-family: var(--font-en); font-size: var(--type-stat); font-weight:900; color: var(--navy); line-height:.95; }
+.stathero__num .unit{ font-size:.4em; color: var(--navy); font-weight:700; margin-left:.1em; }
+.stathero__warn{
+  display:inline-flex; align-items:center; gap:14px; margin-top:26px;
+  background: var(--danger); color:#fff; font-weight:800;
+  font-size: var(--type-small); padding:12px 34px; border-radius:999px;
+}
+.stathero__msg{ font-size: var(--type-heading); color: var(--navy); font-weight:800; margin:30px 0 0; max-width:24ch; text-wrap:balance; }
+.stathero__src{ font-size: var(--type-small); color: var(--gray); margin-top:30px; }
+
+/* ============ 14. Q&A / MYTH ============ */
+.qa{ display:flex; flex-direction:column; gap:34px; margin-top:30px; flex:1; justify-content:center; }
+.qa__row{ display:flex; align-items:flex-start; gap:28px; border-radius:14px; padding:34px 44px; }
+.qa__row.myth{ background:#fff; border:2px solid var(--navy-line); border-left:14px solid var(--danger); box-shadow: var(--shadow-sm); }
+.qa__row.fact{ background: var(--accent-soft); border:2px solid var(--accent-line); border-left:14px solid var(--accent); }
+.qa__mark{ flex:none; font-size: var(--type-heading); font-weight:900; line-height:1; }
+.qa__row.myth .qa__mark{ color: var(--danger); }
+.qa__row.fact .qa__mark{ color: var(--green); }
+.qa__txt{ font-size: var(--type-subtitle); color: var(--navy); font-weight:700; line-height:1.4; margin:0; }
+
+/* ============ 15. STEPS（PDF p16 縦フロー・丸数字＋点線リーダー） ============ */
+.steps{ display:flex; flex-direction:column; gap:0; margin-top:40px; flex:none; }
+.step{ display:flex; align-items:center; gap:34px; }
+.step__n{
+  flex:none; width:88px; height:88px; border-radius:50%;
+  background: var(--accent); color:#fff;
+  font-family: var(--font-en); font-size: calc(46px * var(--type-mult)); font-weight:800;
+  display:flex; align-items:center; justify-content:center;
+}
+.step.is-now .step__n{ background: var(--navy); }
+.step__card{
+  flex:1; display:flex; align-items:center; gap:28px;
+  background:#fff; border:2px solid var(--navy-line); border-radius:14px;
+  padding:24px 40px; box-shadow: var(--shadow-sm);
+}
+.step.is-now .step__card{ border-color: var(--accent); border-width:3px; background: var(--accent-soft); }
+.step__ic{ flex:none; font-size: calc(52px * var(--type-mult)); line-height:1; }
+.step__label{
+  flex:none; font-family: var(--font-en); font-size: var(--type-small); font-weight:800;
+  color: var(--navy); letter-spacing:.05em;
+}
+.step__label small{ display:block; font-size: calc(24px * var(--type-mult)); color: var(--accent-ink); font-weight:700; letter-spacing:0; }
+.step__vr{ flex:none; width:2px; align-self:stretch; background: var(--line); }
+.step__t{ font-size: var(--type-small); color: var(--ink-2); font-weight:700; line-height:1.5; }
+.steps__dots{
+  flex:none; width:0; height:34px; margin-left:43px;
+  border-left:5px dotted var(--accent);
+}
+.steps__arrow{ display:none; }
+
+/* ============ 16. TRIAGE 3-TIER ============ */
+.triage{ display:flex; flex-direction:column; gap:22px; margin-top:24px; flex:1; justify-content:center; }
+.triage__row{ display:flex; align-items:center; gap:28px; border-radius:14px; padding:22px 36px; background:#fff; border:2px solid var(--navy-line); box-shadow: var(--shadow-sm); }
+.triage__row .ic{ flex:none; font-size: calc(60px * var(--type-mult)); line-height:1; }
+.triage__row .tt{ font-size: var(--type-subtitle); font-weight:800; }
+.triage__row .ds{ font-size: var(--type-small); color: var(--ink-2); margin:6px 0 0; }
+.triage--er{ border-left:16px solid var(--danger); }
+.triage--er .tt{ color: var(--danger); }
+.triage--soon{ border-left:16px solid var(--accent); }
+.triage--soon .tt{ color: var(--accent-ink); }
+.triage--watch{ border-left:16px solid var(--green); }
+.triage--watch .tt{ color:#1c7a3a; }
+
+/* ============ 17. CASE / EPISODE ============ */
+.case{ display:flex; align-items:center; gap:54px; margin-top:30px; flex:1; }
+.case__avatar{ flex:none; width:300px; height:300px; border-radius:50%; background: var(--accent-soft); border:4px solid var(--accent); display:flex; align-items:center; justify-content:center; font-size:170px; }
+.case__body{ display:flex; flex-direction:column; gap:20px; }
+.case__badge{ align-self:flex-start; background: var(--navy); color:#fff; font-size: var(--type-small); font-weight:700; padding:10px 28px; border-radius:10px; }
+.case__story{ font-size: var(--type-subtitle); color: var(--ink-2); line-height:1.6; margin:0; max-width:24ch; }
+.case__story .em{ color: var(--accent-ink); font-weight:700; }
+
+/* ============ 18. CHECKLIST（紺左ブロック＋角丸行・PDF p9様式） ============ */
+.check{ display:flex; flex-direction:column; gap:24px; margin-top:34px; flex:1; justify-content:center; max-width:1560px; }
+.check__item{
+  display:flex; align-items:center; gap:34px;
+  font-size: var(--type-subtitle); color: var(--navy); font-weight:700;
+  background:#fff; border:2px solid var(--navy-line); border-radius:14px;
+  padding:0 34px 0 0; overflow:hidden; box-shadow: var(--shadow-sm);
+  min-height:110px;
+}
+.check__box{
+  flex:none; width:112px; align-self:stretch; border:0; border-radius:0;
+  background: var(--bg-alt); color:transparent;
+  display:flex; align-items:center; justify-content:center;
+  font-size: calc(40px * var(--type-mult));
+}
+.check__item.on .check__box{ background: var(--navy); color:#fff; }
+.check__verdict{
+  margin-top:18px; background:#fff; border:2.5px solid var(--accent); border-radius:12px;
+  padding:26px 40px; font-size: var(--type-body); color: var(--navy); font-weight:800;
+  position:relative;
+}
+.check__verdict::before{
+  content:"“"; position:absolute; top:-52px; left:22px;
+  font-family: var(--font-en); font-size: calc(100px * var(--type-mult));
+  color: var(--accent); font-weight:900; line-height:1;
+}
+
+/* ============ 19. QUOTE / GUIDELINE（オレンジ枠＋引用符） ============ */
+.quote{ justify-content:center; align-items:center; text-align:center; }
+.quote__box{ position:relative; max-width:1440px; background:#fff; border:3px solid var(--accent); border-radius:14px; padding:64px 70px 48px; box-shadow: var(--shadow-sm); }
+.quote__mark{ position:absolute; top:-34px; left:40px; font-family: var(--font-en); font-size: calc(140px * var(--type-mult)); color: var(--accent); line-height:1; font-weight:900; }
+.quote__text{ font-size: var(--type-heading); color: var(--navy); font-weight:800; line-height:1.45; margin:0; text-wrap:pretty; }
+.quote__src{ font-size: var(--type-small); color: var(--gray); margin:30px 0 0; }
+
+/* ============ 20. BEFORE / AFTER ============ */
+.ba{ display:flex; align-items:stretch; gap:32px; margin-top:34px; flex:1; }
+.ba__col{ flex:1; border-radius:16px; padding:44px 40px; display:flex; flex-direction:column; gap:22px; }
+.ba__col.before{ background: var(--bg-alt); border:2px solid var(--line); }
+.ba__col.after{ background: var(--accent-soft); border:3px solid var(--accent); }
+.ba__tag{ align-self:flex-start; font-family: var(--font-en); font-size: var(--type-small); font-weight:800; letter-spacing:.1em; padding:8px 24px; border-radius:8px; }
+.ba__col.before .ba__tag{ background: var(--gray); color:#fff; }
+.ba__col.after .ba__tag{ background: var(--accent); color:#fff; }
+.ba__txt{ font-size: var(--type-body); color: var(--navy); line-height:1.5; font-weight:700; margin:0; }
+.ba__arrow{ flex:none; align-self:center; font-family: var(--font-en); font-size: calc(80px * var(--type-mult)); color: var(--navy); }
+
+/* ============ 21. HORIZONTAL BAR RANKING ============ */
+.hbar{ display:flex; flex-direction:column; gap:26px; margin-top:36px; flex:1; justify-content:center; }
+.hbar__row{ display:flex; align-items:center; gap:24px; }
+.hbar__name{ flex:none; width:500px; text-align:right; font-size: var(--type-body); color: var(--navy); font-weight:700; }
+.hbar__track{ flex:1; height:50px; background: var(--bg-muted); border-radius:0 8px 8px 0; }
+.hbar__fill{ height:100%; border-radius:0 8px 8px 0; background: var(--navy); }
+.hbar__row:first-child .hbar__fill{ background: var(--accent); }
+.hbar__val{ flex:none; width:120px; font-family: var(--font-en); font-size: var(--type-subtitle); font-weight:700; color: var(--navy); }
+
+/* ============ 22. DONUT ============ */
+.donut{ display:flex; align-items:center; justify-content:center; gap:90px; margin-top:30px; flex:1; }
+.donut__svg{ width:440px; height:440px; flex:none; }
+.donut__center{ font-family: var(--font-en); font-size: 52px; font-weight:900; fill: var(--navy); }
+.donut__legend{ display:flex; flex-direction:column; gap:24px; }
+.donut__leg{ display:flex; align-items:center; gap:18px; font-size: var(--type-subtitle); color: var(--ink-2); font-weight:700; }
+.donut__leg .sw{ width:34px; height:34px; border-radius:8px; flex:none; }
+
+/* ============ 23. PICTOGRAM ============ */
+.picto{ display:flex; flex-direction:column; align-items:center; gap:40px; margin-top:40px; flex:1; justify-content:center; }
+.picto__grid{ display:flex; flex-wrap:wrap; justify-content:center; gap:16px; max-width:900px; }
+.picto__p{ font-size: calc(80px * var(--type-mult)); line-height:1; }
+.picto__p.off{ filter: grayscale(1); opacity:.28; }
+.picto__cap{ font-size: var(--type-heading); color: var(--navy); font-weight:800; }
+.picto__cap .em{ color: var(--accent); }
+
+/* ============ 24. TREND LINE (SVG) ============ */
+.trend{ margin-top:36px; flex:1; display:flex; flex-direction:column; min-height:0; overflow:hidden; }
+.trend__svg{ width:100%; flex:1; min-height:0; max-height:460px; }
+.trend__cap{ margin-top:14px; font-size: var(--type-small); color: var(--gray); text-align:center; flex:none; }
+
+/* ============ 25-29. SVG DIAGRAMS (shared) ============ */
+.diag{ margin-top:30px; flex:1; display:flex; align-items:center; justify-content:center; }
+.diag__svg{ width:100%; height:100%; max-height:760px; }
+.diag__svg text{ font-family: var(--font-ja); }
+
+/* ============ 26. タイムライン（HTML水平軸・PDF p5様式） ============ */
+.tl{ margin-top:44px; flex:1; display:flex; flex-direction:column; justify-content:center; }
+.tl__dates{ display:grid; grid-template-columns:repeat(5,1fr); }
+.tl__dates span{ text-align:center; font-family: var(--font-en); font-size: var(--type-subtitle); font-weight:800; color: var(--navy); }
+.tl__nodes{ position:relative; display:grid; grid-template-columns:repeat(5,1fr); margin-top:22px; }
+.tl__nodes::before{
+  content:""; position:absolute; left:1%; right:3%; top:50%; height:5px; margin-top:-2.5px;
+  background: var(--navy);
+}
+.tl__nodes::after{
+  content:""; position:absolute; right:1%; top:50%; margin-top:-14px;
+  border-left:26px solid var(--navy); border-top:14px solid transparent; border-bottom:14px solid transparent;
+}
+.tl__node{
+  position:relative; width:104px; height:104px; margin:0 auto; border-radius:50%;
+  background:#fff; border:5px solid var(--navy);
+  display:flex; align-items:center; justify-content:center;
+  font-size: calc(44px * var(--type-mult)); line-height:1;
+}
+.tl__descs{ display:grid; grid-template-columns:repeat(5,1fr); gap:0 24px; margin-top:0; }
+.tl__desc{ text-align:center; padding-top:38px; position:relative; }
+.tl__desc::before{
+  content:""; position:absolute; top:0; left:50%; height:32px; width:0;
+  border-left:4px dotted var(--navy-line);
+}
+.tl__cap{ font-family: var(--font-en); font-size: var(--type-label); font-weight:800; color: var(--accent-ink); }
+.tl__txt{ font-size: var(--type-label); color: var(--ink-2); line-height:1.5; margin:6px 0 0; }
+
+/* ============ 30. 危険サイン（PDF p15 4象限白カード様式） ============ */
+.eyebrow--red{ color: var(--danger); }
+.eyebrow--red::before{ background: linear-gradient(180deg, var(--danger) 0 68%, var(--navy) 68% 100%); }
+.danger .s-title{ font-family: var(--font-serif); color: var(--navy); }
+.danger__list{ display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:30px; flex:1; align-content:center; }
+.danger__item{
+  display:flex; align-items:flex-start; gap:26px;
+  background:#fff; border:2px solid var(--navy-line); border-radius:14px;
+  padding:28px 34px; box-shadow: var(--shadow-sm);
+}
+.danger__item .ic{ display:none; }
+.danger__tri{ flex:none; width:76px; height:70px; margin-top:4px; }
+.danger__bd h3{
+  display:flex; align-items:center; gap:16px;
+  font-size: var(--type-subtitle); font-weight:800; color: var(--navy); margin:0;
+  padding-bottom:12px; border-bottom:4px solid var(--danger);
+}
+.danger__bd .dnum{
+  flex:none; width:52px; height:52px; border-radius:50%;
+  background: var(--danger); color:#fff;
+  font-family: var(--font-en); font-size: calc(28px * var(--type-mult)); font-weight:800;
+  display:flex; align-items:center; justify-content:center;
+}
+.danger__bd p{ font-size: var(--type-small); color: var(--ink-2); line-height:1.55; margin:14px 0 0; font-weight:700; }
+.danger{ padding-bottom:150px; }
+.danger__call{
+  margin-top:24px; margin-bottom:0; display:flex; align-items:center; justify-content:center; gap:22px;
+  background: var(--danger); color:#fff; border-radius:12px; padding:20px 40px;
+  font-size: var(--type-small); font-weight:800;
+}
+
+/* ============ 31. 用語解説 ============ */
+.term__card{
+  margin-top:28px; background:#fff; border:2px solid var(--navy-line); border-top:10px solid var(--navy);
+  border-radius:14px; padding:38px 52px; box-shadow: var(--shadow-md);
+  display:flex; flex-direction:column; gap:22px; flex:0 1 auto;
+}
+.term__word{ display:flex; align-items:baseline; gap:26px; }
+.term__word .w{ font-family: var(--font-serif); font-size: var(--type-title); font-weight:800; color: var(--navy); }
+.term__word .r{ font-size: var(--type-small); color: var(--gray); }
+.term__def{ font-size: var(--type-body); line-height:1.55; color: var(--ink-2); margin:0; }
+.term__analogy{
+  display:flex; align-items:flex-start; gap:20px;
+  background: var(--accent-soft); border-radius:10px; padding:22px 32px;
+}
+.term__analogy .tag{ flex:none; background: var(--accent); color:#fff; font-size: var(--type-label); font-weight:700; padding:8px 20px; border-radius:8px; }
+.term__analogy p{ font-size: var(--type-small); color: var(--ink-2); line-height:1.55; margin:0; font-weight:700; }
+
+/* ============ 32-33. クイズ 問題/正解 ============ */
+.quiz__q{
+  margin-top:44px; background: var(--navy); border-radius:14px; padding:40px 50px;
+  font-size: var(--type-subtitle); font-weight:700; color:#fff; line-height:1.5;
+  display:flex; gap:26px; align-items:center;
+}
+.quiz__qmark{
+  flex:none; width:84px; height:84px; border-radius:14px; background: var(--accent); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  font-family: var(--font-en); font-size: calc(46px * var(--type-mult)); font-weight:800;
+}
+.quiz__opts{ display:grid; grid-template-columns:repeat(3,1fr); gap:32px; margin-top:32px; flex:1; align-content:start; }
+.quiz__opt{
+  background:#fff; border:2px solid var(--navy-line); border-radius:14px; padding:30px 32px;
+  display:flex; flex-direction:column; align-items:center; gap:22px; text-align:center;
+  box-shadow: var(--shadow-sm);
+}
+.quiz__letter{
+  width:78px; height:78px; border-radius:14px; background: var(--navy); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  font-family: var(--font-en); font-size: calc(42px * var(--type-mult)); font-weight:800;
+}
+.quiz__opt p{ font-size: var(--type-subtitle); font-weight:700; color: var(--navy); margin:0; }
+.quiz__opt--correct{ border-color: var(--green); border-width:3px; background: var(--green-soft); position:relative; }
+.quiz__opt--correct .quiz__letter{ background: var(--green); color:#fff; }
+.quiz__opt--dim{ opacity:.38; }
+.quiz__seal{
+  position:absolute; top:-26px; right:-20px; background: var(--green); color:#fff;
+  font-size: var(--type-label); font-weight:700; padding:12px 24px; border-radius:999px;
+  box-shadow: var(--shadow-md);
+}
+.quiz__why{
+  margin-top:0; margin-bottom:44px; background:#fff; border:2px solid var(--navy-line); border-left:12px solid var(--green); border-radius:10px;
+  padding:24px 40px; font-size: var(--type-small); color: var(--ink-2); line-height:1.6;
+  box-shadow: var(--shadow-sm);
+}
+.quiz__why strong{ color:#1c7a3a; }
+
+/* ============ 34. 図説明・コールアウト ============ */
+.fig{ display:grid; grid-template-columns:0.95fr 1.05fr; gap:64px; margin-top:20px; margin-bottom:56px; flex:1; align-items:center; }
+.fig image-slot{ width:100%; height:520px; border:3px dashed var(--line-soft); border-radius:14px; }
+.fig__notes{ display:flex; flex-direction:column; gap:14px; }
+.fig__note{
+  display:flex; align-items:flex-start; gap:24px;
+  background:#fff; border:2px solid var(--navy-line); border-radius:12px; padding:16px 30px;
+  box-shadow: var(--shadow-sm);
+}
+.fig__num{
+  flex:none; width:56px; height:56px; border-radius:50%; background: var(--accent); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  font-family: var(--font-en); font-size: calc(30px * var(--type-mult)); font-weight:800;
+}
+.fig__note h3{ font-size: var(--type-small); font-weight:700; color: var(--navy); margin:0 0 6px; }
+.fig__note p{ font-size: var(--type-label); color: var(--ink-2); line-height:1.5; margin:0; }
+
+/* ============ 35. 参考文献・出典 ============ */
+.refs__list{ display:flex; flex-direction:column; gap:26px; margin-top:48px; }
+.refs__item{
+  display:flex; align-items:baseline; gap:26px;
+  border-bottom:1px solid var(--line); padding-bottom:26px;
+}
+.refs__num{ flex:none; font-family: var(--font-en); font-size: var(--type-small); font-weight:700; color: var(--accent-ink); }
+.refs__item p{ font-size: var(--type-body); color: var(--ink-2); line-height:1.6; margin:0; }
+.refs__item p small{ display:block; font-size: var(--type-label); color: var(--gray); margin-top:6px; }
+.refs__note{ margin-top:36px; font-size: var(--type-label); color: var(--gray); }
+
+/* ============ 36. LAYOUT INDEX (内部用・本番では削除) ============ */
+.indexgrid{ display:grid; grid-template-columns: repeat(3,1fr); gap:6px 40px; margin-top:16px; flex:1; align-content:start; }
+.indexgrid div{ font-size: calc(var(--type-small) * 0.85); color: var(--ink-2); line-height:1.3; }
+.indexgrid b{ color: var(--accent-ink); font-family: var(--font-en); }
+
+/* entrance animation — fade-up を上位互換で拡張（deck-anim キット / 詳細は _anim_library/） */
+@media (prefers-reduced-motion:no-preference){
+  /* タイミング基底（動きの既定は fade-up） */
+  [data-deck-active] .anim{ animation: fade-up .5s both; }
+  [data-deck-active] .anim2{ animation: fade-up .5s .12s both; }
+  [data-deck-active] .anim3{ animation: fade-up .5s .24s both; }
+  [data-deck-active] .anim4{ animation: fade-up .5s .36s both; }
+  [data-deck-active] .anim5{ animation: fade-up .5s .48s both; }
+  [data-deck-active] .anim6{ animation: fade-up .5s .60s both; }
+  [data-deck-active] .anim-i{ animation: fade-up .5s both; animation-delay: calc(var(--i,0) * .1s); }
+  /* モーション variant（animation-name のみ上書き＝1要素1アニメ維持・data-cue 安全） */
+  [data-deck-active] .a-fade { animation-name: a-fade; }
+  [data-deck-active] .a-up   { animation-name: fade-up; }
+  [data-deck-active] .a-down { animation-name: a-down; }
+  [data-deck-active] .a-right{ animation-name: a-right; }
+  [data-deck-active] .a-left { animation-name: a-left; }
+  [data-deck-active] .a-zoom { animation-name: a-zoom; }
+  [data-deck-active] .a-pop  { animation-name: a-pop; animation-timing-function: cubic-bezier(.34,1.56,.64,1); }
+  [data-deck-active] .a-blur { animation-name: a-blur; }
+  /* コンテンツ・モーション */
+  [data-deck-active] .grow-y { transform-origin:bottom center; animation: grow-y .7s .2s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .grow-x { transform-origin:left center;   animation: grow-x .55s .25s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .nudge-x{ animation: nudge-x .9s .35s ease-in-out both; }
+}
+.grow-y{ transform-origin:bottom center; } .grow-x{ transform-origin:left center; }
+@keyframes fade-up{ from{ opacity:0; transform: translateY(16px);} to{ opacity:1; transform:none;} }
+@keyframes a-fade { from{ opacity:0; } to{ opacity:1; } }
+@keyframes a-down { from{ opacity:0; transform: translateY(-16px);} to{ opacity:1; transform:none; } }
+@keyframes a-right{ from{ opacity:0; transform: translateX(-28px);} to{ opacity:1; transform:none; } }
+@keyframes a-left { from{ opacity:0; transform: translateX(28px); } to{ opacity:1; transform:none; } }
+@keyframes a-zoom { from{ opacity:0; transform: scale(.94);       } to{ opacity:1; transform:none; } }
+@keyframes a-pop  { from{ opacity:0; transform: scale(.8);        } to{ opacity:1; transform:none; } }
+@keyframes a-blur { from{ opacity:0; filter: blur(12px); transform: translateY(10px);} to{ opacity:1; filter: blur(0); transform:none; } }
+@keyframes grow-y { from{ transform: scaleY(0);} to{ transform: scaleY(1);} }
+@keyframes grow-x { from{ transform: scaleX(0);} to{ transform: scaleX(1);} }
+@keyframes nudge-x{ 0%{ transform:none;} 55%{ transform: translateX(10px);} 100%{ transform:none;} }
+
+/* ===== v2 ===== コンテンツが「育つ」演出（2026-07-02・スパイク検証済み / 詳細 _anim_library/README_deck-anim.md）
+   規律: 1スライドに育つ演出1〜2個まで／count-upはHero数値のみ／sweepは結論1フレーズのみ
+   count-up: <span class="count-up" style="--n-to:8000"></span>（中身空・数字はcounterが描く）
+   draw-line: 対象SVGの <path>/<polyline> に pathLength="1" 必須 */
+@property --n { syntax: '<integer>'; inherits: false; initial-value: 0; }
+@media (prefers-reduced-motion:no-preference){
+  [data-deck-active] .count-up { counter-reset: n var(--n); animation: v2-count 1.4s .2s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .draw-line{ stroke-dasharray:1; animation: v2-draw 1.5s .2s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .sweep    { animation: v2-sweep .9s .3s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .a-wipe   { animation-name: v2-wipe; }
+  [data-deck-active] .a-settle { animation-name: v2-settle; animation-duration: 1.2s; }
+}
+.count-up{ counter-reset: n var(--n-to, 0); font-variant-numeric: tabular-nums; }
+.count-up::after{ content: counter(n); }
+.hl-sweep{
+  background-image: linear-gradient(color-mix(in srgb, var(--accent) 32%, transparent),
+                                    color-mix(in srgb, var(--accent) 32%, transparent));
+  background-repeat:no-repeat; background-size:100% 46%; background-position:0 88%;
+}
+@keyframes v2-count { from{ --n:0; } to{ --n: var(--n-to, 100); } }
+@keyframes v2-draw  { from{ stroke-dashoffset:1; } to{ stroke-dashoffset:0; } }
+@keyframes v2-sweep { from{ background-size:0% 46%; } to{ background-size:100% 46%; } }
+@keyframes v2-wipe  { from{ opacity:0; clip-path: inset(0 100% 0 0);} to{ opacity:1; clip-path: inset(0 0 0 0);} }
+@keyframes v2-settle{ from{ opacity:0; transform: scale(1.06);} to{ opacity:1; transform:none;} }
+
+/* tweaks mount */
+#tweaks-root{ position:fixed; inset:0; pointer-events:none; z-index:9999; }
+#tweaks-root > *{ pointer-events:auto; }
+</style>
+</head>
+<body style="font-size: 8px">
+
+<deck-stage width="1920" height="1080">
+  <!-- ===== 01. 表紙 ===== -->
+  <section data-label="表紙" data-screen-label="01 表紙" class="slide cover">
+    <svg class="cover__geo anim2 a-zoom" viewBox="0 0 200 200" aria-hidden="true">
+      <path d="M60 0 A140 140 0 0 1 200 140" fill="none" stroke="var(--navy-line)" stroke-width="4"/>
+      <path d="M95 0 A105 105 0 0 1 200 105" fill="none" stroke="var(--accent)" stroke-width="5"/>
+      <path d="M128 0 A72 72 0 0 1 200 72" fill="none" stroke="var(--navy)" stroke-width="4"/>
+      <g fill="var(--navy-line)">
+        <circle cx="26" cy="120" r="3.4"/><circle cx="52" cy="120" r="3.4"/><circle cx="78" cy="120" r="3.4"/>
+        <circle cx="26" cy="146" r="3.4"/><circle cx="52" cy="146" r="3.4"/><circle cx="78" cy="146" r="3.4"/>
+        <circle cx="26" cy="172" r="3.4"/><circle cx="52" cy="172" r="3.4"/><circle cx="78" cy="172" r="3.4"/>
+      </g>
+      <circle cx="78" cy="146" r="3.8" fill="var(--accent)"/>
+    </svg>
+    <div class="cover__badge anim"><span class="cross">✚</span><span>外来患者指導シリーズ第22弾</span></div>
+    <h1 class="cover__title anim2 a-blur">花粉症・アレルギー性鼻炎の<br><span class="hl">外来指導テンプレート</span></h1>
+    <div class="cover__rule grow-x"></div>
+    <p class="cover__sub anim3">「眠くないから大丈夫」は当てにできない——<br>薬の選び方・使い分け・始める時期を組み立てる</p>
+    <div class="cover__meta anim3">
+      <span class="cover__avatar"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4.6" fill="var(--accent)"/><path d="M2.5 22.5 C2.5 16.5 7 14.2 12 14.2 C17 14.2 21.5 16.5 21.5 22.5 Z" fill="var(--accent)"/></svg></span>
+      <span class="name" style="white-space:nowrap">医知創造ラボ</span>
+      <span class="vline"></span>
+      <span style="white-space:nowrap">監修：今村久司（脳神経内科・総合内科専門医）</span>
+    </div>
+  </section>
+
+  <!-- ===== 02. テーマ・結論先出し ===== -->
+  <section data-label="テーマ・結論" data-screen-label="02 テーマ・結論" class="slide">
+    <div class="eyebrow anim">今日のテーマ<span class="en">TODAY'S POINT</span></div>
+    <div class="theme__body">
+      <h2 class="theme__q anim">「眠くない」と感じていれば、<br>その薬は<span class="hl-underline">安全と言えるか？</span></h2>
+      <div class="concl anim2">
+        <span class="concl__tag">結論</span>
+        <p class="concl__text">いいえ。<span style="white-space:nowrap">自覚と実際の能力低下は、</span><span style="white-space:nowrap">一致しないことがあります</span></p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>02</span></div>
+  </section>
+
+  <!-- ===== 03. 目次 ===== -->
+  <section data-label="目次" data-screen-label="03 目次" class="slide slide--soft">
+    <div class="eyebrow anim">この動画でわかること<span class="en">AGENDA</span></div>
+    <h2 class="s-title serif anim">本日のアジェンダ</h2>
+    <hr class="hairline">
+    <div class="agenda__list">
+      <div class="agenda__item anim a-right" data-cue="1つ目、薬の選び方"><div class="agenda__num">1</div><div class="agenda__txt">薬の選び方<small>鎮静性の見極め方と、症状に合わせた使い分け</small></div></div>
+      <div class="agenda__item anim2 a-right" data-cue="2つ目、市販薬と生活の備え"><div class="agenda__num">2</div><div class="agenda__txt">市販薬と生活の備え<small>点鼻薬の使いすぎ・鼻うがい・マスクの正しい期待値</small></div></div>
+      <div class="agenda__item anim3 a-right" data-cue="そして3つ目、体質を変える"><div class="agenda__num">3</div><div class="agenda__txt">体質を変える・特別な配慮<small>舌下免疫療法を始める時期、高齢者の注意点</small></div></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>03</span></div>
+  </section>
+
+  <!-- ===== 04. 章扉① 薬の選び方 ===== -->
+  <section data-label="章扉①" data-screen-label="04 章扉①" class="slide slide--navy chapter">
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num serif anim a-pop">第1章</h2>
+    <div class="chapter__rule grow-x"></div>
+    <h3 class="chapter__title anim3">薬の選び方</h3>
+  </section>
+
+  <!-- ===== 05. 本文：眠くないから大丈夫は当てにできない ===== -->
+  <section data-label="本文：自覚と実際の乖離" data-screen-label="05 本文：自覚と実際の乖離" class="slide">
+    <div class="chapter-ghost">05</div>
+    <div class="eyebrow anim">運転シミュレーターが示したこと<span class="en">SELF-REPORTED DROWSINESS</span></div>
+    <h2 class="s-title anim">「眠くない」という自覚は、<br><span class="hl-underline">当てにできないことがある</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(28px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:14px">
+      <p class="lead anim2" data-cue="運転シミュレーターを">運転シミュレーターを用いた無作為化比較試験で、第1世代の抗ヒスタミン薬服用後に<span style="white-space:nowrap">車線維持能力が</span>障害されました。</p>
+      <ul class="point-list" style="gap:12px; margin-top:14px">
+        <li class="anim-i" data-cue="一方で、脳への移行が少ない" style="--i:1"><span>脳への移行が少ない薬剤は<strong>プラセボと同程度</strong>の成績</span></li>
+        <li class="anim-i" data-cue="そして、この研究で注目すべきは" style="--i:2"><span><strong>本人が申告した眠気の強さは、この能力低下を予測しませんでした</strong></span></li>
+        <li class="anim-i" data-cue="つまり、「眠くないから今日は" style="--i:3"><span>つまり<strong>「眠くないから今日は大丈夫」という自己判断</strong>には根拠がない可能性</span></li>
+      </ul>
+      <div class="important-box lg anim4" data-cue="ただし、これは単純化して" style="margin-top:14px; padding:16px 40px; border-left-color:var(--danger)">
+        <div class="ttl" style="color:var(--danger)">⚠️ 単純化しない</div>
+        <p><strong>「第1世代は飲酒運転と同じ」ではありません。</strong>指標により差があります</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>05</span></div>
+  </section>
+
+  <!-- ===== 06. 本文：脳への移行度の差（機序） ===== -->
+  <section data-label="本文：脳への移行度の差" data-screen-label="06 本文：脳への移行度の差" class="slide slide--soft">
+    <div class="chapter-ghost">06</div>
+    <div class="eyebrow anim">感覚論ではなく画像で示された差<span class="en">BRAIN H1 RECEPTOR OCCUPANCY</span></div>
+    <h2 class="s-title anim">「眠くなる薬」と「眠くなりにくい薬」、<br><span class="hl-underline">脳への届きやすさが違う</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(28px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:14px">
+      <p class="lead anim2" data-cue="脳の中には、ヒスタミンが">脳内ヒスタミンH1受容体の占拠率をPETで測定した研究が積み重ねられてきました。</p>
+      <ul class="point-list" style="gap:12px; margin-top:12px">
+        <li class="anim-i" data-cue="市販の「かぜ薬」や" style="--i:1"><span>市販の「かぜ薬」「鼻炎薬」に多い<strong>古くからの成分は脳内受容体を大きく占拠</strong></span></li>
+        <li class="anim-i" data-cue="一方、比較的新しい薬の中にも" style="--i:2"><span>第2世代の中にも<strong>脳への移行が少ない薬剤</strong>があると画像で示されている</span></li>
+        <li class="anim-i" data-cue="ここで大事なのは、" style="--i:3"><span><strong>「特定の1剤だけが正解」ではない</strong>——選べる、という事実が重要</span></li>
+      </ul>
+      <div class="important-box lg anim4" style="margin-top:14px; padding:16px 40px">
+        <div class="ttl">📋 外来トーク例</div>
+        <p>「受験・運転・機械操作の前は、<strong>脳への影響が少ない薬</strong>を優先しましょう」</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>06</span></div>
+  </section>
+
+  <!-- ===== 07. 本文：症状で使い分ける ===== -->
+  <section data-label="本文：点鼻と点眼の使い分け" data-screen-label="07 本文：点鼻と点眼の使い分け" class="slide">
+    <div class="chapter-ghost">07</div>
+    <div class="eyebrow anim">「薬が効かない」の正体<span class="en">MATCH THE DRUG TO THE SYMPTOM</span></div>
+    <h2 class="s-title anim">鼻づまりは点鼻ステロイド、<br><span class="hl-underline">目のかゆみは点眼薬</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(27px * var(--type-mult)); --type-small:calc(23px * var(--type-mult)); margin-top:12px">
+      <p class="lead anim2" data-cue="研究をまとめた報告では">16件の無作為化比較試験・2,267例の系統的レビューで、鼻噴霧用ステロイドは経口抗ヒスタミン薬より<span style="white-space:nowrap">鼻症状全般で優位</span>でした。</p>
+      <ul class="point-list" style="gap:10px; margin-top:12px">
+        <li class="anim-i" data-cue="飲み薬の抗ヒスタミン薬より" style="--i:1"><span><strong>鼻づまり・鼻汁・くしゃみ・鼻のかゆみ：</strong>点鼻ステロイドが有意に優位</span></li>
+        <li class="anim-i" data-cue="ところが、目のかゆみなどの" style="--i:2"><span><strong>目のかゆみなどの眼症状：</strong>両者に<strong>有意差なし</strong></span></li>
+        <li class="anim-i" data-cue="ですから、鼻づまりが一番つらい" style="--i:3"><span><strong>鼻づまりが一番つらいなら点鼻薬が本命</strong>／目の症状には点眼薬を別に</span></li>
+      </ul>
+      <div class="important-box lg anim4" style="margin-top:12px; padding:14px 36px">
+        <div class="ttl">📋 外来トーク例</div>
+        <p>「目のかゆみは、<strong>鼻の薬だけでは取れません</strong>。目薬を別に使いましょう」</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>07</span></div>
+  </section>
+
+  <!-- ===== 08. 章扉② 市販薬と生活の備え ===== -->
+  <section data-label="章扉②" data-screen-label="08 章扉②" class="slide slide--navy chapter">
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num serif anim a-pop">第2章</h2>
+    <div class="chapter__rule grow-x"></div>
+    <h3 class="chapter__title anim3">市販薬と生活の備え</h3>
+  </section>
+
+  <!-- ===== 09. 本文：市販点鼻薬の使いすぎ（薬剤性鼻炎） ===== -->
+  <section data-label="本文：薬剤性鼻炎" data-screen-label="09 本文：薬剤性鼻炎" class="slide">
+    <div class="chapter-ghost">09</div>
+    <div class="eyebrow anim">外来で見落とされやすい落とし穴<span class="en">RHINITIS MEDICAMENTOSA</span></div>
+    <h2 class="s-title anim">「スーッとする」市販の点鼻薬に<br><span class="hl-underline">潜むリスク</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(28px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:14px">
+      <p class="lead anim2" data-cue="市販の、鼻の通りを">市販の血管収縮薬タイプの点鼻薬は即効性がある一方、連用すると鼻粘膜の反応が変化します。</p>
+      <ul class="point-list" style="gap:12px; margin-top:12px">
+        <li class="anim-i" data-cue="かえって鼻づまりが悪化" style="--i:1"><span>使い続けると<strong>かえって鼻づまりが悪化</strong>する（薬剤性鼻炎）</span></li>
+        <li class="anim-i" data-cue="「効かなくなったから" style="--i:2"><span>「効かなくなったから増やす」は<strong>悪循環に入っているサイン</strong></span></li>
+        <li class="anim-i" data-cue="まず市販薬の使用状況を" style="--i:3"><span>処方薬が効かないと感じたら<strong>まず市販薬の使用状況を確認</strong></span></li>
+      </ul>
+      <div class="important-box lg anim4" data-cue="まずやめて、処方薬に" style="margin-top:12px; padding:14px 36px">
+        <div class="ttl">📋 外来トーク例</div>
+        <p>「毎日使い続けている点鼻薬があれば、<strong>まずやめて処方薬に切り替えましょう</strong>」</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>09</span></div>
+  </section>
+
+  <!-- ===== 10. 本文：生活でできる備え（鼻うがい・マスク） ===== -->
+  <section data-label="本文：鼻うがい・マスク" data-screen-label="10 本文：鼻うがい・マスク" class="slide slide--soft">
+    <div class="chapter-ghost">10</div>
+    <div class="eyebrow anim">正しい期待値で紹介する<span class="en">SALINE IRRIGATION &amp; AVOIDANCE</span></div>
+    <h2 class="s-title anim">鼻うがい・マスクは、<br><span class="hl-underline">「補助」として位置づける</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(28px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:14px">
+      <p class="lead anim2" data-cue="生理食塩水を使った鼻うがいは">14件の研究・747例のコクランレビューでは、鼻うがいは症状の重症度を改善する可能性が示されましたが、確信度は高くありません。</p>
+      <ul class="point-list" style="gap:10px; margin-top:12px">
+        <li class="anim-i" data-cue="長期間の効果を確かめた" style="--i:1"><span><strong>3か月を超える追跡を報告した研究はなし</strong></span></li>
+        <li class="anim-i" data-cue="使うときは、水道水を" style="--i:2"><span>使用は<strong>生理食塩水・専用の洗浄剤</strong>で。<strong>水道水そのままは使わない</strong></span></li>
+        <li class="anim-i" data-cue="マスクやメガネ、帰宅時に" style="--i:3"><span>マスク・メガネ・帰宅時に上着を払う・洗顔洗髪も<strong>抗原量を減らす補助策</strong></span></li>
+      </ul>
+      <div class="important-box lg anim4" data-cue="薬の効果を補う手助けとして" style="margin-top:12px; padding:14px 36px">
+        <div class="ttl">📋 外来トーク例</div>
+        <p>「鼻うがいは<strong>薬の効果を補う手助け</strong>。これだけで治るものではありません」</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>10</span></div>
+  </section>
+
+  <!-- ===== 11. 章扉③ 体質を変える・特別な配慮 ===== -->
+  <section data-label="章扉③" data-screen-label="11 章扉③" class="slide slide--navy chapter">
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num serif anim a-pop">第3章</h2>
+    <div class="chapter__rule grow-x"></div>
+    <h3 class="chapter__title anim3">体質を変える・特別な配慮</h3>
+  </section>
+
+  <!-- ===== 12. 本文：舌下免疫療法という選択肢 ===== -->
+  <section data-label="本文：舌下免疫療法の時期" data-screen-label="12 本文：舌下免疫療法の時期" class="slide">
+    <div class="chapter-ghost">12</div>
+    <div class="eyebrow anim">「いつ相談するか」が本記事の核<span class="en">SUBLINGUAL IMMUNOTHERAPY — TIMING</span></div>
+    <h2 class="s-title anim">舌下免疫療法は、<br><span class="hl-underline">花粉が飛ぶ時期には始められない</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(27px * var(--type-mult)); --type-small:calc(23px * var(--type-mult)); margin-top:12px">
+      <p class="lead anim2" data-cue="薬で症状を抑えるだけでなく">アレルゲンに少しずつ体を慣らしていく治療で、日本国内での有効性・安全性の検討が重ねられてきました。</p>
+      <ul class="point-list" style="gap:10px; margin-top:12px">
+        <li class="anim-i" data-cue="それは、花粉が飛んでいる" style="--i:1"><span>花粉飛散期に開始すると<strong>アレルギー反応が強く出やすい</strong>ため新規開始は不可</span></li>
+        <li class="anim-i" data-cue="開始できるのは、花粉の" style="--i:2"><span>開始は<strong>飛散終了後から次シーズンの3か月以上前まで</strong></span></li>
+        <li class="anim-i" data-cue="なお、通年性の原因となる" style="--i:3"><span><strong>ダニ（通年性）の舌下免疫療法は季節に依存せず</strong>相談できる</span></li>
+      </ul>
+      <div class="important-box lg anim4" data-cue="ただし、誰にでも勧める" style="margin-top:12px; padding:14px 36px; border-left-color:var(--danger)">
+        <div class="ttl" style="color:var(--danger)">⚠️ 安全弁</div>
+        <p>誰にでも勧める治療ではなく、<strong>数年単位で続ける必要</strong>があります</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>12</span></div>
+  </section>
+
+  <!-- ===== 13. 本文：高齢者・特別な配慮 ===== -->
+  <section data-label="本文：高齢者への配慮" data-screen-label="13 本文：高齢者への配慮" class="slide slide--soft">
+    <div class="chapter-ghost">13</div>
+    <div class="eyebrow anim">誤帰属を避けて正確に伝える<span class="en">OLDER ADULTS — ACUTE ADVERSE EVENTS</span></div>
+    <h2 class="s-title anim">高齢者への注意は、<br><span class="hl-underline">急性期の有害事象に絞る</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(27px * var(--type-mult)); --type-small:calc(23px * var(--type-mult)); margin-top:12px">
+      <p class="lead anim2" data-cue="抗コリン作用を併せ持つ">抗コリン作用を併せ持つ薬剤では、転倒・せん妄・口渇・尿閉・眼圧上昇に注意が必要です。</p>
+      <div class="important-box lg anim3" data-cue="ここで、絶対に誤解させて" style="margin-top:12px; padding:14px 36px; border-left-color:var(--danger)">
+        <div class="ttl" style="color:var(--danger)">⚠️ 誤解させてはいけない</div>
+        <p><strong>「アレルギーの薬で認知症になる」とは言わない。</strong>大規模研究で有意なリスク上昇が出たのは抗うつ薬・抗パ薬・抗精神病薬・膀胱の薬であり、<strong>抗ヒスタミン薬そのものではありません</strong></p>
+      </div>
+      <ul class="point-list" style="gap:10px; margin-top:12px">
+        <li class="anim-i" data-cue="高齢の方には中枢への" style="--i:1"><span>中枢移行の少ない薬剤を優先し、<strong>多剤併用の重複</strong>を定期的に見直す</span></li>
+        <li class="anim-i" data-cue="妊娠中・授乳中の方は" style="--i:2"><span><strong>妊娠中・授乳中の方</strong>は自己判断せず必ず主治医へ</span></li>
+      </ul>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>13</span></div>
+  </section>
+
+  <!-- ===== 14. 受診の目安（danger 4象限） ===== -->
+  <section data-label="受診の目安" data-screen-label="14 受診の目安" class="slide">
+    <div class="chapter-ghost">14</div>
+    <div class="eyebrow anim">花粉症以外の可能性も視野に<span class="en">WHEN TO REFER</span></div>
+    <h2 class="s-title anim">こんなときは、<br><span class="hl-underline">専門的な評価を検討する</span></h2>
+    <hr class="hairline">
+    <div class="danger__list" style="margin-top:30px">
+      <div class="danger__item anim-i a-pop" style="--i:1">
+        <svg class="danger__tri" viewBox="0 0 24 22"><path d="M12 1 L23 21 H1 Z" fill="var(--danger)"/><rect x="10.9" y="8" width="2.2" height="7" rx="1.1" fill="#fff"/><circle cx="12" cy="18" r="1.5" fill="#fff"/></svg>
+        <div class="danger__bd"><h3><span class="dnum">1</span>点鼻薬の毎日使用</h3><p>薬剤性鼻炎の可能性を疑う</p></div>
+      </div>
+      <div class="danger__item anim-i a-pop" style="--i:2">
+        <svg class="danger__tri" viewBox="0 0 24 22"><path d="M12 1 L23 21 H1 Z" fill="var(--danger)"/><rect x="10.9" y="8" width="2.2" height="7" rx="1.1" fill="#fff"/><circle cx="12" cy="18" r="1.5" fill="#fff"/></svg>
+        <div class="danger__bd"><h3><span class="dnum">2</span>眠気・ふらつき</h3><p>生活に支障が出るほどの眠気</p></div>
+      </div>
+      <div class="danger__item anim-i a-pop" style="--i:3">
+        <svg class="danger__tri" viewBox="0 0 24 22"><path d="M12 1 L23 21 H1 Z" fill="var(--danger)"/><rect x="10.9" y="8" width="2.2" height="7" rx="1.1" fill="#fff"/><circle cx="12" cy="18" r="1.5" fill="#fff"/></svg>
+        <div class="danger__bd"><h3><span class="dnum">3</span>左右差・嗅覚低下</h3><p>花粉症以外の疾患の可能性</p></div>
+      </div>
+      <div class="danger__item anim-i a-pop" style="--i:4">
+        <svg class="danger__tri" viewBox="0 0 24 22"><path d="M12 1 L23 21 H1 Z" fill="var(--danger)"/><rect x="10.9" y="8" width="2.2" height="7" rx="1.1" fill="#fff"/><circle cx="12" cy="18" r="1.5" fill="#fff"/></svg>
+        <div class="danger__bd"><h3><span class="dnum">4</span>発熱・膿性鼻汁</h3><p>副鼻腔炎など感染性の関与を疑う</p></div>
+      </div>
+    </div>
+    <div class="danger__call anim-i" style="--i:7">📋 生活指導・市販薬の見直しでは対応しきれないサインです</div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>14</span></div>
+  </section>
+
+  <!-- ===== 15. まとめ ===== -->
+  <section data-label="まとめ" data-screen-label="15 まとめ" class="slide">
+    <div class="chapter-ghost">15</div>
+    <div class="eyebrow anim">まとめ<span class="en">SUMMARY</span></div>
+    <h2 class="s-title serif anim">今日の3つの持ち帰りポイント</h2>
+    <hr class="hairline">
+    <div class="sum__list">
+      <div class="sum__card anim" data-cue="1つ目、「眠くない」は"><div class="sum__n">01</div><div class="sum__h" style="font-size:calc(32px * var(--type-mult))">「眠くない」は<br>当てにできない</div><p class="sum__p" style="font-size:calc(24px * var(--type-mult))">脳への影響が少ない<span style="white-space:nowrap">薬を選べることを</span><span style="white-space:nowrap">伝える</span></p></div>
+      <div class="sum__card anim2" data-cue="2つ目、点鼻と点眼を"><div class="sum__n">02</div><div class="sum__h" style="font-size:calc(32px * var(--type-mult))">点鼻と点眼を<br>組み合わせる</div><p class="sum__p" style="font-size:calc(24px * var(--type-mult))">鼻づまりは点鼻薬、<span style="white-space:nowrap">目のかゆみは</span><span style="white-space:nowrap">点眼薬で</span></p></div>
+      <div class="sum__card anim3" data-cue="そして3つ目、体質を変える"><div class="sum__n">03</div><div class="sum__h" style="font-size:calc(32px * var(--type-mult))">始める時期を<br>今のうちに相談</div><p class="sum__p" style="font-size:calc(24px * var(--type-mult))">舌下免疫療法は<span style="white-space:nowrap">花粉が飛ぶ時期には</span><span style="white-space:nowrap">開始できない</span></p></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>15</span></div>
+  </section>
+
+  <!-- ===== 16. 免責事項 ===== -->
+  <section data-label="免責事項" data-screen-label="16 免責事項" class="slide disc">
+    <div class="disc__icon">⚠️</div>
+    <p class="disc__tag">ご視聴にあたってのお願い</p>
+    <div class="disc__box">
+      <p>この動画は<span class="strong">一般的な情報提供</span>であり、<span style="white-space:nowrap">診断・治療の代わりにはなりません。</span><br>症状がある場合は<span class="strong">医療機関を受診してください</span>。</p>
+    </div>
+  </section>
+
+  <!-- ===== 17. 参考文献・出典① ===== -->
+  <section data-label="参考文献①" data-screen-label="17 参考文献①" class="slide slide--soft">
+    <div class="eyebrow anim">参考文献・出典<span class="en">REFERENCES 1/2</span></div>
+    <h2 class="s-title anim">薬の選び方・使い分け</h2>
+    <div class="refs__list" style="display:grid; grid-template-columns:1fr 1fr; gap:10px 44px; margin-top:26px;">
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[1]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Weiler 2000（運転シミュレーター）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[2]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Weiner 1998（点鼻vs経口）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[3]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Tashiro 2006（PET占拠率）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[4]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Tagawa 2001（PET占拠率）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[5]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Nakamura 2019（PET占拠率）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[6]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Yanai 2017（総説）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[7]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Ansotegui 2024（SR）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[8]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Vuurman 1993（学習への影響）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[9]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Ramey 2006（薬剤性鼻炎）</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>17</span></div>
+  </section>
+
+  <!-- ===== 18. 参考文献・出典② ===== -->
+  <section data-label="参考文献②" data-screen-label="18 参考文献②" class="slide slide--soft">
+    <div class="eyebrow anim">参考文献・出典<span class="en">REFERENCES 2/2</span></div>
+    <h2 class="s-title anim">生活の備え・免疫療法・高齢者</h2>
+    <div class="refs__list" style="display:grid; grid-template-columns:1fr 1fr; gap:10px 44px; margin-top:26px;">
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[10]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Head 2018（鼻うがいCochrane）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[11]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Okamoto 2015（SLIT・スギ）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[12]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Okubo 2008（SLIT・スギ）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[13]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Yonekura 2018（SLIT・スギ）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[14]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Schuster 2025（SLIT・ダニ）</p>
+      </div>
+      <div class="refs__item" style="border-bottom:1px solid var(--line); padding-bottom:6px; align-items:baseline; gap:14px;">
+        <span class="refs__num" style="font-size:var(--type-label)">[15]</span>
+        <p style="font-size:var(--type-label); line-height:1.2; margin:0;">Coupland 2019（抗コリン負荷）</p>
+      </div>
+    </div>
+    <p class="refs__note" style="margin-top:16px; font-size:var(--type-label)">全出典はPMID・DOIを含め概要欄に記載しています。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>18</span></div>
+  </section>
+
+  <!-- ===== 19. エンディング ===== -->
+  <section data-label="エンディング" data-screen-label="19 エンディング" class="slide end">
+    <h2 class="end__h anim" style="font-size:calc(74px * var(--type-mult))">今日から、薬は「選べる」ものに</h2>
+    <div class="end__rule grow-x"></div>
+    <div class="end__cards">
+      <div class="end__card anim2"><span class="end__ic">📄</span><div><h3>詳しい解説はブログへ</h3><p>概要欄から<b style="white-space:nowrap">ブログ記事</b>を<span style="white-space:nowrap">ご覧</span>ください</p></div></div>
+      <div class="end__card anim3"><span class="end__ic">📋</span><div><h3 style="white-space:nowrap">患者配布用ハンドアウト</h3><p>外来でそのまま使える<br><b>配布資料</b>を用意しています</p></div></div>
+      <div class="end__card anim4"><span class="end__ic">👍</span><div><h3>高評価・<span style="white-space:nowrap">チャンネル登録</span></h3><p>次回も<b style="white-space:nowrap">お楽しみに</b></p></div></div>
+    </div>
+    <div class="end__note anim5">最後までご視聴いただきありがとうございました。<br>役に立ったと<span style="white-space:nowrap">感じたら</span>、高評価とチャンネル登録を<br>いただけると<span style="white-space:nowrap">励みになります</span>。</div>
+  </section>
+
+</deck-stage>
+
+<script src="deck-stage.js"></script>
+<script src="image-slot.js"></script>
+
+</body>
+</html>

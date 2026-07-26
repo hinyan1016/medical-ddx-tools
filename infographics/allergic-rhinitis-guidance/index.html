@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1080">
+<title>「眠くないから大丈夫」は当てにできない｜花粉症・アレルギー性鼻炎の外来指導テンプレート（インフォグラフィック）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;800&family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#012360; --deep:#33691E; --accent:#7CB342; --accentDeep:#33691E;
+  --red:#DC3323; --ink:#22323f; --ink2:#3c4d5a;
+  --line:#D8DDE6; --bg:#F1F8E9;
+  --font:"Noto Sans JP","BIZ UDPGothic","Yu Gothic","Meiryo",sans-serif;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:var(--font); background:#fff;}
+.info{width:1080px; background:#fff; color:var(--ink); padding:0 0 60px;}
+
+.info__head{background:linear-gradient(135deg,#001B4D 0%,#012360 52%,#33691E 100%); color:#fff;
+  padding:56px 64px 50px; position:relative; overflow:hidden;}
+.info__head::after{content:""; position:absolute; right:-100px; top:-100px; width:340px; height:340px;
+  border-radius:50%; background:radial-gradient(circle at 30% 30%, rgba(124,179,66,.60), rgba(124,179,66,0) 70%);}
+.info__badge{display:inline-flex; align-items:center; gap:10px;
+  background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3);
+  border-radius:999px; padding:8px 22px; font-size:22px; font-weight:700; position:relative; z-index:2;}
+.info__badge .x{color:var(--accent);}
+.info__title{font-size:44px; font-weight:800; line-height:1.3; margin-top:20px; position:relative; z-index:2;}
+.info__title .hl{color:#C5E1A5;}
+.info__sub{font-size:23px; color:rgba(255,255,255,.85); margin-top:14px; position:relative; z-index:2; line-height:1.5;}
+
+.lead{padding:0 64px; margin-top:34px;}
+.lead__box{background:var(--bg); border-left:6px solid var(--accent); border-radius:0 12px 12px 0;
+  padding:20px 26px; font-size:22px; line-height:1.6; color:var(--ink2);}
+.lead__box b{color:var(--deep);}
+
+.sec{padding:0 64px; margin-top:46px;}
+.sec__h{display:flex; align-items:center; gap:16px; font-size:32px; font-weight:800;
+  color:var(--navy); margin-bottom:20px;}
+.sec__n{flex:none; width:52px; height:52px; border-radius:14px; background:var(--accent);
+  color:#fff; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:700;}
+
+.pillars{display:flex; flex-direction:column; gap:13px;}
+.pillar{border:2px solid var(--line); border-radius:14px; display:flex; overflow:hidden; align-items:stretch; background:var(--bg);}
+.pillar__num{flex:none; width:56px; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:700; color:#fff; background:var(--deep);}
+.pillar__icon{flex:none; width:78px; display:flex; align-items:center; justify-content:center; font-size:34px; background:#fff;}
+.pillar__main{flex:1; padding:16px 22px;}
+.pillar__t{font-size:22px; font-weight:700; color:var(--deep); margin-bottom:6px;}
+.pillar__d{font-size:19px; line-height:1.6; color:var(--ink2);}
+.pillar__d b{color:var(--deep);}
+.pillar__d .rd{color:var(--red); font-weight:700;}
+
+.timeline{display:flex; border:2px solid var(--line); border-radius:14px; overflow:hidden;}
+.tl__seg{flex:1; padding:20px 22px; position:relative;}
+.tl__seg.ng{background:#FDECEA;}
+.tl__seg.ok{background:var(--bg);}
+.tl__seg + .tl__seg{border-left:2px dashed var(--line);}
+.tl__tag{display:inline-block; font-size:15px; font-weight:800; border-radius:999px; padding:4px 14px; margin-bottom:8px;}
+.tl__seg.ng .tl__tag{background:var(--red); color:#fff;}
+.tl__seg.ok .tl__tag{background:var(--deep); color:#fff;}
+.tl__h{font-size:21px; font-weight:800; color:var(--ink); margin-bottom:6px;}
+.tl__d{font-size:17px; line-height:1.6; color:var(--ink2);}
+.tl__d b{color:var(--deep);}
+.tl__seg.ng .tl__d b{color:var(--red);}
+
+.assist{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+.assist__card{border:2px solid var(--line); border-radius:14px; background:#fff; padding:18px 22px;}
+.assist__h{display:flex; align-items:center; gap:12px; margin-bottom:8px;}
+.assist__ic{flex:none; width:44px; height:44px; border-radius:10px; background:var(--bg); border:1.5px solid var(--accent);
+  display:flex; align-items:center; justify-content:center; font-size:22px;}
+.assist__t{font-size:20px; font-weight:700; color:var(--deep);}
+.assist__d{font-size:17px; line-height:1.6; color:var(--ink2);}
+.assist__d b{color:var(--accentDeep);}
+.assist__tag{display:inline-block; margin-top:8px; font-size:14px; font-weight:700; color:var(--accentDeep);
+  background:var(--bg); border-radius:999px; padding:3px 12px;}
+
+.trigbox{margin:20px 64px 0; background:#E8F5E9; border:2.5px solid var(--accent); border-radius:14px;
+  padding:20px 28px; display:flex; align-items:flex-start; gap:18px;}
+.trigbox__ic{flex:none; font-size:32px; line-height:1;}
+.trigbox__t{font-size:22px; font-weight:800; color:var(--deep); margin-bottom:6px;}
+.trigbox__d{font-size:19px; line-height:1.6; color:var(--ink2);}
+.trigbox__d b{color:var(--accentDeep);}
+.trigbox__warn{margin-top:10px; font-size:18px; line-height:1.55; color:var(--red); font-weight:700;}
+
+.promise{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+.pcol{border:2px solid var(--line); border-radius:14px; overflow:hidden;}
+.pcol__h{font-size:21px; font-weight:700; color:#fff; padding:12px 20px; text-align:center;}
+.pcol--ok .pcol__h{background:var(--deep);}
+.pcol--ng .pcol__h{background:var(--red);}
+.pcol__b{padding:14px 20px 16px; display:flex; flex-direction:column; gap:9px;}
+.pcol__i{font-size:18px; line-height:1.55; color:var(--ink2); display:flex; gap:9px; align-items:flex-start;}
+.pcol__i .mk{flex:none; font-weight:700;}
+.pcol--ok .mk{color:var(--deep);}
+.pcol--ng .mk{color:var(--red);}
+.pcol__i b{color:var(--accentDeep);}
+.pcol--ng .pcol__i b{color:var(--red);}
+
+.call-box{margin-top:18px; background:#FDECEA; border:2px solid var(--red); border-radius:12px;
+  padding:16px 24px; font-size:20px; line-height:1.55; color:var(--red); font-weight:700; text-align:center;}
+
+.info__foot{margin-top:52px; padding:26px 64px 0; border-top:2px solid var(--line);
+  display:flex; align-items:center; justify-content:space-between; font-size:22px; color:#7a8a96; font-weight:700;}
+.info__foot .x{color:var(--accent);}
+.info__src{padding:0 64px; margin-top:20px; font-size:15px; line-height:1.55; color:#9aa8b2;}
+</style>
+</head>
+<body style="margin:0;background:#eef2f6;display:flex;flex-direction:column;align-items:center;">
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="https://youtu.be/4CZUuPP_6m4" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#C0392B;color:#fff;">▶ 解説動画（YouTube）</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+<div class="info">
+  <div class="info__head hd">
+    <span class="info__badge"><span class="x">✚</span>かかりつけ医・一般内科の外来10分で使う</span>
+    <div class="info__title">「眠くないから大丈夫」は<br><span class="hl">当てにできない</span></div>
+    <div class="info__sub">花粉症・アレルギー性鼻炎の外来指導テンプレート<br><span style="white-space:nowrap">外来患者指導テンプレート・シリーズ 第22弾</span></div>
+  </div>
+
+  <div class="lead">
+    <div class="lead__box"><b>眠気を感じなくても、実際の能力は落ちていることがあります。</b>外来で伝えるべきは、<b>薬の選び方・症状に合わせた使い分け・市販薬の落とし穴</b>、そして<b>体質を変える治療を始める時期</b>——この4点です。</div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">3</span>薬の選び方・核心3点</div>
+    <div class="pillars">
+      <div class="pillar">
+        <div class="pillar__num">1</div>
+        <div class="pillar__icon">🚗</div>
+        <div class="pillar__main">
+          <div class="pillar__t">「眠くない」という自覚は当てにできない</div>
+          <div class="pillar__d">運転シミュレーター試験で、第1世代の抗ヒスタミン薬服用後に車線維持能力が障害。<b><span style="white-space:nowrap">本人が申告した眠気の強さは、</span>この能力低下を予測しなかった</b>。脳への移行が少ない薬剤を選べることが重要。<span class="rd">「第1世代は飲酒運転と同じ」と単純化はしない</span>。</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar__num">2</div>
+        <div class="pillar__icon">💧</div>
+        <div class="pillar__main">
+          <div class="pillar__t">鼻づまりは点鼻ステロイド、目のかゆみは点眼薬</div>
+          <div class="pillar__d">系統的レビューで、鼻噴霧用ステロイドは経口抗ヒスタミン薬より<b>鼻づまり・鼻水・くしゃみに有意に優位</b>。一方<b><span style="white-space:nowrap">目のかゆみなどの眼症状には</span>有意差なし</b>——目には点眼薬が別に必要。</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar__num">3</div>
+        <div class="pillar__icon">🚫</div>
+        <div class="pillar__main">
+          <div class="pillar__t">市販の点鼻薬の連用は、かえって鼻づまりを悪化させる</div>
+          <div class="pillar__d">市販の血管収縮薬タイプは即効性がある一方、<b><span style="white-space:nowrap">連用すると鼻粘膜の反応が変化</span>し悪化</b>（薬剤性鼻炎）。「効かなくなったから増やす」は悪循環のサイン。処方薬への切り替えを。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">↑</span>舌下免疫療法 ― 「いつ」相談するか</div>
+    <div class="timeline">
+      <div class="tl__seg ng">
+        <span class="tl__tag">開始不可</span>
+        <div class="tl__h">花粉の飛散期</div>
+        <div class="tl__d">治療用エキスを追加すると<b>アレルギー反応が強く出やすい</b>ため、新規開始はできない</div>
+      </div>
+      <div class="tl__seg ok">
+        <span class="tl__tag">開始できる</span>
+        <div class="tl__h">飛散終了後〜次シーズンの3か月以上前まで</div>
+        <div class="tl__d"><b><span style="white-space:nowrap">症状のない今の時期こそ</span>相談のタイミング</b>。初回投与は医療機関で医師の観察のもと行う</div>
+      </div>
+    </div>
+    <div class="step-note" style="margin-top:14px; font-size:18px; line-height:1.55; color:var(--ink2); background:var(--bg); border-radius:12px; padding:14px 22px;"><b>誰にでも勧める治療ではない。</b>アレルゲンの確定診断が前提で、<span style="white-space:nowrap">数年単位で続ける必要</span>がある。ダニ（通年性）は季節に依存せず相談できる。</div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">＋</span>生活の備え・高齢者への配慮</div>
+    <div class="assist">
+      <div class="assist__card">
+        <div class="assist__h"><span class="assist__ic">🌊</span><span class="assist__t">鼻うがい・マスクは「補助」</span></div>
+        <div class="assist__d">生理食塩水の鼻うがいは症状をやわらげる可能性が報告されるが<b><span style="white-space:nowrap">確信度は高くない</span></b>。水道水そのままは使わない。マスク・洗顔洗髪も抗原量を減らす補助策。</div>
+        <span class="assist__tag">これだけで治るものではない</span>
+      </div>
+      <div class="assist__card">
+        <div class="assist__h"><span class="assist__ic">👴</span><span class="assist__t">高齢者は急性期の有害事象に注意</span></div>
+        <div class="assist__d">抗コリン作用のある薬剤で<b>転倒・せん妄・口渇・尿閉・眼圧上昇</b>に注意。中枢移行の少ない薬剤を優先し、多剤併用の重複を見直す。</div>
+        <span class="assist__tag">誤帰属を避ける（下記参照）</span>
+      </div>
+      <div class="assist__card">
+        <div class="assist__h"><span class="assist__ic">🤰</span><span class="assist__t">妊娠中・授乳中の方</span></div>
+        <div class="assist__d">使用できる薬剤が限られる。自己判断・市販薬の使用を避け、<b>必ず主治医・産婦人科医に相談</b>してもらう。</div>
+        <span class="assist__tag">主治医に相談へ統一</span>
+      </div>
+      <div class="assist__card">
+        <div class="assist__h"><span class="assist__ic">🩺</span><span class="assist__t">受診・紹介の目安</span></div>
+        <div class="assist__d">左右差が強い・においを感じにくい（花粉症以外の疾患）、発熱・膿性鼻汁が続く（感染性）は<b><span style="white-space:nowrap">生活指導では対応しきれない</span>サイン</b>。</div>
+        <span class="assist__tag">専門的な評価を検討</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="trigbox">
+    <span class="trigbox__ic">🧠</span>
+    <div>
+      <div class="trigbox__t">「アレルギーの薬で認知症になる」とは言わない</div>
+      <div class="trigbox__d">高齢者の抗コリン薬曝露と認知症リスクを検討した大規模な症例対照研究で、有意なリスク上昇が示されたのは<b>抗うつ薬・抗パーキンソン病薬・抗精神病薬・膀胱の薬</b>などであり、<b><span style="white-space:nowrap">抗ヒスタミン薬そのものは</span>含まれていない</b>。高齢者への注意は、転倒・せん妄・口渇・尿閉といった<b>急性期の有害事象</b>に限定する。</div>
+      <div class="trigbox__warn">⚠️ 認知症リスクへの言及は抗ヒスタミン薬に帰属させない。誤解を招く説明は避ける。</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">!</span>約束の線引き ― 誠実さが質になる</div>
+    <div class="promise">
+      <div class="pcol pcol--ok">
+        <div class="pcol__h">言ってよいこと</div>
+        <div class="pcol__b">
+          <div class="pcol__i"><span class="mk">✔</span><span><b>脳への影響が少ない薬</b>を選べる</span></div>
+          <div class="pcol__i"><span class="mk">✔</span><span>鼻づまりには<b>点鼻ステロイドが優位</b></span></div>
+          <div class="pcol__i"><span class="mk">✔</span><span>目の症状には<b>点眼薬が別に必要</b></span></div>
+          <div class="pcol__i"><span class="mk">✔</span><span>舌下免疫療法は<b>非飛散期に開始</b>を検討できる</span></div>
+        </div>
+      </div>
+      <div class="pcol pcol--ng">
+        <div class="pcol__h">言ってはいけないこと</div>
+        <div class="pcol__b">
+          <div class="pcol__i"><span class="mk">✕</span><span>「第1世代は<b>飲酒運転と同じ</b>」</span></div>
+          <div class="pcol__i"><span class="mk">✕</span><span>「<b>フェキソフェナジンなら</b>絶対安全」</span></div>
+          <div class="pcol__i"><span class="mk">✕</span><span>「アレルギーの薬で<b>認知症になる</b>」</span></div>
+          <div class="pcol__i"><span class="mk">✕</span><span>「鼻うがいで<b>花粉症が治る</b>」</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="call-box">市販の点鼻薬を毎日使用・薬で強い眠気やふらつき・左右差や嗅覚低下・発熱と膿性鼻汁<br>生活指導・市販薬の見直しでは対応しきれないサインです</div>
+  </div>
+
+  <div class="info__src">出典: Weiler JM, et al. Ann Intern Med 2000;132(5):354-363. PMID 10691585／Weiner JM, et al. BMJ 1998;317(7173):1624-1629. PMID 9848901／Yanai K, et al. Pharmacol Ther 2017;178:148-156. PMID 28457804／Tashiro M, et al. Br J Clin Pharmacol 2006;61(1):16-26. PMID 16390347／Ramey JT, et al. J Investig Allergol Clin Immunol 2006;16(3):148-155. PMID 16784007／Head K, et al. Cochrane Database Syst Rev 2018;6(6):CD012597. PMID 29932206／Okamoto Y, et al. Int Arch Allergy Immunol 2015;166(3):177-188. PMID 25895909／Schuster A, et al. Lancet Reg Health Eur 2025;48:101136. PMID 39678704／Coupland CAC, et al. JAMA Intern Med 2019;179(8):1084-1093. PMID 31233095</div>
+
+  <div class="info__foot">
+    <span><span class="x">✚</span> 医知創造ラボ（脳神経内科専門医監修）</span>
+    <span>tools.ichisouzo-lab.com</span>
+  </div>
+</div>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px auto 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="https://youtu.be/4CZUuPP_6m4" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#C0392B;color:#fff;">▶ 解説動画（YouTube）</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+</body>
+</html>
