@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1080">
+<title>入口はALT 30、目標は「％」で語る｜脂肪肝（MASLD）の生活指導 外来指導テンプレート（インフォグラフィック）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;800&family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#012360; --deep:#6D1B3E; --accent:#8E2A52; --accentDeep:#4E1029;
+  --red:#DC3323; --ink:#22323f; --ink2:#3c4d5a;
+  --line:#D8DDE6; --bg:#FBEAF0;
+  --font:"Noto Sans JP","BIZ UDPGothic","Yu Gothic","Meiryo",sans-serif;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:var(--font); background:#fff;}
+.info{width:1080px; background:#fff; color:var(--ink); padding:0 0 60px;}
+
+.info__head{background:linear-gradient(135deg,#001B4D 0%,#012360 52%,#4E1029 100%); color:#fff;
+  padding:56px 64px 50px; position:relative; overflow:hidden;}
+.info__head::after{content:""; position:absolute; right:-100px; top:-100px; width:340px; height:340px;
+  border-radius:50%; background:radial-gradient(circle at 30% 30%, rgba(142,42,82,.60), rgba(142,42,82,0) 70%);}
+.info__badge{display:inline-flex; align-items:center; gap:10px;
+  background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3);
+  border-radius:999px; padding:8px 22px; font-size:22px; font-weight:700; position:relative; z-index:2;}
+.info__badge .x{color:#E48AAE;}
+.info__title{font-size:44px; font-weight:800; line-height:1.3; margin-top:20px; position:relative; z-index:2;}
+.info__title .hl{color:#F1C6D6;}
+.info__sub{font-size:23px; color:rgba(255,255,255,.85); margin-top:14px; position:relative; z-index:2; line-height:1.5;}
+
+.lead{padding:0 64px; margin-top:34px;}
+.lead__box{background:var(--bg); border-left:6px solid var(--accent); border-radius:0 12px 12px 0;
+  padding:20px 26px; font-size:22px; line-height:1.6; color:var(--ink2);}
+.lead__box b{color:var(--deep);}
+
+.sec{padding:0 64px; margin-top:46px;}
+.sec__h{display:flex; align-items:center; gap:16px; font-size:32px; font-weight:800;
+  color:var(--navy); margin-bottom:20px;}
+.sec__n{flex:none; width:52px; height:52px; border-radius:14px; background:var(--accent);
+  color:#fff; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:700;}
+
+.pillars{display:flex; flex-direction:column; gap:13px;}
+.pillar{border:2px solid var(--line); border-radius:14px; display:flex; overflow:hidden; align-items:stretch; background:var(--bg);}
+.pillar__num{flex:none; width:56px; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:700; color:#fff; background:var(--deep);}
+.pillar__icon{flex:none; width:78px; display:flex; align-items:center; justify-content:center; font-size:34px; background:#fff;}
+.pillar__main{flex:1; padding:16px 22px;}
+.pillar__t{font-size:22px; font-weight:700; color:var(--deep); margin-bottom:6px;}
+.pillar__d{font-size:19px; line-height:1.6; color:var(--ink2);}
+.pillar__d b{color:var(--deep);}
+.pillar__d .rd{color:var(--red); font-weight:700;}
+
+.timeline{display:flex; border:2px solid var(--line); border-radius:14px; overflow:hidden;}
+.tl__seg{flex:1; padding:20px 22px; position:relative; background:var(--bg);}
+.tl__seg + .tl__seg{border-left:2px dashed var(--line);}
+.tl__tag{display:inline-block; font-size:15px; font-weight:800; border-radius:999px; padding:4px 14px; margin-bottom:8px;
+  background:var(--deep); color:#fff;}
+.tl__h{font-size:26px; font-weight:800; color:var(--deep); margin-bottom:6px;}
+.tl__d{font-size:17px; line-height:1.6; color:var(--ink2);}
+.tl__d b{color:var(--deep);}
+
+.assist{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+.assist__card{border:2px solid var(--line); border-radius:14px; background:#fff; padding:18px 22px;}
+.assist__h{display:flex; align-items:center; gap:12px; margin-bottom:8px;}
+.assist__ic{flex:none; width:44px; height:44px; border-radius:10px; background:var(--bg); border:1.5px solid var(--accent);
+  display:flex; align-items:center; justify-content:center; font-size:22px;}
+.assist__t{font-size:20px; font-weight:700; color:var(--deep);}
+.assist__d{font-size:17px; line-height:1.6; color:var(--ink2);}
+.assist__d b{color:var(--accentDeep);}
+.assist__tag{display:inline-block; margin-top:8px; font-size:14px; font-weight:700; color:var(--accentDeep);
+  background:var(--bg); border-radius:999px; padding:3px 12px;}
+
+.trigbox{margin:20px 64px 0; background:#FBEAF0; border:2.5px solid var(--accent); border-radius:14px;
+  padding:20px 28px; display:flex; align-items:flex-start; gap:18px;}
+.trigbox__ic{flex:none; font-size:32px; line-height:1;}
+.trigbox__t{font-size:22px; font-weight:800; color:var(--deep); margin-bottom:6px;}
+.trigbox__d{font-size:19px; line-height:1.6; color:var(--ink2);}
+.trigbox__d b{color:var(--accentDeep);}
+.trigbox__warn{margin-top:10px; font-size:18px; line-height:1.55; color:var(--red); font-weight:700;}
+
+.promise{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+.pcol{border:2px solid var(--line); border-radius:14px; overflow:hidden;}
+.pcol__h{font-size:21px; font-weight:700; color:#fff; padding:12px 20px; text-align:center;}
+.pcol--ok .pcol__h{background:var(--deep);}
+.pcol--ng .pcol__h{background:var(--red);}
+.pcol__b{padding:14px 20px 16px; display:flex; flex-direction:column; gap:9px;}
+.pcol__i{font-size:18px; line-height:1.55; color:var(--ink2); display:flex; gap:9px; align-items:flex-start;}
+.pcol__i .mk{flex:none; font-weight:700;}
+.pcol--ok .mk{color:var(--deep);}
+.pcol--ng .mk{color:var(--red);}
+.pcol__i b{color:var(--accentDeep);}
+.pcol--ng .pcol__i b{color:var(--red);}
+
+.call-box{margin-top:18px; background:#FDECEA; border:2px solid var(--red); border-radius:12px;
+  padding:16px 24px; font-size:20px; line-height:1.55; color:var(--red); font-weight:700; text-align:center;}
+
+.info__foot{margin-top:52px; padding:26px 64px 0; border-top:2px solid var(--line);
+  display:flex; align-items:center; justify-content:space-between; font-size:22px; color:#7a8a96; font-weight:700;}
+.info__foot .x{color:var(--accent);}
+.info__src{padding:0 64px; margin-top:20px; font-size:15px; line-height:1.55; color:#9aa8b2;}
+</style>
+</head>
+<body>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="https://youtu.be/hnyVzO-nuTM" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#C0392B;color:#fff;">▶ 解説動画（YouTube）</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+<div class="info">
+  <div class="info__head hd">
+    <span class="info__badge"><span class="x">✚</span>外来の数分で、何をどの順に伝えるか</span>
+    <div class="info__title">入口はALT 30、<br><span class="hl">目標は「％」で語る</span></div>
+    <div class="info__sub">脂肪肝（MASLD）の生活指導 外来指導テンプレート<br><span style="white-space:nowrap">外来患者指導テンプレート・シリーズ 第24弾</span></div>
+  </div>
+
+  <div class="lead">
+    <div class="lead__box"><b>「脂肪肝ですね、痩せましょう」で終わると、患者さんは何kg減らせばよいのかも、いつ検査を受け直すのかも分からないまま帰ります。</b>入口を<b>健診のALT 30</b>にそろえ、目標を<b>体重の「％」</b>で示す——この2つで、外来の会話が変わります。</div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">3</span>外来指導の核心3点</div>
+    <div class="pillars">
+      <div class="pillar">
+        <div class="pillar__num">1</div>
+        <div class="pillar__icon">🧪</div>
+        <div class="pillar__main">
+          <div class="pillar__t">入口をそろえる ― 健診のALT 30</div>
+          <div class="pillar__d">日本肝臓学会「奈良宣言2023」は、<b>健診等でALTが30を超えたらまずかかりつけ医を受診</b>し、必要なら専門診療科へ、という診療連携を呼びかけている。求めているのは<b>原因の検索</b>であって、<span class="rd">脂肪肝と決めつけることではない</span>。</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar__num">2</div>
+        <div class="pillar__icon">🔍</div>
+        <div class="pillar__main">
+          <div class="pillar__t">ALTが正常でも安心とは限らない</div>
+          <div class="pillar__d">日本の多施設研究では、<b>ALTが30以下でもFIB-4が高い例で進行した線維化が高率に</b>見つかり、<b>2型糖尿病を併存するとさらに高く</b>なった。逆に糖尿病がなくFIB-4も低ければ進行例は認められなかった。<span class="rd">「様子を見る」対象にしない</span>。</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar__num">3</div>
+        <div class="pillar__icon">📉</div>
+        <div class="pillar__main">
+          <div class="pillar__t">減量は「体重」ではなく「％」で語る</div>
+          <div class="pillar__d">生検で確かめた前向き研究で、<b>減った割合と組織の改善が段階的に対応</b>した。ただし<b>5％を達成できたのは約3割</b>。<span class="rd">最初から10％を提示しない</span>——達成できない目標は脱落を招くだけ。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">％</span>減量の目標 ― 何％で何が変わるか</div>
+    <div class="timeline">
+      <div class="tl__seg">
+        <span class="tl__tag">まず</span>
+        <div class="tl__h">5％</div>
+        <div class="tl__d">肝臓の状態が<b>目に見えて良くなる</b>。70kgの方なら<b>3.5kg</b></div>
+      </div>
+      <div class="tl__seg">
+        <span class="tl__tag">次に</span>
+        <div class="tl__h">7％</div>
+        <div class="tl__d"><b>炎症の所見まで改善</b>する。生活習慣介入の試験で示された</div>
+      </div>
+      <div class="tl__seg">
+        <span class="tl__tag">さらに</span>
+        <div class="tl__h">10％</div>
+        <div class="tl__d"><b>硬さ（線維化）が戻る方</b>も出てくる</div>
+      </div>
+    </div>
+    <div class="step-note" style="margin-top:14px; font-size:18px; line-height:1.55; color:var(--ink2); background:var(--bg); border-radius:12px; padding:14px 22px;"><b>ただし5％も簡単ではありません（達成は約3割）。</b>だからこそ<b>まず5％から</b>。<span style="white-space:nowrap">「10％減らないと意味がない」</span>という説明は、達成できない患者さんを脱落させるだけ。<b>減った分だけ返ってきます</b>と伝える。</div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">＋</span>実務のポイント</div>
+    <div class="assist">
+      <div class="assist__card">
+        <div class="assist__h"><span class="assist__ic">🏋️</span><span class="assist__t">運動は「歩く」でなくてよい</span></div>
+        <div class="assist__d">有酸素運動と筋力トレーニングを比べた系統的レビューで<b>どちらも肝脂肪を改善</b>。筋トレのほうが<b>体への負担は軽い</b>。目安は<span style="white-space:nowrap">週3回・1回40〜45分・12週間</span>。</div>
+        <span class="assist__tag">膝が痛い方にも根拠を持って提示できる</span>
+      </div>
+      <div class="assist__card">
+        <div class="assist__h"><span class="assist__ic">🧍</span><span class="assist__t">やせていても脂肪肝はある</span></div>
+        <div class="assist__d">日本の健診集団を新分類で層別した研究で、<b>体格が標準以下の方にも一定の割合</b>で見つかった。<span style="white-space:nowrap">体格を理由に除外しない</span>。</div>
+        <span class="assist__tag">予備的報告。有病率の断定には使わない</span>
+      </div>
+      <div class="assist__card">
+        <div class="assist__h"><span class="assist__ic">🍶</span><span class="assist__t">飲酒歴は「責めずに」聞く</span></div>
+        <div class="assist__d">MASLD・MASH・MetALDという枠組みで、<b>代謝の異常と飲酒が重なる病態が正面から位置づけ</b>られた。<span style="white-space:nowrap">見ておく検査が変わる</span>ため正確な量が要る。</div>
+        <span class="assist__tag">責めるためではなく層別化のため</span>
+      </div>
+      <div class="assist__card">
+        <div class="assist__h"><span class="assist__ic">⏱️</span><span class="assist__t">症状がない時期こそ次回を決める</span></div>
+        <div class="assist__d">脂肪肝はほぼ無症状で、<b>勝負どころは専門外来ではなく一般外来</b>。米国の診療パスウェイも<span style="white-space:nowrap">プライマリケアでの層別化</span>を重視する。</div>
+        <span class="assist__tag">次の検査日を決めて帰す</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="trigbox">
+    <span class="trigbox__ic">⚠️</span>
+    <div>
+      <div class="trigbox__t">「脂肪肝の死因の第1位は心血管」とは言わない</div>
+      <div class="trigbox__d">生検で確定した大規模コホートで<b>超過死亡にもっとも寄与していたのは肝臓の外のがんと肝硬変</b>であり、論文は<b><span style="white-space:nowrap">心血管疾患と肝細胞癌の寄与を「限定的」と明記</span></b>している。心血管を語るなら、<b>同じ集団の別解析</b>（主要心血管イベントが全病期で増加）を出典にすること。</div>
+      <div class="trigbox__warn">⚠️ 同一コホートの2つの論文を混ぜないこと。これが、この領域で<b>誤引用</b>を避ける要点。</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">!</span>約束の線引き ― 何を言い、何を言わないか</div>
+    <div class="promise">
+      <div class="pcol pcol--ok">
+        <div class="pcol__h">言ってよいこと</div>
+        <div class="pcol__b">
+          <div class="pcol__i"><span class="mk">✔</span><span>入口は<b>健診のALT 30</b>（まず原因を検索する）</span></div>
+          <div class="pcol__i"><span class="mk">✔</span><span>目標は<b>今の体重の5％</b>から（70kgなら3.5kg）</span></div>
+          <div class="pcol__i"><span class="mk">✔</span><span>運動は<b>筋トレでもよい</b>（週3回・40〜45分）</span></div>
+          <div class="pcol__i"><span class="mk">✔</span><span><b>肝臓の外の病気も増える</b>（がん・心血管）</span></div>
+        </div>
+      </div>
+      <div class="pcol pcol--ng">
+        <div class="pcol__h">言ってはいけないこと</div>
+        <div class="pcol__b">
+          <div class="pcol__i"><span class="mk">✕</span><span>「<b>単純な脂肪肝なら心配ない</b>」</span></div>
+          <div class="pcol__i"><span class="mk">✕</span><span>「<b>ALTが正常なら大丈夫</b>」</span></div>
+          <div class="pcol__i"><span class="mk">✕</span><span>「<b>痩せているから脂肪肝ではない</b>」</span></div>
+          <div class="pcol__i"><span class="mk">✕</span><span>「<b>死因の第1位は心血管</b>」</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="call-box">黄疸・腹水・下腿浮腫・消化管出血を疑う所見／ALTが正常でも2型糖尿病＋FIB-4高値<br>生活指導の枠を超えるサインは、様子見の対象にしない</div>
+  </div>
+
+  <div class="info__src">出典: 日本肝臓学会「奈良宣言2023」（医療関係者向け）／Kawanaka M, et al. Diagnostics (Basel) 2025;15(13):1591. PMID 40647590／Rinella ME, et al. J Hepatol 2023;79(6):1542-1556. PMID 37364790／Vilar-Gomez E, et al. Gastroenterology 2015;149(2):367-378.e5. PMID 25865049／Promrat K, et al. Hepatology 2010;51(1):121-129. PMID 19827166／Hashida R, et al. J Hepatol 2017;66(1):142-152. PMID 27639843／Miwa T, et al. J Clin Med 2024;13(4):1158. PMID 38398471／Simon TG, et al. Gut 2021;70(7):1375-1382. PMID 33037056／Simon TG, et al. Gut 2022;71(9):1867-1875. PMID 34489307／Kanwal F, et al. Gastroenterology 2021;161(5):1657-1669. PMID 34602251／MASLD診療ガイドライン2026（日本消化器病学会・日本肝臓学会編）</div>
+
+  <div class="info__foot">
+    <span><span class="x">✚</span> 医知創造ラボ（脳神経内科専門医監修）</span>
+    <span>tools.ichisouzo-lab.com</span>
+  </div>
+</div>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px auto 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="https://youtu.be/hnyVzO-nuTM" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#C0392B;color:#fff;">▶ 解説動画（YouTube）</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+</body>
+</html>
