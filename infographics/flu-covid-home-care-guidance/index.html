@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1080">
+<title>「いつまで休むか」はAND条件で決まる｜インフルエンザ・新型コロナの予防と家庭療養 外来指導テンプレート（インフォグラフィック）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;800&family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#012360; --deep:#5D540E; --accent:#7A6E12; --accentDeep:#3E3807;
+  --red:#DC3323; --ink:#22323f; --ink2:#3c4d5a;
+  --line:#D8DDE6; --bg:#F8F5E2;
+  --font:"Noto Sans JP","BIZ UDPGothic","Yu Gothic","Meiryo",sans-serif;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:var(--font); background:#fff;}
+.info{width:1080px; background:#fff; color:var(--ink); padding:0 0 60px;}
+
+.info__head{background:linear-gradient(135deg,#001B4D 0%,#012360 52%,#3E3807 100%); color:#fff;
+  padding:56px 64px 50px; position:relative; overflow:hidden;}
+.info__head::after{content:""; position:absolute; right:-100px; top:-100px; width:340px; height:340px;
+  border-radius:50%; background:radial-gradient(circle at 30% 30%, rgba(122,110,18,.60), rgba(122,110,18,0) 70%);}
+.info__badge{display:inline-flex; align-items:center; gap:10px;
+  background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3);
+  border-radius:999px; padding:8px 22px; font-size:22px; font-weight:700; position:relative; z-index:2;}
+.info__badge .x{color:#9C8E22;}
+.info__title{font-size:44px; font-weight:800; line-height:1.3; margin-top:20px; position:relative; z-index:2;}
+.info__title .hl{color:#CFC78C;}
+.info__sub{font-size:23px; color:rgba(255,255,255,.85); margin-top:14px; position:relative; z-index:2; line-height:1.5;}
+
+.lead{padding:0 64px; margin-top:34px;}
+.lead__box{background:var(--bg); border-left:6px solid var(--accent); border-radius:0 12px 12px 0;
+  padding:20px 26px; font-size:22px; line-height:1.6; color:var(--ink2);}
+.lead__box b{color:var(--deep);}
+
+.sec{padding:0 64px; margin-top:46px;}
+.sec__h{display:flex; align-items:center; gap:16px; font-size:32px; font-weight:800;
+  color:var(--navy); margin-bottom:20px;}
+.sec__n{flex:none; width:52px; height:52px; border-radius:14px; background:var(--accent);
+  color:#fff; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:700;}
+
+.pillars{display:flex; flex-direction:column; gap:13px;}
+.pillar{border:2px solid var(--line); border-radius:14px; display:flex; overflow:hidden; align-items:stretch; background:var(--bg);}
+.pillar__num{flex:none; width:56px; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:700; color:#fff; background:var(--deep);}
+.pillar__icon{flex:none; width:78px; display:flex; align-items:center; justify-content:center; font-size:34px; background:#fff;}
+.pillar__main{flex:1; padding:16px 22px;}
+.pillar__t{font-size:22px; font-weight:700; color:var(--deep); margin-bottom:6px;}
+.pillar__d{font-size:19px; line-height:1.6; color:var(--ink2);}
+.pillar__d b{color:var(--deep);}
+.pillar__d .rd{color:var(--red); font-weight:700;}
+
+.timeline{display:flex; border:2px solid var(--line); border-radius:14px; overflow:hidden;}
+.tl__seg{flex:1; padding:20px 22px; position:relative; background:var(--bg);}
+.tl__seg + .tl__seg{border-left:2px dashed var(--line);}
+.tl__tag{display:inline-block; font-size:15px; font-weight:800; border-radius:999px; padding:4px 14px; margin-bottom:8px;
+  background:var(--deep); color:#fff;}
+.tl__h{font-size:26px; font-weight:800; color:var(--deep); margin-bottom:6px;}
+.tl__d{font-size:17px; line-height:1.6; color:var(--ink2);}
+.tl__d b{color:var(--deep);}
+
+.andgrid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+.andcard{border:2px solid var(--line); border-radius:14px; background:#fff; padding:18px 20px;}
+.andcard__t{font-size:20px; font-weight:800; color:var(--deep); margin-bottom:12px; display:flex; align-items:center; gap:8px;}
+.andcard__t .ic{font-size:24px;}
+.androw{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+.andchip{background:var(--bg); border:1.5px solid var(--accent); border-radius:10px; padding:8px 14px;
+  font-size:17px; font-weight:700; color:var(--accentDeep); line-height:1.35;}
+.andchip small{display:block; font-size:13px; font-weight:600; color:var(--ink2);}
+.andop{flex:none; min-width:34px; height:34px; padding:0 8px; border-radius:17px; background:var(--deep);
+  color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:800;}
+.andnote{margin-top:14px; font-size:17px; line-height:1.6; color:var(--ink2); background:var(--bg);
+  border-radius:12px; padding:14px 22px;}
+.andnote b{color:var(--deep);}
+
+.assist{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+.assist__card{border:2px solid var(--line); border-radius:14px; background:#fff; padding:18px 22px;}
+.assist__h{display:flex; align-items:center; gap:12px; margin-bottom:8px;}
+.assist__ic{flex:none; width:44px; height:44px; border-radius:10px; background:var(--bg); border:1.5px solid var(--accent);
+  display:flex; align-items:center; justify-content:center; font-size:22px;}
+.assist__t{font-size:20px; font-weight:700; color:var(--deep);}
+.assist__d{font-size:17px; line-height:1.6; color:var(--ink2);}
+.assist__d b{color:var(--accentDeep);}
+.assist__tag{display:inline-block; margin-top:8px; font-size:14px; font-weight:700; color:var(--accentDeep);
+  background:var(--bg); border-radius:999px; padding:3px 12px;}
+
+.trigbox{margin:20px 64px 0; background:#F8F5E2; border:2.5px solid var(--accent); border-radius:14px;
+  padding:20px 28px; display:flex; align-items:flex-start; gap:18px;}
+.trigbox__ic{flex:none; font-size:32px; line-height:1;}
+.trigbox__t{font-size:22px; font-weight:800; color:var(--deep); margin-bottom:6px;}
+.trigbox__d{font-size:19px; line-height:1.6; color:var(--ink2);}
+.trigbox__d b{color:var(--accentDeep);}
+.trigbox__warn{margin-top:10px; font-size:18px; line-height:1.55; color:var(--red); font-weight:700;}
+
+.promise{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+.pcol{border:2px solid var(--line); border-radius:14px; overflow:hidden;}
+.pcol__h{font-size:21px; font-weight:700; color:#fff; padding:12px 20px; text-align:center;}
+.pcol--ok .pcol__h{background:var(--deep);}
+.pcol--ng .pcol__h{background:var(--red);}
+.pcol__b{padding:14px 20px 16px; display:flex; flex-direction:column; gap:9px;}
+.pcol__i{font-size:18px; line-height:1.55; color:var(--ink2); display:flex; gap:9px; align-items:flex-start;}
+.pcol__i .mk{flex:none; font-weight:700;}
+.pcol--ok .mk{color:var(--deep);}
+.pcol--ng .mk{color:var(--red);}
+.pcol__i b{color:var(--accentDeep);}
+.pcol--ng .pcol__i b{color:var(--red);}
+
+.call-box{margin-top:18px; background:#FDECEA; border:2px solid var(--red); border-radius:12px;
+  padding:16px 24px; font-size:20px; line-height:1.55; color:var(--red); font-weight:700; text-align:center;}
+.call-box2{margin-top:16px; background:var(--bg); border:2px solid var(--accent); border-radius:12px;
+  padding:16px 24px; font-size:20px; line-height:1.55; color:var(--deep); font-weight:700; text-align:center;}
+
+.info__foot{margin-top:52px; padding:26px 64px 0; border-top:2px solid var(--line);
+  display:flex; align-items:center; justify-content:space-between; font-size:22px; color:#7a8a96; font-weight:700;}
+.info__foot .x{color:var(--accent);}
+.info__src{padding:0 64px; margin-top:20px; font-size:15px; line-height:1.55; color:#9aa8b2;}
+</style>
+</head>
+<body>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+<div class="info">
+  <div class="info__head hd">
+    <span class="info__badge"><span class="x">✚</span>外来で聞かれる4つの質問に答える</span>
+    <div class="info__title">「いつまで休むか」は<br><span class="hl">AND条件</span>で決まる</div>
+    <div class="info__sub">インフルエンザ・新型コロナの予防と家庭療養 外来指導テンプレート<br><span style="white-space:nowrap">外来患者指導テンプレート・シリーズ 第25弾</span></div>
+  </div>
+
+  <div class="lead">
+    <div class="lead__box"><b>「いつまで休めばいいですか」「証明書は必要ですか」「薬は飲まないとだめですか」「家族にうつさない方法は」</b>——検査で名前がついた後、外来で必ず聞かれる質問に、<b>法令原文と厚生労働省のQ&A</b>で正確に答える。</div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">4</span>外来指導の核心4点</div>
+    <div class="pillars">
+      <div class="pillar">
+        <div class="pillar__num">1</div>
+        <div class="pillar__icon">🔬</div>
+        <div class="pillar__main">
+          <div class="pillar__t">陽性はほぼ本物、陰性は否定できない</div>
+          <div class="pillar__d">迅速抗原検査の<b>特異度はいずれも98%超</b>。一方<b>感度は5〜9割台にとどまる</b>。<span class="rd">症状だけではインフルかコロナかは決められない</span>——陽性尤度比が2を超えたのは「医師の総合的な臨床的印象」のみ。</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar__num">2</div>
+        <div class="pillar__icon">💊</div>
+        <div class="pillar__main">
+          <div class="pillar__t">薬は早いほうがよいが、全員に必須ではない</div>
+          <div class="pillar__d">インフル<b>発症48時間以内</b>・ラゲブリオ／パキロビッド<b>発症5日以内</b>・ゾコーバ<b>発症3日以内</b>。厚労省Q&A＝「<b>全ての患者に対して必須ではない</b>」。<span class="rd">48時間を過ぎたら無意味、とは言えない</span>（症状が遷延する場合は考慮）。</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar__num">3</div>
+        <div class="pillar__icon">🏠</div>
+        <div class="pillar__main">
+          <div class="pillar__t">家庭内対策は、やるなら発症から36時間以内</div>
+          <div class="pillar__d">index患者の発症から<b>36時間以内に対策を始めた世帯では</b>二次感染が有意に低下（全体では有意差なし）。<b>発端者の発症からおよそ3日で次の人が発症</b>する。<span class="rd">遅いと無駄ではなく、早いほど期待できる</span>。</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar__num">4</div>
+        <div class="pillar__icon">📅</div>
+        <div class="pillar__main">
+          <div class="pillar__t">休む期間は法令のAND条件。証明書は不要</div>
+          <div class="pillar__d">学校・保育所は「<b>発症後◯日</b>」と「<b>解熱・軽快後◯日</b>」の<b>両方</b>を満たす必要がある。<span class="rd">熱が下がっただけでは足りない</span>。<b>治癒証明書・陰性証明書はいずれも不要</b>。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">⏱</span>抗ウイルス薬の時間窓 ― 薬ごとに違う</div>
+    <div class="timeline">
+      <div class="tl__seg">
+        <span class="tl__tag">インフル</span>
+        <div class="tl__h">48時間以内</div>
+        <div class="tl__d">発症から48時間以内に開始すると<b>発熱期間が1〜2日短縮</b>。過ぎると<b>十分な効果は期待できない</b></div>
+      </div>
+      <div class="tl__seg">
+        <span class="tl__tag">ラゲブリオ／パキロビッド</span>
+        <div class="tl__h">5日以内</div>
+        <div class="tl__d"><b>発症から5日以内</b>に服用開始が必要。妊婦は禁忌の薬もある</div>
+      </div>
+      <div class="tl__seg">
+        <span class="tl__tag">ゾコーバ</span>
+        <div class="tl__h">3日以内</div>
+        <div class="tl__d"><b>発症から3日以内</b>に服用開始が必要。併用禁忌薬に注意</div>
+      </div>
+    </div>
+    <div class="andnote"><b>全員に必須ではありません。</b>重症化リスクが高い方には重症化予防効果があるとされる一方、<b>そのほかの方には内服による重症化予防効果は限定的</b>（厚労省）。48時間を過ぎても<b>症状が遷延する場合は投与を考慮する</b>ことがある（日本小児科学会）。</div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">AND</span>休む期間 ― 「発症後」と「解熱・軽快後」の両方</div>
+    <div class="andgrid">
+      <div class="andcard">
+        <div class="andcard__t"><span class="ic">🏫</span>学校（インフルエンザ）</div>
+        <div class="androw">
+          <span class="andchip">発症後5日</span>
+          <span class="andop">AND</span>
+          <span class="andchip">解熱後2日<small>幼児は3日</small></span>
+        </div>
+      </div>
+      <div class="andcard">
+        <div class="andcard__t"><span class="ic">🏫</span>学校・保育所（新型コロナ）</div>
+        <div class="androw">
+          <span class="andchip">発症後5日</span>
+          <span class="andop">AND</span>
+          <span class="andchip">症状軽快後1日</span>
+        </div>
+      </div>
+      <div class="andcard">
+        <div class="andcard__t"><span class="ic">🧸</span>保育所（インフルエンザ）</div>
+        <div class="androw">
+          <span class="andchip">発症後5日</span>
+          <span class="andop">AND</span>
+          <span class="andchip">解熱後3日<small>乳幼児の場合</small></span>
+        </div>
+      </div>
+      <div class="andcard">
+        <div class="andcard__t"><span class="ic">💼</span>大人・新型コロナ（法令上の日数規定なし・目安）</div>
+        <div class="androw">
+          <span class="andchip">発症日を0日目に<br>5日間は外出を控える</span>
+          <span class="andop">＋</span>
+          <span class="andchip">5日目に症状が続けば<br>軽快後24時間</span>
+        </div>
+      </div>
+    </div>
+    <div class="andnote">学校・保育所は<b>法令・国のめやすで日数が決まる</b>（片方だけでは足りないAND条件）。<b>大人にも法令上の日数規定はないが、国の目安は同じくAND条件</b>——その後10日目までは不織布マスク。<b>成人インフルエンザの日数目安は国が示していない</b>ため、勤務先の規則とあわせて確認する。</div>
+    <div class="call-box2">治癒証明書・陰性証明書はいずれも不要（職場・学校・保育所とも）</div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">＋</span>実務のポイント</div>
+    <div class="assist">
+      <div class="assist__card">
+        <div class="assist__h"><span class="assist__ic">🧒</span><span class="assist__t">異常行動は薬のせいとは限らない</span></div>
+        <div class="assist__d">服用の有無・薬の種類に関わらず起こる（厚労省）。<b>発熱から2日間は目を離さない</b>——施錠・1階で寝かせる等の対策を。</div>
+        <span class="assist__tag">「薬をやめれば安心」でもない</span>
+      </div>
+      <div class="assist__card">
+        <div class="assist__h"><span class="assist__ic">💊</span><span class="assist__t">解熱薬はどちらが危険とも言えない</span></div>
+        <div class="assist__d">NSAIDs（イブプロフェン等）がウイルス性気道感染で危険かどうかは<b>不明</b>。日本の実務では<b>アセトアミノフェンが第一選択</b>として使われることが多い。</div>
+        <span class="assist__tag">「危険」「安全」どちらも断定しない</span>
+      </div>
+      <div class="assist__card">
+        <div class="assist__h"><span class="assist__ic">💉</span><span class="assist__t">有効率は一つの数字で語れない</span></div>
+        <div class="assist__d">対象・アウトカム・シーズンで数字は大きく変わる。<b>かかっても重くなりにくくする</b>狙いで、株が変わるため<b>毎年</b>打つ。</div>
+        <span class="assist__tag">「有効率◯%」と断定しない</span>
+      </div>
+      <div class="assist__card">
+        <div class="assist__h"><span class="assist__ic">🏠</span><span class="assist__t">家庭内感染は珍しくない</span></div>
+        <div class="assist__d">同居家族には<b>かなりの割合でうつる</b>ことが分かっている。だからこそ<b>最初の36時間の対応</b>が重要になる。</div>
+        <span class="assist__tag">％の数字は外来説明に使わない</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="trigbox">
+    <span class="trigbox__ic">⚠️</span>
+    <div>
+      <div class="trigbox__t">「熱が下がれば登校（出勤）可」ではない</div>
+      <div class="trigbox__d">学校保健安全法施行規則第19条は「発症後5日」と「解熱後2日（幼児3日）」の<b>両方</b>を満たすAND条件で、片方だけでは足りない。ただし<b><span style="white-space:nowrap">「病状により学校医その他の医師が感染のおそれがないと認めたとき」</span>はこの期間によらないただし書きが法令上ある</b>。</div>
+      <div class="trigbox__warn">⚠️ 「解熱後2日」は学校（児童生徒等）の基準。<b>大人の出勤にそのまま当てはめない</b>——大人には法令上の日数規定がなく、目安と勤務先の規則による。</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">!</span>約束の線引き ― 何を言い、何を言わないか</div>
+    <div class="promise">
+      <div class="pcol pcol--ok">
+        <div class="pcol__h">言ってよいこと</div>
+        <div class="pcol__b">
+          <div class="pcol__i"><span class="mk">✔</span><span>検査は<b>陽性ならほぼ本物</b>、<b>陰性でも否定できない</b></span></div>
+          <div class="pcol__i"><span class="mk">✔</span><span>薬は<b>早いほうがよいが全員必須ではない</b></span></div>
+          <div class="pcol__i"><span class="mk">✔</span><span>休む期間は<b>AND条件</b>（発症後日数＋解熱・軽快後日数）</span></div>
+          <div class="pcol__i"><span class="mk">✔</span><span><b>治癒証明書・陰性証明書は不要</b></span></div>
+        </div>
+      </div>
+      <div class="pcol pcol--ng">
+        <div class="pcol__h">言ってはいけないこと</div>
+        <div class="pcol__b">
+          <div class="pcol__i"><span class="mk">✕</span><span>「<b>熱が下がれば登校（出勤）可</b>」</span></div>
+          <div class="pcol__i"><span class="mk">✕</span><span>「<b>48時間を過ぎたら薬は無意味</b>」</span></div>
+          <div class="pcol__i"><span class="mk">✕</span><span>「<b>陰性だから違う</b>」</span></div>
+          <div class="pcol__i"><span class="mk">✕</span><span>「<b>ワクチンの有効率は◯%です</b>」（単一断定）</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="call-box">高熱が続く／呼吸が苦しい／意識状態がおかしい／小児は発熱から2日間の見守りを<br>生活指導の枠を超えるサインは、様子見の対象にしない</div>
+  </div>
+
+  <div class="info__src">出典: 厚生労働省「令和７年度 急性呼吸器感染症（ARI）総合対策に関するQ&A」／学校保健安全法施行規則（昭和33年文部省令第18号）第19条／こども家庭庁「保育所における感染症対策ガイドライン」（2018年改訂版）／Ebell MH, et al. BMJ Open 2025;15(3):e067574. PMID 40032401／Merckx J, et al. Ann Intern Med 2017;167(6):394-409. PMID 28869986／Dinnes J, et al. Cochrane Database Syst Rev 2022;7(7):CD013705. PMID 35866452／Suess T, et al. BMC Infect Dis 2012;12:26. PMID 22280120／Tsang TK, et al. Trends Microbiol 2016;24(2):123-133. PMID 26612500／von Philipsborn P, et al. BMJ Open 2020;10(11):e040990. PMID 33444207</div>
+
+  <div class="info__foot">
+    <span><span class="x">✚</span> 医知創造ラボ（脳神経内科専門医監修）</span>
+    <span>tools.ichisouzo-lab.com</span>
+  </div>
+</div>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px auto 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+</body>
+</html>
