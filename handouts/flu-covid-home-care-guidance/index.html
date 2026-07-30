@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#5D540E">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="description" content="インフルエンザや新型コロナで陽性と言われたときの家庭療養をA4一枚に。薬はいつまでに飲むとよいか、学校・保育所・職場をいつまで休むか（発症後5日など）、家族にうつさない工夫、子どもの異常行動への対応をまとめた患者さん向け配布資料です。">
+<meta name="description" content="インフルエンザや新型コロナで陽性と言われたときの家庭療養をA4 2枚に。薬はいつまでに飲むとよいか、学校・保育所・職場をいつまで休むか（発症後5日など）、家族にうつさない工夫、子どもの異常行動への対応をまとめた患者さん向け配布資料です。">
 <title>インフルエンザ・コロナと言われたら｜患者さん向け配布資料</title>
 <style>
   :root{
@@ -151,11 +151,16 @@
     h1{font-size:18pt;}
     h2{font-size:12pt;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
     .kicker,.alert,.alert2,.fh,.fh .fitems div,.fast div,.fast2 div,.qr{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-    ul.checks li{font-size:10pt;padding:2px 2px;}
-    ul.checks .why{font-size:10pt;}
-    .lead{font-size:9.5pt;margin-top:5px;}
-    .head{padding-bottom:8px;margin-bottom:9px;}
-    h2{margin:8px 0 6px;padding:4px 12px;}
+    /* ★1ページ目にセクション表(.cols)全体を収めるための詰め（2026-07-30）。
+       この弾は .cols が他弾より大きく（項目数が多い）、詰める前は
+       head + .cols = 1166px で1ページ(1047px)を119px超えていた。
+       超えると .cols が丸ごと2ページ目へ落ちて1ページ目が空になり3ページになる。
+       文字サイズは10pt→9.5ptの範囲にとどめ、主に行間・余白から取っている。 */
+    ul.checks li{font-size:9.5pt;padding:0 2px;line-height:1.5;}
+    ul.checks .why{font-size:9.3pt;}
+    .lead{font-size:9pt;margin-top:3px;}
+    .head{padding-bottom:5px;margin-bottom:5px;}
+    h2{margin:3px 0 2px;padding:2.5px 12px;}
     .alert,.alert2,.fh{padding:6px 11px;margin-top:8px;}
     .fh .ft,.alert .at,.alert2 .at{font-size:11pt;margin-bottom:4px;}
     .fh .fitems div,.fast div,.fast2 div{padding:4px 8px;font-size:10pt;}
@@ -167,6 +172,14 @@
     a[href]{color:inherit;text-decoration:none;}
     /* 見出しだけがページ末尾に取り残される／枠が途中で割れるのを防ぐ */
     .fh,.alert,.alert2,.memo,ul.checks li{break-inside:avoid;page-break-inside:avoid;}
+    h2{break-after:avoid;page-break-after:avoid;}
+    /* ===== handout-pagination-v1: 改ページをブロック境界に固定（A4 2ページ構成）=====
+       これが無いと、セクション表(.cols)やボックスが途中で割れ、2ページ目が
+       見出しのないチェック項目から始まる（第25/26弾で実際に発生）。
+       ★条件: head + .cols が1ページ(277mm)に収まること。収まらない弾は
+         文字サイズではなく padding/margin を詰めて収める。 */
+    .cols,.fh,.alert,.alert2,.memo,.fast,.fast2,.promise,.tbl{break-inside:avoid;page-break-inside:avoid;}
+    ul.checks li{break-inside:avoid;page-break-inside:avoid;}
     h2{break-after:avoid;page-break-after:avoid;}
   }
   @media (max-width:560px){

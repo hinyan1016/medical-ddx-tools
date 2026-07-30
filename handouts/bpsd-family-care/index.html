@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#2A5D54">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="description" content="認知症の「困った行動」（興奮・不安・くり返し・徘徊・拒否など）を和らげる家族のかかわり方。行動の理由を探す・環境を整える・安心できる声かけ・活動と役割・音楽・介護者ケアをA4一枚にまとめたご家族向け配布資料です。">
+<meta name="description" content="認知症の「困った行動」（興奮・不安・くり返し・徘徊・拒否など）を和らげる家族のかかわり方。行動の理由を探す・環境を整える・安心できる声かけ・活動と役割・音楽・介護者ケアをA4 2枚にまとめたご家族向け配布資料です。">
 <title>認知症の「困った行動」とうまく付き合う 家族のかかわり方｜ご家族向け配布資料</title>
 <style>
   :root{
@@ -120,7 +120,7 @@
   .pbtn:active{transform:scale(.98);}
   .noprint p{font-size:12px;color:#777;margin-top:8px;}
 
-  /* ===== 印刷（A4 1枚に収める） ===== */
+  /* ===== 印刷（A4 2枚・改ページはブロック境界） ===== */
   @page{size:A4 portrait;margin:10mm 12mm;}
   @media print{
     body{background:#fff;padding:0;font-size:10.5pt;}
@@ -133,6 +133,14 @@
     .lead{font-size:10pt;}
     .alert{padding:7px 12px;}
     a[href]{color:inherit;text-decoration:none;}
+    /* ===== handout-pagination-v1: 改ページをブロック境界に固定（A4 2ページ構成）=====
+       これが無いと、セクション表(.cols)やボックスが途中で割れ、2ページ目が
+       見出しのないチェック項目から始まる（第25/26弾で実際に発生）。
+       ★条件: head + .cols が1ページ(277mm)に収まること。収まらない弾は
+         文字サイズではなく padding/margin を詰めて収める。 */
+    .cols,.fh,.alert,.alert2,.memo,.fast,.fast2,.promise,.tbl{break-inside:avoid;page-break-inside:avoid;}
+    ul.checks li{break-inside:avoid;page-break-inside:avoid;}
+    h2{break-after:avoid;page-break-after:avoid;}
   }
   @media (max-width:560px){
     body{padding:8px;}

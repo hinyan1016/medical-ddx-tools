@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#8C2F0D">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="description" content="胸やけ・呑酸（酸っぱいものが上がる感じ）が続く方への生活指導をA4一枚に。体重を減らす・寝るときの工夫（頭側を高く・夕食から3時間空ける）・左向きで寝る・禁煙・食べ物は一律禁止でなく自分のトリガーを見つける・おなかに圧をかけない、をやさしく解説。すぐに受診が必要なサイン、お薬についての注意つき。患者さん向け配布資料です。">
+<meta name="description" content="胸やけ・呑酸（酸っぱいものが上がる感じ）が続く方への生活指導をA4 2枚に。体重を減らす・寝るときの工夫（頭側を高く・夕食から3時間空ける）・左向きで寝る・禁煙・食べ物は一律禁止でなく自分のトリガーを見つける・おなかに圧をかけない、をやさしく解説。すぐに受診が必要なサイン、お薬についての注意つき。患者さん向け配布資料です。">
 <title>逆流性食道炎（GERD）と付き合うための生活のポイント｜患者さん向け配布資料</title>
 <style>
   :root{
@@ -165,6 +165,14 @@
     .memo .mrow{padding:3px 0;}
     .foot{margin-top:8px;padding-top:6px;font-size:9pt;}
     a[href]{color:inherit;text-decoration:none;}
+    /* ===== handout-pagination-v1: 改ページをブロック境界に固定（A4 2ページ構成）=====
+       これが無いと、セクション表(.cols)やボックスが途中で割れ、2ページ目が
+       見出しのないチェック項目から始まる（第25/26弾で実際に発生）。
+       ★条件: head + .cols が1ページ(277mm)に収まること。収まらない弾は
+         文字サイズではなく padding/margin を詰めて収める。 */
+    .cols,.fh,.alert,.alert2,.memo,.fast,.fast2,.promise,.tbl{break-inside:avoid;page-break-inside:avoid;}
+    ul.checks li{break-inside:avoid;page-break-inside:avoid;}
+    h2{break-after:avoid;page-break-after:avoid;}
   }
   @media (max-width:560px){
     body{padding:8px;}

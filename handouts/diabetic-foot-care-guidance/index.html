@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#33691E">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="description" content="糖尿病で足のしびれ・感覚の鈍さがある方への、フットケア（足の手入れ）の生活指導をA4一枚に。毎日足を見る・触る、素足を避けて靴の中を確認、爪やたこを自分で削らない、低温やけどに注意、足を清潔に保つ、禁煙と血糖コントロール、をやさしく解説。すぐに受診が必要なサインつき。患者さん向け配布資料です。">
+<meta name="description" content="糖尿病で足のしびれ・感覚の鈍さがある方への、フットケア（足の手入れ）の生活指導をA4 2枚に。毎日足を見る・触る、素足を避けて靴の中を確認、爪やたこを自分で削らない、低温やけどに注意、足を清潔に保つ、禁煙と血糖コントロール、をやさしく解説。すぐに受診が必要なサインつき。患者さん向け配布資料です。">
 <title>糖尿病性末梢神経障害のフットケア（足の手入れ）のポイント｜患者さん向け配布資料</title>
 <style>
   :root{
@@ -165,6 +165,14 @@
     .memo .mrow{padding:3px 0;}
     .foot{margin-top:8px;padding-top:6px;font-size:9pt;}
     a[href]{color:inherit;text-decoration:none;}
+    /* ===== handout-pagination-v1: 改ページをブロック境界に固定（A4 2ページ構成）=====
+       これが無いと、セクション表(.cols)やボックスが途中で割れ、2ページ目が
+       見出しのないチェック項目から始まる（第25/26弾で実際に発生）。
+       ★条件: head + .cols が1ページ(277mm)に収まること。収まらない弾は
+         文字サイズではなく padding/margin を詰めて収める。 */
+    .cols,.fh,.alert,.alert2,.memo,.fast,.fast2,.promise,.tbl{break-inside:avoid;page-break-inside:avoid;}
+    ul.checks li{break-inside:avoid;page-break-inside:avoid;}
+    h2{break-after:avoid;page-break-after:avoid;}
   }
   @media (max-width:560px){
     body{padding:8px;}

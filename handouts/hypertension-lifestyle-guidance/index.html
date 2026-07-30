@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#B0263A">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="description" content="高血圧の生活のポイント。減塩・野菜と果物・家庭血圧の測定・運動と適正体重・節酒と禁煙・薬を続けるをA4一枚にまとめた患者さん向け配布資料です。">
+<meta name="description" content="高血圧の生活のポイント。減塩・野菜と果物・家庭血圧の測定・運動と適正体重・節酒と禁煙・薬を続けるをA4 2枚にまとめた患者さん向け配布資料です。">
 <title>高血圧とうまく付き合う生活のポイント｜患者さん向け配布資料</title>
 <style>
   :root{
@@ -126,6 +126,14 @@
     .lead{font-size:10pt;}
     .alert{padding:7px 12px;}
     a[href]{color:inherit;text-decoration:none;}
+    /* ===== handout-pagination-v1: 改ページをブロック境界に固定（A4 2ページ構成）=====
+       これが無いと、セクション表(.cols)やボックスが途中で割れ、2ページ目が
+       見出しのないチェック項目から始まる（第25/26弾で実際に発生）。
+       ★条件: head + .cols が1ページ(277mm)に収まること。収まらない弾は
+         文字サイズではなく padding/margin を詰めて収める。 */
+    .cols,.fh,.alert,.alert2,.memo,.fast,.fast2,.promise,.tbl{break-inside:avoid;page-break-inside:avoid;}
+    ul.checks li{break-inside:avoid;page-break-inside:avoid;}
+    h2{break-after:avoid;page-break-after:avoid;}
   }
   @media (max-width:560px){
     body{padding:8px;}

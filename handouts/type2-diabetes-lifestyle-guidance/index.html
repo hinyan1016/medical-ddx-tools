@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#1565C0">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="description" content="2型糖尿病の食事・運動・血糖自己測定（SMBG）を無理なく続けるための生活のポイント。食べる順番・量と質・食後に動く・血糖の見える化・シックデイ（体調の悪い日）の備えをA4一枚にまとめた患者さん向け配布資料です。">
+<meta name="description" content="2型糖尿病の食事・運動・血糖自己測定（SMBG）を無理なく続けるための生活のポイント。食べる順番・量と質・食後に動く・血糖の見える化・シックデイ（体調の悪い日）の備えをA4 2枚にまとめた患者さん向け配布資料です。">
 <title>糖尿病と上手に付き合う 生活の6つのポイント｜患者さん向け配布資料</title>
 <style>
   :root{
@@ -129,6 +129,14 @@
     .lead{font-size:10pt;}
     .alert{padding:7px 12px;}
     a[href]{color:inherit;text-decoration:none;}
+    /* ===== handout-pagination-v1: 改ページをブロック境界に固定（A4 2ページ構成）=====
+       これが無いと、セクション表(.cols)やボックスが途中で割れ、2ページ目が
+       見出しのないチェック項目から始まる（第25/26弾で実際に発生）。
+       ★条件: head + .cols が1ページ(277mm)に収まること。収まらない弾は
+         文字サイズではなく padding/margin を詰めて収める。 */
+    .cols,.fh,.alert,.alert2,.memo,.fast,.fast2,.promise,.tbl{break-inside:avoid;page-break-inside:avoid;}
+    ul.checks li{break-inside:avoid;page-break-inside:avoid;}
+    h2{break-after:avoid;page-break-after:avoid;}
   }
   @media (max-width:560px){
     body{padding:8px;}

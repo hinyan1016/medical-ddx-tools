@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#8B4513">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="description" content="鉄欠乏性貧血と言われたときの鉄剤の飲み方・続ける期間・食事の工夫をA4一枚に。ヘモグロビンが正常に戻ってからさらに約3か月続ける理由、お茶やビタミンCの誤解、なぜ鉄が足りなくなったのかを調べる意味をまとめた患者さん向け配布資料です。">
+<meta name="description" content="鉄欠乏性貧血と言われたときの鉄剤の飲み方・続ける期間・食事の工夫をA4 2枚に。ヘモグロビンが正常に戻ってからさらに約3か月続ける理由、お茶やビタミンCの誤解、なぜ鉄が足りなくなったのかを調べる意味をまとめた患者さん向け配布資料です。">
 <title>鉄が足りない貧血と言われたら｜患者さん向け配布資料</title>
 <style>
   :root{
@@ -151,11 +151,15 @@
     h1{font-size:18pt;}
     h2{font-size:12pt;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
     .kicker,.alert,.alert2,.fh,.fh .fitems div,.fast div,.fast2 div,.qr{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-    ul.checks li{font-size:10pt;padding:2px 2px;}
-    ul.checks .why{font-size:10pt;}
-    .lead{font-size:9.5pt;margin-top:5px;}
-    .head{padding-bottom:8px;margin-bottom:9px;}
-    h2{margin:8px 0 6px;padding:4px 12px;}
+    /* ★1ページ目に6セクション全部を収めるための詰め（2026-07-30）。
+       文字サイズは落とさず（読みやすさ優先）、行間と余白から取っている。
+       実印刷幅は A4 210mm − 左右margin 12mm×2 = 186mm = 703px。この幅で
+       head + .cols が有効高 1047px（277mm）に収まることが条件。 */
+    ul.checks li{font-size:9.8pt;padding:0.5px 2px;}
+    ul.checks .why{font-size:9.6pt;}
+    .lead{font-size:9.5pt;margin-top:4px;}
+    .head{padding-bottom:6px;margin-bottom:6px;}
+    h2{margin:4px 0 3px;padding:3px 12px;}
     .alert,.alert2,.fh{padding:6px 11px;margin-top:8px;}
     .fh .ft,.alert .at,.alert2 .at{font-size:11pt;margin-bottom:4px;}
     .fh .fitems div,.fast div,.fast2 div{padding:4px 8px;font-size:10pt;}
@@ -167,6 +171,23 @@
     a[href]{color:inherit;text-decoration:none;}
     /* 見出しだけがページ末尾に取り残される／枠が途中で割れるのを防ぐ */
     .fh,.alert,.alert2,.memo,ul.checks li{break-inside:avoid;page-break-inside:avoid;}
+    h2{break-after:avoid;page-break-after:avoid;}
+    /* ★A4 2ページ構成を明示する（2026-07-30）。
+       これを入れる前は6番目のセクションの途中で改ページされ、2ページ目の先頭に
+       見出しのないチェック項目が1つだけ孤立していた。
+         1ページ目 = 見出し＋QR＋6セクションのチェックリスト（.cols）
+         2ページ目 = 誤解されがち（.fh）／すぐに相談（.alert）／食べ方（.alert2）／記入欄（.memo）
+       .cols を分割禁止にしただけでは、収まらないときに丸ごと2ページ目へ落ちて
+       1ページ目が空になるので、上の字送りを詰めて .cols が1ページに収まる前提を作ってある。 */
+    .cols{break-inside:avoid;page-break-inside:avoid;}
+    .fh{break-before:page;page-break-before:always;margin-top:0;}
+    /* ===== handout-pagination-v1: 改ページをブロック境界に固定（A4 2ページ構成）=====
+       これが無いと、セクション表(.cols)やボックスが途中で割れ、2ページ目が
+       見出しのないチェック項目から始まる（第25/26弾で実際に発生）。
+       ★条件: head + .cols が1ページ(277mm)に収まること。収まらない弾は
+         文字サイズではなく padding/margin を詰めて収める。 */
+    .cols,.fh,.alert,.alert2,.memo,.fast,.fast2,.promise,.tbl{break-inside:avoid;page-break-inside:avoid;}
+    ul.checks li{break-inside:avoid;page-break-inside:avoid;}
     h2{break-after:avoid;page-break-after:avoid;}
   }
   @media (max-width:560px){
@@ -185,7 +206,7 @@
 <body>
 <div class="noprint">
   <button class="pbtn" id="printBtn">🖨️ この資料を印刷する（A4）</button>
-  <p>A4・1枚に収まります（カラー印刷推奨）</p>
+  <p>A4・2枚（1枚目＝やること／2枚目＝誤解と受診の目安・記入欄。カラー印刷推奨）</p>
 </div>
 
 <div class="sheet">

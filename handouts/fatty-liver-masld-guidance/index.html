@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#6D1B3E">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="description" content="健診で「脂肪肝」「ALTが高い」と言われたときの生活のしかたをA4一枚に。体重の5%から肝臓は変わること、歩く以外の運動でもよいこと、やせていても脂肪肝はあること、お酒の伝え方、受診の目安をまとめた患者さん向け配布資料です。">
+<meta name="description" content="健診で「脂肪肝」「ALTが高い」と言われたときの生活のしかたをA4 2枚に。体重の5%から肝臓は変わること、歩く以外の運動でもよいこと、やせていても脂肪肝はあること、お酒の伝え方、受診の目安をまとめた患者さん向け配布資料です。">
 <title>脂肪肝と言われたら｜患者さん向け配布資料</title>
 <style>
   :root{
@@ -167,6 +167,14 @@
     a[href]{color:inherit;text-decoration:none;}
     /* 見出しだけがページ末尾に取り残される／枠が途中で割れるのを防ぐ */
     .fh,.alert,.alert2,.memo,ul.checks li{break-inside:avoid;page-break-inside:avoid;}
+    h2{break-after:avoid;page-break-after:avoid;}
+    /* ===== handout-pagination-v1: 改ページをブロック境界に固定（A4 2ページ構成）=====
+       これが無いと、セクション表(.cols)やボックスが途中で割れ、2ページ目が
+       見出しのないチェック項目から始まる（第25/26弾で実際に発生）。
+       ★条件: head + .cols が1ページ(277mm)に収まること。収まらない弾は
+         文字サイズではなく padding/margin を詰めて収める。 */
+    .cols,.fh,.alert,.alert2,.memo,.fast,.fast2,.promise,.tbl{break-inside:avoid;page-break-inside:avoid;}
+    ul.checks li{break-inside:avoid;page-break-inside:avoid;}
     h2{break-after:avoid;page-break-after:avoid;}
   }
   @media (max-width:560px){

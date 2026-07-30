@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#C2185B">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="description" content="片頭痛の発作を減らすための毎日のセルフケア6つのポイント。頭痛ダイアリーをつける・睡眠を一定に・有酸素運動・食事を抜かない・ストレス対処・頭痛薬を使いすぎない（薬剤使用過多頭痛MOHに注意）をA4一枚に。危険な頭痛の受診サインつき。患者さん・ご家族向け配布資料です。">
+<meta name="description" content="片頭痛の発作を減らすための毎日のセルフケア6つのポイント。頭痛ダイアリーをつける・睡眠を一定に・有酸素運動・食事を抜かない・ストレス対処・頭痛薬を使いすぎない（薬剤使用過多頭痛MOHに注意）をA4 2枚に。危険な頭痛の受診サインつき。患者さん・ご家族向け配布資料です。">
 <title>片頭痛のセルフケア 発作を減らす毎日の習慣｜患者さん・ご家族向け配布資料</title>
 <style>
   :root{
@@ -142,6 +142,14 @@
     .lead{font-size:10pt;}
     .alert,.fh{padding:7px 12px;}
     a[href]{color:inherit;text-decoration:none;}
+    /* ===== handout-pagination-v1: 改ページをブロック境界に固定（A4 2ページ構成）=====
+       これが無いと、セクション表(.cols)やボックスが途中で割れ、2ページ目が
+       見出しのないチェック項目から始まる（第25/26弾で実際に発生）。
+       ★条件: head + .cols が1ページ(277mm)に収まること。収まらない弾は
+         文字サイズではなく padding/margin を詰めて収める。 */
+    .cols,.fh,.alert,.alert2,.memo,.fast,.fast2,.promise,.tbl{break-inside:avoid;page-break-inside:avoid;}
+    ul.checks li{break-inside:avoid;page-break-inside:avoid;}
+    h2{break-after:avoid;page-break-after:avoid;}
   }
   @media (max-width:560px){
     body{padding:8px;}

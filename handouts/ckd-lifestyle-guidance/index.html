@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#546E7A">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="description" content="慢性腎臓病（CKD）の生活指導をA4一枚に。減塩は最も確実な柱・たんぱく質は自己判断で極端に抜かない・運動はしてよい・食事全体の質を整える・禁煙は腎保護そのもの、をやさしく解説。むくみ・尿の異常など受診の目安つき。患者さん・ご家族向け配布資料です。">
+<meta name="description" content="慢性腎臓病（CKD）の生活指導をA4 2枚に。減塩は最も確実な柱・たんぱく質は自己判断で極端に抜かない・運動はしてよい・食事全体の質を整える・禁煙は腎保護そのもの、をやさしく解説。むくみ・尿の異常など受診の目安つき。患者さん・ご家族向け配布資料です。">
 <title>慢性腎臓病（CKD）の生活指導｜患者さん・ご家族向け配布資料</title>
 <style>
   :root{
@@ -142,6 +142,14 @@
     .lead{font-size:10pt;}
     .alert,.fh{padding:7px 12px;}
     a[href]{color:inherit;text-decoration:none;}
+    /* ===== handout-pagination-v1: 改ページをブロック境界に固定（A4 2ページ構成）=====
+       これが無いと、セクション表(.cols)やボックスが途中で割れ、2ページ目が
+       見出しのないチェック項目から始まる（第25/26弾で実際に発生）。
+       ★条件: head + .cols が1ページ(277mm)に収まること。収まらない弾は
+         文字サイズではなく padding/margin を詰めて収める。 */
+    .cols,.fh,.alert,.alert2,.memo,.fast,.fast2,.promise,.tbl{break-inside:avoid;page-break-inside:avoid;}
+    ul.checks li{break-inside:avoid;page-break-inside:avoid;}
+    h2{break-after:avoid;page-break-after:avoid;}
   }
   @media (max-width:560px){
     body{padding:8px;}

@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#00695C">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="description" content="「毎日出ない＝便秘」ではありません。便の硬さ・いきみ・残便感も合わせて考える便秘のセルフケアをA4一枚に。水溶性食物繊維（サイリウム）を少しずつ、足台を使ったトイレの姿勢、起床後・食後の習慣と便意を我慢しない工夫、運動と水分、お腹のマッサージ、毎日の心がけを解説。血便や体重減少など受診が必要なサインつき。患者さん向け配布資料です。">
+<meta name="description" content="「毎日出ない＝便秘」ではありません。便の硬さ・いきみ・残便感も合わせて考える便秘のセルフケアをA4 2枚に。水溶性食物繊維（サイリウム）を少しずつ、足台を使ったトイレの姿勢、起床後・食後の習慣と便意を我慢しない工夫、運動と水分、お腹のマッサージ、毎日の心がけを解説。血便や体重減少など受診が必要なサインつき。患者さん向け配布資料です。">
 <title>慢性便秘とうまく付き合う生活のポイント｜患者さん向け配布資料</title>
 <style>
   :root{
@@ -165,6 +165,14 @@
     .memo .mrow{padding:3px 0;}
     .foot{margin-top:8px;padding-top:6px;font-size:9pt;}
     a[href]{color:inherit;text-decoration:none;}
+    /* ===== handout-pagination-v1: 改ページをブロック境界に固定（A4 2ページ構成）=====
+       これが無いと、セクション表(.cols)やボックスが途中で割れ、2ページ目が
+       見出しのないチェック項目から始まる（第25/26弾で実際に発生）。
+       ★条件: head + .cols が1ページ(277mm)に収まること。収まらない弾は
+         文字サイズではなく padding/margin を詰めて収める。 */
+    .cols,.fh,.alert,.alert2,.memo,.fast,.fast2,.promise,.tbl{break-inside:avoid;page-break-inside:avoid;}
+    ul.checks li{break-inside:avoid;page-break-inside:avoid;}
+    h2{break-after:avoid;page-break-after:avoid;}
   }
   @media (max-width:560px){
     body{padding:8px;}
