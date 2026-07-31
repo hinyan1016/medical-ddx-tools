@@ -34,8 +34,8 @@ DECK = {
         "（2021年9月）・令和8年度診療報酬の告示と通知・PMDA電子添文・コクランレビューを原文で確認し、"
         "脳神経内科・総合内科専門医監修で全17スライドに整理。医療従事者向け。外来患者指導テンプレート・シリーズ第28弾。"
     ),
-    "youtube_id": "",
-    "blog_url": "",
+    "youtube_id": "rC8IcJtgpYo",
+    "blog_url": "https://blog.ichisouzo-lab.com/entry/2026/07/31/155114",
     "source_dir": "禁煙外来サポート指導/generated",
     "slide_prefix": "slide_",
     "pdf_filename": "slides.pdf",
