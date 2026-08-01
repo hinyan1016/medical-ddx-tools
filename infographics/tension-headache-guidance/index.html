@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1080">
+<title>緊張型頭痛・肩こり頭痛と、正しく付き合う｜外来患者指導テンプレート（インフォグラフィック）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;800&family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0B2A4A; --deep:#1E3A5F; --accent:#294B15; --accentDeep:#1D360F;
+  --red:#C0392B; --ink:#22323f; --ink2:#3c4d5a;
+  --line:#DCE6D2; --bg:#F0F4EC;
+  --font:"Noto Sans JP","BIZ UDPGothic","Yu Gothic","Meiryo",sans-serif;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:var(--font); background:#fff;}
+.info{width:1080px; background:#fff; color:var(--ink); padding:0 0 60px;}
+
+.info__head{background:linear-gradient(135deg,#001B33 0%,#0B2A4A 52%,#1D360F 100%); color:#fff;
+  padding:56px 64px 50px; position:relative; overflow:hidden;}
+.info__head::after{content:""; position:absolute; right:-100px; top:-100px; width:340px; height:340px;
+  border-radius:50%; background:radial-gradient(circle at 30% 30%, rgba(65,110,35,.60), rgba(65,110,35,0) 70%);}
+.info__badge{display:inline-flex; align-items:center; gap:10px;
+  background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3);
+  border-radius:999px; padding:8px 22px; font-size:22px; font-weight:700; position:relative; z-index:2;}
+.info__badge .x{color:#9FCB7C;}
+.info__title{font-size:44px; font-weight:800; line-height:1.35; margin-top:20px; position:relative; z-index:2;}
+.info__title .hl{color:#C9E6B3;}
+.info__sub{font-size:23px; color:rgba(255,255,255,.85); margin-top:14px; position:relative; z-index:2; line-height:1.5;}
+
+.lead{padding:0 64px; margin-top:34px;}
+.lead__box{background:var(--bg); border-left:6px solid var(--accent); border-radius:0 12px 12px 0;
+  padding:20px 26px; font-size:22px; line-height:1.7; color:var(--ink2);}
+.lead__box b{color:var(--accentDeep);}
+
+.sec{padding:0 64px; margin-top:46px;}
+.sec__h{display:flex; align-items:center; gap:16px; font-size:32px; font-weight:800;
+  color:var(--navy); margin-bottom:20px;}
+.sec__n{flex:none; width:52px; height:52px; border-radius:14px; background:var(--accent);
+  color:#fff; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:700;}
+
+.pillars{display:flex; flex-direction:column; gap:13px;}
+.pillar{border:2px solid var(--line); border-radius:14px; display:flex; overflow:hidden; align-items:stretch; background:var(--bg);}
+.pillar__num{flex:none; width:56px; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:700; color:#fff; background:var(--deep);}
+.pillar__icon{flex:none; width:78px; display:flex; align-items:center; justify-content:center; font-size:34px; background:#fff;}
+.pillar__main{flex:1; padding:16px 22px;}
+.pillar__t{font-size:22px; font-weight:700; color:var(--accentDeep); margin-bottom:8px;}
+.pillar__d{font-size:19px; line-height:1.75; color:var(--ink2);}
+.pillar__d b{color:var(--deep);}
+.pillar__chips{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px;}
+.chip{display:inline-flex; align-items:center; gap:6px; background:#fff; border:1.5px solid var(--accent);
+  color:var(--accentDeep); font-size:17px; font-weight:700; border-radius:999px; padding:6px 16px;}
+.chip .mk{color:var(--accent);}
+
+.diarybox{margin:20px 64px 0; background:var(--bg); border:2.5px solid var(--accent); border-radius:14px;
+  padding:20px 28px; display:flex; align-items:flex-start; gap:18px;}
+.diarybox__ic{flex:none; font-size:32px; line-height:1;}
+.diarybox__t{font-size:22px; font-weight:800; color:var(--accentDeep); margin-bottom:6px;}
+.diarybox__d{font-size:19px; line-height:1.7; color:var(--ink2);}
+.diarybox__d b{color:var(--deep);}
+
+.weekrow{display:flex; gap:8px; margin-top:14px;}
+.wcell{flex:1; border:2px solid var(--line); border-radius:10px; background:#fff; padding:10px 4px; text-align:center;}
+.wcell__d{font-size:15px; font-weight:700; color:var(--ink2); margin-bottom:6px;}
+.wcell__m{width:26px; height:26px; margin:0 auto; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:15px; font-weight:800; color:#fff;}
+.wcell--on .wcell__m{background:var(--accent);}
+.wcell--off .wcell__m{background:#E4E9DE; color:#aab6a0;}
+.wcell--warn{border-color:var(--red);}
+.wcell--warn .wcell__m{background:var(--red);}
+
+.promise{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+.pcol{border:2px solid var(--line); border-radius:14px; overflow:hidden;}
+.pcol__h{font-size:21px; font-weight:700; color:#fff; padding:12px 20px; text-align:center;}
+.pcol--ok .pcol__h{background:var(--deep);}
+.pcol--ng .pcol__h{background:var(--accentDeep);}
+.pcol__b{padding:14px 20px 16px; display:flex; flex-direction:column; gap:10px;}
+.pcol__i{font-size:18px; line-height:1.6; color:var(--ink2); display:flex; gap:9px; align-items:flex-start;}
+.pcol__i .mk{flex:none; font-weight:700;}
+.pcol--ok .mk{color:var(--deep);}
+.pcol--ng .mk{color:var(--accentDeep);}
+.pcol__i b{color:var(--deep);}
+.pcol--ng .pcol__i b{color:var(--accentDeep);}
+
+.dangerbox{margin-top:6px; background:#FBEAE8; border:2.5px solid var(--red); border-radius:14px; padding:22px 28px;}
+.dangerbox__t{font-size:23px; font-weight:800; color:#8B2318; margin-bottom:14px; display:flex; align-items:center; gap:10px;}
+.dangerlist{display:flex; flex-direction:column; gap:9px;}
+.dangeritem{display:flex; gap:10px; align-items:flex-start; font-size:18px; line-height:1.6; color:var(--ink2);}
+.dangeritem .mk{flex:none; color:var(--red); font-weight:800; font-size:19px;}
+.dangeritem b{color:#8B2318;}
+.dangernote{margin-top:14px; font-size:17.5px; line-height:1.65; color:#8B2318; font-weight:700;
+  background:#fff; border-radius:10px; padding:12px 18px;}
+
+.andgrid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;}
+.andcard{border:2px solid var(--line); border-radius:14px; background:#fff; padding:20px 18px; text-align:center;}
+.andcard__ic{font-size:30px; margin-bottom:8px;}
+.andcard__t{font-size:19px; font-weight:800; color:var(--accentDeep); margin-bottom:8px; line-height:1.4;}
+.andcard__d{font-size:16px; line-height:1.6; color:var(--ink2);}
+.andnote{margin-top:16px; font-size:18px; line-height:1.7; color:var(--ink2); background:var(--bg);
+  border-radius:12px; padding:16px 24px; text-align:center;}
+.andnote b{color:var(--accentDeep);}
+
+.call-box{margin-top:20px; background:#FBEAE8; border:2px solid var(--red); border-radius:12px;
+  padding:16px 24px; font-size:20px; line-height:1.6; color:var(--red); font-weight:700; text-align:center;}
+
+.info__foot{margin-top:52px; padding:26px 64px 0; border-top:2px solid var(--line);
+  display:flex; align-items:center; justify-content:space-between; font-size:22px; color:#7a8a96; font-weight:700;}
+.info__foot .x{color:var(--accent);}
+.info__src{padding:0 64px; margin-top:20px; font-size:15px; line-height:1.6; color:#9aa8b2;}
+</style>
+</head>
+<body>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+<div class="info">
+  <div class="info__head hd">
+    <span class="info__badge"><span class="x">✚</span>その頭痛、肩こりだけとは限りません</span>
+    <div class="info__title">緊張型頭痛・肩こり頭痛と、<br><span class="hl">正しく付き合う</span></div>
+    <div class="info__sub">ご自身でできるセルフケアと、受診の目安<br><span style="white-space:nowrap">外来患者指導テンプレート・シリーズ 第29弾</span></div>
+  </div>
+
+  <div class="lead">
+    <div class="lead__box">「肩こりからくる頭痛ですね」と言われた方へ。緊張型頭痛はとても身近な頭痛ですが、<b><span style="white-space:nowrap">診断や薬の使い方に</span>気をつけたい点</b>があります。<span style="white-space:nowrap">ご自身でできること</span>と、<b><span style="white-space:nowrap">次の受診で</span><span style="white-space:nowrap">伝えてほしいこと</span></b>をまとめました。</div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">3</span>見直したい3つのポイント</div>
+    <div class="pillars">
+      <div class="pillar">
+        <div class="pillar__num">1</div>
+        <div class="pillar__icon">🚶</div>
+        <div class="pillar__main">
+          <div class="pillar__t">歩くと、頭痛はひどくなりますか？</div>
+          <div class="pillar__chips">
+            <span class="chip"><span class="mk">✓</span>歩く・階段でひどくなる</span>
+            <span class="chip"><span class="mk">✓</span>吐き気がある</span>
+            <span class="chip"><span class="mk">✓</span>光も音もつらい</span>
+          </div>
+          <div class="pillar__d">こうした特徴があるときは、<b><span style="white-space:nowrap">「肩こり頭痛」ではなく</span><span style="white-space:nowrap">片頭痛の可能性</span></b>があります。<span style="white-space:nowrap">当てはまるものがあれば、</span><b>次の受診で必ず伝えてください</b>。</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar__num">2</div>
+        <div class="pillar__icon">📅</div>
+        <div class="pillar__main">
+          <div class="pillar__t">薬は、週2日まで</div>
+          <div class="pillar__d">頭痛薬は<b><span style="white-space:nowrap">飲みすぎると、</span><span style="white-space:nowrap">かえって頭痛が</span><span style="white-space:nowrap">悪化することがあります</span></b>。目安は<b>週2日まで</b>。<span style="white-space:nowrap">飲んだ日は</span><b>カレンダーに○</b>をつけてください。<span style="white-space:nowrap">3日を超える週が</span>続くようなら、<b><span style="white-space:nowrap">薬を増やすのではなく</span>医療者に相談</b>してください。<span style="white-space:nowrap">市販の風邪薬にも</span>同じ成分が<span style="white-space:nowrap">入っていることがある</span>ので、あわせて確認を。</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar__num">3</div>
+        <div class="pillar__icon">🤝</div>
+        <div class="pillar__main">
+          <div class="pillar__t">肩こりとの、正直な付き合い方</div>
+          <div class="pillar__d">首や肩の張りは<span style="white-space:nowrap">頭痛と一緒に</span>出やすいものです。<b><span style="white-space:nowrap">ほぐすと楽になる方も</span>いますが</b>、<span style="white-space:nowrap">それだけで治るとは</span>限りません。<span style="white-space:nowrap">「姿勢を直せば</span>必ず治る」とも、<span style="white-space:nowrap">逆に「肩こりは</span>まったく関係ない」とも<b>言い切れません</b>。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="diarybox">
+    <span class="diarybox__ic">📝</span>
+    <div style="flex:1">
+      <div class="diarybox__t">迷ったら、2週間の頭痛ダイアリー</div>
+      <div class="diarybox__d"><span style="white-space:nowrap">痛みの強さ・</span>続いた時間・<span style="white-space:nowrap">きっかけになりそうなこと</span>を<b>2週間つけて</b>、<span style="white-space:nowrap">受診のときに</span><b><span style="white-space:nowrap">持って来て</span><span style="white-space:nowrap">ください</span></b>。<span style="white-space:nowrap">片頭痛と緊張型頭痛の</span>見分けの助けになります。</div>
+      <div class="weekrow">
+        <div class="wcell"><div class="wcell__d">月</div><div class="wcell__m wcell--off">－</div></div>
+        <div class="wcell"><div class="wcell__d">火</div><div class="wcell__m wcell--off">－</div></div>
+        <div class="wcell wcell--on"><div class="wcell__d">水</div><div class="wcell__m">○</div></div>
+        <div class="wcell"><div class="wcell__d">木</div><div class="wcell__m wcell--off">－</div></div>
+        <div class="wcell"><div class="wcell__d">金</div><div class="wcell__m wcell--off">－</div></div>
+        <div class="wcell wcell--on"><div class="wcell__d">土</div><div class="wcell__m">○</div></div>
+        <div class="wcell"><div class="wcell__d">日</div><div class="wcell__m wcell--off">－</div></div>
+      </div>
+      <div class="diarybox__d" style="margin-top:10px;"><span style="white-space:nowrap">○が週2日までなら</span>様子を見てよい目安。<span style="color:var(--red); font-weight:700;"><span style="white-space:nowrap">3日を超える週が</span>続いたら相談</span>のサインです。</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">!</span>してよいこと、しなくていいこと</div>
+    <div class="promise">
+      <div class="pcol pcol--ok">
+        <div class="pcol__h">してよいこと</div>
+        <div class="pcol__b">
+          <div class="pcol__i"><span class="mk">✔</span><span><b><span style="white-space:nowrap">首や肩をほぐして</span>楽になるなら</b>、<span style="white-space:nowrap">続けてかまいません</span></span></div>
+          <div class="pcol__i"><span class="mk">✔</span><span><b><span style="white-space:nowrap">頭痛が起きた日を</span>カレンダーに記録</b>する</span></div>
+          <div class="pcol__i"><span class="mk">✔</span><span><span style="white-space:nowrap">週2日を超えたら、</span><b><span style="white-space:nowrap">増やさずに</span>医療者へ相談</b>する</span></div>
+          <div class="pcol__i"><span class="mk">✔</span><span><span style="white-space:nowrap">いつもと違う頭痛は、</span><b>我慢せず伝える</b></span></div>
+        </div>
+      </div>
+      <div class="pcol pcol--ng">
+        <div class="pcol__h">しなくていいこと</div>
+        <div class="pcol__b">
+          <div class="pcol__i"><span class="mk">✕</span><span>「<b><span style="white-space:nowrap">姿勢を直せば</span>必ず治る</b>」と<span style="white-space:nowrap">思い込む必要はない</span></span></div>
+          <div class="pcol__i"><span class="mk">✕</span><span><b><span style="white-space:nowrap">自己判断で</span><span style="white-space:nowrap">薬の量や回数を</span>増やす</b>のはやめる</span></div>
+          <div class="pcol__i"><span class="mk">✕</span><span>「<b><span style="white-space:nowrap">肩こりのせい</span></b>」と<span style="white-space:nowrap">決めつけない</span></span></div>
+          <div class="pcol__i"><span class="mk">✕</span><span><span style="white-space:nowrap">抗不安薬などを</span>長く飲んでいる方は、<b><span style="white-space:nowrap">自己判断で</span>急にやめない</b></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">⚠</span>すぐ受診のサイン</div>
+    <div class="dangerbox">
+      <div class="dangerbox__t">🚨 次のようなときは、我慢せずすぐに受診してください</div>
+      <div class="dangerlist">
+        <div class="dangeritem"><span class="mk">●</span><span><b><span style="white-space:nowrap">今までにない、</span><span style="white-space:nowrap">突然始まって</span>1分ほどで<span style="white-space:nowrap">最も強くなる頭痛</span></b></span></div>
+        <div class="dangeritem"><span class="mk">●</span><span><span style="white-space:nowrap">いつもと様子が違う頭痛、</span><b><span style="white-space:nowrap">最近パターンが</span>変わった頭痛</b></span></div>
+        <div class="dangeritem"><span class="mk">●</span><span><span style="white-space:nowrap">熱がある、体重が急に減っているなど、</span><b><span style="white-space:nowrap">頭痛以外の症状</span>を伴う</b></span></div>
+        <div class="dangeritem"><span class="mk">●</span><span><span style="white-space:nowrap">手足が動かしにくい、</span>ろれつが回らないなど、<b><span style="white-space:nowrap">体の症状</span>を伴う</b></span></div>
+        <div class="dangeritem"><span class="mk">●</span><span><b><span style="white-space:nowrap">65歳を過ぎてから</span>初めて起きた頭痛</b></span></div>
+        <div class="dangeritem"><span class="mk">●</span><span><b><span style="white-space:nowrap">頭をぶつけたあとに</span>始まった頭痛</b>、<span style="white-space:nowrap">妊娠中・産後に</span>起きた頭痛</span></div>
+        <div class="dangeritem"><span class="mk">●</span><span><span style="white-space:nowrap">せき・くしゃみ、</span><span style="white-space:nowrap">体を動かしたときに</span><b>誘発される頭痛</b></span></div>
+        <div class="dangeritem"><span class="mk">●</span><span><b><span style="white-space:nowrap">頭痛薬を飲む日が、</span>だんだん増えている</b></span></div>
+      </div>
+      <div class="dangernote">⚠ 「たいしたことなさそう」に見える頭痛でも、油断しないでください。<span style="white-space:nowrap">心配なときは早めに相談を。</span></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">▶</span>この頭痛の、これから</div>
+    <div class="andgrid">
+      <div class="andcard">
+        <div class="andcard__ic">🌱</div>
+        <div class="andcard__t">多くの方は<br>よくなります</div>
+        <div class="andcard__d">時間とともに<span style="white-space:nowrap">落ち着いていく方</span><span style="white-space:nowrap">が多いです</span></div>
+      </div>
+      <div class="andcard">
+        <div class="andcard__ic">⏳</div>
+        <div class="andcard__t">一部の方は<br>長引きます</div>
+        <div class="andcard__d"><span style="white-space:nowrap">慢性化する方も</span>一定数います</div>
+      </div>
+      <div class="andcard">
+        <div class="andcard__ic">🔑</div>
+        <div class="andcard__t">鍵は「薬を<br>飲みすぎないこと」</div>
+        <div class="andcard__d"><span style="white-space:nowrap">慢性化を防ぐ、</span>いちばんの方法です</div>
+      </div>
+    </div>
+    <div class="andnote">多くの方は<b>よくなります</b>。ただし、一部の方は<b>慢性化</b>します。<span style="white-space:nowrap">慢性化を防ぐいちばんの方法は、</span><b><span style="white-space:nowrap">薬を飲みすぎない</span>こと</b>です。</div>
+  </div>
+
+  <div class="info__src">出典: 『頭痛の診療ガイドライン2021』（日本神経学会・日本頭痛学会・日本神経治療学会 監修）／国際頭痛分類 第3版（ICHD-3）日本語版（日本頭痛学会・国際頭痛分類委員会 訳）／日本頭痛学会 頭痛ダイアリー</div>
+
+  <div class="info__foot">
+    <span><span class="x">✚</span> 医知創造ラボ（脳神経内科専門医監修）</span>
+    <span>tools.ichisouzo-lab.com</span>
+  </div>
+</div>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px auto 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+</body>
+</html>

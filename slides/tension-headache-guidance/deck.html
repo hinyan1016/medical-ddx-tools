@@ -1,0 +1,779 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>緊張型頭痛・肩こり頭痛のセルフケア｜外来患者指導シリーズ第29弾</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   テーマ「セミナー紺」— 参照: docs/specs/2026-07-05-slide-theme-seminar-navy-design.md
+   濃紺 #012360 × フォレストグリーン #294B15 × 警告レッド #DC3323 / 全文Noto Sans JPで統一
+   クラス設計・セクション番号は 医療スライドテンプレート.html と互換
+   ===================================================================== */
+:root{
+  /* palette (PDF実測値) */
+  --navy:#012360;
+  --navy-ink:#001B4D;
+  --accent:#294B15;
+  --accent-soft: color-mix(in srgb, var(--accent) 11%, #ffffff);
+  --accent-line: color-mix(in srgb, var(--accent) 62%, #ffffff);
+  --accent-ink: #1D360F;
+  --danger:#DC3323;
+  --danger-soft: color-mix(in srgb, var(--danger) 9%, #ffffff);
+  --bg:#FDFDFD;
+
+  /* 継承トークンの上書き（colors_and_type.css の値を紺橙系に寄せる） */
+  --blue:#1D4189;
+  --blue-soft:#E9EEF8;
+  --blue-tint:#EEF2FA;
+  --red: var(--danger);
+  --red-soft: var(--danger-soft);
+  --orange: var(--accent);
+  --orange-soft: var(--accent-soft);
+  --line:#D8DDE6;
+  --line-soft:#C9D2DF;
+  --bg-muted:#F8F8F8;
+  --bg-alt:#F6F6F6;
+  --navy-line: color-mix(in srgb, var(--navy) 22%, #ffffff);
+
+  /* type scale — multiply all via --type-mult (既存テンプレと同値) */
+  --type-mult: 1.38;
+  --type-display: calc(96px * var(--type-mult));
+  --type-title:   calc(82px * var(--type-mult));
+  --type-heading: calc(60px * var(--type-mult));
+  --type-subtitle:calc(44px * var(--type-mult));
+  --type-body:    calc(38px * var(--type-mult));
+  --type-small:   calc(30px * var(--type-mult));
+  --type-label:   calc(27px * var(--type-mult));
+  --type-chapter: calc(210px * var(--type-mult));
+  --type-stat:    calc(150px * var(--type-mult));
+
+  --pad-x: 112px;
+  --pad-top: 58px;
+  --pad-bottom: 80px;
+  --gap-title: 24px;
+  --gap-item: 22px;
+
+  /* このテーマ内は本文・見出しともNoto Sans JPに統一（colors_and_type.css の --font-ja を上書き。他ファイルには影響しない） */
+  --font-ja: "Noto Sans JP", "BIZ UDPGothic", "Yu Gothic", "Meiryo", sans-serif;
+  --font-serif: var(--font-ja);
+  --grad-navy: linear-gradient(160deg, #012360 0%, #001B4D 100%);
+}
+.serif{ font-family: var(--font-serif); font-weight:800; letter-spacing:.02em; }
+
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#0a1430; }
+
+/* ---------- base slide ---------- */
+.slide{
+  box-sizing:border-box;
+  display:flex; flex-direction:column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-ja);
+  overflow:hidden;
+  position:relative;
+}
+/* 下端の紺帯（PDF全ページ共通の締め） */
+.slide::after{
+  content:""; position:absolute; left:0; right:0; bottom:0; height:10px;
+  background: var(--navy); pointer-events:none;
+}
+.slide--navy{ background: var(--grad-navy); color: var(--white); }
+.slide--navy::after{ background: var(--accent); }
+.slide--soft{ background: var(--bg-alt); }
+
+/* eyebrow — 紺の縦帯（下端アクセント）＋ラベル */
+.eyebrow{
+  display:flex; align-items:center; gap:18px;
+  font-size: var(--type-label); font-weight:700; color: var(--navy);
+  letter-spacing:.04em;
+}
+.eyebrow::before{
+  content:""; width:12px; height:44px; border-radius:3px;
+  background: linear-gradient(180deg, var(--navy) 0 68%, var(--accent) 68% 100%);
+  flex:none;
+}
+.eyebrow .num{ font-family: var(--font-en); color: var(--accent-ink); }
+.eyebrow .en{ font-family: var(--font-en); color: var(--accent-ink); letter-spacing:.15em; text-transform:uppercase; }
+.slide--navy .eyebrow{ color: rgba(255,255,255,.88); }
+.slide--navy .eyebrow .en{ color:#fff; }
+.slide--navy .eyebrow::before{ background: linear-gradient(180deg, #fff 0 68%, var(--accent) 68% 100%); }
+
+.s-title{
+  font-size: var(--type-heading); line-height:1.22; color: var(--navy);
+  margin: var(--gap-title) 0 0; font-weight:800; letter-spacing:.01em;
+  text-wrap: pretty;
+}
+.slide--navy .s-title{ color:#fff; }
+
+.lead{
+  font-size: var(--type-body); line-height:1.7; color: var(--ink-2);
+  margin:0; text-wrap: pretty;
+}
+.muted{ color: var(--gray); }
+
+/* 見出し下罫線 — 紺の実線＋左端アクセント短セグメント（PDF見出し様式） */
+.hairline{
+  height:4px; border:0; margin:20px 0 0;
+  background: linear-gradient(90deg, var(--accent) 0 150px, var(--navy) 150px);
+  opacity:1;
+}
+.slide--navy .hairline{ background: linear-gradient(90deg, var(--accent) 0 150px, rgba(255,255,255,.85) 150px); }
+
+/* 右上の薄い大章番号（装飾・背面） */
+.chapter-ghost{
+  position:absolute; top: 30px; right: var(--pad-x);
+  font-family: var(--font-en); font-weight:700; line-height:.8;
+  font-size: calc(150px * var(--type-mult)); color: var(--navy);
+  opacity:.05; pointer-events:none; user-select:none;
+}
+.slide--navy .chapter-ghost{ color:#fff; opacity:.10; }
+
+/* 汎用 下線ハイライト */
+.hl-underline{ border-bottom: 6px solid var(--accent-line); }
+
+/* 赤バッジ（PDF p1「7/7まで」様式・インライン強調） */
+.badge-danger{
+  display:inline-block; background: var(--danger); color:#fff;
+  font-weight:800; padding: 4px 26px; border-radius:10px;
+  line-height:1.35;
+}
+
+/* footer band */
+.slide__foot{
+  position:absolute; left: var(--pad-x); right: var(--pad-x); bottom: 36px;
+  display:flex; align-items:center; justify-content:space-between;
+  font-size: calc(24px * var(--type-mult)); color: var(--gray);
+  font-family: var(--font-ja);
+}
+.slide__foot .ch{ display:flex; align-items:center; gap:10px; font-weight:700; color: var(--navy); }
+.slide__foot .cross{ color: var(--accent); font-weight:700; }
+.slide--navy .slide__foot{ color: rgba(255,255,255,.65); }
+.slide--navy .slide__foot .ch{ color:#fff; }
+.slide--navy .slide__foot .cross{ color: var(--accent); }
+
+/* ============ 1. COVER（白背景・右上に幾何アクセント） ============ */
+.cover{ justify-content:center; }
+.cover__geo{
+  position:absolute; right: 70px; top: 48px; width: 380px; height: 380px;
+  pointer-events:none;
+}
+.cover__badge{
+  display:inline-flex; align-items:center; gap:14px; align-self:flex-start;
+  background:#fff; border:2px solid var(--navy-line);
+  color: var(--navy); padding:12px 26px; border-radius:999px;
+  font-size: var(--type-label); font-weight:700;
+}
+.cover__badge .cross{ color: var(--accent); font-size:1.2em; }
+.cover__title{
+  font-family: var(--font-serif);
+  font-size: calc(76px * var(--type-mult)); line-height:1.3; color: var(--navy); font-weight:800;
+  margin:42px 0 0; letter-spacing:.02em; max-width:1400px;
+}
+.cover__title .hl{ color: var(--accent); }
+.cover__rule{ width: 1500px; max-width:100%; height:3px; background: var(--navy); margin-top:36px; }
+.cover__sub{
+  font-size: var(--type-subtitle); color: var(--ink-2);
+  margin:34px 0 0; font-weight:700;
+}
+.cover__sub .badge-danger{ margin: 0 6px; }
+.cover__meta{
+  display:flex; gap:30px; align-items:center; margin-top:64px;
+  font-size: var(--type-small); color: var(--gray);
+}
+.cover__avatar{
+  flex:none; width:84px; height:84px; border-radius:50%;
+  background: var(--accent-soft); border:3px solid var(--accent);
+  display:flex; align-items:center; justify-content:center;
+}
+.cover__avatar svg{ width:56%; height:56%; }
+.cover__meta .name{ font-weight:800; color: var(--navy); font-size: var(--type-small); }
+.cover__meta .vline{ width:2px; height:52px; background: var(--line); }
+/* 旧テーマ互換（コーラル版からコピーした装飾を無効化） */
+.cover__blob{ display:none; }
+
+/* ============ 2. THEME / CONCLUSION FIRST ============ */
+.theme__body{ display:flex; flex-direction:column; gap: var(--gap-title); margin-top: 28px; flex:1; justify-content:center; }
+.theme__q{ font-family: var(--font-serif); font-size: var(--type-title); line-height:1.28; color: var(--navy); font-weight:800; max-width:22ch; text-wrap:balance; }
+.theme__q .hl{ color: var(--accent-ink); border-bottom: 8px solid var(--accent-line); }
+.concl{
+  display:flex; align-items:flex-start; gap:28px;
+  background:#fff; border:3px solid var(--accent);
+  border-radius: 12px; padding: 32px 44px;
+  position:relative;
+}
+.concl::before{
+  content:"“"; position:absolute; top:-58px; left:26px;
+  font-family: var(--font-en); font-size: calc(110px * var(--type-mult));
+  color: var(--accent); font-weight:900; line-height:1;
+}
+.concl__tag{
+  flex:none; background: var(--navy); color:#fff; font-weight:700;
+  font-size: var(--type-small); padding:10px 24px; border-radius:8px;
+}
+.concl__text{ font-size: var(--type-subtitle); line-height:1.5; color: var(--navy); font-weight:700; margin:0; }
+
+/* ============ 3. AGENDA（紺角チップ＋アクセント縦罫） ============ */
+.agenda__list{ display:flex; flex-direction:column; gap:26px; margin-top:36px; }
+.agenda__item{ display:flex; align-items:center; gap:32px; }
+.agenda__num{
+  flex:none; width:76px; height:76px; border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+  background: var(--navy); color:#fff;
+  font-family: var(--font-en); font-size: calc(46px * var(--type-mult)); font-weight:800;
+}
+.agenda__txt{
+  font-size: var(--type-subtitle); color: var(--navy); font-weight:700;
+  border-left: 5px solid var(--accent); padding-left: 30px;
+}
+.agenda__txt small{ display:block; font-size: var(--type-small); color: var(--gray); font-weight:400; margin-top:8px; }
+
+/* ============ 4. CHAPTER DIVIDER（全面紺・白・中央） ============ */
+.chapter{ justify-content:center; align-items:center; text-align:center; }
+.chapter__kicker{
+  font-family: var(--font-en); font-size: var(--type-label); color: rgba(255,255,255,.55);
+  font-weight:700; letter-spacing:.4em; text-transform:uppercase;
+}
+.chapter__num{
+  font-family: var(--font-serif); font-size: calc(150px * var(--type-mult)); line-height:1.05;
+  font-weight:800; color:#fff; margin:10px 0 0; letter-spacing:.04em;
+}
+.chapter__rule{ width:560px; height:6px; background: var(--accent); border-radius:3px; margin-top:44px; }
+.chapter__title{ font-size: var(--type-subtitle); color:#fff; font-weight:700; margin:44px 0 0; max-width:26ch; text-wrap:balance; letter-spacing:.06em; }
+
+/* ============ 5. BODY 1 COLUMN ============ */
+.body1{ }
+.body1__main{ margin-top: 26px; max-width: 1640px; }
+.body1 .lead{ margin-bottom: 20px; }
+.important-box.lg{
+  background:#fff; border:2px solid var(--navy-line); border-left: 12px solid var(--accent);
+  border-radius: 12px; padding: 26px 40px; margin:0;
+  box-shadow: var(--shadow-sm);
+}
+.important-box.lg .ttl{ display:flex; align-items:center; gap:14px; font-size: var(--type-small); font-weight:700; color: var(--accent-ink); margin-bottom:8px; }
+.important-box.lg p{ font-size: var(--type-body); line-height:1.6; color: var(--ink-2); margin:0; }
+
+/* ============ 6. BODY + ILLUSTRATION 2COL ============ */
+.cols2{ display:grid; grid-template-columns: 1.28fr 0.72fr; gap:54px; align-items:center; margin-top:24px; flex:1; }
+.cols2__text{ display:flex; flex-direction:column; gap: 18px; }
+.cols2__text .lead{ font-size: var(--type-body); }
+.point-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:18px; }
+.point-list li{ display:flex; align-items:flex-start; gap:20px; font-size: var(--type-body); color: var(--ink-2); line-height:1.5; }
+.point-list li::before{ content:"✓"; flex:none; width:44px; height:44px; border-radius:50%; background: var(--navy); color:#fff; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:.8em; margin-top:2px; }
+.cols2 image-slot{ width:100%; height:460px; border:3px dashed var(--line-soft); border-radius:14px; }
+
+/* ============ 8. COMPARISON TABLE ============ */
+.tablewrap{ margin-top:26px; flex:1; }
+table.cmp{ width:100%; border-collapse:collapse; font-size: var(--type-small); }
+table.cmp th, table.cmp td{ text-align:left; padding:16px 28px; vertical-align:middle; line-height:1.4; }
+table.cmp thead th{ background: var(--navy); color:#fff; font-weight:700; font-size: var(--type-body); }
+table.cmp thead th:first-child{ border-top-left-radius:10px; }
+table.cmp thead th:last-child{ border-top-right-radius:10px; }
+table.cmp tbody td{ border-bottom:1px solid var(--line); color: var(--ink-2); }
+table.cmp tbody tr:nth-child(even){ background: var(--bg-muted); }
+table.cmp tbody td:first-child{ font-weight:700; color: var(--navy); font-size: var(--type-body); white-space:nowrap; }
+table.cmp .pill{ display:inline-block; font-size: calc(24px * var(--type-mult)); font-weight:700; padding:6px 16px; border-radius:999px; }
+.pill--easy{ background: var(--green-soft); color:#1c7a3a; }
+.pill--mid{ background: var(--accent-soft); color: var(--accent-ink); }
+table.cmp.compact th, table.cmp.compact td{ padding:9px 22px; }
+
+/* ============ 10. DISCLAIMER ============ */
+.disc{ justify-content:center; align-items:center; text-align:center; background: var(--bg-alt); }
+.disc__icon{ font-size: calc(96px * var(--type-mult)); line-height:1; }
+.disc__tag{ font-family: var(--font-serif); font-size: var(--type-subtitle); font-weight:700; color: var(--navy); margin:28px 0 0; letter-spacing:.08em; }
+.disc__box{
+  margin-top:38px; max-width:1180px; background:#fff; border:2px solid var(--navy-line);
+  border-top: 10px solid var(--accent); border-radius:12px; padding:48px 56px;
+  box-shadow: var(--shadow-md);
+}
+.disc__box p{ font-size: var(--type-body); line-height:1.7; color: var(--ink-2); margin:0; text-wrap:pretty; }
+.disc__box .strong{ color: var(--navy); font-weight:700; }
+
+/* ============ 11. SUMMARY（PDF p3 3カードゴール様式） ============ */
+.sum__list{ display:grid; grid-template-columns: repeat(3,1fr); gap:40px; margin-top:70px; flex:1; align-content:start; }
+.sum__card{
+  position:relative; background:#fff; border:2px solid var(--navy-line);
+  border-radius:14px; padding:64px 36px 40px; display:flex; flex-direction:column; gap:20px;
+  box-shadow: var(--shadow-md); text-align:center; align-items:center;
+}
+.sum__n{
+  position:absolute; top:-38px; left:50%; margin-left:-38px;
+  width:76px; height:76px; border-radius:50%;
+  background: var(--navy); color:#fff;
+  font-family: var(--font-en); font-size: calc(34px * var(--type-mult)); font-weight:800;
+  display:flex; align-items:center; justify-content:center; line-height:1;
+  box-shadow: var(--shadow-md);
+}
+.sum__h{ font-size: var(--type-subtitle); font-weight:800; color: var(--navy); line-height:1.3; text-wrap:balance; }
+.sum__h::after{ content:""; display:block; width:120px; height:4px; background: var(--accent); margin:16px auto 0; border-radius:2px; }
+.sum__p{ font-size: var(--type-small); color: var(--ink-2); line-height:1.6; margin:0; }
+
+/* ============ 12. ENDING（白背景・PDF p17様式） ============ */
+.end{ justify-content:center; align-items:center; text-align:center; }
+.end__h{
+  font-family: var(--font-serif);
+  font-size: var(--type-title); color: var(--navy); font-weight:800; margin:0; text-wrap:balance;
+}
+.end__rule{
+  width:1500px; max-width:100%; height:4px; margin-top:30px;
+  background: linear-gradient(90deg, var(--navy) 0 44%, var(--accent) 44% 56%, var(--navy) 56%);
+}
+.end__cards{ display:grid; grid-template-columns:repeat(3,1fr); gap:36px; margin-top:70px; width:100%; max-width:1640px; }
+.end__card{
+  background:#fff; border:2px solid var(--navy-line); border-radius:14px;
+  padding:34px 30px; display:flex; align-items:center; gap:24px; text-align:left;
+  box-shadow: var(--shadow-sm);
+}
+.end__ic{
+  flex:none; width:88px; height:88px; border-radius:50%;
+  background: var(--accent); color:#fff; display:flex; align-items:center; justify-content:center;
+  font-size: calc(40px * var(--type-mult));
+}
+.end__card h3{ font-size: var(--type-small); font-weight:800; color: var(--navy); margin:0 0 6px; }
+.end__card h3 u{ text-decoration:none; border-bottom:3px solid var(--accent); }
+.end__card p{ font-size: var(--type-label); color: var(--ink-2); line-height:1.5; margin:0; }
+.end__card p b{ color: var(--accent-ink); }
+.end__note{
+  margin-top:60px; max-width:1400px; background:#fff;
+  border:2.5px solid var(--accent); border-radius:12px; padding:30px 60px;
+  font-family: var(--font-serif); font-size: var(--type-small); color: var(--navy);
+  font-weight:700; line-height:1.8;
+}
+.end__note b{ color: var(--accent-ink); }
+/* 旧テーマ互換（ピルCTA・コピー流用時も破綻しない） */
+.end__cross{ font-size: var(--type-subtitle); color: var(--accent); font-weight:700; }
+.end__sub{ font-size: var(--type-subtitle); color: var(--ink-2); margin:26px 0 0; font-weight:400; }
+.end__cta{ display:flex; gap:30px; margin-top:64px; }
+.btn{ display:inline-flex; align-items:center; gap:16px; font-size: var(--type-subtitle); font-weight:700; padding:24px 48px; border-radius:999px; }
+.btn--sub{ background: var(--accent); color:#fff; }
+.btn--like{ background:#fff; color: var(--navy); border:2px solid var(--navy); }
+.end__next{ margin-top:56px; font-size: var(--type-small); color: var(--gray); }
+.end__next b{ color: var(--navy); }
+
+/* ============ 30. 危険サイン（PDF p15 4象限白カード様式） ============ */
+.eyebrow--red{ color: var(--danger); }
+.eyebrow--red::before{ background: linear-gradient(180deg, var(--danger) 0 68%, var(--navy) 68% 100%); }
+.danger .s-title{ font-family: var(--font-serif); color: var(--navy); }
+.danger__list{ display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:30px; flex:1; align-content:center; }
+.danger__item{
+  display:flex; align-items:flex-start; gap:26px;
+  background:#fff; border:2px solid var(--navy-line); border-radius:14px;
+  padding:28px 34px; box-shadow: var(--shadow-sm);
+}
+.danger__item .ic{ display:none; }
+.danger__tri{ flex:none; width:76px; height:70px; margin-top:4px; }
+.danger__bd h3{
+  display:flex; align-items:center; gap:16px;
+  font-size: var(--type-subtitle); font-weight:800; color: var(--navy); margin:0;
+  padding-bottom:12px; border-bottom:4px solid var(--danger);
+}
+.danger__bd .dnum{
+  flex:none; width:52px; height:52px; border-radius:50%;
+  background: var(--danger); color:#fff;
+  font-family: var(--font-en); font-size: calc(28px * var(--type-mult)); font-weight:800;
+  display:flex; align-items:center; justify-content:center;
+}
+.danger__bd p{ font-size: var(--type-small); color: var(--ink-2); line-height:1.55; margin:14px 0 0; font-weight:700; }
+.danger{ padding-bottom:150px; }
+.danger__call{
+  margin-top:24px; margin-bottom:0; display:flex; align-items:center; justify-content:center; gap:22px;
+  background: var(--danger); color:#fff; border-radius:12px; padding:20px 40px;
+  font-size: var(--type-small); font-weight:800;
+}
+
+/* ============ 35. 参考文献・出典 ============ */
+.refs__list{ display:flex; flex-direction:column; gap:26px; margin-top:48px; }
+.refs__item{
+  display:flex; align-items:baseline; gap:26px;
+  border-bottom:1px solid var(--line); padding-bottom:26px;
+}
+.refs__num{ flex:none; font-family: var(--font-en); font-size: var(--type-small); font-weight:700; color: var(--accent-ink); }
+.refs__item p{ font-size: var(--type-body); color: var(--ink-2); line-height:1.6; margin:0; }
+.refs__item p small{ display:block; font-size: var(--type-label); color: var(--gray); margin-top:6px; }
+.refs__note{ margin-top:36px; font-size: var(--type-label); color: var(--gray); }
+
+/* entrance animation — fade-up を上位互換で拡張（deck-anim キット / 詳細は _anim_library/） */
+@media (prefers-reduced-motion:no-preference){
+  /* タイミング基底（動きの既定は fade-up） */
+  [data-deck-active] .anim{ animation: fade-up .5s both; }
+  [data-deck-active] .anim2{ animation: fade-up .5s .12s both; }
+  [data-deck-active] .anim3{ animation: fade-up .5s .24s both; }
+  [data-deck-active] .anim4{ animation: fade-up .5s .36s both; }
+  [data-deck-active] .anim5{ animation: fade-up .5s .48s both; }
+  [data-deck-active] .anim6{ animation: fade-up .5s .60s both; }
+  [data-deck-active] .anim-i{ animation: fade-up .5s both; animation-delay: calc(var(--i,0) * .1s); }
+  /* モーション variant（animation-name のみ上書き＝1要素1アニメ維持・data-cue 安全） */
+  [data-deck-active] .a-fade { animation-name: a-fade; }
+  [data-deck-active] .a-up   { animation-name: fade-up; }
+  [data-deck-active] .a-down { animation-name: a-down; }
+  [data-deck-active] .a-right{ animation-name: a-right; }
+  [data-deck-active] .a-left { animation-name: a-left; }
+  [data-deck-active] .a-zoom { animation-name: a-zoom; }
+  [data-deck-active] .a-pop  { animation-name: a-pop; animation-timing-function: cubic-bezier(.34,1.56,.64,1); }
+  [data-deck-active] .a-blur { animation-name: a-blur; }
+  /* コンテンツ・モーション */
+  [data-deck-active] .grow-y { transform-origin:bottom center; animation: grow-y .7s .2s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .grow-x { transform-origin:left center;   animation: grow-x .55s .25s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .nudge-x{ animation: nudge-x .9s .35s ease-in-out both; }
+}
+.grow-y{ transform-origin:bottom center; } .grow-x{ transform-origin:left center; }
+@keyframes fade-up{ from{ opacity:0; transform: translateY(16px);} to{ opacity:1; transform:none;} }
+@keyframes a-fade { from{ opacity:0; } to{ opacity:1; } }
+@keyframes a-down { from{ opacity:0; transform: translateY(-16px);} to{ opacity:1; transform:none; } }
+@keyframes a-right{ from{ opacity:0; transform: translateX(-28px);} to{ opacity:1; transform:none; } }
+@keyframes a-left { from{ opacity:0; transform: translateX(28px); } to{ opacity:1; transform:none; } }
+@keyframes a-zoom { from{ opacity:0; transform: scale(.94);       } to{ opacity:1; transform:none; } }
+@keyframes a-pop  { from{ opacity:0; transform: scale(.8);        } to{ opacity:1; transform:none; } }
+@keyframes a-blur { from{ opacity:0; filter: blur(12px); transform: translateY(10px);} to{ opacity:1; filter: blur(0); transform:none; } }
+@keyframes grow-y { from{ transform: scaleY(0);} to{ transform: scaleY(1);} }
+@keyframes grow-x { from{ transform: scaleX(0);} to{ transform: scaleX(1);} }
+@keyframes nudge-x{ 0%{ transform:none;} 55%{ transform: translateX(10px);} 100%{ transform:none;} }
+
+/* ===== v2 ===== コンテンツが「育つ」演出（2026-07-02・スパイク検証済み / 詳細 _anim_library/README_deck-anim.md）
+   規律: 1スライドに育つ演出1〜2個まで／count-upはHero数値のみ／sweepは結論1フレーズのみ
+   count-up: <span class="count-up" style="--n-to:8000"></span>（中身空・数字はcounterが描く）
+   draw-line: 対象SVGの <path>/<polyline> に pathLength="1" 必須 */
+@property --n { syntax: '<integer>'; inherits: false; initial-value: 0; }
+@media (prefers-reduced-motion:no-preference){
+  [data-deck-active] .count-up { counter-reset: n var(--n); animation: v2-count 1.4s .2s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .draw-line{ stroke-dasharray:1; animation: v2-draw 1.5s .2s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .sweep    { animation: v2-sweep .9s .3s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .a-wipe   { animation-name: v2-wipe; }
+  [data-deck-active] .a-settle { animation-name: v2-settle; animation-duration: 1.2s; }
+}
+.count-up{ counter-reset: n var(--n-to, 0); font-variant-numeric: tabular-nums; }
+.count-up::after{ content: counter(n); }
+.hl-sweep{
+  background-image: linear-gradient(color-mix(in srgb, var(--accent) 32%, transparent),
+                                    color-mix(in srgb, var(--accent) 32%, transparent));
+  background-repeat:no-repeat; background-size:100% 46%; background-position:0 88%;
+}
+@keyframes v2-count { from{ --n:0; } to{ --n: var(--n-to, 100); } }
+@keyframes v2-draw  { from{ stroke-dashoffset:1; } to{ stroke-dashoffset:0; } }
+@keyframes v2-sweep { from{ background-size:0% 46%; } to{ background-size:100% 46%; } }
+@keyframes v2-wipe  { from{ opacity:0; clip-path: inset(0 100% 0 0);} to{ opacity:1; clip-path: inset(0 0 0 0);} }
+@keyframes v2-settle{ from{ opacity:0; transform: scale(1.06);} to{ opacity:1; transform:none;} }
+
+/* tweaks mount */
+#tweaks-root{ position:fixed; inset:0; pointer-events:none; z-index:9999; }
+#tweaks-root > *{ pointer-events:auto; }
+</style>
+</head>
+<body style="font-size: 8px">
+
+<deck-stage width="1920" height="1080">
+  <!-- ===== 01. 表紙 ===== -->
+  <section data-label="表紙" data-screen-label="01 表紙" class="slide cover">
+    <svg class="cover__geo anim2 a-zoom" viewBox="0 0 200 200" aria-hidden="true">
+      <path d="M60 0 A140 140 0 0 1 200 140" fill="none" stroke="var(--navy-line)" stroke-width="4"/>
+      <path d="M95 0 A105 105 0 0 1 200 105" fill="none" stroke="var(--accent)" stroke-width="5"/>
+      <path d="M128 0 A72 72 0 0 1 200 72" fill="none" stroke="var(--navy)" stroke-width="4"/>
+      <g fill="var(--navy-line)">
+        <circle cx="26" cy="120" r="3.4"/><circle cx="52" cy="120" r="3.4"/><circle cx="78" cy="120" r="3.4"/>
+        <circle cx="26" cy="146" r="3.4"/><circle cx="52" cy="146" r="3.4"/><circle cx="78" cy="146" r="3.4"/>
+        <circle cx="26" cy="172" r="3.4"/><circle cx="52" cy="172" r="3.4"/><circle cx="78" cy="172" r="3.4"/>
+      </g>
+      <circle cx="78" cy="146" r="3.8" fill="var(--accent)"/>
+    </svg>
+    <div class="cover__badge anim"><span class="cross">✚</span><span>外来患者指導シリーズ第29弾</span></div>
+    <h1 class="cover__title anim2 a-blur">緊張型頭痛・<br><span class="hl">肩こり頭痛のセルフケア</span></h1>
+    <div class="cover__rule grow-x"></div>
+    <p class="cover__sub anim3">「肩こりのせい」に<br>してしまう前に</p>
+    <div class="cover__meta anim3">
+      <span class="cover__avatar"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4.6" fill="var(--accent)"/><path d="M2.5 22.5 C2.5 16.5 7 14.2 12 14.2 C17 14.2 21.5 16.5 21.5 22.5 Z" fill="var(--accent)"/></svg></span>
+      <span class="name" style="white-space:nowrap">医知創造ラボ</span>
+      <span class="vline"></span>
+      <span style="white-space:nowrap">監修：今村久司（脳神経内科・総合内科専門医）</span>
+    </div>
+  </section>
+  <!-- ===== 02. テーマ・結論 ===== -->
+  <section data-label="テーマ・結論" data-screen-label="02 テーマ・結論" class="slide">
+    <div class="eyebrow anim">今日のテーマ<span class="en">TODAY'S POINT</span></div>
+    <div class="theme__body">
+      <h2 class="theme__q anim">「肩こりのせい」ではなく<br><span class="hl-underline">3つの外来手順</span></h2>
+      <div class="concl anim2">
+        <span class="concl__tag">結論</span>
+        <p class="concl__text"><span style="white-space:nowrap">1問を聞く、</span><span style="white-space:nowrap">薬は週2〜3日まで、</span><span style="white-space:nowrap">肩こりと決めつけない——</span><span style="white-space:nowrap">この3つです</span></p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>02</span></div>
+  </section>
+  <!-- ===== 03. 目次 ===== -->
+  <section data-label="目次" data-screen-label="03 目次" class="slide slide--soft">
+    <div class="eyebrow anim">この動画でわかること<span class="en">AGENDA</span></div>
+    <h2 class="s-title serif anim">本日のアジェンダ</h2>
+    <hr class="hairline">
+    <div class="agenda__list">
+      <div class="agenda__item anim a-right"><div class="agenda__num">1</div><div class="agenda__txt">その診断は本当か<small>日常動作の1問、触診でわかること、緊張型頭痛の3つの型</small></div></div>
+      <div class="agenda__item anim2 a-right"><div class="agenda__num">2</div><div class="agenda__txt">薬の線引き<small>週2〜3日のライン、急性期薬の選択肢、予防に切り替える線</small></div></div>
+      <div class="agenda__item anim3 a-right"><div class="agenda__num">3</div><div class="agenda__txt">肩こりと、どう付き合うか<small>GLの全文検索の結果、非薬物療法の格付け、受診の目安</small></div></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>03</span></div>
+  </section>
+  <!-- ===== 04. 章扉① ===== -->
+  <section data-label="章扉①" data-screen-label="04 章扉①" class="slide slide--navy chapter">
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num serif anim a-pop">第1章</h2>
+    <div class="chapter__rule grow-x"></div>
+    <h3 class="chapter__title anim3"><span style="white-space:nowrap">「肩こり頭痛」と</span><span style="white-space:nowrap">言う前に</span></h3>
+  </section>
+  <!-- ===== 05. 本文：日常動作で悪化するかを1問聞く ===== -->
+  <section data-label="本文：1問聞く" data-screen-label="05 本文：1問聞く" class="slide">
+    <div class="chapter-ghost">05</div>
+    <div class="eyebrow anim">本弾の核心<span class="en">Tepper 2004 / ICHD-3</span></div>
+    <h2 class="s-title anim">「歩くと悪化しますか」を<br><span class="hl-underline">必ず1問聞く</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(26px * var(--type-mult)); --type-small:calc(23px * var(--type-mult)); margin-top:10px">
+      <p class="lead anim2" data-cue="非片頭痛と診断された患者" style="margin-bottom:6px">専門家パネルが患者の頭痛日記を読み直した研究があります。</p>
+      <ul class="point-list" style="gap:6px; margin-top:6px">
+        <li class="anim-i" style="--i:1" data-cue="Tepper 2004("><span>Tepper 2004（15か国・1,203人）＝非片頭痛と診断された<strong>82%が片頭痛(48%)</strong>または疑い(34%)</span></li>
+        <li class="anim-i" style="--i:2" data-cue="逆に、新たに片頭痛と診断"><span>新規の片頭痛診断は<strong>98%が正しかった</strong></span></li>
+        <li class="anim-i" style="--i:3" data-cue="対象はエピソード性・反復"><span>対象は<strong>反復性の一次性頭痛で受診した患者</strong>。健診集団ではない</span></li>
+        <li class="anim-i" style="--i:4" data-cue="ICHD-3の基準Cは、"><span>ICHD-3基準C＝4項目中<strong>2項目以上</strong>。④「歩行や階段の昇降のような<strong>日常的な</strong><span style="white-space:nowrap">動作により増悪しない」</span>→<strong>片頭痛を疑うサイン</strong></span></li>
+        <li class="anim-i" style="--i:5" data-cue="絶対条件は基準Dで"><span><strong>絶対条件は基準D</strong>＝悪心・嘔吐なし／光過敏か音過敏は一方のみ</span></li>
+        <li class="anim-i" style="--i:6" data-cue="迷ったら、頭痛ダイアリー"><span>迷ったら<strong>頭痛ダイアリーを2週間</strong>渡す</span></li>
+      </ul>
+      <div class="important-box lg anim6" style="margin-top:6px; padding:8px 36px; --type-body:calc(23px * var(--type-mult)); --type-small:calc(20px * var(--type-mult))">
+        <div class="ttl">📋 外来トーク例</div>
+        <p>「<strong>歩いたり階段を上がったりすると、ひどくなりますか</strong>」を必ず聞く</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>05</span></div>
+  </section>
+  <!-- ===== 06. 本文：触って確かめる ===== -->
+  <section data-label="本文：触診" data-screen-label="06 本文：触診" class="slide">
+    <div class="chapter-ghost">06</div>
+    <div class="eyebrow anim">実務<span class="en">ICHD-3 日本語版</span></div>
+    <h2 class="s-title anim">触って確かめる<br><span class="hl-underline">頭蓋周囲の圧痛</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(27px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:14px">
+      <p class="lead anim2" data-cue="だからこそ、触診が、緊張">触診は、緊張型頭痛の説明を価値あるものにする手がかりです。</p>
+      <ul class="point-list" style="gap:10px; margin-top:10px">
+        <li class="anim-i" style="--i:1" data-cue="触診する部位は7つの筋肉"><span>触診部位は7筋＝<strong>前頭筋・側頭筋・咬筋・翼突筋・胸鎖乳突筋・板状筋・僧帽筋</strong></span></li>
+        <li class="anim-i" style="--i:2" data-cue="第2指と第3指を小さく回"><span><strong>第2指と第3指を小さく回転させて動かし、強く圧迫</strong>を加える</span></li>
+        <li class="anim-i" style="--i:3" data-cue="各筋肉で0〜3のスコアを"><span>各筋肉で<strong>0〜3のスコア</strong>をつけ、合計して総圧痛スコアを出す</span></li>
+        <li class="anim-i" style="--i:4" data-cue="ICHD-3は、「頭蓋周"><span>ICHD-3＝「<strong>頭蓋周囲の圧痛の増強は最も重要な異常所見</strong>」</span></li>
+        <li class="anim-i" style="--i:5" data-cue="圧痛は非発作時にもみられ"><span>圧痛は<strong>非発作時にもみられ、頭痛の強さと頻度とともに増強</strong>する</span></li>
+      </ul>
+      <div class="important-box lg anim6" style="margin-top:8px; padding:10px 40px; --type-body:calc(24px * var(--type-mult)); --type-small:calc(21px * var(--type-mult))">
+        <div class="ttl">📋 ICHD-3の一文</div>
+        <p>「<strong>触診は治療戦略に関する有用な手引きとなり、患者への説明をさらに価値あるものにする</strong>」</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>06</span></div>
+  </section>
+  <!-- ===== 07. 表：緊張型頭痛の3つの型 ===== -->
+  <section data-label="表：3つの型" data-screen-label="07 表：3つの型" class="slide" style="padding-bottom:124px">
+    <div class="chapter-ghost">07</div>
+    <div class="eyebrow anim">分類<span class="en">ICHD-3 日本語版</span></div>
+    <h2 class="s-title anim">緊張型頭痛の3つの型と<br><span class="hl-underline">治療の対象</span></h2>
+    <hr class="hairline">
+    <div class="tablewrap" style="margin-top:10px">
+      <table class="cmp compact" style="--type-small:calc(21px * var(--type-mult)); --type-body:calc(23px * var(--type-mult))">
+        <thead><tr><th>型</th><th>頻度の基準（ICHD-3）</th><th>治療の対象か</th></tr></thead>
+        <tbody>
+          <tr><td>稀発反復性</td><td>1か月に1日未満（年間12日未満）</td><td>通常、治療の対象とはならない</td></tr>
+          <tr><td>頻発反復性</td><td>3か月を超えて1か月に1〜14日</td><td>支障があれば治療が必要</td></tr>
+          <tr><td>慢性</td><td>3か月を超えて1か月に15日以上</td><td>治療が必要。40.5%が生活に支障</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="important-box lg anim4" style="margin-top:10px; padding:12px 40px; --type-body:calc(25px * var(--type-mult)); --type-small:calc(22px * var(--type-mult))" data-cue="「頻発反復性緊張型頭痛と">
+      <div class="ttl">📋 GL2021の一文</div>
+      <p>「<strong>頻発反復性緊張型頭痛と慢性緊張型頭痛で、日常生活に支障をきたす場合には治療が必要</strong>」</p>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>07</span></div>
+  </section>
+  <!-- ===== 08. 章扉② ===== -->
+  <section data-label="章扉②" data-screen-label="08 章扉②" class="slide slide--navy chapter">
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num serif anim a-pop">第2章</h2>
+    <div class="chapter__rule grow-x"></div>
+    <h3 class="chapter__title anim3">薬を、どこまで許すか</h3>
+  </section>
+  <!-- ===== 09. 本文：週2〜3日で線を引く ===== -->
+  <section data-label="本文：週2〜3日" data-screen-label="09 本文：週2〜3日" class="slide">
+    <div class="chapter-ghost">09</div>
+    <div class="eyebrow anim">本弾の核心<span class="en">GL2021 CQ III-5 / ICHD-3</span></div>
+    <h2 class="s-title anim">急性期薬は<br><span class="hl-underline">「週2〜3日」で線を引く</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(26px * var(--type-mult)); --type-small:calc(23px * var(--type-mult)); margin-top:10px">
+      <p class="lead anim2" data-cue="「痛くなったら飲んでいい" style="margin-bottom:6px">「痛くなったら飲んでいい」で終わらせず、数え方をその場で渡します。</p>
+      <ul class="point-list" style="gap:6px; margin-top:6px">
+        <li class="anim-i" style="--i:1" data-cue="GL2021は、「1週間"><span>GL2021 CQ III-5＝「<strong>1週間のなかで2〜3日以上の使用は避けることが大切</strong>」</span></li>
+        <li class="anim-i" style="--i:2" data-cue="同じガイドラインは、1週"><span>CQ III-4＝<strong>1週間で2〜3日使用でMOHの可能性</strong>（確実性A）</span></li>
+        <li class="anim-i" style="--i:3" data-cue="ICHD-3のMOHの基"><span>ICHD-3のMOH基準は<strong>月単位</strong>（トリプタン・オピオイド等は<strong>月10日以上</strong>／非オピオイド系鎮痛薬は<strong>月15日以上</strong>・いずれも3か月超）</span></li>
+        <li class="anim-i" style="--i:4" data-cue="ICHD-3自身も、「使"><span>ICHD-3自身＝「<strong>使用日数は正式なエビデンスではなく専門家の意見に基づく</strong>」</span></li>
+        <li class="anim-i" style="--i:5" data-cue="ICHD-3は、「MOH"><span>ICHD-3＝「<strong>MOHのパンフレットのみでしばしば十分</strong>」</span></li>
+      </ul>
+      <div class="important-box lg anim6" style="margin-top:6px; padding:8px 36px; --type-body:calc(23px * var(--type-mult)); --type-small:calc(20px * var(--type-mult))">
+        <div class="ttl">📋 外来トーク例</div>
+        <p>「<strong>週に2日まで。3日を超えたら予防に切り替えます</strong>」</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>09</span></div>
+  </section>
+  <!-- ===== 10. 表：急性期薬の選択肢 ===== -->
+  <section data-label="表：急性期薬" data-screen-label="10 表：急性期薬" class="slide" style="padding-bottom:124px">
+    <div class="chapter-ghost">10</div>
+    <div class="eyebrow anim">急性期治療薬<span class="en">GL2021 表1 / EFNS 2010</span></div>
+    <h2 class="s-title anim">急性期薬の選択肢と、<br><span class="hl-underline">やらないこと</span></h2>
+    <hr class="hairline">
+    <div class="tablewrap" style="margin-top:10px">
+      <table class="cmp compact" style="--type-small:calc(21px * var(--type-mult)); --type-body:calc(23px * var(--type-mult))">
+        <thead><tr><th>薬剤</th><th>位置づけ</th></tr></thead>
+        <tbody>
+          <tr><td>アセトアミノフェン</td><td>500〜1,000mg/回（確実性A）。2時間後pain freeのNNT22</td></tr>
+          <tr><td>NSAIDs（イブプロフェン等）</td><td>確実性A。イブプロフェン400mgのNNT14</td></tr>
+          <tr><td>トリプタン・筋弛緩薬・オピオイド</td><td>EFNSガイドラインで推奨されていない</td></tr>
+          <tr><td>チザニジン</td><td>確実性B。適応外使用が保険上認められている</td></tr>
+          <tr><td>エチゾラム</td><td>主要評価項目で有意差なし。頓用のみ、連用は不可</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="important-box lg anim4" style="margin-top:10px; padding:12px 40px; --type-body:calc(25px * var(--type-mult)); --type-small:calc(22px * var(--type-mult))" data-cue="アセトアミノフェン100">
+      <div class="ttl">📋 Cochraneの結論</div>
+      <p>アセトアミノフェン1000mgは<strong>「a small benefit」</strong>——そこそこ効く人がいる、という水準</p>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>10</span></div>
+  </section>
+  <!-- ===== 11. 本文：予防療法に切り替える線 ===== -->
+  <section data-label="本文：予防に切り替える線" data-screen-label="11 本文：予防に切り替える線" class="slide">
+    <div class="chapter-ghost">11</div>
+    <div class="eyebrow anim">予防療法<span class="en">GL2021 CQ III-4・III-6</span></div>
+    <h2 class="s-title anim">予防に<br><span class="hl-underline">切り替える線</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(27px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:14px">
+      <p class="lead anim2" data-cue="対象は頻発反復性緊張型頭">対象は頻発反復性緊張型頭痛と、慢性緊張型頭痛です。</p>
+      <ul class="point-list" style="gap:12px; margin-top:14px">
+        <li class="anim-i" style="--i:1" data-cue="第一選択はアミトリプチリ"><span>第一選択は<strong>アミトリプチリン</strong>（確実性A）。<strong>10mgから開始、30mgまで増量可</strong></span></li>
+        <li class="anim-i" style="--i:2" data-cue="表の用量は5〜75mg/"><span>表2の用量は<strong>5〜75mg/日</strong>。本文と表、両方を伝える</span></li>
+        <li class="anim-i" style="--i:3" data-cue="Jackson 2017"><span>Jackson 2017＝頭痛頻度を<strong>プラセボより−4.8回/月</strong>減らす</span></li>
+        <li class="anim-i" style="--i:4" data-cue="再評価の目安は、6〜12"><span>再評価の目安＝<strong>6〜12か月</strong>または<strong>3か月（最大6か月）</strong>の2通り</span></li>
+        <li class="anim-i" style="--i:5" data-cue="SSRIは推奨されません"><span>SSRIは推奨しない。<strong>プラセボとも差がなかった</strong></span></li>
+      </ul>
+      <div class="important-box lg anim6" style="margin-top:14px; padding:14px 40px">
+        <div class="ttl">📋 支払基金 事例275</div>
+        <p>「<strong>アミトリプチリンは片頭痛・緊張型頭痛への処方を審査上認める</strong>」</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>11</span></div>
+  </section>
+  <!-- ===== 12. 章扉③ ===== -->
+  <section data-label="章扉③" data-screen-label="12 章扉③" class="slide slide--navy chapter">
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num serif anim a-pop">第3章</h2>
+    <div class="chapter__rule grow-x"></div>
+    <h3 class="chapter__title anim3">肩こりと、どう付き合うか</h3>
+  </section>
+  <!-- ===== 13. 本文：「肩こりが原因」はGLに書いていない ===== -->
+  <section data-label="本文：肩こりが原因ではない" data-screen-label="13 本文：肩こりが原因ではない" class="slide">
+    <div class="chapter-ghost">13</div>
+    <div class="eyebrow anim">本弾の核心<span class="en">GL2021 全文検索 / Ashina S 2015</span></div>
+    <h2 class="s-title anim">「肩こりが原因です」は<br><span class="hl-underline">GLに書いていない</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(27px * var(--type-mult)); --type-small:calc(24px * var(--type-mult)); margin-top:14px">
+      <p class="lead anim2" data-cue="ガイドラインのPDFを、">ガイドラインのPDFを、実際に全文検索して確かめました。</p>
+      <ul class="point-list" style="gap:10px; margin-top:10px">
+        <li class="anim-i" style="--i:1" data-cue="GL2021は、「危険因"><span>GL2021 CQ III-2＝「<strong>危険因子や誘因に確定されたものはない</strong>」</span></li>
+        <li class="anim-i" style="--i:2" data-cue="GL全体で「肩こり」が出"><span>GL全体で「肩こり」は<strong>3か所のみ</strong>。緊張型頭痛の章は<strong>1か所</strong></span></li>
+        <li class="anim-i" style="--i:3" data-cue="ICHD-3の緊張型頭痛"><span>ICHD-3の緊張型頭痛の章の<strong>本文中</strong>に「<strong>肩</strong>」という字は<strong>0回</strong>（触診部位の<strong>僧帽筋</strong>は1回）</span></li>
+        <li class="anim-i" style="--i:4" data-cue="片頭痛76.2%、緊張型"><span>Ashina S 2015＝頸部痛は<strong>片頭痛76.2%／緊張型頭痛88.4%</strong></span></li>
+        <li class="anim-i" style="--i:5" data-cue="ただし、いずれの資料でも"><span>因果の向きは<strong>いずれの資料でも示されていない</strong></span></li>
+      </ul>
+      <div class="important-box lg anim6" style="margin-top:8px; padding:10px 40px; --type-body:calc(24px * var(--type-mult)); --type-small:calc(21px * var(--type-mult))">
+        <div class="ttl">📋 外来トーク例</div>
+        <p>「<strong>首や肩の張りは頭痛と一緒に出やすいものです。ほぐすと楽になる人はいますが、それだけで治る<span style="white-space:nowrap">とは限りません</span></strong>」</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>13</span></div>
+  </section>
+  <!-- ===== 14. 表：非薬物療法の格付け ===== -->
+  <section data-label="表：非薬物療法" data-screen-label="14 表：非薬物療法" class="slide" style="padding-bottom:124px">
+    <div class="chapter-ghost">14</div>
+    <div class="eyebrow anim">非薬物療法<span class="en">GL2021 CQ III-7</span></div>
+    <h2 class="s-title anim">非薬物療法を<br><span class="hl-underline">「格付けどおり」に出す</span></h2>
+    <hr class="hairline">
+    <div class="tablewrap" style="margin-top:10px">
+      <table class="cmp compact" style="--type-small:calc(21px * var(--type-mult)); --type-body:calc(23px * var(--type-mult))">
+        <thead><tr><th>治療法</th><th>エビデンスの確実性</th></tr></thead>
+        <tbody>
+          <tr><td>筋電図バイオフィードバック療法</td><td>確実性A</td></tr>
+          <tr><td>頭痛体操</td><td>確実性B（運動プログラム全体は確実性C）</td></tr>
+          <tr><td>認知行動療法（マインドフルネス）</td><td>確実性C</td></tr>
+          <tr><td>リラクセーション法・鍼灸</td><td>確実性C</td></tr>
+          <tr><td>脊椎整復</td><td>有効な効果は得られておらず推奨されない</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="important-box lg anim4" style="margin-top:10px; padding:12px 40px; --type-body:calc(25px * var(--type-mult)); --type-small:calc(22px * var(--type-mult))" data-cue="Anheyer 2019">
+      <div class="ttl">📋 マインドフルネスの実際</div>
+      <p>Anheyer 2019（5RCT・185人）＝<strong>頭痛頻度SMD 0.00、usual careと差なし</strong></p>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>14</span></div>
+  </section>
+  <!-- ===== 15. 受診・紹介の目安 ===== -->
+  <section data-label="受診・紹介の目安" data-screen-label="15 受診・紹介の目安" class="slide danger">
+    <div class="chapter-ghost">15</div>
+    <div class="eyebrow eyebrow--red anim">生活指導の枠を超えるサイン<span class="en">WHEN TO REFER</span></div>
+    <h2 class="s-title anim">こんなときは、<br><span class="hl-underline">専門的な評価を先に</span></h2>
+    <hr class="hairline">
+    <p class="anim" style="margin:10px 0 0; font-size:calc(22px * var(--type-mult)); color:var(--ink-2); font-weight:700; text-align:center">大前提：SAH患者の<strong style="color:var(--danger)">12%</strong>が初診で誤診／最多の誤診名は<strong>「片頭痛または緊張型頭痛」</strong></p>
+    <div class="danger__list" style="margin-top:6px; gap:18px; --type-subtitle:calc(34px * var(--type-mult)); --type-small:calc(24px * var(--type-mult))">
+      <div class="danger__item anim-i a-pop" style="padding:18px 28px; --i:1">
+        <svg class="danger__tri" viewBox="0 0 24 22"><path d="M12 1 L23 21 H1 Z" fill="var(--danger)"/><rect x="10.9" y="8" width="2.2" height="7" rx="1.1" fill="#fff"/><circle cx="12" cy="18" r="1.5" fill="#fff"/></svg>
+        <div class="danger__bd"><h3><span class="dnum">1</span>突然発症の雷鳴頭痛</h3><p>1分以内にピークに達する頭痛。即日画像</p></div>
+      </div>
+      <div class="danger__item anim-i a-pop" style="padding:18px 28px; --i:2">
+        <svg class="danger__tri" viewBox="0 0 24 22"><path d="M12 1 L23 21 H1 Z" fill="var(--danger)"/><rect x="10.9" y="8" width="2.2" height="7" rx="1.1" fill="#fff"/><circle cx="12" cy="18" r="1.5" fill="#fff"/></svg>
+        <div class="danger__bd"><h3><span class="dnum">2</span>いつもと違う・新規発症</h3><p>65歳以降の新規発症も含む</p></div>
+      </div>
+      <div class="danger__item anim-i a-pop" style="padding:18px 28px; --i:3">
+        <svg class="danger__tri" viewBox="0 0 24 22"><path d="M12 1 L23 21 H1 Z" fill="var(--danger)"/><rect x="10.9" y="8" width="2.2" height="7" rx="1.1" fill="#fff"/><circle cx="12" cy="18" r="1.5" fill="#fff"/></svg>
+        <div class="danger__bd"><h3><span class="dnum">3</span>24時間未満で連日の頭痛に</h3><p>NDPHを疑う。慢性緊張型頭痛と呼ばない</p></div>
+      </div>
+      <div class="danger__item anim-i a-pop" style="padding:18px 28px; --i:4">
+        <svg class="danger__tri" viewBox="0 0 24 22"><path d="M12 1 L23 21 H1 Z" fill="var(--danger)"/><rect x="10.9" y="8" width="2.2" height="7" rx="1.1" fill="#fff"/><circle cx="12" cy="18" r="1.5" fill="#fff"/></svg>
+        <div class="danger__bd"><h3><span class="dnum">4</span>頭痛が月15日以上</h3><p>慢性緊張型頭痛・MOHの重なりを整理</p></div>
+      </div>
+    </div>
+    <div class="danger__call anim-i" style="--i:7; margin-top:12px">📋 「軽そうに見える」は除外根拠にならない</div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>15</span></div>
+  </section>
+  <!-- ===== 16. まとめ ===== -->
+  <section data-label="まとめ" data-screen-label="16 まとめ" class="slide">
+    <div class="chapter-ghost">16</div>
+    <div class="eyebrow anim">まとめ<span class="en">SUMMARY</span></div>
+    <h2 class="s-title serif anim">今日の3つの持ち帰りポイント</h2>
+    <hr class="hairline">
+    <div class="sum__list">
+      <div class="sum__card anim"><div class="sum__n">01</div><div class="sum__h" style="font-size:calc(30px * var(--type-mult))">1問を<br>必ず聞く</div><p class="sum__p" style="font-size:calc(24px * var(--type-mult))"><span style="white-space:nowrap">「歩くと悪化しますか」を</span><span style="white-space:nowrap">確認し、</span><span style="white-space:nowrap">片頭痛の取りこぼしを防ぐ</span></p></div>
+      <div class="sum__card anim2"><div class="sum__n">02</div><div class="sum__h" style="font-size:calc(30px * var(--type-mult))">週2〜3日で<br>線を引く</div><p class="sum__p" style="font-size:calc(24px * var(--type-mult))">急性期薬はカレンダーに◯。<span style="white-space:nowrap">3日を超えたら</span><span style="white-space:nowrap">予防に切り替える</span></p></div>
+      <div class="sum__card anim3"><div class="sum__n">03</div><div class="sum__h" style="font-size:calc(30px * var(--type-mult))">肩こりと<br>決めつけない</div><p class="sum__p" style="font-size:calc(24px * var(--type-mult))">関連はあるが、<span style="white-space:nowrap">原因と決まった</span><span style="white-space:nowrap">わけではないと伝える</span></p></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>16</span></div>
+  </section>
+  <!-- ===== 17. エンディング ===== -->
+  <section data-label="エンディング" data-screen-label="17 エンディング" class="slide end">
+    <h2 class="end__h anim" style="font-size:calc(66px * var(--type-mult))">「肩こりのせい」で終わらせない外来へ</h2>
+    <div class="end__rule grow-x"></div>
+    <div class="end__cards">
+      <div class="end__card anim2"><span class="end__ic">📄</span><div><h3>解説と出典はブログへ</h3><p>概要欄から<b style="white-space:nowrap">ブログ記事</b>を<span style="white-space:nowrap">ご覧</span>ください</p></div></div>
+      <div class="end__card anim3"><span class="end__ic">📋</span><div><h3 style="white-space:nowrap">患者配布用ハンドアウト</h3><p>外来でそのまま使える<br><b>配布資料</b>を用意しています</p></div></div>
+      <div class="end__card anim4"><span class="end__ic">👍</span><div><h3>高評価・<span style="white-space:nowrap">チャンネル登録</span></h3><p>次回も<b style="white-space:nowrap">お楽しみに</b></p></div></div>
+    </div>
+    <div class="end__note anim5">この動画は<span style="white-space:nowrap">一般的な情報提供です</span>。<br>最後までご視聴いただき<span style="white-space:nowrap">ありがとうございました</span>。<br>高評価とチャンネル登録を<span style="white-space:nowrap">いただけると励みになります</span>。</div>
+  </section>
+
+</deck-stage>
+
+<script src="deck-stage.js"></script>
+<script src="image-slot.js"></script>
+
+</body>
