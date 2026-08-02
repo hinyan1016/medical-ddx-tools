@@ -1,0 +1,808 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>両下肢浮腫（両足のむくみ）の外来指導｜外来患者指導シリーズ第30弾</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   テーマ「セミナー紺」— 参照: docs/specs/2026-07-05-slide-theme-seminar-navy-design.md
+   濃紺 #012360 × フォレストグリーン #294B15 × 警告レッド #DC3323 / 全文Noto Sans JPで統一
+   クラス設計・セクション番号は 医療スライドテンプレート.html と互換
+   ===================================================================== */
+:root{
+  /* palette (PDF実測値) */
+  --navy:#012360;
+  --navy-ink:#001B4D;
+  --accent:#294B15;
+  --accent-soft: color-mix(in srgb, var(--accent) 11%, #ffffff);
+  --accent-line: color-mix(in srgb, var(--accent) 62%, #ffffff);
+  --accent-ink: #1D360F;
+  --danger:#DC3323;
+  --danger-soft: color-mix(in srgb, var(--danger) 9%, #ffffff);
+  --bg:#FDFDFD;
+
+  /* 継承トークンの上書き（colors_and_type.css の値を紺橙系に寄せる） */
+  --blue:#1D4189;
+  --blue-soft:#E9EEF8;
+  --blue-tint:#EEF2FA;
+  --red: var(--danger);
+  --red-soft: var(--danger-soft);
+  --orange: var(--accent);
+  --orange-soft: var(--accent-soft);
+  --line:#D8DDE6;
+  --line-soft:#C9D2DF;
+  --bg-muted:#F8F8F8;
+  --bg-alt:#F6F6F6;
+  --navy-line: color-mix(in srgb, var(--navy) 22%, #ffffff);
+
+  /* type scale — multiply all via --type-mult (既存テンプレと同値) */
+  --type-mult: 1.38;
+  --type-display: calc(96px * var(--type-mult));
+  --type-title:   calc(82px * var(--type-mult));
+  --type-heading: calc(60px * var(--type-mult));
+  --type-subtitle:calc(44px * var(--type-mult));
+  --type-body:    calc(38px * var(--type-mult));
+  --type-small:   calc(30px * var(--type-mult));
+  --type-label:   calc(27px * var(--type-mult));
+  --type-chapter: calc(210px * var(--type-mult));
+  --type-stat:    calc(150px * var(--type-mult));
+
+  --pad-x: 112px;
+  --pad-top: 58px;
+  --pad-bottom: 80px;
+  --gap-title: 24px;
+  --gap-item: 22px;
+
+  /* このテーマ内は本文・見出しともNoto Sans JPに統一（colors_and_type.css の --font-ja を上書き。他ファイルには影響しない） */
+  --font-ja: "Noto Sans JP", "BIZ UDPGothic", "Yu Gothic", "Meiryo", sans-serif;
+  --font-serif: var(--font-ja);
+  --grad-navy: linear-gradient(160deg, #012360 0%, #001B4D 100%);
+}
+.serif{ font-family: var(--font-serif); font-weight:800; letter-spacing:.02em; }
+
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#0a1430; }
+
+/* ---------- base slide ---------- */
+.slide{
+  box-sizing:border-box;
+  display:flex; flex-direction:column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-ja);
+  overflow:hidden;
+  position:relative;
+}
+/* 下端の紺帯（PDF全ページ共通の締め） */
+.slide::after{
+  content:""; position:absolute; left:0; right:0; bottom:0; height:10px;
+  background: var(--navy); pointer-events:none;
+}
+.slide--navy{ background: var(--grad-navy); color: var(--white); }
+.slide--navy::after{ background: var(--accent); }
+.slide--soft{ background: var(--bg-alt); }
+
+/* eyebrow — 紺の縦帯（下端アクセント）＋ラベル */
+.eyebrow{
+  display:flex; align-items:center; gap:18px;
+  font-size: var(--type-label); font-weight:700; color: var(--navy);
+  letter-spacing:.04em;
+}
+.eyebrow::before{
+  content:""; width:12px; height:44px; border-radius:3px;
+  background: linear-gradient(180deg, var(--navy) 0 68%, var(--accent) 68% 100%);
+  flex:none;
+}
+.eyebrow .num{ font-family: var(--font-en); color: var(--accent-ink); }
+.eyebrow .en{ font-family: var(--font-en); color: var(--accent-ink); letter-spacing:.15em; text-transform:uppercase; }
+.slide--navy .eyebrow{ color: rgba(255,255,255,.88); }
+.slide--navy .eyebrow .en{ color:#fff; }
+.slide--navy .eyebrow::before{ background: linear-gradient(180deg, #fff 0 68%, var(--accent) 68% 100%); }
+
+.s-title{
+  font-size: var(--type-heading); line-height:1.22; color: var(--navy);
+  margin: var(--gap-title) 0 0; font-weight:800; letter-spacing:.01em;
+  text-wrap: pretty;
+}
+.slide--navy .s-title{ color:#fff; }
+
+.lead{
+  font-size: var(--type-body); line-height:1.7; color: var(--ink-2);
+  margin:0; text-wrap: pretty;
+}
+.muted{ color: var(--gray); }
+
+/* 見出し下罫線 — 紺の実線＋左端アクセント短セグメント（PDF見出し様式） */
+.hairline{
+  height:4px; border:0; margin:20px 0 0;
+  background: linear-gradient(90deg, var(--accent) 0 150px, var(--navy) 150px);
+  opacity:1;
+}
+.slide--navy .hairline{ background: linear-gradient(90deg, var(--accent) 0 150px, rgba(255,255,255,.85) 150px); }
+
+/* 右上の薄い大章番号（装飾・背面） */
+.chapter-ghost{
+  position:absolute; top: 30px; right: var(--pad-x);
+  font-family: var(--font-en); font-weight:700; line-height:.8;
+  font-size: calc(150px * var(--type-mult)); color: var(--navy);
+  opacity:.05; pointer-events:none; user-select:none;
+}
+.slide--navy .chapter-ghost{ color:#fff; opacity:.10; }
+
+/* 汎用 下線ハイライト */
+.hl-underline{ border-bottom: 6px solid var(--accent-line); }
+
+/* 赤バッジ（PDF p1「7/7まで」様式・インライン強調） */
+.badge-danger{
+  display:inline-block; background: var(--danger); color:#fff;
+  font-weight:800; padding: 4px 26px; border-radius:10px;
+  line-height:1.35;
+}
+
+/* footer band */
+.slide__foot{
+  position:absolute; left: var(--pad-x); right: var(--pad-x); bottom: 36px;
+  display:flex; align-items:center; justify-content:space-between;
+  font-size: calc(24px * var(--type-mult)); color: var(--gray);
+  font-family: var(--font-ja);
+}
+.slide__foot .ch{ display:flex; align-items:center; gap:10px; font-weight:700; color: var(--navy); }
+.slide__foot .cross{ color: var(--accent); font-weight:700; }
+.slide--navy .slide__foot{ color: rgba(255,255,255,.65); }
+.slide--navy .slide__foot .ch{ color:#fff; }
+.slide--navy .slide__foot .cross{ color: var(--accent); }
+
+/* ============ 1. COVER（白背景・右上に幾何アクセント） ============ */
+.cover{ justify-content:center; }
+.cover__geo{
+  position:absolute; right: 70px; top: 48px; width: 380px; height: 380px;
+  pointer-events:none;
+}
+.cover__badge{
+  display:inline-flex; align-items:center; gap:14px; align-self:flex-start;
+  background:#fff; border:2px solid var(--navy-line);
+  color: var(--navy); padding:12px 26px; border-radius:999px;
+  font-size: var(--type-label); font-weight:700;
+}
+.cover__badge .cross{ color: var(--accent); font-size:1.2em; }
+.cover__title{
+  font-family: var(--font-serif);
+  font-size: calc(76px * var(--type-mult)); line-height:1.3; color: var(--navy); font-weight:800;
+  margin:42px 0 0; letter-spacing:.02em; max-width:1400px;
+}
+.cover__title .hl{ color: var(--accent); }
+.cover__rule{ width: 1500px; max-width:100%; height:3px; background: var(--navy); margin-top:36px; }
+.cover__sub{
+  font-size: var(--type-subtitle); color: var(--ink-2);
+  margin:34px 0 0; font-weight:700;
+}
+.cover__sub .badge-danger{ margin: 0 6px; }
+.cover__meta{
+  display:flex; gap:30px; align-items:center; margin-top:64px;
+  font-size: var(--type-small); color: var(--gray);
+}
+.cover__avatar{
+  flex:none; width:84px; height:84px; border-radius:50%;
+  background: var(--accent-soft); border:3px solid var(--accent);
+  display:flex; align-items:center; justify-content:center;
+}
+.cover__avatar svg{ width:56%; height:56%; }
+.cover__meta .name{ font-weight:800; color: var(--navy); font-size: var(--type-small); }
+.cover__meta .vline{ width:2px; height:52px; background: var(--line); }
+/* 旧テーマ互換（コーラル版からコピーした装飾を無効化） */
+.cover__blob{ display:none; }
+
+/* ============ 2. THEME / CONCLUSION FIRST ============ */
+.theme__body{ display:flex; flex-direction:column; gap: var(--gap-title); margin-top: 28px; flex:1; justify-content:center; }
+.theme__q{ font-family: var(--font-serif); font-size: var(--type-title); line-height:1.28; color: var(--navy); font-weight:800; max-width:22ch; text-wrap:balance; }
+.theme__q .hl{ color: var(--accent-ink); border-bottom: 8px solid var(--accent-line); }
+.concl{
+  display:flex; align-items:flex-start; gap:28px;
+  background:#fff; border:3px solid var(--accent);
+  border-radius: 12px; padding: 32px 44px;
+  position:relative;
+}
+.concl::before{
+  content:"“"; position:absolute; top:-58px; left:26px;
+  font-family: var(--font-en); font-size: calc(110px * var(--type-mult));
+  color: var(--accent); font-weight:900; line-height:1;
+}
+.concl__tag{
+  flex:none; background: var(--navy); color:#fff; font-weight:700;
+  font-size: var(--type-small); padding:10px 24px; border-radius:8px;
+}
+.concl__text{ font-size: var(--type-subtitle); line-height:1.5; color: var(--navy); font-weight:700; margin:0; }
+
+/* ============ 3. AGENDA（紺角チップ＋アクセント縦罫） ============ */
+.agenda__list{ display:flex; flex-direction:column; gap:26px; margin-top:36px; }
+.agenda__item{ display:flex; align-items:center; gap:32px; }
+.agenda__num{
+  flex:none; width:76px; height:76px; border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+  background: var(--navy); color:#fff;
+  font-family: var(--font-en); font-size: calc(46px * var(--type-mult)); font-weight:800;
+}
+.agenda__txt{
+  font-size: var(--type-subtitle); color: var(--navy); font-weight:700;
+  border-left: 5px solid var(--accent); padding-left: 30px;
+}
+.agenda__txt small{ display:block; font-size: var(--type-small); color: var(--gray); font-weight:400; margin-top:8px; }
+
+/* ============ 4. CHAPTER DIVIDER（全面紺・白・中央） ============ */
+.chapter{ justify-content:center; align-items:center; text-align:center; }
+.chapter__kicker{
+  font-family: var(--font-en); font-size: var(--type-label); color: rgba(255,255,255,.55);
+  font-weight:700; letter-spacing:.4em; text-transform:uppercase;
+}
+.chapter__num{
+  font-family: var(--font-serif); font-size: calc(150px * var(--type-mult)); line-height:1.05;
+  font-weight:800; color:#fff; margin:10px 0 0; letter-spacing:.04em;
+}
+.chapter__rule{ width:560px; height:6px; background: var(--accent); border-radius:3px; margin-top:44px; }
+.chapter__title{ font-size: var(--type-subtitle); color:#fff; font-weight:700; margin:44px 0 0; max-width:26ch; text-wrap:balance; letter-spacing:.06em; }
+
+/* ============ 5. BODY 1 COLUMN ============ */
+.body1{ }
+.body1__main{ margin-top: 26px; max-width: 1640px; }
+.body1 .lead{ margin-bottom: 20px; }
+.important-box.lg{
+  background:#fff; border:2px solid var(--navy-line); border-left: 12px solid var(--accent);
+  border-radius: 12px; padding: 26px 40px; margin:0;
+  box-shadow: var(--shadow-sm);
+}
+.important-box.lg .ttl{ display:flex; align-items:center; gap:14px; font-size: var(--type-small); font-weight:700; color: var(--accent-ink); margin-bottom:8px; }
+.important-box.lg p{ font-size: var(--type-body); line-height:1.6; color: var(--ink-2); margin:0; }
+
+/* ============ 6. BODY + ILLUSTRATION 2COL ============ */
+.cols2{ display:grid; grid-template-columns: 1.28fr 0.72fr; gap:54px; align-items:center; margin-top:24px; flex:1; }
+.cols2__text{ display:flex; flex-direction:column; gap: 18px; }
+.cols2__text .lead{ font-size: var(--type-body); }
+.point-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:18px; }
+.point-list li{ display:flex; align-items:flex-start; gap:20px; font-size: var(--type-body); color: var(--ink-2); line-height:1.5; }
+.point-list li::before{ content:"✓"; flex:none; width:44px; height:44px; border-radius:50%; background: var(--navy); color:#fff; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:.8em; margin-top:2px; }
+.cols2 image-slot{ width:100%; height:460px; border:3px dashed var(--line-soft); border-radius:14px; }
+
+/* ============ 8. COMPARISON TABLE ============ */
+.tablewrap{ margin-top:26px; flex:1; }
+table.cmp{ width:100%; border-collapse:collapse; font-size: var(--type-small); }
+table.cmp th, table.cmp td{ text-align:left; padding:16px 28px; vertical-align:middle; line-height:1.4; }
+table.cmp thead th{ background: var(--navy); color:#fff; font-weight:700; font-size: var(--type-body); }
+table.cmp thead th:first-child{ border-top-left-radius:10px; }
+table.cmp thead th:last-child{ border-top-right-radius:10px; }
+table.cmp tbody td{ border-bottom:1px solid var(--line); color: var(--ink-2); }
+table.cmp tbody tr:nth-child(even){ background: var(--bg-muted); }
+table.cmp tbody td:first-child{ font-weight:700; color: var(--navy); font-size: var(--type-body); white-space:nowrap; }
+table.cmp .pill{ display:inline-block; font-size: calc(24px * var(--type-mult)); font-weight:700; padding:6px 16px; border-radius:999px; }
+.pill--easy{ background: var(--green-soft); color:#1c7a3a; }
+.pill--mid{ background: var(--accent-soft); color: var(--accent-ink); }
+table.cmp.compact th, table.cmp.compact td{ padding:9px 22px; }
+
+/* ============ 10. DISCLAIMER ============ */
+.disc{ justify-content:center; align-items:center; text-align:center; background: var(--bg-alt); }
+.disc__icon{ font-size: calc(96px * var(--type-mult)); line-height:1; }
+.disc__tag{ font-family: var(--font-serif); font-size: var(--type-subtitle); font-weight:700; color: var(--navy); margin:28px 0 0; letter-spacing:.08em; }
+.disc__box{
+  margin-top:38px; max-width:1180px; background:#fff; border:2px solid var(--navy-line);
+  border-top: 10px solid var(--accent); border-radius:12px; padding:48px 56px;
+  box-shadow: var(--shadow-md);
+}
+.disc__box p{ font-size: var(--type-body); line-height:1.7; color: var(--ink-2); margin:0; text-wrap:pretty; }
+.disc__box .strong{ color: var(--navy); font-weight:700; }
+
+/* ============ 11. SUMMARY（PDF p3 3カードゴール様式） ============ */
+.sum__list{ display:grid; grid-template-columns: repeat(3,1fr); gap:40px; margin-top:70px; flex:1; align-content:start; }
+.sum__card{
+  position:relative; background:#fff; border:2px solid var(--navy-line);
+  border-radius:14px; padding:64px 36px 40px; display:flex; flex-direction:column; gap:20px;
+  box-shadow: var(--shadow-md); text-align:center; align-items:center;
+}
+.sum__n{
+  position:absolute; top:-38px; left:50%; margin-left:-38px;
+  width:76px; height:76px; border-radius:50%;
+  background: var(--navy); color:#fff;
+  font-family: var(--font-en); font-size: calc(34px * var(--type-mult)); font-weight:800;
+  display:flex; align-items:center; justify-content:center; line-height:1;
+  box-shadow: var(--shadow-md);
+}
+.sum__h{ font-size: var(--type-subtitle); font-weight:800; color: var(--navy); line-height:1.3; text-wrap:balance; }
+.sum__h::after{ content:""; display:block; width:120px; height:4px; background: var(--accent); margin:16px auto 0; border-radius:2px; }
+.sum__p{ font-size: var(--type-small); color: var(--ink-2); line-height:1.6; margin:0; }
+
+/* ============ 12. ENDING（白背景・PDF p17様式） ============ */
+.end{ justify-content:center; align-items:center; text-align:center; }
+.end__h{
+  font-family: var(--font-serif);
+  font-size: var(--type-title); color: var(--navy); font-weight:800; margin:0; text-wrap:balance;
+}
+.end__rule{
+  width:1500px; max-width:100%; height:4px; margin-top:30px;
+  background: linear-gradient(90deg, var(--navy) 0 44%, var(--accent) 44% 56%, var(--navy) 56%);
+}
+.end__cards{ display:grid; grid-template-columns:repeat(3,1fr); gap:36px; margin-top:70px; width:100%; max-width:1640px; }
+.end__card{
+  background:#fff; border:2px solid var(--navy-line); border-radius:14px;
+  padding:34px 30px; display:flex; align-items:center; gap:24px; text-align:left;
+  box-shadow: var(--shadow-sm);
+}
+.end__ic{
+  flex:none; width:88px; height:88px; border-radius:50%;
+  background: var(--accent); color:#fff; display:flex; align-items:center; justify-content:center;
+  font-size: calc(40px * var(--type-mult));
+}
+.end__card h3{ font-size: var(--type-small); font-weight:800; color: var(--navy); margin:0 0 6px; }
+.end__card h3 u{ text-decoration:none; border-bottom:3px solid var(--accent); }
+.end__card p{ font-size: var(--type-label); color: var(--ink-2); line-height:1.5; margin:0; }
+.end__card p b{ color: var(--accent-ink); }
+.end__note{
+  margin-top:60px; max-width:1400px; background:#fff;
+  border:2.5px solid var(--accent); border-radius:12px; padding:30px 60px;
+  font-family: var(--font-serif); font-size: var(--type-small); color: var(--navy);
+  font-weight:700; line-height:1.8;
+}
+.end__note b{ color: var(--accent-ink); }
+/* 旧テーマ互換（ピルCTA・コピー流用時も破綻しない） */
+.end__cross{ font-size: var(--type-subtitle); color: var(--accent); font-weight:700; }
+.end__sub{ font-size: var(--type-subtitle); color: var(--ink-2); margin:26px 0 0; font-weight:400; }
+.end__cta{ display:flex; gap:30px; margin-top:64px; }
+.btn{ display:inline-flex; align-items:center; gap:16px; font-size: var(--type-subtitle); font-weight:700; padding:24px 48px; border-radius:999px; }
+.btn--sub{ background: var(--accent); color:#fff; }
+.btn--like{ background:#fff; color: var(--navy); border:2px solid var(--navy); }
+.end__next{ margin-top:56px; font-size: var(--type-small); color: var(--gray); }
+.end__next b{ color: var(--navy); }
+
+/* ============ 30. 危険サイン（PDF p15 4象限白カード様式） ============ */
+.eyebrow--red{ color: var(--danger); }
+.eyebrow--red::before{ background: linear-gradient(180deg, var(--danger) 0 68%, var(--navy) 68% 100%); }
+.danger .s-title{ font-family: var(--font-serif); color: var(--navy); }
+.danger__list{ display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:30px; flex:1; align-content:center; }
+.danger__item{
+  display:flex; align-items:flex-start; gap:26px;
+  background:#fff; border:2px solid var(--navy-line); border-radius:14px;
+  padding:28px 34px; box-shadow: var(--shadow-sm);
+}
+.danger__item .ic{ display:none; }
+.danger__tri{ flex:none; width:76px; height:70px; margin-top:4px; }
+.danger__bd h3{
+  display:flex; align-items:center; gap:16px;
+  font-size: var(--type-subtitle); font-weight:800; color: var(--navy); margin:0;
+  padding-bottom:12px; border-bottom:4px solid var(--danger);
+}
+.danger__bd .dnum{
+  flex:none; width:52px; height:52px; border-radius:50%;
+  background: var(--danger); color:#fff;
+  font-family: var(--font-en); font-size: calc(28px * var(--type-mult)); font-weight:800;
+  display:flex; align-items:center; justify-content:center;
+}
+.danger__bd p{ font-size: var(--type-small); color: var(--ink-2); line-height:1.55; margin:14px 0 0; font-weight:700; }
+.danger{ padding-bottom:150px; }
+.danger__call{
+  margin-top:24px; margin-bottom:0; display:flex; align-items:center; justify-content:center; gap:22px;
+  background: var(--danger); color:#fff; border-radius:12px; padding:20px 40px;
+  font-size: var(--type-small); font-weight:800;
+}
+
+/* ============ 35. 参考文献・出典 ============ */
+.refs__list{ display:flex; flex-direction:column; gap:26px; margin-top:48px; }
+.refs__item{
+  display:flex; align-items:baseline; gap:26px;
+  border-bottom:1px solid var(--line); padding-bottom:26px;
+}
+.refs__num{ flex:none; font-family: var(--font-en); font-size: var(--type-small); font-weight:700; color: var(--accent-ink); }
+.refs__item p{ font-size: var(--type-body); color: var(--ink-2); line-height:1.6; margin:0; }
+.refs__item p small{ display:block; font-size: var(--type-label); color: var(--gray); margin-top:6px; }
+.refs__note{ margin-top:36px; font-size: var(--type-label); color: var(--gray); }
+
+/* entrance animation — fade-up を上位互換で拡張（deck-anim キット / 詳細は _anim_library/） */
+@media (prefers-reduced-motion:no-preference){
+  /* タイミング基底（動きの既定は fade-up） */
+  [data-deck-active] .anim{ animation: fade-up .5s both; }
+  [data-deck-active] .anim2{ animation: fade-up .5s .12s both; }
+  [data-deck-active] .anim3{ animation: fade-up .5s .24s both; }
+  [data-deck-active] .anim4{ animation: fade-up .5s .36s both; }
+  [data-deck-active] .anim5{ animation: fade-up .5s .48s both; }
+  [data-deck-active] .anim6{ animation: fade-up .5s .60s both; }
+  [data-deck-active] .anim-i{ animation: fade-up .5s both; animation-delay: calc(var(--i,0) * .1s); }
+  /* モーション variant（animation-name のみ上書き＝1要素1アニメ維持・data-cue 安全） */
+  [data-deck-active] .a-fade { animation-name: a-fade; }
+  [data-deck-active] .a-up   { animation-name: fade-up; }
+  [data-deck-active] .a-down { animation-name: a-down; }
+  [data-deck-active] .a-right{ animation-name: a-right; }
+  [data-deck-active] .a-left { animation-name: a-left; }
+  [data-deck-active] .a-zoom { animation-name: a-zoom; }
+  [data-deck-active] .a-pop  { animation-name: a-pop; animation-timing-function: cubic-bezier(.34,1.56,.64,1); }
+  [data-deck-active] .a-blur { animation-name: a-blur; }
+  /* コンテンツ・モーション */
+  [data-deck-active] .grow-y { transform-origin:bottom center; animation: grow-y .7s .2s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .grow-x { transform-origin:left center;   animation: grow-x .55s .25s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .nudge-x{ animation: nudge-x .9s .35s ease-in-out both; }
+}
+.grow-y{ transform-origin:bottom center; } .grow-x{ transform-origin:left center; }
+@keyframes fade-up{ from{ opacity:0; transform: translateY(16px);} to{ opacity:1; transform:none;} }
+@keyframes a-fade { from{ opacity:0; } to{ opacity:1; } }
+@keyframes a-down { from{ opacity:0; transform: translateY(-16px);} to{ opacity:1; transform:none; } }
+@keyframes a-right{ from{ opacity:0; transform: translateX(-28px);} to{ opacity:1; transform:none; } }
+@keyframes a-left { from{ opacity:0; transform: translateX(28px); } to{ opacity:1; transform:none; } }
+@keyframes a-zoom { from{ opacity:0; transform: scale(.94);       } to{ opacity:1; transform:none; } }
+@keyframes a-pop  { from{ opacity:0; transform: scale(.8);        } to{ opacity:1; transform:none; } }
+@keyframes a-blur { from{ opacity:0; filter: blur(12px); transform: translateY(10px);} to{ opacity:1; filter: blur(0); transform:none; } }
+@keyframes grow-y { from{ transform: scaleY(0);} to{ transform: scaleY(1);} }
+@keyframes grow-x { from{ transform: scaleX(0);} to{ transform: scaleX(1);} }
+@keyframes nudge-x{ 0%{ transform:none;} 55%{ transform: translateX(10px);} 100%{ transform:none;} }
+
+/* ===== v2 ===== コンテンツが「育つ」演出（2026-07-02・スパイク検証済み / 詳細 _anim_library/README_deck-anim.md）
+   規律: 1スライドに育つ演出1〜2個まで／count-upはHero数値のみ／sweepは結論1フレーズのみ
+   count-up: <span class="count-up" style="--n-to:8000"></span>（中身空・数字はcounterが描く）
+   draw-line: 対象SVGの <path>/<polyline> に pathLength="1" 必須 */
+@property --n { syntax: '<integer>'; inherits: false; initial-value: 0; }
+@media (prefers-reduced-motion:no-preference){
+  [data-deck-active] .count-up { counter-reset: n var(--n); animation: v2-count 1.4s .2s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .draw-line{ stroke-dasharray:1; animation: v2-draw 1.5s .2s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .sweep    { animation: v2-sweep .9s .3s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .a-wipe   { animation-name: v2-wipe; }
+  [data-deck-active] .a-settle { animation-name: v2-settle; animation-duration: 1.2s; }
+}
+.count-up{ counter-reset: n var(--n-to, 0); font-variant-numeric: tabular-nums; }
+.count-up::after{ content: counter(n); }
+.hl-sweep{
+  background-image: linear-gradient(color-mix(in srgb, var(--accent) 32%, transparent),
+                                    color-mix(in srgb, var(--accent) 32%, transparent));
+  background-repeat:no-repeat; background-size:100% 46%; background-position:0 88%;
+}
+@keyframes v2-count { from{ --n:0; } to{ --n: var(--n-to, 100); } }
+@keyframes v2-draw  { from{ stroke-dashoffset:1; } to{ stroke-dashoffset:0; } }
+@keyframes v2-sweep { from{ background-size:0% 46%; } to{ background-size:100% 46%; } }
+@keyframes v2-wipe  { from{ opacity:0; clip-path: inset(0 100% 0 0);} to{ opacity:1; clip-path: inset(0 0 0 0);} }
+@keyframes v2-settle{ from{ opacity:0; transform: scale(1.06);} to{ opacity:1; transform:none;} }
+
+/* tweaks mount */
+#tweaks-root{ position:fixed; inset:0; pointer-events:none; z-index:9999; }
+#tweaks-root > *{ pointer-events:auto; }
+</style>
+</head>
+<body style="font-size: 8px">
+
+<deck-stage width="1920" height="1080">
+  <!-- ===== 01. 表紙 ===== -->
+  <section data-label="表紙" data-screen-label="01 表紙" class="slide cover">
+    <svg class="cover__geo anim2 a-zoom" viewBox="0 0 200 200" aria-hidden="true">
+      <path d="M60 0 A140 140 0 0 1 200 140" fill="none" stroke="var(--navy-line)" stroke-width="4"/>
+      <path d="M95 0 A105 105 0 0 1 200 105" fill="none" stroke="var(--accent)" stroke-width="5"/>
+      <path d="M128 0 A72 72 0 0 1 200 72" fill="none" stroke="var(--navy)" stroke-width="4"/>
+      <g fill="var(--navy-line)">
+        <circle cx="26" cy="120" r="3.4"/><circle cx="52" cy="120" r="3.4"/><circle cx="78" cy="120" r="3.4"/>
+        <circle cx="26" cy="146" r="3.4"/><circle cx="52" cy="146" r="3.4"/><circle cx="78" cy="146" r="3.4"/>
+        <circle cx="26" cy="172" r="3.4"/><circle cx="52" cy="172" r="3.4"/><circle cx="78" cy="172" r="3.4"/>
+      </g>
+      <circle cx="78" cy="146" r="3.8" fill="var(--accent)"/>
+    </svg>
+    <div class="cover__badge anim"><span class="cross">✚</span><span>外来患者指導シリーズ第30弾</span></div>
+    <h1 class="cover__title anim2 a-blur">両足のむくみの外来指導<br><span class="hl">弾性ストッキングの前に</span></h1>
+    <div class="cover__rule grow-x"></div>
+    <p class="cover__sub anim3">「むくみには弾性ストッキング」と<br>言ってしまう前に</p>
+    <div class="cover__meta anim3">
+      <span class="cover__avatar"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4.6" fill="var(--accent)"/><path d="M2.5 22.5 C2.5 16.5 7 14.2 12 14.2 C17 14.2 21.5 16.5 21.5 22.5 Z" fill="var(--accent)"/></svg></span>
+      <span class="name" style="white-space:nowrap">医知創造ラボ</span>
+      <span class="vline"></span>
+      <span style="white-space:nowrap">監修：今村久司（脳神経内科・総合内科専門医）</span>
+    </div>
+  </section>
+  <!-- ===== 02. テーマ・結論 ===== -->
+  <section data-label="テーマ・結論" data-screen-label="02 テーマ・結論" class="slide">
+    <div class="eyebrow anim">今日のテーマ<span class="en">TODAY'S POINT</span></div>
+    <div class="theme__body">
+      <h2 class="theme__q anim">「両足のむくみ」に<br><span class="hl-underline">3つの外来手順</span></h2>
+      <div class="concl anim2">
+        <span class="concl__tag">結論</span>
+        <p class="concl__text"><span style="white-space:nowrap">危険を先に外す、</span><span style="white-space:nowrap">お薬手帳を先に見る、</span><span style="white-space:nowrap">圧迫の前に5つの確認——</span><span style="white-space:nowrap">この3つです</span></p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>02</span></div>
+  </section>
+  <!-- ===== 03. 目次 ===== -->
+  <section data-label="目次" data-screen-label="03 目次" class="slide slide--soft">
+    <div class="eyebrow anim">この動画でわかること<span class="en">AGENDA</span></div>
+    <h2 class="s-title serif anim">本日のアジェンダ</h2>
+    <hr class="hairline">
+    <div class="agenda__list">
+      <div class="agenda__item anim a-right"><div class="agenda__num">1</div><div class="agenda__txt">危険なものを先に外す<small>片足か両足か、心臓・肺の見落とし、すぐ受診すべきサイン</small></div></div>
+      <div class="agenda__item anim2 a-right"><div class="agenda__num">2</div><div class="agenda__txt">お薬手帳と原因の当たり<small>薬剤性浮腫の頻度、利尿薬が効かない理由、原因の早見表</small></div></div>
+      <div class="agenda__item anim3 a-right"><div class="agenda__num">3</div><div class="agenda__txt">弾性ストッキングの前に<small>足の脈とABI、5つの安全確認、共通の生活指導</small></div></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>03</span></div>
+  </section>
+  <!-- ===== 04. 章扉① ===== -->
+  <section data-label="章扉①" data-screen-label="04 章扉①" class="slide slide--navy chapter">
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num serif anim a-pop">第1章</h2>
+    <div class="chapter__rule grow-x"></div>
+    <h3 class="chapter__title anim3"><span style="white-space:nowrap">危険なものを</span><span style="white-space:nowrap">先に外す</span></h3>
+  </section>
+  <!-- ===== 05. 本文：まず、片足か両足か ===== -->
+  <section data-label="本文：片足か両足か" data-screen-label="05 本文：片足か両足か" class="slide">
+    <div class="chapter-ghost">05</div>
+    <div class="eyebrow anim">最初の分かれ道<span class="en">JCS 2017 / Weng 2017</span></div>
+    <h2 class="s-title anim">まず、<span class="hl-underline">片足か両足か</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(26px * var(--type-mult)); --type-small:calc(23px * var(--type-mult)); margin-top:10px">
+      <p class="lead anim2" style="margin-bottom:6px" data-cue="最初の分かれ道は左右差で">最初の分かれ道は左右差です。片側は緊急側から考えます。</p>
+      <ul class="point-list" style="gap:6px; margin-top:6px">
+        <li class="anim-i" style="--i:1" data-cue="2017年版のガイドライ"><span>DVTの腫脹は<strong>片側下肢発現が81.6〜90.9%</strong>（2017年版GL）</span></li>
+        <li class="anim-i" style="--i:2" data-cue="両側性は9.1〜18.4"><span>両側性は<strong>9.1〜18.4%＝確率は下がるが否定はできない</strong></span></li>
+        <li class="anim-i" style="--i:3" data-cue="色調も手がかりで、炎症性"><span>色調＝蜂窩織炎など炎症性疾患は<strong>鮮紅色</strong>／DVTの静脈うっ滞は<strong>暗赤色</strong></span></li>
+        <li class="anim-i" style="--i:4" data-cue="深部静脈血栓症の静脈うっ"><span>静脈うっ滞は<strong>下肢挙上で色調が薄くなる</strong>。炎症性疾患は変化しにくい</span></li>
+        <li class="anim-i" style="--i:5" data-cue="ただし、蜂窩織炎で入院し"><span>蜂窩織炎は入院259人中<strong>79人（30.5%）が誤診</strong>＝「赤い＝感染」と決めつけない</span></li>
+        <li class="anim-i" style="--i:6" data-cue="それでも、片側の赤み・熱"><span>ただし<strong>片側の赤み・熱感・痛みは受診サイン</strong>として残す（安全側）</span></li>
+      </ul>
+      <div class="important-box lg anim6" style="margin-top:6px; padding:8px 36px; --type-body:calc(23px * var(--type-mult)); --type-small:calc(20px * var(--type-mult))" data-cue="「両足だから血栓ではあり">
+        <div class="ttl">📋 外来トーク例</div>
+        <p>「<strong>両足だから血栓ではありません、とは言えません</strong>」</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>05</span></div>
+  </section>
+  <!-- ===== 06. 本文：「両足＝静脈」と決めつけない ===== -->
+  <section data-label="本文：両足＝静脈と決めつけない" data-screen-label="06 本文：両足＝静脈と決めつけない" class="slide">
+    <div class="chapter-ghost">06</div>
+    <div class="eyebrow anim">見落としの古典<span class="en">Blankfield 1998 / 心不全GL2025</span></div>
+    <h2 class="s-title anim">「両足＝静脈のせい」と<br><span class="hl-underline">決めつけない</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(25px * var(--type-mult)); --type-small:calc(22px * var(--type-mult)); margin-top:8px">
+      <p class="lead anim2" style="margin-bottom:6px" data-cue="心臓や肺が見落とされてい">心臓や肺が見落とされていた古典的な報告があります。</p>
+      <ul class="point-list" style="gap:6px; margin-top:6px">
+        <li class="anim-i" style="--i:1" data-cue="プライマリケアの両足のむ"><span>初診時の印象は<strong>静脈不全71%・うっ血性心不全18%</strong>（45人）</span></li>
+        <li class="anim-i" style="--i:2" data-cue="ところが検査では、原因が"><span>検査では<strong>心疾患が原因33%／肺高血圧あり42%／静脈不全22%</strong>（相互排他ではない）</span></li>
+        <li class="anim-i" style="--i:3" data-cue="45人・単施設・1998"><span><strong>n=45・単施設・1998年</strong>＝有病率として扱わない</span></li>
+        <li class="anim-i" style="--i:4" data-cue="だからこそ、心不全の症状"><span>心不全の症状＝<strong>息切れ・起坐呼吸・発作性夜間呼吸困難</strong>を聞く</span></li>
+        <li class="anim-i" style="--i:5" data-cue="特異的な身体所見は体重増"><span>特異的な身体所見＝<strong>体重増加（＞2 kg/週）</strong>（GL2025 表12）</span></li>
+        <li class="anim-i" style="--i:6" data-cue="前屈呼吸苦は、"><span>「<strong>靴紐を結ぶときに苦しくならないか</strong>」（前屈呼吸苦）も聞く</span></li>
+      </ul>
+      <div class="important-box lg anim6" style="margin-top:6px; padding:8px 36px; --type-body:calc(23px * var(--type-mult)); --type-small:calc(20px * var(--type-mult))" data-cue="「体重は週1回、同じ条件">
+        <div class="ttl">📋 外来トーク例</div>
+        <p>「<strong>体重は週1回、同じ条件で。1週間で2kgを超えて増えたら連絡してください</strong>」</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>06</span></div>
+  </section>
+  <!-- ===== 07. 章扉② ===== -->
+  <section data-label="章扉②" data-screen-label="07 章扉②" class="slide slide--navy chapter">
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num serif anim a-pop">第2章</h2>
+    <div class="chapter__rule grow-x"></div>
+    <h3 class="chapter__title anim3"><span style="white-space:nowrap">お薬手帳と</span><span style="white-space:nowrap">原因の当たり</span></h3>
+  </section>
+  <!-- ===== 08. 本文：お薬手帳を先に見る ===== -->
+  <section data-label="本文：お薬手帳を先に見る" data-screen-label="08 本文：お薬手帳を先に見る" class="slide">
+    <div class="chapter-ghost">08</div>
+    <div class="eyebrow anim">本弾の核心<span class="en">Therapeutics Letter 162 (June 2026)</span></div>
+    <h2 class="s-title anim">お薬手帳を先に見る——<br><span class="hl-underline">薬が原因なら利尿薬は効かない</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(25px * var(--type-mult)); --type-small:calc(22px * var(--type-mult)); margin-top:8px">
+      <p class="lead anim2" style="margin-bottom:6px" data-cue="新しく出たむくみでは、検">新しく出たむくみでは、検査より先にお薬手帳を開きます。</p>
+      <ul class="point-list" style="gap:6px; margin-top:6px">
+        <li class="anim-i" style="--i:1" data-cue="アムロジピンやニフェジピ"><span>アムロジピン／ニフェジピンの高齢者の<strong>最大10%</strong>が開始1年以内に末梢浮腫</span></li>
+        <li class="anim-i" style="--i:2" data-cue="ガバペンチンやプレガバリ"><span>ガバペンチン／プレガバリンは<strong>最大5%</strong></span></li>
+        <li class="anim-i" style="--i:3" data-cue="NSAIDsはナトリウム"><span>NSAIDsはナトリウム貯留により<strong>浮腫の頻度を倍にする</strong>（市販薬も確認）</span></li>
+        <li class="anim-i" style="--i:4" data-cue="血管拡張によるむくみは利"><span>血管拡張によるむくみは<strong>利尿薬に反応しない</strong>＝処方カスケードの入口</span></li>
+        <li class="anim-i" style="--i:5" data-cue="安全にできるなら、原因薬"><span>安全なら<strong>原因薬を止める・減らす・変える</strong>を、新しい治療より先に</span></li>
+        <li class="anim-i" style="--i:6" data-cue="弾性ストッキングと挙上は"><span>弾性ストッキングと挙上は<strong>補助であって原因対処の代わりではない</strong></span></li>
+      </ul>
+      <div class="important-box lg anim6" style="margin-top:6px; padding:8px 36px; --type-body:calc(23px * var(--type-mult)); --type-small:calc(20px * var(--type-mult))" data-cue="対処の第一は、最近の処方">
+        <div class="ttl">📋 対処の第一</div>
+        <p><strong>最近の処方変更と、NSAIDsなど市販薬を含めた服薬レビュー</strong>から始める</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>08</span></div>
+  </section>
+  <!-- ===== 09. 表：薬剤別の押さえどころ ===== -->
+  <section data-label="表：薬剤別の押さえどころ" data-screen-label="09 表：薬剤別の押さえどころ" class="slide" style="padding-bottom:124px">
+    <div class="chapter-ghost">09</div>
+    <div class="eyebrow anim">薬剤別<span class="en">Vukadinović 2019 / Largeau 2022</span></div>
+    <h2 class="s-title anim">むくみを起こす薬の<br><span class="hl-underline">押さえどころ</span></h2>
+    <hr class="hairline">
+    <div class="tablewrap" style="margin-top:10px">
+      <table class="cmp compact" style="--type-small:calc(21px * var(--type-mult)); --type-body:calc(23px * var(--type-mult))">
+        <thead><tr><th>薬剤</th><th>押さえどころ</th></tr></thead>
+        <tbody>
+          <tr><td>アムロジピン</td><td>浮腫16.6% vs プラセボ6.2%（RR 2.9）。用量依存＝中止の前に減量の選択肢</td></tr>
+          <tr><td>ガバペンチノイド</td><td>開始・増量から数週間で出て、中止後は中央値7日で改善（症例集積）</td></tr>
+          <tr><td>ピオグリタゾン</td><td>むくみが出ることがある（頻度を示す一次資料はない）</td></tr>
+          <tr><td>NSAIDs</td><td>心不全GLも増悪因子の薬剤に挙げる。市販薬を含めて確認</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="important-box lg anim4" style="margin-top:10px; padding:12px 40px; --type-body:calc(24px * var(--type-mult)); --type-small:calc(21px * var(--type-mult))" data-cue="ただし、決めつけないでく">
+      <div class="ttl">📋 決めつけない</div>
+      <p>アムロジピンの浮腫の<strong>最大3分の1は薬のせいではない可能性</strong>——他の原因の検索を止めない</p>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>09</span></div>
+  </section>
+  <!-- ===== 10. 表：原因の当たりをつける早見表 ===== -->
+  <section data-label="表：原因の早見表" data-screen-label="10 表：原因の早見表" class="slide" style="padding-bottom:124px">
+    <div class="chapter-ghost">10</div>
+    <div class="eyebrow anim">原因の当たり<span class="en">Ely 2006 / Trayes 2013</span></div>
+    <h2 class="s-title anim">原因の当たりをつける<br><span class="hl-underline">早見表</span></h2>
+    <hr class="hairline">
+    <div class="tablewrap" style="margin-top:10px">
+      <table class="cmp compact" style="--type-small:calc(21px * var(--type-mult)); --type-body:calc(23px * var(--type-mult))">
+        <thead><tr><th>当たり</th><th>手がかり</th></tr></thead>
+        <tbody>
+          <tr><td>静脈不全</td><td>高齢者の慢性両側性で最も多い。下垂性浮腫・ヘモジデリン沈着</td></tr>
+          <tr><td>リンパ浮腫</td><td>非圧痕性でゴワつく皮膚</td></tr>
+          <tr><td>心・腎・肝</td><td>息切れ・体重増加（心）、尿の泡立ち・顔のむくみ（腎）、腹水・黄疸（肝）</td></tr>
+          <tr><td>特発性浮腫</td><td>初経〜閉経の女性で最も多い</td></tr>
+          <tr><td>睡眠時無呼吸</td><td>肺高血圧がなくても両下肢浮腫を起こしうる。いびき・日中の眠気を聞く</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="important-box lg anim4" style="margin-top:10px; padding:12px 40px; --type-body:calc(24px * var(--type-mult)); --type-small:calc(21px * var(--type-mult))" data-cue="急性(72時間未満)のむ">
+      <div class="ttl">📋 評価のタイミング（Ely 2006）</div>
+      <p><strong>急性（72時間未満）や呼吸困難はその場で評価</strong>。無症状の慢性両側性の精査は次回でよい</p>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>10</span></div>
+  </section>
+  <!-- ===== 11. 章扉③ ===== -->
+  <section data-label="章扉③" data-screen-label="11 章扉③" class="slide slide--navy chapter">
+    <p class="chapter__kicker anim">CHAPTER</p>
+    <h2 class="chapter__num serif anim a-pop">第3章</h2>
+    <div class="chapter__rule grow-x"></div>
+    <h3 class="chapter__title anim3"><span style="white-space:nowrap">弾性ストッキングの</span><span style="white-space:nowrap">前に</span></h3>
+  </section>
+  <!-- ===== 12. 本文：足の脈を触る→ABI ===== -->
+  <section data-label="本文：足の脈を触る" data-screen-label="12 本文：足の脈を触る" class="slide">
+    <div class="chapter-ghost">12</div>
+    <div class="eyebrow anim">本弾の核心<span class="en">Rabe 2020 Rec 12 / JCS 2022・2017</span></div>
+    <h2 class="s-title anim">勧める前に、<span class="hl-underline">足の脈を触る</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(25px * var(--type-mult)); --type-small:calc(22px * var(--type-mult)); margin-top:8px">
+      <p class="lead anim2" style="margin-bottom:6px" data-cue="圧迫の前に、動脈の確認が">圧迫の前に、動脈の確認が求められています。</p>
+      <ul class="point-list" style="gap:6px; margin-top:6px">
+        <li class="anim-i" style="--i:1" data-cue="国際コンセンサスの推奨1"><span>Rec 12＝<strong>足の脈・足関節の脈が弱い／触れなければABPIを先に測る</strong></span></li>
+        <li class="anim-i" style="--i:2" data-cue="足背動脈と後脛骨動脈を、"><span>手技＝<strong>足の脈（足背動脈・後脛骨動脈）を両足で触る</strong></span></li>
+        <li class="anim-i" style="--i:3" data-cue="日本のガイドラインも、着"><span>2017年版GL＝<strong>下肢脈拍・冷感の確認など動脈血行の評価を着用前に</strong></span></li>
+        <li class="anim-i" style="--i:4" data-cue="ABI 0.90以下は、"><span><strong>ABI 0.90以下＝主幹動脈の狭窄・閉塞を疑う</strong>（JCS 2022）</span></li>
+        <li class="anim-i" style="--i:5" data-cue="ただし、0.9未満は禁忌"><span><strong>ABI＜0.9は禁忌でなく「慎重に経過を見る」</strong>（Rec 14）</span></li>
+        <li class="anim-i" style="--i:6" data-cue="控えるラインには両論があ"><span>控えるラインは両論併記＝日本GL：<strong>ABI＜0.5・足関節圧＜60 mmHg</strong>（DVT急性期の節）<span style="white-space:nowrap">／国際：<strong>ABPI＜0.6</strong></span></span></li>
+      </ul>
+      <div class="important-box lg anim6" style="margin-top:6px; padding:8px 36px; --type-body:calc(22px * var(--type-mult)); --type-small:calc(20px * var(--type-mult))" data-cue="「ストッキングの前に、両">
+        <div class="ttl">📋 外来トーク例</div>
+        <p>「<strong>ストッキングの前に、両足の脈を触らせてください</strong>」</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>12</span></div>
+  </section>
+  <!-- ===== 13. 本文：触診はふるい ===== -->
+  <section data-label="本文：触診はふるい" data-screen-label="13 本文：触診はふるい" class="slide">
+    <div class="chapter-ghost">13</div>
+    <div class="eyebrow anim">限界も正直に<span class="en">Herráiz-Adillo 2018 / Armstrong 2010</span></div>
+    <h2 class="s-title anim">触診は「ふるい」——<br><span class="hl-underline">除外の決め手ではない</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(25px * var(--type-mult)); --type-small:calc(22px * var(--type-mult)); margin-top:8px">
+      <p class="lead anim2" style="margin-bottom:6px" data-cue="「脈が触れたから動脈は大">脈が触れたから動脈は大丈夫、とは言い切れません。</p>
+      <ul class="point-list" style="gap:6px; margin-top:6px">
+        <li class="anim-i" style="--i:1" data-cue="看護師の触診で、どちらか"><span>看護師触診・どちらかの脈の消失を陽性→<strong>感度86.8%・特異度82.7%</strong></span></li>
+        <li class="anim-i" style="--i:2" data-cue="一方、医師の触診に大腿の"><span>医師触診＋大腿雑音聴診・ABI≦0.90のみ陽性→<strong>感度58.2%</strong></span></li>
+        <li class="anim-i" style="--i:3" data-cue="測り方が全部違うので、"><span>測り方が全部違う＝<strong>「同じ検査のばらつき」として並べない</strong></span></li>
+        <li class="anim-i" style="--i:4" data-cue="言えるのは「低い報告では"><span>言えるのは「<strong>低い報告では6割程度しか拾えない</strong>」まで。誤診30%超の報告も</span></li>
+        <li class="anim-i" style="--i:5" data-cue="高齢・糖尿病・石灰化・A"><span><strong>高齢・糖尿病・石灰化（ABI≧1.4）で触知の偽陰性が増える</strong></span></li>
+        <li class="anim-i" style="--i:6" data-cue="逆に、両足を急がず丁寧に"><span>急がず<strong>両足を丁寧に触れば</strong>再現性と精度は許容範囲になる</span></li>
+      </ul>
+      <div class="important-box lg anim6" style="margin-top:6px; padding:8px 36px; --type-body:calc(23px * var(--type-mult)); --type-small:calc(20px * var(--type-mult))" data-cue="触診は、触れない人・弱い">
+        <div class="ttl">📋 位置づけ</div>
+        <p>触診は「<strong>触れない・弱い人を拾ってABIに送る</strong>」ふるい。除外の決め手にはしない</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>13</span></div>
+  </section>
+  <!-- ===== 14. 表：5つの安全確認 ===== -->
+  <section data-label="表：5つの安全確認" data-screen-label="14 表：5つの安全確認" class="slide" style="padding-bottom:124px">
+    <div class="chapter-ghost">14</div>
+    <div class="eyebrow anim">安全の要<span class="en">Rabe 2020 Rec 17・21 / JCS 2025・2017</span></div>
+    <h2 class="s-title anim">確認は動脈だけではない——<br><span class="hl-underline">5つの安全確認</span></h2>
+    <hr class="hairline">
+    <div class="tablewrap" style="margin-top:10px">
+      <table class="cmp compact" style="--type-small:calc(20px * var(--type-mult)); --type-body:calc(22px * var(--type-mult))">
+        <thead><tr><th>確認</th><th>要点</th></tr></thead>
+        <tbody>
+          <tr><td>① 動脈</td><td>足の脈を触る→触れない・弱いならABIを先に</td></tr>
+          <tr><td>② 心臓</td><td>重症心不全＝NYHA IVには推奨しない／NYHA IIIはルーチン使用を推奨しない（強度が違う）</td></tr>
+          <tr><td>③ 糖尿病</td><td>知覚脱失を伴う重度ニューロパチー・皮膚壊死リスクの細小血管症は禁忌</td></tr>
+          <tr><td>④ 急性炎症</td><td>赤く腫れて熱いあいだは自己判断で始めない。まず感染の評価</td></tr>
+          <tr><td>⑤ アレルギー</td><td>圧迫材への確認されたアレルギーは禁忌。「以前かぶれたか」を聞く</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="important-box lg anim4" style="margin-top:10px; padding:12px 40px; --type-body:calc(22px * var(--type-mult)); --type-small:calc(20px * var(--type-mult))" data-cue="ただし、4つ目には両論が">
+      <div class="ttl">📋 ④には両論がある</div>
+      <p>Rec 19は<strong>抗菌薬併用下の圧迫をsuggest</strong>＝「禁止」と断定しない。<strong>並行して圧迫する判断は医療者が行う</strong></p>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>14</span></div>
+  </section>
+  <!-- ===== 15. 本文：共通の生活指導 ===== -->
+  <section data-label="本文：共通の生活指導" data-screen-label="15 本文：共通の生活指導" class="slide">
+    <div class="chapter-ghost">15</div>
+    <div class="eyebrow anim">共通の生活指導<span class="en">Ely 2006 / Junge 2022 / Araujo 2016</span></div>
+    <h2 class="s-title anim">効果が未証明のものは<br><span class="hl-underline">未証明と言う</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="--type-body:calc(25px * var(--type-mult)); --type-small:calc(22px * var(--type-mult)); margin-top:8px">
+      <p class="lead anim2" style="margin-bottom:6px" data-cue="共通の生活指導は6項目で">共通の生活指導は6項目です。</p>
+      <ul class="point-list" style="gap:6px; margin-top:6px">
+        <li class="anim-i" style="--i:1" data-cue="1つ目、下肢挙上。"><span><strong>下肢挙上</strong>＝静脈不全の治療の基本。足を台に上げる時間を作る</span></li>
+        <li class="anim-i" style="--i:2" data-cue="2つ目、長時間の同じ姿勢"><span><strong>長時間の同じ姿勢を中断</strong>＝健常者でも立位15分で下腿容積が平均63 mL増加</span></li>
+        <li class="anim-i" style="--i:3" data-cue="3つ目、足首の運動。"><span><strong>足首の運動</strong>＝効果は未証明（very low）。「やって害はない」水準</span></li>
+        <li class="anim-i" style="--i:4" data-cue="4つ目、塩分。数値目標は"><span><strong>塩分</strong>＝数値目標は示さず個別化。「適切な塩分摂取量のエビデンスは確立していない」（GL2025）</span></li>
+        <li class="anim-i" style="--i:5" data-cue="5つ目、体重の自己記録。"><span><strong>体重の自己記録</strong>＝週1回・同じ条件。1週間で2kg超の増加は連絡ライン</span></li>
+        <li class="anim-i" style="--i:6" data-cue="6つ目、スキンケア。"><span><strong>スキンケア</strong>＝潰瘍予防に重要。うっ滞性皮膚炎は保湿とステロイド外用</span></li>
+      </ul>
+      <div class="important-box lg anim6" style="margin-top:6px; padding:8px 36px; --type-body:calc(23px * var(--type-mult)); --type-small:calc(20px * var(--type-mult))" data-cue="「ふくらはぎを動かせばむ">
+        <div class="ttl">📋 言わないこと</div>
+        <p>「<strong>ふくらはぎを動かせばむくみは取れる</strong>」とは断定しない</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>15</span></div>
+  </section>
+  <!-- ===== 16. 受診・紹介の目安 ===== -->
+  <section data-label="受診・紹介の目安" data-screen-label="16 受診・紹介の目安" class="slide danger">
+    <div class="chapter-ghost">16</div>
+    <div class="eyebrow eyebrow--red anim">生活指導の枠を超えるサイン<span class="en">WHEN TO REFER</span></div>
+    <h2 class="s-title anim">こんなときは、<br><span class="hl-underline">専門的な評価を先に</span></h2>
+    <hr class="hairline">
+    <p class="anim" style="margin:10px 0 0; font-size:calc(22px * var(--type-mult)); color:var(--ink-2); font-weight:700; text-align:center">大前提：両側性でもDVTは<strong style="color:var(--danger)">9.1〜18.4%</strong>＝<strong>否定はできない</strong>（2017年版GL）</p>
+    <div class="danger__list" style="margin-top:6px; gap:18px; --type-subtitle:calc(34px * var(--type-mult)); --type-small:calc(24px * var(--type-mult))">
+      <div class="danger__item anim-i a-pop" style="padding:18px 28px; --i:1">
+        <svg class="danger__tri" viewBox="0 0 24 22"><path d="M12 1 L23 21 H1 Z" fill="var(--danger)"/><rect x="10.9" y="8" width="2.2" height="7" rx="1.1" fill="#fff"/><circle cx="12" cy="18" r="1.5" fill="#fff"/></svg>
+        <div class="danger__bd"><h3><span class="dnum">1</span>片足だけ急に腫れて痛む</h3><p>暗赤色ならDVTを疑い当日〜翌日に評価</p></div>
+      </div>
+      <div class="danger__item anim-i a-pop" style="padding:18px 28px; --i:2">
+        <svg class="danger__tri" viewBox="0 0 24 22"><path d="M12 1 L23 21 H1 Z" fill="var(--danger)"/><rect x="10.9" y="8" width="2.2" height="7" rx="1.1" fill="#fff"/><circle cx="12" cy="18" r="1.5" fill="#fff"/></svg>
+        <div class="danger__bd"><h3><span class="dnum">2</span>片足の鮮紅色の赤み・熱感</h3><p>蜂窩織炎を疑い受診。圧迫は始めない</p></div>
+      </div>
+      <div class="danger__item anim-i a-pop" style="padding:18px 28px; --i:3">
+        <svg class="danger__tri" viewBox="0 0 24 22"><path d="M12 1 L23 21 H1 Z" fill="var(--danger)"/><rect x="10.9" y="8" width="2.2" height="7" rx="1.1" fill="#fff"/><circle cx="12" cy="18" r="1.5" fill="#fff"/></svg>
+        <div class="danger__bd"><h3><span class="dnum">3</span>息切れ・急な体重増加</h3><p>心不全を疑う。圧迫を始めず先に評価</p></div>
+      </div>
+      <div class="danger__item anim-i a-pop" style="padding:18px 28px; --i:4">
+        <svg class="danger__tri" viewBox="0 0 24 22"><path d="M12 1 L23 21 H1 Z" fill="var(--danger)"/><rect x="10.9" y="8" width="2.2" height="7" rx="1.1" fill="#fff"/><circle cx="12" cy="18" r="1.5" fill="#fff"/></svg>
+        <div class="danger__bd"><h3><span class="dnum">4</span>足の脈が触れない・冷たい</h3><p>ストッキングを渡す前にABIを測定</p></div>
+      </div>
+    </div>
+    <div class="danger__call anim-i" style="--i:7; margin-top:12px">📋 迷ったら、弾性ストッキングより先に評価を</div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>16</span></div>
+  </section>
+  <!-- ===== 17. まとめ ===== -->
+  <section data-label="まとめ" data-screen-label="17 まとめ" class="slide">
+    <div class="chapter-ghost">17</div>
+    <div class="eyebrow anim">まとめ<span class="en">SUMMARY</span></div>
+    <h2 class="s-title serif anim">今日の3つの持ち帰りポイント</h2>
+    <hr class="hairline">
+    <div class="sum__list">
+      <div class="sum__card anim"><div class="sum__n">01</div><div class="sum__h" style="font-size:calc(30px * var(--type-mult))">危険を<br>先に外す</div><p class="sum__p" style="font-size:calc(24px * var(--type-mult))">両足でもDVTは<span style="white-space:nowrap">否定できない。</span><span style="white-space:nowrap">心臓・肺の見落としに</span><span style="white-space:nowrap">注意する</span></p></div>
+      <div class="sum__card anim2"><div class="sum__n">02</div><div class="sum__h" style="font-size:calc(30px * var(--type-mult))">お薬手帳を<br>先に見る</div><p class="sum__p" style="font-size:calc(24px * var(--type-mult))">薬が原因なら<span style="white-space:nowrap">利尿薬は効かない。</span><span style="white-space:nowrap">止める・減らす・変えるを</span><span style="white-space:nowrap">先に考える</span></p></div>
+      <div class="sum__card anim3"><div class="sum__n">03</div><div class="sum__h" style="font-size:calc(30px * var(--type-mult))">圧迫の前に<br>5つの確認</div><p class="sum__p" style="font-size:calc(24px * var(--type-mult))">動脈・心臓・糖尿病・<span style="white-space:nowrap">急性炎症・アレルギーを</span><span style="white-space:nowrap">見てから勧める</span></p></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>17</span></div>
+  </section>
+  <!-- ===== 18. エンディング ===== -->
+  <section data-label="エンディング" data-screen-label="18 エンディング" class="slide end">
+    <h2 class="end__h anim" style="font-size:calc(56px * var(--type-mult))"><span style="white-space:nowrap">「むくみには弾性ストッキング」</span><br><span style="white-space:nowrap">で終わらせない外来へ</span></h2>
+    <div class="end__rule grow-x" style="flex:none"></div>
+    <div class="end__cards" style="margin-top:40px">
+      <div class="end__card anim2"><span class="end__ic">📄</span><div><h3>解説と出典はブログへ</h3><p>概要欄から<b style="white-space:nowrap">ブログ記事</b>を<span style="white-space:nowrap">ご覧</span>ください</p></div></div>
+      <div class="end__card anim3"><span class="end__ic">📋</span><div><h3 style="white-space:nowrap">患者配布用ハンドアウト</h3><p>外来でそのまま使える<br><b>配布資料</b>を用意しています</p></div></div>
+      <div class="end__card anim4"><span class="end__ic">👍</span><div><h3>高評価・<span style="white-space:nowrap">チャンネル登録</span></h3><p>次回も<b style="white-space:nowrap">お楽しみに</b></p></div></div>
+    </div>
+    <div class="end__note anim5" style="margin-top:34px">この動画は<span style="white-space:nowrap">一般的な情報提供です</span>。<br>最後までご視聴いただき<span style="white-space:nowrap">ありがとうございました</span>。<br>高評価とチャンネル登録を<span style="white-space:nowrap">いただけると励みになります</span>。</div>
+  </section>
+
+</deck-stage>
+
+<script src="deck-stage.js"></script>
+<script src="image-slot.js"></script>
+
+</body>
+</html>
