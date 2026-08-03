@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v86';
+const CACHE_NAME = 'ddx-tools-v87';
 const ASSETS = [
   './',
   './index.html',
@@ -45,6 +45,7 @@ const ASSETS = [
   './news2_calculator.html',
   './glim_nutrition.html',
   './infographics/tolosa_hunt.html',
+  './infographics/alcohol-reduction-guidance/index.html',
   './handouts/index.html',
   './handouts/stroke-secondary-prevention/index.html',
   './handouts/parkinson-rehab-guidance/index.html',
@@ -78,6 +79,7 @@ const ASSETS = [
   './handouts/bilateral-leg-edema-guidance/index.html',
   './handouts/osteoporosis/index.html',
   './handouts/overactive-bladder-frequency/index.html',
+  './handouts/alcohol-reduction-guidance/index.html',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png'

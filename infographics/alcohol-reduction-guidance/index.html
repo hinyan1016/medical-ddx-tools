@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="節酒・減酒の外来サポート。純アルコール量の数え方（量mL×度数/100×0.8）、男性40g・女性20gは許容量ではないこと、目標は断酒でなくてよいこと、そして『自分で急にやめてはいけない人』の見分け方を1枚にまとめたインフォグラフィック。">
+<title>お酒は、やめなくていい。まず量を数える｜節酒・減酒の外来サポート（インフォグラフィック）</title>
+<style>
+/* ===== 配色（第33弾テーマ：モーブ） ===== */
+:root{
+  --mauve:#7F5A83;      /* テーマカラー */
+  --deep:#634167;       /* 濃色（見出し） */
+  --bg:#F5F0F6;         /* 淡背景 */
+  --line:#E4D9E8;       /* 罫線 */
+  --red:#C0392B;        /* 警告 */
+  --redBg:#FBEAE8;
+  --redInk:#8B2318;
+  --navy:#28306B;       /* 補助（原文引用ブロック） */
+  --navyBg:#EEF1F7;
+  --ink:#2B2430;
+  --ink2:#4A4152;
+  --gray:#7A7080;
+  --font:"Noto Sans JP","BIZ UDPGothic","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+}
+/* ルートフォントサイズで全体を拡大縮小する（レスポンシブの基点） */
+html{font-size:16px;}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:var(--font); background:#DDD4E0; color:var(--ink);
+  display:flex; flex-direction:column; align-items:center; overflow-x:hidden;}
+img{max-width:100%; height:auto;}
+.nw{white-space:nowrap;}
+
+/* ===== 上部ナビ ===== */
+.ignav{width:100%; max-width:1080px; display:flex; gap:0.6rem; flex-wrap:wrap;
+  align-items:center; margin:0 auto 0.75rem; padding:0.75rem 0.5rem 0;}
+.ignav a{display:inline-flex; align-items:center; gap:0.4rem; text-decoration:none;
+  font-weight:700; font-size:0.88rem; padding:0.56rem 0.95rem; border-radius:0.5rem;}
+.ignav .a1{background:var(--deep); color:#fff;}
+.ignav .a2{background:#fff; color:var(--deep); border:1px solid var(--line);}
+
+/* ===== 本体キャンバス（PNG化はこの1080px幅で行う） ===== */
+.info{width:100%; max-width:1080px; background:#fff; padding:0 0 3.5rem;}
+
+/* --- ヘッダー --- */
+.hd{background:linear-gradient(135deg,#3A2440 0%,#634167 52%,#7F5A83 100%); color:#fff;
+  padding:3.4rem 4rem 3rem; position:relative; overflow:hidden;}
+.hd::after{content:""; position:absolute; right:-6rem; top:-6rem; width:21rem; height:21rem;
+  border-radius:50%; background:radial-gradient(circle at 30% 30%, rgba(210,170,215,.55), rgba(210,170,215,0) 70%);}
+.hd__badge{display:inline-flex; align-items:center; gap:0.6rem; background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.32); border-radius:999px; padding:0.5rem 1.35rem;
+  font-size:1.35rem; font-weight:700; position:relative; z-index:2; line-height:1.4;}
+.hd__badge .x{color:#E3C4E8;}
+.hd__title{font-size:2.75rem; font-weight:800; line-height:1.36; margin-top:1.2rem;
+  position:relative; z-index:2;}
+.hd__title .hl{color:#EBCDEF;}
+.hd__sub{font-size:1.42rem; color:rgba(255,255,255,.86); margin-top:0.85rem; line-height:1.55;
+  position:relative; z-index:2;}
+
+/* --- リード --- */
+.lead{padding:0 4rem; margin-top:2.1rem;}
+.lead__box{background:var(--bg); border-left:0.38rem solid var(--mauve); border-radius:0 0.75rem 0.75rem 0;
+  padding:1.25rem 1.6rem; font-size:1.35rem; line-height:1.72; color:var(--ink2);}
+.lead__box b{color:var(--deep);}
+
+/* --- 外来10分の3ステップ --- */
+.steps{display:flex; gap:0.9rem; padding:0 4rem; margin-top:1.5rem;}
+.step{flex:1 1 0; border:0.13rem solid var(--line); border-radius:0.85rem; background:var(--bg);
+  padding:1.05rem 1.1rem; text-align:center;}
+.step__n{display:inline-flex; align-items:center; justify-content:center; width:2.3rem; height:2.3rem;
+  border-radius:50%; background:var(--mauve); color:#fff; font-size:1.15rem; font-weight:700;
+  margin-bottom:0.5rem;}
+.step__t{font-size:1.32rem; font-weight:800; color:var(--deep); line-height:1.45;}
+.step__d{font-size:1.02rem; line-height:1.6; color:var(--ink2); margin-top:0.4rem;}
+
+/* --- セクション --- */
+.sec{padding:0 4rem; margin-top:2.9rem;}
+.sec__h{display:flex; align-items:center; gap:1rem; font-size:2rem; font-weight:800;
+  color:var(--deep); margin-bottom:1.25rem; line-height:1.4;}
+.sec__n{flex:none; width:3.25rem; height:3.25rem; border-radius:0.85rem; background:var(--mauve);
+  color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.5rem; font-weight:700;}
+.sec__n--red{background:var(--red);}
+
+/* --- 計算式カード --- */
+.formula{border:0.16rem solid var(--mauve); border-radius:0.9rem; overflow:hidden;}
+.formula__h{background:var(--mauve); color:#fff; font-size:1.3rem; font-weight:800; padding:0.7rem 1.5rem;}
+.formula__b{padding:1.5rem; text-align:center; background:var(--bg);}
+.formula__eq{font-size:1.85rem; font-weight:800; color:var(--deep); line-height:1.6;}
+.formula__eq .op{color:var(--mauve); margin:0 0.25rem;}
+.formula__ex{margin-top:1rem; font-size:1.28rem; line-height:1.7; color:var(--ink2);}
+.formula__ex b{color:var(--deep);}
+.formula__note{margin-top:0.9rem; font-size:1.05rem; line-height:1.65; color:var(--gray);}
+
+/* --- 換算カード --- */
+.conv{margin-top:1.2rem; border:0.13rem solid var(--line); border-radius:0.9rem; overflow:hidden;}
+.conv__h{background:var(--deep); color:#fff; font-size:1.22rem; font-weight:800; padding:0.65rem 1.5rem;}
+.conv__grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.7rem; padding:1.1rem 1.2rem;}
+.conv__i{background:var(--bg); border-radius:0.65rem; padding:0.75rem 0.9rem;}
+.conv__i .nm{font-size:1.1rem; font-weight:700; color:var(--ink2); line-height:1.45;}
+.conv__i .gv{font-size:1.28rem; font-weight:800; color:var(--deep); margin-top:0.2rem;}
+.conv__f{padding:0 1.2rem 1.1rem; font-size:1.02rem; line-height:1.65; color:var(--gray);}
+
+/* --- 警告帯（★40g/20g・★急にやめない） --- */
+.alert{border:0.19rem solid var(--red); background:var(--redBg); border-radius:0.9rem; padding:1.4rem 1.7rem;}
+.alert__t{font-size:1.55rem; font-weight:800; color:var(--redInk); line-height:1.45; margin-bottom:0.8rem;}
+.alert__d{font-size:1.25rem; line-height:1.75; color:var(--redInk); font-weight:700;}
+.alert__q{margin-top:0.9rem; background:#fff; border-left:0.3rem solid var(--red); border-radius:0 0.5rem 0.5rem 0;
+  padding:0.85rem 1.15rem; font-size:1.12rem; line-height:1.7; color:var(--ink2); font-weight:400;}
+.alert__q b{color:var(--redInk);}
+
+/* --- 原文引用ブロック --- */
+.quote{margin-top:1.1rem; background:var(--navyBg); border-left:0.38rem solid var(--navy);
+  border-radius:0 0.75rem 0.75rem 0; padding:1.05rem 1.4rem;}
+.quote__t{font-size:1.15rem; font-weight:800; color:var(--navy); margin-bottom:0.5rem; line-height:1.5;}
+.quote__d{font-size:1.12rem; line-height:1.75; color:var(--ink2);}
+.quote__d b{color:var(--navy);}
+.quote__src{margin-top:0.5rem; font-size:0.95rem; color:var(--gray); line-height:1.6;}
+
+/* --- トーク例 --- */
+.talk{margin-top:1.1rem; background:var(--bg); border-radius:0.75rem; padding:1.05rem 1.4rem;
+  font-size:1.18rem; line-height:1.75; color:var(--ink2);}
+.talk .lb{display:inline-block; background:var(--mauve); color:#fff; font-size:0.98rem; font-weight:700;
+  border-radius:0.4rem; padding:0.15rem 0.65rem; margin-right:0.5rem;}
+.talk b{color:var(--deep);}
+
+/* --- 行動リスト（2列） --- */
+.acts{display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-top:1.1rem;}
+.act{display:flex; gap:0.65rem; align-items:flex-start; border:0.13rem solid var(--line);
+  border-radius:0.7rem; background:#fff; padding:0.8rem 1rem; font-size:1.12rem; line-height:1.65; color:var(--ink2);}
+.act .mk{flex:none; color:var(--mauve); font-weight:700;}
+.act b{color:var(--deep);}
+
+/* --- ★危険サインのチェックリスト --- */
+.signs{display:flex; flex-direction:column; gap:0.7rem;}
+.sign{display:flex; align-items:stretch; border:0.16rem solid #E8BDB7; border-radius:0.8rem;
+  background:#fff; overflow:hidden;}
+.sign__ic{flex:none; width:4.6rem; background:var(--red); color:#fff; display:flex;
+  align-items:center; justify-content:center; font-size:1.7rem;}
+.sign__m{flex:1; padding:0.85rem 1.1rem;}
+.sign__t{font-size:1.25rem; font-weight:800; color:var(--redInk); line-height:1.45;}
+.sign__d{font-size:1.08rem; line-height:1.65; color:var(--ink2); margin-top:0.3rem;}
+
+/* --- 効果リスト --- */
+.gains{display:grid; grid-template-columns:1fr 1fr; gap:0.8rem;}
+.gain{border:0.13rem solid var(--line); border-radius:0.8rem; background:#fff; padding:1rem 1.2rem;}
+.gain__t{display:flex; align-items:center; gap:0.55rem; font-size:1.3rem; font-weight:800;
+  color:var(--deep); line-height:1.45;}
+.gain__d{font-size:1.08rem; line-height:1.7; color:var(--ink2); margin-top:0.4rem;}
+.gain__d b{color:var(--mauve);}
+.gain__cav{margin-top:0.45rem; font-size:0.98rem; line-height:1.6; color:var(--gray);
+  border-top:0.13rem solid var(--line); padding-top:0.4rem;}
+
+/* --- 相談先 --- */
+.consult{margin-top:1.2rem; border:0.16rem solid var(--mauve); border-radius:0.9rem;
+  background:var(--bg); padding:1.15rem 1.5rem;}
+.consult__t{font-size:1.25rem; font-weight:800; color:var(--deep); margin-bottom:0.4rem; line-height:1.5;}
+.consult__d{font-size:1.08rem; line-height:1.7; color:var(--ink2); word-break:break-all;}
+.consult__d a{color:var(--mauve); font-weight:700;}
+
+/* --- フッター --- */
+.src{padding:0 4rem; margin-top:2.4rem; font-size:0.92rem; line-height:1.65; color:var(--gray);}
+.foot{margin:1.6rem 4rem 0; padding-top:1.5rem; border-top:0.13rem solid var(--line);
+  display:flex; align-items:center; justify-content:space-between; gap:0.8rem; flex-wrap:wrap;
+  font-size:1.32rem; color:var(--gray); font-weight:700;}
+.foot .x{color:var(--mauve);}
+
+/* ===== 中間幅（721〜1079px）：rem を画面幅に連動させて相似縮小 ===== */
+@media (max-width:1079px){
+  html{font-size:1.48vw;}
+}
+/* ===== スマホ（720px以下）：横並びを縦積みに落とす ===== */
+@media (max-width:720px){
+  html{font-size:12px;}
+  .hd{padding:1.8rem 1.3rem 1.6rem;}
+  .hd__title{font-size:2.15rem;}
+  .lead, .steps, .sec, .src{padding-left:1.3rem; padding-right:1.3rem;}
+  .foot{margin-left:1.3rem; margin-right:1.3rem;}
+  .steps{flex-direction:column;}          /* 3ステップを縦積み */
+  .conv__grid{grid-template-columns:1fr;} /* 換算カードを1列 */
+  .acts{grid-template-columns:1fr;}       /* 行動リストを1列 */
+  .gains{grid-template-columns:1fr;}      /* 効果リストを1列 */
+  .sign{flex-direction:column;}           /* アイコン帯を上に */
+  .sign__ic{width:100%; height:2.6rem; font-size:1.4rem;}
+  .sec__h{font-size:1.65rem; gap:0.7rem;}
+  .sec__n{width:2.6rem; height:2.6rem; font-size:1.25rem;}
+  .formula__eq{font-size:1.35rem;}
+  .foot{font-size:1.05rem;}
+}
+</style>
+</head>
+<body>
+<nav class="ignav" data-ig-nav-v2>
+  <a class="a1" href="../">🖼️ インフォグラフィック一覧</a>
+  <a class="a2" href="infographic.png" target="_blank" rel="noopener">📥 画像版（PNG）</a>
+</nav>
+
+<div class="info">
+
+  <!-- ========== ヘッダー ========== -->
+  <div class="hd">
+    <span class="hd__badge"><span class="x">✚</span>「やめられますか」で始めない</span>
+    <div class="hd__title">お酒は、やめなくていい。<br>まず<span class="hl">量を数える</span></div>
+    <div class="hd__sub">節酒・減酒の外来サポート｜内科医・かかりつけ医向け<br><span class="nw">外来患者指導テンプレート・シリーズ 第33弾</span></div>
+  </div>
+
+  <!-- ========== リード ========== -->
+  <div class="lead">
+    <div class="lead__box">外来で最初に聞くのは<b><span class="nw">「やめられますか」ではなく</span><span class="nw">「どれくらい飲みますか」</span></b>です。<span class="nw">量を数え、</span><span class="nw">減酒を治療目標として置き、</span><b><span class="nw">急にやめてはいけない人だけを止める</span></b>——<span class="nw">外来10分で使える手順を</span><span class="nw">1枚にまとめました。</span></div>
+  </div>
+
+  <!-- ========== 外来10分の3ステップ ========== -->
+  <div class="steps">
+    <div class="step">
+      <div class="step__n">1</div>
+      <div class="step__t">数える</div>
+      <div class="step__d"><span class="nw">純アルコール量の式で</span><span class="nw">1週間分を合計する</span></div>
+    </div>
+    <div class="step">
+      <div class="step__n">2</div>
+      <div class="step__t">目標を置く</div>
+      <div class="step__d"><span class="nw">ゼロにしなくてよい。</span><span class="nw">今より減れば効果あり</span></div>
+    </div>
+    <div class="step">
+      <div class="step__n">3</div>
+      <div class="step__t"><span class="nw">急にやめさせない</span></div>
+      <div class="step__d"><span class="nw">離脱のサインがある人は</span><span class="nw">自己流の断酒を止める</span></div>
+    </div>
+  </div>
+
+  <!-- ========== ① 数える ========== -->
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">1</span><span>まず量を数える——<span class="nw">「杯」ではなく</span><span class="nw">「グラム」で</span></span></div>
+
+    <div class="formula">
+      <div class="formula__h">覚えてよい数字は、この式ひとつだけ</div>
+      <div class="formula__b">
+        <div class="formula__eq"><span class="nw">純アルコール量（g）</span><span class="op">＝</span><br><span class="nw">摂取量（mL）</span><span class="op">×</span><span class="nw">アルコール濃度（度数/100）</span><span class="op">×</span><span class="nw">0.8</span></div>
+        <div class="formula__ex">例：<b><span class="nw">ビール500mL（5％）</span></b>の場合<br><b><span class="nw">500(mL) × 0.05 × 0.8 ＝ 20(g)</span></b></div>
+        <div class="formula__note"><span class="nw">0.8 はアルコールの比重。</span><span class="nw">食品のエネルギー（kcal）と同じように、</span><span class="nw">飲んだ量を数値にできます。</span><span class="nw">（厚生労働省ガイドライン 2024年2月公表）</span></div>
+      </div>
+    </div>
+
+    <div class="conv">
+      <div class="conv__h"><span class="nw">よく飲むお酒の換算</span><span class="nw">（1ドリンク＝純アルコール10g）</span></div>
+      <div class="conv__grid">
+        <div class="conv__i"><div class="nm"><span class="nw">ビール500mL（5％）</span></div><div class="gv">20g</div></div>
+        <div class="conv__i"><div class="nm"><span class="nw">日本酒 1合</span></div><div class="gv"><span class="nw">2ドリンク＝20g</span></div></div>
+        <div class="conv__i"><div class="nm"><span class="nw">ビール大瓶 1本</span></div><div class="gv"><span class="nw">2.5ドリンク＝25g</span></div></div>
+        <div class="conv__i"><div class="nm"><span class="nw">ウイスキー</span><span class="nw">水割りダブル 1杯</span></div><div class="gv"><span class="nw">2ドリンク＝20g</span></div></div>
+        <div class="conv__i"><div class="nm"><span class="nw">ワイングラス 1杯</span></div><div class="gv"><span class="nw">1.5ドリンク＝15g</span></div></div>
+        <div class="conv__i"><div class="nm"><span class="nw">焼酎お湯割り 1杯</span>／<span class="nw">梅酒小コップ 1杯</span></div><div class="gv"><span class="nw">1ドリンク＝10g</span></div></div>
+      </div>
+      <div class="conv__f">※ ドリンク換算は<span class="nw">学会の手引き（2019年小改訂）</span><span class="nw">のAUDIT-C質問2から。</span><span class="nw">まずは1週間の合計を出すところまでで十分です。</span></div>
+    </div>
+
+    <div class="talk"><span class="lb">外来トーク例</span><span class="nw">「お酒をやめましょう、という話ではありません。</span><b><span class="nw">まず、どれくらい飲んでいるか</span><span class="nw">一緒に数えさせてください。</span></b>」</div>
+  </div>
+
+  <!-- ========== ★ 40g/20g は許容量ではない ========== -->
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n sec__n--red">★</span><span><span class="nw">「男性40g・女性20g」は、</span><span class="nw">許容量ではない</span></span></div>
+
+    <div class="alert">
+      <div class="alert__t">🚫 <span class="nw">「ここまで飲んでよい量」ではなく、</span><span class="nw">「ここから下げていく出発点」</span></div>
+      <div class="alert__d"><span class="nw">生活習慣病のリスクを高める量＝</span><span class="nw">1日当たりの純アルコール摂取量が</span><span class="nw">男性40g以上・女性20g以上。</span><span class="nw">この数字は、</span><span class="nw">減らす対象を決めるための目安であって、</span><span class="nw">安全ラインではありません。</span></div>
+      <div class="alert__q"><b>厚生労働省ガイドラインの原文</b><br>「※これらの量の飲酒をしている者の減少を目標としたものです。<b><span class="nw">なお、これらの量は個々人の</span><span class="nw">許容量を示したものではありません。</span></b>」</div>
+    </div>
+
+    <div class="quote">
+      <div class="quote__t">📌 少しの飲酒でもリスクが上がる病気がある</div>
+      <div class="quote__d">ガイドラインの表1では、<b><span class="nw">高血圧（男女）</span></b>と<b><span class="nw">食道がん（男性）</span></b>が<b>「0g＜」</b>＝<span class="nw">少しでも飲めば</span><span class="nw">リスクが上がると示されています。</span><span class="nw">「1日ビール2杯までなら安全」という説明は、</span><span class="nw">ガイドラインの読み違いです。</span></div>
+      <div class="quote__src">※ 表1はすべて日本人研究に基づく</div>
+    </div>
+
+    <div class="quote">
+      <div class="quote__t">📌 1回で飲みすぎる日をつくらない</div>
+      <div class="quote__d">「<b><span class="nw">一時多量飲酒</span>（<span class="nw">1回の飲酒機会で</span><span class="nw">純アルコール摂取量60g以上</span>）は、<span class="nw">外傷の危険性も高めるものであり、</span><span class="nw">避けるべきです</span></b>」<span class="nw">——週の合計だけでなく、</span><span class="nw">「一晩でどれだけ飲むか」も見ます。</span></div>
+    </div>
+
+    <div class="talk"><span class="lb">外来トーク例</span><span class="nw">「男性で1日40g、女性で20gを超えると、</span><span class="nw">生活習慣病のリスクが上がります。</span><b><span class="nw">ただしこれは、ここまで飲んでいい、</span><span class="nw">という量ではありません。</span><span class="nw">ここから下げていく出発点です。</span></b>」</div>
+  </div>
+
+  <!-- ========== ③ 目標は断酒でなくていい ========== -->
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">2</span>目標は「断酒」でなくていい</div>
+
+    <div class="quote">
+      <div class="quote__t">📖 学会の手引き（2019年小改訂）の原文</div>
+      <div class="quote__d">「<b><span class="nw">軽症の依存症で明確な合併症を有しないケースで、</span><span class="nw">患者が断酒を望む場合や</span><span class="nw">断酒を必要とするその他の事情がある場合を除き、</span><span class="nw">飲酒量低減が治療目標になります。</span></b>」</div>
+    </div>
+
+    <div class="quote">
+      <div class="quote__t">📖 効果は「40g・20gに届いたか」で判定しない</div>
+      <div class="quote__d">「<b><span class="nw">しかしながら、この目安に達しなくとも、</span><span class="nw">治療開始時よりも飲酒量が低下し、</span><span class="nw">飲酒に関係した健康障害や</span><span class="nw">社会・家族問題の軽減が認められる場合、</span><span class="nw">飲酒量低減による治療の効果が</span><span class="nw">認められたと判断できます。</span></b>」</div>
+    </div>
+
+    <div class="talk"><span class="lb">外来トーク例</span><span class="nw">「ゼロにしなくて構いません。</span><b><span class="nw">今より減れば、それは効果があったと</span><span class="nw">判断してよいことになっています。</span></b><span class="nw">まず、週に何日休むかを決めましょう。」</span></div>
+
+    <div class="acts">
+      <div class="act"><span class="mk">①</span><span><b><span class="nw">自らの飲酒状況等を把握する</span></b></span></div>
+      <div class="act"><span class="mk">②</span><span><b><span class="nw">あらかじめ量を決めて飲酒をする</span></b></span></div>
+      <div class="act"><span class="mk">③</span><span><b><span class="nw">飲酒前又は飲酒中に食事をとる</span></b></span></div>
+      <div class="act"><span class="mk">④</span><span><b><span class="nw">飲酒の合間に水（又は炭酸水）を飲む</span></b>など、<span class="nw">ゆっくり分解・吸収できるようにする</span></span></div>
+      <div class="act"><span class="mk">⑤</span><span><b><span class="nw">一週間のうち、</span><span class="nw">飲酒をしない日を設ける</span></b></span></div>
+      <div class="act"><span class="mk">✚</span><span><span class="nw">飲んだ量を書き出す</span><b><span class="nw">「飲酒日記」</span></b>を<span class="nw">続けてもらう</span></span></div>
+    </div>
+    <div class="conv__f" style="padding:0.8rem 0 0;">※ ①〜⑤は厚生労働省ガイドライン<span class="nw">「健康に配慮した飲酒の仕方」</span>より。<span class="nw">治療の主体は薬ではなく、</span><span class="nw">こうした心理社会的な支援です。</span></div>
+  </div>
+
+  <!-- ========== ★ 急にやめてはいけない人 ========== -->
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n sec__n--red">★</span><span>自分で<span class="nw">急にやめてはいけない人がいる</span></span></div>
+
+    <div class="alert" style="margin-bottom:1.2rem;">
+      <div class="alert__t">🚨 <span class="nw">「今日から一滴もやめます」を、</span><span class="nw">そのまま帰さない</span></div>
+      <div class="alert__d"><span class="nw">下の4つのどれかが当てはまる人は、</span><b><span class="nw">自己判断で急にやめると危険</span></b>です。<span class="nw">やめ方・減らし方を必ず医療者と決めます。</span></div>
+    </div>
+
+    <div class="signs">
+      <div class="sign">
+        <div class="sign__ic">⚡</div>
+        <div class="sign__m">
+          <div class="sign__t"><span class="nw">お酒を止めたときに</span><span class="nw">けいれんを起こしたことがある</span></div>
+          <div class="sign__d"><span class="nw">幻が見えた（振戦せん妄）ことがある人も同じです。</span><b><span class="nw">「前にも起きたこと」が、</span><span class="nw">最も信頼できる予測因子とされています。</span></b></div>
+        </div>
+      </div>
+      <div class="sign">
+        <div class="sign__ic">🤲</div>
+        <div class="sign__m">
+          <div class="sign__t">朝、手がふるえる</div>
+          <div class="sign__d"><span class="nw">すでに離脱の症状が出ている状態です。</span><span class="nw">「二日酔いだから」と片づけないでください。</span></div>
+        </div>
+      </div>
+      <div class="sign">
+        <div class="sign__ic">💧</div>
+        <div class="sign__m">
+          <div class="sign__t">寝汗・眠れない日が続く</div>
+          <div class="sign__d"><span class="nw">飲まない時間が長くなると出てくる</span><span class="nw">不眠・発汗も、離脱のサインです。</span></div>
+        </div>
+      </div>
+      <div class="sign">
+        <div class="sign__ic">🍶</div>
+        <div class="sign__m">
+          <div class="sign__t"><span class="nw">朝や日中に「迎え酒」をしている</span></div>
+          <div class="sign__d"><span class="nw">つらさを抑えるために飲んでいるなら、</span><span class="nw">体はすでにお酒に依存しています。</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quote">
+      <div class="quote__t">⏱ やめた後、いつ起きるか</div>
+      <div class="quote__d"><b><span class="nw">離脱によるけいれんは、</span><span class="nw">最後の一杯から6〜48時間</span></b>に現れます（<span class="nw">その90%以上は48時間以内</span>）。<b><span class="nw">振戦せん妄（幻覚・強い混乱）は</span><span class="nw">48〜72時間に始まります。</span></b><span class="nw">「やめた直後は大丈夫だった」は、</span><span class="nw">安全の根拠になりません。</span></div>
+    </div>
+
+    <div class="talk"><span class="lb">外来トーク例</span><span class="nw">「その気持ちは大事にしたいのですが、</span><b><span class="nw">今日いきなり全部やめると、</span><span class="nw">かえって危ないことがあります。</span></b><span class="nw">前に、お酒を止めたときにけいれんを起こしたり、</span><span class="nw">幻が見えたりしたことはありませんか？</span><span class="nw">朝、手がふるえることは？</span>——<span class="nw">減らし方を一緒に決めましょう。」</span></div>
+  </div>
+
+  <!-- ========== ⑦ 減らすと変わること ========== -->
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">3</span>減らすと、何が変わるか</div>
+    <div class="gains">
+      <div class="gain">
+        <div class="gain__t">🩺 血圧</div>
+        <div class="gain__d"><b><span class="nw">もともと多く飲んでいる人ほど、</span><span class="nw">減らすと血圧が下がります。</span></b><span class="nw">1日2杯（1杯＝純アルコール12g）</span><span class="nw">以下の人では、減らしても</span><span class="nw">血圧ははっきりとは下がりませんでした。</span></div>
+      </div>
+      <div class="gain">
+        <div class="gain__t">🫀 肝機能・体重</div>
+        <div class="gain__d"><b><span class="nw">1か月お酒をやめた人では、</span><span class="nw">血圧・体重・</span><span class="nw">インスリンの効きが改善しました。</span></b></div>
+        <div class="gain__cav">※ <span class="nw">くじ引きで割りつけた研究ではなく</span><span class="nw">観察研究の結果です。</span></div>
+      </div>
+      <div class="gain">
+        <div class="gain__t">💓 脈の乱れ（心房細動）</div>
+        <div class="gain__d"><b><span class="nw">大きく減らす・やめると、</span><span class="nw">心房細動の再発が減りました。</span></b></div>
+        <div class="gain__cav">※ <span class="nw">この研究の目標は「断酒」で、</span><span class="nw">実際に週16.8→2.1ドリンクまで減っています。</span><span class="nw">「少し減らせばよい」根拠にはなりません。</span></div>
+      </div>
+      <div class="gain">
+        <div class="gain__t">😴 睡眠</div>
+        <div class="gain__d"><b><span class="nw">「寝酒」は眠りを浅くします。</span></b><span class="nw">飲酒量が多いほど</span><span class="nw">睡眠時無呼吸のリスクが</span><span class="nw">高いことも報告されています。</span></div>
+      </div>
+      <div class="gain">
+        <div class="gain__t">🔴 顔が赤くなる体質の人</div>
+        <div class="gain__d"><span class="nw">飲むと顔が赤くなる体質は</span><b><span class="nw">日本では41%程度</span></b><span class="nw">いるとされます。</span><b><span class="nw">「飲めるようになった」人ほど、</span><span class="nw">口の中のがんや食道がんのリスクが</span><span class="nw">高くなります。</span></b></div>
+      </div>
+      <div class="gain">
+        <div class="gain__t">⚖️ ただし、元通りではない</div>
+        <div class="gain__d"><b><span class="nw">減らせば血圧・肝機能・体重は動きます。</span></b><span class="nw">ただし、これまで飲んできた分が</span><span class="nw">ゼロになるわけではありません。</span></div>
+      </div>
+    </div>
+
+    <div class="consult">
+      <div class="consult__t">📞 相談先</div>
+      <div class="consult__d"><span class="nw">依存症対策全国センター</span>（<span class="nw">全国の相談窓口・医療機関を検索できます</span>）<br><a href="https://www.ncasa-japan.jp/you-do/treatment/treatment-map" target="_blank" rel="noopener">https://www.ncasa-japan.jp/you-do/treatment/treatment-map</a></div>
+    </div>
+  </div>
+
+  <!-- ========== 出典 ========== -->
+  <div class="src">出典: 厚生労働省「健康に配慮した飲酒に関するガイドライン」（令和6年2月19日公表）／ アルコール健康障害対策推進基本計画（第3期・令和8年3月）／ 新アルコール・薬物使用障害の診断治療ガイドラインに基づいたアルコール依存症の診断治療の手引き（日本アルコール・アディクション医学会／日本アルコール関連問題学会・2018年12月第1版／2019年7月小改訂）／ Jesse S, et al. Acta Neurol Scand. 2017;135(1):4-16（PMID 27586815）／ Goodson CM, et al. Alcohol Clin Exp Res. 2014;38(10):2664-77（PMID 25346507）／ Roerecke M, et al. Lancet Public Health. 2017;2(2):e108-e120（PMID 29253389）／ Mehta G, et al. BMJ Open. 2018;8(5):e020673（PMID 29730627）／ Voskoboinik A, et al. N Engl J Med. 2020;382(1):20-28（PMID 31893513）／ Simou E, et al. Sleep Med. 2018;42:38-46（PMID 29458744）／ Yokoyama T, et al. Cancer Epidemiol Biomarkers Prev. 2003;12(11 Pt 1):1227-33（PMID 14652286）／ Witkiewitz K, et al. Alcohol Clin Exp Res. 2017;41(1):179-186（PMID 28019652）</div>
+
+  <div class="foot">
+    <span><span class="x">✚</span> 医知創造ラボ（脳神経内科専門医監修）</span>
+    <span>tools.ichisouzo-lab.com</span>
+  </div>
+</div>
+</body>
+</html>
