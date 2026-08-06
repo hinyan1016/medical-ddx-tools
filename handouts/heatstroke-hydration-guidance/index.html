@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#8D6E00">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="熱中症の水分補給を3段階に整理した配布資料です。普段は水と麦茶でよいこと、汗をかいている最中は水だけにしないこと、経口補水液は国が定めた病者用食品でありスポーツドリンクよりナトリウム・カリウムが約3〜4倍多いこと、のどの渇きは運動する人には使えても高齢者には使えないこと、そして受診の目安をまとめました。">
+<title>熱中症・脱水の水分補給ガイド｜患者さん向け配布資料</title>
+<style>
+  :root{
+    --navy:#4A3A00;
+    --blue:#6B5300;
+    --accent:#8D6E00;
+    --accent-deep:#5C4700;
+    --danger:#C0392B;
+    --light:#F7F3E6;
+    --line:#E3D6AE;
+    --ink:#1a1a1a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    font-family:"Yu Gothic","游ゴシック","Hiragino Kaku Gothic ProN","Segoe UI",sans-serif;
+    color:var(--ink);
+    background:#f3f0e6;
+    line-height:1.6;
+    padding:16px;
+  }
+  .sheet{
+    background:#fff;
+    max-width:820px;
+    margin:0 auto 20px;
+    padding:22px 26px 26px;
+    box-shadow:0 2px 14px rgba(0,0,0,.12);
+  }
+  .head{
+    display:flex;align-items:flex-start;gap:14px;
+    border-bottom:3px solid var(--accent-deep);
+    padding-bottom:12px;margin-bottom:14px;
+  }
+  .head-main{flex:1;}
+  .kicker{
+    display:inline-block;background:var(--accent);color:#fff;
+    font-size:12px;font-weight:700;letter-spacing:.06em;
+    padding:3px 10px;border-radius:3px;margin-bottom:7px;
+  }
+  h1{font-size:22px;font-weight:800;color:var(--accent);line-height:1.35;letter-spacing:.01em;}
+  .sub{font-size:12.5px;color:var(--navy);font-weight:700;margin-top:6px;}
+  .lead{font-size:13.5px;color:#333;margin-top:8px;}
+  .lead b{color:var(--accent-deep);}
+  .qr{
+    width:104px;flex:0 0 104px;text-align:center;
+    border:1px solid var(--line);border-radius:8px;padding:7px 6px 5px;
+  }
+  .qr svg{width:78px;height:78px;display:block;margin:0 auto;}
+  .qr .qr-cap{font-size:9.5px;color:#555;line-height:1.35;margin-top:4px;}
+  h2{
+    font-size:15px;font-weight:800;color:#fff;background:var(--blue);
+    padding:5px 12px;border-radius:4px;margin:14px 0 9px;
+    display:flex;align-items:center;gap:8px;
+  }
+  h2 .num{
+    background:#fff;color:var(--blue);font-size:12.5px;font-weight:800;
+    width:21px;height:21px;border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;flex:0 0 21px;
+  }
+  h2.hd{background:var(--danger);}
+  h2.hd .num{color:var(--danger);}
+  /* ① 3段階の表 */
+  .stage{width:100%;border-collapse:collapse;font-size:12.5px;}
+  .stage th{
+    background:var(--light);color:var(--accent-deep);font-weight:800;font-size:11.5px;
+    border:1px solid var(--line);padding:5px 6px;
+  }
+  .stage td{border:1px solid var(--line);padding:7px 8px;vertical-align:top;}
+  .stage td.n{
+    width:32px;text-align:center;font-weight:800;color:#fff;background:var(--accent);
+  }
+  .stage td.what{font-weight:700;color:var(--accent-deep);width:110px;}
+  .stagenote{font-size:11.5px;color:#555;margin-top:6px;}
+  /* ② 病者用食品 */
+  .fh{
+    border:2.5px solid var(--accent);border-radius:8px;
+    padding:11px 14px;margin-top:14px;background:var(--light);
+  }
+  .fh .ft{color:var(--accent-deep);font-weight:800;font-size:14.5px;margin-bottom:7px;}
+  .fh .fitems{display:flex;gap:8px;flex-wrap:wrap;}
+  .fh .fitems div{
+    flex:1 1 30%;font-size:12.5px;background:#fff;border:1px solid var(--line);
+    border-radius:6px;padding:7px 10px;
+  }
+  .fh .fitems.two div{flex:1 1 44%;}
+  .fh .fitems .l{color:var(--accent-deep);font-weight:800;display:block;margin-bottom:2px;}
+  .fh .fnote{
+    margin-top:8px;font-size:12.5px;color:#333;border-top:1px dashed var(--line);padding-top:7px;
+  }
+  .fh .fnote b{color:var(--accent-deep);}
+  .stathero{display:flex;gap:10px;align-items:center;margin-top:10px;}
+  .stathero .n{font-size:26px;font-weight:800;color:var(--danger);}
+  .stathero .t{font-size:12.5px;color:#333;}
+  /* ③ 図解（水だけ vs 塩分入り） */
+  .ba{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;}
+  .ba div{
+    flex:1 1 44%;background:#fff;border:1px solid var(--line);border-radius:6px;
+    padding:8px 11px;font-size:12.5px;
+  }
+  .ba .l{display:block;color:var(--accent-deep);font-weight:800;font-size:13px;margin-bottom:3px;}
+  /* ④ 対比（運動する人 / 高齢者） */
+  .compare{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;}
+  .compare div{
+    flex:1 1 44%;border-radius:8px;padding:10px 12px;font-size:12.5px;
+  }
+  .compare .ok{background:#EFF6EF;border:1.5px solid #7FAE7F;}
+  .compare .ng{background:var(--light);border:1.5px solid var(--accent);}
+  .compare .l{display:block;font-weight:800;font-size:13.5px;margin-bottom:4px;}
+  .compare .ok .l{color:#2F6B2F;}
+  .compare .ng .l{color:var(--accent-deep);}
+  /* ⑤ チェックリスト・記入欄 */
+  ul.checks{list-style:none;}
+  ul.checks li{
+    display:flex;gap:9px;align-items:flex-start;
+    padding:4.5px 2px;border-bottom:1px dashed var(--line);
+    font-size:13px;
+  }
+  ul.checks li:last-child{border-bottom:none;}
+  ul.checks .box{
+    flex:0 0 17px;width:17px;height:17px;margin-top:1px;
+    border:2px solid var(--accent-deep);border-radius:3px;
+  }
+  ul.checks li b{color:var(--accent-deep);}
+  ul.checks .why{color:#555;font-size:11.5px;}
+  /* ⑥ 持病 */
+  .tblnote{font-size:11.5px;color:#555;margin-top:6px;}
+  /* ⑦ 受診ライン */
+  .alert{
+    border:2.5px solid var(--danger);border-radius:8px;
+    padding:11px 14px;margin-top:0;background:#FBEAE8;
+  }
+  .alert .at{color:var(--danger);font-weight:800;font-size:15px;margin-bottom:6px;}
+  .fast{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;}
+  .fast div{
+    flex:1 1 44%;font-size:12.5px;background:#fff;border:1px solid #EAC5C0;
+    border-radius:6px;padding:6px 9px;
+  }
+  .fast .l{color:var(--danger);font-weight:800;font-size:13px;display:block;}
+  .alert .daily{
+    margin-top:8px;font-size:12.5px;color:#333;border-top:1px dashed #EAC5C0;padding-top:7px;
+  }
+  .alert .daily b{color:var(--danger);}
+  /* 相談先・記入欄 */
+  .memo{
+    border:1.5px solid var(--line);border-radius:8px;padding:10px 13px;margin-top:14px;
+    font-size:12.5px;
+  }
+  .memo .mtitle{font-weight:800;color:var(--accent-deep);font-size:13.5px;margin-bottom:5px;}
+  .memo .mtext{font-size:12.5px;color:#333;margin-bottom:7px;}
+  .memo .mtext b{color:var(--accent-deep);}
+  .memo .mrow{display:flex;gap:6px;align-items:baseline;padding:5px 0;}
+  .memo .mlabel{flex:0 0 210px;font-weight:700;color:var(--accent-deep);white-space:nowrap;}
+  .memo .mline{flex:1;border-bottom:1px solid #b3a482;min-height:18px;}
+  .foot{
+    margin-top:16px;padding-top:10px;border-top:1px solid var(--line);
+    font-size:11px;color:#666;line-height:1.5;
+  }
+  .foot .brand{font-weight:700;color:var(--accent-deep);}
+  .noprint{margin:0 auto 18px;max-width:820px;text-align:center;}
+  .pbtn{
+    display:inline-block;background:var(--accent-deep);color:#fff;text-decoration:none;
+    font-size:14px;font-weight:700;padding:10px 24px;border-radius:24px;border:none;cursor:pointer;
+    box-shadow:0 2px 10px rgba(140,110,0,.25);
+  }
+  .pbtn:active{transform:scale(.98);}
+  .noprint p{font-size:12px;color:#777;margin-top:8px;}
+
+  @page{size:A4 portrait;margin:10mm 12mm;}
+  @media print{
+    body{background:#fff;padding:0;font-size:10.5pt;}
+    .sheet{box-shadow:none;margin:0;max-width:none;padding:0;}
+    .noprint{display:none !important;}
+    h1{font-size:18pt;}
+    h2{font-size:12pt;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .kicker,.alert,.fh,.stage th,.stage td.n,.ba div,.compare div,.fast div,.qr{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    ul.checks li{font-size:9.8pt;padding:0px 2px;}
+    ul.checks .why{font-size:9.6pt;}
+    .lead{font-size:9.5pt;margin-top:3px;}
+    .head{padding-bottom:4px;margin-bottom:4px;}
+    h2{margin:3px 0 1px;padding:3px 12px;}
+    .alert,.fh{padding:6px 11px;}
+    .fh{margin-top:8px;}
+    .stage{font-size:9.8pt;}
+    .stage th{padding:2px 6px;font-size:9pt;}
+    .stage td{padding:4px 6px;}
+    .stagenote,.tblnote{font-size:9pt;margin-top:3px;}
+    .fh .ft,.alert .at{font-size:11pt;margin-bottom:4px;}
+    .fh .fitems div,.fast div,.ba div,.compare div{padding:4px 8px;font-size:10pt;line-height:1.45;}
+    .fast{gap:6px;}
+    .fh .fitems{gap:6px;}
+    .ba{gap:6px;}
+    .compare{gap:6px;}
+    .fh .fnote{margin-top:5px;padding-top:5px;font-size:10pt;}
+    .alert .daily{margin-top:5px;padding-top:5px;font-size:9.8pt;}
+    .memo{margin-top:7px;padding:6px 11px;font-size:10pt;}
+    .memo .mtitle{font-size:11pt;margin-bottom:2px;}
+    .memo .mtext{font-size:9.8pt;margin-bottom:3px;line-height:1.45;}
+    .memo .mrow{padding:2px 0;}
+    .foot{margin-top:6px;padding-top:5px;font-size:9pt;line-height:1.45;}
+    ul.checks li{line-height:1.5;}
+    a[href]{color:inherit;text-decoration:none;}
+    .formula,.tbl,.week,.fh,.alert,.memo,.fast,.start,.fh .fitems,.stage,.ba,.compare{break-inside:avoid;page-break-inside:avoid;}
+    ul.checks li{break-inside:avoid;page-break-inside:avoid;}
+    h2{break-after:avoid;page-break-after:avoid;}
+    /* A4 2ページ構成: 1ページ目=見出し＋QR＋①3段階／②病者用食品／③水だけではいけない理由
+       2ページ目=④のどの渇き／⑤高齢の方へ／⑥持病がある方へ／⑦受診してください／参照先 */
+    .pg2{break-before:page;page-break-before:always;}
+  }
+  @media (max-width:560px){
+    body{padding:8px;}
+    .sheet{padding:16px 15px 20px;}
+    .head{flex-direction:column;align-items:center;text-align:center;}
+    h1{font-size:19px;}
+    .fh .fitems div{flex:1 1 100%;}
+    .fast div{flex:1 1 100%;}
+    .ba div{flex:1 1 100%;}
+    .compare div{flex:1 1 100%;}
+    .memo .mlabel{flex:0 0 150px;}
+    .stage{font-size:11.5px;}
+  }
+</style>
+</head>
+<body>
+<div class="noprint">
+  <button class="pbtn" id="printBtn">🖨️ この資料を印刷する（A4）</button>
+  <p>A4・2枚（1枚目＝3段階の使い分け・病者用食品・水だけではいけない理由／2枚目＝のどの渇き・高齢の方への声かけ・持病がある方・受診の目安。カラー印刷推奨）</p>
+</div>
+
+<div class="sheet">
+
+  <div class="head">
+    <div class="head-main">
+      <span class="kicker">熱中症予防に、毎日は飲みません</span>
+      <h1>熱中症・脱水の<br>水分補給ガイド</h1>
+      <p class="sub">経口補水液は「具合が悪くなってから」の飲み物です。まず、3段階に分けて考えます。</p>
+      <p class="lead">熱中症・脱水の水分補給をまとめた資料です。<b>普段・汗をかいている最中・脱水したときの3段階の使い分け</b>と、<span style="white-space:nowrap;">のどの渇きを当てにしてよい人・</span><span style="white-space:nowrap;">いけない人の見分け方、</span>そして<b>受診の目安</b>をまとめました。</p>
+    </div>
+    <div class="qr">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 37 37" shape-rendering="crispEdges" role="img" aria-label="QRコード"><rect width="37" height="37" fill="#fff"/><path d="M2 2h1v1h-1zM3 2h1v1h-1zM4 2h1v1h-1zM5 2h1v1h-1zM6 2h1v1h-1zM7 2h1v1h-1zM8 2h1v1h-1zM10 2h1v1h-1zM11 2h1v1h-1zM12 2h1v1h-1zM15 2h1v1h-1zM16 2h1v1h-1zM17 2h1v1h-1zM18 2h1v1h-1zM20 2h1v1h-1zM23 2h1v1h-1zM25 2h1v1h-1zM28 2h1v1h-1zM29 2h1v1h-1zM30 2h1v1h-1zM31 2h1v1h-1zM32 2h1v1h-1zM33 2h1v1h-1zM34 2h1v1h-1zM2 3h1v1h-1zM8 3h1v1h-1zM11 3h1v1h-1zM12 3h1v1h-1zM13 3h1v1h-1zM14 3h1v1h-1zM15 3h1v1h-1zM16 3h1v1h-1zM18 3h1v1h-1zM19 3h1v1h-1zM20 3h1v1h-1zM21 3h1v1h-1zM22 3h1v1h-1zM23 3h1v1h-1zM24 3h1v1h-1zM26 3h1v1h-1zM28 3h1v1h-1zM34 3h1v1h-1zM2 4h1v1h-1zM4 4h1v1h-1zM5 4h1v1h-1zM6 4h1v1h-1zM8 4h1v1h-1zM13 4h1v1h-1zM14 4h1v1h-1zM16 4h1v1h-1zM19 4h1v1h-1zM21 4h1v1h-1zM23 4h1v1h-1zM26 4h1v1h-1zM28 4h1v1h-1zM30 4h1v1h-1zM31 4h1v1h-1zM32 4h1v1h-1zM34 4h1v1h-1zM2 5h1v1h-1zM4 5h1v1h-1zM5 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM11 5h1v1h-1zM13 5h1v1h-1zM18 5h1v1h-1zM21 5h1v1h-1zM22 5h1v1h-1zM24 5h1v1h-1zM28 5h1v1h-1zM30 5h1v1h-1zM31 5h1v1h-1zM32 5h1v1h-1zM34 5h1v1h-1zM2 6h1v1h-1zM4 6h1v1h-1zM5 6h1v1h-1zM6 6h1v1h-1zM8 6h1v1h-1zM10 6h1v1h-1zM11 6h1v1h-1zM12 6h1v1h-1zM13 6h1v1h-1zM18 6h1v1h-1zM19 6h1v1h-1zM22 6h1v1h-1zM23 6h1v1h-1zM24 6h1v1h-1zM25 6h1v1h-1zM26 6h1v1h-1zM28 6h1v1h-1zM30 6h1v1h-1zM31 6h1v1h-1zM32 6h1v1h-1zM34 6h1v1h-1zM2 7h1v1h-1zM8 7h1v1h-1zM10 7h1v1h-1zM11 7h1v1h-1zM12 7h1v1h-1zM13 7h1v1h-1zM15 7h1v1h-1zM17 7h1v1h-1zM19 7h1v1h-1zM21 7h1v1h-1zM22 7h1v1h-1zM26 7h1v1h-1zM28 7h1v1h-1zM34 7h1v1h-1zM2 8h1v1h-1zM3 8h1v1h-1zM4 8h1v1h-1zM5 8h1v1h-1zM6 8h1v1h-1zM7 8h1v1h-1zM8 8h1v1h-1zM10 8h1v1h-1zM12 8h1v1h-1zM14 8h1v1h-1zM16 8h1v1h-1zM18 8h1v1h-1zM20 8h1v1h-1zM22 8h1v1h-1zM24 8h1v1h-1zM26 8h1v1h-1zM28 8h1v1h-1zM29 8h1v1h-1zM30 8h1v1h-1zM31 8h1v1h-1zM32 8h1v1h-1zM33 8h1v1h-1zM34 8h1v1h-1zM10 9h1v1h-1zM11 9h1v1h-1zM12 9h1v1h-1zM13 9h1v1h-1zM16 9h1v1h-1zM19 9h1v1h-1zM20 9h1v1h-1zM23 9h1v1h-1zM25 9h1v1h-1zM2 10h1v1h-1zM6 10h1v1h-1zM8 10h1v1h-1zM9 10h1v1h-1zM10 10h1v1h-1zM12 10h1v1h-1zM16 10h1v1h-1zM17 10h1v1h-1zM19 10h1v1h-1zM20 10h1v1h-1zM21 10h1v1h-1zM23 10h1v1h-1zM24 10h1v1h-1zM25 10h1v1h-1zM26 10h1v1h-1zM27 10h1v1h-1zM28 10h1v1h-1zM29 10h1v1h-1zM30 10h1v1h-1zM31 10h1v1h-1zM34 10h1v1h-1zM2 11h1v1h-1zM6 11h1v1h-1zM11 11h1v1h-1zM12 11h1v1h-1zM13 11h1v1h-1zM16 11h1v1h-1zM17 11h1v1h-1zM18 11h1v1h-1zM20 11h1v1h-1zM25 11h1v1h-1zM26 11h1v1h-1zM27 11h1v1h-1zM31 11h1v1h-1zM32 11h1v1h-1zM3 12h1v1h-1zM8 12h1v1h-1zM12 12h1v1h-1zM15 12h1v1h-1zM16 12h1v1h-1zM17 12h1v1h-1zM19 12h1v1h-1zM20 12h1v1h-1zM22 12h1v1h-1zM23 12h1v1h-1zM24 12h1v1h-1zM25 12h1v1h-1zM26 12h1v1h-1zM31 12h1v1h-1zM33 12h1v1h-1zM7 13h1v1h-1zM11 13h1v1h-1zM12 13h1v1h-1zM13 13h1v1h-1zM15 13h1v1h-1zM18 13h1v1h-1zM19 13h1v1h-1zM22 13h1v1h-1zM23 13h1v1h-1zM24 13h1v1h-1zM26 13h1v1h-1zM34 13h1v1h-1zM3 14h1v1h-1zM4 14h1v1h-1zM7 14h1v1h-1zM8 14h1v1h-1zM10 14h1v1h-1zM12 14h1v1h-1zM15 14h1v1h-1zM18 14h1v1h-1zM20 14h1v1h-1zM21 14h1v1h-1zM23 14h1v1h-1zM27 14h1v1h-1zM28 14h1v1h-1zM29 14h1v1h-1zM30 14h1v1h-1zM31 14h1v1h-1zM2 15h1v1h-1zM4 15h1v1h-1zM5 15h1v1h-1zM7 15h1v1h-1zM9 15h1v1h-1zM11 15h1v1h-1zM14 15h1v1h-1zM16 15h1v1h-1zM19 15h1v1h-1zM20 15h1v1h-1zM22 15h1v1h-1zM24 15h1v1h-1zM25 15h1v1h-1zM26 15h1v1h-1zM31 15h1v1h-1zM32 15h1v1h-1zM3 16h1v1h-1zM4 16h1v1h-1zM5 16h1v1h-1zM6 16h1v1h-1zM7 16h1v1h-1zM8 16h1v1h-1zM10 16h1v1h-1zM12 16h1v1h-1zM13 16h1v1h-1zM15 16h1v1h-1zM16 16h1v1h-1zM17 16h1v1h-1zM19 16h1v1h-1zM20 16h1v1h-1zM24 16h1v1h-1zM25 16h1v1h-1zM27 16h1v1h-1zM28 16h1v1h-1zM29 16h1v1h-1zM31 16h1v1h-1zM33 16h1v1h-1zM2 17h1v1h-1zM3 17h1v1h-1zM9 17h1v1h-1zM11 17h1v1h-1zM12 17h1v1h-1zM13 17h1v1h-1zM16 17h1v1h-1zM17 17h1v1h-1zM18 17h1v1h-1zM19 17h1v1h-1zM20 17h1v1h-1zM23 17h1v1h-1zM25 17h1v1h-1zM27 17h1v1h-1zM28 17h1v1h-1zM29 17h1v1h-1zM30 17h1v1h-1zM4 18h1v1h-1zM5 18h1v1h-1zM8 18h1v1h-1zM9 18h1v1h-1zM10 18h1v1h-1zM13 18h1v1h-1zM14 18h1v1h-1zM19 18h1v1h-1zM21 18h1v1h-1zM23 18h1v1h-1zM24 18h1v1h-1zM26 18h1v1h-1zM28 18h1v1h-1zM30 18h1v1h-1zM31 18h1v1h-1zM33 18h1v1h-1zM5 19h1v1h-1zM9 19h1v1h-1zM11 19h1v1h-1zM14 19h1v1h-1zM17 19h1v1h-1zM18 19h1v1h-1zM20 19h1v1h-1zM25 19h1v1h-1zM27 19h1v1h-1zM31 19h1v1h-1zM32 19h1v1h-1zM33 19h1v1h-1zM2 20h1v1h-1zM4 20h1v1h-1zM5 20h1v1h-1zM6 20h1v1h-1zM7 20h1v1h-1zM8 20h1v1h-1zM9 20h1v1h-1zM10 20h1v1h-1zM14 20h1v1h-1zM16 20h1v1h-1zM17 20h1v1h-1zM18 20h1v1h-1zM19 20h1v1h-1zM22 20h1v1h-1zM25 20h1v1h-1zM26 20h1v1h-1zM29 20h1v1h-1zM31 20h1v1h-1zM33 20h1v1h-1zM4 21h1v1h-1zM5 21h1v1h-1zM6 21h1v1h-1zM7 21h1v1h-1zM10 21h1v1h-1zM14 21h1v1h-1zM19 21h1v1h-1zM21 21h1v1h-1zM22 21h1v1h-1zM23 21h1v1h-1zM24 21h1v1h-1zM26 21h1v1h-1zM28 21h1v1h-1zM29 21h1v1h-1zM33 21h1v1h-1zM3 22h1v1h-1zM4 22h1v1h-1zM8 22h1v1h-1zM12 22h1v1h-1zM13 22h1v1h-1zM14 22h1v1h-1zM17 22h1v1h-1zM20 22h1v1h-1zM23 22h1v1h-1zM25 22h1v1h-1zM27 22h1v1h-1zM28 22h1v1h-1zM29 22h1v1h-1zM30 22h1v1h-1zM31 22h1v1h-1zM34 22h1v1h-1zM2 23h1v1h-1zM3 23h1v1h-1zM5 23h1v1h-1zM6 23h1v1h-1zM9 23h1v1h-1zM10 23h1v1h-1zM12 23h1v1h-1zM15 23h1v1h-1zM18 23h1v1h-1zM19 23h1v1h-1zM20 23h1v1h-1zM22 23h1v1h-1zM23 23h1v1h-1zM25 23h1v1h-1zM26 23h1v1h-1zM32 23h1v1h-1zM33 23h1v1h-1zM7 24h1v1h-1zM8 24h1v1h-1zM12 24h1v1h-1zM13 24h1v1h-1zM15 24h1v1h-1zM16 24h1v1h-1zM18 24h1v1h-1zM19 24h1v1h-1zM20 24h1v1h-1zM23 24h1v1h-1zM24 24h1v1h-1zM25 24h1v1h-1zM26 24h1v1h-1zM31 24h1v1h-1zM32 24h1v1h-1zM33 24h1v1h-1zM5 25h1v1h-1zM6 25h1v1h-1zM7 25h1v1h-1zM9 25h1v1h-1zM12 25h1v1h-1zM14 25h1v1h-1zM15 25h1v1h-1zM16 25h1v1h-1zM19 25h1v1h-1zM21 25h1v1h-1zM23 25h1v1h-1zM24 25h1v1h-1zM26 25h1v1h-1zM28 25h1v1h-1zM34 25h1v1h-1zM2 26h1v1h-1zM3 26h1v1h-1zM4 26h1v1h-1zM8 26h1v1h-1zM10 26h1v1h-1zM11 26h1v1h-1zM15 26h1v1h-1zM17 26h1v1h-1zM19 26h1v1h-1zM21 26h1v1h-1zM22 26h1v1h-1zM23 26h1v1h-1zM24 26h1v1h-1zM25 26h1v1h-1zM26 26h1v1h-1zM27 26h1v1h-1zM28 26h1v1h-1zM29 26h1v1h-1zM30 26h1v1h-1zM31 26h1v1h-1zM34 26h1v1h-1zM10 27h1v1h-1zM12 27h1v1h-1zM13 27h1v1h-1zM14 27h1v1h-1zM15 27h1v1h-1zM16 27h1v1h-1zM17 27h1v1h-1zM19 27h1v1h-1zM20 27h1v1h-1zM23 27h1v1h-1zM26 27h1v1h-1zM30 27h1v1h-1zM32 27h1v1h-1zM33 27h1v1h-1zM2 28h1v1h-1zM3 28h1v1h-1zM4 28h1v1h-1zM5 28h1v1h-1zM6 28h1v1h-1zM7 28h1v1h-1zM8 28h1v1h-1zM10 28h1v1h-1zM13 28h1v1h-1zM16 28h1v1h-1zM17 28h1v1h-1zM18 28h1v1h-1zM20 28h1v1h-1zM22 28h1v1h-1zM26 28h1v1h-1zM28 28h1v1h-1zM30 28h1v1h-1zM31 28h1v1h-1zM33 28h1v1h-1zM2 29h1v1h-1zM8 29h1v1h-1zM15 29h1v1h-1zM18 29h1v1h-1zM21 29h1v1h-1zM23 29h1v1h-1zM26 29h1v1h-1zM30 29h1v1h-1zM33 29h1v1h-1zM34 29h1v1h-1zM2 30h1v1h-1zM4 30h1v1h-1zM5 30h1v1h-1zM6 30h1v1h-1zM8 30h1v1h-1zM10 30h1v1h-1zM13 30h1v1h-1zM14 30h1v1h-1zM16 30h1v1h-1zM18 30h1v1h-1zM21 30h1v1h-1zM23 30h1v1h-1zM26 30h1v1h-1zM27 30h1v1h-1zM28 30h1v1h-1zM29 30h1v1h-1zM30 30h1v1h-1zM31 30h1v1h-1zM2 31h1v1h-1zM4 31h1v1h-1zM5 31h1v1h-1zM6 31h1v1h-1zM8 31h1v1h-1zM12 31h1v1h-1zM13 31h1v1h-1zM15 31h1v1h-1zM16 31h1v1h-1zM20 31h1v1h-1zM22 31h1v1h-1zM23 31h1v1h-1zM24 31h1v1h-1zM26 31h1v1h-1zM28 31h1v1h-1zM29 31h1v1h-1zM30 31h1v1h-1zM2 32h1v1h-1zM4 32h1v1h-1zM5 32h1v1h-1zM6 32h1v1h-1zM8 32h1v1h-1zM14 32h1v1h-1zM16 32h1v1h-1zM17 32h1v1h-1zM19 32h1v1h-1zM22 32h1v1h-1zM23 32h1v1h-1zM24 32h1v1h-1zM26 32h1v1h-1zM28 32h1v1h-1zM29 32h1v1h-1zM30 32h1v1h-1zM2 33h1v1h-1zM8 33h1v1h-1zM13 33h1v1h-1zM16 33h1v1h-1zM17 33h1v1h-1zM18 33h1v1h-1zM19 33h1v1h-1zM20 33h1v1h-1zM23 33h1v1h-1zM25 33h1v1h-1zM26 33h1v1h-1zM27 33h1v1h-1zM31 33h1v1h-1zM2 34h1v1h-1zM3 34h1v1h-1zM4 34h1v1h-1zM5 34h1v1h-1zM6 34h1v1h-1zM7 34h1v1h-1zM8 34h1v1h-1zM10 34h1v1h-1zM11 34h1v1h-1zM14 34h1v1h-1zM19 34h1v1h-1zM21 34h1v1h-1zM23 34h1v1h-1zM24 34h1v1h-1zM26 34h1v1h-1zM27 34h1v1h-1zM34 34h1v1h-1z" fill="#8D6E00"/></svg>
+      <div class="qr-cap">動画・くわしい解説はこちら</div>
+    </div>
+  </div>
+
+  <h2><span class="num">1</span>飲み物は3段階で選びます</h2>
+  <table class="stage">
+    <tr><th>場面</th><th>飲むもの</th><th>理由</th></tr>
+    <tr><td class="n">①</td><td class="what">普段（脱水していないとき）</td><td>水・麦茶で十分です。塩分は食事からとれています</td></tr>
+    <tr><td class="n">②</td><td class="what">汗をかいている最中</td><td>塩分の入ったものにします。水だけでは体に残りません</td></tr>
+    <tr><td class="n">③</td><td class="what">下痢・嘔吐・熱中症の症状で脱水したとき</td><td><b>経口補水液</b>。ここで初めて使います</td></tr>
+  </table>
+  <div class="stagenote">※ 「常備しておく」ではなく、<span style="white-space:nowrap;">「どの場面で開けるか」を</span><span style="white-space:nowrap;">決めておくことが大切です。</span></div>
+
+  <h2><span class="num">2</span>経口補水液は「具合が悪いとき」の飲み物です</h2>
+  <div class="fh">
+    <div class="ft">📍 国の分類では「病者用食品」です</div>
+    <div class="stathero">
+      <span class="n">約3〜4倍</span>
+      <span class="t">経口補水液は、スポーツドリンクより<span style="white-space:nowrap;">ナトリウム・カリウムが</span><span style="white-space:nowrap;">多く含まれています</span></span>
+    </div>
+    <div class="fnote">消費者庁は<b>「脱水状態でない方が普段の水分補給として飲むものではありません」</b>と<span style="white-space:nowrap;">はっきり案内しています。</span><span style="white-space:nowrap;">元気なうちから毎日飲む物ではありません。</span></div>
+  </div>
+
+  <h2><span class="num">3</span>水だけではいけない理由</h2>
+  <div class="ba">
+    <div><span class="l">水だけを飲むと</span>飲んだそばから<span style="white-space:nowrap;">尿になって出ていきやすくなります。</span><span style="white-space:nowrap;">血液が薄まるためです</span></div>
+    <div><span class="l">塩分が入っていると</span>体に水が<span style="white-space:nowrap;">とどまりやすくなります。</span><span style="white-space:nowrap;">足もつりにくくなります</span></div>
+  </div>
+  <div class="tblnote">※ 汗をたくさんかいている最中は、水だけにせず<span style="white-space:nowrap;">塩分の入った飲み物に変えてください。</span></div>
+
+  <h2 class="pg2"><span class="num">4</span>のどの渇きを当てにしてよい人・いけない人</h2>
+  <div class="compare">
+    <div class="ok"><span class="l">運動・お仕事をする方</span>のどが渇いたら飲む、で<span style="white-space:nowrap;">合っています。</span><span style="white-space:nowrap;">渇く前に飲みすぎるとかえって</span><span style="white-space:nowrap;">具合が悪くなることがあります</span></div>
+    <div class="ng"><span class="l">高齢の方</span>のどの渇きを<span style="white-space:nowrap;">当てにしないでください。</span><span style="white-space:nowrap;">年齢とともに「渇いた」という感覚が</span><span style="white-space:nowrap;">当てにならなくなります</span></div>
+  </div>
+
+  <h2><span class="num">5</span>高齢の方へ：飲むタイミングを決めておきましょう</h2>
+  <ul class="checks">
+    <li><span class="box"></span><span><b>お薬を飲むときに、<span style="white-space:nowrap;">必ずコップ1杯</span></b><br><span class="why">→ 新しい習慣を足さず、<span style="white-space:nowrap;">もともとある場面に結びつけます</span></span></span></li>
+    <li><span class="box"></span><span><b>食事のときに、<span style="white-space:nowrap;">必ずコップ1杯</span></b><br><span class="why">→ 服薬時と食事時にはもともと定着した<span style="white-space:nowrap;">飲水のパターンがあります</span></span></span></li>
+    <li><span class="box"></span><span><b>夜のトイレが心配なら、<span style="white-space:nowrap;">控えるのではなく日中に寄せる</span></b><br><span class="why">→ 夕方以降を減らし、<span style="white-space:nowrap;">朝と昼にしっかりとります</span></span></span></li>
+  </ul>
+
+  <h2 class="hd"><span class="num">6</span>持病がある方へ</h2>
+  <div class="alert" style="margin-bottom:14px;">
+    <div class="at">⚠️ 腎臓・心臓・糖尿病の治療中は、飲む前に主治医へ</div>
+    <div class="fast">
+      <div><span class="l">ナトリウム・カリウムが多い</span><span style="white-space:nowrap;">腎臓・心臓の治療中は、</span><span style="white-space:nowrap;">摂取量に制限がかかっていることがあります</span></div>
+      <div><span class="l">糖質も含まれる</span><span style="white-space:nowrap;">糖質の摂取量を制限されている場合も、</span><span style="white-space:nowrap;">同じように注意が必要です</span></div>
+    </div>
+    <div class="daily"><b>「使用前に必ず医師に相談しましょう」</b>と<span style="white-space:nowrap;">消費者庁も案内しています。</span></div>
+  </div>
+
+  <h2 class="hd"><span class="num">7</span>ここまで来たら受診してください</h2>
+  <div class="alert">
+    <div class="at">🚨 次のどれかに当てはまれば、ためらわず救急を</div>
+    <div class="fast">
+      <div><span class="l">立ちくらみ・こむら返り・<span style="white-space:nowrap;">大量の発汗</span></span><span style="white-space:nowrap;">意識がはっきりしていれば、</span><span style="white-space:nowrap;">涼しい所で安静・冷却・経口補水でかまいません</span></div>
+      <div><span class="l"><span style="white-space:nowrap;">頭痛・吐き気・倦怠感・</span><span style="white-space:nowrap;">力が入らない・判断力が落ちている</span></span>ここまで来たら<span style="white-space:nowrap;">受診してください</span></div>
+      <div><span class="l"><span style="white-space:nowrap;">意識がおかしい・</span><span style="white-space:nowrap;">呼びかけへの反応が鈍い</span></span>すぐに<span style="white-space:nowrap;">救急車を呼んでください</span></div>
+      <div><span class="l">自分で水が飲めない</span>無理に<span style="white-space:nowrap;">飲ませようとせず</span><span style="white-space:nowrap;">すぐ救急です</span></div>
+    </div>
+  </div>
+
+  <div class="memo">
+    <div class="mtitle">🌡️ 暑さ指数（WBGT）を毎日チェックしましょう</div>
+    <div class="mtext"><span style="white-space:nowrap;">環境省の熱中症予防情報サイトで、</span><span style="white-space:nowrap;">自分の地域の暑さ指数が確認できます。</span><b><span style="white-space:nowrap;">アラートが出ていなくても、</span><span style="white-space:nowrap;">31を超える日は外出・運動を控えましょう。</span></b><span style="white-space:nowrap;">（https://www.wbgt.env.go.jp/）</span></div>
+    <div class="mrow"><span class="mlabel">次回受診日</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">持病・服薬中のお薬</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">気になること・聞きたいこと</span><span class="mline"></span></div>
+  </div>
+
+  <div class="foot">
+    <span class="brand">医知創造ラボ</span>｜熱中症・脱水の水分補給ガイド（患者さん向け配布資料）<br>
+    この資料は一般的な情報です。持病がある方の経口補水液の使用や水分摂取量は、必ず主治医にご確認ください。
+    <span style="white-space:nowrap;">くわしい解説は</span> <b>tools.ichisouzo-lab.com</b>（QRコード）から。
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var btn=document.getElementById('printBtn');
+  if(btn){btn.addEventListener('click',function(){window.print();});}
+})();
+</script>
+
+</body>
+</html>
