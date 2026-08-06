@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="湖・沼・池・潟の違いを、水深・規模・植生・塩分・成因・人の関与で比較する、拡大可能な高精細インフォグラフィック。">
+<title>湖・沼・池・潟の違い｜拡大できる高精細インフォグラフィック</title>
+<style>
+:root{--base:16px;--navy:#173b62;--blue:#2c5aa0;--sky:#eaf5fb;--ink:#203246;--muted:#5c6f82;--line:#cbdbe8;--cream:#fffdf8}
+*{box-sizing:border-box}
+html{font-size:var(--base);-webkit-text-size-adjust:100%}
+body{margin:0;background:#e7eef4;color:var(--ink);font-family:"BIZ UDPGothic","Yu Gothic UI",Meiryo,sans-serif;line-height:1.65}
+.toolbar{position:sticky;top:0;z-index:20;display:flex;justify-content:center;align-items:center;gap:.55rem;flex-wrap:wrap;padding:.65rem;background:rgba(231,238,244,.96);border-bottom:1px solid #c5d2de;backdrop-filter:blur(8px)}
+.toolbar a,.toolbar button{appearance:none;border:1px solid #b8c8d6;background:#fff;color:var(--navy);border-radius:.55rem;padding:.58rem .85rem;font:700 .92rem/1.1 inherit;text-decoration:none;cursor:pointer}
+.toolbar button[aria-pressed="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+.toolbar .hint{font-size:.86rem;color:var(--muted)}
+.sheet{width:min(1200px,100%);margin:0 auto 2rem;background:var(--cream);box-shadow:0 14px 40px rgba(23,59,98,.14);overflow:hidden}
+.hd{padding:2.3rem 3rem 2rem;color:#fff;background:linear-gradient(135deg,#153a5f 0%,#2c5aa0 62%,#4d8eb6 100%);position:relative}
+.hd:after{content:"";position:absolute;width:22rem;height:22rem;border:3rem solid rgba(255,255,255,.08);border-radius:50%;right:-9rem;top:-11rem}
+.eyebrow{font-size:1rem;font-weight:800;letter-spacing:.14em;opacity:.9}
+h1{font-size:clamp(2.1rem,5vw,3.5rem);line-height:1.25;margin:.4rem 0 .7rem;letter-spacing:.02em;position:relative;z-index:1}
+.lead{max-width:54rem;font-size:1.12rem;font-weight:700;opacity:.95;position:relative;z-index:1}
+.content{padding:2.2rem 2.5rem 2.6rem}
+.key{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:1.4rem}
+.key div{background:#f2f7fb;border:1px solid var(--line);border-radius:.8rem;padding:.8rem;text-align:center}
+.key b{display:block;font-size:1.05rem;color:var(--navy)}
+.key span{font-size:.9rem;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.15rem}
+.card{border:2px solid var(--card);border-radius:1rem;overflow:hidden;background:#fff}
+.card-h{display:flex;align-items:center;gap:1rem;padding:1rem 1.2rem;color:#fff;background:var(--card)}
+.kanji{display:grid;place-items:center;width:3.6rem;height:3.6rem;border-radius:50%;background:rgba(255,255,255,.18);font-size:2rem;font-weight:900;flex:none}
+.card h2{font-size:1.75rem;line-height:1.2;margin:0}.en{display:block;font-size:.8rem;letter-spacing:.09em;opacity:.9;margin-top:.2rem}
+.card-b{display:grid;grid-template-columns:1fr 1.05fr;gap:1rem;padding:1.15rem}
+.scene{min-height:10rem;border-radius:.75rem;background:linear-gradient(#d8eff8 0 45%,var(--water) 46% 80%,#bea477 81%);position:relative;overflow:hidden;border:1px solid rgba(0,0,0,.08)}
+.scene:before{content:"";position:absolute;left:8%;right:8%;top:43%;height:3px;background:rgba(255,255,255,.8)}
+.scene .depth{position:absolute;right:.55rem;top:52%;font-weight:900;color:#fff;text-shadow:0 1px 3px #173b62;font-size:.9rem}
+.scene .plant{position:absolute;bottom:17%;left:10%;font-size:2.3rem;filter:saturate(.8)}
+.scene .plant.r{left:auto;right:10%}.scene .label{position:absolute;left:.6rem;top:.5rem;background:rgba(255,255,255,.9);border-radius:.4rem;padding:.18rem .45rem;font-size:.82rem;font-weight:800;color:var(--navy)}
+.facts{margin:0;padding-left:1.2rem;font-size:1rem}.facts li{margin:.3rem 0}.facts b{color:var(--card)}
+.summary{grid-column:1/-1;background:color-mix(in srgb,var(--card) 8%,white);border-radius:.7rem;padding:.75rem .9rem;font-size:.96rem}.summary b{color:var(--card)}
+.lake{--card:#216c96;--water:#397fae}.marsh{--card:#467b45;--water:#719d68}.pond{--card:#b06a2b;--water:#5f9fb3}.lagoon{--card:#775493;--water:#4c8daa}
+.compare{margin-top:1.6rem;border:2px solid var(--navy);border-radius:1rem;overflow:hidden;background:#fff}
+.compare h2{margin:0;padding:.9rem 1.1rem;background:var(--navy);color:#fff;font-size:1.5rem}
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;min-width:900px;border-collapse:collapse;font-size:.94rem}
+th,td{padding:.7rem .75rem;border:1px solid #d7e1e9;text-align:left;vertical-align:top}
+thead th{background:#2c5aa0;color:#fff;font-weight:800}tbody th{background:#edf4f8;color:var(--navy);white-space:nowrap}tbody tr:nth-child(even) td{background:#f8fbfd}
+.note{margin-top:1.25rem;padding:1rem 1.1rem;border-left:.38rem solid #e49b35;background:#fff6e8;border-radius:0 .7rem .7rem 0;font-size:.95rem}
+.source{margin-top:1rem;font-size:.86rem;color:var(--muted)}
+.brand{display:flex;justify-content:space-between;gap:1rem;align-items:center;margin-top:1.4rem;padding-top:1rem;border-top:1px solid var(--line);font-size:.88rem;color:var(--muted)}
+.brand b{color:var(--navy);font-size:1rem}
+@media(max-width:760px){.hd{padding:1.6rem 1.15rem}.content{padding:1.15rem .8rem 1.6rem}.key{grid-template-columns:repeat(2,1fr)}.cards{grid-template-columns:1fr}.card-b{grid-template-columns:1fr}.scene{min-height:11rem}.toolbar .hint{width:100%;text-align:center}.brand{display:block}.brand span{display:block;margin-top:.35rem}}
+@media print{body{background:#fff}.toolbar{display:none}.sheet{box-shadow:none;margin:0;width:100%}}
+</style>
+</head>
+<body>
+<nav class="toolbar" aria-label="表示サイズの変更">
+  <a href="../">一覧へ</a><span class="hint">文字サイズ：</span>
+  <button type="button" data-size="16" aria-pressed="true">標準 12pt</button>
+  <button type="button" data-size="20" aria-pressed="false">大 15pt</button>
+  <button type="button" data-size="24" aria-pressed="false">特大 18pt</button>
+  <a href="infographic.png" target="_blank" rel="noopener">高精細PNG</a>
+</nav>
+<main class="sheet">
+  <header class="hd">
+    <div class="eyebrow">自然地理学の見分け方</div>
+    <h1>湖・沼・池・潟の違い</h1>
+    <p class="lead">名称だけで一律には決まりません。水深・規模・植生・塩分・成因・人の関与を合わせて捉えると、違いが見えてきます。</p>
+  </header>
+  <div class="content">
+    <section class="key" aria-label="見分ける六つの視点">
+      <div><b>水深</b><span>深いか・浅いか</span></div><div><b>植生</b><span>水草が底まで育つか</span></div>
+      <div><b>成因</b><span>自然か・人工か</span></div><div><b>塩分</b><span>淡水か・汽水か</span></div>
+    </section>
+    <section class="cards">
+      <article class="card lake"><div class="card-h"><span class="kanji">湖</span><h2>湖<span class="en">LAKE</span></h2></div><div class="card-b">
+        <div class="scene"><span class="label">深い水域</span><span class="plant">🌿</span><span class="depth">水深 5〜10m以上の例</span></div>
+        <ul class="facts"><li><b>比較的深い</b>大規模な水域</li><li>水草は主に湖岸部に分布</li><li>地殻運動・火山・堰き止めなどで形成</li><li>鉛直循環が生じることがある</li></ul>
+        <p class="summary"><b>要点：</b>深さと水量があり、湖底全体まで光や水草が届きにくい。</p>
+      </div></article>
+      <article class="card marsh"><div class="card-h"><span class="kanji">沼</span><h2>沼<span class="en">MARSH / SWAMP</span></h2></div><div class="card-b">
+        <div class="scene"><span class="label">浅く植物が豊富</span><span class="plant">🌾</span><span class="plant r">🌿</span><span class="depth">概ね水深 5m以内</span></div>
+        <ul class="facts"><li><b>浅く、光が底まで届きやすい</b></li><li>沈水・浮葉・抽水植物が豊富</li><li>泥や有機物がたまりやすい</li><li>湿地的な植生帯につながる</li></ul>
+        <p class="summary"><b>要点：</b>湖より浅く、植物による一次生産が大きい水域。</p>
+      </div></article>
+      <article class="card pond"><div class="card-h"><span class="kanji">池</span><h2>池<span class="en">POND</span></h2></div><div class="card-b">
+        <div class="scene"><span class="label">小規模・管理される例</span><span class="plant">🌳</span><span class="depth">多くは浅い</span></div>
+        <ul class="facts"><li><b>面積・水量が比較的小さい</b></li><li>自然池と人工のため池がある</li><li>農業・防災・観賞・親水などに利用</li><li>人の管理で環境が変わりやすい</li></ul>
+        <p class="summary"><b>要点：</b>小規模で、人工・管理という要素が強いことが多い。</p>
+      </div></article>
+      <article class="card lagoon"><div class="card-h"><span class="kanji">潟</span><h2>潟<span class="en">LAGOON</span></h2></div><div class="card-b">
+        <div class="scene"><span class="label">海と淡水の接点</span><span class="plant">🏝️</span><span class="plant r">🌊</span><span class="depth">広く浅い沿岸域</span></div>
+        <ul class="facts"><li>砂州などで<b>外海から隔てられた</b>水域</li><li>海水と淡水が混ざる汽水域が多い</li><li>潮汐・河川流入で塩分が変動</li><li>漁業・養殖・湿地として利用</li></ul>
+        <p class="summary"><b>要点：</b>沿岸にあり、海と陸水の性質をあわせ持つ。</p>
+      </div></article>
+    </section>
+    <section class="compare"><h2>6つの視点で比較</h2><div class="table-wrap"><table>
+      <thead><tr><th>項目</th><th>湖</th><th>沼</th><th>池</th><th>潟</th></tr></thead>
+      <tbody>
+        <tr><th>水深</th><td>比較的深い</td><td>概ね5m以内</td><td>多くは浅い</td><td>多くは浅い</td></tr>
+        <tr><th>規模</th><td>大規模</td><td>中〜大規模</td><td>小規模</td><td>中〜大規模の沿岸域</td></tr>
+        <tr><th>植生</th><td>湖岸部が中心</td><td>水中・岸辺とも豊富</td><td>周囲が中心</td><td>塩生・汽水性植物</td></tr>
+        <tr><th>塩分</th><td>主に淡水</td><td>主に淡水</td><td>主に淡水</td><td>主に汽水・変動あり</td></tr>
+        <tr><th>成因</th><td>構造・火山・堰き止め等</td><td>浅水化・湿地化等</td><td>自然または人工</td><td>砂州等による海域の隔離</td></tr>
+        <tr><th>人の関与</th><td>利用・管理あり</td><td>治水・保全あり</td><td>管理・利用が強い</td><td>漁業・養殖・治水</td></tr>
+      </tbody>
+    </table></div></section>
+    <p class="note"><b>大切な注意：</b>実際の水域は連続的に移り変わるため、境界は明確ではありません。同じ場所でも、歴史・地域・行政上の名称が優先されることがあります。</p>
+    <p class="source">一般的な自然地理学・陸水学上の特徴を比較した教育用図解です。深さの数値だけで名称を機械的に決めるものではありません。</p>
+    <footer class="brand"><b>医知創造ラボ</b><span>湖・沼・池・潟を「名称」ではなく「環境の特徴」で読む</span></footer>
+  </div>
+</main>
+<script>
+(function(){var buttons=document.querySelectorAll('[data-size]');for(var i=0;i<buttons.length;i++){buttons[i].addEventListener('click',function(){document.documentElement.style.setProperty('--base',this.getAttribute('data-size')+'px');for(var j=0;j<buttons.length;j++){buttons[j].setAttribute('aria-pressed',buttons[j]===this?'true':'false')}})}})();
+</script>
+</body>
+</html>
