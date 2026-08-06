@@ -10,7 +10,7 @@
 *{box-sizing:border-box}
 html{font-size:var(--base);-webkit-text-size-adjust:100%}
 body{margin:0;background:#e7eef4;color:var(--ink);font-family:"BIZ UDPGothic","Yu Gothic UI",Meiryo,sans-serif;line-height:1.65}
-.toolbar{position:sticky;top:0;z-index:20;display:flex;justify-content:center;align-items:center;gap:.55rem;flex-wrap:wrap;padding:.65rem;background:rgba(231,238,244,.96);border-bottom:1px solid #c5d2de;backdrop-filter:blur(8px)}
+.toolbar{position:sticky;top:0;z-index:20;display:flex;flex-direction:column;align-items:center;align-items:center;gap:.55rem;flex-wrap:wrap;padding:.65rem;background:rgba(231,238,244,.96);border-bottom:1px solid #c5d2de;backdrop-filter:blur(8px)}
 .toolbar a,.toolbar button{appearance:none;border:1px solid #b8c8d6;background:#fff;color:var(--navy);border-radius:.55rem;padding:.58rem .85rem;font:700 .92rem/1.1 inherit;text-decoration:none;cursor:pointer}
 .toolbar button[aria-pressed="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
 .toolbar .hint{font-size:.86rem;color:var(--muted)}
@@ -54,6 +54,7 @@ thead th{background:#2c5aa0;color:#fff;font-weight:800}tbody th{background:#edf4
 </style>
 </head>
 <body>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
 <nav class="toolbar" aria-label="表示サイズの変更">
   <a href="../">一覧へ</a><span class="hint">文字サイズ：</span>
   <button type="button" data-size="16" aria-pressed="true">標準 12pt</button>
@@ -113,5 +114,6 @@ thead th{background:#2c5aa0;color:#fff;font-weight:800}tbody th{background:#edf4
 <script>
 (function(){var buttons=document.querySelectorAll('[data-size]');for(var i=0;i<buttons.length;i++){buttons[i].addEventListener('click',function(){document.documentElement.style.setProperty('--base',this.getAttribute('data-size')+'px');for(var j=0;j<buttons.length;j++){buttons[j].setAttribute('aria-pressed',buttons[j]===this?'true':'false')}})}})();
 </script>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px auto 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
 </body>
 </html>
