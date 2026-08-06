@@ -34,7 +34,7 @@ DECK = {
         "PubMed収載の一次文献21件をメタデータ照合したうえで全26スライドに整理。脳神経内科医・救急医・集中治療医向け。"
     ),
     "youtube_id": "2Jbvih_BZx0",
-    "blog_url": "",
+    "blog_url": "https://blog.ichisouzo-lab.com/entry/2026/08/06/170325",
     "source_dir": "高齢者てんかん重積_麻酔導入判断/generated",
     "slide_prefix": "slide_",
     "pdf_filename": "slides.pdf",
