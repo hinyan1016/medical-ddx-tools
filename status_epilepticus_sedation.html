@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#012360">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>てんかん重積 麻酔薬導入 判断整理ツール｜医知創造ラボ</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Yu Gothic UI",sans-serif;
+     background:#eef1f6;color:#12263f;line-height:1.7;padding:14px;}
+.wrap{max-width:760px;margin:0 auto;}
+header{background:#012360;color:#fff;border-radius:14px;padding:20px 22px;margin-bottom:16px;}
+header h1{font-size:1.28rem;line-height:1.4;font-weight:800;}
+header p{margin-top:8px;font-size:.9rem;color:#cfe0ff;}
+.notice{background:#fff6e8;border:2px solid #f0c98a;border-radius:12px;padding:14px 16px;margin-bottom:16px;
+        font-size:.9rem;color:#5c4a2e;}
+.notice b{color:#9a5b00;}
+.step{background:#fff;border:1px solid #dbe2ee;border-radius:14px;padding:18px 18px 14px;margin-bottom:14px;}
+.step h2{font-size:1.02rem;color:#012360;font-weight:800;margin-bottom:4px;}
+.step .sub{font-size:.85rem;color:#6a7690;margin-bottom:12px;}
+.opts{display:flex;flex-direction:column;gap:8px;}
+.opt{display:block;width:100%;text-align:left;border:2px solid #dbe2ee;background:#f7f9fc;border-radius:10px;
+     padding:12px 14px;font-size:.95rem;color:#33405c;cursor:pointer;font-family:inherit;line-height:1.5;}
+.opt:hover{border-color:#9db4d8;}
+.opt.on{border-color:#F27E03;background:#fff8f1;font-weight:700;color:#012360;}
+.opt small{display:block;color:#6a7690;font-weight:400;font-size:.8rem;margin-top:3px;}
+.actions{display:flex;gap:10px;margin:18px 0;}
+.btn{flex:1;border:none;border-radius:10px;padding:13px;font-size:.98rem;font-weight:800;cursor:pointer;font-family:inherit;}
+.btn-main{background:#012360;color:#fff;}
+.btn-sub{background:#fff;color:#012360;border:2px solid #cfdae6;}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+#result{display:none;}
+.rcard{background:#fff;border:1px solid #dbe2ee;border-left-width:10px;border-radius:14px;padding:18px;margin-bottom:14px;}
+.rcard.yes{border-left-color:#1E7A46;}
+.rcard.mid{border-left-color:#F27E03;}
+.rcard.no{border-left-color:#C0392B;}
+.rlabel{display:inline-block;font-size:.82rem;font-weight:800;color:#fff;padding:5px 12px;border-radius:7px;margin-bottom:10px;}
+.l-yes{background:#1E7A46;} .l-mid{background:#F27E03;} .l-no{background:#C0392B;}
+.rcard h3{font-size:1.08rem;color:#012360;font-weight:800;margin-bottom:8px;}
+.rcard p{font-size:.93rem;color:#33405c;margin-bottom:8px;}
+.rcard p b{color:#012360;}
+.src{font-size:.8rem;color:#7a869e;margin-top:10px;padding-top:8px;border-top:1px solid #e8edf5;}
+.gate{background:#f7f9fc;border:1px solid #dbe2ee;border-radius:11px;padding:14px 16px;margin-bottom:10px;}
+.gate .gt{font-weight:800;color:#012360;font-size:.97rem;margin-bottom:5px;}
+.gate .gb{font-size:.9rem;color:#33405c;}
+.gate.flag{background:#fdf3f2;border-color:#e8b4ae;}
+.gate.flag .gt{color:#C0392B;}
+h2.sec{font-size:1.05rem;color:#012360;font-weight:800;margin:20px 0 10px;padding-left:11px;border-left:5px solid #F27E03;}
+.four{display:flex;flex-wrap:wrap;gap:10px;}
+.f1{flex:1 1 calc(50% - 5px);min-width:200px;background:#f7f9fc;border:1px solid #dbe2ee;border-radius:11px;padding:13px 15px;}
+.f1 .ft{font-weight:800;color:#012360;font-size:.95rem;margin-bottom:4px;}
+.f1 .fb{font-size:.86rem;color:#44506b;}
+.say{background:#f2f7f3;border:1px solid #bcd9c6;border-radius:12px;padding:16px;font-size:.93rem;color:#234a33;}
+.say b{color:#1E7A46;}
+footer{margin-top:22px;font-size:.8rem;color:#7a869e;text-align:center;line-height:1.8;}
+footer a{color:#2471A3;}
+@media(max-width:520px){header h1{font-size:1.1rem;} .f1{flex:1 1 100%;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>てんかん重積<br>麻酔薬導入の判断を整理するツール</h1>
+  <p>持続静注麻酔薬（ミダゾラム／プロポフォール／バルビツール酸）に踏み切るかどうかを、一次文献の位置づけと照らして整理します。脳神経内科医・救急医・集中治療医向け。</p>
+</header>
+
+<div class="notice">
+  <b>⚠ これは判定装置ではありません。</b>
+  重積の治療反応性を予測できる信頼できるスコアは、現時点で存在しません（Giovannini G, et al. Seizure. 2017）。
+  本ツールは「導入すべき／すべきでない」を出しません。<b>文献上の位置づけと、確認すべき論点を並べるだけ</b>です。
+  最終判断は担当医が、施設の体制と患者・家族の価値観を踏まえて行ってください。
+</div>
+
+<div id="steps"></div>
+
+<div class="actions">
+  <button class="btn btn-main" id="go" disabled onclick="showResult()">整理を表示</button>
+  <button class="btn btn-sub" onclick="resetAll()">最初から</button>
+</div>
+
+<div id="result"></div>
+
+<footer>
+  出典はすべてPubMed収載論文（メタデータ照合済み）。<br>
+  引用研究の大半は観察研究であり、難治性重積の無作為化比較試験はほとんど存在しません。<br>
+  薬剤の用量・投与速度は各施設のプロトコルと添付文書に従ってください。<br>
+  <a href="index.html">← 診断ツール一覧へ</a>　｜　✚ 医知創造ラボ
+</footer>
+
+</div>
+
+<script>
+var STEPS = [
+  {
+    id: 'semiology',
+    title: '① 発作型（semiology）',
+    sub: '文献上、麻酔薬の位置づけを最も強く規定する軸です。',
+    options: [
+      {id:'gcse',  label:'けいれん性の難治性重積',           note:'全身けいれんが持続。第1・第2選択薬で止まらない'},
+      {id:'subtle',label:'subtle SE',                        note:'昏睡＋発作性EEG所見。運動症状はごくわずか、または無い'},
+      {id:'ncse_c',label:'NCSE with coma（昏睡を伴う）',      note:'非けいれん性で、意識は昏睡レベル'},
+      {id:'ncse_n',label:'NCSE without coma（意識が保たれる）',note:'焦点性で意識障害はあるが昏睡ではない／欠神重積など'},
+      {id:'epc',   label:'焦点運動発作性重積・EPC',           note:'持続性部分てんかんを含む。意識は保たれる'}
+    ]
+  },
+  {
+    id: 'loc',
+    title: '② 意識レベル',
+    sub: '人口ベース研究で、致死率を最も分けた因子です。',
+    options: [
+      {id:'awake', label:'覚醒〜軽度の意識混濁', note:'呼びかけに反応する'},
+      {id:'impair',label:'高度の意識障害・昏睡', note:'反応が乏しい／開眼しない'}
+    ]
+  },
+  {
+    id: 'etiology',
+    title: '③ 病因',
+    sub: '転帰を最も強く規定します。可逆性があるかどうかを見ます。',
+    options: [
+      {id:'autoimm',label:'自己免疫性脳炎',                note:'免疫治療で改善が期待できる'},
+      {id:'known',  label:'既知てんかんの増悪・薬剤中断',  note:'急性の脳障害ではない'},
+      {id:'stroke', label:'脳卒中など急性の脳障害',        note:'急性症候性発作'},
+      {id:'tumor',  label:'脳腫瘍・進行性の器質疾患',      note:'原病の進行が背景にある'},
+      {id:'unknown',label:'まだ特定できていない',          note:'検索途上'}
+    ]
+  },
+  {
+    id: 'organ',
+    title: '④ 入室時の全身状態',
+    sub: '入室時の臓器不全は、1年後の転帰不良と独立して関連していました。',
+    options: [
+      {id:'organ_y',label:'臓器不全がある', note:'循環・呼吸・腎・肝などの障害'},
+      {id:'organ_n',label:'臓器不全はない', note:''}
+    ]
+  },
+  {
+    id: 'upstream',
+    title: '⑤ 上流は尽くしたか',
+    sub: '第1選択ベンゾジアゼピンの十分量投与は、良好転帰と最も強く関連した介入です。',
+    options: [
+      {id:'bzd_ok',label:'十分量のベンゾジアゼピンを投与済み', note:'そのうえで第2選択薬も投与した'},
+      {id:'bzd_ng',label:'減量投与、または未投与・不明',       note:'ここが埋まっていない可能性がある'}
+    ]
+  }
+];
+
+var POS = {
+  gcse:   {lv:'yes', label:'正当化される',      txt:'けいれん性の難治性重積は、生命を脅かす救急病態です。ガイドラインが第3選択として持続静注麻酔薬を置く根拠は、主にこの病型から導かれています。'},
+  subtle: {lv:'yes', label:'正当化される',      txt:'subtle SE はけいれん性重積の遷延形（電気-運動解離）とみなされます。第1選択薬への反応は15%にとどまり、けいれん性重積の55%と対照的で、これがエスカレーションの根拠になります。'},
+  ncse_c: {lv:'mid', label:'個別化して判断',    txt:'昏睡を伴う非けいれん性重積は一貫して転帰不良と関連しますが、昏睡が発作活動によるのか背景病態によるのかを切り分けられないことが未解決の課題です。併存症・重症度・病因・回復の軌跡で個別に判断します。'},
+  ncse_n: {lv:'no',  label:'文献上、役割は乏しい',txt:'意識が保たれた非けいれん性重積では、持続静注麻酔薬の役割は乏しい（negligible）と結論されています。転帰を決めるのは発作の持続そのものより病因と併存症であり、循環不安定と長期人工呼吸のリスクが利益を上回りうるとされます。'},
+  epc:    {lv:'no',  label:'文献上、役割は乏しい',txt:'焦点運動発作性重積・EPC は第1選択薬に難治であることが多い一方、麻酔薬が使われること自体が稀です。転帰は病因と併存症で決まります。'}
+};
+
+var answers = {};
+
+function renderSteps(){
+  var h = '', i, j, s, o, sel;
+  for(i=0;i<STEPS.length;i++){
+    s = STEPS[i];
+    h += '<div class="step"><h2>' + s.title + '</h2><div class="sub">' + s.sub + '</div><div class="opts">';
+    for(j=0;j<s.options.length;j++){
+      o = s.options[j];
+      sel = (answers[s.id] === o.id) ? ' on' : '';
+      h += '<button type="button" class="opt' + sel + '" onclick="pick(\'' + s.id + '\',\'' + o.id + '\')">' + o.label;
+      if(o.note){ h += '<small>' + o.note + '</small>'; }
+      h += '</button>';
+    }
+    h += '</div></div>';
+  }
+  document.getElementById('steps').innerHTML = h;
+  document.getElementById('go').disabled = !allAnswered();
+}
+
+function allAnswered(){
+  var i;
+  for(i=0;i<STEPS.length;i++){ if(!answers[STEPS[i].id]) return false; }
+  return true;
+}
+
+function pick(stepId, optId){
+  answers[stepId] = optId;
+  renderSteps();
+  document.getElementById('result').style.display = 'none';
+}
+
+function resetAll(){
+  answers = {};
+  renderSteps();
+  document.getElementById('result').style.display = 'none';
+  window.scrollTo(0,0);
+}
+
+function gateBlock(flag, title, body){
+  return '<div class="gate' + (flag ? ' flag' : '') + '"><div class="gt">' + title + '</div><div class="gb">' + body + '</div></div>';
+}
+
+function showResult(){
+  var p = POS[answers.semiology];
+  var h = '';
+
+  h += '<h2 class="sec">この病型における文献上の位置づけ</h2>';
+  h += '<div class="rcard ' + p.lv + '">';
+  h += '<span class="rlabel l-' + p.lv + '">' + p.label + '</span>';
+  h += '<h3>持続静注麻酔薬の位置づけ</h3>';
+  h += '<p>' + p.txt + '</p>';
+  h += '<div class="src">Fisch U, et al. Anesthetics in status epilepticus: does one size fits it all? Front Neurol. 2026;17:1805775.（スコーピングレビュー）</div>';
+  h += '</div>';
+
+  // 意識レベル
+  h += '<h2 class="sec">意識レベルから読めること</h2>';
+  h += '<div class="rcard ' + (answers.loc === 'impair' ? 'mid' : 'yes') + '">';
+  if(answers.loc === 'impair'){
+    h += '<p>意識障害がある症例の致死率は<b>33%</b>で、覚醒していた症例の<b>8.2%</b>より高くなっています。意識レベルは強い予後規定因子です。</p>';
+  } else {
+    h += '<p>覚醒している症例の致死率は<b>8.2%</b>で、意識障害例の<b>33%</b>より低い群にあたります。両側強直間代発作のみで終わった症例では死亡はありませんでした。</p>';
+  }
+  h += '<div class="src">Leitinger M, et al. Epilepsia. 2019;60(1):53-62.（人口ベース研究・年齢中央値69歳）</div>';
+  h += '</div>';
+
+  // 導入前3ゲート
+  h += '<h2 class="sec">踏み切る前に確認する3つのゲート</h2>';
+
+  var g1flag = (answers.semiology === 'ncse_n' || answers.semiology === 'ncse_c');
+  h += gateBlock(g1flag, '① 本当に非けいれん性重積か',
+    'Salzburg基準の<b>陽性的中率は34%</b>（感度94%／特異度77%）。基準を満たしても3例に2例は非けいれん性重積ではありません。偽陽性の多くは各種の脳症・発作後状態でした。'
+    + (g1flag ? '<br><b>→ 本症例は非けいれん性重積として入力されています。鎮静で脳症や発作後状態を覆い隠していないか、まず確認してください。</b>' : '')
+    + '<div class="src">Ulvin LB, et al. Ann Clin Transl Neurol. 2024;11(10):2685-2695.</div>');
+
+  var etxt, eflag = false;
+  if(answers.etiology === 'autoimm'){
+    etxt = '自己免疫性脳炎の死亡率は<b>14.3%</b>と病因の中で最も低く、改善率も最も高い群でした。<b>免疫治療を含む原因治療の徹底が、麻酔薬の議論より先に来ます。</b>';
+  } else if(answers.etiology === 'tumor'){
+    etxt = '脳腫瘍を病因とする非けいれん性重積の死亡率は<b>63.6%</b>と病因の中で最も高くなっています。'
+         + '<b>原病の見通しを踏まえ、どこまで侵襲を加えるかを家族と共有する必要があります。</b>';
+    eflag = true;
+  } else if(answers.etiology === 'known'){
+    etxt = '既知てんかんの増悪では死亡率は<b>17.2%</b>で、急性の脳障害を背景とする群より低くなっています。急性症候性でないことは、良好転帰と関連していました。';
+  } else if(answers.etiology === 'stroke'){
+    etxt = '急性の脳障害が病因であることは、良好転帰の<b>オッズ比0.5</b>（＝不利に働く）と関連し、1年後の転帰不良とも独立して関連していました（<b>オッズ比2.75</b>）。';
+    eflag = true;
+  } else {
+    etxt = '病因が特定できていない段階です。<b>病因の可逆性が、投じるコストの見合いを決めます。</b>まず原因検索を優先してください。適切な抗てんかん薬治療で<b>58.5%</b>が改善したという報告があります。';
+    eflag = true;
+  }
+  h += gateBlock(eflag, '② 病因は治療しうるものか', etxt
+    + '<div class="src">Uçan Tokuç FE, et al. Neurol Int. 2025;17(2):29.／Beuchat I, et al. Neurology. 2022;99(16):e1824-e1834.</div>');
+
+  var g3flag = (answers.upstream === 'bzd_ng');
+  h += gateBlock(g3flag, '③ 上流を尽くしたか',
+    '第1選択ベンゾジアゼピンが十分量であることは、良好転帰の<b>オッズ比2.5</b>（95%信頼区間 1.6-4.0）でした。ガイドラインからの治療逸脱は、難治性への進展と強く関連しています。'
+    + (g3flag ? '<br><b>→ ベンゾジアゼピンが十分量でない可能性が入力されています。麻酔薬より先に、ここを埋めることを検討してください。最大のレバーは上流にあります。</b>'
+              : '<br>→ 上流は確保されています。')
+    + '<div class="src">Beuchat I, et al. Neurology. 2022;99(16):e1824-e1834.（SENSEレジストリ）</div>');
+
+  // 年齢・ADLの扱い
+  h += '<h2 class="sec">年齢・入院前ADLの扱い（誤用の多い論点）</h2>';
+  h += '<div class="rcard mid">';
+  h += '<p>けいれん性重積でICU入室した成人の研究で、入院前に機能障害があった群では治療制限の決定が<b>35.7%</b>（機能障害なし群は<b>12%</b>）と約3倍多く行われました。'
+     + 'しかし<b>1年後に機能が悪化しなかった割合は42.9%と44.1%でほぼ同じ</b>で、多変量解析でも入院前の機能状態は1年後の機能低下と<b>独立して関連しませんでした（オッズ比0.61・有意差なし）</b>。</p>';
+  h += '<p>実際に関連していたのは、致死的な併存症（2.92）、脳の器質的障害（2.75）、59歳超（2.36）、難治性（2.19）、入室時の臓器不全（2.08）でした。'
+     + '<b>年齢とADLは予後を見積もる材料ではありますが、治療を制限する基準としては使えません。</b></p>';
+  if(answers.organ === 'organ_y'){
+    h += '<p><b>→ 本症例は入室時の臓器不全ありとして入力されています。これは実際に予後と独立して関連した因子です。</b></p>';
+  }
+  h += '<div class="src">Vieille T, et al. Epilepsy Behav. 2023;141:109083.（成人499例・NCT03457831）</div>';
+  h += '</div>';
+
+  // 導入後4原則
+  h += '<h2 class="sec">導入すると決めた場合の4原則</h2>';
+  h += '<div class="four">'
+     + '<div class="f1"><div class="ft">① 遅らせない</div><div class="fb">難治性と確定した後の導入遅延は、一貫して転帰不良と関連します。</div></div>'
+     + '<div class="f1"><div class="ft">② 目標は発作停止</div><div class="fb">低酸素性でない難治性重積では、burst suppression が優れるという証拠はありません。</div></div>'
+     + '<div class="f1"><div class="ft">③ 期間は最短に</div><div class="fb">24〜48時間は専門家合意にすぎず、延長は感染・離脱時発作・再発を増やします。</div></div>'
+     + '<div class="f1"><div class="ft">④ 持続脳波で離脱</div><div class="fb">維持期と離脱期を通じた脳波監視が必須とされています。</div></div>'
+     + '</div>';
+  h += '<div class="rcard yes" style="margin-top:12px;">';
+  h += '<h3>期間の最短化は、そのまま廃用対策になります</h3>';
+  h += '<p>集中治療関連筋力低下は<b>長期の不動化と高齢</b>が危険因子で、四肢の近位筋と呼吸筋を侵します。回復は不完全なことがあり、<b>退室後2年まで持続しうる</b>ほか、1年死亡リスクにも寄与します。予防の要は早期離床です。'
+     + '<b>発作を止めることと廃用を防ぐことは対立しません。</b></p>';
+  h += '<div class="src">Hermans G, Van den Berghe G. Crit Care. 2015;19(1):274.</div>';
+  h += '</div>';
+
+  // 家族説明
+  h += '<h2 class="sec">家族・本人と共有するときの材料</h2>';
+  h += '<div class="say">';
+  h += '<p style="margin-bottom:10px;"><b>予後の見積もりを共有する材料</b>（判定ではなく、幅のある見通しとして伝えます）</p>';
+  if(p.lv === 'no'){
+    h += '<p>「この発作の型では、眠らせる治療を足しても、結果を良くするという証拠が乏しいことが分かっています。'
+       + '結果を決めているのは、発作そのものより<b>原因の病気と、もともとの体の状態</b>です。'
+       + 'ですので、原因の治療と、いまの薬の調整を優先したいと考えています。」</p>';
+  } else if(p.lv === 'mid'){
+    h += '<p>「この状態では、眠らせる治療が役に立つ場合と、負担のほうが大きくなる場合の両方があります。'
+       + '<b>原因の病気がどこまで治せるか</b>を見ながら、期間を区切って判断していきたいと考えています。」</p>';
+  } else {
+    h += '<p>「この発作の型は、放置すると脳と全身に負担がかかるため、<b>人工呼吸器をつけて眠らせる治療</b>が必要になります。'
+       + 'ただし眠らせる期間は<b>できるだけ短く</b>します。長く眠らせるほど、筋力が落ちて起き上がれなくなるリスクが上がるからです。」</p>';
+  }
+  h += '<p style="margin-top:10px;">「なお、<b>ご高齢であることや、もともとの生活の自立度だけを理由に治療を控える</b>ことは、'
+     + 'そうした方でも1年後の状態が変わらなかったという研究があるため、私たちはしていません。」</p>';
+  h += '<p style="margin-top:10px;font-size:.86rem;color:#5b6b60;">※ 神経集中治療で事前指示を持つ患者は中央値39%にとどまります（Sutter R, et al. Crit Care Med. 2020）。'
+     + '重積が起きてからでは遅く、<b>平時の外来こそがこの話をする場</b>です。</p>';
+  h += '</div>';
+
+  h += '<div class="notice" style="margin-top:16px;">'
+     + '<b>⚠ 繰り返しになりますが、これは判定装置ではありません。</b> '
+     + '本ツールは選択した条件に対応する文献上の位置づけを並べたものです。'
+     + '治療反応性を予測できる信頼できるスコアは存在せず、最終判断は担当医が行ってください。'
+     + '</div>';
+
+  var r = document.getElementById('result');
+  r.innerHTML = h;
+  r.style.display = 'block';
+  r.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+renderSteps();
+</script>
+</body>
+</html>

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#012360">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="難治性てんかん重積で持続静注麻酔薬・気管挿管に踏み切るかを判断するための当直用A4資料。病型別の位置づけ（けいれん性RSEとNCSE with comaは正当化、意識が保たれたNCSEとEPCは役割が乏しい）、導入前の3ゲート、導入後の4原則、年齢・ADLを差し控えの根拠にしないこと。">
+<title>てんかん重積 麻酔薬導入の判断｜当直用A4資料</title>
+<style>
+  :root{
+    --navy:#012360;
+    --blue:#1B3A5C;
+    --accent:#F27E03;
+    --accent-deep:#B85E00;
+    --danger:#C0392B;
+    --ok:#1E7A46;
+    --light:#F5F7FB;
+    --line:#D9E0EE;
+    --ink:#1a1a1a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;}
+  body{font-family:"Yu Gothic","游ゴシック","Hiragino Kaku Gothic ProN","Segoe UI",sans-serif;
+       color:var(--ink);background:#eef1f6;line-height:1.55;padding:16px;}
+  .sheet{background:#fff;max-width:820px;margin:0 auto 20px;padding:20px 24px 24px;
+         box-shadow:0 2px 14px rgba(0,0,0,.12);}
+  .head{border-bottom:3px solid var(--navy);padding-bottom:10px;margin-bottom:12px;}
+  .kicker{display:inline-block;background:var(--navy);color:#fff;font-size:11.5px;font-weight:700;
+          letter-spacing:.06em;padding:3px 10px;border-radius:3px;margin-bottom:6px;}
+  h1{font-size:21px;font-weight:800;color:var(--navy);line-height:1.32;}
+  .sub{font-size:12.5px;color:var(--blue);font-weight:700;margin-top:5px;}
+  .lead{font-size:12px;color:#333;margin-top:6px;}
+  .lead b{color:var(--navy);}
+  h2{font-size:14px;font-weight:800;color:#fff;background:var(--blue);
+     padding:5px 10px;border-radius:3px;margin:14px 0 8px;}
+  table{width:100%;border-collapse:collapse;margin-bottom:8px;}
+  th{background:var(--navy);color:#fff;font-size:11.5px;font-weight:700;padding:6px 8px;
+     text-align:left;border:1px solid var(--navy);}
+  td{font-size:11.8px;padding:6px 8px;border:1px solid var(--line);vertical-align:top;}
+  td.n{font-weight:700;color:var(--navy);}
+  tr:nth-child(even) td{background:#f8fafd;}
+  .tag{display:inline-block;font-size:10.5px;font-weight:700;color:#fff;padding:2px 8px;border-radius:4px;white-space:nowrap;}
+  .t-yes{background:var(--ok);} .t-mid{background:var(--accent);} .t-no{background:var(--danger);}
+  .flow{display:flex;align-items:stretch;gap:6px;margin-bottom:8px;}
+  .fs{flex:1;border:1.5px solid var(--line);border-radius:6px;padding:8px 9px;background:var(--light);}
+  .fs .ft{font-size:11px;font-weight:800;color:var(--navy);margin-bottom:2px;}
+  .fs .fb{font-size:10.8px;color:#333;line-height:1.45;}
+  .fs.key{border-color:var(--accent);background:#fff8f1;}
+  .far{display:flex;align-items:center;color:#9aa8c4;font-weight:800;font-size:14px;}
+  .gate{border:1.5px solid var(--line);border-left:8px solid var(--navy);border-radius:5px;
+        padding:8px 11px;margin-bottom:7px;}
+  .gate .gt{font-size:12.5px;font-weight:800;color:var(--navy);}
+  .gate .gb{font-size:11.5px;color:#333;margin-top:3px;}
+  .gate .gb b{color:var(--navy);}
+  .r4{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px;}
+  .r4 .c{flex:1 1 calc(50% - 4px);border:1.5px solid var(--line);border-radius:5px;padding:8px 10px;background:var(--light);}
+  .r4 .ct{font-size:12px;font-weight:800;color:var(--navy);}
+  .r4 .cb{font-size:11px;color:#333;margin-top:2px;}
+  .warn{background:#fff6e8;border:1.5px solid #f0c98a;border-radius:6px;padding:9px 12px;margin-bottom:8px;}
+  .warn .wt{font-size:12.5px;font-weight:800;color:var(--accent-deep);margin-bottom:3px;}
+  .warn .wb{font-size:11.5px;color:#5c4a2e;}
+  .warn .wb b{color:var(--accent-deep);}
+  .note{font-size:10.5px;color:#6a7690;line-height:1.5;margin-top:6px;}
+  .src{margin-top:10px;padding-top:7px;border-top:1px solid var(--line);font-size:9.5px;color:#7a869e;line-height:1.5;}
+  .brand{margin-top:8px;display:flex;justify-content:space-between;align-items:center;
+         font-size:10.5px;color:#7a869e;}
+  .brand b{color:var(--navy);font-size:12px;}
+  .pbtn{display:block;margin:0 auto 8px;background:var(--navy);color:#fff;border:none;
+        border-radius:8px;padding:11px 22px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;}
+  .ptip{text-align:center;font-size:11.5px;color:#555;margin-bottom:14px;}
+
+  @page{size:A4 portrait;margin:10mm 12mm;}
+  @media print{
+    body{background:#fff;padding:0;}
+    .sheet{box-shadow:none;max-width:none;margin:0;padding:0;}
+    .noprint{display:none !important;}
+    .pagebreak{break-before:page;page-break-before:always;}
+    h2{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    th,.tag,.kicker,.fs.key,.warn{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    /* A4 2枚に収めるための詰め（Chrome headless 実測: 2枚目が 1066px → 有効高 1047px を超えていた） */
+    h2{margin:9px 0 6px;}
+    .gate{margin-bottom:5px;}
+    .warn{margin-bottom:6px;}
+    .r4{margin-bottom:6px;}
+    table{margin-bottom:6px;}
+    .src{margin-top:7px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="noprint">
+  <button class="pbtn" id="printBtn">🖨️ この資料を印刷する（A4）</button>
+  <p class="ptip">A4・2枚（1枚目＝時間軸と病型別の判断軸／2枚目＝導入前3ゲート・導入後4原則・年齢とADLの扱い）</p>
+</div>
+
+<div class="sheet">
+
+  <div class="head">
+    <span class="kicker">当直用・医療者向け</span>
+    <h1>てんかん重積、麻酔薬・挿管に踏み切るか</h1>
+    <p class="sub">分岐の軸は「年齢」でも「入院前ADL」でもなく、発作型 × 意識レベル</p>
+    <p class="lead">難治性重積545例のうち<b>71.7%は挿管されずに治療</b>され、<b>52.7%が良好転帰</b>だった（SENSEレジストリ）。
+    「難治だから麻酔」は自動的な帰結ではない。</p>
+  </div>
+
+  <h2>① まず時間軸 — 最大のレバーは上流にある</h2>
+  <div class="flow">
+    <div class="fs key">
+      <div class="ft">t1＝5分</div>
+      <div class="fb">第1選択BZDを<b>十分量</b>。<br>良好転帰のオッズ比 <b>2.5</b>（1.6-4.0）</div>
+    </div>
+    <div class="far">▶</div>
+    <div class="fs">
+      <div class="ft">第2選択薬</div>
+      <div class="fb">LEV/fPHT/VPA に有意差なし。<br>60分後の停止は<b>約半数</b>（45-47%）</div>
+    </div>
+    <div class="far">▶</div>
+    <div class="fs">
+      <div class="ft">RSE 確定</div>
+      <div class="fb"><b>ここで判断する</b>。<br>下表の病型で位置づけが変わる</div>
+    </div>
+  </div>
+  <p class="note">※ t1＝治療を開始すべき時点、t2＝神経損傷など長期的帰結のリスクが生じる時点。
+  <b>t1が5分・t2が30分と決まっているのはけいれん性重積だけ</b>で、他の病型はデータがない。
+  非けいれん性重積に「30分ルール」を機械的に当てはめる根拠はない（ILAE 2015／原著も「証拠は不完全」と明記）。</p>
+
+  <h2>② 病型別 — 持続静注麻酔薬（CIVAD）の位置づけ</h2>
+  <table>
+    <tr><th style="width:44%;">重積の病型</th><th style="width:20%;">位置づけ</th><th>根拠・注意</th></tr>
+    <tr><td class="n">けいれん性の難治性重積</td><td><span class="tag t-yes">正当化される</span></td><td>生命を脅かす救急病態。ガイドラインの推奨はここから導かれる</td></tr>
+    <tr><td class="n">subtle SE<br><span style="font-weight:400;font-size:11px;">（昏睡＋発作性EEG・運動症状は軽微/欠如）</span></td><td><span class="tag t-yes">正当化される</span></td><td>けいれん性の遷延形。第1選択ASMへの反応は<b>15%</b>（けいれん性は55%）</td></tr>
+    <tr><td class="n">NCSE with coma</td><td><span class="tag t-mid">個別化</span></td><td>転帰不良と関連するが、昏睡が発作由来か背景病態由来かを切り分けられない</td></tr>
+    <tr><td class="n">NCSE without coma<br><span style="font-weight:400;font-size:11px;">（意識が保たれる）</span></td><td><span class="tag t-no">役割は乏しい</span></td><td>転帰を決めるのは<b>病因と併存症</b>。循環不安定・長期人工呼吸のリスクが利益を上回りうる</td></tr>
+    <tr><td class="n">焦点運動発作性重積・EPC</td><td><span class="tag t-no">役割は乏しい</span></td><td>同上。難治でも麻酔薬が使われること自体が稀</td></tr>
+  </table>
+
+  <h2>③ 予後を分けるのは意識レベル</h2>
+  <table>
+    <tr><th style="width:50%;">臨床像</th><th>致死率</th></tr>
+    <tr><td class="n">意識障害あり</td><td style="color:var(--danger);font-weight:800;">33%</td></tr>
+    <tr><td class="n">覚醒している</td><td style="color:var(--ok);font-weight:800;">8.2%</td></tr>
+    <tr><td class="n">両側強直間代発作のみで終わった症例</td><td style="color:var(--ok);font-weight:800;">死亡ゼロ</td></tr>
+  </table>
+  <p class="note">人口ベース研究（成人221例・年齢中央値69歳）。<b>重積は高齢者の病態</b>であり、
+  同レジストリでも年齢中央値は69〜70歳。</p>
+
+  <div class="brand">
+    <span><b>✚ 医知創造ラボ</b>　脳神経内科医・救急医・集中治療医向け</span>
+    <span>1 / 2　2026年8月版</span>
+  </div>
+
+</div>
+
+<div class="sheet pagebreak">
+
+  <h2>④ 踏み切る前に確認する3つのゲート</h2>
+
+  <div class="gate">
+    <div class="gt">1. 本当に非けいれん性重積か</div>
+    <div class="gb">Salzburg基準の<b>陽性的中率は34%</b>（感度94%／特異度77%）。基準を満たしても<b>3例に2例はNCSEではない</b>。偽陽性の多くは脳症・発作後状態。<b>鎮静で脳症を覆い隠していないか</b>をまず疑う。</div>
+  </div>
+
+  <div class="gate">
+    <div class="gt">2. 病因は治療しうるものか</div>
+    <div class="gb">病因別死亡率：<b>自己免疫性脳炎 14.3%</b>／てんかん 17.2%／<b>脳腫瘍 63.6%</b>。適切なASMで<b>58.5%が改善</b>。<b>病因の可逆性が、投じるコストの見合いを決める。</b></div>
+  </div>
+
+  <div class="gate">
+    <div class="gt">3. 上流を尽くしたか</div>
+    <div class="gb">第1選択BZDの<b>十分量投与は良好転帰のオッズ比2.5</b>。<b>治療逸脱はRSEへの進展と強く関連</b>。非麻酔性ASMの積み増しは相当割合のRSEで依然有効。</div>
+  </div>
+
+  <h2>⑤ 導入すると決めた後の4原則</h2>
+  <div class="r4">
+    <div class="c"><div class="ct">1. 遅らせない</div><div class="cb">RSE確定後の導入遅延は一貫して転帰不良と関連する</div></div>
+    <div class="c"><div class="ct">2. 目標は発作停止</div><div class="cb">非低酸素性RSEで burst suppression の上乗せ効果は示されていない</div></div>
+    <div class="c"><div class="ct">3. 期間は最短に</div><div class="cb">24〜48時間は専門家合意にすぎない。延長は感染・離脱時発作・再発を増やす</div></div>
+    <div class="c"><div class="ct">4. 持続脳波で離脱</div><div class="cb">維持期・離脱期を通じたcEEG監視が必須とされる</div></div>
+  </div>
+  <div class="warn">
+    <div class="wt">⏱ 期間の最短化は、そのまま廃用対策である</div>
+    <div class="wb">ICU関連筋力低下は<b>長期不動化と高齢</b>が危険因子で、<b>退室後2年まで持続しうる</b>。予防の要は早期離床。<b>発作を止めることと廃用を防ぐことは対立しない。</b></div>
+  </div>
+
+  <h2>⑥ 年齢・入院前ADLの扱い（誤用が多い）</h2>
+  <table>
+    <tr><th style="width:46%;">項目</th><th>入院前に機能障害あり</th><th>機能障害なし</th></tr>
+    <tr><td class="n">治療制限の決定</td><td style="color:var(--danger);font-weight:700;">35.7%</td><td>12%</td></tr>
+    <tr><td class="n">ICU死亡率</td><td>19.6%</td><td>13.1%（有意差なし）</td></tr>
+    <tr><td class="n">1年後に機能が悪化しなかった割合</td><td style="font-weight:700;">42.9%</td><td style="font-weight:700;">44.1%（ほぼ同じ）</td></tr>
+  </table>
+  <p class="note" style="margin-bottom:8px;"><b>1年後の転帰不良と関連した因子（多変量）</b>：
+  致死的な併存症 2.92／脳の器質的障害 2.75／59歳超 2.36／難治性 2.19／入室時の臓器不全 2.08／
+  <b style="color:#C0392B;">入院前の機能障害 0.61 ＝ 有意差なし</b></p>
+  <div class="warn">
+    <div class="wt">差し控えの根拠に最もよく使われる因子が、最も予測力が乏しかった</div>
+    <div class="wb">入院前の機能状態は1年後の機能低下と<b>独立して関連しない</b>。見るべきは<b>病因・意識レベル・臓器障害</b>。ただし<b>年齢自体は予後因子</b>（59歳超 OR 2.36）で、「予後の見積もり」と「治療制限の基準」を混同しない。予後スコア（STESS/EMSE）は<b>治療反応性を予測できない</b>（PPV 32〜53%）。<b>スコアで適応を決めない。</b></div>
+  </div>
+
+  <p class="note"><b>意思決定は重積が起きる前から始まっている。</b>
+  神経集中治療で事前指示または代理意思決定者を持つ患者は<b>中央値39%</b>にとどまる。
+  高齢てんかん患者の平時の外来こそが、この話をする場。</p>
+
+  <div class="src">
+    出典（すべてPubMed収載・メタデータ照合済み）：
+    Beuchat I, Neurology 2022;99:e1824／Fisch U, Front Neurol 2026;17:1805775／Leitinger M, Epilepsia 2019;60:53／
+    Vieille T, Epilepsy Behav 2023;141:109083／Trinka E, Epilepsia 2015;56:1515／Ulvin LB, Ann Clin Transl Neurol 2024;11:2685／
+    Uçan Tokuç FE, Neurol Int 2025;17:29／Giovannini G, Seizure 2017;46:31／Hermans G, Crit Care 2015;19:274／
+    Sutter R, Crit Care Med 2020;48:1188／Kapur J, N Engl J Med 2019;381:2103<br>
+    ※ 引用研究の大半は観察研究。薬剤の用量・投与速度は本資料では扱わない（各施設のプロトコルと添付文書に従う）。本資料は診療方針を保証しない。<br>
+    監修：今村久司（神経内科専門医・指導医／総合内科専門医・指導医）
+  </div>
+
+  <div class="brand">
+    <span><b>✚ 医知創造ラボ</b>　tools.ichisouzo-lab.com/status_epilepticus_sedation.html（判断整理ツール）</span>
+    <span>2 / 2　2026年8月版</span>
+  </div>
+
+</div>
+
+<script>
+document.getElementById('printBtn').addEventListener('click', function(){ window.print(); });
+</script>
+</body>
+</html>

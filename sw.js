@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v88';
+const CACHE_NAME = 'ddx-tools-v90';
 const ASSETS = [
   './',
   './index.html',
@@ -82,6 +82,8 @@ const ASSETS = [
   './handouts/overactive-bladder-frequency/index.html',
   './handouts/alcohol-reduction-guidance/index.html',
   './handouts/heatstroke-hydration-guidance/index.html',
+  './status_epilepticus_sedation.html',
+  './handouts/status-epilepticus-sedation/index.html',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png'
