@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#8A0F6B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="転ばない体をつくるための配布資料です。足腰を鍛えるだけでは転倒はあまり減らず、わざとバランスを崩す練習を混ぜたときにいちばん減ること、目安は週2回・1時間・半年であること、ふらつきの原因になりやすい薬は血圧の薬とは限らないこと、ビタミンDは足りない人が毎日少しずつとるものであることをまとめました。">
+<title>転ばない体に必要な、もう一つの練習｜患者さん向け配布資料</title>
+<style>
+  :root{
+    --navy:#3A0A2D;
+    --blue:#6E0C56;
+    --accent:#8A0F6B;
+    --accent-deep:#5A0844;
+    --danger:#C0392B;
+    --light:#F7EEF4;
+    --line:#E3CBDB;
+    --ink:#1a1a1a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    font-family:"Yu Gothic","游ゴシック","Hiragino Kaku Gothic ProN","Segoe UI",sans-serif;
+    color:var(--ink);
+    background:#f3ecf1;
+    line-height:1.6;
+    padding:16px;
+  }
+  .sheet{
+    background:#fff;
+    max-width:820px;
+    margin:0 auto 20px;
+    padding:22px 26px 26px;
+    box-shadow:0 2px 14px rgba(0,0,0,.12);
+  }
+  .head{
+    display:flex;align-items:flex-start;gap:14px;
+    border-bottom:3px solid var(--accent-deep);
+    padding-bottom:12px;margin-bottom:14px;
+  }
+  .head-main{flex:1;}
+  .kicker{
+    display:inline-block;background:var(--accent);color:#fff;
+    font-size:12px;font-weight:700;letter-spacing:.06em;
+    padding:3px 10px;border-radius:3px;margin-bottom:7px;
+  }
+  h1{font-size:22px;font-weight:800;color:var(--accent);line-height:1.35;letter-spacing:.01em;}
+  .sub{font-size:12.5px;color:var(--navy);font-weight:700;margin-top:6px;}
+  .lead{font-size:13.5px;color:#333;margin-top:8px;}
+  .lead b{color:var(--accent-deep);}
+  .qr{
+    width:104px;flex:0 0 104px;text-align:center;
+    border:1px solid var(--line);border-radius:8px;padding:7px 6px 5px;
+  }
+  .qr svg{width:78px;height:78px;display:block;margin:0 auto;}
+  .qr .qr-cap{font-size:9.5px;color:#555;line-height:1.35;margin-top:4px;}
+  h2{
+    font-size:15px;font-weight:800;color:#fff;background:var(--blue);
+    padding:5px 12px;border-radius:4px;margin:14px 0 9px;
+    display:flex;align-items:center;gap:8px;
+  }
+  h2 .num{
+    background:#fff;color:var(--blue);font-size:12.5px;font-weight:800;
+    width:21px;height:21px;border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;flex:0 0 21px;
+  }
+  h2.hd{background:var(--danger);}
+  h2.hd .num{color:var(--danger);}
+  /* ① 2本立ての対比 */
+  .compare{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;}
+  .compare div{
+    flex:1 1 44%;border-radius:8px;padding:10px 12px;font-size:12.5px;
+  }
+  .compare .ng{background:#F4F1F3;border:1.5px solid #B9A7B2;}
+  .compare .ok{background:var(--light);border:1.5px solid var(--accent);}
+  .compare .l{display:block;font-weight:800;font-size:13.5px;margin-bottom:4px;}
+  .compare .ng .l{color:#6B5A64;}
+  .compare .ok .l{color:var(--accent-deep);}
+  .bothnote{
+    margin-top:8px;background:var(--light);border-left:5px solid var(--accent);
+    padding:8px 12px;font-size:13px;color:#333;border-radius:0 6px 6px 0;
+  }
+  .bothnote b{color:var(--accent-deep);}
+  /* ② チェックリスト */
+  ul.checks{list-style:none;}
+  ul.checks li{
+    display:flex;gap:9px;align-items:flex-start;
+    padding:4.5px 2px;border-bottom:1px dashed var(--line);
+    font-size:13px;
+  }
+  ul.checks li:last-child{border-bottom:none;}
+  ul.checks .box{
+    flex:0 0 17px;width:17px;height:17px;margin-top:1px;
+    border:2px solid var(--accent-deep);border-radius:3px;
+  }
+  ul.checks li b{color:var(--accent-deep);}
+  ul.checks .why{color:#555;font-size:11.5px;}
+  .tblnote{font-size:11.5px;color:#555;margin-top:6px;}
+  .tblnote b{color:var(--accent-deep);}
+  /* ③ 用量 */
+  .fh{
+    border:2.5px solid var(--accent);border-radius:8px;
+    padding:11px 14px;margin-top:8px;background:var(--light);
+  }
+  .fh .ft{color:var(--accent-deep);font-weight:800;font-size:14.5px;margin-bottom:7px;}
+  .fh .fitems{display:flex;gap:8px;flex-wrap:wrap;}
+  .fh .fitems div{
+    flex:1 1 30%;font-size:12.5px;background:#fff;border:1px solid var(--line);
+    border-radius:6px;padding:7px 10px;text-align:center;
+  }
+  .fh .fitems .l{color:var(--accent-deep);font-weight:800;display:block;margin-bottom:2px;font-size:11.5px;}
+  .fh .fitems .v{font-size:19px;font-weight:800;color:var(--accent);}
+  .fh .fnote{
+    margin-top:8px;font-size:12.5px;color:#333;border-top:1px dashed var(--line);padding-top:7px;
+  }
+  .fh .fnote b{color:var(--accent-deep);}
+  /* 週の記入欄 */
+  .week{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;}
+  .week th{
+    background:var(--light);color:var(--accent-deep);font-weight:800;font-size:11.5px;
+    border:1px solid var(--line);padding:4px 2px;text-align:center;
+  }
+  .week td{border:1px solid var(--line);padding:11px 2px;text-align:center;}
+  /* ④ 指輪っかテスト */
+  .ring{display:flex;gap:12px;align-items:center;margin-top:8px;flex-wrap:wrap;}
+  .ring .rfig{flex:0 0 128px;text-align:center;}
+  .ring .rtext{flex:1 1 55%;font-size:12.5px;color:#333;}
+  .ring .rtext b{color:var(--accent-deep);}
+  .judge{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
+  .judge div{
+    flex:1 1 30%;font-size:12px;background:#fff;border:1px solid var(--line);
+    border-radius:6px;padding:6px 9px;
+  }
+  .judge .l{display:block;font-weight:800;font-size:12.5px;margin-bottom:2px;}
+  .judge .j1 .l{color:#2F6B2F;}
+  .judge .j2 .l{color:var(--accent-deep);}
+  .judge .j3 .l{color:var(--danger);}
+  /* ⑤⑦ 警告枠 */
+  .alert{
+    border:2.5px solid var(--danger);border-radius:8px;
+    padding:11px 14px;background:#FBEAE8;
+  }
+  .alert .at{color:var(--danger);font-weight:800;font-size:15px;margin-bottom:6px;}
+  .fast{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;}
+  .fast div{
+    flex:1 1 44%;font-size:12.5px;background:#fff;border:1px solid #EAC5C0;
+    border-radius:6px;padding:6px 9px;
+  }
+  .fast .l{color:var(--danger);font-weight:800;font-size:13px;display:block;}
+  .alert .daily{
+    margin-top:8px;font-size:12.5px;color:#333;border-top:1px dashed #EAC5C0;padding-top:7px;
+  }
+  .alert .daily b{color:var(--danger);}
+  /* 相談先・記入欄 */
+  .memo{
+    border:1.5px solid var(--line);border-radius:8px;padding:10px 13px;margin-top:14px;
+    font-size:12.5px;
+  }
+  .memo .mtitle{font-weight:800;color:var(--accent-deep);font-size:13.5px;margin-bottom:5px;}
+  .memo .mtext{font-size:12.5px;color:#333;margin-bottom:7px;}
+  .memo .mtext b{color:var(--accent-deep);}
+  .memo .mrow{display:flex;gap:6px;align-items:baseline;padding:5px 0;}
+  .memo .mlabel{flex:0 0 210px;font-weight:700;color:var(--accent-deep);white-space:nowrap;}
+  .memo .mline{flex:1;border-bottom:1px solid #b3a482;min-height:18px;}
+  .foot{
+    margin-top:16px;padding-top:10px;border-top:1px solid var(--line);
+    font-size:11px;color:#666;line-height:1.5;
+  }
+  .foot .brand{font-weight:700;color:var(--accent-deep);}
+  .noprint{margin:0 auto 18px;max-width:820px;text-align:center;}
+  .pbtn{
+    display:inline-block;background:var(--accent-deep);color:#fff;text-decoration:none;
+    font-size:14px;font-weight:700;padding:10px 24px;border-radius:24px;border:none;cursor:pointer;
+    box-shadow:0 2px 10px rgba(90,8,68,.25);
+  }
+  .pbtn:active{transform:scale(.98);}
+  .noprint p{font-size:12px;color:#777;margin-top:8px;}
+
+  @page{size:A4 portrait;margin:10mm 12mm;}
+  @media print{
+    body{background:#fff;padding:0;font-size:10.5pt;}
+    .sheet{box-shadow:none;margin:0;max-width:none;padding:0;}
+    .noprint{display:none !important;}
+    h1{font-size:18pt;}
+    h2{font-size:12pt;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .kicker,.alert,.fh,.week th,.compare div,.fast div,.judge div,.qr,.bothnote{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    ul.checks li{font-size:9.8pt;padding:0px 2px;line-height:1.5;}
+    ul.checks .why{font-size:9.6pt;}
+    .lead{font-size:9.5pt;margin-top:3px;}
+    .head{padding-bottom:4px;margin-bottom:4px;}
+    h2{margin:3px 0 1px;padding:3px 12px;}
+    .alert,.fh{padding:6px 11px;}
+    .fh{margin-top:6px;}
+    .fh .ft{font-size:11pt;margin-bottom:4px;}
+    .fh .fitems div,.fast div,.compare div,.judge div{padding:4px 8px;font-size:10pt;line-height:1.45;}
+    .fh .fitems .v{font-size:15pt;}
+    .fast,.fh .fitems,.compare,.judge{gap:6px;}
+    .fh .fnote{margin-top:5px;padding-top:5px;font-size:10pt;}
+    .alert .at{font-size:11pt;margin-bottom:4px;}
+    .alert .daily{margin-top:5px;padding-top:5px;font-size:9.8pt;}
+    .bothnote{margin-top:5px;padding:5px 10px;font-size:10pt;}
+    .week{font-size:9.5pt;margin-top:5px;}
+    .week th{padding:2px 2px;font-size:9pt;}
+    .week td{padding:7px 2px;}
+    .ring{gap:8px;margin-top:5px;}
+    .ring .rfig{flex:0 0 86px;}
+    .ring .rfig svg{width:86px;height:69px;}
+    .ring .rtext{font-size:10pt;}
+    .tblnote{font-size:9pt;margin-top:3px;}
+    .memo{margin-top:7px;padding:6px 11px;font-size:10pt;}
+    .memo .mtitle{font-size:11pt;margin-bottom:2px;}
+    .memo .mtext{font-size:9.8pt;margin-bottom:3px;line-height:1.45;}
+    .memo .mrow{padding:2px 0;}
+    .foot{margin-top:6px;padding-top:5px;font-size:9pt;line-height:1.45;}
+    a[href]{color:inherit;text-decoration:none;}
+    .fh,.alert,.memo,.fast,.week,.compare,.judge,.ring,.bothnote,.fh .fitems{break-inside:avoid;page-break-inside:avoid;}
+    ul.checks li{break-inside:avoid;page-break-inside:avoid;}
+    h2{break-after:avoid;page-break-after:avoid;}
+    /* A4 2ページ構成: 1ページ目=見出し＋QR＋①足腰だけでは足りない／②練習の中身／③どれくらい／④ふくらはぎ
+       2ページ目=⑤お薬／⑥ビタミンD／⑦相談してほしいこと／記入欄 */
+    .pg2{break-before:page;page-break-before:always;}
+  }
+  @media (max-width:560px){
+    body{padding:8px;}
+    .sheet{padding:16px 15px 20px;}
+    .head{flex-direction:column;align-items:center;text-align:center;}
+    h1{font-size:19px;}
+    .compare div{flex:1 1 100%;}
+    .fh .fitems div{flex:1 1 100%;}
+    .fast div{flex:1 1 100%;}
+    .judge div{flex:1 1 100%;}
+    .ring .rfig{flex:1 1 100%;}
+    .memo .mlabel{flex:0 0 150px;}
+    .week{font-size:11px;}
+  }
+</style>
+</head>
+<body>
+<div class="noprint">
+  <button class="pbtn" id="printBtn">🖨️ この資料を印刷する（A4）</button>
+  <p>A4・2枚（1枚目＝足腰だけでは足りない・練習の中身・どれくらいやるか・ふくらはぎを囲む／2枚目＝お薬のこと・ビタミンD・相談してほしいこと。カラー印刷推奨）</p>
+</div>
+
+<div class="sheet">
+
+  <div class="head">
+    <div class="head-main">
+      <span class="kicker">筋トレだけでは足りません</span>
+      <h1>転ばない体に必要な、<br>もう一つの練習</h1>
+      <p class="sub">「足腰を鍛えましょう」だけでは、転ぶ回数はあまり減りません。</p>
+      <p class="lead">転倒が心配な方とご家族へ。<b>いちばん転ばなくなったのは、<span style="white-space:nowrap;">筋力の運動と「バランスの練習」を</span><span style="white-space:nowrap;">両方やった人たち</span></b><span style="white-space:nowrap;">でした。</span><span style="white-space:nowrap;">その練習の中身と、</span><b><span style="white-space:nowrap;">お薬の見直し方</span></b><span style="white-space:nowrap;">をまとめています。</span></p>
+    </div>
+    <div class="qr">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 41 41" shape-rendering="crispEdges" role="img" aria-label="QRコード"><rect width="41" height="41" fill="#fff"/><path d="M2 2h1v1h-1zM3 2h1v1h-1zM4 2h1v1h-1zM5 2h1v1h-1zM6 2h1v1h-1zM7 2h1v1h-1zM8 2h1v1h-1zM11 2h1v1h-1zM13 2h1v1h-1zM16 2h1v1h-1zM17 2h1v1h-1zM20 2h1v1h-1zM23 2h1v1h-1zM24 2h1v1h-1zM26 2h1v1h-1zM29 2h1v1h-1zM32 2h1v1h-1zM33 2h1v1h-1zM34 2h1v1h-1zM35 2h1v1h-1zM36 2h1v1h-1zM37 2h1v1h-1zM38 2h1v1h-1zM2 3h1v1h-1zM8 3h1v1h-1zM11 3h1v1h-1zM12 3h1v1h-1zM16 3h1v1h-1zM18 3h1v1h-1zM19 3h1v1h-1zM21 3h1v1h-1zM23 3h1v1h-1zM25 3h1v1h-1zM27 3h1v1h-1zM29 3h1v1h-1zM32 3h1v1h-1zM38 3h1v1h-1zM2 4h1v1h-1zM4 4h1v1h-1zM5 4h1v1h-1zM6 4h1v1h-1zM8 4h1v1h-1zM15 4h1v1h-1zM18 4h1v1h-1zM19 4h1v1h-1zM21 4h1v1h-1zM22 4h1v1h-1zM24 4h1v1h-1zM25 4h1v1h-1zM26 4h1v1h-1zM28 4h1v1h-1zM29 4h1v1h-1zM32 4h1v1h-1zM34 4h1v1h-1zM35 4h1v1h-1zM36 4h1v1h-1zM38 4h1v1h-1zM2 5h1v1h-1zM4 5h1v1h-1zM5 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM11 5h1v1h-1zM14 5h1v1h-1zM16 5h1v1h-1zM17 5h1v1h-1zM20 5h1v1h-1zM24 5h1v1h-1zM25 5h1v1h-1zM28 5h1v1h-1zM29 5h1v1h-1zM32 5h1v1h-1zM34 5h1v1h-1zM35 5h1v1h-1zM36 5h1v1h-1zM38 5h1v1h-1zM2 6h1v1h-1zM4 6h1v1h-1zM5 6h1v1h-1zM6 6h1v1h-1zM8 6h1v1h-1zM13 6h1v1h-1zM14 6h1v1h-1zM15 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM23 6h1v1h-1zM25 6h1v1h-1zM27 6h1v1h-1zM28 6h1v1h-1zM29 6h1v1h-1zM30 6h1v1h-1zM32 6h1v1h-1zM34 6h1v1h-1zM35 6h1v1h-1zM36 6h1v1h-1zM38 6h1v1h-1zM2 7h1v1h-1zM8 7h1v1h-1zM10 7h1v1h-1zM11 7h1v1h-1zM14 7h1v1h-1zM16 7h1v1h-1zM18 7h1v1h-1zM21 7h1v1h-1zM22 7h1v1h-1zM24 7h1v1h-1zM26 7h1v1h-1zM27 7h1v1h-1zM29 7h1v1h-1zM30 7h1v1h-1zM32 7h1v1h-1zM38 7h1v1h-1zM2 8h1v1h-1zM3 8h1v1h-1zM4 8h1v1h-1zM5 8h1v1h-1zM6 8h1v1h-1zM7 8h1v1h-1zM8 8h1v1h-1zM10 8h1v1h-1zM12 8h1v1h-1zM14 8h1v1h-1zM16 8h1v1h-1zM18 8h1v1h-1zM20 8h1v1h-1zM22 8h1v1h-1zM24 8h1v1h-1zM26 8h1v1h-1zM28 8h1v1h-1zM30 8h1v1h-1zM32 8h1v1h-1zM33 8h1v1h-1zM34 8h1v1h-1zM35 8h1v1h-1zM36 8h1v1h-1zM37 8h1v1h-1zM38 8h1v1h-1zM13 9h1v1h-1zM14 9h1v1h-1zM17 9h1v1h-1zM19 9h1v1h-1zM20 9h1v1h-1zM24 9h1v1h-1zM25 9h1v1h-1zM26 9h1v1h-1zM28 9h1v1h-1zM29 9h1v1h-1zM30 9h1v1h-1zM2 10h1v1h-1zM5 10h1v1h-1zM7 10h1v1h-1zM8 10h1v1h-1zM10 10h1v1h-1zM11 10h1v1h-1zM13 10h1v1h-1zM15 10h1v1h-1zM16 10h1v1h-1zM17 10h1v1h-1zM18 10h1v1h-1zM19 10h1v1h-1zM20 10h1v1h-1zM21 10h1v1h-1zM22 10h1v1h-1zM26 10h1v1h-1zM27 10h1v1h-1zM28 10h1v1h-1zM29 10h1v1h-1zM30 10h1v1h-1zM31 10h1v1h-1zM33 10h1v1h-1zM2 11h1v1h-1zM4 11h1v1h-1zM6 11h1v1h-1zM9 11h1v1h-1zM16 11h1v1h-1zM17 11h1v1h-1zM18 11h1v1h-1zM20 11h1v1h-1zM21 11h1v1h-1zM23 11h1v1h-1zM25 11h1v1h-1zM30 11h1v1h-1zM31 11h1v1h-1zM32 11h1v1h-1zM36 11h1v1h-1zM38 11h1v1h-1zM2 12h1v1h-1zM3 12h1v1h-1zM5 12h1v1h-1zM6 12h1v1h-1zM8 12h1v1h-1zM9 12h1v1h-1zM10 12h1v1h-1zM11 12h1v1h-1zM12 12h1v1h-1zM14 12h1v1h-1zM15 12h1v1h-1zM16 12h1v1h-1zM17 12h1v1h-1zM19 12h1v1h-1zM21 12h1v1h-1zM27 12h1v1h-1zM28 12h1v1h-1zM30 12h1v1h-1zM31 12h1v1h-1zM32 12h1v1h-1zM34 12h1v1h-1zM37 12h1v1h-1zM38 12h1v1h-1zM3 13h1v1h-1zM4 13h1v1h-1zM6 13h1v1h-1zM7 13h1v1h-1zM9 13h1v1h-1zM13 13h1v1h-1zM14 13h1v1h-1zM15 13h1v1h-1zM16 13h1v1h-1zM18 13h1v1h-1zM21 13h1v1h-1zM22 13h1v1h-1zM23 13h1v1h-1zM24 13h1v1h-1zM25 13h1v1h-1zM26 13h1v1h-1zM27 13h1v1h-1zM28 13h1v1h-1zM29 13h1v1h-1zM30 13h1v1h-1zM34 13h1v1h-1zM35 13h1v1h-1zM2 14h1v1h-1zM3 14h1v1h-1zM8 14h1v1h-1zM9 14h1v1h-1zM10 14h1v1h-1zM14 14h1v1h-1zM17 14h1v1h-1zM18 14h1v1h-1zM19 14h1v1h-1zM22 14h1v1h-1zM23 14h1v1h-1zM25 14h1v1h-1zM26 14h1v1h-1zM27 14h1v1h-1zM29 14h1v1h-1zM30 14h1v1h-1zM31 14h1v1h-1zM32 14h1v1h-1zM33 14h1v1h-1zM37 14h1v1h-1zM38 14h1v1h-1zM2 15h1v1h-1zM4 15h1v1h-1zM6 15h1v1h-1zM11 15h1v1h-1zM13 15h1v1h-1zM15 15h1v1h-1zM16 15h1v1h-1zM21 15h1v1h-1zM22 15h1v1h-1zM23 15h1v1h-1zM24 15h1v1h-1zM27 15h1v1h-1zM31 15h1v1h-1zM32 15h1v1h-1zM33 15h1v1h-1zM36 15h1v1h-1zM37 15h1v1h-1zM38 15h1v1h-1zM2 16h1v1h-1zM3 16h1v1h-1zM4 16h1v1h-1zM6 16h1v1h-1zM7 16h1v1h-1zM8 16h1v1h-1zM13 16h1v1h-1zM14 16h1v1h-1zM15 16h1v1h-1zM22 16h1v1h-1zM24 16h1v1h-1zM25 16h1v1h-1zM30 16h1v1h-1zM33 16h1v1h-1zM34 16h1v1h-1zM36 16h1v1h-1zM38 16h1v1h-1zM2 17h1v1h-1zM3 17h1v1h-1zM4 17h1v1h-1zM13 17h1v1h-1zM15 17h1v1h-1zM16 17h1v1h-1zM18 17h1v1h-1zM22 17h1v1h-1zM23 17h1v1h-1zM24 17h1v1h-1zM26 17h1v1h-1zM27 17h1v1h-1zM28 17h1v1h-1zM30 17h1v1h-1zM31 17h1v1h-1zM32 17h1v1h-1zM34 17h1v1h-1zM37 17h1v1h-1zM4 18h1v1h-1zM6 18h1v1h-1zM8 18h1v1h-1zM10 18h1v1h-1zM11 18h1v1h-1zM12 18h1v1h-1zM15 18h1v1h-1zM16 18h1v1h-1zM17 18h1v1h-1zM18 18h1v1h-1zM22 18h1v1h-1zM25 18h1v1h-1zM26 18h1v1h-1zM29 18h1v1h-1zM31 18h1v1h-1zM32 18h1v1h-1zM33 18h1v1h-1zM35 18h1v1h-1zM36 18h1v1h-1zM37 18h1v1h-1zM3 19h1v1h-1zM5 19h1v1h-1zM7 19h1v1h-1zM10 19h1v1h-1zM12 19h1v1h-1zM14 19h1v1h-1zM16 19h1v1h-1zM17 19h1v1h-1zM21 19h1v1h-1zM23 19h1v1h-1zM24 19h1v1h-1zM25 19h1v1h-1zM28 19h1v1h-1zM31 19h1v1h-1zM32 19h1v1h-1zM34 19h1v1h-1zM36 19h1v1h-1zM37 19h1v1h-1zM38 19h1v1h-1zM3 20h1v1h-1zM5 20h1v1h-1zM6 20h1v1h-1zM8 20h1v1h-1zM9 20h1v1h-1zM10 20h1v1h-1zM13 20h1v1h-1zM21 20h1v1h-1zM22 20h1v1h-1zM23 20h1v1h-1zM24 20h1v1h-1zM28 20h1v1h-1zM30 20h1v1h-1zM31 20h1v1h-1zM35 20h1v1h-1zM36 20h1v1h-1zM37 20h1v1h-1zM38 20h1v1h-1zM2 21h1v1h-1zM5 21h1v1h-1zM6 21h1v1h-1zM12 21h1v1h-1zM13 21h1v1h-1zM14 21h1v1h-1zM17 21h1v1h-1zM18 21h1v1h-1zM19 21h1v1h-1zM21 21h1v1h-1zM22 21h1v1h-1zM23 21h1v1h-1zM24 21h1v1h-1zM25 21h1v1h-1zM26 21h1v1h-1zM28 21h1v1h-1zM32 21h1v1h-1zM33 21h1v1h-1zM36 21h1v1h-1zM37 21h1v1h-1zM6 22h1v1h-1zM8 22h1v1h-1zM9 22h1v1h-1zM11 22h1v1h-1zM12 22h1v1h-1zM13 22h1v1h-1zM15 22h1v1h-1zM18 22h1v1h-1zM21 22h1v1h-1zM23 22h1v1h-1zM24 22h1v1h-1zM25 22h1v1h-1zM26 22h1v1h-1zM27 22h1v1h-1zM28 22h1v1h-1zM29 22h1v1h-1zM30 22h1v1h-1zM32 22h1v1h-1zM34 22h1v1h-1zM35 22h1v1h-1zM37 22h1v1h-1zM3 23h1v1h-1zM5 23h1v1h-1zM6 23h1v1h-1zM10 23h1v1h-1zM11 23h1v1h-1zM15 23h1v1h-1zM19 23h1v1h-1zM26 23h1v1h-1zM27 23h1v1h-1zM28 23h1v1h-1zM31 23h1v1h-1zM32 23h1v1h-1zM33 23h1v1h-1zM35 23h1v1h-1zM37 23h1v1h-1zM38 23h1v1h-1zM4 24h1v1h-1zM5 24h1v1h-1zM8 24h1v1h-1zM9 24h1v1h-1zM10 24h1v1h-1zM12 24h1v1h-1zM14 24h1v1h-1zM15 24h1v1h-1zM16 24h1v1h-1zM18 24h1v1h-1zM20 24h1v1h-1zM21 24h1v1h-1zM23 24h1v1h-1zM24 24h1v1h-1zM26 24h1v1h-1zM27 24h1v1h-1zM30 24h1v1h-1zM31 24h1v1h-1zM32 24h1v1h-1zM37 24h1v1h-1zM38 24h1v1h-1zM2 25h1v1h-1zM4 25h1v1h-1zM7 25h1v1h-1zM10 25h1v1h-1zM11 25h1v1h-1zM12 25h1v1h-1zM13 25h1v1h-1zM16 25h1v1h-1zM20 25h1v1h-1zM21 25h1v1h-1zM25 25h1v1h-1zM27 25h1v1h-1zM28 25h1v1h-1zM37 25h1v1h-1zM2 26h1v1h-1zM3 26h1v1h-1zM4 26h1v1h-1zM5 26h1v1h-1zM7 26h1v1h-1zM8 26h1v1h-1zM10 26h1v1h-1zM11 26h1v1h-1zM13 26h1v1h-1zM14 26h1v1h-1zM15 26h1v1h-1zM18 26h1v1h-1zM20 26h1v1h-1zM21 26h1v1h-1zM25 26h1v1h-1zM26 26h1v1h-1zM27 26h1v1h-1zM30 26h1v1h-1zM31 26h1v1h-1zM32 26h1v1h-1zM33 26h1v1h-1zM35 26h1v1h-1zM38 26h1v1h-1zM3 27h1v1h-1zM4 27h1v1h-1zM6 27h1v1h-1zM7 27h1v1h-1zM11 27h1v1h-1zM12 27h1v1h-1zM14 27h1v1h-1zM17 27h1v1h-1zM20 27h1v1h-1zM24 27h1v1h-1zM26 27h1v1h-1zM31 27h1v1h-1zM32 27h1v1h-1zM33 27h1v1h-1zM35 27h1v1h-1zM36 27h1v1h-1zM37 27h1v1h-1zM38 27h1v1h-1zM2 28h1v1h-1zM4 28h1v1h-1zM7 28h1v1h-1zM8 28h1v1h-1zM9 28h1v1h-1zM11 28h1v1h-1zM12 28h1v1h-1zM16 28h1v1h-1zM17 28h1v1h-1zM18 28h1v1h-1zM22 28h1v1h-1zM23 28h1v1h-1zM25 28h1v1h-1zM27 28h1v1h-1zM33 28h1v1h-1zM36 28h1v1h-1zM38 28h1v1h-1zM3 29h1v1h-1zM5 29h1v1h-1zM6 29h1v1h-1zM9 29h1v1h-1zM11 29h1v1h-1zM12 29h1v1h-1zM13 29h1v1h-1zM14 29h1v1h-1zM15 29h1v1h-1zM16 29h1v1h-1zM18 29h1v1h-1zM19 29h1v1h-1zM20 29h1v1h-1zM21 29h1v1h-1zM23 29h1v1h-1zM27 29h1v1h-1zM28 29h1v1h-1zM30 29h1v1h-1zM32 29h1v1h-1zM37 29h1v1h-1zM38 29h1v1h-1zM2 30h1v1h-1zM3 30h1v1h-1zM8 30h1v1h-1zM9 30h1v1h-1zM10 30h1v1h-1zM11 30h1v1h-1zM13 30h1v1h-1zM15 30h1v1h-1zM16 30h1v1h-1zM17 30h1v1h-1zM18 30h1v1h-1zM19 30h1v1h-1zM21 30h1v1h-1zM22 30h1v1h-1zM23 30h1v1h-1zM24 30h1v1h-1zM29 30h1v1h-1zM30 30h1v1h-1zM31 30h1v1h-1zM32 30h1v1h-1zM33 30h1v1h-1zM34 30h1v1h-1zM35 30h1v1h-1zM36 30h1v1h-1zM38 30h1v1h-1zM10 31h1v1h-1zM11 31h1v1h-1zM13 31h1v1h-1zM18 31h1v1h-1zM19 31h1v1h-1zM20 31h1v1h-1zM23 31h1v1h-1zM25 31h1v1h-1zM26 31h1v1h-1zM27 31h1v1h-1zM28 31h1v1h-1zM30 31h1v1h-1zM34 31h1v1h-1zM35 31h1v1h-1zM38 31h1v1h-1zM2 32h1v1h-1zM3 32h1v1h-1zM4 32h1v1h-1zM5 32h1v1h-1zM6 32h1v1h-1zM7 32h1v1h-1zM8 32h1v1h-1zM11 32h1v1h-1zM18 32h1v1h-1zM19 32h1v1h-1zM24 32h1v1h-1zM28 32h1v1h-1zM29 32h1v1h-1zM30 32h1v1h-1zM32 32h1v1h-1zM34 32h1v1h-1zM35 32h1v1h-1zM37 32h1v1h-1zM38 32h1v1h-1zM2 33h1v1h-1zM8 33h1v1h-1zM10 33h1v1h-1zM11 33h1v1h-1zM14 33h1v1h-1zM16 33h1v1h-1zM17 33h1v1h-1zM21 33h1v1h-1zM22 33h1v1h-1zM23 33h1v1h-1zM25 33h1v1h-1zM26 33h1v1h-1zM28 33h1v1h-1zM30 33h1v1h-1zM34 33h1v1h-1zM35 33h1v1h-1zM36 33h1v1h-1zM37 33h1v1h-1zM38 33h1v1h-1zM2 34h1v1h-1zM4 34h1v1h-1zM5 34h1v1h-1zM6 34h1v1h-1zM8 34h1v1h-1zM11 34h1v1h-1zM12 34h1v1h-1zM13 34h1v1h-1zM14 34h1v1h-1zM16 34h1v1h-1zM19 34h1v1h-1zM21 34h1v1h-1zM24 34h1v1h-1zM25 34h1v1h-1zM26 34h1v1h-1zM27 34h1v1h-1zM28 34h1v1h-1zM30 34h1v1h-1zM31 34h1v1h-1zM32 34h1v1h-1zM33 34h1v1h-1zM34 34h1v1h-1zM35 34h1v1h-1zM38 34h1v1h-1zM2 35h1v1h-1zM4 35h1v1h-1zM5 35h1v1h-1zM6 35h1v1h-1zM8 35h1v1h-1zM10 35h1v1h-1zM14 35h1v1h-1zM16 35h1v1h-1zM17 35h1v1h-1zM19 35h1v1h-1zM21 35h1v1h-1zM22 35h1v1h-1zM23 35h1v1h-1zM24 35h1v1h-1zM26 35h1v1h-1zM29 35h1v1h-1zM33 35h1v1h-1zM34 35h1v1h-1zM35 35h1v1h-1zM37 35h1v1h-1zM2 36h1v1h-1zM4 36h1v1h-1zM5 36h1v1h-1zM6 36h1v1h-1zM8 36h1v1h-1zM11 36h1v1h-1zM13 36h1v1h-1zM14 36h1v1h-1zM15 36h1v1h-1zM16 36h1v1h-1zM18 36h1v1h-1zM22 36h1v1h-1zM23 36h1v1h-1zM26 36h1v1h-1zM29 36h1v1h-1zM30 36h1v1h-1zM33 36h1v1h-1zM34 36h1v1h-1zM36 36h1v1h-1zM37 36h1v1h-1zM38 36h1v1h-1zM2 37h1v1h-1zM8 37h1v1h-1zM11 37h1v1h-1zM13 37h1v1h-1zM14 37h1v1h-1zM15 37h1v1h-1zM16 37h1v1h-1zM17 37h1v1h-1zM20 37h1v1h-1zM23 37h1v1h-1zM24 37h1v1h-1zM25 37h1v1h-1zM26 37h1v1h-1zM27 37h1v1h-1zM29 37h1v1h-1zM30 37h1v1h-1zM32 37h1v1h-1zM33 37h1v1h-1zM2 38h1v1h-1zM3 38h1v1h-1zM4 38h1v1h-1zM5 38h1v1h-1zM6 38h1v1h-1zM7 38h1v1h-1zM8 38h1v1h-1zM10 38h1v1h-1zM12 38h1v1h-1zM14 38h1v1h-1zM15 38h1v1h-1zM19 38h1v1h-1zM21 38h1v1h-1zM22 38h1v1h-1zM23 38h1v1h-1zM25 38h1v1h-1zM27 38h1v1h-1zM29 38h1v1h-1zM30 38h1v1h-1zM31 38h1v1h-1zM32 38h1v1h-1zM37 38h1v1h-1zM38 38h1v1h-1z" fill="#8A0F6B"/></svg>
+      <div class="qr-cap">動画・くわしい解説はこちら</div>
+    </div>
+  </div>
+
+  <h2><span class="num">1</span>「足腰を鍛える」だけでは足りません</h2>
+  <div class="compare">
+    <div class="ng"><span class="l">筋力の運動だけ</span><span style="white-space:nowrap;">スクワットや足上げなど、</span><span style="white-space:nowrap;">力をつける運動だけをした場合、</span><b><span style="white-space:nowrap;">転ぶ回数が減るかどうかは</span><span style="white-space:nowrap;">はっきりしていません</span></b></div>
+    <div class="ok"><span class="l">バランスの練習</span><span style="white-space:nowrap;">片脚立ちのように、</span><span style="white-space:nowrap;">わざとバランスを崩す練習は、</span><b><span style="white-space:nowrap;">転ぶ回数が減ることが</span><span style="white-space:nowrap;">はっきりしています</span></b></div>
+  </div>
+  <div class="bothnote">そして<b><span style="white-space:nowrap;">いちばん減っていたのは、この2つを</span><span style="white-space:nowrap;">「両方」やったグループ</span></b><span style="white-space:nowrap;">でした。</span><span style="white-space:nowrap;">筋トレやウォーキングをやめる必要はありません。</span><b><span style="white-space:nowrap;">バランスの練習を足してください</span></b><span style="white-space:nowrap;">（「歩くことだけで転倒が減るか」は、まだはっきりしていません）。</span></div>
+
+  <h2><span class="num">2</span>バランスの練習（できるものから）</h2>
+  <ul class="checks">
+    <li><span class="box"></span><span><b>片脚立ち</b>　台所や洗面所で、<span style="white-space:nowrap;">左右それぞれ10〜30秒</span><br><span class="why">→ <b>かならず机や手すりに手を添えて</b>。<span style="white-space:nowrap;">できるようになったら、指1本だけ触れて行います</span></span></span></li>
+    <li><span class="box"></span><span><b>つぎ足歩き</b>　かかとにつま先をつけて、<span style="white-space:nowrap;">一本線の上を歩くように10歩</span><br><span class="why">→ 廊下など、<span style="white-space:nowrap;">両側に壁がある場所で行うと安全です</span></span></span></li>
+    <li><span class="box"></span><span><b>方向転換</b>　その場でゆっくり半周まわって止まる。<span style="white-space:nowrap;">左右それぞれ5回</span><br><span class="why">→ <span style="white-space:nowrap;">転ぶのは「振り向いたとき」「向きを変えたとき」が多いためです</span></span></span></li>
+    <li><span class="box"></span><span><b>立ち座り</b>　いすから手を使わずに立つ・座るを10回<br><span class="why">→ <span style="white-space:nowrap;">つらければ手を使ってかまいません。回数より、毎回ゆっくり行うことが大切です</span></span></span></li>
+  </ul>
+  <div class="tblnote">※ <b><span style="white-space:nowrap;">始める前に「つかまる場所」を決めてください。</span></b><span style="white-space:nowrap;">練習そのもので転んでしまっては意味がありません。</span><span style="white-space:nowrap;">ふらつきが強い日は休みましょう。</span></div>
+
+  <h2><span class="num">3</span>どれくらいやればいいですか</h2>
+  <div class="fh">
+    <div class="ft">📍 実際に転倒が減った研究のやり方</div>
+    <div class="fitems">
+      <div><span class="l">回数</span><span class="v">週2回</span></div>
+      <div><span class="l">1回の時間</span><span class="v">1時間</span></div>
+      <div><span class="l">続けた期間</span><span class="v">半年</span></div>
+    </div>
+    <div class="fnote"><b><span style="white-space:nowrap;">毎日やらなくて大丈夫です。</span></b><span style="white-space:nowrap;">1時間が長ければ、</span><span style="white-space:nowrap;">10分ずつに分けてもかまいません。</span><b><span style="white-space:nowrap;">「週2回を半年」を目標にしましょう。</span></b></div>
+    <table class="week">
+      <tr><th>今週やった日に○</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th><th>日</th></tr>
+      <tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    </table>
+  </div>
+
+  <h2><span class="num">4</span>ふくらはぎを、両手で囲んでみましょう</h2>
+  <div class="ring">
+    <div class="rfig">
+      <svg viewBox="0 0 120 96" width="120" height="96" role="img" aria-label="ふくらはぎを両手の親指と人差し指で囲む図">
+        <ellipse cx="60" cy="48" rx="24" ry="36" fill="#F7EEF4" stroke="#8A0F6B" stroke-width="2.5"/>
+        <path d="M60 12 C 30 12, 18 30, 18 48 C 18 66, 30 84, 60 84" fill="none" stroke="#5A0844" stroke-width="4" stroke-linecap="round"/>
+        <path d="M60 12 C 90 12, 102 30, 102 48 C 102 66, 90 84, 60 84" fill="none" stroke="#5A0844" stroke-width="4" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="rtext">
+      両手の<b>親指と人差し指</b>で輪をつくり、<span style="white-space:nowrap;">ふくらはぎのいちばん太いところを</span><span style="white-space:nowrap;">軽く囲んでみてください。</span><br>
+      <b><span style="white-space:nowrap;">力を入れず、指が触れるくらいの強さ</span></b><span style="white-space:nowrap;">で囲むのがコツです。</span><br>
+      <span style="font-size:11.5px;color:#555;">これは<b style="color:#5A0844;"><span style="white-space:nowrap;">「調べたほうがよい人」を見つける目安</span></b><span style="white-space:nowrap;">です。病院では握力なども測って確かめます。</span></span>
+    </div>
+  </div>
+  <div class="judge">
+    <div class="j1"><span class="l">囲めない</span><span style="white-space:nowrap;">いまのところ心配は少なめです</span></div>
+    <div class="j2"><span class="l">ちょうど囲める</span><span style="white-space:nowrap;">境目です。練習を始めましょう</span></div>
+    <div class="j3"><span class="l">すき間ができる</span><b><span style="white-space:nowrap;">受診のときに伝えてください</span></b></div>
+  </div>
+
+  <h2 class="hd pg2"><span class="num">5</span>お薬のこと</h2>
+  <div class="alert">
+    <div class="at">⚠️ まず最初に ― ご自分の判断でお薬を止めないでください</div>
+    <div class="daily" style="margin-top:0;border-top:none;padding-top:0;">止めるほうが危ないお薬もあります。<b><span style="white-space:nowrap;">この紙を持って受診し、主治医と一緒に見直してください。</span></b></div>
+  </div>
+  <div class="fh">
+    <div class="ft">📍 ふらつきに関係することがあるお薬</div>
+    <div class="fnote" style="border-top:none;margin-top:0;padding-top:0;">
+      <b><span style="white-space:nowrap;">尿を出すお薬（利尿薬）</span></b>・<b><span style="white-space:nowrap;">睡眠薬</span></b>・<b><span style="white-space:nowrap;">気持ちを落ち着けるお薬</span></b>・<b><span style="white-space:nowrap;">強い痛み止め</span></b>・<b><span style="white-space:nowrap;">てんかんのお薬</span></b><span style="white-space:nowrap;">などです。</span>
+    </div>
+    <div class="fnote">★ よく「<b>血圧の薬のせい</b>」と言われますが、<b><span style="white-space:nowrap;">血圧の薬がひとまとめに原因になるわけではありません。</span></b><span style="white-space:nowrap;">同じ「血圧の薬」でも種類によって違います。</span><span style="white-space:nowrap;">自己判断で止めると、脳卒中などの危険が上がります。</span></div>
+    <div class="fnote">★ もう一つ大事なのが<b><span style="white-space:nowrap;">「飲んでいるお薬の数そのもの」</span></b><span style="white-space:nowrap;">です。</span><span style="white-space:nowrap;">数が多いほど、ふらつきとの関係が強くなります。</span><b><span style="white-space:nowrap;">市販薬とサプリメントも入れて</span><span style="white-space:nowrap;">数え、下の記入欄に書いてください。</span></b></div>
+  </div>
+
+  <h2><span class="num">6</span>ビタミンDについて</h2>
+  <div class="compare">
+    <div class="ok"><span class="l">こういう飲み方なら</span><b><span style="white-space:nowrap;">足りていない人が、</span><span style="white-space:nowrap;">毎日少しずつ</span></b><span style="white-space:nowrap;">とる場合には、</span><span style="white-space:nowrap;">転ぶ回数が減ったという報告があります</span></div>
+    <div class="ng"><span class="l">こういう飲み方は</span><b><span style="white-space:nowrap;">量を増やしても、転ぶ回数は減りません。</span></b><span style="white-space:nowrap;">かえって増えたという報告もあります。</span><b><span style="white-space:nowrap;">たまにまとめて飲むやり方も効きません</span></b></div>
+  </div>
+  <div class="tblnote">※ <b><span style="white-space:nowrap;">「たくさん飲めばよい」ではありません。</span></b><span style="white-space:nowrap;">量は必ず主治医に相談して決めてください。</span><span style="white-space:nowrap;">骨粗しょう症の治療で飲んでいる場合は、そちらの指示を優先します。</span></div>
+
+  <h2 class="hd"><span class="num">7</span>次の受診を待たずに相談してほしいこと</h2>
+  <div class="alert">
+    <div class="at">🚨 次のどれかに当てはまれば、早めにご連絡ください</div>
+    <div class="fast">
+      <div><span class="l">転んで頭を打った</span><span style="white-space:nowrap;">血をサラサラにする薬を</span><span style="white-space:nowrap;">飲んでいる方は特にすぐに</span></div>
+      <div><span class="l"><span style="white-space:nowrap;">この1か月で</span><span style="white-space:nowrap;">2回以上転んだ</span></span><span style="white-space:nowrap;">原因を調べる必要があります</span></div>
+      <div><span class="l"><span style="white-space:nowrap;">立ち上がったときに</span><span style="white-space:nowrap;">目の前が暗くなる</span></span><span style="white-space:nowrap;">お薬や血圧が関係している</span><span style="white-space:nowrap;">ことがあります</span></div>
+      <div><span class="l"><span style="white-space:nowrap;">支えがあっても</span><span style="white-space:nowrap;">片脚立ちが数秒もたない</span></span><span style="white-space:nowrap;">練習の前に一度ご相談ください</span></div>
+    </div>
+    <div class="daily">「転んだ」とご自分から言い出しにくい方が多いのですが、<b><span style="white-space:nowrap;">転んだ回数は、いちばん大事な情報です。</span></b><span style="white-space:nowrap;">かならず教えてください。</span></div>
+  </div>
+
+  <div class="memo">
+    <div class="mtitle">📝 次の受診のときに、伝えること</div>
+    <div class="mtext"><span style="white-space:nowrap;">「ときどきふらつきます」ではなく、</span><b><span style="white-space:nowrap;">「この1年で◯回転びました」「朝起きたときにふらつきます」</span></b><span style="white-space:nowrap;">と伝えると話が早く進みます。</span></div>
+    <div class="mrow"><span class="mlabel">この1年で転んだ回数</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">転びかけた回数（1か月）</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">ふらつく時間帯・場面</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">お薬の数（市販薬・サプリ込み）</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">ふくらはぎを囲んだ結果</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">次回受診日</span><span class="mline"></span></div>
+  </div>
+
+  <div class="foot">
+    <span class="brand">医知創造ラボ</span>｜転ばない体に必要な、もう一つの練習（患者さん向け配布資料）<br>
+    この資料は一般的な情報です。運動を始めてよいか、お薬やサプリメントを変えてよいかは必ず主治医にご確認ください。<span style="white-space:nowrap;">くわしい解説は</span> <b>tools.ichisouzo-lab.com</b>（QRコード）から。
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var btn=document.getElementById('printBtn');
+  if(btn){btn.addEventListener('click',function(){window.print();});}
+})();
+</script>
+
+</body>
+</html>
