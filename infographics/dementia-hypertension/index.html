@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="高血圧と認知症の関係を一次資料の数値で整理したインフォグラフィック。高血圧は認知症の14因子のひとつでPAFは中年期2%、効くのはいま測っている血圧より中年期の血圧、増えるのはまず血管性認知症、厳格降圧で有意に減ったのはMCIであって認知症単独では有意差が出なかったことまで。">
+<title>高血圧と認知症｜“下げれば防げる”と言えるのか、一次資料で確認する（インフォグラフィック）</title>
+<style>
+:root{
+  --navy:#1B3A5C;
+  --navyDeep:#0F2540;
+  --navyBg:#E9EEF5;
+  --coral:#FF7A59;
+  --coralBg:#FFF1EC;
+  --coralInk:#B8431F;
+  --amber:#C77800;
+  --amberBg:#FFF8E1;
+  --bg:#F7F5F6;
+  --line:#D6E0E9;
+  --gray:#69737E;
+  --ink:#20242B;
+  --ink2:#3C4450;
+  --ok:#2E7D5B;
+  --font:"Noto Sans JP","BIZ UDPGothic","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+}
+html{font-size:16px;}
+*{box-sizing:border-box; margin:0; padding:0;}
+/* 日本語の語中改行を文節境界で切る（feedback_ja_wrap_auto_phrase） */
+body,.lead__box,.card p,.tier__d,td,th,.note,.badge__t,.src,.quote__d{
+  word-break:auto-phrase; line-break:strict;
+}
+body{font-family:var(--font); background:#E4E9EF; color:var(--ink); display:flex;
+  flex-direction:column; align-items:center; overflow-x:hidden;}
+.nw{white-space:nowrap;}
+
+.info{width:100%; max-width:1080px; background:#fff; padding:0 0 3rem;}
+
+/* ---- ヘッダー ---- */
+.hd{background:linear-gradient(135deg,#0A1B2E 0%,#153352 55%,#1B3A5C 100%); color:#fff;
+  padding:2.6rem 3rem 2.2rem; text-align:center; position:relative; overflow:hidden;}
+.hd::after{content:""; position:absolute; right:-5rem; top:-5rem; width:18rem; height:18rem;
+  border-radius:50%; background:radial-gradient(circle at 30% 30%, rgba(255,122,89,.32), rgba(255,122,89,0) 70%);}
+.hd__title{font-size:3rem; font-weight:800; line-height:1.3; position:relative; z-index:2;}
+.hd__sub{font-size:1.34rem; margin-top:.8rem; color:rgba(255,255,255,.9); line-height:1.6; position:relative; z-index:2;}
+.hd__by{font-size:1rem; margin-top:.7rem; color:rgba(255,255,255,.7); position:relative; z-index:2;}
+
+/* ---- セクション ---- */
+.sec{padding:0 3rem; margin-top:2.2rem;}
+.sec__h{display:flex; align-items:center; gap:.9rem; font-size:1.8rem; font-weight:800;
+  color:var(--navy); margin-bottom:1rem; line-height:1.4;}
+.sec__n{flex:none; width:2.7rem; height:2.7rem; border-radius:50%; background:var(--coral);
+  color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.35rem; font-weight:800;}
+
+.cards{display:flex; gap:1rem; align-items:stretch;}
+.card{flex:1 1 0; border:.13rem solid var(--line); border-radius:.8rem; background:#fff; padding:1.1rem 1.25rem;}
+.card--coral{border-color:var(--coral); background:var(--coralBg);}
+.card__t{display:inline-block; font-size:.95rem; font-weight:800; color:#fff; background:var(--navy);
+  border-radius:.35rem; padding:.25rem .8rem; margin-bottom:.8rem;}
+.card--coral .card__t{background:var(--coral);}
+.card p{font-size:1.05rem; line-height:1.7; color:var(--ink2);}
+.card p + p{margin-top:.6rem;}
+.card b{color:var(--navy);}
+.card--coral b{color:var(--coralInk);}
+
+.big{display:flex; align-items:baseline; justify-content:center; gap:.5rem; margin:.6rem 0 .2rem;}
+.big__n{font-size:3.4rem; font-weight:800; color:var(--coralInk); line-height:1;}
+.big__u{font-size:1.4rem; font-weight:800; color:var(--coralInk);}
+.big__cap{text-align:center; font-size:.95rem; color:var(--gray); line-height:1.6;}
+
+.paf{margin-top:.9rem; background:var(--amberBg); border-left:.32rem solid var(--amber);
+  border-radius:0 .5rem .5rem 0; padding:.75rem 1rem; font-size:.98rem; line-height:1.65; color:var(--ink2);}
+.paf b{color:var(--amber);}
+
+.hr{display:flex; align-items:baseline; gap:.6rem; margin-top:.7rem; font-size:1.12rem; color:var(--ink2);}
+.hr b{color:var(--navy); font-size:1.25rem;}
+
+/* パターン表 */
+.ptbl{width:100%; border-collapse:collapse; margin-top:.75rem; background:#fff;
+  border:.12rem solid var(--line); border-radius:.5rem; overflow:hidden;}
+.ptbl caption{caption-side:top; text-align:left; font-size:.95rem; font-weight:700;
+  color:var(--gray); padding:.15rem 0 .45rem;}
+.ptbl td{border-top:.08rem solid var(--line); padding:.5rem .8rem; font-size:1.02rem; color:var(--ink2);}
+.ptbl tr:first-child td{border-top:none;}
+.ptbl td:last-child{text-align:right; font-weight:800; color:var(--navy); width:6rem;}
+.ptbl tr.hi td{background:var(--coralBg); color:var(--coralInk);}
+.ptbl tr.hi td:last-child{color:var(--coralInk);}
+
+.timeline{display:flex; align-items:center; gap:.8rem; margin-top:1rem; background:var(--navy);
+  border-radius:.6rem; padding:.7rem 1.1rem; color:#fff;}
+.timeline__lab{flex:none; font-size:.95rem; font-weight:700; color:rgba(255,255,255,.8);}
+.timeline__bar{flex:1; display:flex; align-items:center; gap:.6rem;}
+.timeline__seg{flex:1; text-align:center; font-size:1.05rem; font-weight:800; padding:.3rem 0;
+  border-radius:.35rem; background:rgba(255,255,255,.12);}
+.timeline__seg--on{background:var(--coral);}
+.timeline__ar{flex:none; color:var(--coral); font-weight:800; font-size:1.2rem;}
+.tl-note{margin-top:.55rem; font-size:1.12rem; font-weight:700; color:var(--navy); text-align:center;}
+
+/* 試験カード */
+.trial__row{display:flex; gap:.6rem; align-items:flex-start; font-size:1.02rem; line-height:1.66; color:var(--ink2);}
+.trial__row + .trial__row{margin-top:.5rem;}
+.trial__k{flex:none; width:3.2rem; font-weight:800; color:var(--navy);}
+.card--coral .trial__k{color:var(--coralInk);}
+.ep{margin-top:.8rem; border:.14rem solid var(--navy); border-radius:.6rem; padding:.7rem .9rem; background:#fff;}
+.ep--sub{border-width:.09rem; border-color:var(--line);}
+.ep__h{display:flex; align-items:center; justify-content:space-between; gap:.6rem;}
+.ep__t{font-size:1rem; font-weight:800; color:var(--navy);}
+.ep__mark{flex:none; font-size:1.3rem; font-weight:800;}
+.ep__mark--no{color:var(--gray);}
+.ep__mark--yes{color:var(--ok);}
+.ep__d{font-size:1.04rem; line-height:1.66; color:var(--ink2); margin-top:.35rem;}
+.ep__d b{color:var(--navy);}
+.ep__v{font-weight:800;}
+.cav{display:flex; gap:.5rem; margin-top:.7rem; font-size:.94rem; line-height:1.6; color:var(--gray);}
+.cav .i{flex:none; color:var(--amber); font-weight:800;}
+
+/* 表 */
+.tbls{display:flex; gap:1rem; align-items:flex-start;}
+.tbl{flex:1 1 0;}
+.tbl__t{font-size:1rem; font-weight:800; color:#fff; background:var(--navy);
+  border-radius:.35rem .35rem 0 0; padding:.4rem .8rem; line-height:1.5;}
+table.d{width:100%; border-collapse:collapse; border:.12rem solid var(--navy); border-top:none;}
+table.d th{background:var(--navyBg); color:var(--navy); font-size:.9rem; font-weight:800;
+  padding:.45rem .55rem; text-align:left; line-height:1.4; border:.06rem solid var(--line);}
+table.d td{border:.06rem solid var(--line); padding:.5rem .55rem; font-size:.9rem; line-height:1.55;
+  color:var(--ink2); vertical-align:top;}
+table.d td.k{font-weight:800; color:var(--navy); background:#FAFBFC; width:7.2rem;}
+table.d td.hi{background:var(--coralBg);}
+table.d td.hi b{color:var(--coralInk);}
+table.d td.c{text-align:center;}
+.note{display:flex; gap:.5rem; margin-top:.6rem; font-size:.9rem; line-height:1.62; color:var(--gray);}
+.note .i{flex:none; color:var(--navy); font-weight:800;}
+
+/* 3層 */
+.tiers{display:flex; flex-direction:column; gap:.7rem;}
+.tier{display:flex; gap:1rem; align-items:flex-start; border:.13rem solid var(--line);
+  border-radius:.7rem; background:#fff; padding:.9rem 1.1rem;}
+.tier--warn{border-color:var(--amber); background:var(--amberBg);}
+.tier__k{flex:none; width:8.2rem; font-weight:800; color:var(--navy); line-height:1.5; font-size:1.02rem;}
+.tier--warn .tier__k{color:var(--amber);}
+.tier__b{flex:1;}
+.tier__h{font-size:1.24rem; font-weight:800; color:var(--navy); line-height:1.5;}
+.tier--warn .tier__h{color:var(--amber);}
+.tier__d{font-size:1rem; line-height:1.68; color:var(--ink2); margin-top:.3rem;}
+.tier__d li{margin-left:1.1rem;}
+
+/* 注意バッジ */
+.badges{margin-top:1.5rem; border:.16rem solid var(--amber); border-radius:.8rem;
+  background:var(--amberBg); padding:1rem 1.3rem;}
+.badge__t{display:flex; align-items:center; gap:.6rem; font-size:1.24rem; font-weight:800;
+  color:var(--amber); margin-bottom:.6rem;}
+.badges ul{list-style:none;}
+.badges li{display:flex; gap:.6rem; font-size:1.05rem; line-height:1.7; color:var(--ink2); padding:.15rem 0;}
+.badges li .m{flex:none; color:var(--amber); font-weight:800;}
+.badges li b{color:var(--amber);}
+
+.src{padding:0 3rem; margin-top:2rem; font-size:.86rem; line-height:1.75; color:var(--gray);}
+.foot{margin:1.3rem 3rem 0; padding-top:1.2rem; border-top:.12rem solid var(--line);
+  display:flex; align-items:center; justify-content:space-between; gap:.8rem; flex-wrap:wrap;
+  font-size:1.24rem; color:var(--gray); font-weight:700;}
+.foot .x{color:var(--coral);}
+
+@media (max-width:1079px){ html{font-size:1.48vw;} }
+@media (max-width:720px){
+  html{font-size:12px;}
+  .hd{padding:1.6rem 1.2rem 1.4rem;} .hd__title{font-size:2.1rem;}
+  .sec,.src{padding-left:1.2rem; padding-right:1.2rem;}
+  .foot{margin-left:1.2rem; margin-right:1.2rem;}
+  .cards,.tbls{flex-direction:column;}
+  .tier{flex-direction:column; gap:.35rem;} .tier__k{width:auto;}
+}
+</style>
+</head>
+<body>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+<div class="info">
+
+  <div class="hd">
+    <div class="hd__title">高血圧と認知症</div>
+    <div class="hd__sub">“下げれば防げる”と言えるのか、一次資料で確認する</div>
+    <div class="hd__by">脳神経内科医が一次資料で解説</div>
+  </div>
+
+  <!-- ① -->
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">1</span>高血圧は認知症の14因子のひとつ</div>
+    <div class="cards">
+      <div class="card card--coral" style="flex:0 0 38%;">
+        <span class="card__t">Lancet 2024 委員会報告</span>
+        <p>認知症の予防可能な危険因子<br><b>14因子</b>・合計人口寄与割合（PAF）</p>
+        <div class="big"><span class="big__n">45</span><span class="big__u">%</span></div>
+        <div class="big__cap">早年期 5% ＋ 中年期 30% ＋ 晩年期 10%</div>
+        <p style="margin-top:.9rem;">高血圧の中年期PAF：<b style="font-size:1.5rem;">2%</b></p>
+        <div class="paf"><b>PAFは集団全体で高血圧を取り除けたと仮定した場合の推計値</b>であり、個人のリスクが下がる割合ではない</div>
+      </div>
+
+      <div class="card">
+        <span class="card__t">「いつの血圧が効くか」＝中年期を示す2つの観察研究</span>
+        <p><b>ARIC研究（Gottesman 2014, JAMA Neurol）</b><br>晩年期の収縮期血圧は、それに先行する20年間の認知機能低下と関連しなかった</p>
+        <p><b>ARIC研究（Walker 2019, JAMA）</b><br>晩年期の血圧にかかわらず、中年期の持続的高血圧は認知症リスクと関連</p>
+        <div class="hr">ハザード比 <b>1.41</b><span style="font-size:1rem;color:var(--gray);">（95%信頼区間 1.17-1.71）</span></div>
+
+        <table class="ptbl">
+          <caption>参考：血圧パターン別の認知症発症率（/100人年）</caption>
+          <tr><td>中年期・晩年期とも正常血圧</td><td>1.31</td></tr>
+          <tr><td>中年期・晩年期とも高血圧</td><td>2.83</td></tr>
+          <tr class="hi"><td><b>中年期高血圧・晩年期低血圧</b></td><td>4.26</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="timeline">
+      <span class="timeline__lab">時期</span>
+      <div class="timeline__bar">
+        <span class="timeline__seg">若年期</span>
+        <span class="timeline__ar">→</span>
+        <span class="timeline__seg timeline__seg--on">中年期</span>
+        <span class="timeline__ar">→</span>
+        <span class="timeline__seg">晩年期</span>
+      </div>
+    </div>
+    <div class="tl-note">いま測っている血圧より、20〜30年前の血圧のほうが効いている</div>
+  </div>
+
+  <!-- ② -->
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">2</span>2つの大規模試験、“何を測ったか”が違う</div>
+    <div class="cards">
+      <div class="card">
+        <span class="card__t">SPRINT MIND, JAMA 2019</span>
+        <div class="trial__row"><span class="trial__k">対象</span><span>米国50歳以上・高血圧あり（糖尿病・脳卒中既往は除外）、<b>9,361例</b></span></div>
+        <div class="trial__row"><span class="trial__k">介入</span><span>収縮期血圧目標 <b>&lt;120mmHg</b>（厳格）vs <b>&lt;140mmHg</b>（標準）</span></div>
+
+        <div class="ep">
+          <div class="ep__h">
+            <span class="ep__t">主要評価項目：probable dementia（臨床診断された認知症）</span>
+            <span class="ep__mark ep__mark--no">✕</span>
+          </div>
+          <div class="ep__d"><span class="ep__v">7.2 vs 8.6</span> /1000人年<br>ハザード比 <span class="ep__v">0.83</span>（95%信頼区間 0.67-1.04）<br><b>＝統計学的に有意差なし</b></div>
+        </div>
+        <div class="ep ep--sub">
+          <div class="ep__h">
+            <span class="ep__t">副次評価項目：MCI（軽度認知障害）</span>
+            <span class="ep__mark ep__mark--yes">✔</span>
+          </div>
+          <div class="ep__d"><span class="ep__v">14.6 vs 18.3</span> /1000人年<br>ハザード比 <span class="ep__v">0.81</span>（95%信頼区間 0.69-0.95）<br><b>＝有意に減少</b></div>
+        </div>
+        <div class="cav"><span class="i">ⓘ</span><span>試験が早期中止となり発症例が予想より少なかったため、この評価項目については検出力不足であった可能性がある（原著の記載）</span></div>
+      </div>
+
+      <div class="card card--coral">
+        <span class="card__t">He 2025, Nat Med</span>
+        <div class="trial__row"><span class="trial__k">対象</span><span>中国農村部・40歳以上・血圧コントロール不良、<b>33,995例</b></span></div>
+        <div class="trial__row"><span class="trial__k">介入</span><span>非医師の地域医療従事者主導のステップドケアで降圧薬を開始・増量（目標 収縮期&lt;130かつ拡張期&lt;80mmHg）</span></div>
+        <div class="trial__row"><span class="trial__k">降圧幅</span><span>48か月時点で 収縮期 <b>−22.0mmHg</b>／拡張期 <b>−9.3mmHg</b></span></div>
+
+        <div class="ep" style="border-color:var(--coral);">
+          <div class="ep__h">
+            <span class="ep__t" style="color:var(--coralInk);">主要評価項目：全原因認知症</span>
+            <span class="ep__mark ep__mark--yes">✔</span>
+          </div>
+          <div class="ep__d">相対危険度 <span class="ep__v">0.85</span>（95%信頼区間 0.76-0.95、P=0.0035）<br><b style="color:var(--coralInk);">＝有意に減少</b></div>
+        </div>
+        <div class="cav"><span class="i">ⓘ</span><span>対象は血圧コントロール不良の中国農村部の集団。降圧幅も大きく、日本の一般的な高血圧治療とは前提が異なる</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ -->
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">3</span>増えるのは、まず血管性認知症</div>
+    <div class="tbls">
+      <div class="tbl">
+        <div class="tbl__t">表1　久山町研究＝日本人データ（Ninomiya 2011, Hypertension）</div>
+        <table class="d">
+          <tr><th>項目</th><th>血管性認知症</th><th>アルツハイマー病</th></tr>
+          <tr>
+            <td class="k">晩年期血圧との関連</td>
+            <td class="hi"><b>血圧が高いほど発症率が上昇</b><br>正常 2.3 → ステージ2高血圧 18.9 /1000人年<br>（傾向性 P&lt;0.001）</td>
+            <td>明確な関連なし<br>（傾向性 P=0.88）</td>
+          </tr>
+          <tr>
+            <td class="k">中年期高血圧が<br>ある場合のリスク</td>
+            <td class="hi">晩年期の血圧にかかわらず<br><b>約5倍</b></td>
+            <td>同様の強い関連なし</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="tbl">
+        <div class="tbl__t">表2　降圧治療のメタ解析2本</div>
+        <table class="d">
+          <tr><th>研究</th><th>規模</th><th>効果指標</th><th>絶対値</th></tr>
+          <tr>
+            <td class="k">Hughes 2020,<br>JAMA</td>
+            <td>RCT14件・<br>96,158例</td>
+            <td class="c">オッズ比<br><b>0.93</b><br>（95%信頼区間<br>0.88-0.98）</td>
+            <td class="c">絶対リスク減少<br><b>0.39%</b><br>（95%信頼区間<br>0.09-0.68%）</td>
+          </tr>
+          <tr>
+            <td class="k">Peters 2022,<br>Eur Heart J</td>
+            <td>28,008例<br>（個別患者データ統合）</td>
+            <td class="c">調整オッズ比<br><b>0.87</b><br>（95%信頼区間<br>0.75-0.99）</td>
+            <td class="c">平均降圧幅<br><b>10/4mmHg</b><br>（収縮期/拡張期）</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div class="note"><span class="i">ⓘ</span><span>表2の注記：Peters 2022 の「絶対値」は絶対リスク減少ではなく<b>実際に下げた降圧幅</b>（収縮期/拡張期 mmHg）。Hughes 2020 の「絶対リスク減少 0.39%」とは単位が異なる（Peters 2022 のSoTに絶対リスク減少の記載がないための代替表記）。</span></div>
+  </div>
+
+  <!-- ④ -->
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">4</span>いま何をすればよいか</div>
+    <div class="tiers">
+      <div class="tier">
+        <div class="tier__k">層1<br>いつから</div>
+        <div class="tier__b">
+          <div class="tier__h">中年期（40歳以降）から血圧を管理する</div>
+          <div class="tier__d">Lancet委員会の提言：40歳以降、収縮期130mmHg以下を目標に管理</div>
+        </div>
+      </div>
+      <div class="tier">
+        <div class="tier__k">層2<br>下げると<br>何が起きるか</div>
+        <div class="tier__b">
+          <div class="tier__h">降圧治療でリスクはやや下がる。ただし劇的ではない</div>
+          <div class="tier__d">複数のメタ解析でオッズ比 0.87〜0.93、絶対リスク減少は 0.39%（Hughes 2020）</div>
+        </div>
+      </div>
+      <div class="tier tier--warn">
+        <div class="tier__k">層3<br>下げすぎへの<br>注意</div>
+        <div class="tier__b">
+          <div class="tier__h">“中年期高血圧→晩年期低血圧”の組み合わせが最もリスクが高かった</div>
+          <div class="tier__d">
+            （Walker 2019、ハザード比 1.62、発症率 4.26/100人年）
+            <ul>
+              <li>ただしこれは<b>観察されたパターンの分類</b>であり、降圧薬で下げすぎた場合の話ではない</li>
+              <li>高齢者の過度な降圧に伴う<b>起立性低血圧・転倒</b>は、別の実務課題として注意する</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="badges">
+      <div class="badge__t"><span>⚠</span>大切な注意点</div>
+      <ul>
+        <li><span class="m">●</span><span><b>「血圧を下げれば認知症を防げる」とは言い切れない</b></span></li>
+        <li><span class="m">●</span><span>PAF（2%）は個人のリスクではなく<b>集団全体の推計値</b></span></li>
+        <li><span class="m">●</span><span><b>自己判断で降圧薬を減らす・やめることは勧めない</b></span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="src">
+    出典：SPRINT MIND Investigators. JAMA. 2019 ／ Hughes D, et al. JAMA. 2020 ／ Peters R, et al. Eur Heart J. 2022 ／
+    He J, et al. Nat Med. 2025 ／ Walker KA, et al. JAMA. 2019 ／ Ninomiya T, et al. Hypertension. 2011 ／
+    Gottesman RF, et al. JAMA Neurol. 2014 ／ Livingston G, et al. Lancet. 2024
+    <br>すべて PubMed で実在を確認しています。個々の治療方針は主治医の判断によります。
+  </div>
+
+  <div class="foot"><span><span class="x">✚</span> 医知創造ラボ</span><span>監修：今村久司（脳神経内科専門医・総合内科専門医）</span></div>
+</div>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px auto 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+</body>
+</html>

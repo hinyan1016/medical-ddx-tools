@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1B3A5C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="血圧を指摘された方とご家族への配布資料です。認知症に効いているのはいま測っている血圧より中年期の血圧であること、高血圧で増えるのはまず血管性認知症であること、下げれば防げるとまでは言い切れないこと、そして自己判断で降圧薬を減らさないことをまとめました。家庭血圧の記録欄つき。">
+<title>高血圧と認知症のこと｜血圧を指摘された方とご家族へ</title>
+<style>
+  :root{
+    --navy:#1B3A5C;          /* 構造色（見出し・罫線）*/
+    --accent:#FF7A59;        /* テーマの差し色 */
+    --accent-ink:#B8431F;
+    --accent-bg:#FFF1EC;
+    --danger:#C0392B;        /* 警告は別の赤 */
+    --danger-bg:#FBEAE8;
+    --danger-line:#EAC5C0;
+    --navy-bg:#EEF2F6;
+    --line:#D6E0E9;
+    --ink:#1a1a1a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    font-family:"Yu Gothic","游ゴシック","Hiragino Kaku Gothic ProN","Segoe UI",sans-serif;
+    color:var(--ink); background:#eef1f4; line-height:1.6; padding:16px;
+    /* 日本語の語中改行を文節境界で切る */
+    word-break:auto-phrase; line-break:strict;
+  }
+  .sheet{background:#fff;max-width:820px;margin:0 auto 20px;padding:22px 26px 26px;box-shadow:0 2px 14px rgba(0,0,0,.12);}
+  .head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:14px;}
+  .kicker{display:inline-block;background:var(--accent);color:#fff;font-size:12px;font-weight:700;
+    letter-spacing:.06em;padding:3px 10px;border-radius:3px;margin-bottom:7px;}
+  h1{font-size:22px;font-weight:800;color:var(--navy);line-height:1.35;}
+  .sub{font-size:12.5px;color:var(--accent-ink);font-weight:700;margin-top:6px;}
+  .lead{font-size:13.5px;color:#333;margin-top:8px;}
+  .lead b{color:var(--navy);}
+  h2{font-size:15px;font-weight:800;color:#fff;background:var(--navy);padding:5px 12px;border-radius:4px;
+    margin:14px 0 9px;display:flex;align-items:center;gap:8px;}
+  h2 .num{background:#fff;color:var(--navy);font-size:12.5px;font-weight:800;width:21px;height:21px;
+    border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex:0 0 21px;}
+  h2.hd{background:var(--danger);}
+  h2.hd .num{color:var(--danger);}
+  ul.checks{list-style:none;margin-top:8px;}
+  ul.checks li{display:flex;gap:9px;align-items:flex-start;padding:4.5px 2px;
+    border-bottom:1px dashed var(--line);font-size:13px;}
+  ul.checks li:last-child{border-bottom:none;}
+  ul.checks .box{flex:0 0 17px;width:17px;height:17px;margin-top:1px;border:2px solid var(--navy);border-radius:3px;}
+  ul.checks li b{color:var(--navy);}
+  /* 補足は必ず別行にする（インラインだと本文と続き読みになる） */
+  ul.checks .why{display:block;color:#555;font-size:11.5px;margin-top:1px;}
+  .bothnote{margin-top:8px;background:var(--accent-bg);border-left:5px solid var(--accent);
+    padding:9px 13px;font-size:13px;color:#333;border-radius:0 6px 6px 0;}
+  .bothnote b{color:var(--accent-ink);}
+  .alert{border:2.5px solid var(--danger);border-radius:8px;padding:11px 14px;background:var(--danger-bg);}
+  .alert .at{color:var(--danger);font-weight:800;font-size:15px;margin-bottom:6px;}
+  .alert p{font-size:13px;line-height:1.62;}
+  .alert p + p{margin-top:6px;}
+  .alert b{color:var(--danger);}
+  .memo{border:1.5px solid var(--line);border-radius:8px;padding:10px 13px;margin-top:14px;font-size:12.5px;}
+  .memo .mtitle{font-weight:800;color:var(--navy);font-size:13.5px;margin-bottom:5px;}
+  .memo .mtext{font-size:12.5px;color:#333;margin-bottom:7px;}
+  .memo .mtext b{color:var(--accent-ink);}
+  .memo .mrow{display:flex;gap:6px;align-items:baseline;padding:5px 0;}
+  .memo .mlabel{flex:0 0 200px;font-weight:700;color:var(--navy);white-space:nowrap;}
+  .memo .mline{flex:1;border-bottom:1px solid #97a6b5;min-height:18px;}
+  .btbl{width:100%;border-collapse:collapse;margin-top:8px;table-layout:fixed;}
+  .btbl th,.btbl td{border:1px solid var(--line);text-align:center;font-size:11px;padding:2px 1px;}
+  .btbl th{background:var(--navy-bg);color:var(--navy);font-weight:800;width:64px;white-space:nowrap;}
+  .btbl td{height:22px;}
+  .bcap{font-size:11.5px;color:#555;margin-top:5px;}
+  .foot{margin-top:16px;padding-top:10px;border-top:1px solid var(--line);font-size:11px;color:#666;line-height:1.5;}
+  .foot .brand{font-weight:700;color:var(--navy);}
+  .noprint{margin:0 auto 18px;max-width:820px;text-align:center;}
+  .pbtn{display:inline-block;background:var(--navy);color:#fff;text-decoration:none;font-size:14px;
+    font-weight:700;padding:10px 24px;border-radius:24px;border:none;cursor:pointer;box-shadow:0 2px 10px rgba(27,58,92,.25);}
+  .pbtn:active{transform:scale(.98);}
+  .noprint p{font-size:12px;color:#777;margin-top:8px;}
+
+  @page{size:A4 portrait;margin:10mm 12mm;}
+  @media print{
+    body{background:#fff;padding:0;font-size:9.8pt;}
+    .sheet{box-shadow:none;margin:0;max-width:none;padding:0;}
+    .noprint{display:none !important;}
+    h1{font-size:16pt;line-height:1.25;}
+    h2{font-size:11.5pt;-webkit-print-color-adjust:exact;print-color-adjust:exact;margin:3px 0 1px;padding:1px 9px;}
+    h2 .num{width:17px;height:17px;flex:0 0 17px;font-size:10.5pt;}
+    .kicker,.alert,.bothnote,.btbl th{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .kicker{padding:2px 9px;margin-bottom:4px;}
+    .sub{margin-top:3px;}
+    ul.checks{margin-top:4px;}
+    ul.checks li{font-size:9.3pt;padding:0px 2px;line-height:1.32;}
+    ul.checks .why{font-size:9pt;}
+    .lead{font-size:9pt;margin-top:1px;line-height:1.42;}
+    .head{padding-bottom:2px;margin-bottom:2px;}
+    .alert{padding:3px 9px;}
+    .alert .at{font-size:10pt;margin-bottom:1px;}
+    .alert p{font-size:9.3pt;line-height:1.34;}
+    .bothnote{margin-top:3px;padding:3px 9px;font-size:9.3pt;line-height:1.32;}
+    .memo{margin-top:4px;padding:3px 9px;font-size:9.3pt;}
+    .memo .mtitle{font-size:10pt;margin-bottom:1px;}
+    .memo .mtext{font-size:9.1pt;margin-bottom:1px;line-height:1.32;}
+    .memo .mrow{padding:1px 0;}
+    .memo .mline{min-height:13px;}
+    .btbl th,.btbl td{font-size:8.4pt;padding:1px 1px;}
+    .btbl td{height:16px;}
+    .bcap{font-size:8.4pt;margin-top:2px;}
+    .foot{margin-top:3px;padding-top:2px;font-size:7.8pt;line-height:1.32;}
+    a[href]{color:inherit;text-decoration:none;}
+    .alert,.memo,.bothnote,.btbl{break-inside:avoid;page-break-inside:avoid;}
+    ul.checks li{break-inside:avoid;page-break-inside:avoid;}
+    h2{break-after:avoid;page-break-after:avoid;}
+  }
+  @media (max-width:560px){
+    body{padding:8px;} .sheet{padding:16px 15px 20px;} h1{font-size:19px;}
+    .memo .mlabel{flex:0 0 150px;} .btbl th{width:44px;}
+  }
+</style>
+</head>
+<body>
+<div class="noprint">
+  <button class="pbtn" id="printBtn">&#128424;&#65039; この資料を印刷する（A4）</button>
+  <p>A4・1枚（いつの血圧が効くか・どの認知症が増えるか・下げるとどうなるか・薬を自分でやめない・記入欄。カラー印刷推奨）</p>
+</div>
+
+<div class="sheet">
+
+  <div class="head">
+    <span class="kicker">血圧を指摘された方とご家族へ</span>
+    <h1>高血圧と認知症のこと<br>いま何をすればよいか</h1>
+    <p class="sub">「血圧を下げれば認知症を防げる」とは、まだ言い切れません。</p>
+    <p class="lead">高血圧が認知症の危険因子であることは分かっています。ただし<b>「下げれば防げる」と言い切れるかは、別の話</b>です。研究で分かっていること／まだ分かっていないことを分けて、いま何をすればよいかだけをまとめました。この紙は受診のときに持ってきて、主治医と一緒にお使いください。</p>
+  </div>
+
+  <h2><span class="num">1</span>効いているのは「いま」より「中年期」の血圧</h2>
+  <ul class="checks">
+    <li><span class="box"></span><span><b>40代からの血圧管理に意味があります</b><span class="why">研究では、いま測っている血圧より、20〜30年前の血圧のほうが認知症との関連がはっきりしていました</span></span></li>
+    <li><span class="box"></span><span>いまご高齢の方も、<b>主治医と決めた目標を守ることが土台</b>になります<span class="why">目標の数値は年齢や持病によって変わります。人によって違うので、この紙には書いていません</span></span></li>
+  </ul>
+
+  <h2><span class="num">2</span>増えるのは、まず「血管性認知症」</h2>
+  <div class="bothnote">日本人を長く追いかけた研究（久山町研究）では、<b>血圧が高い人ほど血管性認知症が増えていました。</b>一方で、アルツハイマー病では同じような関連は見られませんでした。<b>認知症とひとくくりにせず、「血圧と結びつきが強いのは血管性のほう」</b>と考えるのが、いまの研究に忠実な見方です。</div>
+
+  <h2><span class="num">3</span>下げると減る。ただし「防げる」とまでは言えない</h2>
+  <ul class="checks">
+    <li><span class="box"></span><span>降圧治療で認知症は<b>減る方向</b>ですが、<b>劇的に減るわけではありません</b></span></li>
+    <li><span class="box"></span><span>血圧を厳しく下げた大規模試験で<b>はっきり減ったのは「軽度認知障害」</b>のほうでした<span class="why">認知症そのものについては、この試験では差を示せませんでした（「効果がない」と証明されたわけではありません）</span></span></li>
+    <li><span class="box"></span><span>それでも血圧の管理には、<b>脳卒中や心臓の病気を防ぐという別の意味</b>があります</span></li>
+  </ul>
+
+  <h2 class="hd"><span class="num">4</span>自己判断で薬を減らさないでください</h2>
+  <div class="alert">
+    <div class="at">&#9888;&#65039; ここがいちばん大切です</div>
+    <p>「血圧を下げすぎると認知症になる」という話を見かけることがあります。もとになった研究は、<b>血圧がどう変わってきたかを観察して分類したもの</b>で、<b>降圧薬で下げすぎた場合を調べた研究ではありません。</b></p>
+    <p>ですから、この話を理由に<b>自分の判断で薬を減らす・やめることは勧められません。</b>ふらつき、立ちくらみ、転びそうになることがあれば、<b>薬をやめるのではなく、そのことを主治医に伝えてください。</b>量や種類の調整は主治医が判断します。</p>
+  </div>
+
+  <h2><span class="num">5</span>家で血圧を測って、受診のときに見せる</h2>
+  <ul class="checks">
+    <li><span class="box"></span><span>できるだけ<b>同じ時間・同じ姿勢</b>で測り、下の欄に書いておきます</span></li>
+    <li><span class="box"></span><span><b>1回の高い値で慌てない。</b>続けて記録した流れを主治医が見ます</span></li>
+    <li><span class="box"></span><span>ふらついた日は、その日の欄に<b>○</b>をつけておくと伝わりやすくなります</span></li>
+  </ul>
+
+  <div class="memo">
+    <div class="mtitle">&#9997;&#65039; 受診のときに、主治医と一緒に書きましょう</div>
+    <div class="mtext"><b>血圧の目標は人によって違います。</b>あなたの目標を、ここに書いてもらってください。</div>
+    <div class="mrow"><span class="mlabel">わたしの血圧の目標</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">気になるときの連絡先</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">次の受診日</span><span class="mline"></span></div>
+
+    <table class="btbl">
+      <tr><th>日付</th><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><th>上／下</th><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><th>日付</th><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><th>上／下</th><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    </table>
+    <div class="bcap">2週間分。ふらつきがあった日は、値の欄に○をつけてください。</div>
+  </div>
+
+  <div class="foot">
+    <span class="brand">医知創造ラボ</span>｜監修：今村久司（脳神経内科専門医・総合内科専門医）<br>
+    この資料は、PubMedで実在を確認した一次文献をもとに作成しています。<b>お薬の種類や量、血圧の目標値については、必ず主治医にご確認ください。</b>治療方針は担当の先生の判断によります。
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var b = document.getElementById('printBtn');
+  if (b) { b.addEventListener('click', function(){ window.print(); }); }
+})();
+</script>
+</body>
+</html>
