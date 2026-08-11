@@ -1,0 +1,735 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>心不全の患者さんに「毎日体重を測って」と言う前に｜2025年改訂ガイドラインで変わったこと — 外来患者指導シリーズ第41弾</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* warm accent (tweakable) */
+  --accent: #FF7A59;
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, #ffffff);
+  --accent-line: color-mix(in srgb, var(--accent) 60%, #ffffff);
+  --accent-ink: color-mix(in srgb, var(--accent) 70%, #5a2418);
+
+  /* type scale — multiply all via --type-mult (base enlarged for mobile readability) */
+  --type-mult: 1.38;
+  --type-display: calc(96px * var(--type-mult));
+  --type-title:   calc(82px * var(--type-mult));
+  --type-heading: calc(60px * var(--type-mult));
+  --type-subtitle:calc(44px * var(--type-mult));
+  --type-body:    calc(38px * var(--type-mult));
+  --type-small:   calc(30px * var(--type-mult));
+  --type-label:   calc(27px * var(--type-mult));
+  --type-chapter: calc(210px * var(--type-mult));
+  --type-stat:    calc(150px * var(--type-mult));
+
+  --pad-x: 112px;
+  --pad-top: 58px;
+  --pad-bottom: 116px;  /* フッター帯(bottom 36-40px + 行高53px = 89-93px)を必ず避ける。80pxだと content box 下端がフッター上端より下になり9-13px食い込む */
+  --gap-title: 24px;
+  --gap-item: 22px;
+
+  --grad-navy: linear-gradient(135deg, #1B3A5C 0%, #2C5AA0 100%);
+}
+
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#0c1622; }
+
+/* ---------- base slide ---------- */
+.slide{
+  box-sizing:border-box;
+  display:flex; flex-direction:column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--font-ja);
+  overflow:hidden;
+  position:relative;
+}
+.slide--navy{ background: var(--grad-navy); color: var(--white); }
+.slide--soft{ background: var(--bg-alt); }
+
+/* eyebrow — shared header marker across content slides */
+.eyebrow{
+  display:flex; align-items:center; gap:16px;
+  font-size: var(--type-label); font-weight:700; color: var(--blue);
+  letter-spacing:.04em;
+}
+.eyebrow::before{
+  content:""; width:18px; height:18px; border-radius:4px;
+  background: var(--accent); flex:none;
+}
+.eyebrow .num{ font-family: var(--font-en); color: var(--accent-ink); }
+
+.s-title{
+  font-size: var(--type-heading); line-height:1.22; color: var(--navy);
+  margin: var(--gap-title) 0 0; font-weight:700; letter-spacing:.01em;
+  text-wrap: pretty;
+}
+.slide--navy .s-title{ color:#fff; }
+
+.lead{
+  font-size: var(--type-body); line-height:1.7; color: var(--ink-2);
+  margin:0; text-wrap: pretty;
+}
+.muted{ color: var(--gray); }
+
+/* footer band w/ channel + page (decorative, consistent) */
+.slide__foot{
+  position:absolute; left: var(--pad-x); right: var(--pad-x); bottom: 40px;
+  display:flex; align-items:center; justify-content:space-between;
+  font-size: calc(24px * var(--type-mult)); color: var(--gray);
+  font-family: var(--font-ja);
+}
+.slide__foot .ch{ display:flex; align-items:center; gap:10px; }
+.slide__foot .cross{ color: var(--accent); font-weight:700; }
+.slide--navy .slide__foot{ color: rgba(255,255,255,.65); }
+.slide--navy .slide__foot .cross{ color:#fff; }
+
+/* ============ 1. COVER ============ */
+.cover{ justify-content:center; }
+.cover__badge{
+  display:inline-flex; align-items:center; gap:14px; align-self:flex-start;
+  background: rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.28);
+  color:#fff; padding:14px 26px; border-radius:999px;
+  font-size: var(--type-label); font-weight:700;
+}
+.cover__badge .cross{ color: var(--accent); font-size:1.2em; }
+.cover__title{
+  font-size: var(--type-display); line-height:1.18; color:#fff; font-weight:700;
+  margin:42px 0 0; letter-spacing:.01em; text-wrap:balance; max-width:24ch;
+}
+.cover__title .hl{ color: var(--accent); }
+.cover__sub{
+  font-size: var(--type-subtitle); color: rgba(255,255,255,.82);
+  margin:34px 0 0; font-weight:400;
+}
+.cover__meta{
+  display:flex; gap:34px; align-items:center; margin-top:60px;
+  font-size: var(--type-small); color: rgba(255,255,255,.78);
+}
+.cover__meta .ep{
+  font-family: var(--font-en); font-weight:700; color:#fff;
+  background: var(--accent); padding:8px 20px; border-radius:8px;
+}
+.cover__blob{
+  position:absolute; right:-160px; top:-160px; width:620px; height:620px;
+  border-radius:50%; background: radial-gradient(circle at 30% 30%, rgba(255,122,89,.5), rgba(255,122,89,0) 70%);
+  pointer-events:none;
+}
+
+/* ============ 2. THEME / CONCLUSION FIRST ============ */
+.theme__body{ display:flex; flex-direction:column; gap: var(--gap-title); margin-top: 28px; flex:1; justify-content:center; }
+.theme__q{ font-size: var(--type-title); line-height:1.25; color: var(--navy); font-weight:700; max-width:22ch; text-wrap:balance; }
+.theme__q .hl{ color: var(--accent-ink); border-bottom: 8px solid var(--accent-line); }
+.concl{
+  display:flex; align-items:flex-start; gap:28px;
+  background: var(--accent-soft); border-left: 12px solid var(--accent);
+  border-radius: 10px; padding: 32px 44px;
+}
+.concl__tag{
+  flex:none; background: var(--accent); color:#fff; font-weight:700;
+  font-size: var(--type-small); padding:10px 22px; border-radius:8px;
+}
+.concl__text{ font-size: var(--type-subtitle); line-height:1.5; color: var(--navy-ink); font-weight:700; margin:0; }
+
+/* ============ 3. AGENDA ============ */
+.agenda__list{ display:flex; flex-direction:column; gap:12px; margin-top:18px; }
+.agenda__item{
+  display:flex; align-items:center; gap:26px;
+  background: var(--white); border:2px solid var(--line); border-left:8px solid var(--blue);
+  border-radius:10px; padding: 12px 32px; box-shadow: var(--shadow-sm);
+}
+.agenda__num{
+  flex:none; width:54px; height:54px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background: var(--blue-soft); color: var(--blue);
+  font-family: var(--font-en); font-size: calc(32px * var(--type-mult)); font-weight:700;
+}
+.agenda__item:nth-child(2) .agenda__num{ background: var(--accent-soft); color: var(--accent-ink); }
+.agenda__txt{ font-size: var(--type-small); color: var(--navy); font-weight:700; }
+.agenda__txt small{ display:block; font-size: var(--type-label); color: var(--gray); font-weight:400; margin-top:4px; }
+
+/* ============ 4. CHAPTER DIVIDER ============ */
+.chapter{ justify-content:center; }
+.chapter__num{
+  font-family: var(--font-en); font-size: var(--type-chapter); line-height:.9;
+  font-weight:700; color: var(--accent); margin:0;
+}
+.chapter__kicker{ font-size: var(--type-subtitle); color: rgba(255,255,255,.75); font-weight:700; letter-spacing:.1em; }
+.chapter__title{ font-size: var(--type-title); color:#fff; font-weight:700; margin:18px 0 0; max-width:20ch; text-wrap:balance; }
+.chapter__rule{ width:120px; height:8px; background: var(--accent); border-radius:4px; margin-top:40px; }
+
+/* ============ 5. BODY 1 COLUMN ============ */
+.body1{ }
+.body1__main{ margin-top: 26px; max-width: 1640px; display:flex; flex-direction:column; gap:20px; }
+.body1 .lead{ margin-bottom: 0; }
+.important-box.lg{
+  background: var(--blue-tint); border-left: 12px solid var(--blue);
+  border-radius: 10px; padding: 26px 40px; margin:0;
+}
+.important-box.lg .ttl{ display:flex; align-items:center; gap:14px; font-size: var(--type-small); font-weight:700; color: var(--blue); margin-bottom:8px; }
+.important-box.lg p{ font-size: var(--type-body); line-height:1.6; color: var(--ink-2); margin:0; }
+
+/* ============ 6. BODY + ILLUSTRATION 2COL ============ */
+.cols2{ display:grid; grid-template-columns: 1.28fr 0.72fr; gap:54px; align-items:center; margin-top:24px; flex:1; }
+.cols2__text{ display:flex; flex-direction:column; gap: 18px; }
+.cols2__text .lead{ font-size: var(--type-body); }
+.point-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:18px; }
+.point-list li{ display:flex; align-items:flex-start; gap:20px; font-size: var(--type-body); color: var(--ink-2); line-height:1.5; }
+.point-list li::before{ content:"✓"; flex:none; width:44px; height:44px; border-radius:50%; background: var(--accent-soft); color: var(--accent-ink); font-weight:700; display:flex; align-items:center; justify-content:center; font-size:.8em; margin-top:2px; }
+.cols2 image-slot{ width:100%; height:460px; border:3px dashed var(--line-soft); border-radius:14px; }
+
+/* ============ 8. COMPARISON TABLE ============ */
+.tablewrap{ margin-top:26px; flex:1; }
+table.cmp{ width:100%; border-collapse:collapse; font-size: var(--type-small); }
+table.cmp th, table.cmp td{ text-align:left; padding:16px 28px; vertical-align:middle; line-height:1.4; }
+table.cmp thead th{ background: var(--navy); color:#fff; font-weight:700; font-size: var(--type-body); white-space:nowrap; }
+table.cmp thead th:first-child{ border-top-left-radius:10px; }
+table.cmp thead th:last-child{ border-top-right-radius:10px; }
+table.cmp tbody td{ border-bottom:1px solid var(--line); color: var(--ink-2); }
+table.cmp tbody tr:nth-child(even){ background: var(--bg-muted); }
+table.cmp tbody td:first-child{ font-weight:700; color: var(--navy); font-size: var(--type-body); white-space:nowrap; }
+table.cmp .pill{ display:inline-block; font-size: calc(24px * var(--type-mult)); font-weight:700; padding:6px 16px; border-radius:999px; }
+.pill--d{ background: var(--red-soft); color:#8a1f2b; }
+.pill--dash{ background: var(--bg-muted); color: var(--gray); }
+
+/* ============ 10. DISCLAIMER ============ */
+.disc{ justify-content:center; align-items:center; text-align:center; background: var(--bg-alt); }
+.disc__icon{ font-size: calc(96px * var(--type-mult)); line-height:1; }
+.disc__tag{ font-size: var(--type-subtitle); font-weight:700; color: var(--navy); margin:28px 0 0; letter-spacing:.06em; }
+.disc__box{
+  margin-top:38px; max-width:1180px; background:#fff; border:2px solid var(--line);
+  border-top: 10px solid var(--yellow); border-radius:12px; padding:48px 56px;
+  box-shadow: var(--shadow-md);
+}
+.disc__box p{ font-size: var(--type-body); line-height:1.7; color: var(--ink-2); margin:0; text-wrap:pretty; }
+.disc__box .strong{ color: var(--navy); font-weight:700; }
+
+/* ============ 12. ENDING / CTA ============ */
+.end{ justify-content:center; align-items:center; text-align:center; }
+.end__cross{ font-size: var(--type-subtitle); color: var(--accent); font-weight:700; }
+.end__h{ font-size: var(--type-title); color:#fff; font-weight:700; margin:18px 0 0; text-wrap:balance; }
+.end__sub{ font-size: var(--type-subtitle); color: rgba(255,255,255,.82); margin:26px 0 0; font-weight:400; }
+.end__cta{ display:flex; gap:30px; margin-top:64px; }
+.btn{ display:inline-flex; align-items:center; gap:16px; font-size: var(--type-subtitle); font-weight:700; padding:24px 48px; border-radius:999px; }
+.btn--sub{ background: var(--accent); color:#fff; }
+.btn--like{ background: rgba(255,255,255,.14); color:#fff; border:2px solid rgba(255,255,255,.4); }
+.end__next{ margin-top:56px; font-size: var(--type-small); color: rgba(255,255,255,.7); }
+.end__next b{ color:#fff; }
+
+/* ============ EDITORIAL POLISH (shared utilities) ============ */
+.eyebrow .en{ font-family: var(--font-en); color: var(--accent-ink); letter-spacing:.15em; text-transform:uppercase; }
+.slide--navy .eyebrow{ color: rgba(255,255,255,.85); }
+.slide--navy .eyebrow .en{ color:#fff; }
+.hairline{ height:1px; background: var(--navy); opacity:.25; margin: 18px 0 0; border:0; }
+.slide--navy .hairline{ background:#fff; opacity:.3; }
+.chapter-ghost{
+  position:absolute; top: 30px; right: var(--pad-x);
+  font-family: var(--font-en); font-weight:700; line-height:.8;
+  font-size: calc(150px * var(--type-mult)); color: var(--navy);
+  opacity:.06; pointer-events:none; user-select:none;
+}
+.slide--navy .chapter-ghost{ color:#fff; opacity:.10; }
+.hl-underline{ border-bottom: 6px solid var(--accent-line); }
+
+/* ============ 14. Q&A / MYTH ============ */
+.qa{ display:flex; flex-direction:column; gap:34px; margin-top:30px; flex:1; justify-content:center; }
+.qa__row{ display:flex; align-items:flex-start; gap:28px; border-radius:14px; padding:34px 44px; }
+.qa__row.myth{ background: var(--red-soft); border-left:12px solid var(--red); }
+.qa__row.fact{ background: var(--green-soft); border-left:12px solid var(--green); }
+.qa__mark{ flex:none; font-size: var(--type-heading); font-weight:900; line-height:1; }
+.qa__row.myth .qa__mark{ color: var(--red); }
+.qa__row.fact .qa__mark{ color: var(--green); }
+.qa__txt{ font-size: var(--type-subtitle); color: var(--ink-2); font-weight:700; line-height:1.4; margin:0; }
+
+/* ============ 18. CHECKLIST ============ */
+.check{ display:flex; flex-direction:column; gap:22px; margin-top:30px; flex:1; justify-content:center; max-width:1560px; }
+.check__item{ display:flex; align-items:center; gap:28px; font-size: var(--type-subtitle); color: var(--ink-2); font-weight:700; }
+.check__box{ flex:none; width:56px; height:56px; border-radius:10px; border:4px solid var(--line-soft); display:flex; align-items:center; justify-content:center; font-size: calc(40px * var(--type-mult)); color:#fff; }
+.check__item.on .check__box{ background: var(--blue); border-color: var(--blue); }
+.check__verdict{ margin-top:10px; background: var(--accent-soft); border-left:12px solid var(--accent); border-radius:10px; padding:26px 40px; font-size: var(--type-body); color: var(--navy); font-weight:700; }
+
+/* ============ 19. QUOTE / GUIDELINE ============ */
+.quote{ justify-content:center; align-items:center; text-align:center; }
+.quote__box{ position:relative; max-width:1620px; background: var(--bg-alt); border-left:12px solid var(--navy); border-radius:14px; padding:64px 70px 48px; display:flex; flex-direction:column; gap:22px; }
+.quote__mark{ position:absolute; top:-30px; left:40px; font-family: var(--font-en); font-size: calc(140px * var(--type-mult)); color: var(--accent); line-height:1; font-weight:900; }
+/* 引用は自動折り返しに任せず <br> で改行位置を手で決める。
+   pretty だと最終行が「扱った」のような3文字だけの行になり（orphanチェッカーは
+   1-2文字しか見ないのですり抜ける）、balance にすると「エビ／デンス」のように
+   カタカナ語を分断する。どちらも目視でしか気づけない。 */
+.quote__text{ font-size: var(--type-subtitle); color: var(--navy-ink); font-weight:700; line-height:1.5; margin:0; }
+.quote__text.sub{ font-size: var(--type-subtitle); color: var(--ink-2); font-weight:700; }
+.quote__text.sub b{ color: var(--accent-ink); }
+.quote__src{ font-size: var(--type-small); color: var(--gray); margin:10px 0 0; }
+
+/* ============ 20. BEFORE / AFTER ============ */
+.ba{ display:flex; align-items:stretch; gap:32px; margin-top:34px; flex:1; }
+.ba__col{ flex:1; border-radius:16px; padding:44px 40px; display:flex; flex-direction:column; gap:22px; }
+.ba__col.before{ background: var(--bg-alt); border:2px solid var(--line); }
+.ba__col.after{ background: var(--accent-soft); border:3px solid var(--accent); }
+.ba__tag{ align-self:flex-start; font-family: var(--font-en); font-size: var(--type-small); font-weight:700; letter-spacing:.1em; padding:8px 22px; border-radius:8px; }
+.ba__col.before .ba__tag{ background: var(--gray); color:#fff; }
+.ba__col.after .ba__tag{ background: var(--accent); color:#fff; }
+.ba__txt{ font-size: var(--type-body); color: var(--ink-2); line-height:1.5; font-weight:700; margin:0; }
+.ba__num{ font-family: var(--font-en); font-size: calc(70px * var(--type-mult)); font-weight:800; color: var(--navy); line-height:1; margin:0; }
+.ba__col.after .ba__num{ color: var(--accent-ink); }
+.ba__arrow{ flex:none; align-self:center; font-family: var(--font-en); font-size: calc(80px * var(--type-mult)); color: var(--accent); }
+
+/* ============ 36. LAYOUT INDEX (テンプレ内部用・本デッキでは未使用) ============ */
+.indexgrid{ display:grid; grid-template-columns: repeat(3,1fr); gap:6px 40px; margin-top:16px; flex:1; align-content:start; }
+.indexgrid div{ font-size: calc(var(--type-small) * 0.85); color: var(--ink-2); line-height:1.3; }
+.indexgrid b{ color: var(--accent-ink); font-family: var(--font-en); }
+
+/* ============ 第39弾 追加: 3メッセージ縦積み（02・18で共通） ============ */
+.concl__msgs{ counter-reset:cm; list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:14px; }
+.concl__msgs li{ counter-increment:cm; display:flex; align-items:flex-start; gap:20px; font-size: var(--type-small); font-weight:700; color: var(--navy-ink); line-height:1.38; }
+.concl__msgs li::before{
+  content: counter(cm); flex:none; width:40px; height:40px; border-radius:50%;
+  background: var(--accent); color:#fff; font-family: var(--font-en); font-weight:800;
+  display:flex; align-items:center; justify-content:center; font-size: calc(22px * var(--type-mult));
+}
+
+/* ============ 第39弾 追加: 場・対象集団の帯（05・06 必須） ============ */
+.popband{ display:inline-flex; align-items:flex-start; gap:16px; background: var(--blue-tint); border:2px solid var(--blue-soft); border-radius:10px; padding:14px 32px; margin-top:16px; max-width:1640px; }
+.popband .tag{ flex:none; margin-top:2px; background: var(--blue); color:#fff; font-size: var(--type-label); font-weight:800; padding:6px 18px; border-radius:6px; }
+.popband p{ font-size: var(--type-small); color: var(--navy); font-weight:700; margin:0; line-height:1.45; }
+
+/* ============ 第39弾 追加: 数値バー比較（05・06） ============ */
+.numbar{ display:flex; flex-direction:column; gap:20px; margin-top:18px; }
+.numbar__row{ display:flex; align-items:center; gap:26px; }
+.numbar__name{ flex:none; width:480px; text-align:right; font-size: var(--type-small); color: var(--navy); font-weight:700; white-space:nowrap; }
+.numbar__track{ flex:1; height:54px; background: var(--bg-muted); border-radius:0 10px 10px 0; }
+.numbar__fill{ height:100%; border-radius:0 10px 10px 0; background: var(--blue); display:flex; align-items:center; justify-content:flex-end; padding-right:22px; }
+.numbar__fill.peak{ background: var(--accent); }
+.numbar__fill span{ font-family: var(--font-en); font-size: var(--type-subtitle); font-weight:800; color:#fff; }
+.numbar__stat{ margin-top:24px; background:#fff; border:2px solid var(--line); border-left:10px solid var(--navy); border-radius:10px; padding:18px 32px; display:flex; flex-direction:column; gap:8px; }
+.numbar__stat p{ font-size: var(--type-small); color: var(--ink-2); line-height:1.5; margin:0; font-weight:700; }
+.numbar__stat p.note{ font-weight:400; color: var(--gray); }
+
+/* ============ 第39弾 追加: 根拠なしショーケース（13） ============ */
+.gap-grid{ display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:8px; }
+.gap-item{ display:flex; align-items:flex-start; gap:22px; background:var(--bg-muted); border:2px solid var(--line); border-left:10px solid var(--gray-2); border-radius:10px; padding:24px 30px; }
+.gap-item .ic{ flex:none; font-size: calc(48px * var(--type-mult)); line-height:1; color: var(--gray); }
+.gap-item .bd b{ display:block; font-size: var(--type-small); font-weight:800; color: var(--navy); }
+.gap-item .bd small{ display:block; font-size: var(--type-label); font-weight:400; color: var(--gray); margin-top:8px; }
+
+/* ============ 第39弾 追加: 外来トーク台本（17） ============ */
+.talk{ display:flex; flex-direction:column; gap:15px; margin-top:16px; max-width:1650px; }
+.talk p{ font-size: var(--type-small); line-height:1.4; color: var(--ink-2); margin:0; font-weight:700; }
+.talk p:first-child{ font-size: var(--type-body); color: var(--navy); }
+
+/* entrance animation — fade-up を上位互換で拡張（deck-anim キット / 詳細は _anim_library/） */
+@media (prefers-reduced-motion:no-preference){
+  [data-deck-active] .anim{ animation: fade-up .5s both; }
+  [data-deck-active] .anim2{ animation: fade-up .5s .12s both; }
+  [data-deck-active] .anim3{ animation: fade-up .5s .24s both; }
+  [data-deck-active] .anim4{ animation: fade-up .5s .36s both; }
+  [data-deck-active] .anim5{ animation: fade-up .5s .48s both; }
+  [data-deck-active] .anim6{ animation: fade-up .5s .60s both; }
+  [data-deck-active] .anim-i{ animation: fade-up .5s both; animation-delay: calc(var(--i,0) * .1s); }
+  [data-deck-active] .a-fade { animation-name: a-fade; }
+  [data-deck-active] .a-up   { animation-name: fade-up; }
+  [data-deck-active] .a-down { animation-name: a-down; }
+  [data-deck-active] .a-right{ animation-name: a-right; }
+  [data-deck-active] .a-left { animation-name: a-left; }
+  [data-deck-active] .a-zoom { animation-name: a-zoom; }
+  [data-deck-active] .a-pop  { animation-name: a-pop; animation-timing-function: cubic-bezier(.34,1.56,.64,1); }
+  [data-deck-active] .a-blur { animation-name: a-blur; }
+  [data-deck-active] .grow-y { transform-origin:bottom center; animation: grow-y .7s .2s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .grow-x { transform-origin:left center;   animation: grow-x .55s .25s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .nudge-x{ animation: nudge-x .9s .35s ease-in-out both; }
+}
+.grow-y{ transform-origin:bottom center; } .grow-x{ transform-origin:left center; }
+@keyframes fade-up{ from{ opacity:0; transform: translateY(16px);} to{ opacity:1; transform:none;} }
+@keyframes a-fade { from{ opacity:0; } to{ opacity:1; } }
+@keyframes a-down { from{ opacity:0; transform: translateY(-16px);} to{ opacity:1; transform:none; } }
+@keyframes a-right{ from{ opacity:0; transform: translateX(-28px);} to{ opacity:1; transform:none; } }
+@keyframes a-left { from{ opacity:0; transform: translateX(28px); } to{ opacity:1; transform:none; } }
+@keyframes a-zoom { from{ opacity:0; transform: scale(.94);       } to{ opacity:1; transform:none; } }
+@keyframes a-pop  { from{ opacity:0; transform: scale(.8);        } to{ opacity:1; transform:none; } }
+@keyframes a-blur { from{ opacity:0; filter: blur(12px); transform: translateY(10px);} to{ opacity:1; filter: blur(0); transform:none; } }
+@keyframes grow-y { from{ transform: scaleY(0);} to{ transform: scaleY(1);} }
+@keyframes grow-x { from{ transform: scaleX(0);} to{ transform: scaleX(1);} }
+@keyframes nudge-x{ 0%{ transform:none;} 55%{ transform: translateX(10px);} 100%{ transform:none;} }
+
+#tweaks-root{ position:fixed; inset:0; pointer-events:none; z-index:9999; }
+#tweaks-root > *{ pointer-events:auto; }
+</style>
+</head>
+<body style="font-size: 8px">
+
+<deck-stage width="1920" height="1080">
+
+  <!-- ==========================================================================
+       外来患者指導シリーズ 第41弾／心不全の自己管理（体重・塩分・水分）
+       構成の正本: docs/heart-failure-selfcare-guidance/structure.md §8
+       数値・引用の正本: docs/heart-failure-selfcare-guidance/literature_review.md
+
+       ★ 2026-08-11 改訂: 18枚 → 23枚。1枚1メッセージに再構成した。
+         旧版は平均190字/枚・軽い枚(<120字)が表紙のみで、過去回(平均137-180字・
+         軽い枚5-7枚)に比べ密度が高すぎた。スライドから外した散文は消したのではなく
+         「語る文」として台本へ移す。台本執筆時に下記 ★台本へ を回収すること。
+       ★ 章扉3枚(05/09/15)で塩分・水分・体重の切り替わりを作り、息継ぎを確保した。
+       ★ 3メッセージはスライドでは短縮見出し形(02・23)。フル文は台本・ブログまとめ・
+         YouTube概要欄で一字一句一致させる正本とする（structure.md §3 の対応表を参照）。
+       ★ data-cue はまだ書いていない。slidecast.json を確定させたあとに
+         assign_data_cues.py で「位置ではなく内容」で割り当て、実文言を一字一句転記する。
+       ★ 表紙に「所要 約◯分」を書いていない。音声を作って実尺を測ってから入れること。
+       ★ 塩分のg数を「推奨」として書かない（SoT §9 ⑬）。
+       ========================================================================== -->
+
+  <!-- ===== 01. 表紙 ===== -->
+  <section data-label="表紙" data-screen-label="01 表紙" class="slide slide--navy cover">
+    <div class="cover__blob"></div>
+    <div class="cover__badge anim"><span class="cross">✚</span><span>医知創造ラボ</span></div>
+    <h1 class="cover__title anim2 a-blur">心不全の患者さんに<br><span class="hl">「毎日体重を測って」</span><br>と言う前に</h1>
+    <p class="cover__sub anim3" data-cue="その説明の前提が、202">2025年改訂ガイドラインで変わったこと</p>
+    <div class="cover__meta anim3">
+      <span class="ep">#041</span>
+      <span>監修：総合内科専門医</span>
+    </div>
+  </section>
+
+  <!-- ===== 02. テーマ・結論（短縮見出し形／23と同一） ===== -->
+  <section data-label="テーマ・結論" data-screen-label="02 テーマ・結論" class="slide">
+    <div class="eyebrow anim">今日の結論<span class="en">TODAY'S CONCLUSION</span></div>
+    <h2 class="s-title anim">体重・塩分・水分は、<span class="hl-underline">根拠の重みが違う</span></h2>
+    <div class="concl anim2" style="flex-direction:column; align-items:stretch; margin-top:40px; padding:36px 48px;" data-cue="ふたつめ。体重は、それ単">
+      <span class="concl__tag" style="align-self:flex-start;">結論</span>
+      <ul class="concl__msgs" style="margin-top:24px; gap:22px;">
+        <li style="font-size:var(--type-subtitle);">数値付きの推奨が付いたのは水分だけ</li>
+        <li style="font-size:var(--type-subtitle);">体重は、単独では増悪を捉えきれない</li>
+        <li style="font-size:var(--type-subtitle);">渡すのは一般値ではなく、個別の取り決め</li>
+      </ul>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>02</span></div>
+  </section>
+
+  <!-- ===== 03. 導入 ===== -->
+  <section data-label="導入" data-screen-label="03 導入" class="slide slide--soft">
+    <div class="chapter-ghost">03</div>
+    <div class="eyebrow anim">外来でよく渡す3つの数字<span class="en">EVERYDAY SCENE</span></div>
+    <h2 class="s-title anim">「塩分6g」「水分1.5L」<br>「体重2kg」</h2>
+    <hr class="hairline">
+    <div class="body1__main" style="margin-top:34px;">
+      <p class="lead anim2" data-cue="どれも同じ重みの生活指導">3つとも、同じ重みの生活指導として並んでいる。</p>
+      <div class="important-box lg anim3" data-cue="でも、ガイドラインでの根">
+        <div class="ttl">💭 立ち止まって考えたいこと</div>
+        <p>この3つ、ガイドラインでの根拠の重みは同じでしょうか。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>03</span></div>
+  </section>
+
+  <!-- ===== 04. 3段の段差 ===== -->
+  <section data-label="根拠の重みが違う" data-screen-label="04 根拠の重みが違う" class="slide">
+    <div class="chapter-ghost">04</div>
+    <div class="eyebrow anim">根拠の重みが違う<span class="en">THREE DIFFERENT WEIGHTS</span></div>
+    <h2 class="s-title anim">同じ「生活指導」でも、<span class="hl-underline">段差がある</span></h2>
+    <div class="agenda__list" style="margin-top:34px; gap:20px;">
+      <div class="agenda__item anim a-right" data-cue="水分は、2025年の改訂"><div class="agenda__num">1</div><div class="agenda__txt">水分<small>2025年改訂で数値付きの推奨が新設された</small></div></div>
+      <div class="agenda__item anim2 a-right" data-cue="塩分は、推奨を出せず「今"><div class="agenda__num">2</div><div class="agenda__txt">塩分<small>推奨を出せず「今後の臨床課題」へ</small></div></div>
+      <div class="agenda__item anim3 a-right" data-cue="体重は、数字はあるものの"><div class="agenda__num">3</div><div class="agenda__txt">体重<small>数字はあるが推奨クラスが付いていない</small></div></div>
+    </div>
+    <p class="lead muted anim4" style="margin-top:24px; font-size:var(--type-small);" data-cue="ただし、これは重要度の順">段差は、重要度の順位ではない。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>04</span></div>
+  </section>
+
+  <!-- ===== 05. 章扉① 塩分 ===== -->
+  <section data-label="章扉・塩分" data-screen-label="05 章扉①塩分" class="slide slide--navy chapter">
+    <div class="cover__blob"></div>
+    <p class="chapter__kicker anim">CHAPTER 1 ／ SALT</p>
+    <h2 class="chapter__title anim2">塩分</h2>
+    <p class="cover__sub anim3" style="margin-top:22px;" data-cue="ガイドラインは、目標のg">目標g数は、出せなかった</p>
+    <div class="chapter__rule anim4"></div>
+  </section>
+
+  <!-- ===== 06. 塩分：GL引用 ===== -->
+  <section data-label="塩分・主題" data-screen-label="06 塩分・主題" class="slide slide--soft quote">
+    <div class="eyebrow anim">塩分<span class="en">NO TARGET WAS ISSUED</span></div>
+    <h2 class="s-title anim" style="margin-bottom:8px;">ガイドラインは<span class="hl-underline">目標g数を出せなかった</span></h2>
+    <div class="quote__box anim2" style="margin-top:34px;" data-cue="「推奨を示すに足る十分な">
+      <div class="quote__mark">"</div>
+      <p class="quote__text">推奨を示すに足る十分なエビデンスがなかったため、<br>今後の臨床課題として取り扱った</p>
+      <p class="quote__src">『2025年改訂版 心不全診療ガイドライン』第15章 今後の臨床課題</p>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>06</span></div>
+  </section>
+
+  <!-- ===== 07. 塩分：不利な数字（表1行） ===== -->
+  <section data-label="塩分の数字" data-screen-label="07 塩分の数字" class="slide">
+    <div class="chapter-ghost">07</div>
+    <div class="eyebrow anim">誤読しやすい数値<span class="en">DO NOT OVERREAD</span></div>
+    <h2 class="s-title anim">塩分制限に<span class="hl-underline">不利な数字もある</span></h2>
+    <div class="tablewrap anim2" style="flex:none;" data-cue="Steinのメタ解析では">
+      <table class="cmp">
+        <thead>
+          <tr><th>介入</th><th>全死亡</th><th>入院</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>塩分制限のみ</td><td>RR 1.92（1.51–2.45）</td><td>RR 1.63（1.11–2.40）</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead muted anim3" style="margin-top:26px; font-size:var(--type-small);" data-cue="エビデンスの質は、死亡が">Steinのメタ解析。質は死亡＝中、入院＝低。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>07</span></div>
+  </section>
+
+  <!-- ===== 08. 塩分：決着していない ===== -->
+  <section data-label="塩分は決着していない" data-screen-label="08 塩分は決着していない" class="slide slide--soft">
+    <div class="chapter-ghost">08</div>
+    <div class="eyebrow anim">まだ決着していない<span class="en">NOT SETTLED</span></div>
+    <h2 class="s-title anim">⚠️「塩分制限は有害」と<span class="hl-underline">読んではいけない</span></h2>
+    <ul class="point-list anim2" style="margin-top:34px;">
+      <li>ガイドラインはこの塩分アームに触れていない</li>
+      <li>重症度の交絡が残る</li>
+      <li>SODIUM-HFでは害が出ていない</li>
+    </ul>
+    <div class="important-box lg anim3" style="margin-top:28px;" data-cue="推奨として書けたのは「個">
+      <div class="ttl">📌 推奨として書けたこと</div>
+      <p>「個別性をふまえた塩分管理を考慮する」（クラスIIa・C-EO）</p>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>08</span></div>
+  </section>
+
+  <!-- ===== 09. 章扉② 水分 ===== -->
+  <section data-label="章扉・水分" data-screen-label="09 章扉②水分" class="slide slide--navy chapter">
+    <div class="cover__blob"></div>
+    <p class="chapter__kicker anim">CHAPTER 2 ／ FLUID</p>
+    <h2 class="chapter__title anim2">水分</h2>
+    <p class="cover__sub anim3" style="margin-top:22px;" data-cue="ここで、初めて推奨が付き">初めて、推奨が付いた</p>
+    <div class="chapter__rule anim4"></div>
+  </section>
+
+  <!-- ===== 10. 水分：CQ3引用 ===== -->
+  <section data-label="水分・主題" data-screen-label="10 水分・主題" class="slide slide--soft quote">
+    <div class="eyebrow anim">水分<span class="en">A NEW RECOMMENDATION</span></div>
+    <h2 class="s-title anim" style="margin-bottom:8px;">2025年改訂で<span class="hl-underline">初めて推奨が付いた</span></h2>
+    <div class="quote__box anim2" style="margin-top:34px;" data-cue="「代償期の心不全における">
+      <div class="quote__mark">"</div>
+      <p class="quote__text">代償期の心不全における1日水分摂取量1〜1.5Lを<br>目標とした水分制限を弱く推奨する</p>
+      <p class="quote__src">『2025年改訂版 心不全診療ガイドライン』CQ3</p>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>10</span></div>
+  </section>
+
+  <!-- ===== 11. 水分：日本と欧米 ===== -->
+  <section data-label="日本と欧米" data-screen-label="11 日本と欧米" class="slide">
+    <div class="chapter-ghost">11</div>
+    <div class="eyebrow anim">対象範囲が違う<span class="en">JAPAN VS WEST</span></div>
+    <h2 class="s-title anim">欧米とは、<span class="hl-underline">かける相手が違う</span></h2>
+    <div class="ba" style="margin-top:34px; flex:none;">
+      <div class="ba__col after anim2" data-cue="日本は、代償期の心不全患"><span class="ba__tag">JCS/JHFS 2025</span><p class="ba__txt">代償期の心不全患者一般に、1日1〜1.5L</p></div>
+      <div class="ba__arrow">↔</div>
+      <div class="ba__col before anim3" data-cue="一方、ACC/AHAやE"><span class="ba__tag">ACC/AHA・ESC</span><p class="ba__txt">重度心不全か低Na血症に限定した考慮</p></div>
+    </div>
+    <p class="lead muted anim4" style="margin-top:22px; font-size:var(--type-small);" data-cue="そのまま欧米の解説を引き">ACC/AHAはクラスIIb、ESCは推奨クラスなし。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>11</span></div>
+  </section>
+
+  <!-- ===== 12. 水分：根拠の規模（軽い枚） ===== -->
+  <section data-label="根拠の規模" data-screen-label="12 根拠の規模" class="slide slide--soft">
+    <div class="chapter-ghost">12</div>
+    <div class="eyebrow anim">その根拠の規模<span class="en">HOW STRONG</span></div>
+    <h2 class="s-title anim">根拠は<span class="hl-underline">3試験・331人</span>、<br>いずれも10年以上前</h2>
+    <div class="popband anim2" style="margin-top:36px;" data-cue="Steinのメタ解析で、"><span class="tag">根拠</span><p>Steinのメタ解析。無作為化比較試験3つを統合したもの。</p></div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>12</span></div>
+  </section>
+
+  <!-- ===== 13. 水分：内訳（表） ===== -->
+  <section data-label="根拠の内訳" data-screen-label="13 根拠の内訳" class="slide">
+    <div class="chapter-ghost">13</div>
+    <div class="eyebrow anim">内訳<span class="en">WHERE THE EFFECT CAME FROM</span></div>
+    <h2 class="s-title anim">効果が出たのは<span class="hl-underline">「水分制限のみ」</span></h2>
+    <div class="tablewrap anim2" style="flex:none;" data-cue="塩分制限と組み合わせた解">
+      <table class="cmp">
+        <thead>
+          <tr><th>介入</th><th>全死亡</th><th>入院</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>水分制限のみ</td><td>RR 0.32（0.13–0.82）</td><td>RR 0.46（0.27–0.77）</td></tr>
+          <tr><td>塩分と組み合わせ</td><td>RR 0.92（0.49–1.73）</td><td>RR 0.94（0.75–1.19）</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead muted anim3" style="margin-top:24px; font-size:var(--type-small);" data-cue="そのため、エビデンス総体">エビデンス総体の確実性はC（弱）。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>13</span></div>
+  </section>
+
+  <!-- ===== 14. 水分：口渇 ===== -->
+  <section data-label="口渇は割れている" data-screen-label="14 口渇は割れている" class="slide slide--soft">
+    <div class="chapter-ghost">14</div>
+    <div class="eyebrow anim">但し書き<span class="en">THIRST</span></div>
+    <h2 class="s-title anim">口渇の結果は、<span class="hl-underline">真逆に割れている</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="margin-top:30px; gap:20px;">
+      <div class="important-box lg anim2" data-cue="Holstの研究では、制">
+        <div class="ttl">Holst（代償期・n=64）</div>
+        <p>1500mL/日で口渇は51対23、P&lt;0.001で強かった</p>
+      </div>
+      <div class="important-box lg anim3" data-cue="一方、Albertの研究">
+        <div class="ttl">Albert（低Na血症の入院例）</div>
+        <p>1000mL/日で30日の口渇は50対50、P=0.77で差なし</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>14</span></div>
+  </section>
+
+  <!-- ===== 15. 章扉③ 体重 ===== -->
+  <section data-label="章扉・体重" data-screen-label="15 章扉③体重" class="slide slide--navy chapter">
+    <div class="cover__blob"></div>
+    <p class="chapter__kicker anim">CHAPTER 3 ／ WEIGHT</p>
+    <h2 class="chapter__title anim2">体重</h2>
+    <p class="cover__sub anim3" style="margin-top:22px;" data-cue="ここからが、今日の核心で">本日の核心</p>
+    <div class="chapter__rule anim4"></div>
+  </section>
+
+  <!-- ===== 16. 体重：GL引用 ===== -->
+  <section data-label="体重・主題" data-screen-label="16 体重・主題" class="slide slide--soft quote">
+    <div class="eyebrow anim">体重<span class="en">THE CORE</span></div>
+    <h2 class="s-title anim" style="margin-bottom:8px;">「測るだけ」では<span class="hl-underline">増悪を捉えきれない</span></h2>
+    <div class="quote__box anim2" style="margin-top:34px;" data-cue="「これら単体のモニタリン">
+      <div class="quote__mark">"</div>
+      <p class="quote__text">これら単体のモニタリングによる<br>心不全イベント抑制効果は十分でない</p>
+      <p class="quote__src">『2025年改訂版 心不全診療ガイドライン』表57</p>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>16</span></div>
+  </section>
+
+  <!-- ===== 17. 体重：根拠4件（表） ===== -->
+  <section data-label="根拠4件" data-screen-label="17 根拠4件" class="slide">
+    <div class="chapter-ghost">17</div>
+    <div class="eyebrow anim">根拠4件の中身<span class="en">NOT ALL NEGATIVE</span></div>
+    <h2 class="s-title anim">4件は<span class="hl-underline">一様ではない</span></h2>
+    <div class="tablewrap anim2" data-cue="しかし、TIM-HF2は">
+      <table class="cmp">
+        <thead>
+          <tr><th>試験</th><th>主要評価項目の結果</th><th>性質</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Tele-HF（n=1,653）</td><td>HR 1.04（0.91–1.19）</td><td><span class="pill pill--dash">陰性</span></td></tr>
+          <tr><td>BEAT-HF（n=1,437）</td><td>補正後 HR 1.03（0.88–1.20）</td><td><span class="pill pill--dash">陰性</span></td></tr>
+          <tr><td>TIM-HF2（n=1,538）</td><td>ratio 0.80（0.65–1.00）p=0.0460</td><td><span class="pill pill--d">境界的有意</span></td></tr>
+          <tr><td>TIM-HF</td><td>—</td><td><span class="pill pill--d">デザイン論文</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead muted anim3" style="margin-top:22px; font-size:var(--type-small);" data-cue="ガイドラインは4件をまと">4件すべてが陰性だったとは書かれていない。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>17</span></div>
+  </section>
+
+  <!-- ===== 18. 体重：それでも測る理由 ===== -->
+  <section data-label="それでも測る理由" data-screen-label="18 それでも測る理由" class="slide slide--soft">
+    <div class="chapter-ghost">18</div>
+    <div class="eyebrow anim">それでも測る理由<span class="en">WHY STILL MEASURE</span></div>
+    <h2 class="s-title anim">測る理由を、<span class="hl-underline">言い換える</span></h2>
+    <div class="ba" style="margin-top:34px; flex:none;">
+      <div class="ba__col before anim2" data-cue="ですから「毎日測っていれ"><span class="ba__tag">❌ これまで</span><p class="ba__txt">毎日測っていれば入院を防げます</p></div>
+      <div class="ba__arrow">➜</div>
+      <div class="ba__col after anim3" data-cue="「症状やむくみと合わせて"><span class="ba__tag">⭕ 言い換え</span><p class="ba__txt">症状やむくみと合わせると、受診のきっかけに気づけます</p></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>18</span></div>
+  </section>
+
+  <!-- ===== 19. 体重：2つの「2kg」 ===== -->
+  <section data-label="2つの2kg" data-screen-label="19 2つの2kg" class="slide">
+    <div class="chapter-ghost">19</div>
+    <div class="eyebrow anim">2つの「2kg」<span class="en">TWO DIFFERENT NUMBERS</span></div>
+    <h2 class="s-title anim">同じ2kgでも、<span class="hl-underline">位置づけが違う</span></h2>
+    <div class="tablewrap anim2" style="flex:none;" data-cue="「3日間で2kg以上」は">
+      <table class="cmp">
+        <thead>
+          <tr><th>数字</th><th>出典</th><th>使いどころ</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>3日間で2kg以上</td><td>表53 患者教育の内容</td><td>患者に渡す連絡の目安</td></tr>
+          <tr><td>＞2kg/週</td><td>増悪時の身体所見</td><td>医療者が拾ううっ血の徴候</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead muted anim3" style="margin-top:26px; font-size:var(--type-small);" data-cue="なお「毎朝・排尿後・同じ">毎朝・排尿後・同じ服装は、ガイドラインにはない。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>19</span></div>
+  </section>
+
+  <!-- ===== 20. 体重：セットで見るもの ===== -->
+  <section data-label="増悪サイン" data-screen-label="20 増悪サイン" class="slide slide--soft">
+    <div class="chapter-ghost">20</div>
+    <div class="eyebrow anim">受診の線<span class="en">WHEN TO CALL</span></div>
+    <h2 class="s-title anim">体重と、<span class="hl-underline">セットで見るもの</span></h2>
+    <hr class="hairline">
+    <div class="check">
+      <div class="check__item on anim" data-cue="肺うっ血なら、息切れや起"><div class="check__box">✓</div>肺うっ血なら、息切れ・起坐呼吸</div>
+      <div class="check__item on anim2" data-cue="体うっ血なら、下腿浮腫や"><div class="check__box">✓</div>体うっ血なら、下腿浮腫・腹部膨満感</div>
+      <div class="check__verdict anim3" data-cue="渡す線は、息切れ・3日で">渡す線は、息切れ・3日で2kgの増加・むくみの3つ</div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>20</span></div>
+  </section>
+
+  <!-- ===== 21. 指導そのものの限界と安全性 ===== -->
+  <section data-label="限界と安全性" data-screen-label="21 限界と安全性" class="slide">
+    <div class="chapter-ghost">21</div>
+    <div class="eyebrow anim">指導そのものの限界<span class="en">LIMITS AND SAFETY</span></div>
+    <h2 class="s-title anim">⚠️ 指導すれば良くなる、<span class="hl-underline">わけではない</span></h2>
+    <hr class="hairline">
+    <div class="body1__main" style="margin-top:30px; gap:20px;">
+      <div class="important-box lg anim2" data-cue="死亡が改善したのは、専門">
+        <div class="ttl">限界 ― 死亡改善は多職種チームの結果</div>
+        <p>セルフケア中心の群は死亡RR 1.14で有意差なし</p>
+      </div>
+      <div class="important-box lg anim3" data-cue="中等度以上のうつを合併す">
+        <div class="ttl">⚠️ 安全性 ― うつを合併する患者</div>
+        <p>中等度以上のうつでは生存が悪化（HR 1.39・交互作用P=0.01）</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>21</span></div>
+  </section>
+
+  <!-- ===== 22. 外来トーク例（性質上ここだけ字数が多い＝読ませる枚） ===== -->
+  <section data-label="トーク例" data-screen-label="22 トーク例" class="slide slide--soft">
+    <div class="chapter-ghost">22</div>
+    <div class="eyebrow anim">外来トーク例<span class="en">WHAT TO SAY</span></div>
+    <h2 class="s-title anim">そのまま使える、外来の30秒</h2>
+    <div class="talk" style="margin-top:30px; gap:20px;">
+      <p class="anim2" data-cue="「毎日おうちで体重を測っ">「毎日おうちで体重を測っていただきます。</p>
+      <p class="anim2" data-cue="ただ、体重だけを見ていれ">ただ、体重だけ見ていれば安心ではありません。</p>
+      <p class="anim3" data-cue="悪くなる直前まで変わらな">悪くなる直前まで変わらないこともあるので、息切れやむくみとセットで見てください。</p>
+      <p class="anim4" data-cue="そして今日、何kg増えた">今日、何kg増えたら連絡するかを決めましょう。目安は3日で2kgです。</p>
+      <p class="anim5" data-cue="記録がつらいときは、我慢">記録がつらいときは、我慢せず教えてください。」</p>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>22</span></div>
+  </section>
+
+  <!-- ===== 23. まとめ（02と同一の短縮見出し形） ===== -->
+  <section data-label="まとめ" data-screen-label="23 まとめ" class="slide slide--navy end">
+    <div class="cover__blob"></div>
+    <p class="end__cross anim" style="margin:0;">✚ 医知創造ラボ</p>
+    <h2 class="end__h anim2" style="margin-top:2px;">今日のまとめ</h2>
+    <div class="concl anim3" style="flex-direction:column; align-items:stretch; background:rgba(255,255,255,.08); border-left-color: var(--accent); margin-top:18px; padding:26px 44px; max-width:1500px;" data-cue="ふたつめ。体重は、それ単">
+      <span class="concl__tag" style="align-self:flex-start;">結論</span>
+      <ul class="concl__msgs" style="margin-top:16px; gap:14px;">
+        <li style="color:#fff; font-size:var(--type-subtitle);">数値付きの推奨が付いたのは水分だけ</li>
+        <li style="color:#fff; font-size:var(--type-subtitle);">体重は、単独では増悪を捉えきれない</li>
+        <li style="color:#fff; font-size:var(--type-subtitle);">渡すのは一般値ではなく、個別の取り決め</li>
+      </ul>
+    </div>
+    <p class="end__sub anim4" style="margin-top:18px; font-size:var(--type-small);" data-cue="みっつめ。外来で渡すのは">この動画は一般的な情報提供です。</p>
+    <div class="end__cta anim4" style="margin-top:20px;">
+      <span class="btn btn--sub">🔔 チャンネル登録</span>
+      <span class="btn btn--like">👍 高評価</span>
+    </div>
+  </section>
+
+</deck-stage>
+
+<script src="deck-stage.js"></script>
+<script src="image-slot.js"></script>
+
+
+</body>
+</html>

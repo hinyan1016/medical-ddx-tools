@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="心不全の生活指導で渡している「塩分」「水分」「体重」は、2025年改訂版 心不全診療ガイドラインでの根拠の重みがそれぞれ違います。数値付きの推奨が新しく付いたのは水分だけ、塩分は推奨を出せず「今後の臨床課題」へ、体重の数字には推奨クラスが付いていません。外来で何をどう渡すかを、一次資料の数値と「推奨が無いこと」まで含めて整理しました。">
+<title>心不全の自己管理｜体重・塩分・水分は「根拠の重み」が違う（インフォグラフィック）</title>
+<style>
+/* ===== 配色（ネイビー＋コーラル・デッキ --navy/--accent と一致） ===== */
+:root{
+  --navy:#1B3A5C;
+  --navyDeep:#0F2540;
+  --bg:#EEF2F6;
+  --line:#D6E0E9;
+  --coral:#FF7A59;
+  --coralBg:#FFF1EC;
+  --coralInk:#B8431F;
+  --navyBg:#E9EEF5;
+  --gray:#69737E;
+  --grayLine:#CBD3DB;
+  --ink:#20242B;
+  --ink2:#3C4450;
+  --font:"Noto Sans JP","BIZ UDPGothic","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+}
+html{font-size:16px;}
+*{box-sizing:border-box; margin:0; padding:0;}
+/* 日本語の語中改行（「水分制／限」「言えな／い」）を文節境界で切る。Chrome 119+ / Playwright Chromium で有効。
+   非対応環境では通常の禁則にフォールバックするだけなので安全（2026-08-11 目視で導入） */
+body, .evidtbl td, .evidtbl th, .tier__d, .two__d, .act, .gap__d, .consult__d, .quote__d, .lead__box, .note{
+  word-break:auto-phrase; line-break:strict;
+}
+body{font-family:var(--font); background:#E4E9EF; color:var(--ink);
+  display:flex; flex-direction:column; align-items:center; overflow-x:hidden;}
+img{max-width:100%; height:auto;}
+.nw{white-space:nowrap;}
+
+.info{width:100%; max-width:1080px; background:#fff; padding:0 0 3.5rem;}
+
+.hd{background:linear-gradient(135deg,#0A1B2E 0%,#153352 55%,#1B3A5C 100%); color:#fff;
+  padding:3.4rem 4rem 3rem; position:relative; overflow:hidden;}
+.hd::after{content:""; position:absolute; right:-6rem; top:-6rem; width:21rem; height:21rem;
+  border-radius:50%; background:radial-gradient(circle at 30% 30%, rgba(255,122,89,.35), rgba(255,122,89,0) 70%);}
+.hd__badge{display:inline-flex; align-items:center; gap:0.6rem; background:rgba(255,255,255,.13);
+  border:1px solid rgba(255,255,255,.32); border-radius:999px; padding:0.5rem 1.35rem;
+  font-size:1.28rem; font-weight:700; position:relative; z-index:2; line-height:1.4;}
+.hd__badge .x{color:var(--coral);}
+.hd__title{font-size:2.55rem; font-weight:800; line-height:1.4; margin-top:1.2rem;
+  position:relative; z-index:2;}
+.hd__title .hl{color:var(--coral);}
+.hd__sub{font-size:1.32rem; color:rgba(255,255,255,.86); margin-top:0.9rem; line-height:1.6;
+  position:relative; z-index:2;}
+
+.lead{padding:0 4rem; margin-top:2.1rem;}
+.lead__box{background:var(--bg); border-left:0.38rem solid var(--navy); border-radius:0 0.75rem 0.75rem 0;
+  padding:1.3rem 1.6rem; font-size:1.34rem; line-height:1.78; color:var(--ink2);}
+.lead__box b{color:var(--navy);}
+.lead__box .c{color:var(--coralInk);}
+
+.sec{padding:0 4rem; margin-top:2.7rem;}
+.sec__h{display:flex; align-items:center; gap:1rem; font-size:1.92rem; font-weight:800;
+  color:var(--navy); margin-bottom:1.2rem; line-height:1.4;}
+.sec__n{flex:none; width:3.15rem; height:3.15rem; border-radius:0.85rem; background:var(--navy);
+  color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.45rem; font-weight:700;}
+.sec__n--coral{background:var(--coral);}
+.sec__sub{font-size:1.05rem; color:var(--gray); margin:-0.7rem 0 1.1rem; line-height:1.6;}
+
+/* --- 段差図（推奨の重み） --- */
+.tiers{display:flex; align-items:flex-end; gap:1rem; margin-top:0.4rem;}
+.tier{flex:1 1 0; border-radius:0.85rem 0.85rem 0 0; border:0.14rem solid var(--line); border-bottom:none;
+  background:var(--bg); padding:1.15rem 1.15rem 1.3rem; text-align:center; position:relative;}
+/* height ではなく min-height。文字がはみ出しても土台バーに切られない（2026-08-11 目視で検出） */
+.tier--hi{min-height:17rem; background:var(--coralBg); border-color:var(--coral);}
+.tier--mid{min-height:13.5rem; background:var(--navyBg); border-color:var(--navy);}
+.tier--lo{min-height:10rem;}
+.tier__cap{font-size:1.42rem; font-weight:800; color:var(--navy); line-height:1.4;}
+.tier--hi .tier__cap{color:var(--coralInk);}
+.tier__badge{display:inline-block; margin-top:0.5rem; border-radius:999px; padding:0.3rem 0.85rem;
+  font-size:0.95rem; font-weight:800; line-height:1.4; background:var(--navy); color:#fff;}
+.tier--hi .tier__badge{background:var(--coral);}
+.tier--lo .tier__badge{background:var(--gray);}
+.tier__d{font-size:1rem; line-height:1.6; color:var(--ink2); margin-top:0.6rem;}
+.tiers__base{height:0.42rem; background:var(--navy); border-radius:0.2rem;}
+.tiers__axis{margin-top:0.7rem; font-size:1rem; line-height:1.68; color:var(--gray);}
+.tiers__axis b{color:var(--coralInk);}
+
+/* --- 根拠の強さの表 --- */
+.evidtbl{width:100%; border-collapse:collapse; border:0.14rem solid var(--navy); border-radius:0.7rem; overflow:hidden;}
+.evidtbl th{background:var(--navy); color:#fff; font-size:0.94rem; font-weight:800; padding:0.6rem 0.75rem; text-align:left; line-height:1.4;}
+.evidtbl td{border-top:0.08rem solid var(--line); padding:0.75rem 0.75rem; font-size:0.92rem; line-height:1.55; color:var(--ink2); vertical-align:top;}
+.evidtbl td.what{font-weight:800; color:var(--navy); background:var(--navyBg); width:7rem;}
+/* cert 列は幅を固定する。狭いと「推奨クラ／ス」「目標g数な／し」と語が割れる（2026-08-11 目視で検出） */
+.evidtbl td.cert, .evidtbl th.cert{width:11rem;}
+.evidtbl td.cert{font-weight:700; color:var(--coralInk); font-size:0.88rem;}
+.evidtbl tr:nth-child(even) td{background:#FAFBFC;}
+.evidtbl tr:nth-child(even) td.what{background:var(--navyBg);}
+.note{margin-top:0.85rem; font-size:0.98rem; line-height:1.68; color:var(--gray);}
+.note b{color:var(--ink2);}
+
+.quote{margin-top:1.1rem; background:var(--coralBg); border-left:0.38rem solid var(--coral);
+  border-radius:0 0.75rem 0.75rem 0; padding:1.05rem 1.4rem;}
+.quote__t{font-size:1.14rem; font-weight:800; color:var(--coralInk); margin-bottom:0.5rem; line-height:1.5;}
+.quote__d{font-size:1.08rem; line-height:1.72; color:var(--ink2);}
+.quote__d b{color:var(--coralInk);}
+.quote__src{margin-top:0.5rem; font-size:0.92rem; color:var(--gray); line-height:1.6;}
+
+/* --- 2つの2kg --- */
+.two{display:flex; gap:1rem; margin-top:0.3rem;}
+.two__c{flex:1 1 0; border:0.14rem solid var(--line); border-radius:0.85rem; background:#fff; padding:1.1rem 1.3rem;}
+.two__c--pt{border-color:var(--coral); background:var(--coralBg);}
+.two__t{font-size:1.28rem; font-weight:800; color:var(--navy); line-height:1.45;}
+.two__c--pt .two__t{color:var(--coralInk);}
+.two__who{display:inline-block; margin-top:0.45rem; font-size:0.92rem; font-weight:800; color:var(--gray);}
+.two__d{font-size:1.02rem; line-height:1.66; color:var(--ink2); margin-top:0.5rem;}
+
+/* --- 受診の線 --- */
+.acts{display:flex; flex-direction:column; gap:0.7rem; margin-top:0.2rem;}
+.act{display:flex; gap:0.7rem; align-items:flex-start; border:0.13rem solid var(--line);
+  border-radius:0.7rem; background:#fff; padding:0.85rem 1.1rem; font-size:1.08rem; line-height:1.62; color:var(--ink2);}
+.act .mk{flex:none; color:var(--coral); font-weight:700; font-size:1.15rem;}
+.act b{color:var(--navy);}
+.act .pop{display:block; margin-top:0.35rem; font-size:0.92rem; color:var(--gray);}
+
+.consult{margin-top:1.4rem; border:0.16rem solid var(--navy); border-radius:0.9rem;
+  background:var(--bg); padding:1.15rem 1.5rem;}
+.consult__t{font-size:1.2rem; font-weight:800; color:var(--navy); margin-bottom:0.4rem; line-height:1.5;}
+.consult__d{font-size:1.05rem; line-height:1.68; color:var(--ink2);}
+
+.gap{margin-top:1.5rem; border:0.16rem dashed var(--coral); border-radius:0.9rem;
+  background:#fff; padding:1.3rem 1.6rem;}
+.gap__t{display:flex; align-items:center; gap:0.6rem; font-size:1.28rem; font-weight:800; color:var(--coralInk); line-height:1.5;}
+.gap__d{font-size:1.02rem; line-height:1.65; color:var(--ink2); margin-top:0.5rem;}
+
+.src{padding:0 4rem; margin-top:2.4rem; font-size:0.88rem; line-height:1.7; color:var(--gray);}
+.foot{margin:1.6rem 4rem 0; padding-top:1.5rem; border-top:0.13rem solid var(--line);
+  display:flex; align-items:center; justify-content:space-between; gap:0.8rem; flex-wrap:wrap;
+  font-size:1.28rem; color:var(--gray); font-weight:700;}
+.foot .x{color:var(--coral);}
+
+@media (max-width:1079px){
+  html{font-size:1.48vw;}
+}
+@media (max-width:720px){
+  html{font-size:12px;}
+  .hd{padding:1.8rem 1.3rem 1.6rem;}
+  .hd__title{font-size:2.05rem;}
+  .lead, .sec, .src{padding-left:1.3rem; padding-right:1.3rem;}
+  .foot{margin-left:1.3rem; margin-right:1.3rem;}
+  .tiers{flex-direction:column; align-items:stretch;}
+  .tier{height:auto !important; border-bottom:0.14rem solid var(--line); border-radius:0.85rem;}
+  .two{flex-direction:column;}
+  .sec__h{font-size:1.55rem; gap:0.7rem;}
+  .sec__n{width:2.5rem; height:2.5rem; font-size:1.2rem;}
+  .evidtbl th, .evidtbl td{font-size:0.86rem; padding:0.55rem 0.5rem;}
+  .foot{font-size:1.02rem;}
+}
+</style>
+</head>
+<body>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+<div class="info">
+  <div class="hd">
+    <div class="hd__badge"><span class="x">&#10010;</span> 外来患者指導シリーズ 第41弾｜心不全の自己管理</div>
+    <div class="hd__title">同じ「生活指導」でも、<br><span class="hl">根拠の重み</span>は3つで違う</div>
+    <div class="hd__sub">2025年改訂版 心不全診療ガイドライン（JCS/JHFS）で、数値付きの推奨が新しく付いたのは水分だけでした</div>
+  </div>
+
+  <div class="lead">
+    <div class="lead__box">
+      外来で渡している「塩分」「水分」「体重」を、<b>ガイドラインがどこまで裏づけているか</b>で並べ直すと、
+      3つは同じ重みではありません。<span class="c">塩分は推奨を出せず「今後の臨床課題」へ</span>、
+      水分は<b>2025年改訂で初めて数値付きの推奨</b>が付き、体重の数字には<b>推奨クラスが付いていません</b>。
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">1</span>ガイドラインでの「推奨の重み」</div>
+    <div class="sec__sub">段の高さは<b>推奨の重み</b>であって、<b>臨床上の重要度の順位ではありません</b>。</div>
+    <div class="tiers">
+      <div class="tier tier--hi">
+        <div class="tier__cap">水分</div>
+        <div class="tier__badge">弱い推奨あり（新設）</div>
+        <!-- 改行位置は手で決める。列幅は約15字なので1行15字以内に割る
+             （自動折り返しは「初め／て」の1字 orphan を作った・2026-08-11 目視） -->
+        <div class="tier__d">代償期の心不全で<br>1日1〜1.5Lを目標に<br>水分制限を<b>弱く推奨</b>（CQ3）<br>日本では今回が初めて</div>
+      </div>
+      <div class="tier tier--mid">
+        <div class="tier__cap">体重</div>
+        <div class="tier__badge">数字はあるが推奨クラスなし</div>
+        <div class="tier__d">患者教育の表に<br>「3日間で2kg以上の体重増加」<br>推奨クラス・エビデンス<br>レベルは付いていない</div>
+      </div>
+      <div class="tier tier--lo">
+        <div class="tier__cap">塩分</div>
+        <div class="tier__badge">推奨を出せず</div>
+        <div class="tier__d">1日5〜7.5gを検討したが<br>「今後の臨床課題」へ</div>
+      </div>
+    </div>
+    <div class="tiers__base"></div>
+    <div class="tiers__axis">
+      ★ <b>「塩分の段が低い」は「塩分はどうでもよい」ではありません。</b>
+      推奨として書けたのは「過剰な塩分摂取を避け、個別性をふまえた塩分管理を考慮する」（クラスIIa・C-EO）までです。
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n sec__n--coral">2</span>根拠の中身と、言えないこと</div>
+    <table class="evidtbl">
+      <tr>
+        <th>項目</th><th>ガイドラインでの位置づけ</th><th class="cert">推奨クラス<br>／確実性</th><th>この根拠では言えないこと</th>
+      </tr>
+      <tr>
+        <td class="what">水分</td>
+        <td>CQ3「代償期の心不全における1日水分摂取量1〜1.5Lを目標とした水分制限」。根拠はStein のメタ解析に含まれた無作為化比較試験3つ・計331人で、いずれも10年以上前の試験</td>
+        <td class="cert">弱く推奨<br>確実性 C（弱）</td>
+        <td>「水分を制限すれば入院・死亡が減る」とは言えない。効果が出ているのは<b>水分制限のみ</b>の解析で、ナトリウム制限と組み合わせた解析では死亡（RR 0.92, 95%CI 0.49–1.73）・入院（RR 0.94, 95%CI 0.75–1.19）とも利益なし</td>
+      </tr>
+      <tr>
+        <td class="what">塩分</td>
+        <td>日本人における適切な塩分摂取量は<b>クリニカルクエスチョンとして検討されたが推奨に至らず</b>、「今後の臨床課題」として取り扱われた</td>
+        <td class="cert"><span class="nw">目標g数なし</span><br>（<span class="nw">IIa・C-EO</span> の<br>一般論のみ）</td>
+        <td>「1日◯gまで」と言えない。<b>「塩分制限は有害」とも言えない</b>。Stein の塩分制限単独アームは死亡 RR 1.92（1.51–2.45, 質＝中）・入院 RR 1.63（1.11–2.40, 質＝低）だが、ガイドラインのCQ3解説はこのアームに触れておらず、重症度の交絡も残る</td>
+      </tr>
+      <tr>
+        <td class="what">体重</td>
+        <td>表に「複数のRCTで、これら単体のモニタリングによる心不全イベント抑制効果は十分でない」。本文にも「単一の指標の変化は非特異的で、増悪の直前まで変化しないことがある」</td>
+        <td class="cert"><span class="nw">推奨クラス・</span><br><span class="nw">エビデンス</span><br><span class="nw">レベルなし</span></td>
+        <td>「毎日測っていれば入院を防げる」とは言えない。ただし<b>測定の否定ではなく、単独指標としての限界</b>。引かれた4件のうちTele-HF・BEAT-HFは陰性、TIM-HF2は境界的に有意、残る1件は研究デザイン論文</td>
+      </tr>
+    </table>
+    <div class="quote">
+      <div class="quote__t">塩分は「良い」とも「悪い」とも決着していない</div>
+      <div class="quote__d">
+        同じ問いを前向きに検証した SODIUM-HF では、主要複合評価項目は<b>15% 対 17%（HR 0.89, 95%CI 0.63–1.26, p=0.53）</b>で、
+        低塩分食群に害は観察されていません。<b>この試験は2025年改訂版ガイドライン本文には引用されていません。</b>
+      </div>
+      <div class="quote__src">Ezekowitz JA, et al. Lancet. 2022;399(10333):1391-1400.</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">3</span>「2kg」は2つある。混同しない</div>
+    <div class="two">
+      <div class="two__c two__c--pt">
+        <div class="two__t">3日間で2kg以上</div>
+        <span class="two__who">＝ 患者さんに渡す、連絡の目安</span>
+        <div class="two__d">患者教育の表にある数字。呼吸困難などとあわせて「医療機関への受診の必要性」を伝えるためのもの。推奨クラス・エビデンスレベルは付いていない</div>
+      </div>
+      <div class="two__c">
+        <div class="two__t">2kg／週 を超える増加</div>
+        <span class="two__who">＝ 医療者が診察で拾う、うっ血の徴候</span>
+        <div class="two__d">うっ血所見の表に載る数字。<b>患者向けの受診目安に流用しない</b>。期間も位置づけも違う</div>
+      </div>
+    </div>
+    <div class="note">
+      なお「<b>毎朝・排尿後・同じ服装で測る</b>」という手順は、一般に勧められている測り方ではありますが、
+      <b>ガイドラインが決めた手順として書かれているものではありません</b>。
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n sec__n--coral">4</span>外来で渡す線と、渡すときの安全策</div>
+    <div class="acts">
+      <div class="act"><span class="mk">&#9679;</span><span><b>息切れ</b>（動いたときの息切れ・横になると苦しい）<span class="pop">体重だけを見ず、症状とセットで見る</span></span></div>
+      <div class="act"><span class="mk">&#9679;</span><span><b>3日で2kgの体重増加</b><span class="pop">「あなたは何kg増えたら、誰に連絡するか」を、その場で一緒に決めて書き込む</span></span></div>
+      <div class="act"><span class="mk">&#9679;</span><span><b>むくみ</b>（すねの前を押す・毎日同じ場所を見る）<span class="pop">腹部の張り、急に増えた体重と合わせて確認する</span></span></div>
+    </div>
+    <div class="consult">
+      <div class="consult__t">★ 記録がつらいときの相談先を、必ず一緒に渡す</div>
+      <div class="consult__d">
+        個別患者データメタ解析（20試験・5,624人）では、<b>中等度〜重度のうつを合併する患者で、自己管理介入群のほうが生存が悪化していました</b>
+        （HR 1.39, 95%CI 1.06–1.83, 交互作用 P=0.01）。原著も「うつのある患者に自己管理戦略を適用する際には注意が必要」と述べています。
+        <b>意欲の問題として扱わず、記録がつらいと言える相手を先に決めておきます。</b>
+      </div>
+    </div>
+    <div class="gap">
+      <div class="gap__t"><span>&#9888;</span>「セルフケア教育だけで死亡が減る」とは言えない</div>
+      <div class="gap__d">
+        多職種戦略のシステマティックレビューでは、<b>専門多職種チームによるフォローアップ</b>で死亡が改善しました（RR 0.75, 95%CI 0.59–0.96）が、
+        <b>患者のセルフケア向上に焦点を当てたプログラム</b>では死亡に有意差がありませんでした（RR 1.14, 95%CI 0.67–1.94）。
+        言えるのは「入院は減る方向」までです。
+      </div>
+    </div>
+  </div>
+
+  <div class="src">
+    出典：日本循環器学会／日本心不全学会合同ガイドライン．2025年改訂版 心不全診療ガイドライン．2025年3月28日発行．／
+    Kitai T, et al. Circ J. 2025;89(8):1278-1444.／
+    Stein C, et al. Clin Nutr ESPEN. 2022;49:129-137.／
+    Ezekowitz JA, et al. Lancet. 2022;399(10333):1391-1400.／
+    McAlister FA, et al. J Am Coll Cardiol. 2004;44(4):810-9.／
+    Jonkman NH, et al. Circulation. 2016;133(12):1189-98.／
+    Chaudhry SI, et al. N Engl J Med. 2010;363(24):2301-9.／
+    Ong MK, et al. JAMA Intern Med. 2016;176(3):310-8.／
+    Koehler F, et al. Lancet. 2018;392(10152):1047-1057.／
+    Holst M, et al. Scand Cardiovasc J. 2008;42(5):316-22.／
+    Albert NM, et al. J Card Fail. 2013;19(1):1-9.
+    <br>すべて PubMed および発行元公式資料で実在を確認しています。個々の治療方針は主治医の判断によります。
+  </div>
+
+  <div class="foot"><span><span class="x">&#10010;</span> 医知創造ラボ</span><span>監修：今村久司（脳神経内科専門医・総合内科専門医）</span></div>
+</div>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px auto 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+</body>
+</html>

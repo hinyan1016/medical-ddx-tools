@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1B3A5C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="心不全と診断された方とご家族への配布資料です。毎日同じ条件で体重を測ること、むくみを毎日同じ場所で見ること、連絡する目安（息切れ・3日で2kgの増加・むくみ）、食事は濃い味を控えて汁物を残すこと、水分は自己判断で減らさないこと、記録がつらいときは主治医か家族に伝えることをまとめました。連絡する体重と連絡先を書き込む記入欄と、2週間分の体重記録欄つき。">
+<title>心不全の毎日の自己管理｜ご本人・ご家族向け配布資料</title>
+<style>
+  :root{
+    --navy:#1B3A5C;          /* 構造色（見出し・罫線）*/
+    --navy-deep:#12293F;
+    --accent:#FF7A59;        /* テーマの差し色 */
+    --accent-ink:#B8431F;
+    --accent-bg:#FFF1EC;
+    --danger:#C0392B;        /* 警告は別の赤 */
+    --danger-bg:#FBEAE8;
+    --danger-line:#EAC5C0;
+    --navy-bg:#EEF2F6;
+    --line:#D6E0E9;
+    --ink:#1a1a1a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    font-family:"Yu Gothic","游ゴシック","Hiragino Kaku Gothic ProN","Segoe UI",sans-serif;
+    color:var(--ink);
+    background:#eef1f4;
+    line-height:1.6;
+    padding:16px;
+    /* 日本語の語中改行を文節境界で切る（nowrap span を手で並べる方式の代替）*/
+    word-break:auto-phrase;
+    line-break:strict;
+  }
+  .sheet{
+    background:#fff;
+    max-width:820px;
+    margin:0 auto 20px;
+    padding:22px 26px 26px;
+    box-shadow:0 2px 14px rgba(0,0,0,.12);
+  }
+  .head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:14px;}
+  .kicker{
+    display:inline-block;background:var(--accent);color:#fff;
+    font-size:12px;font-weight:700;letter-spacing:.06em;
+    padding:3px 10px;border-radius:3px;margin-bottom:7px;
+  }
+  h1{font-size:22px;font-weight:800;color:var(--navy);line-height:1.35;letter-spacing:.01em;}
+  .sub{font-size:12.5px;color:var(--accent-ink);font-weight:700;margin-top:6px;}
+  .lead{font-size:13.5px;color:#333;margin-top:8px;}
+  .lead b{color:var(--navy);}
+  h2{
+    font-size:15px;font-weight:800;color:#fff;background:var(--navy);
+    padding:5px 12px;border-radius:4px;margin:14px 0 9px;
+    display:flex;align-items:center;gap:8px;
+  }
+  h2 .num{
+    background:#fff;color:var(--navy);font-size:12.5px;font-weight:800;
+    width:21px;height:21px;border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;flex:0 0 21px;
+  }
+  h2.hd{background:var(--danger);}
+  h2.hd .num{color:var(--danger);}
+  ul.checks{list-style:none;margin-top:8px;}
+  ul.checks li{
+    display:flex;gap:9px;align-items:flex-start;
+    padding:4.5px 2px;border-bottom:1px dashed var(--line);
+    font-size:13px;
+  }
+  ul.checks li:last-child{border-bottom:none;}
+  ul.checks .box{
+    flex:0 0 17px;width:17px;height:17px;margin-top:1px;
+    border:2px solid var(--navy);border-radius:3px;
+  }
+  ul.checks li b{color:var(--navy);}
+  /* 補足は必ず別行にする。インラインだと本文と続き読みになる（「書きます受診のときに」）*/
+  ul.checks .why{display:block;color:#555;font-size:11.5px;margin-top:1px;}
+  .bothnote{
+    margin-top:8px;background:var(--accent-bg);border-left:5px solid var(--accent);
+    padding:9px 13px;font-size:13px;color:#333;border-radius:0 6px 6px 0;
+  }
+  .bothnote b{color:var(--accent-ink);}
+  .alert{border:2.5px solid var(--danger);border-radius:8px;padding:11px 14px;background:var(--danger-bg);}
+  .alert .at{color:var(--danger);font-weight:800;font-size:15px;margin-bottom:6px;}
+  .fast{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;}
+  .fast div{
+    flex:1 1 30%;font-size:12.5px;background:#fff;border:1px solid var(--danger-line);
+    border-radius:6px;padding:7px 10px;
+  }
+  .fast .l{color:var(--danger);font-weight:800;font-size:13px;display:block;}
+  .fast .s{color:#555;font-size:11.5px;}
+  .memo{border:1.5px solid var(--line);border-radius:8px;padding:10px 13px;margin-top:14px;font-size:12.5px;}
+  .memo .mtitle{font-weight:800;color:var(--navy);font-size:13.5px;margin-bottom:5px;}
+  .memo .mtext{font-size:12.5px;color:#333;margin-bottom:7px;}
+  .memo .mtext b{color:var(--accent-ink);}
+  .memo .mrow{display:flex;gap:6px;align-items:baseline;padding:5px 0;}
+  .memo .mlabel{flex:0 0 210px;font-weight:700;color:var(--navy);white-space:nowrap;}
+  .memo .mline{flex:1;border-bottom:1px solid #97a6b5;min-height:18px;}
+  /* 2週間分の体重記録 */
+  .wtbl{width:100%;border-collapse:collapse;margin-top:8px;table-layout:fixed;}
+  .wtbl th,.wtbl td{border:1px solid var(--line);text-align:center;font-size:11px;padding:2px 1px;}
+  .wtbl th{background:var(--navy-bg);color:var(--navy);font-weight:800;width:52px;white-space:nowrap;}
+  .wtbl td{height:22px;}
+  .wcap{font-size:11.5px;color:#555;margin-top:5px;}
+  .foot{margin-top:16px;padding-top:10px;border-top:1px solid var(--line);font-size:11px;color:#666;line-height:1.5;}
+  .foot .brand{font-weight:700;color:var(--navy);}
+  .noprint{margin:0 auto 18px;max-width:820px;text-align:center;}
+  .pbtn{
+    display:inline-block;background:var(--navy);color:#fff;text-decoration:none;
+    font-size:14px;font-weight:700;padding:10px 24px;border-radius:24px;border:none;cursor:pointer;
+    box-shadow:0 2px 10px rgba(27,58,92,.25);
+  }
+  .pbtn:active{transform:scale(.98);}
+  .noprint p{font-size:12px;color:#777;margin-top:8px;}
+
+  @page{size:A4 portrait;margin:10mm 12mm;}
+  @media print{
+    body{background:#fff;padding:0;font-size:9.8pt;}
+    .sheet{box-shadow:none;margin:0;max-width:none;padding:0;}
+    .noprint{display:none !important;}
+    h1{font-size:16pt;line-height:1.25;}
+    h2{font-size:11.5pt;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    h2 .num{width:17px;height:17px;flex:0 0 17px;font-size:10.5pt;}
+    .kicker,.alert,.fast div,.bothnote,.wtbl th{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .kicker{padding:2px 9px;margin-bottom:4px;}
+    .sub{margin-top:3px;}
+    ul.checks{margin-top:4px;}
+    ul.checks li{font-size:9.3pt;padding:0px 2px;line-height:1.32;}
+    ul.checks .why{font-size:9pt;}
+    .lead{font-size:9pt;margin-top:1px;line-height:1.42;}
+    .head{padding-bottom:2px;margin-bottom:2px;}
+    h2{margin:3px 0 1px;padding:1px 9px;}
+    .alert{padding:3px 9px;}
+    .alert .at{font-size:10pt;margin-bottom:1px;}
+    .fast div{padding:2px 7px;font-size:9.3pt;line-height:1.3;}
+    .fast .s{font-size:8.6pt;}
+    .fast{gap:4px;margin-top:1px;}
+    .bothnote{margin-top:3px;padding:3px 9px;font-size:9.3pt;line-height:1.32;}
+    .memo{margin-top:4px;padding:3px 9px;font-size:9.3pt;}
+    .memo .mtitle{font-size:10pt;margin-bottom:1px;}
+    .memo .mtext{font-size:9.1pt;margin-bottom:1px;line-height:1.32;}
+    .memo .mrow{padding:1px 0;}
+    .memo .mline{min-height:13px;}
+    .wtbl th,.wtbl td{font-size:8.4pt;padding:1px 1px;}
+    .wtbl td{height:16px;}
+    .wcap{font-size:8.4pt;margin-top:2px;}
+    .foot{margin-top:3px;padding-top:2px;font-size:7.8pt;line-height:1.32;}
+    a[href]{color:inherit;text-decoration:none;}
+    .alert,.memo,.fast,.bothnote,.wtbl{break-inside:avoid;page-break-inside:avoid;}
+    ul.checks li{break-inside:avoid;page-break-inside:avoid;}
+    h2{break-after:avoid;page-break-after:avoid;}
+  }
+  @media (max-width:560px){
+    body{padding:8px;}
+    .sheet{padding:16px 15px 20px;}
+    h1{font-size:19px;}
+    .fast div{flex:1 1 100%;}
+    .memo .mlabel{flex:0 0 150px;}
+    .wtbl th{width:38px;}
+  }
+</style>
+</head>
+<body>
+<div class="noprint">
+  <button class="pbtn" id="printBtn">&#128424;&#65039; この資料を印刷する（A4）</button>
+  <p>A4・1枚（体重の測り方・むくみの見方・連絡する目安・食事・水分・記入欄・2週間の記録欄。カラー印刷推奨）</p>
+</div>
+
+<div class="sheet">
+
+  <div class="head">
+    <span class="kicker">心不全と診断された方とご家族へ</span>
+    <h1>心不全の毎日の自己管理<br>体重・むくみ・食事のこと</h1>
+    <p class="sub">「何kg増えたら、誰に連絡するか」を、今日いっしょに決めておきましょう。</p>
+    <p class="lead">毎日の体重は、<b>それだけを見ていれば安心、というものではありません。</b>悪くなる直前まで変わらないこともあります。だからこそ、息切れやむくみとセットで見ていただきます。この紙は、受診のときに持ってきて、主治医と一緒に書き込んでお使いください。</p>
+  </div>
+
+  <h2><span class="num">1</span>毎日、同じ条件で体重を測る</h2>
+  <ul class="checks">
+    <li><span class="box"></span><span><b>朝おきたあと、トイレをすませてから、同じ服装で</b>測ります<span class="why">（これは一般的な測り方です。ガイドラインが手順として決めているものではありません）</span></span></li>
+    <li><span class="box"></span><span>測った数字は、この紙の記録欄に書きます<span class="why">受診のときに主治医が見ると、増え方の流れがわかります</span></span></li>
+    <li><span class="box"></span><span><b>体重だけを見て安心しない。</b>息切れ・むくみと合わせて見ます</span></li>
+  </ul>
+
+  <h2><span class="num">2</span>むくみは、毎日同じ場所を見る</h2>
+  <ul class="checks">
+    <li><span class="box"></span><span><b>すねの前を指で5秒ほど押して、へこみが残るか</b>を見ます</span></li>
+    <li><span class="box"></span><span>くつ下のあとが強く残る、くつがきつくなった、おなかが張る<span class="why">これも、体に水がたまってきたサインのことがあります</span></span></li>
+  </ul>
+
+  <h2 class="hd"><span class="num">3</span>この3つが出たら、連絡してください</h2>
+  <div class="alert">
+    <div class="at">&#9888;&#65039; 様子を見ずに、決めておいた連絡先へ</div>
+    <div class="fast">
+      <div><span class="l">息切れ</span><span class="s">動いたときの息切れ／横になると苦しい</span></div>
+      <div><span class="l">3日で2kgの増加</span><span class="s">下の記入欄で、あなたの目安を決めます</span></div>
+      <div><span class="l">むくみ</span><span class="s">すね・足の甲・おなかの張り</span></div>
+    </div>
+  </div>
+
+  <h2><span class="num">4</span>食事は「濃い味を1つ減らす」から</h2>
+  <div class="bothnote"><b>塩分を1日何グラムまでにするか、いまのガイドラインでは目標の数字が決められていません。</b>数字を追いかけるより、汁物を残す、つけ物やつくだ煮を減らす、しょうゆをかけずに小皿につける——こうした「いつもより濃い味を1つ減らす」を続けるほうが、無理なく続きます。</div>
+
+  <h2><span class="num">5</span>水分は、自分の判断で減らさない</h2>
+  <div class="bothnote"><b>水分を控えるかどうかは、主治医が決めます。</b>言われていない方が自己判断で減らすと、脱水になることがあります。<b>口がかわいてつらいときは、我慢せず主治医に伝えてください。</b>がまんを続ける必要はありません。</div>
+
+  <h2><span class="num">6</span>記録がつらいときは、それも伝えてください</h2>
+  <div class="bothnote">毎日つけるのがつらい、気持ちが落ち込んで手につかない——そういうときは、<b>無理に続けず、主治医かご家族に伝えてください。</b>やる気の問題ではありません。つらいまま一人で続けないことのほうが、ずっと大切です。</div>
+
+  <div class="memo">
+    <div class="mtitle">&#9997;&#65039; 受診のときに、主治医と一緒に書きましょう</div>
+    <div class="mtext"><b>「何kg増えたら、誰に連絡するか」は人によって違います。</b>あなたの目安を、ここに書いてもらってください。</div>
+    <div class="mrow"><span class="mlabel">わたしのふだんの体重</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">連絡する体重（　　kgになったら）</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">連絡先（電話番号・担当）</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">次の受診日</span><span class="mline"></span></div>
+
+    <table class="wtbl">
+      <tr><th>日付</th><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><th>体重(kg)</th><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><th>日付</th><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr><th>体重(kg)</th><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    </table>
+    <div class="wcap">2週間分。息切れ・むくみがあった日は、体重の欄に○をつけておくと伝わりやすくなります。</div>
+  </div>
+
+  <div class="foot">
+    <span class="brand">医知創造ラボ</span>｜監修：今村久司（脳神経内科専門医・総合内科専門医）<br>
+    この資料は、PubMedで実在を確認した一次文献と、2025年改訂版 心不全診療ガイドライン（日本循環器学会／日本心不全学会）をもとに作成しています。<b>お薬の種類や量については扱っていません。</b>治療方針は担当の先生の判断によります。体重の目安・水分・食事の内容は、必ず主治医にご確認ください。
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var b = document.getElementById('printBtn');
+  if (b) { b.addEventListener('click', function(){ window.print(); }); }
+})();
+</script>
+</body>
+</html>

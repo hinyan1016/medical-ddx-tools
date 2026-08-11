@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v101';
+const CACHE_NAME = 'ddx-tools-v102';
 const ASSETS = [
   './',
   './index.html',
@@ -49,6 +49,7 @@ const ASSETS = [
   './infographics/alcohol-reduction-guidance/index.html',
   './infographics/heatstroke-hydration-guidance/index.html',
   './infographics/aspiration-prevention-guidance/index.html',
+  './infographics/heart-failure-selfcare-guidance/index.html',
   './handouts/index.html',
   './handouts/stroke-secondary-prevention/index.html',
   './handouts/parkinson-rehab-guidance/index.html',
@@ -89,6 +90,7 @@ const ASSETS = [
   './handouts/atrial-fibrillation-guidance/index.html',
   './handouts/how-to-stop-sleeping-pills/index.html',
   './handouts/aspiration-prevention-guidance/index.html',
+  './handouts/heart-failure-selfcare-guidance/index.html',
   './status_epilepticus_sedation.html',
   './handouts/status-epilepticus-sedation/index.html',
   './manifest.json',
