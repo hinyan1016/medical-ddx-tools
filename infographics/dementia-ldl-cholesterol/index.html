@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="LDLコレステロールと認知症の関係を一次資料の数値で整理したインフォグラフィック。高LDLは2024年に新しく加わった危険因子でPAFは中年期7%、効くのは中年期のLDL（Iwagami・Anstey）、高齢での低下は診断の15年以上前から始まる「先ぶれ」かもしれない（Stewart）、スタチンは「なる」も「防ぐ」もRCTでは支持されていないことまで。">
+<title>コレステロールと認知症｜「下げれば防げる」「薬で認知症になる」を一次資料で確認する（インフォグラフィック）</title>
+<style>
+:root{
+  --navy:#1B3A5C;
+  --navyDeep:#0F2540;
+  --navyBg:#E9EEF5;
+  --coral:#FF7A59;
+  --coralBg:#FFF1EC;
+  --coralInk:#B8431F;
+  --amber:#C77800;
+  --amberBg:#FFF8E1;
+  --bg:#F7F5F6;
+  --line:#D6E0E9;
+  --gray:#69737E;
+  --ink:#20242B;
+  --ink2:#3C4450;
+  --ok:#2E7D5B;
+  --font:"Noto Sans JP","BIZ UDPGothic","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+}
+html{font-size:16px;}
+*{box-sizing:border-box; margin:0; padding:0;}
+/* 日本語の語中改行を文節境界で切る（feedback_ja_wrap_auto_phrase） */
+body,.lead__box,.card p,.tier__d,td,th,.note,.badge__t,.src,.quote__d,.trial__row,.ep__d,.cav,.big__cap,.tl-note{
+  word-break:auto-phrase; line-break:strict;
+}
+body{font-family:var(--font); background:#E4E9EF; color:var(--ink); display:flex;
+  flex-direction:column; align-items:center; overflow-x:hidden;}
+.nw{white-space:nowrap;}
+
+.info{width:100%; max-width:1080px; background:#fff; padding:0 0 3rem;}
+
+/* ---- ヘッダー ---- */
+.hd{background:linear-gradient(135deg,#0A1B2E 0%,#153352 55%,#1B3A5C 100%); color:#fff;
+  padding:2.6rem 3rem 2.2rem; text-align:center; position:relative; overflow:hidden;}
+.hd::after{content:""; position:absolute; right:-5rem; top:-5rem; width:18rem; height:18rem;
+  border-radius:50%; background:radial-gradient(circle at 30% 30%, rgba(255,122,89,.32), rgba(255,122,89,0) 70%);}
+.hd__title{font-size:3rem; font-weight:800; line-height:1.3; position:relative; z-index:2;}
+.hd__sub{font-size:1.34rem; margin-top:.8rem; color:rgba(255,255,255,.9); line-height:1.6; position:relative; z-index:2;}
+.hd__by{font-size:1rem; margin-top:.7rem; color:rgba(255,255,255,.7); position:relative; z-index:2;}
+
+/* ---- セクション ---- */
+.sec{padding:0 3rem; margin-top:2.2rem;}
+.sec__h{display:flex; align-items:center; gap:.9rem; font-size:1.8rem; font-weight:800;
+  color:var(--navy); margin-bottom:1rem; line-height:1.4;}
+.sec__n{flex:none; width:2.7rem; height:2.7rem; border-radius:50%; background:var(--coral);
+  color:#fff; display:flex; align-items:center; justify-content:center; font-size:1.35rem; font-weight:800;}
+
+.cards{display:flex; gap:1rem; align-items:stretch;}
+.card{flex:1 1 0; border:.13rem solid var(--line); border-radius:.8rem; background:#fff; padding:1.1rem 1.25rem;}
+.card--coral{border-color:var(--coral); background:var(--coralBg);}
+.card__t{display:inline-block; font-size:.95rem; font-weight:800; color:#fff; background:var(--navy);
+  border-radius:.35rem; padding:.25rem .8rem; margin-bottom:.8rem;}
+.card--coral .card__t{background:var(--coral);}
+.card p{font-size:1.05rem; line-height:1.7; color:var(--ink2);}
+.card p + p{margin-top:.6rem;}
+.card b{color:var(--navy);}
+.card--coral b{color:var(--coralInk);}
+
+.big{display:flex; align-items:baseline; justify-content:center; gap:.5rem; margin:.6rem 0 .2rem;}
+.big__n{font-size:3.4rem; font-weight:800; color:var(--coralInk); line-height:1;}
+.big__u{font-size:1.4rem; font-weight:800; color:var(--coralInk);}
+.big__cap{text-align:center; font-size:.95rem; color:var(--gray); line-height:1.6;}
+
+.paf{margin-top:.9rem; background:var(--amberBg); border-left:.32rem solid var(--amber);
+  border-radius:0 .5rem .5rem 0; padding:.75rem 1rem; font-size:.98rem; line-height:1.65; color:var(--ink2);}
+.paf b{color:var(--amber);}
+
+.hr{display:flex; align-items:baseline; gap:.6rem; margin-top:.7rem; font-size:1.12rem; color:var(--ink2);}
+.hr b{color:var(--navy); font-size:1.25rem;}
+
+/* パターン表 */
+.ptbl{width:100%; border-collapse:collapse; margin-top:.75rem; background:#fff;
+  border:.12rem solid var(--line); border-radius:.5rem; overflow:hidden;}
+.ptbl caption{caption-side:top; text-align:left; font-size:.95rem; font-weight:700;
+  color:var(--gray); padding:.15rem 0 .45rem;}
+.ptbl td{border-top:.08rem solid var(--line); padding:.5rem .8rem; font-size:1.0rem; color:var(--ink2); line-height:1.55;}
+.ptbl tr:first-child td{border-top:none;}
+.ptbl td:last-child{text-align:right; font-weight:800; color:var(--navy); width:11rem;}
+.ptbl tr.hi td{background:var(--coralBg); color:var(--coralInk);}
+.ptbl tr.hi td:last-child{color:var(--coralInk);}
+.ptbl tr.ns td:last-child{color:var(--gray); font-weight:700;}
+
+.timeline{display:flex; align-items:center; gap:.8rem; margin-top:1rem; background:var(--navy);
+  border-radius:.6rem; padding:.7rem 1.1rem; color:#fff;}
+.timeline__lab{flex:none; font-size:.95rem; font-weight:700; color:rgba(255,255,255,.8);}
+.timeline__bar{flex:1; display:flex; align-items:center; gap:.6rem;}
+.timeline__seg{flex:1; text-align:center; font-size:1.05rem; font-weight:800; padding:.3rem 0;
+  border-radius:.35rem; background:rgba(255,255,255,.12);}
+.timeline__seg--on{background:var(--coral);}
+.timeline__ar{flex:none; color:var(--coral); font-weight:800; font-size:1.2rem;}
+.tl-note{margin-top:.55rem; font-size:1.12rem; font-weight:700; color:var(--navy); text-align:center;}
+
+/* 試験カード */
+.trial__row{display:flex; gap:.6rem; align-items:flex-start; font-size:1.0rem; line-height:1.66; color:var(--ink2);}
+.trial__row + .trial__row{margin-top:.5rem;}
+.trial__k{flex:none; width:4.4rem; font-weight:800; color:var(--navy);}
+.card--coral .trial__k{color:var(--coralInk);}
+.ep{margin-top:.8rem; border:.14rem solid var(--navy); border-radius:.6rem; padding:.7rem .9rem; background:#fff;}
+.ep--sub{border-width:.09rem; border-color:var(--line);}
+.ep__h{display:flex; align-items:center; justify-content:space-between; gap:.6rem;}
+.ep__t{font-size:.98rem; font-weight:800; color:var(--navy);}
+.ep__mark{flex:none; font-size:1.3rem; font-weight:800;}
+.ep__mark--no{color:var(--gray);}
+.ep__mark--yes{color:var(--ok);}
+.ep__mark--warn{color:var(--amber);}
+.ep__d{font-size:1.0rem; line-height:1.66; color:var(--ink2); margin-top:.35rem;}
+.ep__d b{color:var(--navy);}
+.ep__v{font-weight:800;}
+.cav{display:flex; gap:.5rem; margin-top:.7rem; font-size:.92rem; line-height:1.6; color:var(--gray);}
+.cav .i{flex:none; color:var(--amber); font-weight:800;}
+
+/* 表 */
+.tbls{display:flex; gap:1rem; align-items:flex-start;}
+.tbl{flex:1 1 0;}
+.tbl__t{font-size:.98rem; font-weight:800; color:#fff; background:var(--navy);
+  border-radius:.35rem .35rem 0 0; padding:.4rem .8rem; line-height:1.5;}
+table.d{width:100%; border-collapse:collapse; border:.12rem solid var(--navy); border-top:none;}
+table.d th{background:var(--navyBg); color:var(--navy); font-size:.88rem; font-weight:800;
+  padding:.45rem .5rem; text-align:left; line-height:1.4; border:.06rem solid var(--line);}
+table.d td{border:.06rem solid var(--line); padding:.5rem .5rem; font-size:.88rem; line-height:1.55;
+  color:var(--ink2); vertical-align:top;}
+table.d td.k{font-weight:800; color:var(--navy); background:#FAFBFC; width:7.6rem;}
+table.d td.hi{background:var(--coralBg);}
+table.d td.hi b{color:var(--coralInk);}
+table.d td.c{text-align:center;}
+.note{display:flex; gap:.5rem; margin-top:.6rem; font-size:.88rem; line-height:1.62; color:var(--gray);}
+.note .i{flex:none; color:var(--navy); font-weight:800;}
+
+/* 3層 */
+.tiers{display:flex; flex-direction:column; gap:.7rem;}
+.tier{display:flex; gap:1rem; align-items:flex-start; border:.13rem solid var(--line);
+  border-radius:.7rem; background:#fff; padding:.9rem 1.1rem;}
+.tier--warn{border-color:var(--amber); background:var(--amberBg);}
+.tier__k{flex:none; width:8.2rem; font-weight:800; color:var(--navy); line-height:1.5; font-size:1.0rem;}
+.tier--warn .tier__k{color:var(--amber);}
+.tier__b{flex:1;}
+.tier__h{font-size:1.2rem; font-weight:800; color:var(--navy); line-height:1.5;}
+.tier--warn .tier__h{color:var(--amber);}
+.tier__d{font-size:.98rem; line-height:1.68; color:var(--ink2); margin-top:.3rem;}
+.tier__d li{margin-left:1.1rem;}
+
+/* 注意バッジ */
+.badges{margin-top:1.5rem; border:.16rem solid var(--amber); border-radius:.8rem;
+  background:var(--amberBg); padding:1rem 1.3rem;}
+.badge__t{display:flex; align-items:center; gap:.6rem; font-size:1.24rem; font-weight:800;
+  color:var(--amber); margin-bottom:.6rem;}
+.badges ul{list-style:none;}
+.badges li{display:flex; gap:.6rem; font-size:1.02rem; line-height:1.7; color:var(--ink2); padding:.15rem 0;}
+.badges li .m{flex:none; color:var(--amber); font-weight:800;}
+.badges li b{color:var(--amber);}
+
+.src{padding:0 3rem; margin-top:2rem; font-size:.84rem; line-height:1.78; color:var(--gray);}
+.foot{margin:1.3rem 3rem 0; padding-top:1.2rem; border-top:.12rem solid var(--line);
+  display:flex; align-items:center; justify-content:space-between; gap:.8rem; flex-wrap:wrap;
+  font-size:1.24rem; color:var(--gray); font-weight:700;}
+.foot .x{color:var(--coral);}
+
+@media (max-width:1079px){ html{font-size:1.48vw;} }
+@media (max-width:720px){
+  html{font-size:12px;}
+  .hd{padding:1.6rem 1.2rem 1.4rem;} .hd__title{font-size:2.1rem;}
+  .sec,.src{padding-left:1.2rem; padding-right:1.2rem;}
+  .foot{margin-left:1.2rem; margin-right:1.2rem;}
+  .cards,.tbls{flex-direction:column;}
+  .tier{flex-direction:column; gap:.35rem;} .tier__k{width:auto;}
+}
+</style>
+</head>
+<body>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+<div class="info">
+
+  <div class="hd">
+    <div class="hd__title">コレステロールと認知症</div>
+    <div class="hd__sub">「下げれば防げる」「薬で認知症になる」を一次資料で確認する</div>
+    <div class="hd__by">脳神経内科医が一次資料で解説</div>
+  </div>
+
+  <!-- ① 前提 -->
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">1</span>高LDLは2024年に新しく加わった危険因子</div>
+    <div class="cards">
+      <div class="card card--coral" style="flex:0 0 40%;">
+        <span class="card__t">Lancet 2024 委員会報告</span>
+        <p>認知症の予防可能な危険因子<br><b>14因子</b>・合計人口寄与割合（PAF）</p>
+        <div class="big"><span class="big__n">45</span><span class="big__u">%</span></div>
+        <div class="big__cap">早年期 5% ＋ 中年期 30% ＋ 晩年期 10%<br>（2020年版12因子・合計40%から+5ポイント）</div>
+        <p style="margin-top:.9rem;">高LDLコレステロールの中年期PAF：<b style="font-size:1.5rem;">7%</b></p>
+        <p>中年期区分の内訳で<b>難聴7%と並んで最大タイ</b><br>（うつ病3%・TBI3%・運動不足2%・糖尿病2%・喫煙2%・高血圧2%・肥満1%・過剰飲酒1%）</p>
+        <div class="paf"><b>PAFは集団全体で高LDLを取り除けたと仮定した場合の推計値</b>であり、個人のリスクが下がる割合ではない</div>
+      </div>
+
+      <div class="card">
+        <span class="card__t">2024年版で新規追加された2因子のひとつ</span>
+        <p><b>2020年版の12因子にLDLは含まれていなかった。</b><br>2024年版でもう1つの新規因子（視力低下・PAF 2%）とともに加わった</p>
+        <p><b>委員会の介入の方向性</b><br>中年期のLDL管理（食事・運動・必要時に薬物）</p>
+        <p><b>委員会メッセージ</b><br>リスク低減はどの年代から始めても意味がある（"never too early, never too late"）</p>
+        <div class="paf" style="border-color:var(--navy); background:var(--navyBg);">因子どうしは重なり合うため、単純加算には限界があると委員会も明記している</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ② いつのLDLか -->
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">2</span>効くのは「いつのLDLか」＝中年期</div>
+    <div class="cards">
+      <div class="card">
+        <span class="card__t">Iwagami 2021, Lancet Healthy Longev（英国CPRD・185万人）</span>
+        <p>LDL <b>1SD（1.01 mmol/L＝39 mg/dL）</b>上昇あたり<br>全体：調整率比 <b>RR 1.05</b>（95%CI 1.03-1.06）</p>
+        <table class="ptbl">
+          <caption>年齢帯×追跡期間別のRR</caption>
+          <tr><td>65歳未満・測定後10年以内</td><td>1.10（1.04-1.15）</td></tr>
+          <tr class="hi"><td><b>65歳未満・測定後10年超</b></td><td>1.17（1.08-1.27）</td></tr>
+          <tr><td>65歳以上・測定後10年以内</td><td>1.03（1.01-1.05）</td></tr>
+          <tr><td>65歳以上・測定後10年超（65歳未満より弱い）</td><td>1.07（1.03-1.13）</td></tr>
+        </table>
+        <p style="margin-top:.7rem;">抄録の結論：<b>「中年期（65歳未満）に測ったLDLコレステロールは、10年より後の認知症リスクと控えめに（modestly）関連する」</b></p>
+      </div>
+
+      <div class="card card--coral">
+        <span class="card__t">Anstey 2017, J Alzheimers Dis（中年期 vs 晩年期メタ解析・17件23,338人）</span>
+        <div class="hr">中年期の総コレステロール高値→晩年期AD<br><b>相対リスク 2.14</b><span style="font-size:1rem;color:var(--gray);">（95%CI 1.33-3.44）</span></div>
+        <div class="paf" style="border-color:var(--coral); background:#fff;">⚠ <b>ここは総コレステロール（TC）の値であり、LDLではない</b></div>
+        <p style="margin-top:.8rem;"><b>晩年期に測った総コレステロール高値は、MCI・AD・血管性認知症・全認知症・認知機能低下のいずれとも関連しなかった</b></p>
+
+        <table class="ptbl" style="margin-top:1rem;">
+          <caption>参考：Solomon 2009（40-45歳で測定・30年後のAD、TC&lt;200を基準）</caption>
+          <tr class="ns"><td>境界域 200-239 mg/dL（有意でない）</td><td>1.23（0.97-1.55）</td></tr>
+          <tr class="hi"><td><b>高値 ≥240 mg/dL</b></td><td>1.57（1.23-2.01）</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="timeline">
+      <span class="timeline__lab">時期</span>
+      <div class="timeline__bar">
+        <span class="timeline__seg">若年期</span>
+        <span class="timeline__ar">→</span>
+        <span class="timeline__seg timeline__seg--on">中年期</span>
+        <span class="timeline__ar">→</span>
+        <span class="timeline__seg">晩年期</span>
+      </div>
+    </div>
+    <div class="tl-note">効くのは、いま測っているLDLより中年期のLDL。ただし関連の大きさは控えめ（modestly）</div>
+  </div>
+
+  <!-- ③ 高齢での低下は先ぶれ -->
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">3</span>高齢での低下は「先ぶれ」かもしれない</div>
+    <div class="cards">
+      <div class="card" style="flex:1 1 100%;">
+        <span class="card__t">Stewart 2007, Arch Neurol（Honolulu-Asia Aging Study）</span>
+        <p><b>日系米国人男性 1,027人。</b>1965〜1993年の5時点で総コレステロールを測定し、1991〜1996年に2回の認知症スクリーニング</p>
+        <p>26年間の総コレステロール変化の傾き（slope）を、<b>追跡終了時に認知症を発症した56人</b> vs <b>発症しなかった971人</b>で比較</p>
+        <div class="paf" style="border-color:var(--amber);">認知症を発症した男性、とくにアルツハイマー病の男性では、<b>コレステロール値が診断の少なくとも15年前から低下しはじめており</b>、その期間を通じて認知症でない男性より低いままだった（血管危険因子・体重変化・飲酒・脂質低下薬の使用を調整しても頑健）</div>
+        <p style="margin-top:.7rem;">抄録の結論：血清総コレステロールの低下は、認知症の発症の早期段階と関連している<b>可能性がある</b>（"may be associated with"）</p>
+      </div>
+    </div>
+    <div class="tl-note" style="margin-top:1rem;">⚠ 対象は日系米国人男性のみ。「日本人で同じ」とは言えない／「低いことが原因」とも「高いままでよい」とも言えない</div>
+  </div>
+
+  <!-- ④ 脳のどこに効くか -->
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">4</span>脳のどこに効いているのか</div>
+    <div class="tbls">
+      <div class="tbl">
+        <div class="tbl__t">久山町研究＝日本人データ（Matsuzaki 2011, Neurology・剖検147例）</div>
+        <table class="d">
+          <tr><th>病理</th><th>LDLなど脂質指標との関連</th></tr>
+          <tr>
+            <td class="k">老人斑<br>（アミロイド病理）</td>
+            <td class="hi"><b>調整平均値が有意に高値</b>（老人斑が軽度でも成立・APOE ε4等で調整後も成立）。<br>最高四分位で老人斑リスクが有意に高く、閾値効果を示唆</td>
+          </tr>
+          <tr>
+            <td class="k">神経原線維変化<br>（NFT）</td>
+            <td>関連なし</td>
+          </tr>
+        </table>
+        <div class="note"><span class="i">ⓘ</span><span>剖検病理の研究であって発症率ではない。「久山町で高LDLだと認知症が◯倍」とは言えない</span></div>
+      </div>
+
+      <div class="tbl">
+        <div class="tbl__t">韓国・アミロイドPET（Kang 2023, Alzheimers Res Ther・1,175人）</div>
+        <table class="d">
+          <tr><th>アウトカム</th><th>効果指標</th><th>p値</th></tr>
+          <tr>
+            <td class="k">アミロイドPET<br>集積</td>
+            <td class="hi c">LDL-C高値で増加<br><b>β=0.014〜0.115</b><br>（APOEε4・脂質低下薬と独立）</td>
+            <td class="c">0.013</td>
+          </tr>
+          <tr>
+            <td class="k">白質高信号<br>(WMH)体積</td>
+            <td class="c">HDL-C低値で増加<br><b>β=-0.133〜-0.006</b></td>
+            <td class="c">0.032</td>
+          </tr>
+          <tr>
+            <td class="k">海馬体積<br>（直接効果）</td>
+            <td class="c">LDL-C高値で縮小<br><b>β=-0.053</b></td>
+            <td class="c">0.040</td>
+          </tr>
+          <tr>
+            <td class="k">海馬体積<br>（間接効果）</td>
+            <td class="c">アミロイド集積が媒介<br><b>β=-0.018</b></td>
+            <td class="c">0.006</td>
+          </tr>
+        </table>
+        <div class="note"><span class="i">ⓘ</span><span>横断研究であり因果ではない。「LDLを下げればアミロイドが減る」とは言えない</span></div>
+      </div>
+    </div>
+    <div class="tl-note" style="margin-top:1rem;">LDL→アミロイド側（久山町・韓国PETで方向が一致）。第1弾（高血圧）は主に血管性認知症で強い関連——ただし「高血圧＝血管性、LDL＝アルツハイマー」と断定的に二分はできない（混合病理がある）</div>
+  </div>
+
+  <!-- ⑤ 薬は「なる」も「防ぐ」も未支持 -->
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">5</span>薬は「なる」も「防ぐ」も、RCTでは支持されていない</div>
+    <div class="cards" style="align-items:flex-start;">
+      <div class="card">
+        <span class="card__t">「スタチンで認知症になる」のか</span>
+        <div class="trial__row"><span class="trial__k">起点</span><span>2012年FDA警告＝<b>有害事象報告システム（AERS）と医学文献レビュー</b>に基づく（対照試験ではない）</span></div>
+
+        <div class="ep">
+          <div class="ep__h">
+            <span class="ep__t">Ott 2015：RCT25件・46,836人（14試験27,643人でメタ解析）</span>
+            <span class="ep__mark ep__mark--no">✕</span>
+          </div>
+          <div class="ep__d">認知機能正常者：標準化平均差 <span class="ep__v">0.01</span>（95%CI -0.01〜0.03、p=0.42）<br>アルツハイマー病患者：標準化平均差 <span class="ep__v">-0.05</span>（95%CI -0.19〜0.10、p=0.38）<br><b>＝いずれも有意な有害作用なし</b></div>
+        </div>
+        <div class="ep ep--sub">
+          <div class="ep__h">
+            <span class="ep__t">Cochrane 2016（McGuinness）・PROSPER</span>
+            <span class="ep__mark ep__mark--no">✕</span>
+          </div>
+          <div class="ep__d">5種類の認知機能検査いずれもスタチン群とプラセボ群に差なし（<b>エビデンスの質は高</b>）／認知症発症は1試験のみ・両群31例：オッズ比 <span class="ep__v">1.00</span>（95%CI 0.61-1.65）／PROSPER：認知機能にも身体機能障害にも<b>有意な影響なし</b></div>
+        </div>
+        <div class="ep">
+          <div class="ep__h">
+            <span class="ep__t">ASPREE（Zhou 2021）：65歳以上18,846人・4.7年</span>
+            <span class="ep__mark ep__mark--warn">⚠</span>
+          </div>
+          <div class="ep__d">全原因認知症：ハザード比 <span class="ep__v">1.16</span>（95%CI 0.97-1.40、p=0.11）＝関連なし<br>mixed presentations：<span class="ep__v">1.06</span>（0.82-1.35、p=0.67）＝関連なし<br><b>probable AD：1.33</b>（95%CI 1.00-1.77、<b>p=0.05＝境界域</b>）</div>
+        </div>
+        <div class="cav"><span class="i">ⓘ</span><span>probable AD のHR1.33は論文自身が「関連しなかった」とまとめている数値。単独で切り出して煽らない／無かったことにもしない</span></div>
+
+        <div class="ep ep--sub">
+          <div class="ep__h">
+            <span class="ep__t">Benn 2017（メンデルランダム化・遺伝学的解析）</span>
+            <span class="ep__mark ep__mark--no">✕</span>
+          </div>
+          <div class="ep__d">生涯LDL-Cが1 mmol/L低いことに対応するリスク比：<br>AD <span class="ep__v">0.57</span>（0.27-1.17）／血管性認知症 <span class="ep__v">0.81</span>（0.34-1.89）／全認知症 <span class="ep__v">0.66</span>（0.34-1.26）／パーキンソン病 <span class="ep__v">1.02</span>（0.26-4.00）<br><b>＝いずれも95%CIが1をまたぎ有意でない</b></div>
+        </div>
+      </div>
+
+      <div class="card card--coral">
+        <span class="card__t">逆に「スタチンで防げる」のか</span>
+        <div class="trial__row"><span class="trial__k">Larsson<br>2018</span><span>前向き観察研究<b>17件</b>でスタチン使用と認知症リスク低下が関連：相対リスク <b>0.77</b>（95%CI 0.63-0.95）／ADリスク低下（13件）：<b>0.86</b>（0.80-0.92）</span></div>
+
+        <div class="ep" style="border-color:var(--coral);">
+          <div class="ep__h">
+            <span class="ep__t" style="color:var(--coralInk);">同じ論文内のRCTでは</span>
+            <span class="ep__mark ep__mark--no">✕</span>
+          </div>
+          <div class="ep__d">認知症発症を扱ったスタチンのRCTは<b>1件のみ</b>で、<b>関連は示されなかった</b>（原文："The single RCT on statins and dementia incidence showed no association."）</div>
+        </div>
+
+        <div class="ep" style="border-color:var(--coral);">
+          <div class="ep__h">
+            <span class="ep__t" style="color:var(--coralInk);">Cochrane 2016 著者結論</span>
+          </div>
+          <div class="ep__d">「血管疾患のリスクがある人に晩年期に投与されたスタチンが、<b>認知機能低下や認知症を予防しないこと</b>については、良質なエビデンスがある」</div>
+        </div>
+        <div class="cav"><span class="i">ⓘ</span><span>観察研究では効いて見えるのに、RCTでは効かない——という乖離が同じ論文の中に併記されている</span></div>
+      </div>
+    </div>
+
+    <div class="paf" style="margin-top:1.2rem; border-color:var(--navy); background:var(--navyBg); max-width:100%;">
+      <b>現行のFDA承認添付文書</b>（アトルバスタチン・改訂12/2024）では、認知機能の記載は
+      <b>Warnings ではなく 6.2 Postmarketing Experience</b>（市販後の自発報告の欄）。
+      原文の趣旨：<b>「まれな報告」</b>（記憶喪失・物忘れ・健忘・記憶障害・錯乱）、
+      <b>「一般に重篤ではなく、中止により回復」</b>（発症まで1日〜数年・症状消失まで<b>中央値3週間</b>）
+    </div>
+  </div>
+
+  <!-- ⑥ 下げすぎは大丈夫か -->
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">6</span>下げすぎは大丈夫か</div>
+    <div class="cards">
+      <div class="card">
+        <span class="card__t">EBBINGHAUS（Giugliano 2017, NEJM・PCSK9阻害薬上乗せ）</span>
+        <p><b>1,204人を中央値19か月追跡。</b>主要評価項目（空間作業記憶方略指標）のベースラインからの平均変化：<br>エボロクマブ群 <b>-0.21±2.62</b> vs プラセボ群 <b>-0.29±2.81</b>（非劣性 P&lt;0.001）</p>
+        <p><b>探索的解析では、LDLコレステロール値と認知の変化の間に関連は認められなかった</b></p>
+        <div class="cav" style="margin-top:.5rem;"><span class="i">ⓘ</span><span>追跡は中央値19か月。「長期の安全性が証明された」とは言えない</span></div>
+      </div>
+
+      <div class="card card--coral">
+        <span class="card__t">Lee 2025（韓国11大学病院・後ろ向き観察・傾向スコアマッチング108,980例）</span>
+        <p>LDL-C <b>&lt;70 mg/dL</b> 群は <b>&gt;130 mg/dL</b> 群と比べ<br>全原因認知症のリスクが <b>26%低下</b>、ADRDのリスクが <b>28%低下</b></p>
+        <p>LDL-C <b>&lt;55 mg/dL</b> では、両アウトカムとも<b>18%低下</b></p>
+        <div class="cav" style="margin-top:.5rem;"><span class="i">ⓘ</span><span>後ろ向き観察研究。HR・95%CIは抄録に記載がない。「LDLを70未満に下げれば認知症が26%減る」と因果では言えない</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑦ 日本の現状／これから -->
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">7</span>日本の現状とこれから分かること</div>
+    <div class="cards">
+      <div class="card">
+        <span class="card__t">JAS 動脈硬化性疾患予防GL2022 英語版（Okamura 2024, J Atheroscler Thromb）</span>
+        <p>全文553,139字を機械検索（2026-08-12実測）：<br><b>"dementia" は全文で5件</b>（血圧・久山町エライジン酸・冠動脈疾患等の文脈）<br><b>"Alzheimer" は全文に1件も無い</b></p>
+        <div class="paf" style="border-color:var(--navy); background:var(--navyBg);">書けるのは<b>「LDL管理目標の根拠として認知症は挙げられていない」</b>まで。「関係を否定している」わけではない（書いていない ≠ 否定している）。照合したのは英語版のみ</div>
+      </div>
+
+      <div class="card card--coral">
+        <span class="card__t">PREVENTABLE試験（ClinicalTrials.gov NCT04262206）</span>
+        <p><b>Duke大学。</b>地域在住・<b>75歳以上</b>を対象に、アトルバスタチン40mg vs プラセボを比較</p>
+        <p>予定登録数 <b>20,000人</b>。主要評価項目：<b>「新規に認知症と診断されないこと」</b></p>
+        <p>状態：<b>RECRUITING</b>（開始2020-09-01・完了予定2026-12-31）</p>
+        <div class="cav"><span class="i">ⓘ</span><span>結果はまだ発表されていない。完了予定日であって公表日ではない</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑧ いま何をすればよいか -->
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">8</span>いま何をすればよいか</div>
+    <div class="tiers">
+      <div class="tier">
+        <div class="tier__k">層1<br>いつから</div>
+        <div class="tier__b">
+          <div class="tier__h">中年期からのLDL管理は、脳のためにも意味がありそう</div>
+          <div class="tier__d">Lancet委員会の方向性：中年期のLDL管理（食事・運動・必要時に薬物）</div>
+        </div>
+      </div>
+      <div class="tier">
+        <div class="tier__k">層2<br>薬について</div>
+        <div class="tier__b">
+          <div class="tier__h">「なる」も「防ぐ」も、RCTでは確定した答えが出ていない</div>
+          <div class="tier__d">スタチンで認知機能が悪くなることも、認知症を予防することも、無作為化試験のまとめでは示されていない</div>
+        </div>
+      </div>
+      <div class="tier tier--warn">
+        <div class="tier__k">層3<br>気になったら</div>
+        <div class="tier__b">
+          <div class="tier__h">物忘れが気になっても、自己判断で薬を中止しない</div>
+          <div class="tier__d">
+            <ul>
+              <li>晩年期にLDLの値が下がってきたことを「良くなった」と受け取らず、主治医に伝える</li>
+              <li>認知症になった場合にスタチンをやめるべきかも「判断できるエビデンスが無い」（Cochrane 2016）。<b>主治医が個別に判断する領域</b></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="badges">
+      <div class="badge__t"><span>⚠</span>大切な注意点</div>
+      <ul>
+        <li><span class="m">●</span><span><b>「LDLを下げれば認知症を防げる」とは言い切れない</b>（観察研究では関連、RCTでは予防効果が示されていない）</span></li>
+        <li><span class="m">●</span><span>PAF（7%）は個人のリスクではなく<b>集団全体の推計値</b></span></li>
+        <li><span class="m">●</span><span><b>自己判断でスタチンを減らす・やめることは勧めない</b></span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="src">
+    出典：Livingston G, et al. Lancet. 2024 ／ Iwagami M, et al. Lancet Healthy Longev. 2021 ／
+    Anstey KJ, et al. J Alzheimers Dis. 2017 ／ Solomon A, et al. Dement Geriatr Cogn Disord. 2009 ／
+    Stewart R, et al. Arch Neurol. 2007 ／ Matsuzaki T, et al. Neurology. 2011 ／
+    Kang SH, et al. Alzheimers Res Ther. 2023 ／ Ott BR, et al. J Gen Intern Med. 2015 ／
+    Zhou Z, et al. J Am Coll Cardiol. 2021 ／ Shepherd J, et al. Lancet. 2002 ／
+    McGuinness B, et al. Cochrane Database Syst Rev. 2016;2016(1):CD003160 ／
+    Larsson SC, Markus HS. J Alzheimers Dis. 2018 ／ Benn M, et al. BMJ. 2017 ／
+    Giugliano RP, et al. N Engl J Med. 2017 ／ Lee M, et al. J Neurol Neurosurg Psychiatry. 2025 ／
+    Okamura T, et al. J Atheroscler Thromb. 2024 ／
+    DailyMed（NLM）アトルバスタチンカルシウム錠 添付文書・改訂12/2024 ／
+    ClinicalTrials.gov. NCT04262206（PREVENTABLE）
+    <br>すべて PubMed で実在を確認しています。個々の治療方針は主治医の判断によります。
+  </div>
+
+  <div class="foot"><span><span class="x">✚</span> 医知創造ラボ</span><span>監修：今村久司（脳神経内科専門医・総合内科専門医）</span></div>
+</div>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px auto 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+</body>
+</html>
