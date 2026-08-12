@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="研修医がAIの鑑別を持ってきたとき、指導医は何を聞くか。NEJM 2025が提唱したDEFT-AIアプローチを1枚に整理したインフォグラフィック。DEFT-AIは4段階ではなく5段階で、5番目「AI Engagement Recommendation（次はどの監督レベルでAIを使ってよいか）」が本体。LLMを渡しても診断推論スコアは補正差2%ポイント（P=.60）で改善せず、偏ったAIでは−11.3%ポイント。医学生がLLM出力を正しく評価できたのは中央値56%。">
+<title>DEFT-AIアプローチ｜研修医がAIの鑑別を持ってきたとき、指導医は何を聞くか（インフォグラフィック）</title>
+<style>
+:root{
+  --navy:#012360;
+  --navyDeep:#001838;
+  --accent:#F27E03;
+  --bg:#E4E9EF;
+  --ink:#20242B;
+  --ink2:#3C4450;
+  --gray:#69737E;
+  --line:#D6E0E9;
+  --font:"Noto Sans JP","BIZ UDPGothic","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+}
+html{font-size:16px;}
+*{box-sizing:border-box; margin:0; padding:0;}
+/* 日本語の語中改行を文節境界で切る（feedback_ja_wrap_auto_phrase） */
+body,.lead,.note,.src,.nav a{ word-break:auto-phrase; line-break:strict; }
+body{font-family:var(--font); background:var(--bg); color:var(--ink);
+  display:flex; flex-direction:column; align-items:center; overflow-x:hidden;}
+
+.info{width:100%; max-width:1080px; background:#fff;}
+
+/* ---- ヘッダー（build_index.py がここを thumb.png に書き出す） ---- */
+.hd{background:linear-gradient(135deg,#001838 0%,#012360 55%,#0A3A86 100%); color:#fff;
+  padding:2.6rem 3rem 2.2rem; text-align:center; position:relative; overflow:hidden;}
+.hd::after{content:""; position:absolute; left:0; right:0; bottom:0; height:6px; background:var(--accent);}
+.hd__eyebrow{font-size:.82rem; letter-spacing:.18em; font-weight:700; color:var(--accent); margin-bottom:.7rem;}
+.hd__t{font-size:2.05rem; font-weight:800; line-height:1.34; letter-spacing:.01em;}
+.hd__s{margin-top:.9rem; font-size:1.02rem; line-height:1.6; color:#C9D8F2; font-weight:500;}
+.hd__src{margin-top:1.1rem; font-size:.8rem; color:#9DB3D6;}
+
+/* ---- 本体 ---- */
+.body{padding:2.2rem 3rem 3rem;}
+.lead{font-size:1rem; line-height:1.85; color:var(--ink2);}
+.lead strong{color:var(--navy); font-weight:700;}
+.fig{margin:1.8rem 0 1.2rem; text-align:center;}
+.fig a{display:inline-block; cursor:zoom-in; max-width:100%;}
+.fig img{width:100%; height:auto; display:block; border:1px solid var(--line); border-radius:8px;}
+.fig__cap{margin-top:.7rem; font-size:.84rem; color:var(--gray);}
+
+.note{margin-top:1.6rem; padding:1.1rem 1.3rem; border-left:5px solid var(--accent);
+  background:#FFF6EC; font-size:.92rem; line-height:1.8; color:var(--ink2); border-radius:0 6px 6px 0;}
+.note b{color:#A8560A;}
+
+.src{margin-top:1.6rem; padding-top:1.2rem; border-top:1px solid var(--line);
+  font-size:.83rem; line-height:1.8; color:var(--gray);}
+.src a{color:var(--navy);}
+
+.nav{display:flex; flex-wrap:wrap; gap:.7rem; margin-top:1.8rem;}
+.nav a{display:inline-block; padding:.62rem 1.15rem; border-radius:999px; text-decoration:none;
+  font-size:.9rem; font-weight:700; border:1.5px solid var(--navy); color:var(--navy); background:#fff;}
+.nav a.main{background:var(--navy); color:#fff;}
+
+.foot{padding:1.4rem 3rem 2.4rem; font-size:.8rem; color:var(--gray); text-align:center;}
+
+@media (max-width:720px){
+  .hd{padding:2rem 1.3rem 1.7rem;}
+  .hd__t{font-size:1.42rem;}
+  .body{padding:1.6rem 1.3rem 2.2rem;}
+  .foot{padding:1.2rem 1.3rem 2rem;}
+}
+</style>
+</head>
+<body>
+<main class="info">
+
+  <header class="hd">
+    <div class="hd__eyebrow">CLINICAL REASONING × GENERATIVE AI</div>
+    <h1 class="hd__t">研修医がAIの鑑別を持ってきたとき、<br>指導医は何を聞くか</h1>
+    <p class="hd__s">DEFT-AIアプローチの5ステップ<br>― 4段階ではなく5段階である理由</p>
+    <p class="hd__src">Abdulnour RE, Gin B, Boscardin CK. N Engl J Med. 2025;393(8):786-797 を基に作成</p>
+  </header>
+
+  <div class="body">
+
+    <p class="lead">
+      研修医が「ChatGPTに聞いたらこの鑑別が出ました」と言ってきたとき、指導医は何を返すべきか。
+      NEJM 2025 が提唱した <strong>DEFT-AI</strong> は、AIの使用を禁じる枠組みではなく、
+      <strong>使った瞬間を教育機会に変える問いかけの型</strong>です。
+      日本語の解説の多くは「4ステップ」と紹介しますが、原著の KEY POINTS は
+      <strong>diagnosis, evidence, feedback, teaching, and recommendation for AI use</strong> と逐語で記しており、実際は5段階。
+      頭文字は D・E・F・T の4文字ですが、著者らが付け加えたのは5番目の
+      <strong>AI Engagement Recommendation</strong>＝「この学習者は次にどの監督レベルでAIを使ってよいか」を言語化して手渡すステップです。
+    </p>
+
+    <figure class="fig">
+      <a href="infographic.png" target="_blank" rel="noopener">
+        <img src="infographic.png" alt="DEFT-AIアプローチの5ステップと、AIを渡すだけでは診断推論が改善しないことを示す一次資料の数値をまとめたインフォグラフィック">
+      </a>
+      <figcaption class="fig__cap">画像をクリック（タップ）すると原寸で開きます</figcaption>
+    </figure>
+
+    <div class="note">
+      <b>この枠組みの効果は、まだ証明されていません。</b>
+      原典は NEJM の総説（Review Article）であり、その土台となった Savaria 2022 も Perspective で、
+      いずれも有効性の検証データを提示していません。類縁の学習者中心モデルである SNAPPS でも、
+      無作為化比較試験5本を集めたメタ解析で Kirkpatrick Level 3（職場での行動）および
+      Level 4（患者アウトカム）を報告した研究はゼロでした。
+      現時点では提唱段階の枠組みとして扱うのが妥当です。
+    </div>
+
+    <div class="src">
+      <p><b>主な出典</b>（いずれも PubMed 収載。著者・誌名・年・巻号・ページのメタデータ照合済み）</p>
+      <p>
+        Abdulnour RE, et al. Educational Strategies for Clinical Supervision of Artificial Intelligence Use. N Engl J Med. 2025;393(8):786-797.<br>
+        Savaria MC, et al. Enhancing the one-minute preceptor method for clinical teaching with a DEFT approach. Int J Infect Dis. 2022;115:149-153.<br>
+        Neher JO, et al. A five-step "microskills" model of clinical teaching. J Am Board Fam Pract. 1992;5(4):419-24.<br>
+        Goh E, et al. Large Language Model Influence on Diagnostic Reasoning: A Randomized Clinical Trial. JAMA Netw Open. 2024;7(10):e2440969.<br>
+        Jabbour S, et al. Measuring the Impact of AI in the Diagnosis of Hospitalized Patients. JAMA. 2023;330(23):2275-2284.<br>
+        Waldock WJ, et al. Which curriculum components do medical students find most helpful for evaluating AI outputs? BMC Med Educ. 2025;25:195.
+      </p>
+      <p style="margin-top:.9rem">
+        本資料は医療従事者向けの教育・知識整理を目的とした情報提供であり、
+        特定の教育プログラムや診療行為の成果を保証するものではありません。
+      </p>
+    </div>
+
+    <nav class="nav">
+      <a class="main" href="../">◀ インフォグラフィック一覧</a>
+      <a href="https://tools.ichisouzo-lab.com/">診断支援ツール一覧</a>
+    </nav>
+
+  </div>
+
+  <div class="foot">医知創造ラボ</div>
+
+</main>
+</body>
+</html>
