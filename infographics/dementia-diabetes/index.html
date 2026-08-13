@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="糖尿病と認知症の関係を一次資料の数値で整理したインフォグラフィック。糖尿病があると認知症は約1.6倍だが、血糖を下げて認知症を防げるかを検証した介入試験は主要評価項目をすべて外している（ACCORD-MIND p=0.2997／J-MIND-Diabetes 差0.068／evoke p=0.57・0.46）。それでも手がかりは3つ——いつ発症したか、どの血糖を測るか、下げすぎないこと。">
+<title>糖尿病と認知症｜「血糖を下げれば防げる」は、まだ証明されていない（インフォグラフィック）</title>
+<style>
+:root{
+  --navy:#1B3A5C;
+  --navyDeep:#0F2540;
+  --navyBg:#E9EEF5;
+  --coral:#FF7A59;
+  --coralBg:#FFF1EC;
+  --coralInk:#B8431F;
+  --amber:#C77800;
+  --amberBg:#FFF8E1;
+  --line:#D6E0E9;
+  --gray:#69737E;
+  --ink:#20242B;
+  --ink2:#3C4450;
+  --ok:#2E7D5B;
+  --font:"Noto Sans JP","BIZ UDPGothic","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+}
+html{font-size:16px;}
+*{box-sizing:border-box; margin:0; padding:0;}
+/* 日本語の語中改行を文節境界で切る */
+body,.lead,.card p,.row__d,td,th,.note,.src,.cav,.sum__d{
+  word-break:auto-phrase; line-break:strict;
+}
+body{font-family:var(--font); background:#E4E9EF; color:var(--ink);
+  display:flex; flex-direction:column; align-items:center; overflow-x:hidden;}
+.nw{white-space:nowrap;}
+.ig{width:100%; max-width:1080px; background:#fff; padding:0 0 3rem;}
+
+.hd{background:linear-gradient(135deg,#0A1B2E 0%,#153352 55%,#1B3A5C 100%); color:#fff;
+  padding:2.6rem 3rem 2.2rem; text-align:center;}
+.hd__brand{font-size:.95rem; letter-spacing:.14em; opacity:.85; margin-bottom:1rem;}
+.hd__t{font-size:2.5rem; font-weight:800; line-height:1.3; letter-spacing:.01em;}
+.hd__t .hl{color:var(--coral);}
+.hd__s{margin-top:1rem; font-size:1.12rem; opacity:.92; line-height:1.7;}
+
+.sec{padding:2.2rem 3rem 0;}
+.sec__h{display:flex; align-items:center; gap:.8rem; font-size:1.45rem; font-weight:800;
+  color:var(--navy); border-bottom:3px solid var(--navy); padding-bottom:.5rem; margin-bottom:1.2rem;}
+.sec__n{background:var(--coral); color:#fff; font-size:1.05rem; width:2rem; height:2rem;
+  border-radius:.4rem; display:grid; place-items:center; flex:none;}
+.lead{font-size:1.05rem; line-height:1.8; color:var(--ink2);}
+
+.big{display:flex; gap:1.4rem; margin:1.2rem 0 .4rem; flex-wrap:wrap;}
+.big__c{flex:1 1 0; min-width:14rem; background:var(--navyBg); border-radius:.7rem;
+  padding:1.2rem 1.3rem; border-left:6px solid var(--navy);}
+.big__n{font-size:2.6rem; font-weight:800; color:var(--navy); line-height:1.1;}
+.big__n .u{font-size:1.2rem; margin-left:.2rem;}
+.big__d{margin-top:.5rem; font-size:1rem; line-height:1.6; color:var(--ink2);}
+.big--coral{background:var(--coralBg); border-left-color:var(--coral);}
+.big--coral .big__n{color:var(--coralInk);}
+
+table{width:100%; border-collapse:collapse; margin:1rem 0 .3rem; font-size:1rem;}
+th{background:var(--navy); color:#fff; text-align:left; padding:.7rem .9rem; font-weight:700;}
+td{border-bottom:1px solid var(--line); padding:.7rem .9rem; line-height:1.6; vertical-align:top;}
+td.k{font-weight:700; color:var(--navy); width:34%;}
+.src{font-size:.86rem; color:var(--gray); margin-top:.35rem; line-height:1.6;}
+
+.card{border:2px solid var(--line); border-radius:.7rem; padding:1.1rem 1.3rem; margin:1rem 0 .3rem;}
+.card--warn{background:var(--coralBg); border-color:var(--coral);}
+.card--amber{background:var(--amberBg); border-color:#EBC46A;}
+.card__t{font-weight:800; color:var(--navy); font-size:1.1rem; margin-bottom:.5rem;}
+.card--warn .card__t{color:var(--coralInk);}
+.card p{font-size:1rem; line-height:1.75; color:var(--ink2);}
+
+.rows{display:flex; flex-direction:column; gap:.7rem; margin:1rem 0 .3rem;}
+.row{display:flex; gap:1rem; align-items:flex-start; background:#F6F8FB; border-radius:.6rem; padding:.9rem 1.1rem;}
+.row__n{flex:none; width:2.1rem; height:2.1rem; border-radius:50%; background:var(--navy); color:#fff;
+  display:grid; place-items:center; font-weight:800;}
+.row__d{font-size:1rem; line-height:1.7; color:var(--ink2);}
+.row__d b{color:var(--navy);}
+
+.sum{background:var(--navy); color:#fff; border-radius:.8rem; padding:1.6rem 1.8rem; margin:1.4rem 0 .4rem;
+  display:flex; gap:1.2rem; flex-wrap:wrap;}
+.sum__c{flex:1 1 0; min-width:13rem;}
+.sum__t{font-size:1.5rem; font-weight:800; color:var(--coral); margin-bottom:.4rem;}
+.sum__d{font-size:.98rem; line-height:1.7; opacity:.95;}
+
+.note{margin:1.6rem 3rem 0; padding:1rem 1.2rem; background:#F3F5F8; border-left:5px solid var(--gray);
+  font-size:.9rem; line-height:1.75; color:var(--ink2);}
+.ft{margin-top:1.6rem; padding:1.4rem 3rem 0; border-top:2px solid var(--line);
+  font-size:.88rem; color:var(--gray); line-height:1.8; text-align:center;}
+</style>
+</head>
+<body>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+<div class="ig">
+
+  <div class="hd">
+    <div class="hd__brand">✚ 医知創造ラボ ／ 認知症×生活習慣病シリーズ 第4弾</div>
+    <h1 class="hd__t">糖尿病と認知症<br><span class="hl">「血糖を下げれば防げる」</span>を確かめる</h1>
+    <p class="hd__s">糖尿病があると認知症は約1.6倍。ただし「下げれば防げる」を検証した介入試験は、<br>いまのところ主要評価項目をすべて外しています。それでも打てる手は3つあります。</p>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">1</span>日本の現在地</div>
+    <div class="big">
+      <div class="big__c">
+        <div class="big__n">16.8<span class="u">%</span></div>
+        <div class="big__d">20歳以上の男性で<br>「糖尿病が強く疑われる者」</div>
+      </div>
+      <div class="big__c">
+        <div class="big__n">8.9<span class="u">%</span></div>
+        <div class="big__d">20歳以上の女性で<br>「糖尿病が強く疑われる者」</div>
+      </div>
+      <div class="big__c big--coral">
+        <div class="big__n">26.2<span class="u">%</span></div>
+        <div class="big__d"><b>70歳以上の男性</b>では<br>およそ4人に1人（女性は13.7%）</div>
+      </div>
+    </div>
+    <p class="src">出典: 令和5年 国民健康・栄養調査（厚生労働省）。この10年、男女とも有意な増減はありません</p>
+    <div class="card card--amber">
+      <div class="card__t">「強く疑われる者」は、有病率そのものではありません</div>
+      <p>この調査での定義は<b>「HbA1c（NGSP値）が6.5%以上」または「現在治療を受けている」</b>です。診断の手順を踏んだ有病率とは別のものさしなので、他の統計とそのまま比べることはできません。</p>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">2</span>どれくらい増えるのか</div>
+    <table>
+      <thead><tr><th>研究</th><th>認知症との関連</th></tr></thead>
+      <tbody>
+        <tr><td class="k">メタ解析14研究<br><span class="nw">2,310,330人</span>（認知症102,174例）</td><td>全認知症の相対リスクは女性 <b>1.62</b>（1.45–1.80）／男性 <b>1.58</b>（1.38–1.81）＝<b>およそ1.6倍</b></td></tr>
+        <tr><td class="k">同・病型別</td><td>血管性認知症で高く 女性2.34／男性1.73（非血管性は女性1.53／男性1.49）。血管性にかぎって<b>女性の上乗せが男性より19%大きい</b>（1.19［1.08–1.30］P&lt;0.001）</td></tr>
+        <tr><td class="k">久山町研究 1,017人<br>（60歳以上・15年追跡）</td><td>全認知症 ハザード比 <b>1.74</b>（1.19–2.53）p=0.004／アルツハイマー病 <b>2.05</b>（1.18–3.57）p=0.01</td></tr>
+      </tbody>
+    </table>
+    <p class="src">出典: Chatterjee 2016（Diabetes Care）／Ohara 2011（Neurology・75g経口ブドウ糖負荷試験で判定）。久山町の血管性認知症は1.82（0.89–3.71）p=0.09で、有意ではありませんでした</p>
+    <div class="card card--amber">
+      <div class="card__t">それなのに人口寄与割合（PAF）は2%。ただし集団の指標</div>
+      <p>PAFは「関連の強さ × その因子を持つ人の多さ」で決まります。個人では1.6倍でも、集団としての寄与は2%。<b>「糖尿病を治せば認知症が2%減る」「あなたのリスクが2%下がる」という意味ではありません。</b>第3弾で扱った難聴は7%でした。なお委員会がこの2%をどのデータから算出したかは、今回たどれませんでした。</p>
+    </div>
+    <p class="src">出典: Livingston 2024（Lancet・委員会報告。14因子の合計は45%）</p>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">3</span>では、血糖を下げれば減るのか</div>
+    <table>
+      <thead><tr><th>介入試験</th><th>主要評価項目の結果</th></tr></thead>
+      <tbody>
+        <tr><td class="k">ACCORD-MIND<br>55–80歳・<b>2,977人を組み入れ</b><br>（HbA1c 6%未満をめざす強化療法 対 7%台の標準療法）</td><td>40か月時点の認知機能検査の差 <b>0.32</b>（−0.28〜0.91）<b>p=0.2997</b>＝差なし。強化療法そのものが死亡リスクの上昇により中止</td></tr>
+        <tr><td class="k">J-MIND-Diabetes<br>70–85歳・154人・18か月<br>（血糖・血圧・脂質・運動の多因子介入）</td><td>認知機能の複合スコアの群間差 <b>0.068</b>（−0.091〜0.226）＝<b>主要評価項目 未達</b></td></tr>
+        <tr><td class="k">evoke／evoke+<br>40か国・3,808人・最長156週<br>（経口セマグルチド 対 プラセボ）</td><td>104週時点のCDR-SB 差は evoke <b>−0.08</b>（−0.35〜0.20）<b>p=0.57</b>／evoke+ <b>0.10</b>（−0.17〜0.38）<b>p=0.46</b>。両試験とも中止</td></tr>
+      </tbody>
+    </table>
+    <p class="src">出典: Launer 2011（Lancet Neurol）／Sugimoto 2024（J Prev Alzheimers Dis）／Cummings 2026（Lancet）</p>
+    <div class="card card--warn">
+      <div class="card__t">evokeは「治療」の試験であって、「予防」の試験ではありません</div>
+      <p>対象は<b>すでに発症した早期アルツハイマー病の方</b>です。したがって、この結果は<b>「GLP-1受容体作動薬は認知症に無効と証明された」という意味にはなりません</b>。正しい言い方は——認知症を主要評価項目に据えた唯一の大規模試験は陰性だった。予防効果の可能性は残るが、期待の水準は一段下がった。</p>
+    </div>
+    <div class="card">
+      <div class="card__t">「差がつかなかった」の中身も見ておく</div>
+      <p>ACCORD-MINDでは総脳容積は強化療法群のほうが大きく保たれましたが、<b>認知機能の差にはつながりませんでした</b>。画像の上の変化は、臨床的な利益とイコールではありません。J-MIND-Diabetesの42か月追跡でも全体では有意ではないものの、<b>注意・遂行機能の検査（TMT-A／B）と、血糖が目標範囲内にあった時間には差がついています</b>。介入の中身が無駄だった、という結果ではありません。</p>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">4</span>同じ構図が、4弾目にして3例目</div>
+    <table>
+      <thead><tr><th>シリーズ</th><th>人口寄与割合</th><th>大規模介入試験の主要評価項目</th></tr></thead>
+      <tbody>
+        <tr><td class="k">第1弾 高血圧</td><td>2%</td><td>SPRINT MIND＝<b>認知症単独では有意差なし</b></td></tr>
+        <tr><td class="k">第3弾 難聴</td><td>7%</td><td>ACHIEVE＝差 0.002・<b>p=0.96</b></td></tr>
+        <tr><td class="k">第4弾 糖尿病</td><td>2%</td><td>ACCORD-MIND <b>p=0.2997</b>／J-MIND 差0.068／evoke <b>p=0.57・0.46</b></td></tr>
+      </tbody>
+    </table>
+    <div class="card">
+      <div class="card__t">危険因子として確かなことと、介入すれば防げることは、別の問い</div>
+      <p>関連の強さ（何倍なりやすいか）は観察研究でわかります。しかし<b>「その因子に手を入れれば認知症が減るか」は、介入試験でしか答えられません</b>。そして現時点で、その答えは出ていません。</p>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">5</span>手がかり① いつ発症したか</div>
+    <table>
+      <thead><tr><th>70歳時点で、糖尿病を発症していた時期</th><th>認知症のハザード比</th></tr></thead>
+      <tbody>
+        <tr><td class="k">5年以内</td><td>1.11（0.70–1.76）</td></tr>
+        <tr><td class="k">6〜10年前</td><td>1.49（0.95–2.32）</td></tr>
+        <tr><td class="k">10年以上前</td><td><b>2.12</b>（1.50–3.00）</td></tr>
+      </tbody>
+    </table>
+    <p class="src">出典: Barbiellini Amidei 2021（JAMA・英国10,095人を中央値31.7年追跡）。傾向 P&lt;.001。<b>発症年齢が5歳若いごとにハザード比1.24</b>（1.06–1.46）</p>
+    <div class="card card--amber">
+      <div class="card__t">ただし、中年期から予防した場合の効果は、まだ試験されていません</div>
+      <p>前の項でみた介入試験は、どれも<b>すでに糖尿病がある高齢の方</b>が対象です。「若いうちから防いでおけば違ったのか」を確かめた大規模試験は、まだありません。<b>中年期の糖尿病では20年後の認知機能低下が19%大きく</b>（Rawlings 2014・ARIC 13,351人）、<b>前糖尿病（HbA1c 5.7–6.4%）でも低下は有意に大きい</b>という報告もありますが、これは<b>低下の速さであって発症率ではありません</b>。</p>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">6</span>手がかり② どの血糖を測るか</div>
+    <table>
+      <thead><tr><th>久山町研究で測った血糖</th><th>認知症リスクとの関連</th></tr></thead>
+      <tbody>
+        <tr><td class="k">食後2時間値（75gOGTT）</td><td><b>高いほどリスク上昇</b>（全認知症1.74／アルツハイマー病2.05）</td></tr>
+        <tr><td class="k">空腹時血糖</td><td><b>関連がみられなかった</b></td></tr>
+      </tbody>
+    </table>
+    <p class="src">出典: Ohara 2011（Neurology）。同じ集団・同じ期間・同じ手法で、違うのは「どの血糖を測ったか」だけ。第3弾の「自己申告の難聴では拾えない」と同じ構図です</p>
+    <div class="card">
+      <div class="card__t">脳の中で起きていたこと——ただし「3型糖尿病」とは言い切れない</div>
+      <p>久山町の剖検135例の解析では、食後2時間血糖・空腹時インスリン・インスリン抵抗性が高いほど<b>老人斑</b>が多く、<b>APOE ε4</b>を持つ方でその傾向が強まりました。一方、<b>神経原線維変化とは関連しませんでした</b>。アルツハイマー病を「3型糖尿病」と呼び切れる段階ではありません。</p>
+    </div>
+    <p class="src">出典: Matsuzaki 2010（Neurology）</p>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">7</span>手がかり③ 下げすぎの害</div>
+    <table>
+      <thead><tr><th>重症低血糖で受診した回数</th><th>認知症のハザード比</th></tr></thead>
+      <tbody>
+        <tr><td class="k">1回</td><td>1.26（1.10–1.49）</td></tr>
+        <tr><td class="k">2回</td><td>1.80（1.37–2.36）</td></tr>
+        <tr><td class="k">3回以上</td><td><b>1.94</b>（1.42–2.64）</td></tr>
+      </tbody>
+    </table>
+    <p class="src">出典: Whitmer 2009（JAMA・米国16,667人・平均65歳）。論文自身が「軽微な低血糖の影響は不明」と明記しています</p>
+    <div class="card card--warn">
+      <div class="card__t">だから、高齢者の血糖目標には「下限」がある</div>
+      <p>『高齢者糖尿病診療ガイドライン2023』では、<b>インスリンやSU薬など重症低血糖が危惧される薬剤を使っている場合にかぎり</b>、目標に下限が設けられています（例: 認知機能が正常でADLが自立している65–74歳は<b>7.5%未満・下限6.5%</b>、75歳以上は<b>8.0%未満・下限7.0%</b>）。理由は、HbA1cの低値が転倒・骨折・死亡の危険因子であること、高齢者では経口薬による重症低血糖リスクがHbA1c低値ほど上がることです。<b>「高齢者は血糖を下げなくてよい」という意味ではありません。</b></p>
+    </div>
+    <p class="src">出典: 日本老年医学会・日本糖尿病学会『高齢者糖尿病診療ガイドライン2023』Ⅵ章 図1</p>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">8</span>結局、どうすればよいか</div>
+    <div class="sum">
+      <div class="sum__c"><div class="sum__t">いつ</div><div class="sum__d">若くして発症した方ほどリスクが高い。発症した年齢は、大事な情報です。</div></div>
+      <div class="sum__c"><div class="sum__t">どの血糖</div><div class="sum__d">空腹時だけでは拾えませんでした。食後の値も担当の先生と確認を。</div></div>
+      <div class="sum__c"><div class="sum__t">下げすぎない</div><div class="sum__d">低血糖を起こしたら回数を必ず伝える。目標には下限があります。</div></div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>数値の読み方について。</b>ハザード比・相対リスク・オッズ比は「何倍か」を表し、1.00なら差がありません。95%信頼区間が1.00をまたぐ場合は「差があるとは言えない」と扱います。人口寄与割合（PAF）は集団の指標であり、個人の確率ではありません。主要評価項目とは、試験が最初に「これで判定する」と決めた指標のことで、あとから見つかった差とは重みが違います。
+  </div>
+
+  <div class="ft">
+    監修: 今村久司（脳神経内科専門医・総合内科専門医）／医知創造ラボ<br>
+    本図は一般的な医学情報の提供を目的としたもので、個別の診断・治療方針を示すものではありません。<br>
+    血糖の目標やお薬の内容を、自己判断で変えないでください。低血糖を起こしたことがある場合は、次の受診を待たずに担当の先生にご相談ください。
+  </div>
+
+</div>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px auto 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+</body>
+</html>

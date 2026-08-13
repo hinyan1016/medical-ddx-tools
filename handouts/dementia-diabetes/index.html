@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1B3A5C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="糖尿病と認知症について、糖尿病で通院中の方とご家族向けにまとめたA4・1枚の資料。血糖を下げれば認知症を防げるとはまだ言えないこと、早く手を打つこと、空腹時血糖だけで安心しないこと、低血糖の回数を主治医に伝えることを、一次資料の範囲でまとめています。">
+<title>糖尿病と認知症のこと｜糖尿病で通院中の方とご家族へ（A4・1枚）｜医知創造ラボ</title>
+<style>
+  :root{
+    --navy:#1B3A5C;          /* 構造色（見出し・罫線）*/
+    --accent:#FF7A59;        /* テーマの差し色（コーラル・デッキの --accent と同値） */
+    --accent-ink:#B8431F;
+    --accent-bg:#FFF1EC;
+    --danger:#C0392B;        /* 警告は別の赤 */
+    --danger-bg:#FBEAE8;
+    --danger-line:#EAC5C0;
+    --navy-bg:#EEF2F6;
+    --line:#D6E0E9;
+    --ink:#1a1a1a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    font-family:"Yu Gothic","游ゴシック","Hiragino Kaku Gothic ProN","Segoe UI",sans-serif;
+    color:var(--ink); background:#eef1f4; line-height:1.6; padding:16px;
+    /* 日本語の語中改行を文節境界で切る */
+    word-break:auto-phrase; line-break:strict;
+  }
+  .sheet{background:#fff;max-width:820px;margin:0 auto 20px;padding:22px 26px 26px;box-shadow:0 2px 14px rgba(0,0,0,.12);}
+  .head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:14px;}
+  .kicker{display:inline-block;background:var(--accent);color:#fff;font-size:12px;font-weight:700;
+    letter-spacing:.06em;padding:3px 10px;border-radius:3px;margin-bottom:7px;}
+  h1{font-size:22px;font-weight:800;color:var(--navy);line-height:1.35;}
+  .sub{font-size:12.5px;color:var(--accent-ink);font-weight:700;margin-top:6px;}
+  .lead{font-size:13.5px;color:#333;margin-top:8px;}
+  .lead b{color:var(--navy);}
+  h2{font-size:15px;font-weight:800;color:#fff;background:var(--navy);padding:5px 12px;border-radius:4px;
+    margin:14px 0 9px;display:flex;align-items:center;gap:8px;}
+  h2 .num{background:#fff;color:var(--navy);font-size:12.5px;font-weight:800;width:21px;height:21px;
+    border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex:0 0 21px;}
+  h2.hd{background:var(--danger);}
+  h2.hd .num{color:var(--danger);}
+  ul.checks{list-style:none;margin-top:8px;}
+  ul.checks li{display:flex;gap:9px;align-items:flex-start;padding:4.5px 2px;
+    border-bottom:1px dashed var(--line);font-size:13px;}
+  ul.checks li:last-child{border-bottom:none;}
+  ul.checks .box{flex:0 0 17px;width:17px;height:17px;margin-top:1px;border:2px solid var(--navy);border-radius:3px;}
+  ul.checks li b{color:var(--navy);}
+  /* 補足は必ず別行にする（インラインだと本文と続き読みになる） */
+  ul.checks .why{display:block;color:#555;font-size:11.5px;margin-top:1px;}
+  .bothnote{margin-top:8px;background:var(--accent-bg);border-left:5px solid var(--accent);
+    padding:9px 13px;font-size:13px;color:#333;border-radius:0 6px 6px 0;}
+  .bothnote b{color:var(--accent-ink);}
+  .alert{border:2.5px solid var(--danger);border-radius:8px;padding:11px 14px;background:var(--danger-bg);}
+  .alert .at{color:var(--danger);font-weight:800;font-size:15px;margin-bottom:6px;}
+  .alert p{font-size:13px;line-height:1.62;}
+  .alert p + p{margin-top:6px;}
+  .alert b{color:var(--danger);}
+  .memo{border:1.5px solid var(--line);border-radius:8px;padding:10px 13px;margin-top:14px;font-size:12.5px;}
+  .memo .mtitle{font-weight:800;color:var(--navy);font-size:13.5px;margin-bottom:5px;}
+  .memo .mtext{font-size:12.5px;color:#333;margin-bottom:7px;}
+  .memo .mtext b{color:var(--accent-ink);}
+  .memo .mrow{display:flex;gap:6px;align-items:baseline;padding:5px 0;}
+  .memo .mlabel{flex:0 0 260px;font-weight:700;color:var(--navy);white-space:nowrap;}
+  .memo .mline{flex:1;border-bottom:1px solid #97a6b5;min-height:18px;}
+  .foot{margin-top:16px;padding-top:10px;border-top:1px solid var(--line);font-size:11px;color:#666;line-height:1.5;}
+  .foot .brand{font-weight:700;color:var(--navy);}
+  .noprint{margin:0 auto 18px;max-width:820px;text-align:center;}
+  .pbtn{display:inline-block;background:var(--navy);color:#fff;text-decoration:none;font-size:14px;
+    font-weight:700;padding:10px 24px;border-radius:24px;border:none;cursor:pointer;box-shadow:0 2px 10px rgba(27,58,92,.25);}
+  .pbtn:active{transform:scale(.98);}
+  .noprint p{font-size:12px;color:#777;margin-top:8px;}
+
+  @page{size:A4 portrait;margin:10mm 12mm;}
+  @media print{
+    body{background:#fff;padding:0;font-size:9.8pt;}
+    .sheet{box-shadow:none;margin:0;max-width:none;padding:0;}
+    .noprint{display:none !important;}
+    h1{font-size:16pt;line-height:1.25;}
+    h2{font-size:11.5pt;-webkit-print-color-adjust:exact;print-color-adjust:exact;margin:3px 0 1px;padding:1px 9px;}
+    h2 .num{width:17px;height:17px;flex:0 0 17px;font-size:10.5pt;}
+    .kicker,.alert,.bothnote{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .kicker{padding:2px 9px;margin-bottom:4px;}
+    .sub{margin-top:3px;}
+    ul.checks{margin-top:4px;}
+    ul.checks li{font-size:9.3pt;padding:0px 2px;line-height:1.32;}
+    ul.checks .why{font-size:9pt;}
+    .lead{font-size:9pt;margin-top:1px;line-height:1.42;}
+    .head{padding-bottom:2px;margin-bottom:2px;}
+    .alert{padding:3px 9px;}
+    .alert .at{font-size:10pt;margin-bottom:1px;}
+    .alert p{font-size:9.3pt;line-height:1.34;}
+    .bothnote{margin-top:3px;padding:3px 9px;font-size:9.3pt;line-height:1.32;}
+    .memo{margin-top:4px;padding:3px 9px;font-size:9.3pt;}
+    .memo .mtitle{font-size:10pt;margin-bottom:1px;}
+    .memo .mtext{font-size:9.1pt;margin-bottom:1px;line-height:1.32;}
+    .memo .mrow{padding:1px 0;}
+    .memo .mline{min-height:13px;}
+    .foot{margin-top:3px;padding-top:2px;font-size:7.8pt;line-height:1.32;}
+    a[href]{color:inherit;text-decoration:none;}
+    .alert,.memo,.bothnote{break-inside:avoid;page-break-inside:avoid;}
+    ul.checks li{break-inside:avoid;page-break-inside:avoid;}
+    h2{break-after:avoid;page-break-after:avoid;}
+  }
+  @media (max-width:560px){
+    body{padding:8px;} .sheet{padding:16px 15px 20px;} h1{font-size:19px;}
+    .memo .mlabel{flex:0 0 170px;}
+  }
+
+  .head{display:flex;align-items:flex-start;gap:12px;}
+  .head-main{flex:1;min-width:0;}
+  .qr{width:92px;flex:0 0 92px;text-align:center;border:1px solid #d8d8d8;border-radius:8px;padding:6px 5px 4px;-webkit-print-color-adjust:exact;print-color-adjust:exact;text-decoration:none;display:block;}
+  .qr-box{width:70px;height:70px;margin:0 auto;display:flex;align-items:center;justify-content:center;}
+  .qr-box svg{width:100%;height:100%;display:block;}
+  .qr .qr-cap{font-size:9px;color:#555;line-height:1.3;margin-top:3px;}
+</style>
+</head>
+<body>
+<div class="noprint">
+  <button class="pbtn" id="printBtn">&#128424;&#65039; この資料を印刷する（A4）</button>
+  <p>A4・1枚（糖尿病と認知症の関係・「血糖を下げれば防げる」と言えない理由・いまできること・低血糖の伝え方・相談メモ欄。カラー印刷推奨）</p>
+</div>
+
+<div class="sheet">
+
+  <!--
+    QR: ブログ記事の公開後に、第3弾（dementia-hearing-loss/index.html）と同じ形で
+      .head-main の直後に <a class="qr" href="記事URL"><div class="qr-box"><svg …></div>
+      <span class="qrcap">くわしい解説記事</span></a> を追加する。
+      href / QRコードSVG とも同じ記事URLを指すこと（infographics/manifest.json の blog_url が正本）。
+      QRは実URLをエンコードして生成し、**パス文字列の一致を照合**してから確定する
+      （デコードは誤り訂正で通ってしまうため、viewBox の流用も禁止＝slug長でversionが変わる）。
+      本記事は 2026-08-14 時点で未投稿のため、URLが無い。QRは入れていない。
+      注: handouts/fix_qr_links.py は `<div class="qr">` 直後の <svg> を探す正規表現なので、
+      この構造（<a class="qr"><div class="qr-box"><svg>）には一致しない。手で入れる。
+  -->
+  <div class="head"><div class="head-main">
+    <span class="kicker">糖尿病で通院中の方とご家族へ</span>
+    <h1>糖尿病と認知症のこと<br>いま何をすればよいか</h1>
+    <p class="sub">「血糖を下げれば認知症を防げる」とは、まだ言えません。それでも、できることがあります。</p>
+    <p class="lead">糖尿病があると認知症が増えることは、たくさんの研究で一致しています。ただし、<b>血糖を下げれば防げるかどうかは別の話</b>で、それを確かめた試験はそろって差がつきませんでした。分かっていること／まだ分かっていないことを分けて、いま何をすればよいかだけをまとめました。受診のときに持ってきて、担当の先生と一緒にお使いください。</p>
+    </div>
+  </div>
+
+  <h2><span class="num">1</span>「糖尿病があると認知症が増える」は、どのくらいの話か</h2>
+  <ul class="checks">
+    <li><span class="box"></span><span><b>集団で見ると、認知症はおよそ1.6倍</b>になります。「必ずなる」という意味ではありません<span class="why">たくさんの研究をまとめた解析の結果です。「大勢で数えたときに何割か増える」という話で、一人ひとりの将来が決まるわけではありません</span></span></li>
+    <li><span class="box"></span><span><b>日本人のデータでも、同じ向きの結果</b>が出ています<span class="why">日本の地域住民を長年追いかけた研究でも、同じ向きの結果でした</span></span></li>
+    <li><span class="box"></span><span>認知症の危険因子は<b>ほかにもたくさんあります</b>。糖尿病だけで決まるわけではありません<span class="why">血圧・コレステロール・耳の聞こえ・運動・喫煙なども挙げられています。できるところから手をつけてください</span></span></li>
+  </ul>
+
+  <h2><span class="num">2</span>「血糖を下げれば防げる」とは、まだ言えません</h2>
+  <div class="bothnote">血糖をより厳しく下げるやり方、生活と薬を組み合わせたやり方、そして新しく出た薬——<b>「下げれば認知症が減る」を確かめた試験は、いまのところそろって目標を達成できていません。</b><b>ただし、これは「血糖を下げなくてよい」という意味ではありません。</b>目・腎臓・神経・血管の合併症を防ぐために、血糖の管理は今までどおり必要です。<b>この紙を読んで、自己判断で薬を減らしたり中止したりしないでください。</b></div>
+
+  <h2><span class="num">3</span>それでも、いまできることがあります</h2>
+  <ul class="checks">
+    <li><span class="box"></span><span><b>早く手を打つこと</b>——効いているのは「いつから糖尿病なのか」です<span class="why">若いうちに始まった方、糖尿病の期間が長い方ほどリスクが高くなっていました。いま始めるのに遅すぎることはありません</span></span></li>
+    <li><span class="box"></span><span><b>空腹時の血糖だけで安心しないでください</b><span class="why">日本の研究で関連がはっきり見えたのは、食事のあと（2時間後）の血糖でした。空腹時の値だけでは拾いきれないことがあります</span></span></li>
+    <li><span class="box"></span><span><b>次の受診で「HbA1c（ヘモグロビン・エーワンシー）」の値を確認してください</b><span class="why">直近1〜2か月の血糖の平均を映す検査です。ご自分の目標値も、あわせて聞いておきましょう</span></span></li>
+    <li><span class="box"></span><span>血圧・コレステロール・聞こえ・歩くこと——<b>同時に手をつけたほうが得です</b><span class="why">糖尿病の通院のついでに、ほかも一緒に確認してもらいましょう</span></span></li>
+  </ul>
+
+  <h2 class="hd"><span class="num">4</span>低血糖は、必ず担当の先生に伝えてください</h2>
+  <div class="alert">
+    <div class="at">&#9888;&#65039; 「たまにふらつくだけ」で済ませないでください</div>
+    <p><b>冷や汗、手のふるえ、急なふらつき、夜中や明け方の気分の悪さ</b>——低血糖のサインのことがあります。<b>意識がもうろうとするような強い低血糖を起こした方は、その後の認知症のリスクが高くなり、回数が増えるほど高くなります。</b>一度でも心当たりがあれば、次の受診で必ず伝えてください。</p>
+    <p>高齢の方では血糖を<b>下げすぎないこと</b>も大切で、日本のガイドラインでは目標値に<b>「下限」</b>が決められています。<b>ただし、これは「血糖を下げなくてよい」という意味ではありません。</b>目標は年齢・糖尿病の期間・ほかの病気・お薬によって一人ひとり違います。<b>自己判断で薬を減らさず、必ず担当の先生と相談して決めてください。</b></p>
+  </div>
+
+  <h2><span class="num">5</span>相談するときのメモ欄</h2>
+  <div class="memo">
+    <div class="mtitle">&#9997;&#65039; 受診のときに、担当の先生と一緒に書きましょう</div>
+    <div class="mtext"><b>今日の受診でやることは2つです。</b>「HbA1cの値と自分の目標値を聞くこと」と「低血糖があったかどうかを伝えること」。</div>
+    <div class="mrow"><span class="mlabel">今回の HbA1c ／ 私の目標値</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">食後の血糖を測ったことがあるか</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">低血糖かもしれない症状（この3か月で何回）</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">糖尿病が見つかった年齢／いつから</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">次の受診日</span><span class="mline"></span></div>
+  </div>
+
+  <div class="foot">
+    <span class="brand">医知創造ラボ</span>｜監修：今村久司（脳神経内科専門医・総合内科専門医）<br>
+    この資料は、PubMedで実在を確認した一次文献と日本の診療ガイドラインをもとに作成しています。<b>血糖の目標値も使うお薬も一人ひとり違います。この紙を理由に、自己判断で薬を減らしたり中止したりしないでください。</b>必ず担当の先生にご相談ください。
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var b = document.getElementById('printBtn');
+  if (b) { b.addEventListener('click', function(){ window.print(); }); }
+})();
+</script>
+</body>
+</html>
