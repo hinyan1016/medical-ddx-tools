@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="難聴と認知症の関係を一次資料の数値で整理したインフォグラフィック。難聴はLancet 2024の14因子で人口寄与割合が最大（7%）だが、唯一の大規模無作為化試験ACHIEVEの主要解析では差がつかず（p=0.96）、「補聴器で認知症リスクが帳消し」の根拠だったUK Biobank論文は2024年に撤回。自己申告の難聴ではリスクを拾えず、転倒は3年で27%減っていた。">
+<title>難聴と認知症｜「補聴器で防げる」の根拠を一次資料で確認する（インフォグラフィック）</title>
+<style>
+:root{
+  --navy:#1B3A5C;
+  --navyDeep:#0F2540;
+  --navyBg:#E9EEF5;
+  --coral:#FF7A59;
+  --coralBg:#FFF1EC;
+  --coralInk:#B8431F;
+  --amber:#C77800;
+  --amberBg:#FFF8E1;
+  --line:#D6E0E9;
+  --gray:#69737E;
+  --ink:#20242B;
+  --ink2:#3C4450;
+  --ok:#2E7D5B;
+  --font:"Noto Sans JP","BIZ UDPGothic","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+}
+html{font-size:16px;}
+*{box-sizing:border-box; margin:0; padding:0;}
+/* 日本語の語中改行を文節境界で切る */
+body,.lead,.card p,.row__d,td,th,.note,.src,.cav,.sum__d{
+  word-break:auto-phrase; line-break:strict;
+}
+body{font-family:var(--font); background:#E4E9EF; color:var(--ink);
+  display:flex; flex-direction:column; align-items:center; overflow-x:hidden;}
+.nw{white-space:nowrap;}
+.ig{width:100%; max-width:1080px; background:#fff; padding:0 0 3rem;}
+
+.hd{background:linear-gradient(135deg,#0A1B2E 0%,#153352 55%,#1B3A5C 100%); color:#fff;
+  padding:2.6rem 3rem 2.2rem; text-align:center;}
+.hd__brand{font-size:.95rem; letter-spacing:.14em; opacity:.85; margin-bottom:1rem;}
+.hd__t{font-size:2.5rem; font-weight:800; line-height:1.3; letter-spacing:.01em;}
+.hd__t .hl{color:var(--coral);}
+.hd__s{margin-top:1rem; font-size:1.12rem; opacity:.92; line-height:1.7;}
+
+.sec{padding:2.2rem 3rem 0;}
+.sec__h{display:flex; align-items:center; gap:.8rem; font-size:1.45rem; font-weight:800;
+  color:var(--navy); border-bottom:3px solid var(--navy); padding-bottom:.5rem; margin-bottom:1.2rem;}
+.sec__n{background:var(--coral); color:#fff; font-size:1.05rem; width:2rem; height:2rem;
+  border-radius:.4rem; display:grid; place-items:center; flex:none;}
+.lead{font-size:1.05rem; line-height:1.8; color:var(--ink2);}
+
+.big{display:flex; gap:1.4rem; margin:1.2rem 0 .4rem; flex-wrap:wrap;}
+.big__c{flex:1 1 0; min-width:14rem; background:var(--navyBg); border-radius:.7rem;
+  padding:1.2rem 1.3rem; border-left:6px solid var(--navy);}
+.big__n{font-size:2.6rem; font-weight:800; color:var(--navy); line-height:1.1;}
+.big__n .u{font-size:1.2rem; margin-left:.2rem;}
+.big__d{margin-top:.5rem; font-size:1rem; line-height:1.6; color:var(--ink2);}
+.big--coral{background:var(--coralBg); border-left-color:var(--coral);}
+.big--coral .big__n{color:var(--coralInk);}
+
+table{width:100%; border-collapse:collapse; margin:1rem 0 .3rem; font-size:1rem;}
+th{background:var(--navy); color:#fff; text-align:left; padding:.7rem .9rem; font-weight:700;}
+td{border-bottom:1px solid var(--line); padding:.7rem .9rem; line-height:1.6; vertical-align:top;}
+td.k{font-weight:700; color:var(--navy); width:34%;}
+.src{font-size:.86rem; color:var(--gray); margin-top:.35rem; line-height:1.6;}
+
+.card{border:2px solid var(--line); border-radius:.7rem; padding:1.1rem 1.3rem; margin:1rem 0 .3rem;}
+.card--warn{background:var(--coralBg); border-color:var(--coral);}
+.card--amber{background:var(--amberBg); border-color:#EBC46A;}
+.card__t{font-weight:800; color:var(--navy); font-size:1.1rem; margin-bottom:.5rem;}
+.card--warn .card__t{color:var(--coralInk);}
+.card p{font-size:1rem; line-height:1.75; color:var(--ink2);}
+
+.rows{display:flex; flex-direction:column; gap:.7rem; margin:1rem 0 .3rem;}
+.row{display:flex; gap:1rem; align-items:flex-start; background:#F6F8FB; border-radius:.6rem; padding:.9rem 1.1rem;}
+.row__n{flex:none; width:2.1rem; height:2.1rem; border-radius:50%; background:var(--navy); color:#fff;
+  display:grid; place-items:center; font-weight:800;}
+.row__d{font-size:1rem; line-height:1.7; color:var(--ink2);}
+.row__d b{color:var(--navy);}
+
+.sum{background:var(--navy); color:#fff; border-radius:.8rem; padding:1.6rem 1.8rem; margin:1.4rem 0 .4rem;
+  display:flex; gap:1.2rem; flex-wrap:wrap;}
+.sum__c{flex:1 1 0; min-width:13rem;}
+.sum__t{font-size:1.5rem; font-weight:800; color:var(--coral); margin-bottom:.4rem;}
+.sum__d{font-size:.98rem; line-height:1.7; opacity:.95;}
+
+.note{margin:1.6rem 3rem 0; padding:1rem 1.2rem; background:#F3F5F8; border-left:5px solid var(--gray);
+  font-size:.9rem; line-height:1.75; color:var(--ink2);}
+.ft{margin-top:1.6rem; padding:1.4rem 3rem 0; border-top:2px solid var(--line);
+  font-size:.88rem; color:var(--gray); line-height:1.8; text-align:center;}
+</style>
+</head>
+<body>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="https://youtu.be/PLACEHOLDER_YOUTUBE_ID" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#C0392B;color:#fff;">▶ 解説動画（YouTube）</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+<div class="ig">
+
+  <div class="hd">
+    <div class="hd__brand">✚ 医知創造ラボ ／ 認知症×生活習慣病シリーズ 第3弾</div>
+    <h1 class="hd__t">難聴と認知症<br><span class="hl">「補聴器で防げる」</span>の根拠を確かめる</h1>
+    <p class="hd__s">難聴は14の危険因子で最大。ただし「補聴器で防げる」とはまだ言えない。<br>それでも聞こえを測って補う理由は、認知症の外にある。</p>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">1</span>日本の現在地</div>
+    <div class="big">
+      <div class="big__c">
+        <div class="big__n">15.6<span class="u">%</span></div>
+        <div class="big__d">補聴器の所有率<br>（自己申告の難聴者のうち。全人口では1.7%）</div>
+      </div>
+      <div class="big__c big--coral">
+        <div class="big__n">56<span class="u">%</span> / 64<span class="u">%</span></div>
+        <div class="big__d">かかりつけ医／耳鼻科医に相談して<br><b>「特に行動する必要はない」</b>と言われた割合</div>
+      </div>
+      <div class="big__c">
+        <div class="big__n">56<span class="u">%</span></div>
+        <div class="big__d">補聴器所有者のうち<br>「もっと早く入手すべきだった」と答えた割合</div>
+      </div>
+    </div>
+    <p class="src">出典: JapanTrak 2025（日本補聴器工業会・代表サンプル14,368人）</p>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">2</span>関連はどれくらい固いか</div>
+    <table>
+      <thead><tr><th>研究デザイン</th><th>認知症との関連</th></tr></thead>
+      <tbody>
+        <tr><td class="k">前向きコホート639人<br>（追跡中央値11.9年）</td><td>聴力10デシベル悪化ごとに<b>ハザード比1.27</b>（95%CI 1.06–1.50）</td></tr>
+        <tr><td class="k">メタ解析・横断研究</td><td>オッズ比 2.42（1.24–4.72）</td></tr>
+        <tr><td class="k">メタ解析・前向きコホート</td><td><b>オッズ比 1.28</b>（1.02–1.59）／アルツハイマー病単独では有意ではない</td></tr>
+      </tbody>
+    </table>
+    <p class="src">出典: Lin 2011（Arch Neurol）／Loughrey 2018（JAMA Otolaryngol Head Neck Surg・36研究20,264人）</p>
+    <div class="card card--amber">
+      <div class="card__t">人口寄与割合（PAF）は7%で14因子中の最大。ただし集団の指標</div>
+      <p>PAFは「関連の強さ × その因子を持つ人の多さ」で決まります。難聴は60歳超の65%にあるため、一人あたりの上乗せが控えめでも集団では最大になります。<b>「難聴を治せば認知症が7%減る」という意味ではありません。</b></p>
+    </div>
+    <p class="src">出典: Livingston 2024（Lancet・委員会報告）</p>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">3</span>では補聴器で防げるのか</div>
+    <table>
+      <thead><tr><th>ACHIEVE試験（70–84歳・977人・3年）</th><th>3年間の認知機能変化</th></tr></thead>
+      <tbody>
+        <tr><td class="k">補聴器介入群（490人）</td><td>−0.200（−0.256〜−0.144）</td></tr>
+        <tr><td class="k">健康教育対照群（487人）</td><td>−0.202（−0.258〜−0.145）</td></tr>
+        <tr><td class="k">差</td><td><b>0.002（−0.077〜0.081）・p=0.96 ＝ 差なし</b></td></tr>
+      </tbody>
+    </table>
+    <div class="card">
+      <div class="card__t">差がついたのは、事前規定の感度解析だけ</div>
+      <p>高齢で危険因子の多いARICコホート（238人）では低下が<b>48%小さい</b>（差 0.191、p=0.027）。公募コホート（739人）では差なし。さらに<b>対照群の16.5%</b>が試験外で自ら補聴器を入手していました（公募19.4% / ARIC 7.8%）。</p>
+    </div>
+    <p class="src">出典: Lin 2023（Lancet・ACHIEVE）</p>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">4</span>「補聴器で帳消し」の出どころ</div>
+    <div class="card card--warn">
+      <div class="card__t">その根拠だった論文は、2024年に撤回されている</div>
+      <p>英国UK Biobankの解析（Jiang 2023, Lancet Public Health）は、PubMedの出版タイプが<b>Retracted Publication</b>となり、撤回通知が Lancet Public Health 2024;9(1):e10 に掲載されています。解析コードの誤りで補聴器の使用群と非使用群のデータが入れ替わっていたと報じられています（撤回通知の本文は未確認）。<b>日本語の紹介記事はいまも残っています。</b></p>
+    </div>
+    <p class="src">出典: PubMed の出版タイプ／撤回通知 PMID 38101424</p>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">5</span>自覚では、リスクを拾えない</div>
+    <table>
+      <thead><tr><th>難聴の定義</th><th>該当した人</th><th>認知症の人口寄与割合</th></tr></thead>
+      <tbody>
+        <tr><td class="k">聴力検査</td><td>66.1%</td><td><b>最大32%</b>（11.0–46.5%）</td></tr>
+        <tr><td class="k">自己申告</td><td>37.2%</td><td><b>算出できず</b>（リスクと関連せず）</td></tr>
+      </tbody>
+    </table>
+    <p class="src">出典: Ishak 2025（JAMA Otolaryngol Head Neck Surg・ARIC-NCS 2,946人・最長8年）。同じ人・同じ期間・同じ手法で、違うのは測り方だけ</p>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">6</span>日本のデータと、認知症以外の利得</div>
+    <div class="rows">
+      <div class="row"><div class="row__n">日</div><div class="row__d">難聴のある60歳以上1,193人を10年追跡: 聴力10デシベル悪化ごとに認知機能障害の<b>オッズ比1.36</b>（1.21–1.53）。中等度難聴で補聴器を<b>常用</b>している場合は0.54（0.30–1.00）。ただし観察研究で、上限は1.00に接している<span class="src">（Sugiura 2022, Auris Nasus Larynx）</span></div></div>
+      <div class="row"><div class="row__n">転</div><div class="row__d">3年間の平均転倒回数は介入群1.45回 対 対照群1.98回、平均差 −0.54（−0.77〜−0.31）＝<b>27%の減少</b>。こちらは<b>両方の集団で一貫</b><span class="src">（Goman 2025, Lancet Public Health・ACHIEVE二次解析）</span></div></div>
+      <div class="row"><div class="row__n">絆</div><div class="row__d">社会的孤立と孤独感も改善。ただし論文自身が「3年で交流相手が1人多く残った。<b>臨床的に意味のある変化かは不明</b>」と記載<span class="src">（Reed 2025, JAMA Intern Med・ACHIEVE二次解析）</span></div></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">7</span>結局、どうすればよいか</div>
+    <div class="sum">
+      <div class="sum__c"><div class="sum__t">測る</div><div class="sum__d">自覚ではリスクを拾えなかった。まず聴力検査を受ける。</div></div>
+      <div class="sum__c"><div class="sum__t">使う</div><div class="sum__d">目的は認知症予防ではなく、会話と転倒と生活の質のため。</div></div>
+      <div class="sum__c"><div class="sum__t">続ける</div><div class="sum__d">日本のデータで関連が見えたのは「常に使っている」人だった。</div></div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>数値の読み方について。</b>ハザード比・オッズ比は「何倍か」を表し、1.00なら差がありません。95%信頼区間が1.00をまたぐ場合は「差があるとは言えない」と扱います。人口寄与割合（PAF）は集団の指標であり、個人の確率ではありません。なお Ishak 2025 には後日「Error in Methods」の正誤表が出ており、本図では論文自身の表現「最大32%」に沿って記載しています。
+  </div>
+
+  <div class="ft">
+    監修: 今村久司（脳神経内科専門医・総合内科専門医）／医知創造ラボ<br>
+    本図は一般的な医学情報の提供を目的としたもので、個別の診断・治療方針を示すものではありません。<br>
+    聞こえの低下が気になる場合は耳鼻咽喉科・かかりつけ医へ。急に片耳が聞こえなくなった場合は様子を見ずに受診してください。
+  </div>
+
+</div>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px auto 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="https://youtu.be/PLACEHOLDER_YOUTUBE_ID" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#C0392B;color:#fff;">▶ 解説動画（YouTube）</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+</body>
+</html>
