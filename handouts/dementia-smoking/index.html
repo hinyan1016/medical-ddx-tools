@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1B3A5C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="たばこと認知症について、禁煙を迷っている方とご家族向けにまとめたA4・1枚の資料。やめた人では認知症リスクの上昇が見えなくなること、そうなるまでに数年かかること、本数を減らすだけでは足りないこと、やめても頭がぼんやりすることはないことを、一次文献の範囲でまとめています。">
+<title>たばこと認知症のこと｜禁煙を迷っている方とご家族へ（A4・1枚）｜医知創造ラボ</title>
+<style>
+  :root{
+    --navy:#1B3A5C;          /* 構造色（見出し・罫線）*/
+    --accent:#FF7A59;        /* テーマの差し色（コーラル・デッキの --accent と同値） */
+    --accent-ink:#B8431F;
+    --accent-bg:#FFF1EC;
+    --danger:#C0392B;        /* 警告は別の赤 */
+    --danger-bg:#FBEAE8;
+    --danger-line:#EAC5C0;
+    --navy-bg:#EEF2F6;
+    --line:#D6E0E9;
+    --ink:#1a1a1a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    font-family:"Yu Gothic","游ゴシック","Hiragino Kaku Gothic ProN","Segoe UI",sans-serif;
+    color:var(--ink); background:#eef1f4; line-height:1.6; padding:16px;
+    /* 日本語の語中改行を文節境界で切る */
+    word-break:auto-phrase; line-break:strict;
+  }
+  .sheet{background:#fff;max-width:820px;margin:0 auto 20px;padding:22px 26px 26px;box-shadow:0 2px 14px rgba(0,0,0,.12);}
+  .head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:14px;}
+  .kicker{display:inline-block;background:var(--accent);color:#fff;font-size:12px;font-weight:700;
+    letter-spacing:.06em;padding:3px 10px;border-radius:3px;margin-bottom:7px;}
+  h1{font-size:22px;font-weight:800;color:var(--navy);line-height:1.35;}
+  .sub{font-size:12.5px;color:var(--accent-ink);font-weight:700;margin-top:6px;}
+  .lead{font-size:13.5px;color:#333;margin-top:8px;}
+  .lead b{color:var(--navy);}
+  h2{font-size:15px;font-weight:800;color:#fff;background:var(--navy);padding:5px 12px;border-radius:4px;
+    margin:14px 0 9px;display:flex;align-items:center;gap:8px;}
+  h2 .num{background:#fff;color:var(--navy);font-size:12.5px;font-weight:800;width:21px;height:21px;
+    border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex:0 0 21px;}
+  h2.hd{background:var(--danger);}
+  h2.hd .num{color:var(--danger);}
+  ul.checks{list-style:none;margin-top:8px;}
+  ul.checks li{display:flex;gap:9px;align-items:flex-start;padding:4.5px 2px;
+    border-bottom:1px dashed var(--line);font-size:13px;}
+  ul.checks li:last-child{border-bottom:none;}
+  ul.checks .box{flex:0 0 17px;width:17px;height:17px;margin-top:1px;border:2px solid var(--navy);border-radius:3px;}
+  ul.checks li b{color:var(--navy);}
+  /* 補足は必ず別行にする（インラインだと本文と続き読みになる） */
+  ul.checks .why{display:block;color:#555;font-size:11.5px;margin-top:1px;}
+  .bothnote{margin-top:8px;background:var(--accent-bg);border-left:5px solid var(--accent);
+    padding:9px 13px;font-size:13px;color:#333;border-radius:0 6px 6px 0;}
+  .bothnote b{color:var(--accent-ink);}
+  .alert{border:2.5px solid var(--danger);border-radius:8px;padding:11px 14px;background:var(--danger-bg);}
+  .alert .at{color:var(--danger);font-weight:800;font-size:15px;margin-bottom:6px;}
+  .alert p{font-size:13px;line-height:1.62;}
+  .alert p + p{margin-top:6px;}
+  .alert b{color:var(--danger);}
+  .memo{border:1.5px solid var(--line);border-radius:8px;padding:10px 13px;margin-top:14px;font-size:12.5px;}
+  .memo .mtitle{font-weight:800;color:var(--navy);font-size:13.5px;margin-bottom:5px;}
+  .memo .mtext{font-size:12.5px;color:#333;margin-bottom:7px;}
+  .memo .mtext b{color:var(--accent-ink);}
+  .memo .mrow{display:flex;gap:6px;align-items:baseline;padding:5px 0;}
+  .memo .mlabel{flex:0 0 260px;font-weight:700;color:var(--navy);white-space:nowrap;}
+  .memo .mline{flex:1;border-bottom:1px solid #97a6b5;min-height:18px;}
+  .foot{margin-top:16px;padding-top:10px;border-top:1px solid var(--line);font-size:11px;color:#666;line-height:1.5;}
+  .foot .brand{font-weight:700;color:var(--navy);}
+  .noprint{margin:0 auto 18px;max-width:820px;text-align:center;}
+  .pbtn{display:inline-block;background:var(--navy);color:#fff;text-decoration:none;font-size:14px;
+    font-weight:700;padding:10px 24px;border-radius:24px;border:none;cursor:pointer;box-shadow:0 2px 10px rgba(27,58,92,.25);}
+  .pbtn:active{transform:scale(.98);}
+  .noprint p{font-size:12px;color:#777;margin-top:8px;}
+
+  @page{size:A4 portrait;margin:10mm 12mm;}
+  @media print{
+    body{background:#fff;padding:0;font-size:9.8pt;}
+    .sheet{box-shadow:none;margin:0;max-width:none;padding:0;}
+    .noprint{display:none !important;}
+    h1{font-size:16pt;line-height:1.25;}
+    h2{font-size:11.5pt;-webkit-print-color-adjust:exact;print-color-adjust:exact;margin:2px 0 1px;padding:1px 9px;}
+    h2 .num{width:17px;height:17px;flex:0 0 17px;font-size:10.5pt;}
+    .kicker,.alert,.bothnote{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .kicker{padding:2px 9px;margin-bottom:4px;}
+    .sub{margin-top:3px;}
+    ul.checks{margin-top:3px;}
+    ul.checks li{font-size:9.3pt;padding:0px 2px;line-height:1.32;}
+    ul.checks .why{font-size:9pt;}
+    .lead{font-size:9pt;margin-top:1px;line-height:1.42;}
+    .head{padding-bottom:2px;margin-bottom:2px;}
+    .alert{padding:3px 9px;}
+    .alert .at{font-size:10pt;margin-bottom:1px;}
+    .alert p{font-size:9.3pt;line-height:1.34;}
+    .alert p+p{margin-top:2px;}
+    .bothnote{margin-top:3px;padding:3px 9px;font-size:9.3pt;line-height:1.32;}
+    .memo{margin-top:4px;padding:3px 9px;font-size:9.3pt;}
+    .memo .mtitle{font-size:10pt;margin-bottom:1px;}
+    .memo .mtext{font-size:9.1pt;margin-bottom:1px;line-height:1.32;}
+    .memo .mrow{padding:0;}
+    .memo .mline{min-height:13px;}
+    .foot{margin-top:3px;padding-top:2px;font-size:7.8pt;line-height:1.32;}
+    a[href]{color:inherit;text-decoration:none;}
+    .alert,.memo,.bothnote{break-inside:avoid;page-break-inside:avoid;}
+    ul.checks li{break-inside:avoid;page-break-inside:avoid;}
+    h2{break-after:avoid;page-break-after:avoid;}
+  }
+  @media (max-width:560px){
+    body{padding:8px;} .sheet{padding:16px 15px 20px;} h1{font-size:19px;}
+    .memo .mlabel{flex:0 0 170px;}
+  }
+
+  .head{display:flex;align-items:flex-start;gap:12px;}
+  .head-main{flex:1;min-width:0;}
+  .qr{width:92px;flex:0 0 92px;text-align:center;border:1px solid #d8d8d8;border-radius:8px;padding:6px 5px 4px;-webkit-print-color-adjust:exact;print-color-adjust:exact;text-decoration:none;display:block;}
+  .qr-box{width:70px;height:70px;margin:0 auto;display:flex;align-items:center;justify-content:center;}
+  .qr-box svg{width:100%;height:100%;display:block;}
+  .qr .qr-cap{font-size:9px;color:#555;line-height:1.3;margin-top:3px;}
+</style>
+</head>
+<body>
+<div class="noprint">
+  <button class="pbtn" id="printBtn">&#128424;&#65039; この資料を印刷する（A4）</button>
+  <p>A4・1枚（いまからやめても遅くない理由・戻るまでにかかる時間・減らすだけでは足りない理由・よくある心配・相談メモ欄。カラー印刷推奨）</p>
+</div>
+
+<div class="sheet">
+
+  <!--
+    QR: ブログ記事の公開後に、第4弾（dementia-diabetes/index.html）と同じ形で
+      .head-main の直後に <a class="qr" href="記事URL"><div class="qr-box"><svg …></div>
+      <div class="qr-cap">くわしい解説記事</div></a> を追加する。
+      href / QRコードSVG とも同じ記事URLを指すこと（slides/manifest.json の blog_url が正本。
+      infographics/manifest.json は空のまま残ることがあるので使わない）。
+      QRは実URLをエンコードして生成し、**パス文字列の一致を照合**してから確定する
+      （デコードは誤り訂正で通ってしまうため、viewBox の流用も禁止＝slug長でversionが変わる）。
+      手作業は不要。ブログ公開後に次を実行する:
+        PYTHONIOENCODING=utf-8 python fix_qr_links.py --slug dementia-smoking --apply
+  -->
+  <div class="head"><div class="head-main">
+    <span class="kicker">禁煙を迷っている方とご家族へ</span>
+    <h1>たばこと認知症のこと<br>いまからやめても遅くありません</h1>
+    <p class="sub">早くやめるほど、取り戻せます。ただし、ゼロにはなりません。</p>
+    <p class="lead">「もう何十年も吸ってきたのに、いまさらやめて意味があるのか」——それを直接調べた研究があります。<b>やめた人では、認知症リスクの上昇が見えなくなっています</b>。ただし、<b>数年かかります</b>。受診のときに、担当の先生と一緒にお使いください。</p>
+    </div>
+  </div>
+
+  <h2><span class="num">1</span>「いまさらやめても遅い」は本当か</h2>
+  <ul class="checks">
+    <li><span class="box"></span><span><b>やめた人では、認知症リスクの上昇が見えなくなっています</b><span class="why">たくさんの研究をまとめた解析で、いま吸っている人では上昇が見えていましたが、やめた人では、吸わない人との差が見えなくなっていました</span></span></li>
+    <li><span class="box"></span><span><b>日本のデータでも、同じ向きの結果</b>が出ています<span class="why">日本の高齢者を追いかけた研究でも、禁煙して数年たった人では差が見えなくなっていました</span></span></li>
+    <li><span class="box"></span><span>認知症の危険因子は<b>ほかにもたくさんあります</b>（血圧・コレステロール・耳の聞こえ・糖尿病・運動など）。たばこだけで決まるわけではありません</span></li>
+  </ul>
+
+  <h2><span class="num">2</span>ただし、戻るまでに数年かかります</h2>
+  <div class="bothnote">やめた翌日から変わるわけではありません。差が見えなくなるまでには数年かかります。<b>何年かかるかは研究によって幅があり、ひとつの年数には決められません。</b>まっすぐ下がっていくわけでもなく、途中で上下します。<b>早くやめるほど取り戻せます。ただし、ゼロにはなりません。</b></div>
+
+  <h2><span class="num">3</span>本数を減らすだけでは足りません</h2>
+  <ul class="checks">
+    <li><span class="box"></span><span><b>半分に減らした人では、やめた人と同じ結果は確認されていません</b><span class="why">大きな健康保険のデータで、やめた人では認知症が少なくなっていましたが、半分以下に減らした人ではそうなっていませんでした。減らすことが悪いという意味ではありません。目標は「ゼロ」です</span></span></li>
+    <li><span class="box"></span><span>加熱式たばこ・電子たばこに変えることは、<b>いまのところ答えが出ていません</b><span class="why">認知症について調べた研究は、2026年8月の時点で見当たりません。「害が少ない」とも「同じだけ危険」とも言えません</span></span></li>
+    <li><span class="box"></span><span><b>まわりの人が吸う煙も避けてください</b>（受動喫煙も認知症との関連が報告されていますが、どのくらいかを数字にできる段階にはありません）</span></li>
+  </ul>
+
+  <h2><span class="num">4</span>よくある心配と、やめ方の相談先</h2>
+  <ul class="checks">
+    <li><span class="box"></span><span><b>やめても、頭がぼんやりすることはありません</b><span class="why">禁煙の前後で一時的に認知機能が下がることは観察されていません。「頭が回らなくなる」ことを心配して先延ばしにする必要はありません</span></span></li>
+    <li><span class="box"></span><span>体重は少し増えることがあります。<b>まず禁煙、体重はそのあとで</b><span class="why">どのくらい増えるかには幅があります。体重が気になっても順番は「まず禁煙」で、体重は落ち着いてから相談してください</span></span></li>
+    <li><span class="box"></span><span><b>やめ方は、ひとりで我慢しなくてかまいません</b><span class="why">保険で受けられる禁煙外来があります。「意志が弱いからやめられない」わけではありません</span></span></li>
+  </ul>
+
+  <h2 class="hd"><span class="num">5</span>この紙の読み方を、間違えないでください</h2>
+  <div class="alert">
+    <div class="at">&#9888;&#65039; 3つとも、この資料が言っていないことです</div>
+    <p><b>「やめれば認知症にならない」とは言っていません。</b>ここで紹介したのは、くじ引きで割りつけた試験ではなく、吸う人と吸わない人を観察して比べた研究です。</p>
+    <p><b>「○年で元通りになる」とも言っていません。</b>何年かかるかは研究によって幅があります。そして<b>「減らすと悪くなる」とも言っていません。</b>言えるのは、減らすだけでは、やめたときと同じ結果は確認されていない、ということだけです。</p>
+  </div>
+
+  <h2><span class="num">6</span>相談するときのメモ欄</h2>
+  <div class="memo">
+    <div class="mtitle">&#9997;&#65039; 今日やることは2つ。「いまの状況を伝える」と「やめ方を相談する」</div>
+    <div class="mrow"><span class="mlabel">1日の本数 ／ 吸い始めた年齢</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">これまでにやめた時期（いつ・どのくらい）</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">やめられなかったときのきっかけ</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">禁煙外来について聞きたいこと</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">次の受診日</span><span class="mline"></span></div>
+  </div>
+
+  <div class="foot">
+    <span class="brand">医知創造ラボ</span>｜監修：今村久司（脳神経内科専門医・総合内科専門医）<br>
+    この資料は、PubMedで実在を確認した一次文献をもとに作成しています。ここで扱ったのはすべて観察研究で、<b>「やめれば認知症を防げる」ことが証明されたわけではありません。</b>禁煙の具体的な方法は、担当の先生にご相談ください。
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var b = document.getElementById('printBtn');
+  if (b) { b.addEventListener('click', function(){ window.print(); }); }
+})();
+</script>
+</body>
+</html>
