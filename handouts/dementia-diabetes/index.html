@@ -129,22 +129,24 @@
   <!--
     QR: ブログ記事の公開後に、第3弾（dementia-hearing-loss/index.html）と同じ形で
       .head-main の直後に <a class="qr" href="記事URL"><div class="qr-box"><svg …></div>
-      <span class="qrcap">くわしい解説記事</span></a> を追加する。
-      href / QRコードSVG とも同じ記事URLを指すこと（infographics/manifest.json の blog_url が正本）。
+      <div class="qr-cap">くわしい解説記事</div></a> を追加する。
+      href / QRコードSVG とも同じ記事URLを指すこと（slides/manifest.json の blog_url が正本。
+      infographics/manifest.json は空のまま残ることがあるので使わない）。
       QRは実URLをエンコードして生成し、**パス文字列の一致を照合**してから確定する
       （デコードは誤り訂正で通ってしまうため、viewBox の流用も禁止＝slug長でversionが変わる）。
       2026-08-14: 記事公開（/entry/2026/08/14/154829）にあわせて QR を挿入済み。
       href と QR は同一URLから生成し、**同URLで再生成した path 文字列と厳密一致**
       することを確認した（デコード照合は誤り訂正で通ってしまうため使わない）。
-      注: handouts/fix_qr_links.py は `<div class="qr">` 直後の <svg> を探す正規表現なので、
-      この構造（<a class="qr"><div class="qr-box"><svg>）には一致しない。手で入れる。
+      2026-08-14: handouts/fix_qr_links.py がこの構造に対応した。href と QR画像を同時に
+      更新し、path 文字列の厳密一致まで確認する。手作業は不要:
+        PYTHONIOENCODING=utf-8 python fix_qr_links.py --slug dementia-diabetes --apply
   -->
   <div class="head"><div class="head-main">
     <span class="kicker">糖尿病で通院中の方とご家族へ</span>
     <h1>糖尿病と認知症のこと<br>いま何をすればよいか</h1>
     <p class="sub">「血糖を下げれば認知症を防げる」とは、まだ言えません。それでも、できることがあります。</p>
     <p class="lead">糖尿病があると認知症が増えることは、たくさんの研究で一致しています。ただし、<b>血糖を下げれば防げるかどうかは別の話</b>で、それを確かめた試験はそろって差がつきませんでした。分かっていること／まだ分かっていないことを分けて、いま何をすればよいかだけをまとめました。受診のときに持ってきて、担当の先生と一緒にお使いください。</p>
-    </div><a class="qr" href="https://blog.ichisouzo-lab.com/entry/2026/08/14/154829"><div class="qr-box"><svg role="img" aria-label="QRコード" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 41 41" class="segno"><path class="qrline" stroke="#000" d="M4 4.5h7m1 0h2m1 0h1m1 0h2m2 0h2m3 0h1m3 0h7m-33 1h1m5 0h1m1 0h1m1 0h5m1 0h7m1 0h1m1 0h1m5 0h1m-33 1h1m1 0h3m1 0h1m1 0h1m4 0h2m3 0h1m2 0h1m1 0h1m2 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m3 0h1m1 0h1m1 0h6m1 0h4m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h1m2 0h1m1 0h1m1 0h2m2 0h2m1 0h1m1 0h1m1 0h1m1 0h3m1 0h1m-33 1h1m5 0h1m2 0h1m4 0h3m5 0h3m1 0h1m5 0h1m-33 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-22 1h1m1 0h1m1 0h2m2 0h2m1 0h1m1 0h1m-25 1h1m2 0h7m1 0h1m4 0h3m1 0h1m2 0h3m2 0h1m1 0h3m-33 1h2m5 0h1m3 0h1m1 0h3m1 0h3m2 0h3m3 0h4m-30 1h1m1 0h1m1 0h1m1 0h3m1 0h2m1 0h4m2 0h1m1 0h1m2 0h1m1 0h5m-33 1h2m1 0h3m3 0h5m1 0h3m2 0h1m6 0h1m2 0h1m1 0h1m-33 1h4m2 0h1m1 0h2m1 0h1m1 0h1m1 0h1m1 0h3m2 0h2m1 0h2m-27 1h1m1 0h1m6 0h2m1 0h1m1 0h1m2 0h2m1 0h1m1 0h3m4 0h2m-31 1h1m2 0h2m1 0h3m1 0h1m1 0h1m1 0h2m3 0h1m2 0h1m1 0h1m1 0h2m2 0h1m-30 1h1m3 0h1m1 0h1m2 0h3m3 0h1m7 0h2m2 0h3m1 0h1m-32 1h1m3 0h5m2 0h2m1 0h1m6 0h7m-29 1h4m1 0h1m2 0h1m1 0h6m1 0h4m1 0h1m3 0h1m1 0h1m1 0h1m1 0h1m-33 1h1m2 0h4m3 0h1m3 0h6m1 0h1m1 0h1m1 0h3m1 0h2m1 0h1m-28 1h1m1 0h1m1 0h3m1 0h1m1 0h2m1 0h1m4 0h1m1 0h1m2 0h3m1 0h1m-30 1h2m1 0h1m4 0h2m1 0h1m1 0h1m1 0h1m1 0h1m1 0h2m1 0h1m3 0h1m-30 1h1m2 0h1m3 0h2m1 0h2m2 0h1m2 0h9m2 0h1m1 0h1m-31 1h1m3 0h4m5 0h1m3 0h1m3 0h1m1 0h1m2 0h1m1 0h2m1 0h2m-33 1h1m1 0h1m1 0h2m1 0h4m1 0h4m1 0h2m1 0h1m1 0h1m3 0h2m2 0h1m1 0h1m-33 1h9m1 0h1m2 0h1m2 0h1m2 0h2m3 0h5m3 0h1m-25 1h1m1 0h6m1 0h2m2 0h1m2 0h1m3 0h1m1 0h2m-32 1h7m1 0h1m3 0h6m1 0h2m2 0h2m1 0h1m1 0h1m1 0h1m-31 1h1m5 0h1m1 0h1m2 0h2m2 0h6m2 0h2m3 0h4m-32 1h1m1 0h3m1 0h1m1 0h2m2 0h2m1 0h3m5 0h6m2 0h1m-32 1h1m1 0h3m1 0h1m1 0h1m1 0h2m2 0h1m1 0h4m1 0h1m1 0h3m1 0h1m1 0h1m1 0h2m-33 1h1m1 0h3m1 0h1m4 0h1m1 0h1m1 0h1m1 0h3m1 0h2m2 0h1m1 0h2m1 0h3m-33 1h1m5 0h1m2 0h3m1 0h1m5 0h2m1 0h1m3 0h3m1 0h3m-33 1h7m1 0h1m1 0h1m1 0h1m1 0h4m1 0h2m3 0h5"/></svg></div><span class="qrcap">くわしい解説記事</span></a>
+    </div><a class="qr" href="https://blog.ichisouzo-lab.com/entry/2026/08/14/154829"><div class="qr-box"><svg role="img" aria-label="QRコード" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 41 41" class="segno"><path class="qrline" stroke="#000" d="M4 4.5h7m1 0h2m1 0h1m1 0h2m2 0h2m3 0h1m3 0h7m-33 1h1m5 0h1m1 0h1m1 0h5m1 0h7m1 0h1m1 0h1m5 0h1m-33 1h1m1 0h3m1 0h1m1 0h1m4 0h2m3 0h1m2 0h1m1 0h1m2 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m3 0h1m1 0h1m1 0h6m1 0h4m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h1m2 0h1m1 0h1m1 0h2m2 0h2m1 0h1m1 0h1m1 0h1m1 0h3m1 0h1m-33 1h1m5 0h1m2 0h1m4 0h3m5 0h3m1 0h1m5 0h1m-33 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-22 1h1m1 0h1m1 0h2m2 0h2m1 0h1m1 0h1m-25 1h1m2 0h7m1 0h1m4 0h3m1 0h1m2 0h3m2 0h1m1 0h3m-33 1h2m5 0h1m3 0h1m1 0h3m1 0h3m2 0h3m3 0h4m-30 1h1m1 0h1m1 0h1m1 0h3m1 0h2m1 0h4m2 0h1m1 0h1m2 0h1m1 0h5m-33 1h2m1 0h3m3 0h5m1 0h3m2 0h1m6 0h1m2 0h1m1 0h1m-33 1h4m2 0h1m1 0h2m1 0h1m1 0h1m1 0h1m1 0h3m2 0h2m1 0h2m-27 1h1m1 0h1m6 0h2m1 0h1m1 0h1m2 0h2m1 0h1m1 0h3m4 0h2m-31 1h1m2 0h2m1 0h3m1 0h1m1 0h1m1 0h2m3 0h1m2 0h1m1 0h1m1 0h2m2 0h1m-30 1h1m3 0h1m1 0h1m2 0h3m3 0h1m7 0h2m2 0h3m1 0h1m-32 1h1m3 0h5m2 0h2m1 0h1m6 0h7m-29 1h4m1 0h1m2 0h1m1 0h6m1 0h4m1 0h1m3 0h1m1 0h1m1 0h1m1 0h1m-33 1h1m2 0h4m3 0h1m3 0h6m1 0h1m1 0h1m1 0h3m1 0h2m1 0h1m-28 1h1m1 0h1m1 0h3m1 0h1m1 0h2m1 0h1m4 0h1m1 0h1m2 0h3m1 0h1m-30 1h2m1 0h1m4 0h2m1 0h1m1 0h1m1 0h1m1 0h1m1 0h2m1 0h1m3 0h1m-30 1h1m2 0h1m3 0h2m1 0h2m2 0h1m2 0h9m2 0h1m1 0h1m-31 1h1m3 0h4m5 0h1m3 0h1m3 0h1m1 0h1m2 0h1m1 0h2m1 0h2m-33 1h1m1 0h1m1 0h2m1 0h4m1 0h4m1 0h2m1 0h1m1 0h1m3 0h2m2 0h1m1 0h1m-33 1h9m1 0h1m2 0h1m2 0h1m2 0h2m3 0h5m3 0h1m-25 1h1m1 0h6m1 0h2m2 0h1m2 0h1m3 0h1m1 0h2m-32 1h7m1 0h1m3 0h6m1 0h2m2 0h2m1 0h1m1 0h1m1 0h1m-31 1h1m5 0h1m1 0h1m2 0h2m2 0h6m2 0h2m3 0h4m-32 1h1m1 0h3m1 0h1m1 0h2m2 0h2m1 0h3m5 0h6m2 0h1m-32 1h1m1 0h3m1 0h1m1 0h1m1 0h2m2 0h1m1 0h4m1 0h1m1 0h3m1 0h1m1 0h1m1 0h2m-33 1h1m1 0h3m1 0h1m4 0h1m1 0h1m1 0h1m1 0h3m1 0h2m2 0h1m1 0h2m1 0h3m-33 1h1m5 0h1m2 0h3m1 0h1m5 0h2m1 0h1m3 0h3m1 0h3m-33 1h7m1 0h1m1 0h1m1 0h1m1 0h4m1 0h2m3 0h5"/></svg></div><div class="qr-cap">くわしい解説記事</div></a>
   </div>
 
   <h2><span class="num">1</span>「糖尿病があると認知症が増える」は、どのくらいの話か</h2>

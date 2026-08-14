@@ -336,7 +336,7 @@ def main() -> None:
     existing_slugs = {d["slug"] for d in manifest["decks"]}
     existing_blogs = {d.get("blog_url", "") for d in manifest["decks"]}
 
-    added = 0
+    to_add: list[dict] = []
     for d in NEW_DECKS:
         if d["slug"] in existing_slugs:
             print(f"  [SKIP-DUP-SLUG] {d['slug']}")
@@ -344,18 +344,22 @@ def main() -> None:
         if d.get("blog_url") and d["blog_url"] in existing_blogs:
             print(f"  [SKIP-DUP-BLOG] {d['slug']} -> {d['blog_url']}")
             continue
-        manifest["decks"].append(d)
+        to_add.append(d)
         existing_slugs.add(d["slug"])
         existing_blogs.add(d.get("blog_url", ""))
-        added += 1
         print(f"  [ADD] {d['slug']}")
 
+    # decks 配列の並び順がそのままギャラリーの表示順になる（build.py はソートしない）。
+    # 新規は先頭に入れる。NEW_DECKS 内の相対順は保つのでスライスで一括挿入する。
+    manifest["decks"][0:0] = to_add
+    added = len(to_add)
+
     MANIFEST.write_text(
-        json.dumps(manifest, ensure_ascii=False, indent=2),
+        json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
         newline="\n",
     )
-    print(f"\n{added} decks added. Total: {len(manifest['decks'])}")
+    print(f"\n{added} decks added (先頭に挿入). Total: {len(manifest['decks'])}")
 
 
 if __name__ == "__main__":
