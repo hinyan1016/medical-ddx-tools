@@ -10,6 +10,8 @@
 見るもの:
     1. ASSETS に載っているのに実ファイルが無いパス（消したツールの残骸）
     2. 実ファイルがあるのに ASSETS に載っていないページ（キャッシュ漏れ）
+       対象はトップレベルの *.html と PAGE_SUBDIRS 配下。除外したディレクトリは
+       件数と理由を必ず出力する（黙って落とすと「全部見た」と誤読される）。
     3. git HEAD と比べて ASSETS が変わったのに CACHE_NAME が上がっていない
 
 使い方:
@@ -41,6 +43,20 @@ _VERSION = re.compile(r"v(\d+)\s*$")
 # 配信対象でない HTML（テンプレ・作業用）は ASSETS 網羅の対象から外す
 IGNORED_PREFIXES = ("_", ".")
 IGNORED_NAMES = {"test.html", "sample.html"}
+
+# ASSETS 網羅の対象にするサブディレクトリ。
+# 2026-08-15 まではトップレベルの *.html しか数えておらず、infographics/ 配下の
+# キャッシュ漏れ（認知症シリーズ第4弾のインフォページ）を素通りさせた。
+# ASSETS には最初からサブディレクトリ配下が載っていたので、実在確認だけが効いて
+# 網羅確認が効かない非対称になっていた。
+PAGE_SUBDIRS = ("infographics", "handouts")
+
+# 意図的に網羅対象から外すディレクトリと、その理由。
+# 黙って除外すると「全部見た上での PASS」と読めてしまうので、必ず件数を出力する。
+EXCLUDED_SUBDIRS = {
+    "slides": "動画デッキの原本。PWA のオフライン対象ではない",
+    "infographics-gallery": "旧ギャラリー（webp 十数MB）。現行は infographics/index.html",
+}
 
 
 def parse_cache_name(js: str) -> str | None:
@@ -108,10 +124,37 @@ def git_head_sw(repo: Path, rel: str) -> str | None:
     return p.stdout if p.returncode == 0 else None
 
 
+def is_page_name(name: str) -> bool:
+    """テンプレ・作業用のファイル／ディレクトリ名でないなら True。"""
+    return not name.startswith(IGNORED_PREFIXES) and name not in IGNORED_NAMES
+
+
 def collect_pages(root: Path) -> set[str]:
-    """ASSETS 網羅の対象にするトップレベルの診断ツールHTML。"""
-    return {p.name for p in root.glob("*.html")
-            if not p.name.startswith(IGNORED_PREFIXES) and p.name not in IGNORED_NAMES}
+    """ASSETS 網羅の対象にする配信ページを root からの相対パスで返す。
+
+    トップレベルの診断ツール HTML に加えて、PAGE_SUBDIRS 配下のページも数える。
+    パスの途中に '_shared' のような作業用ディレクトリが挟まるものは除く。
+    """
+    pages = {p.name for p in root.glob("*.html") if is_page_name(p.name)}
+    for sub in PAGE_SUBDIRS:
+        d = root / sub
+        if not d.is_dir():
+            continue
+        for p in d.rglob("*.html"):
+            rel = p.relative_to(root).as_posix()
+            if all(is_page_name(part) for part in rel.split("/")):
+                pages.add(rel)
+    return pages
+
+
+def excluded_summary(root: Path) -> list[tuple[str, int, str]]:
+    """網羅対象から外したディレクトリと、その HTML 件数・理由。"""
+    out = []
+    for sub, why in EXCLUDED_SUBDIRS.items():
+        d = root / sub
+        if d.is_dir():
+            out.append((sub, sum(1 for _ in d.rglob("*.html")), why))
+    return sorted(out)
 
 
 def collect_files(root: Path) -> set[str]:
@@ -157,7 +200,10 @@ def main() -> int:
         bump = needs_bump(parse_assets(head_js), assets,
                           version_of(parse_cache_name(head_js)), version_of(cache_name))
 
-    print(f"CACHE_NAME: {cache_name}  /  ASSETS {len(assets)} 件  /  配信ページ {len(pages)} 件")
+    print(f"CACHE_NAME: {cache_name}  /  ASSETS {len(assets)} 件  /  配信ページ {len(pages)} 件"
+          f"（トップレベル + {'/ '.join(PAGE_SUBDIRS)}/）")
+    for sub, n, why in excluded_summary(root):
+        print(f"  網羅対象外: {sub}/ {n} 件 — {why}")
     if compared:
         print(f"HEAD との比較: CACHE_NAME {parse_cache_name(head_js)} → {cache_name}")
     else:

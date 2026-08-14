@@ -72,6 +72,82 @@ def test_fully_listed_pages_report_nothing():
     assert csc.unlisted_pages({"index.html"}, ["./index.html"]) == []
 
 
+# --- 網羅の探索範囲 -----------------------------------------------------------
+def _page(root: Path, rel: str) -> None:
+    """テスト用の配信ページを1枚置く。"""
+    p = root / rel
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text("<html></html>", encoding="utf-8", newline="\n")
+
+
+def test_toplevel_html_is_collected(tmp_path):
+    _page(tmp_path, "aki.html")
+    assert csc.collect_pages(tmp_path) == {"aki.html"}
+
+
+def test_page_subdir_html_is_collected_with_relative_path(tmp_path):
+    """infographics/ 配下も網羅対象。ファイル名だけだと index.html が衝突する。"""
+    _page(tmp_path, "infographics/dementia-diabetes/index.html")
+    _page(tmp_path, "handouts/osteoporosis/index.html")
+    assert csc.collect_pages(tmp_path) == {
+        "infographics/dementia-diabetes/index.html",
+        "handouts/osteoporosis/index.html",
+    }
+
+
+def test_uncached_infographic_page_is_detected(tmp_path):
+    """2026-08-15 まで素通りしていた欠陥の再発防止。
+
+    ASSETS には最初からサブディレクトリ配下が載っていたのに、網羅の探索が
+    トップレベルの *.html だけだったため、infographics/ のキャッシュ漏れを
+    構造的に検出できなかった。
+    """
+    _page(tmp_path, "infographics/dementia-diabetes/index.html")
+    pages = csc.collect_pages(tmp_path)
+    assert csc.unlisted_pages(pages, ["./index.html"]) == [
+        "infographics/dementia-diabetes/index.html"
+    ]
+
+
+def test_excluded_subdir_is_not_collected(tmp_path):
+    """slides/ は動画デッキの原本。PWA のオフライン対象ではない。"""
+    _page(tmp_path, "slides/foo/index.html")
+    assert csc.collect_pages(tmp_path) == set()
+
+
+def test_work_directory_in_path_is_skipped(tmp_path):
+    """パスの途中に _shared のような作業用ディレクトリが挟まるものは配信物でない。"""
+    _page(tmp_path, "infographics/_shared/parts.html")
+    _page(tmp_path, "infographics/live/index.html")
+    assert csc.collect_pages(tmp_path) == {"infographics/live/index.html"}
+
+
+def test_ignored_file_names_are_skipped(tmp_path):
+    _page(tmp_path, "_draft.html")
+    _page(tmp_path, "test.html")
+    _page(tmp_path, "aki.html")
+    assert csc.collect_pages(tmp_path) == {"aki.html"}
+
+
+def test_missing_page_subdir_is_tolerated(tmp_path):
+    """PAGE_SUBDIRS が無いリポジトリでも落ちない。"""
+    _page(tmp_path, "aki.html")
+    assert csc.collect_pages(tmp_path) == {"aki.html"}
+
+
+def test_excluded_dirs_are_disclosed_with_counts(tmp_path):
+    """黙って除外すると『全部見た上での PASS』と誤読される。件数と理由を出す。"""
+    _page(tmp_path, "slides/a/index.html")
+    _page(tmp_path, "slides/b/index.html")
+    summary = csc.excluded_summary(tmp_path)
+    assert [(sub, n) for sub, n, _ in summary] == [("slides", 2)]
+    assert summary[0][2]
+
+
+def test_absent_excluded_dir_is_not_reported(tmp_path):
+    assert csc.excluded_summary(tmp_path) == []
+
+
 # --- CACHE_NAME 上げ忘れ ------------------------------------------------------
 def test_changed_assets_without_bump_is_flagged():
     assert csc.needs_bump(["./a.html"], ["./a.html", "./b.html"], 94, 94) is True
