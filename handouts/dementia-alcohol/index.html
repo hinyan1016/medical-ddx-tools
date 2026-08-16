@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1B3A5C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="お酒と認知症について、お酒を飲む方とご家族向けにまとめたA4・1枚の資料。「少量なら脳に良い」がまだ証明されていないこと、純アルコール量の数え方、厚生労働省の男性40 g・女性20 gが「飲んでよい量」ではないこと、自己判断で急にやめると危険なことがあることを、一次文献の範囲でまとめています。">
+<title>お酒と認知症のこと｜お酒を飲む方とご家族へ（A4・1枚）｜医知創造ラボ</title>
+<style>
+  :root{
+    --navy:#1B3A5C;          /* 構造色（見出し・罫線）*/
+    --accent:#FF7A59;        /* テーマの差し色（コーラル・デッキの --accent と同値） */
+    --accent-ink:#B8431F;
+    --accent-bg:#FFF1EC;
+    --danger:#C0392B;        /* 警告は別の赤 */
+    --danger-bg:#FBEAE8;
+    --danger-line:#EAC5C0;
+    --navy-bg:#EEF2F6;
+    --line:#D6E0E9;
+    --ink:#1a1a1a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    font-family:"Yu Gothic","游ゴシック","Hiragino Kaku Gothic ProN","Segoe UI",sans-serif;
+    color:var(--ink); background:#eef1f4; line-height:1.6; padding:16px;
+    /* 日本語の語中改行を文節境界で切る */
+    word-break:auto-phrase; line-break:strict;
+  }
+  .sheet{background:#fff;max-width:820px;margin:0 auto 20px;padding:22px 26px 26px;box-shadow:0 2px 14px rgba(0,0,0,.12);}
+  .head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:14px;}
+  .kicker{display:inline-block;background:var(--accent);color:#fff;font-size:12px;font-weight:700;
+    letter-spacing:.06em;padding:3px 10px;border-radius:3px;margin-bottom:7px;}
+  h1{font-size:22px;font-weight:800;color:var(--navy);line-height:1.35;}
+  .sub{font-size:12.5px;color:var(--accent-ink);font-weight:700;margin-top:6px;}
+  .lead{font-size:13.5px;color:#333;margin-top:8px;}
+  .lead b{color:var(--navy);}
+  h2{font-size:15px;font-weight:800;color:#fff;background:var(--navy);padding:5px 12px;border-radius:4px;
+    margin:14px 0 9px;display:flex;align-items:center;gap:8px;}
+  h2 .num{background:#fff;color:var(--navy);font-size:12.5px;font-weight:800;width:21px;height:21px;
+    border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex:0 0 21px;}
+  h2.hd{background:var(--danger);}
+  h2.hd .num{color:var(--danger);}
+  ul.checks{list-style:none;margin-top:8px;}
+  ul.checks li{display:flex;gap:9px;align-items:flex-start;padding:4.5px 2px;
+    border-bottom:1px dashed var(--line);font-size:13px;}
+  ul.checks li:last-child{border-bottom:none;}
+  ul.checks .box{flex:0 0 17px;width:17px;height:17px;margin-top:1px;border:2px solid var(--navy);border-radius:3px;}
+  ul.checks li b{color:var(--navy);}
+  /* 補足は必ず別行にする（インラインだと本文と続き読みになる） */
+  ul.checks .why{display:block;color:#555;font-size:11.5px;margin-top:1px;}
+  .bothnote{margin-top:8px;background:var(--accent-bg);border-left:5px solid var(--accent);
+    padding:9px 13px;font-size:13px;color:#333;border-radius:0 6px 6px 0;}
+  .bothnote b{color:var(--accent-ink);}
+  .alert{border:2.5px solid var(--danger);border-radius:8px;padding:11px 14px;background:var(--danger-bg);}
+  .alert .at{color:var(--danger);font-weight:800;font-size:15px;margin-bottom:6px;}
+  .alert p{font-size:13px;line-height:1.62;}
+  .alert p + p{margin-top:6px;}
+  .alert b{color:var(--danger);}
+  /* 純アルコール量の計算カード（本弾のみ） */
+  .calc{margin-top:8px;border:1.5px solid var(--line);border-radius:8px;padding:10px 13px;background:var(--navy-bg);}
+  .calc .cf{font-size:14px;font-weight:800;color:var(--navy);text-align:center;line-height:1.5;}
+  .calc .ce{font-size:12px;color:#444;margin-top:5px;text-align:center;}
+  table.amt{width:100%;border-collapse:collapse;margin-top:8px;font-size:12.5px;}
+  table.amt th,table.amt td{border:1px solid var(--line);padding:4px 8px;text-align:left;}
+  table.amt th{background:var(--navy);color:#fff;font-weight:700;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  table.amt td.g{font-weight:800;color:var(--accent-ink);white-space:nowrap;}
+  .memo{border:1.5px solid var(--line);border-radius:8px;padding:10px 13px;margin-top:14px;font-size:12.5px;}
+  .memo .mtitle{font-weight:800;color:var(--navy);font-size:13.5px;margin-bottom:5px;}
+  .memo .mtext{font-size:12.5px;color:#333;margin-bottom:7px;}
+  .memo .mtext b{color:var(--accent-ink);}
+  .memo .mrow{display:flex;gap:6px;align-items:baseline;padding:5px 0;}
+  .memo .mlabel{flex:0 0 260px;font-weight:700;color:var(--navy);white-space:nowrap;}
+  .memo .mline{flex:1;border-bottom:1px solid #97a6b5;min-height:18px;}
+  .foot{margin-top:16px;padding-top:10px;border-top:1px solid var(--line);font-size:11px;color:#666;line-height:1.5;}
+  .foot .brand{font-weight:700;color:var(--navy);}
+  .noprint{margin:0 auto 18px;max-width:820px;text-align:center;}
+  .pbtn{display:inline-block;background:var(--navy);color:#fff;text-decoration:none;font-size:14px;
+    font-weight:700;padding:10px 24px;border-radius:24px;border:none;cursor:pointer;box-shadow:0 2px 10px rgba(27,58,92,.25);}
+  .pbtn:active{transform:scale(.98);}
+  .noprint p{font-size:12px;color:#777;margin-top:8px;}
+
+  @page{size:A4 portrait;margin:10mm 12mm;}
+  @media print{
+    body{background:#fff;padding:0;font-size:9.8pt;}
+    .sheet{box-shadow:none;margin:0;max-width:none;padding:0;}
+    .noprint{display:none !important;}
+    h1{font-size:16pt;line-height:1.25;}
+    h2{font-size:11.5pt;-webkit-print-color-adjust:exact;print-color-adjust:exact;margin:1px 0 1px;padding:1px 9px;}
+    h2 .num{width:17px;height:17px;flex:0 0 17px;font-size:10.5pt;}
+    .kicker,.alert,.bothnote,.calc{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .kicker{padding:2px 9px;margin-bottom:4px;}
+    .sub{margin-top:3px;}
+    ul.checks{margin-top:3px;}
+    ul.checks li{font-size:9.3pt;padding:0px 2px;line-height:1.32;}
+    ul.checks .why{font-size:9pt;}
+    .lead{font-size:9pt;margin-top:1px;line-height:1.42;}
+    .head{padding-bottom:2px;margin-bottom:2px;}
+    .alert{padding:3px 9px;}
+    .alert .at{font-size:10pt;margin-bottom:1px;}
+    .alert p{font-size:9.3pt;line-height:1.34;}
+    .alert p+p{margin-top:2px;}
+    .bothnote{margin-top:3px;padding:3px 9px;font-size:9.3pt;line-height:1.32;}
+    .calc{margin-top:3px;padding:3px 9px;}
+    .calc .cf{font-size:10pt;line-height:1.32;}
+    .calc .ce{font-size:8.8pt;margin-top:1px;}
+    table.amt{margin-top:3px;font-size:8.8pt;}
+    table.amt th,table.amt td{padding:0px 6px;}
+    .memo{margin-top:4px;padding:3px 9px;font-size:9.3pt;}
+    .memo .mtitle{font-size:10pt;margin-bottom:1px;}
+    .memo .mtext{font-size:9.1pt;margin-bottom:1px;line-height:1.32;}
+    .memo .mrow{padding:0;}
+    .memo .mline{min-height:12px;}
+    .foot{margin-top:3px;padding-top:2px;font-size:7.8pt;line-height:1.32;}
+    a[href]{color:inherit;text-decoration:none;}
+    .alert,.memo,.bothnote,.calc,table.amt{break-inside:avoid;page-break-inside:avoid;}
+    ul.checks li{break-inside:avoid;page-break-inside:avoid;}
+    h2{break-after:avoid;page-break-after:avoid;}
+  }
+  @media (max-width:560px){
+    body{padding:8px;} .sheet{padding:16px 15px 20px;} h1{font-size:19px;}
+    .memo .mlabel{flex:0 0 170px;}
+  }
+
+  .head{display:flex;align-items:flex-start;gap:12px;}
+  .head-main{flex:1;min-width:0;}
+  .qr{width:92px;flex:0 0 92px;text-align:center;border:1px solid #d8d8d8;border-radius:8px;padding:6px 5px 4px;-webkit-print-color-adjust:exact;print-color-adjust:exact;text-decoration:none;display:block;}
+  .qr-box{width:70px;height:70px;margin:0 auto;display:flex;align-items:center;justify-content:center;}
+  .qr-box svg{width:100%;height:100%;display:block;}
+  .qr .qr-cap{font-size:9px;color:#555;line-height:1.3;margin-top:3px;}
+</style>
+</head>
+<body>
+<div class="noprint">
+  <button class="pbtn" id="printBtn">&#128424;&#65039; この資料を印刷する（A4）</button>
+  <p>A4・1枚（「少量なら脳に良い」の現在地・純アルコール量の数え方・男性40 g／女性20 gの意味・急にやめる危険・相談メモ欄。カラー印刷推奨）</p>
+</div>
+
+<div class="sheet">
+
+  <!--
+    QR: 【未焼き込み】ブログ公開後に、採番された実URLで segno（error=m / border=4 / stroke=#000）を生成し、
+      ここに <a class="qr" href="<記事URL>"> … </a> のブロックを挿入する（第4〜6弾と同形式）。
+      ※ fix_qr_links.py は「既にあるQRを揃え直す」ツールで、QRブロックの新規追加はしない。
+      ※ 他弾の viewBox を流用しないこと（slug長で version が変わる）。照合はパス文字列の一致で行う。
+      URLの正本は slides/manifest.json の blog_url。
+  -->
+  <div class="head"><div class="head-main">
+    <span class="kicker">お酒を飲む方とご家族へ</span>
+    <h1>お酒と認知症のこと<br>「少量なら脳にいい」は、まだ証明されていません</h1>
+    <p class="sub">答えは「どうやって調べたか」で変わります。</p>
+    <p class="lead">「少量なら脳に良い」とも「少しでも脳には悪い」とも言われます。違うのは<b>調べ方</b>です。この紙は、お酒をやめさせるための紙ではなく、<b>いまの量を数えて担当の先生と相談するための紙</b>です。</p>
+    </div>
+  </div>
+
+  <h2><span class="num">1</span>「少量なら脳にいい」は、調べ方で答えが変わります</h2>
+  <ul class="checks">
+    <li><span class="box"></span><span><b>認知症になった人の数を追いかけた研究では、少量の人がいちばん少なく見えます</b><span class="why">これが「Jカーブ」です。ただし観察して比べただけの結果で、お酒が脳を守った証拠ではありません</span></span></li>
+    <li><span class="box"></span><span><b>脳の画像を撮った研究では、少量の人に「守られている」形は出ていません</b><span class="why">30年追跡してMRIを撮った研究でも、少量の人が飲まない人より良いという結果は出ていません</span></span></li>
+    <li><span class="box"></span><span><b>生まれつきの体質（遺伝）を使った研究でも、少量が守るという証拠は出ていません</b><span class="why">偏りが入りにくい方法です</span></span></li>
+  </ul>
+  <div class="bothnote">なぜ食い違うのか。理由のひとつは、<b>「飲まない人」のなかに、体を悪くしてお酒をやめた人が混ざっている</b>ことです。ただし、<b>もともと生涯飲まない人と、やめた人とで差がなかった</b>という研究もあり、これだけでは説明しきれません。<b>どの調べ方でも一致しているのは、「多く飲むほど不利」という側だけです。</b></div>
+
+  <h2><span class="num">2</span>お酒の量は「純アルコール量（g）」で数えます</h2>
+  <div class="calc">
+    <div class="cf">純アルコール量（g）＝ お酒の量（ml）× 度数（%）÷ 100 × 0.8</div>
+  </div>
+  <table class="amt">
+    <tr><th>お酒（目安の量）</th><th>純アルコール量</th><th>お酒（目安の量）</th><th>純アルコール量</th></tr>
+    <tr><td>ビール 500 ml（5%）</td><td class="g">20 g</td><td>日本酒 1合 180 ml（15%）</td><td class="g">約22 g</td></tr>
+    <tr><td>缶チューハイ 350 ml（7%）</td><td class="g">約20 g</td><td>焼酎 100 ml（25%）</td><td class="g">20 g</td></tr>
+    <tr><td>ワイン グラス 120 ml（12%）</td><td class="g">約12 g</td><td>ウイスキー ダブル 60 ml（43%）</td><td class="g">約21 g</td></tr>
+  </table>
+
+  <h2><span class="num">3</span>「男性40 g・女性20 g」は、飲んでよい量ではありません</h2>
+  <ul class="checks">
+    <li><span class="box"></span><span>厚生労働省のガイドラインは、この量を<b>「生活習慣病のリスクを高める量」</b>として示しています<span class="why">「ここまでなら大丈夫」という線ではなく、「ここを超えると別の病気のリスクが上がる」という線です</span></span></li>
+    <li><span class="box"></span><span>同じガイドラインに、<b>「これらの量は個々人の許容量を示したものではありません」</b>と書かれています<span class="why">体質・年齢・持病・飲んでいるお薬によって、適切な量は一人ひとり違います</span></span></li>
+    <li><span class="box"></span><span>まず<b>いまの量を数えて</b>、下のメモ欄に書いてください。減らすかどうかを決めるのは、数えたあとです</span></li>
+  </ul>
+
+  <h2 class="hd"><span class="num">4</span>減らすときは、自己判断で急にやめないでください</h2>
+  <div class="alert">
+    <div class="at">&#9888;&#65039; 急にやめると危険なことがあります</div>
+    <p>毎日飲んでいる方が自己判断で急にやめると、<b>手のふるえ・汗・不眠・不安、まれにけいれんや意識の乱れ</b>（離脱症状）が起きることがあります。量が多い方ほど注意が必要です。<b>減らし方・やめてよいかどうかは、必ず主治医と決めてください。</b></p>
+  </div>
+
+  <h2 class="hd"><span class="num">5</span>この紙が言っていないこと</h2>
+  <div class="alert">
+    <div class="at">&#9888;&#65039; 3つとも、この資料が言っていないことです</div>
+    <p><b>「少量なら脳に良い」とは言っていません。</b>紹介したのは観察研究で、お酒を割りつける予防試験は倫理的にできません。</p>
+    <p><b>「やめれば認知症を防げる」とも言っていません。</b>そして<b>「飲まない人のほうが認知症になりやすい」とも言っていません。</b>この紙は、お酒を始める理由にはなりません。</p>
+  </div>
+
+  <h2><span class="num">6</span>いまの量の記録と、相談するときのメモ欄</h2>
+  <div class="memo">
+    <div class="mtitle">&#9997;&#65039; 今日やることは2つ。「いまの量を数える」と「気になることを伝える」</div>
+    <div class="mtext">目標の量や、減らし方・やめ方は、この紙では決めません。<b>必ず主治医と決めてください。</b></div>
+    <div class="mrow"><span class="mlabel">1日に飲む量（種類・量・度数）</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">上の式で計算した純アルコール量（g／日）</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">週に何日飲むか ／ 飲まない日はあるか</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">記憶が飛んだこと・転んだこと・眠りの変化</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">飲んでいるお薬（睡眠薬・安定剤など）／次の受診日</span><span class="mline"></span></div>
+  </div>
+
+  <div class="foot">
+    <span class="brand">医知創造ラボ</span>｜監修：今村久司（脳神経内科専門医・総合内科専門医）<br>
+    この資料は、PubMedで実在を確認した一次文献と厚生労働省「健康に配慮した飲酒に関するガイドライン」（令和6年2月）をもとに作成しています。扱った研究はほとんどが観察研究で、<b>「少量なら脳に良い」ことも「やめれば認知症を防げる」ことも証明されたわけではありません。</b>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var b = document.getElementById('printBtn');
+  if (b) { b.addEventListener('click', function(){ window.print(); }); }
+})();
+</script>
+</body>
+</html>

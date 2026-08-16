@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="飲酒と認知症の関係を、患者さん向けにやさしく整理したインフォグラフィック。「少量なら脳に良い」という話と「少しでも脳には悪い」という話は、どちらも研究の結果です。発症率を追った研究はJカーブを出しますが、脳のMRIと遺伝の情報を使った解析は少量の保護を支持していません。答えは「どうやって調べたか」で変わります。この図はお酒をすすめるものではなく、また急にやめることをすすめるものでもありません。">
+<title>飲酒と認知症｜答えは「どうやって調べたか」で変わる（インフォグラフィック）</title>
+<style>
+:root{
+  --navy:#1B3A5C;
+  --navyDeep:#0F2540;
+  --navyBg:#E9EEF5;
+  --coral:#FF7A59;
+  --coralBg:#FFF1EC;
+  --coralInk:#B8431F;
+  --amber:#C77800;
+  --amberBg:#FFF8E1;
+  --line:#D6E0E9;
+  --gray:#69737E;
+  --ink:#20242B;
+  --ink2:#3C4450;
+  --ok:#2E7D5B;
+  --font:"Noto Sans JP","BIZ UDPGothic","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+}
+html{font-size:16px;}
+*{box-sizing:border-box; margin:0; padding:0;}
+/* 日本語の語中改行を文節境界で切る */
+body,.lead,.card p,.row__d,td,th,.note,.src,.cav,.sum__d,.way__d{
+  word-break:auto-phrase; line-break:strict;
+}
+body{font-family:var(--font); background:#E4E9EF; color:var(--ink);
+  display:flex; flex-direction:column; align-items:center; overflow-x:hidden;}
+.nw{white-space:nowrap;}
+.ig{width:100%; max-width:1080px; background:#fff; padding:0 0 3rem;}
+
+.hd{background:linear-gradient(135deg,#0A1B2E 0%,#153352 55%,#1B3A5C 100%); color:#fff;
+  padding:2.6rem 3rem 2.2rem; text-align:center;}
+.hd__brand{font-size:.95rem; letter-spacing:.14em; opacity:.85; margin-bottom:1rem;}
+.hd__t{font-size:2.5rem; font-weight:800; line-height:1.3; letter-spacing:.01em;}
+.hd__t .hl{color:var(--coral);}
+.hd__s{margin-top:1rem; font-size:1.12rem; opacity:.92; line-height:1.7;}
+
+.sec{padding:2.2rem 3rem 0;}
+.sec__h{display:flex; align-items:center; gap:.8rem; font-size:1.45rem; font-weight:800;
+  color:var(--navy); border-bottom:3px solid var(--navy); padding-bottom:.5rem; margin-bottom:1.2rem;}
+.sec__n{background:var(--coral); color:#fff; font-size:1.05rem; width:2rem; height:2rem;
+  border-radius:.4rem; display:grid; place-items:center; flex:none;}
+.lead{font-size:1.05rem; line-height:1.8; color:var(--ink2);}
+
+/* 3つの調べ方 */
+.ways{display:flex; gap:1.2rem; margin:1.2rem 0 .4rem; flex-wrap:wrap;}
+.way{flex:1 1 0; min-width:15rem; border:2px solid var(--line); border-radius:.7rem; overflow:hidden;}
+.way__h{background:var(--navy); color:#fff; padding:.7rem 1rem; font-weight:800; font-size:1.08rem;}
+.way__b{padding:1rem 1.1rem;}
+.way__a{font-size:1.12rem; font-weight:800; color:var(--coralInk); line-height:1.5; margin-bottom:.5rem;}
+.way__d{font-size:.98rem; line-height:1.7; color:var(--ink2);}
+
+.big{display:flex; gap:1.4rem; margin:1.2rem 0 .4rem; flex-wrap:wrap;}
+.big__c{flex:1 1 0; min-width:14rem; background:var(--navyBg); border-radius:.7rem;
+  padding:1.2rem 1.3rem; border-left:6px solid var(--navy);}
+.big__n{font-size:2.6rem; font-weight:800; color:var(--navy); line-height:1.1;}
+.big__n .u{font-size:1.2rem; margin-left:.2rem;}
+.big__d{margin-top:.5rem; font-size:1rem; line-height:1.6; color:var(--ink2);}
+.big--coral{background:var(--coralBg); border-left-color:var(--coral);}
+.big--coral .big__n{color:var(--coralInk);}
+
+table{width:100%; border-collapse:collapse; margin:1rem 0 .3rem; font-size:1rem;}
+th{background:var(--navy); color:#fff; text-align:left; padding:.7rem .9rem; font-weight:700;}
+td{border-bottom:1px solid var(--line); padding:.7rem .9rem; line-height:1.6; vertical-align:top;}
+td.k{font-weight:700; color:var(--navy); width:34%;}
+.src{font-size:.86rem; color:var(--gray); margin-top:.35rem; line-height:1.6;}
+
+.card{border:2px solid var(--line); border-radius:.7rem; padding:1.1rem 1.3rem; margin:1rem 0 .3rem;}
+.card--warn{background:var(--coralBg); border-color:var(--coral);}
+.card--amber{background:var(--amberBg); border-color:#EBC46A;}
+.card__t{font-weight:800; color:var(--navy); font-size:1.1rem; margin-bottom:.5rem;}
+.card--warn .card__t{color:var(--coralInk);}
+.card p{font-size:1rem; line-height:1.75; color:var(--ink2);}
+.card p + p{margin-top:.6rem;}
+
+.rows{display:flex; flex-direction:column; gap:.7rem; margin:1rem 0 .3rem;}
+.row{display:flex; gap:1rem; align-items:flex-start; background:#F6F8FB; border-radius:.6rem; padding:.9rem 1.1rem;}
+.row__n{flex:none; width:2.1rem; height:2.1rem; border-radius:50%; background:var(--navy); color:#fff;
+  display:grid; place-items:center; font-weight:800;}
+.row__d{font-size:1rem; line-height:1.7; color:var(--ink2);}
+.row__d b{color:var(--navy);}
+
+.calc{background:#F6F8FB; border:2px dashed var(--navy); border-radius:.7rem;
+  padding:1.1rem 1.3rem; margin:1rem 0 .3rem; text-align:center;}
+.calc__f{font-size:1.15rem; font-weight:800; color:var(--navy); line-height:1.8;}
+.calc__d{margin-top:.6rem; font-size:.95rem; line-height:1.7; color:var(--ink2);}
+
+.sum{background:var(--navy); color:#fff; border-radius:.8rem; padding:1.6rem 1.8rem; margin:1.4rem 0 .4rem;
+  display:flex; gap:1.2rem; flex-wrap:wrap;}
+.sum__c{flex:1 1 0; min-width:13rem;}
+.sum__t{font-size:1.5rem; font-weight:800; color:var(--coral); margin-bottom:.4rem;}
+.sum__d{font-size:.98rem; line-height:1.7; opacity:.95;}
+
+.note{margin:1.6rem 3rem 0; padding:1rem 1.2rem; background:#F3F5F8; border-left:5px solid var(--gray);
+  font-size:.9rem; line-height:1.75; color:var(--ink2);}
+.ft{margin-top:1.6rem; padding:1.4rem 3rem 0; border-top:2px solid var(--line);
+  font-size:.88rem; color:var(--gray); line-height:1.8; text-align:center;}
+</style>
+</head>
+<body>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+<div class="ig">
+
+  <div class="hd">
+    <div class="hd__brand">✚ 医知創造ラボ ／ 認知症×生活習慣病シリーズ 第7弾</div>
+    <h1 class="hd__t">飲酒と認知症<br>答えは<span class="hl">「どうやって調べたか」</span>で<br>変わります</h1>
+    <p class="hd__s">この図は、<b>お酒をすすめるものではありません。</b><br>そして、<b>いま飲んでいる方に急にやめるようすすめるものでもありません。</b></p>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">1</span>「少量なら脳に良い」は本当ですか</div>
+    <p class="lead">「少量なら脳に良い」という話と、「少しでも脳には悪い」という話が、どちらも研究の結果として流れています。<b>どちらの数字も本物です。</b>食い違って見えるのは、<b>何を測ったかが違うから</b>です。</p>
+    <div class="rows">
+      <div class="row"><div class="row__n">1</div><div class="row__d"><b>認知症になった人の数を追いかけた研究では、少しだけ飲む人がいちばん少なく見えます。</b>グラフがJの字に見えるので「Jカーブ」と呼ばれます。</div></div>
+      <div class="row"><div class="row__n">2</div><div class="row__d"><b>ところが、脳のMRIを撮って比べた研究では、少ない量の段階から脳が小さいほうに傾いています。</b>「少量なら良い」という結果は出ていません。</div></div>
+      <div class="row"><div class="row__n">3</div><div class="row__d"><b>生まれつきの遺伝子の情報を使って調べる方法でも、少量が脳を守るという結果は出ていません。</b>この方法は、生活習慣の影響が入り込みにくいのが特徴です。</div></div>
+    </div>
+    <p class="src">数字と論文名は、動画・記事のほうに載せています</p>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">2</span>同じ問いに、3つの答えが並びます</div>
+    <div class="ways">
+      <div class="way">
+        <div class="way__h">① 発症率で調べる</div>
+        <div class="way__b">
+          <div class="way__a">少量がいちばん低い</div>
+          <div class="way__d">何万人もの生活を長く追いかけ、認知症になった人を数えます。少量の人がいちばん低く出ることが、くり返し報告されています。</div>
+        </div>
+      </div>
+      <div class="way">
+        <div class="way__h">② 脳の画像で調べる</div>
+        <div class="way__b">
+          <div class="way__a">少量から不利に傾く</div>
+          <div class="way__d">MRIで脳の大きさを測ります。飲む量が多いほど小さいほうへ傾き、<b>少ない量の人でもすでに傾き始めていました。</b></div>
+        </div>
+      </div>
+      <div class="way">
+        <div class="way__h">③ 遺伝で調べる</div>
+        <div class="way__b">
+          <div class="way__a">守る証拠が出ない</div>
+          <div class="way__d">生まれつき決まっている遺伝子を手がかりにする方法です。<b>少量が認知症を防ぐ、という結果は得られていません。</b></div>
+        </div>
+      </div>
+    </div>
+    <div class="card card--warn">
+      <div class="card__t">この図でいちばん伝えたい一文</div>
+      <p><b>どれかが間違っているのではなく、測っているものが違うのです。</b>飲酒と認知症の話は、「どれだけ飲んだか」より先に「どうやって調べたか」で答えが決まります。</p>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">3</span>「飲まない人」に混ざっている人たち</div>
+    <p class="lead">研究で「飲まない人」とまとめられたグループには、<b>一度も飲まなかった人</b>と、<b>以前は飲んでいて、体を悪くしてやめた人</b>の両方が入っています。この2つを分けて見ると、景色が変わります。</p>
+    <div class="big">
+      <div class="big__c">
+        <div class="big__n">1.61<span class="u">倍</span></div>
+        <div class="big__d">日本の大規模調査で、<b>ずっと飲まなかった人</b>の認知症の起こりやすさ。（週に75 gより少ない人と比べた値です）</div>
+      </div>
+      <div class="big__c big--coral">
+        <div class="big__n">2.54<span class="u">倍</span></div>
+        <div class="big__d">同じ調査で、<b>以前は飲んでいて、やめた人</b>。飲まないから高いのではなく、<b>やめる理由のほうが先にあった</b>と考えられます。</div>
+      </div>
+    </div>
+    <p class="src">出典: 日本のJPHC研究（Shimizu 2023, Int J Geriatr Psychiatry・42,870人・飲酒評価から発症まで平均14.9年）</p>
+    <div class="card card--amber">
+      <div class="card__t">ただし、これで全部は説明できません</div>
+      <p>60歳を超えた15の研究の個人データをまとめた解析では、<b>一度も飲まなかった人と、やめた人とのあいだに認知症の起こりやすさの差はありませんでした</b>（0.98倍）。また、英国の研究で<b>心臓や血糖の病気がない人だけに絞ると</b>、飲まない人の高さは1.33倍まで弱まり、<b>偶然の範囲を出ませんでした</b>（0.88〜2.02倍）。</p>
+      <p><b>「飲まない人のほうが危ない」とは読めません。</b>混ざっている人の影響は大きいのですが、それだけで全部が片づくわけでもない、というのが正直なところです。</p>
+    </div>
+    <p class="src">出典: 15研究24,478人の個人データ解析（Mewton 2023, Addiction）／英国ホワイトホールII 23年追跡（Sabia 2018, BMJ）</p>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">4</span>はっきりしているのは、こちら側です</div>
+    <p class="lead">少ない量のところは、調べ方によって答えが割れます。けれども<b>たくさん飲む側では、どの調べ方でも同じ向き</b>——不利に出ます。ここは割れていません。</p>
+    <div class="rows">
+      <div class="row"><div class="row__n">✓</div><div class="row__d">発症率を追った研究でも、<b>ある量を超えると認知症は増えるほうへ向きます</b>。</div></div>
+      <div class="row"><div class="row__n">✓</div><div class="row__d">脳の画像でも、<b>量が増えるほど脳の体積は小さいほうへ傾きます</b>。</div></div>
+      <div class="row"><div class="row__n">✓</div><div class="row__d">お酒の問題で入院した記録を集めた研究では、<b>若い年代で発症した認知症との関連</b>が報告されています。</div></div>
+    </div>
+    <div class="card">
+      <div class="card__t">それでも「やめれば防げる」とは言えません</div>
+      <p>お酒を飲む人と飲まない人をくじ引きで分ける試験は、<b>行うことができません</b>（人に飲酒を割りつけることは、倫理的にできないためです）。ですから言えるのは「<b>リスクを下げる可能性がある</b>」ところまでで、「防げる」とは言えません。</p>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">5</span>日本の基準は、どうなっていますか</div>
+    <div class="calc">
+      <div class="calc__f">純アルコール量（g）＝<br>お酒の量（ml）× 度数 ÷ 100 × 0.8</div>
+      <div class="calc__d">度数5%のビール500 mlなら、500 × 0.05 × 0.8 = <b>20 g</b> です。<br>缶や瓶に「純アルコール量」が書かれているものも増えました。</div>
+    </div>
+    <div class="card card--warn">
+      <div class="card__t">「男性40 g・女性20 g」は、飲んでよい量ではありません</div>
+      <p>厚生労働省のガイドライン（令和6年2月）は、<b>生活習慣病のリスクを高める量</b>として男性40 g以上・女性20 g以上という数字を示しています。同じガイドラインには、<b>「これらの量は個々人の許容量を示したものではありません」</b>と書かれています。</p>
+      <p>つまりこれは<b>「ここまでは大丈夫」ではなく、「ここから下げていく出発点」</b>の数字です。適した量は、年齢・体格・持病・飲んでいるお薬によって、一人ひとり違います。</p>
+    </div>
+    <p class="src">出典: 厚生労働省「健康に配慮した飲酒に関するガイドライン」（令和6年2月19日）</p>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">6</span>よくある心配</div>
+    <div class="rows">
+      <div class="row"><div class="row__n">Q</div><div class="row__d"><b>「少しなら、飲んだほうがよいのですか？」</b><br>いいえ。<b>脳のためにお酒を始める理由はありません。</b>Jカーブは発症率を追った研究で見えているもので、脳の画像と遺伝の調べ方は、少量が脳を守るという結果を出していません。</div></div>
+      <div class="row"><div class="row__n">Q</div><div class="row__d"><b>「では、いますぐやめたほうがよいですか？」</b><br>毎日飲んでいる方が<b>自己判断で急にやめると、危険なことがあります</b>（体の震え・発汗・けいれんなどが起こる場合があります）。減らし方も、やめてよいかどうかも、<b>まず主治医にご相談ください。</b></div></div>
+      <div class="row"><div class="row__n">Q</div><div class="row__d"><b>「お酒で記憶が飛ぶのは、認知症の始まりですか？」</b><br>別のものです。飲んだあと記憶が抜ける「ブラックアウト」は、その場で脳が記憶を作れなくなる<b>一時的な現象</b>です。心配なときは、回数と量を控えることが先になります。</div></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">7</span>結局、どうすればよいか</div>
+    <div class="sum">
+      <div class="sum__c"><div class="sum__t">増やさない</div><div class="sum__d">脳のために飲み始める理由は、<br>いまのところ見あたりません。</div></div>
+      <div class="sum__c"><div class="sum__t">多い側から減らす</div><div class="sum__d">はっきりしているのは、<br>多く飲むほど不利という側です。</div></div>
+      <div class="sum__c"><div class="sum__t">やめ方は主治医と</div><div class="sum__d">急にやめると危ない方がいます。<br>ひとりで決めないでください。</div></div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>この図の数字について。</b>ここで扱った研究は<b>ほとんどが観察研究</b>で、飲酒をくじ引きで割りつけて比べた試験ではありません。したがって「少量なら脳に良い」ことも「やめれば認知症を防げる」ことも、証明されてはいません。示されているのは関連です。<br>飲酒量は<b>すべて自己申告</b>で、実際より少なく申告されやすいことが知られています。また、認知症の危険因子は14あり、すべてなくせたとしたら認知症の約45%が減る（かもしれない）という推計があります。そのうち<b>過度の飲酒の分は1%</b>とされていますが、これは<b>集団のものさしで、一人ひとりの大きさではありません</b>。
+  </div>
+
+  <div class="ft">
+    監修: 今村久司（脳神経内科専門医・総合内科専門医）／医知創造ラボ<br>
+    本図は一般的な医学情報の提供を目的としたもので、個別の診断・治療方針を示すものではありません。<br>
+    飲酒の可否・減らし方・中止の判断は、担当の先生にご相談ください。服用中のお薬を自己判断で変えないでください。
+  </div>
+
+</div>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px auto 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+</body>
+</html>
