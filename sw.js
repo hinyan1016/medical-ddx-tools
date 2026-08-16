@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v113';
+const CACHE_NAME = 'ddx-tools-v114';
 const ASSETS = [
   './',
   './index.html',
@@ -70,6 +70,7 @@ const ASSETS = [
   './infographics/dementia-hearing-loss/index.html',
   './infographics/dementia-hypertension/index.html',
   './infographics/dementia-ldl-cholesterol/index.html',
+  './infographics/dementia-obesity/index.html',
   './infographics/dementia-prevention-guidance/index.html',
   './infographics/dementia-smoking/index.html',
   './infographics/diabetes-2025-2026-impact/index.html',
@@ -186,6 +187,7 @@ const ASSETS = [
   './handouts/dementia-ldl-cholesterol/index.html',
   './handouts/dementia-diabetes/index.html',
   './handouts/dementia-smoking/index.html',
+  './handouts/dementia-obesity/index.html',
   './status_epilepticus_sedation.html',
   './handouts/status-epilepticus-sedation/index.html',
   './manifest.json',

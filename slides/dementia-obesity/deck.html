@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>肥満と認知症 — 認知症×生活習慣病シリーズ 第6弾</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* warm accent (tweakable) */
+  --accent: #FF7A59;
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, #ffffff);
+  --accent-line: color-mix(in srgb, var(--accent) 60%, #ffffff);
+  --accent-ink: color-mix(in srgb, var(--accent) 70%, #5a2418);
+
+  /* type scale — multiply all via --type-mult (base enlarged for mobile readability) */
+  --type-mult: 1.38;
+  --type-display: calc(96px * var(--type-mult));
+  --type-title:   calc(82px * var(--type-mult));
+  --type-heading: calc(60px * var(--type-mult));
+  --type-subtitle:calc(44px * var(--type-mult));
+  --type-body:    calc(38px * var(--type-mult));
+  --type-small:   calc(30px * var(--type-mult));
+  --type-label:   calc(27px * var(--type-mult));
+  --type-chapter: calc(210px * var(--type-mult));
+  --type-stat:    calc(150px * var(--type-mult));
+
+  --pad-x: 112px;
+  --pad-top: 58px;
+  --pad-bottom: 116px;  /* フッター帯(bottom 36-40px + 行高53px = 89-93px)を必ず避ける。80pxだと content box 下端がフッター上端より下になり9-13px食い込む */
+  --gap-title: 24px;
+  --gap-item: 22px;
+
+  --grad-navy: linear-gradient(135deg, #1B3A5C 0%, #2C5AA0 100%);
+}
+
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#0c1622; }
+
+/* ---------- base slide ---------- */
+.slide{
+  box-sizing:border-box;
+  display:flex; flex-direction:column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--font-ja);
+  overflow:hidden;
+  position:relative;
+}
+.slide--navy{ background: var(--grad-navy); color: var(--white); }
+.slide--soft{ background: var(--bg-alt); }
+
+/* eyebrow — shared header marker across content slides */
+.eyebrow{
+  display:flex; align-items:center; gap:16px;
+  font-size: var(--type-label); font-weight:700; color: var(--blue);
+  letter-spacing:.04em;
+}
+.eyebrow::before{
+  content:""; width:18px; height:18px; border-radius:4px;
+  background: var(--accent); flex:none;
+}
+.eyebrow .num{ font-family: var(--font-en); color: var(--accent-ink); }
+
+.s-title{
+  font-size: var(--type-heading); line-height:1.22; color: var(--navy);
+  margin: var(--gap-title) 0 0; font-weight:700; letter-spacing:.01em;
+  text-wrap: pretty;
+}
+.slide--navy .s-title{ color:#fff; }
+
+.lead{
+  font-size: var(--type-body); line-height:1.7; color: var(--ink-2);
+  margin:0; text-wrap: pretty;
+}
+.muted{ color: var(--gray); }
+
+/* footer band w/ channel + page (decorative, consistent) */
+.slide__foot{
+  position:absolute; left: var(--pad-x); right: var(--pad-x); bottom: 40px;
+  display:flex; align-items:center; justify-content:space-between;
+  font-size: calc(24px * var(--type-mult)); color: var(--gray);
+  font-family: var(--font-ja);
+}
+.slide__foot .ch{ display:flex; align-items:center; gap:10px; }
+.slide__foot .cross{ color: var(--accent); font-weight:700; }
+.slide--navy .slide__foot{ color: rgba(255,255,255,.65); }
+.slide--navy .slide__foot .cross{ color:#fff; }
+
+/* ============ 1. COVER ============ */
+.cover{ justify-content:center; }
+.cover__badge{
+  display:inline-flex; align-items:center; gap:14px; align-self:flex-start;
+  background: rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.28);
+  color:#fff; padding:14px 26px; border-radius:999px;
+  font-size: var(--type-label); font-weight:700;
+}
+.cover__badge .cross{ color: var(--accent); font-size:1.2em; }
+.cover__title{
+  font-size: var(--type-display); line-height:1.18; color:#fff; font-weight:700;
+  margin:42px 0 0; letter-spacing:.01em; text-wrap:balance; max-width:24ch;
+}
+.cover__title .hl{ color: var(--accent); }
+.cover__sub{
+  font-size: var(--type-subtitle); color: rgba(255,255,255,.82);
+  margin:34px 0 0; font-weight:400;
+}
+.cover__meta{
+  display:flex; gap:34px; align-items:center; margin-top:60px;
+  font-size: var(--type-small); color: rgba(255,255,255,.78);
+}
+.cover__meta .ep{
+  font-family: var(--font-en); font-weight:700; color:#fff;
+  background: var(--accent); padding:8px 20px; border-radius:8px;
+}
+.cover__blob{
+  position:absolute; right:-160px; top:-160px; width:620px; height:620px;
+  border-radius:50%; background: radial-gradient(circle at 30% 30%, rgba(255,122,89,.5), rgba(255,122,89,0) 70%);
+  pointer-events:none;
+}
+
+/* ============ 2. THEME / CONCLUSION FIRST ============ */
+.theme__body{ display:flex; flex-direction:column; gap: var(--gap-title); margin-top: 28px; flex:1; justify-content:center; }
+.theme__q{ font-size: var(--type-title); line-height:1.25; color: var(--navy); font-weight:700; max-width:22ch; text-wrap:balance; }
+.theme__q .hl{ color: var(--accent-ink); border-bottom: 8px solid var(--accent-line); }
+.concl{
+  display:flex; align-items:flex-start; gap:28px;
+  background: var(--accent-soft); border-left: 12px solid var(--accent);
+  border-radius: 10px; padding: 32px 44px;
+}
+.concl__tag{
+  flex:none; background: var(--accent); color:#fff; font-weight:700;
+  font-size: var(--type-small); padding:10px 22px; border-radius:8px;
+}
+.concl__text{ font-size: var(--type-subtitle); line-height:1.5; color: var(--navy-ink); font-weight:700; margin:0; }
+
+/* ============ 4. CHAPTER DIVIDER ============ */
+.chapter{ justify-content:center; }
+.chapter__num{
+  font-family: var(--font-en); font-size: var(--type-chapter); line-height:.9;
+  font-weight:700; color: var(--accent); margin:0;
+}
+.chapter__kicker{ font-size: var(--type-subtitle); color: rgba(255,255,255,.75); font-weight:700; letter-spacing:.1em; }
+.chapter__title{ font-size: var(--type-title); color:#fff; font-weight:700; margin:18px 0 0; max-width:20ch; text-wrap:balance; }
+.chapter__rule{ width:120px; height:8px; background: var(--accent); border-radius:4px; margin-top:40px; }
+
+/* ============ 5. BODY 1 COLUMN ============ */
+.body1{ }
+.body1__main{ margin-top: 26px; max-width: 1640px; display:flex; flex-direction:column; gap:18px; }
+.body1 .lead{ margin-bottom: 0; }
+.important-box.lg{
+  background: var(--blue-tint); border-left: 12px solid var(--blue);
+  border-radius: 10px; padding: 26px 40px; margin:0;
+}
+.important-box.lg .ttl{ display:flex; align-items:center; gap:14px; font-size: var(--type-small); font-weight:700; color: var(--blue); margin-bottom:8px; }
+.important-box.lg p{ font-size: var(--type-body); line-height:1.6; color: var(--ink-2); margin:0; }
+.important-box.lg.warn{ background: var(--accent-soft); border-left-color: var(--accent); }
+.important-box.lg.warn .ttl{ color: var(--accent-ink); }
+
+/* ============ 8. COMPARISON TABLE ============ */
+.tablewrap{ margin-top:26px; flex:1; }
+table.cmp{ width:100%; border-collapse:collapse; font-size: var(--type-small); }
+table.cmp th, table.cmp td{ text-align:left; padding:16px 28px; vertical-align:middle; line-height:1.4; }
+table.cmp thead th{ background: var(--navy); color:#fff; font-weight:700; font-size: var(--type-body); }
+table.cmp thead th:first-child{ border-top-left-radius:10px; }
+table.cmp thead th:last-child{ border-top-right-radius:10px; }
+table.cmp tbody td{ border-bottom:1px solid var(--line); color: var(--ink-2); }
+table.cmp tbody tr:nth-child(even){ background: var(--bg-muted); }
+table.cmp tbody td:first-child{ font-weight:700; color: var(--navy); font-size: var(--type-body); white-space:nowrap; }
+table.cmp .pill{ display:inline-block; font-size: calc(24px * var(--type-mult)); font-weight:700; padding:6px 16px; border-radius:999px; }
+.pill--easy{ background: var(--green-soft); color:#1c7a3a; }
+.pill--mid{ background: var(--accent-soft); color: var(--accent-ink); }
+/* フッター衝突是正: 行数が多い表のみ行間を詰める */
+table.cmp.tight th, table.cmp.tight td{ padding-top:10px; padding-bottom:10px; }
+table.cmp.xtight th, table.cmp.xtight td{ padding-top:6px; padding-bottom:6px; }
+/* 4列表は1列目の nowrap を解除して桁あふれを避ける */
+table.cmp.wrap1 tbody td:first-child{ white-space:normal; }
+
+/* ============ 11. SUMMARY ============ */
+.sum__list{ display:grid; grid-template-columns: repeat(3,1fr); gap:36px; margin-top:44px; flex:1; align-content:center; }
+.sum__card{
+  background:#fff; border:2px solid var(--line); border-top:10px solid var(--blue);
+  border-radius:12px; padding:38px 34px; display:flex; flex-direction:column; gap:18px;
+  box-shadow: var(--shadow-sm);
+}
+.sum__card:nth-child(2){ border-top-color: var(--accent); }
+.sum__card:nth-child(3){ border-top-color: var(--navy); }
+.sum__n{ font-family: var(--font-en); font-size: calc(50px * var(--type-mult)); font-weight:700; color: var(--blue-soft); line-height:1; }
+.sum__card:nth-child(2) .sum__n{ color: var(--accent-soft); }
+.sum__card:nth-child(3) .sum__n{ color: var(--line); }
+.sum__h{ font-size: var(--type-subtitle); font-weight:700; color: var(--navy); line-height:1.3; }
+.sum__p{ font-size: var(--type-label); color: var(--ink-2); line-height:1.55; margin:0; }
+
+/* ============ 12. ENDING / CTA ============ */
+.end{ justify-content:center; align-items:center; text-align:center; }
+.end__cross{ font-size: var(--type-subtitle); color: var(--accent); font-weight:700; }
+.end__h{ font-size: var(--type-title); color:#fff; font-weight:700; margin:18px 0 0; text-wrap:balance; }
+.end__sub{ font-size: var(--type-subtitle); color: rgba(255,255,255,.82); margin:26px 0 0; font-weight:400; }
+.end__cta{ display:flex; gap:30px; margin-top:64px; }
+.btn{ display:inline-flex; align-items:center; gap:16px; font-size: var(--type-subtitle); font-weight:700; padding:24px 48px; border-radius:999px; }
+.btn--sub{ background: var(--accent); color:#fff; }
+.btn--like{ background: rgba(255,255,255,.14); color:#fff; border:2px solid rgba(255,255,255,.4); }
+.end__next{ margin-top:56px; font-size: var(--type-small); color: rgba(255,255,255,.7); }
+.end__next b{ color:#fff; }
+
+/* ============ 本弾追加: 結論メッセージ縦積み（02・17 共通） ============ */
+.concl__msgs{ counter-reset:cm; list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:14px; }
+.concl__msgs li{ counter-increment:cm; display:flex; align-items:flex-start; gap:20px; font-size: var(--type-small); font-weight:700; color: var(--navy-ink); line-height:1.4; }
+.concl__msgs li::before{
+  content: counter(cm); flex:none; width:40px; height:40px; border-radius:50%;
+  background: var(--accent); color:#fff; font-family: var(--font-en); font-weight:800;
+  display:flex; align-items:center; justify-content:center; font-size: calc(22px * var(--type-mult));
+}
+
+/* ============ EDITORIAL POLISH (shared utilities) ============ */
+.eyebrow .en{ font-family: var(--font-en); color: var(--accent-ink); letter-spacing:.15em; text-transform:uppercase; }
+.slide--navy .eyebrow{ color: rgba(255,255,255,.85); }
+.slide--navy .eyebrow .en{ color:#fff; }
+
+.hairline{ height:1px; background: var(--navy); opacity:.25; margin: 18px 0 0; border:0; }
+.slide--navy .hairline{ background:#fff; opacity:.3; }
+
+.chapter-ghost{
+  position:absolute; top: 30px; right: var(--pad-x);
+  font-family: var(--font-en); font-weight:700; line-height:.8;
+  font-size: calc(150px * var(--type-mult)); color: var(--navy);
+  opacity:.06; pointer-events:none; user-select:none;
+}
+.slide--navy .chapter-ghost{ color:#fff; opacity:.10; }
+
+.hl-underline{ border-bottom: 6px solid var(--accent-line); }
+
+/* entrance animation — fade-up */
+@media (prefers-reduced-motion:no-preference){
+  [data-deck-active] .anim{ animation: fade-up .5s both; }
+  [data-deck-active] .anim2{ animation: fade-up .5s .12s both; }
+  [data-deck-active] .anim3{ animation: fade-up .5s .24s both; }
+  [data-deck-active] .anim4{ animation: fade-up .5s .36s both; }
+  [data-deck-active] .anim5{ animation: fade-up .5s .48s both; }
+  [data-deck-active] .anim6{ animation: fade-up .5s .60s both; }
+  [data-deck-active] .anim-i{ animation: fade-up .5s both; animation-delay: calc(var(--i,0) * .1s); }
+  [data-deck-active] .a-fade { animation-name: a-fade; }
+  [data-deck-active] .a-up   { animation-name: fade-up; }
+  [data-deck-active] .a-down { animation-name: a-down; }
+  [data-deck-active] .a-right{ animation-name: a-right; }
+  [data-deck-active] .a-left { animation-name: a-left; }
+  [data-deck-active] .a-zoom { animation-name: a-zoom; }
+  [data-deck-active] .a-pop  { animation-name: a-pop; animation-timing-function: cubic-bezier(.34,1.56,.64,1); }
+  [data-deck-active] .a-blur { animation-name: a-blur; }
+  [data-deck-active] .grow-y { transform-origin:bottom center; animation: grow-y .7s .2s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .grow-x { transform-origin:left center;   animation: grow-x .55s .25s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .nudge-x{ animation: nudge-x .9s .35s ease-in-out both; }
+}
+.grow-y{ transform-origin:bottom center; } .grow-x{ transform-origin:left center; }
+@keyframes fade-up{ from{ opacity:0; transform: translateY(16px);} to{ opacity:1; transform:none;} }
+@keyframes a-fade { from{ opacity:0; } to{ opacity:1; } }
+@keyframes a-down { from{ opacity:0; transform: translateY(-16px);} to{ opacity:1; transform:none; } }
+@keyframes a-right{ from{ opacity:0; transform: translateX(-28px);} to{ opacity:1; transform:none; } }
+@keyframes a-left { from{ opacity:0; transform: translateX(28px); } to{ opacity:1; transform:none; } }
+@keyframes a-zoom { from{ opacity:0; transform: scale(.94);       } to{ opacity:1; transform:none; } }
+@keyframes a-pop  { from{ opacity:0; transform: scale(.8);        } to{ opacity:1; transform:none; } }
+@keyframes a-blur { from{ opacity:0; filter: blur(12px); transform: translateY(10px);} to{ opacity:1; filter: blur(0); transform:none; } }
+@keyframes grow-y { from{ transform: scaleY(0);} to{ transform: scaleY(1);} }
+@keyframes grow-x { from{ transform: scaleX(0);} to{ transform: scaleX(1);} }
+@keyframes nudge-x{ 0%{ transform:none;} 55%{ transform: translateX(10px);} 100%{ transform:none;} }
+
+/* tweaks mount */
+#tweaks-root{ position:fixed; inset:0; pointer-events:none; z-index:9999; }
+#tweaks-root > *{ pointer-events:auto; }
+</style>
+</head>
+<body style="font-size: 8px">
+
+<deck-stage width="1920" height="1080">
+  <!-- ===== 01. 表紙 ===== -->
+  <section data-label="表紙" data-screen-label="01 表紙" class="slide slide--navy cover">
+    <div class="cover__blob"></div>
+    <div class="cover__badge anim"><span class="cross">✚</span><span>医知創造ラボ</span></div>
+    <h1 class="cover__title anim2 a-blur">肥満と<span class="hl">認知症</span></h1>
+    <p class="cover__sub anim3" data-cue="40代の肥満と、70代のや">問題は中年期の体重。<br>高齢になってからの「やせ」は、別の話</p>
+    <div class="cover__meta anim3">
+      <span class="ep">#06</span>
+      <span>監修：脳神経内科専門医</span>
+    </div>
+  </section>
+
+  <!-- ===== 02. 今日の結論 ===== -->
+  <section data-label="今日の結論" data-screen-label="02 今日の結論" class="slide">
+    <div class="eyebrow anim">今日の結論<span class="en">TODAY'S CONCLUSION</span></div>
+    <div class="theme__body" style="gap:16px;">
+      <h2 class="theme__q anim" style="font-size:var(--type-heading); max-width:none;">答えは<span class="hl-underline">「いつの体重の話か」</span>で<br>変わります</h2>
+      <div class="concl anim2" data-cue="1つめ。40代〜50代の肥" style="flex-direction:column; align-items:stretch; padding:18px 40px;">
+        <span class="concl__tag" style="align-self:flex-start;">結論</span>
+        <ul class="concl__msgs" style="margin-top:14px; gap:10px;">
+          <li>40代〜50代の肥満は、将来の認知症と関連が報告されている。</li>
+          <li>高齢で測ると関連が消える。<span style="white-space:nowrap;">太っていれば安全、という意味ではない。</span></li>
+          <li>減量すれば防げる、とはまだ言えない。<span style="white-space:nowrap;">介入試験は差が出ていない。</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>02</span></div>
+  </section>
+
+  <!-- ===== 03. 前提 ===== -->
+  <section data-label="前提" data-screen-label="03 前提" class="slide">
+    <div class="chapter-ghost">03</div>
+    <div class="eyebrow anim">前提<span class="en">HOW TO READ THESE NUMBERS</span></div>
+    <h2 class="s-title anim">数字を読む前に、<span class="hl-underline">2つだけ</span></h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <div class="important-box lg anim2" data-cue="ハザード比や相対危険度は">
+        <div class="ttl">📊 ハザード比・相対危険度＝上乗せの大きさ</div>
+        <p>その人が何倍なりやすいか。<strong>95%信頼区間が1をまたぐと<span style="white-space:nowrap;">「差があるとは言えない」</span></strong>。</p>
+      </div>
+      <div class="important-box lg warn anim3" data-cue="そして、今日あつかうのは">
+        <div class="ttl">⚠ ここで扱うのは、ほとんどが観察研究</div>
+        <p>体重を割り付けた試験はない。<strong><span style="white-space:nowrap;">因果を証明したものではない</span></strong>。</p>
+      </div>
+    </div>
+    <p class="lead muted anim4" data-cue="もう1つ、人口寄与割合" style="margin-top:6px; font-size:var(--type-small);">人口寄与割合（PAF）は集団のものさし。<strong>個人が何%下がるか、という意味ではない</strong>。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>03</span></div>
+  </section>
+
+  <!-- ===== 04. 章扉① ===== -->
+  <section data-label="章扉①" data-screen-label="04 章扉①" class="slide slide--navy chapter">
+    <div class="cover__blob"></div>
+    <div class="eyebrow anim"><span class="en">CHAPTER 01</span></div>
+    <p class="chapter__kicker anim">MIDLIFE BODY WEIGHT</p>
+    <h2 class="chapter__num anim a-pop">01</h2>
+    <h3 class="chapter__title anim2"><span class="hl-underline">中年期</span>の体重で<br>何が上がるのか</h3>
+    <div class="chapter__rule grow-x"></div>
+  </section>
+
+  <!-- ===== 05. 中年期の肥満 ===== -->
+  <section data-label="中年期の肥満" data-screen-label="05 中年期の肥満" class="slide">
+    <div class="chapter-ghost">05</div>
+    <div class="eyebrow anim">メタ解析と英国コホート<span class="en">Anstey 2011 / Singh-Manoux 2018</span></div>
+    <h2 class="s-title anim">40代〜50代の肥満で、<span class="hl-underline">上がっている</span></h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2" data-cue="メタ解析では、中年期に測">
+      <table class="cmp">
+        <thead>
+          <tr><th>研究</th><th>測った時期</th><th>結果（ふつうの体重と比べて）</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>メタ解析</td><td>中年期</td><td>全認知症 <strong>RR 1.64</strong>／<span style="white-space:nowrap;">アルツハイマー型 <strong>2.04</strong></span></td></tr>
+          <tr><td>Whitehall II</td><td>50歳</td><td><strong>HR 1.93</strong></td></tr>
+          <tr><td>Whitehall II</td><td>60歳・70歳</td><td>関連なし</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead anim3" data-cue="大事なのはここからで" style="margin-top:12px; font-size:var(--type-small);">同じ研究の中で、<strong>50歳では出て、60歳・70歳では出ない</strong>。<span style="white-space:nowrap;">「中年期」を60代まで広げない。</span></p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>05</span></div>
+  </section>
+
+  <!-- ===== 06. 日本人では ===== -->
+  <section data-label="日本人では" data-screen-label="06 日本人では" class="slide slide--soft">
+    <div class="chapter-ghost">06</div>
+    <div class="eyebrow anim">日本・JPHC 研究<span class="en">Tashiro 2023</span></div>
+    <h2 class="s-title anim">日本人でも、<span class="hl-underline">同じ向き</span></h2>
+    <hr class="hairline">
+    <div class="important-box lg warn anim2" data-cue="先に、定義を確認します" style="margin-top:8px; padding:14px 34px;">
+      <p style="font-size:var(--type-small); line-height:1.3;">⚠ <strong>この研究の「肥満」は BMI 27.0〜39.9</strong>。<span style="white-space:nowrap;">日本の肥満基準（25以上）とは別物。</span>25.0〜26.9 は過体重、<span style="white-space:nowrap;">基準は 23.0〜24.9 に置かれている。</span></p>
+    </div>
+    <div class="tablewrap anim3" data-cue="そのうえで、JPHC研究">
+      <table class="cmp">
+        <thead>
+          <tr><th>対象は40〜59歳</th><th>ハザード比</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>男性</td><td><strong>1.31</strong></td></tr>
+          <tr><td>女性</td><td><strong>1.37</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead anim4" data-cue="定義をそろえずに数字だけ" style="margin-top:10px; font-size:var(--type-small);">定義をそろえずに数字だけ持ち出すと、<strong>別の集団の話にすり替わる</strong>。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>06</span></div>
+  </section>
+
+  <!-- ===== 07. 章扉② ===== -->
+  <section data-label="章扉②" data-screen-label="07 章扉②" class="slide slide--navy chapter">
+    <div class="cover__blob"></div>
+    <div class="eyebrow anim"><span class="en">CHAPTER 02</span></div>
+    <p class="chapter__kicker anim">WHY IT LOOKS REVERSED</p>
+    <h2 class="chapter__num anim a-pop">02</h2>
+    <h3 class="chapter__title anim2">高齢では<br><span class="hl-underline">逆に見える</span>のはなぜか</h3>
+    <div class="chapter__rule grow-x"></div>
+  </section>
+
+  <!-- ===== 08. 高齢では逆に見える ===== -->
+  <section data-label="高齢では逆に見える" data-screen-label="08 高齢では逆に見える" class="slide">
+    <div class="chapter-ghost">08</div>
+    <div class="eyebrow anim">英国・約196万人の診療データ<span class="en">Qizilbash 2015</span></div>
+    <h2 class="s-title anim">ここだけ見ると、<span class="hl-underline">結論が反対</span>になる</h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <div class="important-box lg anim2" data-cue="BMIが20未満の人では">
+        <div class="ttl">📉 やせている人で多く、高度肥満で少ない</div>
+        <p>BMI 20未満で認知症が<strong>34%多く</strong>、<span style="white-space:nowrap;">高度肥満では <strong>29%少ない</strong></span>。<span style="white-space:nowrap;">晩年期に測ると関連は消える。</span></p>
+      </div>
+      <div class="important-box lg warn anim3" data-cue="ただし、この研究の追跡は">
+        <div class="ttl">⚠ この読み方を、ここで止めない</div>
+        <p>この研究の追跡は<strong>中央値9.1年</strong>と短い。<span style="white-space:nowrap;">短いとこう見える理由が、次のページにある。</span></p>
+      </div>
+    </div>
+    <p class="lead muted anim4" data-cue="太ることを勧める根拠は" style="margin-top:6px; font-size:var(--type-small);">⚠ <strong>太ることを勧める根拠は、どこにもない</strong>。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>08</span></div>
+  </section>
+
+  <!-- ===== 09. 逆因果 ===== -->
+  <section data-label="逆因果" data-screen-label="09 逆因果" class="slide slide--soft">
+    <div class="chapter-ghost">09</div>
+    <div class="eyebrow anim">38コホート・約130万人<span class="en">Kivimäki 2018</span></div>
+    <h2 class="s-title anim">診断までの<span class="hl-underline">距離</span>で、向きが変わる</h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2" data-cue="診断の10年以内に測ると">
+      <table class="cmp">
+        <thead>
+          <tr><th>BMI を測った時期</th><th>ハザード比</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>診断の10年以内</td><td><strong>0.71</strong></td></tr>
+          <tr><td>10〜20年前</td><td>0.94<span style="white-space:nowrap;">（0.89–0.99）</span></td></tr>
+          <tr><td>20年より前</td><td><strong>1.16</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead anim3" data-cue="ただし、20年で切り替わ" style="margin-top:12px; font-size:var(--type-small);">⚠ <strong>「20年で切り替わる」ではない</strong>。<span style="white-space:nowrap;">0.94 の区間は 0.99 まで届いている。</span>読めるのは<span style="white-space:nowrap;">「離れるほど連続的に上向く」</span>まで。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>09</span></div>
+  </section>
+
+  <!-- ===== 10. 体重が減り始める時期 ===== -->
+  <section data-label="体重が減り始める時期" data-screen-label="10 体重が減り始める時期" class="slide">
+    <div class="chapter-ghost">10</div>
+    <div class="eyebrow anim">診断より前に、すでに起きている<span class="en">Singh-Manoux 2018 / Stewart 2005</span></div>
+    <h2 class="s-title anim">体重は、診断の<span class="hl-underline">8年ほど前</span>から減る</h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <div class="important-box lg anim2" data-cue="英国の28年の追跡では">
+        <div class="ttl">🇬🇧 英国・28年の追跡</div>
+        <p>のちに認知症と診断された人の BMI は、<strong>診断の8年ほど前から</strong><span style="white-space:nowrap;"><strong>差が現れていた</strong>。</span></p>
+      </div>
+      <div class="important-box lg warn anim3" data-cue="日系米国人男性を、32年">
+        <div class="ttl">🇺🇸 日系米国人男性・32年の追跡</div>
+        <p>診断前から体重が減っており、<strong>診断が近づくほど</strong><span style="white-space:nowrap;"><strong>減り方が加速していた</strong>。</span></p>
+      </div>
+    </div>
+    <p class="lead muted anim4" data-cue="高齢期の体重は、生活の結" style="margin-top:6px; font-size:var(--type-small);">高齢期の体重は、生活の結果であると同時に<strong>すでに始まった病気の結果でもある</strong>。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>10</span></div>
+  </section>
+
+  <!-- ===== 11. 体重が減ってきたとき ===== -->
+  <section data-label="体重が減ってきたとき" data-screen-label="11 体重が減ってきたとき" class="slide slide--soft">
+    <div class="chapter-ghost">11</div>
+    <div class="eyebrow anim">JPHC・中年期以降の体重変化<span class="en">Tashiro 2023</span></div>
+    <h2 class="s-title anim">減ったほうが、<span class="hl-underline">シグナルは強い</span></h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2" data-cue="さきほどのJPHCで、中">
+      <table class="cmp">
+        <thead>
+          <tr><th>体重の変化</th><th>男性</th><th>女性</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>減った</td><td><strong>1.49</strong></td><td><strong>1.51</strong></td></tr>
+          <tr><td>増えた</td><td>1.23</td><td>1.21</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="important-box lg warn anim3" data-cue="ただし、体重が減った、イ" style="margin-top:12px; padding:14px 34px;">
+      <p style="font-size:var(--type-small); line-height:1.35;">⚠ <strong>「体重が減った＝認知症」ではない</strong>。がん・甲状腺・うつ・薬の影響など<span style="white-space:nowrap;">原因は多い。</span><span style="white-space:nowrap;"><strong>半年で5%以上</strong>減ったら、</span><span style="white-space:nowrap;">まず原因を調べる。</span></p>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>11</span></div>
+  </section>
+
+  <!-- ===== 12. 章扉③ ===== -->
+  <section data-label="章扉③" data-screen-label="12 章扉③" class="slide slide--navy chapter">
+    <div class="cover__blob"></div>
+    <div class="eyebrow anim"><span class="en">CHAPTER 03</span></div>
+    <p class="chapter__kicker anim">CAN WE ACT ON IT</p>
+    <h2 class="chapter__num anim a-pop">03</h2>
+    <h3 class="chapter__title anim2">では、<br><span class="hl-underline">減らせば</span>防げるのか</h3>
+    <div class="chapter__rule grow-x"></div>
+  </section>
+
+  <!-- ===== 13. お腹まわり ===== -->
+  <section data-label="お腹まわり" data-screen-label="13 お腹まわり" class="slide">
+    <div class="chapter-ghost">13</div>
+    <div class="eyebrow anim">体格だけでは足りないのか<span class="en">Whitmer 2008 / Debette 2010</span></div>
+    <h2 class="s-title anim">お腹まわりには、<span class="hl-underline">別の情報</span>がある</h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <div class="important-box lg anim2" data-cue="中年期にお腹の脂肪の厚み">
+        <div class="ttl">📏 BMI で調整しても残る</div>
+        <p>中年期に腹部の脂肪の厚みを測り36年後まで追跡すると、<span style="white-space:nowrap;"><strong>BMI 調整後も HR 1.92</strong>。</span></p>
+      </div>
+      <div class="important-box lg warn anim3" data-cue="ただし、内臓脂肪と脳の容">
+        <div class="ttl">⚠ 内臓脂肪と脳容積は、横断の観察</div>
+        <p>炎症の指標（CRP）で調整すると<strong>有意でなくなる</strong><span style="white-space:nowrap;">（−0.17±0.13、p = 0.17）</span>。</p>
+      </div>
+    </div>
+    <p class="lead muted anim4" data-cue="内臓脂肪が脳を縮ませる、" style="margin-top:6px; font-size:var(--type-small);">「内臓脂肪が脳を縮ませる」とまでは言えない。<strong>向きは、まだ決められない</strong>。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>13</span></div>
+  </section>
+
+  <!-- ===== 14. 遺伝の手法 ===== -->
+  <section data-label="遺伝の手法" data-screen-label="14 遺伝の手法" class="slide slide--soft">
+    <div class="chapter-ghost">14</div>
+    <div class="eyebrow anim">メンデルランダム化は2本ある<span class="en">Nordestgaard 2026 / Lu 2025</span></div>
+    <h2 class="s-title anim">結論は、<span class="hl-underline">割れている</span></h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2" data-cue="デンマークの、中年期を含">
+      <table class="cmp tight wrap1">
+        <thead>
+          <tr><th>研究</th><th>対象</th><th>アウトカム</th><th>結論</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>デンマーク</td><td>中年期を含む<br>一般集団</td><td><strong>血管性認知症</strong></td><td>因果的な<br>リスク因子</td></tr>
+          <tr><td><span style="white-space:nowrap;">メタ解析併用</span></td><td><strong>60歳以上</strong></td><td>認知機能障害</td><td>因果的関連を<br>認めず</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead anim3" data-cue="違いは、対象年齢とアウト" style="margin-top:10px; font-size:var(--type-small);">違いは<strong>対象年齢とアウトカム</strong>＝この動画の芯そのもの。<br>血圧が<strong>18〜25%</strong>を媒介するという推定もあるが、<span style="white-space:nowrap;">区間は 10〜61%・13〜75% と広い。</span></p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>14</span></div>
+  </section>
+
+  <!-- ===== 15. 減量介入 ===== -->
+  <section data-label="減量介入" data-screen-label="15 減量介入" class="slide">
+    <div class="chapter-ghost">15</div>
+    <div class="eyebrow anim">10年間の生活習慣介入<span class="en">Look AHEAD, Espeland 2017</span></div>
+    <h2 class="s-title anim">減量介入では、<span class="hl-underline">差が出なかった</span></h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <div class="important-box lg anim2" data-cue="集中的な生活習慣介入を1">
+        <div class="ttl">🔬 無作為化して、10年間</div>
+        <p>集中的な生活習慣介入を10年行い、平均11.4年まで追跡。<span style="white-space:nowrap;"><strong>認知機能障害の頻度に差はなかった</strong>。</span></p>
+      </div>
+      <div class="important-box lg warn anim3" data-cue="ただし、対象は、過体重ま">
+        <div class="ttl">⚠ 対象は2型糖尿病のある人</div>
+        <p>過体重または肥満を伴う<strong>2型糖尿病の集団</strong>。<span style="white-space:nowrap;">一般の中年期集団の試験ではない。</span></p>
+      </div>
+    </div>
+    <p class="lead muted anim4" data-cue="中年期に増やさないことと" style="margin-top:6px; font-size:var(--type-small);">中年期に増やさないことと、高齢で減らすことは<strong>別の問題</strong>。<span style="white-space:nowrap;">減らし方は主治医と決める。</span></p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>15</span></div>
+  </section>
+
+  <!-- ===== 16. PAF 1% ===== -->
+  <section data-label="PAF1%" data-screen-label="16 PAF1%" class="slide slide--soft">
+    <div class="chapter-ghost">16</div>
+    <div class="eyebrow anim">14の危険因子で合計45%<span class="en">Lancet Commission 2024</span></div>
+    <h2 class="s-title anim">肥満の PAF は <span class="hl-underline">1%</span></h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <div class="important-box lg anim2" data-cue="ただし、小さいから無視し">
+        <div class="ttl">✖ 「小さいから無視してよい」ではない</div>
+        <p>PAF は<strong>集団のものさし</strong>。個人の大きさに近いのは、<span style="white-space:nowrap;">2章で見たハザード比のほう。</span></p>
+      </div>
+      <div class="important-box lg warn anim3" data-cue="それに、14の因子は、互">
+        <div class="ttl">⚠ 14の因子は、互いに重なっている</div>
+        <p>肥満は高血圧・糖尿病・身体不活動と重なる。<strong>足し合わせても全体にはならない</strong>。</p>
+      </div>
+    </div>
+    <p class="lead muted anim4" data-cue="肥満に手をつけることは、" style="margin-top:6px; font-size:var(--type-small);">肥満に手をつけることは、<strong>隣の因子にも同時に触れる</strong>ことを意味する。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>16</span></div>
+  </section>
+
+  <!-- ===== 17. まとめ ===== -->
+  <section data-label="まとめ" data-screen-label="17 まとめ" class="slide">
+    <div class="chapter-ghost">17</div>
+    <div class="eyebrow anim">まとめ<span class="en">SUMMARY</span></div>
+    <h2 class="s-title anim">持ち帰るのは、<span class="hl-underline">3つ</span></h2>
+    <hr class="hairline">
+    <div class="sum__list" style="margin-top:28px; gap:28px;">
+      <div class="sum__card anim2" data-cue="1つめ。問題は、中年期の" style="padding:26px 26px; gap:10px;">
+        <div class="sum__n">01</div>
+        <div class="sum__h">問題は<br>中年期の体重</div>
+        <p class="sum__p" style="line-height:1.4;">40代〜50代の肥満で<br>関連が報告されている。<br>60代以降では出ない。</p>
+      </div>
+      <div class="sum__card anim3" data-cue="2つめ。高齢のやせは、別" style="padding:26px 26px; gap:10px;">
+        <div class="sum__n">02</div>
+        <div class="sum__h">高齢のやせは<br>別の話</div>
+        <p class="sum__p" style="line-height:1.4;">減り始めるのは<br>診断の8年ほど前から。<br>太ってよい話ではない。</p>
+      </div>
+      <div class="sum__card anim4" data-cue="3つめ。減らせば防げる、" style="padding:26px 26px; gap:10px;">
+        <div class="sum__n">03</div>
+        <div class="sum__h">減らせば防げる<br>とは言えない</div>
+        <p class="sum__p" style="line-height:1.4;">10年の減量介入で<br>差は出なかった。<br>体重管理の理由は別にある。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>17</span></div>
+  </section>
+
+  <!-- ===== 18. エンディング ===== -->
+  <section data-label="エンディング" data-screen-label="18 エンディング" class="slide slide--navy end">
+    <div class="cover__blob"></div>
+    <p class="end__cross anim">✚ 医知創造ラボ</p>
+    <h2 class="end__h anim2">この動画は<br>一般的な情報提供です</h2>
+    <p class="end__sub anim2" data-cue="体重が減ってきたときは、">体重が減ってきたときは、次の受診で相談してください</p>
+    <div class="end__cta anim3">
+      <span class="btn btn--sub">🔔 チャンネル登録</span>
+      <span class="btn btn--like">👍 高評価</span>
+    </div>
+  </section>
+
+</deck-stage>
+
+<script src="deck-stage.js"></script>
+<script src="image-slot.js"></script>
+
+</body>
+</html>
