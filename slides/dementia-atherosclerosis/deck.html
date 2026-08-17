@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>動脈硬化と脳 — 認知症×生活習慣病シリーズ 第8弾</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* deep-red accent (atherosclerosis / vascular theme) */
+  --accent: #C0392B;
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, #ffffff);
+  --accent-line: color-mix(in srgb, var(--accent) 60%, #ffffff);
+  --accent-ink: color-mix(in srgb, var(--accent) 70%, #5a2418);
+
+  /* type scale — multiply all via --type-mult (base enlarged for mobile readability) */
+  --type-mult: 1.38;
+  --type-display: calc(96px * var(--type-mult));
+  --type-title:   calc(82px * var(--type-mult));
+  --type-heading: calc(60px * var(--type-mult));
+  --type-subtitle:calc(44px * var(--type-mult));
+  --type-body:    calc(38px * var(--type-mult));
+  --type-small:   calc(30px * var(--type-mult));
+  --type-label:   calc(27px * var(--type-mult));
+  --type-chapter: calc(210px * var(--type-mult));
+  --type-stat:    calc(150px * var(--type-mult));
+
+  --pad-x: 112px;
+  --pad-top: 58px;
+  --pad-bottom: 116px;  /* フッター帯(bottom 36-40px + 行高53px = 89-93px)を必ず避ける。80pxだと content box 下端がフッター上端より下になり9-13px食い込む */
+  --gap-title: 24px;
+  --gap-item: 22px;
+
+  --grad-navy: linear-gradient(135deg, #1B3A5C 0%, #2C5AA0 100%);
+}
+
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#0c1622; }
+
+/* ---------- base slide ---------- */
+.slide{
+  box-sizing:border-box;
+  display:flex; flex-direction:column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--font-ja);
+  overflow:hidden;
+  position:relative;
+}
+.slide--navy{ background: var(--grad-navy); color: var(--white); }
+.slide--soft{ background: var(--bg-alt); }
+
+/* eyebrow — shared header marker across content slides */
+.eyebrow{
+  display:flex; align-items:center; gap:16px;
+  font-size: var(--type-label); font-weight:700; color: var(--blue);
+  letter-spacing:.04em;
+}
+.eyebrow::before{
+  content:""; width:18px; height:18px; border-radius:4px;
+  background: var(--accent); flex:none;
+}
+.eyebrow .num{ font-family: var(--font-en); color: var(--accent-ink); }
+
+.s-title{
+  font-size: var(--type-heading); line-height:1.22; color: var(--navy);
+  margin: var(--gap-title) 0 0; font-weight:700; letter-spacing:.01em;
+  text-wrap: pretty;
+}
+.slide--navy .s-title{ color:#fff; }
+
+.lead{
+  font-size: var(--type-body); line-height:1.7; color: var(--ink-2);
+  margin:0; text-wrap: pretty;
+}
+.muted{ color: var(--gray); }
+
+/* footer band w/ channel + page (decorative, consistent) */
+.slide__foot{
+  position:absolute; left: var(--pad-x); right: var(--pad-x); bottom: 40px;
+  display:flex; align-items:center; justify-content:space-between;
+  font-size: calc(24px * var(--type-mult)); color: var(--gray);
+  font-family: var(--font-ja);
+}
+.slide__foot .ch{ display:flex; align-items:center; gap:10px; }
+.slide__foot .cross{ color: var(--accent); font-weight:700; }
+.slide--navy .slide__foot{ color: rgba(255,255,255,.65); }
+.slide--navy .slide__foot .cross{ color:#fff; }
+
+/* ============ 1. COVER ============ */
+.cover{ justify-content:center; }
+.cover__badge{
+  display:inline-flex; align-items:center; gap:14px; align-self:flex-start;
+  background: rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.28);
+  color:#fff; padding:14px 26px; border-radius:999px;
+  font-size: var(--type-label); font-weight:700;
+}
+.cover__badge .cross{ color: var(--accent); font-size:1.2em; }
+.cover__title{
+  font-size: var(--type-display); line-height:1.18; color:#fff; font-weight:700;
+  margin:42px 0 0; letter-spacing:.01em; text-wrap:balance; max-width:24ch;
+}
+.cover__title .hl{ color: var(--accent); }
+.cover__sub{
+  font-size: var(--type-subtitle); color: rgba(255,255,255,.82);
+  margin:34px 0 0; font-weight:400;
+}
+.cover__meta{
+  display:flex; gap:34px; align-items:center; margin-top:60px;
+  font-size: var(--type-small); color: rgba(255,255,255,.78);
+}
+.cover__meta .ep{
+  font-family: var(--font-en); font-weight:700; color:#fff;
+  background: var(--accent); padding:8px 20px; border-radius:8px;
+}
+.cover__blob{
+  position:absolute; right:-160px; top:-160px; width:620px; height:620px;
+  border-radius:50%; background: radial-gradient(circle at 30% 30%, rgba(192,57,43,.5), rgba(192,57,43,0) 70%);
+  pointer-events:none;
+}
+
+/* ============ 2. THEME / CONCLUSION FIRST ============ */
+.theme__body{ display:flex; flex-direction:column; gap: var(--gap-title); margin-top: 28px; flex:1; justify-content:center; }
+.theme__q{ font-size: var(--type-title); line-height:1.25; color: var(--navy); font-weight:700; max-width:22ch; text-wrap:balance; }
+.theme__q .hl{ color: var(--accent-ink); border-bottom: 8px solid var(--accent-line); }
+.concl{
+  display:flex; align-items:flex-start; gap:28px;
+  background: var(--accent-soft); border-left: 12px solid var(--accent);
+  border-radius: 10px; padding: 32px 44px;
+}
+.concl__tag{
+  flex:none; background: var(--accent); color:#fff; font-weight:700;
+  font-size: var(--type-small); padding:10px 22px; border-radius:8px;
+}
+.concl__text{ font-size: var(--type-subtitle); line-height:1.5; color: var(--navy-ink); font-weight:700; margin:0; }
+
+/* ============ 4. CHAPTER DIVIDER ============ */
+.chapter{ justify-content:center; }
+.chapter__num{
+  font-family: var(--font-en); font-size: var(--type-chapter); line-height:.9;
+  font-weight:700; color: var(--accent); margin:0;
+}
+.chapter__kicker{ font-size: var(--type-subtitle); color: rgba(255,255,255,.75); font-weight:700; letter-spacing:.1em; }
+.chapter__title{ font-size: var(--type-title); color:#fff; font-weight:700; margin:18px 0 0; max-width:20ch; text-wrap:balance; }
+.chapter__rule{ width:120px; height:8px; background: var(--accent); border-radius:4px; margin-top:40px; }
+
+/* ============ 5. BODY 1 COLUMN ============ */
+.body1{ }
+.body1__main{ margin-top: 26px; max-width: 1640px; display:flex; flex-direction:column; gap:18px; }
+.body1 .lead{ margin-bottom: 0; }
+.important-box.lg{
+  background: var(--blue-tint); border-left: 12px solid var(--blue);
+  border-radius: 10px; padding: 26px 40px; margin:0;
+}
+.important-box.lg .ttl{ display:flex; align-items:center; gap:14px; font-size: var(--type-small); font-weight:700; color: var(--blue); margin-bottom:8px; }
+.important-box.lg p{ font-size: var(--type-body); line-height:1.6; color: var(--ink-2); margin:0; }
+.important-box.lg.warn{ background: var(--accent-soft); border-left-color: var(--accent); }
+.important-box.lg.warn .ttl{ color: var(--accent-ink); }
+
+/* ============ 8. COMPARISON TABLE ============ */
+.tablewrap{ margin-top:26px; flex:1; }
+table.cmp{ width:100%; border-collapse:collapse; font-size: var(--type-small); }
+table.cmp th, table.cmp td{ text-align:left; padding:16px 28px; vertical-align:middle; line-height:1.4; }
+table.cmp thead th{ background: var(--navy); color:#fff; font-weight:700; font-size: var(--type-body); }
+table.cmp thead th:first-child{ border-top-left-radius:10px; }
+table.cmp thead th:last-child{ border-top-right-radius:10px; }
+table.cmp tbody td{ border-bottom:1px solid var(--line); color: var(--ink-2); }
+table.cmp tbody tr:nth-child(even){ background: var(--bg-muted); }
+table.cmp tbody td:first-child{ font-weight:700; color: var(--navy); font-size: var(--type-body); white-space:nowrap; }
+table.cmp .pill{ display:inline-block; font-size: calc(24px * var(--type-mult)); font-weight:700; padding:6px 16px; border-radius:999px; }
+.pill--easy{ background: var(--green-soft); color:#1c7a3a; }
+.pill--mid{ background: var(--accent-soft); color: var(--accent-ink); }
+/* フッター衝突是正: 行数が多い表のみ行間を詰める */
+table.cmp.tight th, table.cmp.tight td{ padding-top:10px; padding-bottom:10px; }
+table.cmp.xtight th, table.cmp.xtight td{ padding-top:6px; padding-bottom:6px; }
+/* 4列表は1列目の nowrap を解除して桁あふれを避ける */
+table.cmp.wrap1 tbody td:first-child{ white-space:normal; }
+
+/* ============ 11. SUMMARY ============ */
+.sum__list{ display:grid; grid-template-columns: repeat(3,1fr); gap:36px; margin-top:44px; flex:1; align-content:center; }
+.sum__card{
+  background:#fff; border:2px solid var(--line); border-top:10px solid var(--blue);
+  border-radius:12px; padding:38px 34px; display:flex; flex-direction:column; gap:18px;
+  box-shadow: var(--shadow-sm);
+}
+.sum__card:nth-child(2){ border-top-color: var(--accent); }
+.sum__card:nth-child(3){ border-top-color: var(--navy); }
+.sum__n{ font-family: var(--font-en); font-size: calc(50px * var(--type-mult)); font-weight:700; color: var(--blue-soft); line-height:1; }
+.sum__card:nth-child(2) .sum__n{ color: var(--accent-soft); }
+.sum__card:nth-child(3) .sum__n{ color: var(--line); }
+.sum__h{ font-size: var(--type-subtitle); font-weight:700; color: var(--navy); line-height:1.3; }
+.sum__p{ font-size: var(--type-label); color: var(--ink-2); line-height:1.55; margin:0; }
+
+/* ============ 12. ENDING / CTA ============ */
+.end{ justify-content:center; align-items:center; text-align:center; }
+.end__cross{ font-size: var(--type-subtitle); color: var(--accent); font-weight:700; }
+.end__h{ font-size: var(--type-title); color:#fff; font-weight:700; margin:18px 0 0; text-wrap:balance; }
+.end__sub{ font-size: var(--type-subtitle); color: rgba(255,255,255,.82); margin:26px 0 0; font-weight:400; }
+.end__cta{ display:flex; gap:30px; margin-top:64px; }
+.btn{ display:inline-flex; align-items:center; gap:16px; font-size: var(--type-subtitle); font-weight:700; padding:24px 48px; border-radius:999px; }
+.btn--sub{ background: var(--accent); color:#fff; }
+.btn--like{ background: rgba(255,255,255,.14); color:#fff; border:2px solid rgba(255,255,255,.4); }
+.end__next{ margin-top:56px; font-size: var(--type-small); color: rgba(255,255,255,.7); }
+.end__next b{ color:#fff; }
+
+/* ============ 本弾追加: 結論メッセージ縦積み（02・17 共通） ============ */
+.concl__msgs{ counter-reset:cm; list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:14px; }
+.concl__msgs li{ counter-increment:cm; display:flex; align-items:flex-start; gap:20px; font-size: var(--type-small); font-weight:700; color: var(--navy-ink); line-height:1.4; }
+.concl__msgs li::before{
+  content: counter(cm); flex:none; width:40px; height:40px; border-radius:50%;
+  background: var(--accent); color:#fff; font-family: var(--font-en); font-weight:800;
+  display:flex; align-items:center; justify-content:center; font-size: calc(22px * var(--type-mult));
+}
+
+/* ============ EDITORIAL POLISH (shared utilities) ============ */
+.eyebrow .en{ font-family: var(--font-en); color: var(--accent-ink); letter-spacing:.15em; text-transform:uppercase; }
+.slide--navy .eyebrow{ color: rgba(255,255,255,.85); }
+.slide--navy .eyebrow .en{ color:#fff; }
+
+.hairline{ height:1px; background: var(--navy); opacity:.25; margin: 18px 0 0; border:0; }
+.slide--navy .hairline{ background:#fff; opacity:.3; }
+
+.chapter-ghost{
+  position:absolute; top: 30px; right: var(--pad-x);
+  font-family: var(--font-en); font-weight:700; line-height:.8;
+  font-size: calc(150px * var(--type-mult)); color: var(--navy);
+  opacity:.06; pointer-events:none; user-select:none;
+}
+.slide--navy .chapter-ghost{ color:#fff; opacity:.10; }
+
+.hl-underline{ border-bottom: 6px solid var(--accent-line); }
+
+/* entrance animation — fade-up */
+@media (prefers-reduced-motion:no-preference){
+  [data-deck-active] .anim{ animation: fade-up .5s both; }
+  [data-deck-active] .anim2{ animation: fade-up .5s .12s both; }
+  [data-deck-active] .anim3{ animation: fade-up .5s .24s both; }
+  [data-deck-active] .anim4{ animation: fade-up .5s .36s both; }
+  [data-deck-active] .anim5{ animation: fade-up .5s .48s both; }
+  [data-deck-active] .anim6{ animation: fade-up .5s .60s both; }
+  [data-deck-active] .anim-i{ animation: fade-up .5s both; animation-delay: calc(var(--i,0) * .1s); }
+  [data-deck-active] .a-fade { animation-name: a-fade; }
+  [data-deck-active] .a-up   { animation-name: fade-up; }
+  [data-deck-active] .a-down { animation-name: a-down; }
+  [data-deck-active] .a-right{ animation-name: a-right; }
+  [data-deck-active] .a-left { animation-name: a-left; }
+  [data-deck-active] .a-zoom { animation-name: a-zoom; }
+  [data-deck-active] .a-pop  { animation-name: a-pop; animation-timing-function: cubic-bezier(.34,1.56,.64,1); }
+  [data-deck-active] .a-blur { animation-name: a-blur; }
+  [data-deck-active] .grow-y { transform-origin:bottom center; animation: grow-y .7s .2s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .grow-x { transform-origin:left center;   animation: grow-x .55s .25s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .nudge-x{ animation: nudge-x .9s .35s ease-in-out both; }
+}
+.grow-y{ transform-origin:bottom center; } .grow-x{ transform-origin:left center; }
+@keyframes fade-up{ from{ opacity:0; transform: translateY(16px);} to{ opacity:1; transform:none;} }
+@keyframes a-fade { from{ opacity:0; } to{ opacity:1; } }
+@keyframes a-down { from{ opacity:0; transform: translateY(-16px);} to{ opacity:1; transform:none; } }
+@keyframes a-right{ from{ opacity:0; transform: translateX(-28px);} to{ opacity:1; transform:none; } }
+@keyframes a-left { from{ opacity:0; transform: translateX(28px); } to{ opacity:1; transform:none; } }
+@keyframes a-zoom { from{ opacity:0; transform: scale(.94);       } to{ opacity:1; transform:none; } }
+@keyframes a-pop  { from{ opacity:0; transform: scale(.8);        } to{ opacity:1; transform:none; } }
+@keyframes a-blur { from{ opacity:0; filter: blur(12px); transform: translateY(10px);} to{ opacity:1; filter: blur(0); transform:none; } }
+@keyframes grow-y { from{ transform: scaleY(0);} to{ transform: scaleY(1);} }
+@keyframes grow-x { from{ transform: scaleX(0);} to{ transform: scaleX(1);} }
+@keyframes nudge-x{ 0%{ transform:none;} 55%{ transform: translateX(10px);} 100%{ transform:none;} }
+
+/* tweaks mount */
+#tweaks-root{ position:fixed; inset:0; pointer-events:none; z-index:9999; }
+#tweaks-root > *{ pointer-events:auto; }
+</style>
+</head>
+<body style="font-size: 8px">
+
+<deck-stage width="1920" height="1080">
+  <!-- ===== 01. 表紙 ===== -->
+  <section data-label="表紙" data-screen-label="01 表紙" class="slide slide--navy cover">
+    <div class="cover__blob"></div>
+    <div class="cover__badge anim"><span class="cross">✚</span><span>医知創造ラボ</span></div>
+    <h1 class="cover__title anim2 a-blur">動脈硬化と<span class="hl">認知症</span></h1>
+    <p class="cover__sub anim3">「アルツハイマー型」と「血管性」は<br>分けられない——剖検データが示すこと</p>
+    <div class="cover__meta anim3">
+      <span class="ep">#08</span>
+      <span>監修：脳神経内科専門医</span>
+    </div>
+  </section>
+
+  <!-- ===== 02. フック ===== -->
+  <section data-label="フック" data-screen-label="02 フック" class="slide">
+    <div class="chapter-ghost">02</div>
+    <div class="eyebrow anim">よくある思い込み<span class="en">A COMMON ASSUMPTION</span></div>
+    <div class="theme__body" style="gap:16px;">
+      <h2 class="theme__q anim" style="font-size:var(--type-heading); max-width:none;">「アルツハイマー型だから、<span class="hl-underline">血圧は関係ない</span>」</h2>
+      <div class="concl anim2" data-cue="今日、確かめるのは" style="flex-direction:column; align-items:stretch; padding:18px 40px;">
+        <span class="concl__tag" style="align-self:flex-start;">今日、確かめること</span>
+        <p class="concl__text" style="margin-top:14px;">認知症の脳を実際に見ると、<span style="white-space:nowrap;">この前提は成り立ちません。</span></p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>02</span></div>
+  </section>
+
+  <!-- ===== 03. この動画で分かること ===== -->
+  <section data-label="この動画で分かること" data-screen-label="03 この動画で分かること" class="slide slide--soft">
+    <div class="chapter-ghost">03</div>
+    <div class="eyebrow anim">医知創造ラボ<span class="en">WHAT YOU'LL LEARN</span></div>
+    <h2 class="s-title anim">この動画で分かること、<span class="hl-underline">3つ</span></h2>
+    <hr class="hairline">
+    <div class="sum__list" style="margin-top:28px; gap:28px;">
+      <div class="sum__card anim2" data-cue="1つめ。認知症の脳" style="padding:26px 26px; gap:10px;">
+        <div class="sum__n">01</div>
+        <div class="sum__h">アルツハイマー型と血管、<br>混在する人が多い</div>
+        <p class="sum__p" style="line-height:1.4;">認知症の脳の多くは、<br>「アルツハイマー」と<br>「血管」が混ざっている。</p>
+      </div>
+      <div class="sum__card anim3" data-cue="2つめ。動脈硬化や" style="padding:26px 26px; gap:10px;">
+        <div class="sum__n">02</div>
+        <div class="sum__h">血管の病変は<br>別ルートでも<span style="white-space:nowrap;">効いてくる</span></div>
+        <p class="sum__p" style="line-height:1.4;">動脈硬化・細動脈硬化は、<br>アルツハイマー病理とは<br>別に認知機能と関連する。</p>
+      </div>
+      <div class="sum__card anim4" data-cue="3つめ。血管を守れば" style="padding:26px 26px; gap:10px;">
+        <div class="sum__n">03</div>
+        <div class="sum__h">「防げる」とは<br>証明されていない</div>
+        <p class="sum__p" style="line-height:1.4;">血管を守れば認知症を<br>防げるとは言えない。<br>それでも打つ手はある。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>03</span></div>
+  </section>
+
+  <!-- ===== 04. 2択で考えていないか ===== -->
+  <section data-label="2択で考えていないか" data-screen-label="04 2択で考えていないか" class="slide">
+    <div class="chapter-ghost">04</div>
+    <div class="eyebrow anim">はじめに<span class="en">NOT EITHER-OR</span></div>
+    <h2 class="s-title anim">認知症を、<span class="hl-underline">「2択」</span>で考えていませんか</h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <div class="important-box lg anim2" data-cue="「アルツハイマー型」か">
+        <div class="ttl">🧠 よくある捉え方</div>
+        <p>「アルツハイマー型」か「血管性」か、<span style="white-space:nowrap;">どちらか一方という理解。</span></p>
+      </div>
+      <div class="important-box lg warn anim3" data-cue="でも、実際の脳では">
+        <div class="ttl">🔬 実際の脳は</div>
+        <p>多くの場合、<strong>両方の変化が同時に見られます</strong>。</p>
+      </div>
+    </div>
+    <p class="lead muted anim4" data-cue="このあと、それを" style="margin-top:18px; font-size:var(--type-small);">この後、それを剖検データで確認していきます。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>04</span></div>
+  </section>
+
+  <!-- ===== 05. 剖検で見た141人 ===== -->
+  <section data-label="剖検で見た141人" data-screen-label="05 剖検で見た141人" class="slide slide--soft">
+    <div class="chapter-ghost">05</div>
+    <div class="eyebrow anim">Rush Memory and Aging Project<span class="en">Schneider 2007</span></div>
+    <h2 class="s-title anim">生前から見続けた<span class="hl-underline">141人の剖検</span></h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <div class="important-box lg anim2" data-cue="地域に暮らす高齢者">
+        <div class="ttl">👤 対象</div>
+        <p>地域に暮らす高齢者141人。<span style="white-space:nowrap;">生前は年1回、臨床評価を受けていた。</span></p>
+      </div>
+      <div class="important-box lg warn anim3" data-cue="脳を調べて、アルツ">
+        <div class="ttl">🔍 死後に調べたこと</div>
+        <p>脳を調べ、<strong>アルツハイマー病理・脳梗塞・<br>パーキンソン病/レビー小体病</strong>を診断した。</p>
+      </div>
+    </div>
+    <p class="lead muted anim4" data-cue="急性・慢性の脳の異常" style="margin-top:18px; font-size:var(--type-small);">急性・慢性の脳異常がなかったのは<strong>20人（14.2%）</strong>でした。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>05</span></div>
+  </section>
+
+  <!-- ===== 06. 最多はAD+梗塞 ===== -->
+  <section data-label="最多はAD+梗塞" data-screen-label="06 最多はAD+梗塞" class="slide">
+    <div class="chapter-ghost">06</div>
+    <div class="eyebrow anim">認知症のあった50人の内訳<span class="en">Schneider 2007</span></div>
+    <h2 class="s-title anim">最多は純粋なADでなく<span class="hl-underline">「AD＋梗塞」</span></h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2" data-cue="認知症のあった、50">
+      <table class="cmp tight wrap1">
+        <thead>
+          <tr><th>病理の組み合わせ</th><th>割合（人数）</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>AD＋梗塞</td><td><strong>38.0%</strong>（n=19）</td></tr>
+          <tr><td>純粋AD</td><td>30.0%（n=15）</td></tr>
+          <tr><td>血管性認知症</td><td>12%（n=6）</td></tr>
+          <tr><td>AD＋PD/LBD</td><td>12%（n=6）</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead anim3" data-cue="いちばん多かったのは" style="margin-top:10px; font-size:var(--type-small);">認知症のあった50人のうち、<strong>いちばん多かった組み合わせ</strong>です。</p>
+    <p class="lead muted anim4" data-cue="ただし、これは、14" style="margin-top:18px; font-size:var(--type-small);">141例の剖検コホートの実数です。<span style="white-space:nowrap;">一般人口の割合ではありません。</span></p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>06</span></div>
+  </section>
+
+  <!-- ===== 07. 複数病理とオッズ2.8倍 ===== -->
+  <section data-label="複数病理とオッズ2.8倍" data-screen-label="07 複数病理とオッズ2.8倍" class="slide slide--soft">
+    <div class="chapter-ghost">07</div>
+    <div class="eyebrow anim">単一病理との比較<span class="en">Schneider 2007</span></div>
+    <h2 class="s-title anim">複数の病理を持つと、<span class="hl-underline">オッズ約2.8倍</span></h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <div class="important-box lg anim2" data-cue="年齢を調整したあとの">
+        <div class="ttl">📊 年齢調整後のオッズ比</div>
+        <p>複数の病理を持つ人は、単一病理の人に比べ<span style="white-space:nowrap;"><strong>OR 2.8</strong>。</span></p>
+      </div>
+      <div class="important-box lg warn anim3" data-cue="ただし、95%信頼区">
+        <div class="ttl">⚠ 信頼区間の幅が広い</div>
+        <p><strong>95%CI 1.2〜6.7</strong>。<span style="white-space:nowrap;">有意だが、値の精度は高くありません。</span></p>
+      </div>
+    </div>
+    <p class="lead muted anim4" data-cue="実際、認知症のあった" style="margin-top:18px; font-size:var(--type-small);">認知症のあった50人のうち、<strong>50%超が複数の病理</strong>を持っていました。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>07</span></div>
+  </section>
+
+  <!-- ===== 08. 動脈硬化とAD型認知症 ===== -->
+  <section data-label="動脈硬化とAD型認知症" data-screen-label="08 動脈硬化とAD型認知症" class="slide">
+    <div class="chapter-ghost">08</div>
+    <div class="eyebrow anim">1,143人・横断研究<span class="en">Arvanitakis 2016</span></div>
+    <h2 class="s-title anim">動脈硬化そのものが、<span class="hl-underline">AD型認知症と関連</span></h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2" data-cue="別の研究では、大きな">
+      <table class="cmp wrap1">
+        <thead>
+          <tr><th>血管の変化</th><th>オッズ比</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>動脈硬化<br>（大きな血管）</td><td><strong>OR 1.33</strong><span style="white-space:nowrap;">（1.11–1.58）</span></td></tr>
+          <tr><td>細動脈硬化<br>（細い血管）</td><td><strong>OR 1.20</strong><span style="white-space:nowrap;">（1.04–1.40）</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead anim3" data-cue="大事なのは、アルツハ" style="margin-top:12px; font-size:var(--type-small);">アルツハイマー病理と梗塞を<strong>調整してもなお関連</strong>していました。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>08</span></div>
+  </section>
+
+  <!-- ===== 09. ただし、これは横断研究 ===== -->
+  <section data-label="ただし、これは横断研究" data-screen-label="09 ただし、これは横断研究" class="slide slide--soft">
+    <div class="chapter-ghost">09</div>
+    <div class="eyebrow anim">因果関係ではありません<span class="en">CROSS-SECTIONAL STUDY</span></div>
+    <h2 class="s-title anim">ただし、これは<span class="hl-underline">「横断研究」</span>です</h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <div class="important-box lg warn anim2" data-cue="「動脈硬化があるから">
+        <div class="ttl">⏳ 順番までは分かっていない</div>
+        <p>「動脈硬化があるから認知症になった」という<span style="white-space:nowrap;"><strong>時間の前後関係は示されていません</strong>。</span></p>
+      </div>
+      <div class="important-box lg anim3" data-cue="著者自身も、血管の病">
+        <div class="ttl">🖊 著者自身の言葉でも</div>
+        <p>血管病理は認知症の「気づかれていない危険因子<span style="white-space:nowrap;">かもしれない」と書かれている。</span></p>
+      </div>
+    </div>
+    <p class="lead muted anim4" data-cue="また、亡くなったとき" style="margin-top:18px; font-size:var(--type-small);">死亡時年齢の中央値は88.8歳。<strong>きわめて高齢な人の集団</strong>という点にも注意が必要です。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>09</span></div>
+  </section>
+
+  <!-- ===== 10. 発症していない人もいる ===== -->
+  <section data-label="発症していない人もいる" data-screen-label="10 発症していない人もいる" class="slide">
+    <div class="chapter-ghost">10</div>
+    <div class="eyebrow anim">認知症なし91人の内訳<span class="en">Schneider 2007</span></div>
+    <h2 class="s-title anim">病理があっても、<span class="hl-underline">発症していない人</span>がいる</h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2" data-cue="認知症のなかった、9">
+      <table class="cmp tight wrap1">
+        <thead>
+          <tr><th>認知症のなかった91人</th><th>割合（人数）</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>慢性病理の異常なし</td><td>28.6%（n=26）</td></tr>
+          <tr><td>純粋AD病理</td><td><strong>24.2%</strong>（n=22）</td></tr>
+          <tr><td>梗塞</td><td>17.6%（n=16）</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead anim3" data-cue="つまり、純粋なアルツ" style="margin-top:10px; font-size:var(--type-small);"><strong>純粋なAD病理を持ちながら認知症でなかった人が、<br>4人に1人近く</strong>いました。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>10</span></div>
+  </section>
+
+  <!-- ===== 11. 閾値を下げるという考え方 ===== -->
+  <section data-label="閾値を下げるという考え方" data-screen-label="11 閾値を下げるという考え方" class="slide slide--soft">
+    <div class="chapter-ghost">11</div>
+    <div class="eyebrow anim">混合病理レビュー<span class="en">Kapasi 2017</span></div>
+    <h2 class="s-title anim">併存する病理は、<span class="hl-underline">発症の「閾値」を下げる</span></h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <div class="important-box lg anim2" data-cue="出典は、個々の研究を">
+        <div class="ttl">📚 レビュー論文の位置づけ</div>
+        <p>個々の研究を束ねた総説。<span style="white-space:nowrap;"><strong>ここから数値は出てきません</strong>。</span></p>
+      </div>
+      <div class="important-box lg warn anim3" data-cue="脳の血管の病理や、レ">
+        <div class="ttl">🧩 考えられていること</div>
+        <p>脳血管病理・レビー小体などの併存が、<span style="white-space:nowrap;">認知症が<strong>臨床的に表面化する閾値を下げる</strong>。</span></p>
+      </div>
+    </div>
+    <p class="lead muted anim4" data-cue="数値の裏づけが要ると" style="margin-top:18px; font-size:var(--type-small);">数値の裏づけが要るときは、前のスライドの数字に戻ります。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>11</span></div>
+  </section>
+
+  <!-- ===== 12. MRIの白質病変 ===== -->
+  <section data-label="MRIの白質病変" data-screen-label="12 MRIの白質病変" class="slide">
+    <div class="chapter-ghost">12</div>
+    <div class="eyebrow anim">46研究のメタ解析<span class="en">Debette &amp; Markus 2010</span></div>
+    <h2 class="s-title anim">白質病変は、<span class="hl-underline">認知症1.9倍</span>と関連</h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2" data-cue="46の研究を集めた">
+      <table class="cmp tight wrap1">
+        <thead>
+          <tr><th>アウトカム</th><th>ハザード比</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>脳卒中</td><td>HR 3.3（2.6–4.4）</td></tr>
+          <tr><td>認知症</td><td><strong>HR 1.9</strong>（1.3–2.8）</td></tr>
+          <tr><td>死亡</td><td>HR 2.0（1.6–2.7）</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead muted anim4" data-cue="ただし、著者の結論は" style="margin-top:10px; font-size:var(--type-small);">著者の結論は<strong>「危険因子の詳細なスクリーニングを促すべき」</strong>。<span style="white-space:nowrap;">治療が必要という意味ではありません。</span></p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>12</span></div>
+  </section>
+
+  <!-- ===== 13. 中年期の因子が25年後に ===== -->
+  <section data-label="中年期の因子が25年後に" data-screen-label="13 中年期の因子が25年後に" class="slide slide--soft">
+    <div class="chapter-ghost">13</div>
+    <div class="eyebrow anim">15,744人・25年追跡<span class="en">Gottesman 2017 ARIC</span></div>
+    <h2 class="s-title anim">中年期の糖尿病は、<span class="hl-underline">APOEとほぼ同じ重さ</span></h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2" data-cue="中年期の人たちを、25年">
+      <table class="cmp wrap1">
+        <thead>
+          <tr><th>中年期の因子</th><th>ハザード比</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>糖尿病</td><td><strong>HR 1.77</strong><span style="white-space:nowrap;">（1.53–2.04）</span></td></tr>
+          <tr><td>（参考）<br>APOE ε4遺伝子型</td><td><strong>HR 1.98</strong><span style="white-space:nowrap;">（1.78–2.21）</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead anim3" data-cue="著者は、「糖尿病のハ" style="margin-top:12px; font-size:var(--type-small);">著者は「糖尿病のハザード比は<br><strong>APOE ε4とほぼ同じくらい高かった</strong>」と述べています。</p>
+    <p class="lead muted anim4" data-cue="ただし、アメリカのコ" style="margin-top:18px; font-size:var(--type-small);">米国のコホート（黒人27.1%）。<span style="white-space:nowrap;">日本人への外挿は慎重に。</span></p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>13</span></div>
+  </section>
+
+  <!-- ===== 14. 日本ではどうか（久山町） ===== -->
+  <section data-label="日本ではどうか（久山町）" data-screen-label="14 日本ではどうか（久山町）" class="slide">
+    <div class="chapter-ghost">14</div>
+    <div class="eyebrow anim">久山町・4時点調査<span class="en">Sekita 2010</span></div>
+    <h2 class="s-title anim">日本では、<span class="hl-underline">有病率</span>がこう動いた</h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2" data-cue="福岡県の久山町では">
+      <table class="cmp xtight wrap1">
+        <thead>
+          <tr><th>有病率</th><th>1985</th><th>1992</th><th>1998</th><th>2005</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>アルツハイマー型</td><td>1.1%</td><td>1.3%</td><td>2.3%</td><td><strong>3.8%</strong></td></tr>
+          <tr><td>血管性認知症</td><td>2.3%</td><td>1.5%</td><td>1.5%</td><td><strong>2.5%</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead anim3" data-cue="65歳以上の住民で" style="margin-top:10px; font-size:var(--type-small);">65歳以上住民の<strong>有病率</strong>（年齢・性別で調整）。<span style="white-space:nowrap;">発症率ではありません。</span></p>
+    <p class="lead muted anim4" data-cue="P for trend" style="margin-top:18px; font-size:var(--type-small);">P for trend は AD＜0.001、<span style="white-space:nowrap;">血管性は0.82。</span></p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>14</span></div>
+  </section>
+
+  <!-- ===== 15. 減ったとは言えない ===== -->
+  <section data-label="減ったとは言えない" data-screen-label="15 減ったとは言えない" class="slide slide--soft">
+    <div class="chapter-ghost">15</div>
+    <div class="eyebrow anim">比が動いた理由<span class="en">Sekita 2010</span></div>
+    <h2 class="s-title anim">血管性認知症は、<span class="hl-underline">「減ったとは言えない」</span></h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <div class="important-box lg anim2" data-cue="有病率は、2.3%か">
+        <div class="ttl">📉 血管性認知症の有病率</div>
+        <p>2.3%→2.5%（P for trend = 0.82）。<span style="white-space:nowrap;"><strong>有意な傾向は検出されていません</strong>。</span></p>
+      </div>
+      <div class="important-box lg warn anim3" data-cue="比が逆転したのは、ア">
+        <div class="ttl">🔁 比が逆転したのは</div>
+        <p><strong>アルツハイマー型が増えたから</strong>（1.1%→3.8%）。<span style="white-space:nowrap;">血管性が減ったからではありません。</span></p>
+      </div>
+    </div>
+    <p class="lead muted anim4" data-cue="「血管性認知症は過去" style="margin-top:18px; font-size:var(--type-small);">「血管性認知症は過去のもの」という語りは、<strong>このデータでは支持されません</strong>。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>15</span></div>
+  </section>
+
+  <!-- ===== 16. では何をすればいいか ===== -->
+  <section data-label="では何をすればいいか" data-screen-label="16 では何をすればいいか" class="slide">
+    <div class="chapter-ghost">16</div>
+    <div class="eyebrow anim">介入の証拠<span class="en">WHAT CAN WE DO</span></div>
+    <h2 class="s-title anim"><span class="hl-underline">防げるとは言えない</span>。それでも</h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <div class="important-box lg warn anim2" data-cue="血管を守れば、認知症">
+        <div class="ttl">⚠ 証明されていないこと</div>
+        <p>血管を守れば認知症を<span style="white-space:nowrap;"><strong>確実に防げると証明されたわけではありません</strong>。</span></p>
+      </div>
+      <div class="important-box lg anim3" data-cue="それでも、手を打つ理">
+        <div class="ttl">💡 それでも手を打つ理由</div>
+        <p>これらの危険因子を持つ人で、<span style="white-space:nowrap;">認知症のリスクが高いことが<strong>複数の観察研究で示されています</strong>。</span></p>
+      </div>
+    </div>
+    <p class="lead muted anim4" data-cue="ただ、「因子に介入す" style="margin-top:18px; font-size:var(--type-small);">「因子に介入すれば認知症が減る」かどうかは、<strong>まだ証明されていません</strong>。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>16</span></div>
+  </section>
+
+  <!-- ===== 17. まとめ ===== -->
+  <section data-label="まとめ" data-screen-label="17 まとめ" class="slide slide--soft">
+    <div class="chapter-ghost">17</div>
+    <div class="eyebrow anim">まとめ<span class="en">SUMMARY</span></div>
+    <h2 class="s-title anim">持ち帰るのは、<span class="hl-underline">3つ</span></h2>
+    <hr class="hairline">
+    <div class="sum__list" style="margin-top:28px; gap:28px;">
+      <div class="sum__card anim2" data-cue="1つめ。アルツハイマ" style="padding:26px 26px; gap:10px;">
+        <div class="sum__n">01</div>
+        <div class="sum__h">アルツハイマー型と血管、<br>混在する人が多い</div>
+        <p class="sum__p" style="line-height:1.4;">認知症のある人の<br>最多はAD＋梗塞。<br>2択では捉えられない。</p>
+      </div>
+      <div class="sum__card anim3" data-cue="2つめ。血管の病変は" style="padding:26px 26px; gap:10px;">
+        <div class="sum__n">02</div>
+        <div class="sum__h">血管の病変は<br>別ルートでも<span style="white-space:nowrap;">効いてくる</span></div>
+        <p class="sum__p" style="line-height:1.4;">AD病理・梗塞を<br>調整してもなお関連。<br>ただし横断研究。</p>
+      </div>
+      <div class="sum__card anim4" data-cue="3つめ。「防げる」と" style="padding:26px 26px; gap:10px;">
+        <div class="sum__n">03</div>
+        <div class="sum__h">「防げる」とは<br>証明されていない</div>
+        <p class="sum__p" style="line-height:1.4;">それでも血管の因子に<br>手を打つ理由はある。<br>個別数値は各弾で。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>17</span></div>
+  </section>
+
+  <!-- ===== 18. エンディング ===== -->
+  <section data-label="エンディング" data-screen-label="18 エンディング" class="slide slide--navy end">
+    <div class="cover__blob"></div>
+    <p class="end__cross anim">✚ 医知創造ラボ</p>
+    <h2 class="end__h anim2">この動画は情報提供です<br>個別の診断ではありません</h2>
+    <p class="end__sub anim2" data-cue="気になることがあれば">血圧や血管の状態が気になるときは、<br>次の受診で相談を</p>
+    <div class="end__cta anim3" data-cue="役に立ったと思われた">
+      <span class="btn btn--sub">🔔 チャンネル登録</span>
+      <span class="btn btn--like">👍 高評価</span>
+    </div>
+  </section>
+</deck-stage>
+
+<script src="deck-stage.js"></script>
+<script src="image-slot.js"></script>
+
+</body>
+</html>

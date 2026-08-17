@@ -1,0 +1,217 @@
+<!doctype html>
+<!-- TODO(投稿後に要更新): blog_url と youtube_id が未確定（2026-08-17時点）。
+     ブログ・YouTube公開後に infographics/manifest.json の dementia-atherosclerosis エントリと
+     このコメントを実URL/実IDへ更新し、add_nav_and_image.py --only dementia-atherosclerosis を再実行すること。 -->
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="動脈硬化と認知症の関係を、剖検データから整理したインフォグラフィック。141人の剖検研究では、認知症のあった50人でいちばん多かったのは純粋なアルツハイマー病理ではなく「アルツハイマー病理＋脳梗塞」（38.0%・n=19）でした。動脈硬化・細動脈硬化はアルツハイマー病理と梗塞を調整してもなお認知機能と関連しますが、これは横断研究であり因果関係の証明ではありません。日本（久山町）では血管性認知症の有病率は20年間で「減ったとは言えない」というデータもあります。それでも「血管を守れば認知症を防げる」とは証明されていません。">
+<title>動脈硬化と認知症｜「アルツハイマー型」と「血管性」は分けられない（インフォグラフィック）</title>
+<style>
+:root{
+  --navy:#1B3A5C;
+  --navyDeep:#0F2540;
+  --navyBg:#E9EEF5;
+  --accent:#C0392B;
+  --accentBg:#F7E7E6;
+  --accentInk:#A13325;
+  --amber:#C77800;
+  --amberBg:#FFF8E1;
+  --line:#D6E0E9;
+  --gray:#69737E;
+  --ink:#20242B;
+  --ink2:#3C4450;
+  --ok:#2E7D5B;
+  --font:"Noto Sans JP","BIZ UDPGothic","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+}
+html{font-size:16px;}
+*{box-sizing:border-box; margin:0; padding:0;}
+/* 日本語の語中改行を文節境界で切る */
+body,.lead,.card p,.row__d,td,th,.note,.src,.cav,.sum__d,.way__d{
+  word-break:auto-phrase; line-break:strict;
+}
+body{font-family:var(--font); background:#E4E9EF; color:var(--ink);
+  display:flex; flex-direction:column; align-items:center; overflow-x:hidden;}
+.nw{white-space:nowrap;}
+.ig{width:100%; max-width:1080px; background:#fff; padding:0 0 3rem;}
+
+.hd{background:linear-gradient(135deg,#0A1B2E 0%,#153352 55%,#1B3A5C 100%); color:#fff;
+  padding:2.6rem 3rem 2.2rem; text-align:center;}
+.hd__brand{font-size:.95rem; letter-spacing:.14em; opacity:.85; margin-bottom:1rem;}
+.hd__t{font-size:2.5rem; font-weight:800; line-height:1.3; letter-spacing:.01em;}
+.hd__t .hl{color:var(--accent);}
+.hd__s{margin-top:1rem; font-size:1.12rem; opacity:.92; line-height:1.7;}
+
+.sec{padding:2.2rem 3rem 0;}
+.sec__h{display:flex; align-items:center; gap:.8rem; font-size:1.45rem; font-weight:800;
+  color:var(--navy); border-bottom:3px solid var(--navy); padding-bottom:.5rem; margin-bottom:1.2rem;}
+.sec__n{background:var(--accent); color:#fff; font-size:1.05rem; width:2rem; height:2rem;
+  border-radius:.4rem; display:grid; place-items:center; flex:none;}
+.lead{font-size:1.05rem; line-height:1.8; color:var(--ink2);}
+
+.big{display:flex; gap:1.4rem; margin:1.2rem 0 .4rem; flex-wrap:wrap;}
+.big__c{flex:1 1 0; min-width:14rem; background:var(--navyBg); border-radius:.7rem;
+  padding:1.2rem 1.3rem; border-left:6px solid var(--navy);}
+.big__n{font-size:2.6rem; font-weight:800; color:var(--navy); line-height:1.1;}
+.big__n .u{font-size:1.2rem; margin-left:.2rem;}
+.big__d{margin-top:.5rem; font-size:1rem; line-height:1.6; color:var(--ink2);}
+.big--accent{background:var(--accentBg); border-left-color:var(--accent);}
+.big--accent .big__n{color:var(--accentInk);}
+
+table{width:100%; border-collapse:collapse; margin:1rem 0 .3rem; font-size:1rem;}
+th{background:var(--navy); color:#fff; text-align:left; padding:.7rem .9rem; font-weight:700;}
+td{border-bottom:1px solid var(--line); padding:.7rem .9rem; line-height:1.6; vertical-align:top;}
+td.k{font-weight:700; color:var(--navy); width:34%;}
+.src{font-size:.86rem; color:var(--gray); margin-top:.35rem; line-height:1.6;}
+
+.card{border:2px solid var(--line); border-radius:.7rem; padding:1.1rem 1.3rem; margin:1rem 0 .3rem;}
+.card--warn{background:var(--accentBg); border-color:var(--accent);}
+.card--amber{background:var(--amberBg); border-color:#EBC46A;}
+.card__t{font-weight:800; color:var(--navy); font-size:1.1rem; margin-bottom:.5rem;}
+.card--warn .card__t{color:var(--accentInk);}
+.card p{font-size:1rem; line-height:1.75; color:var(--ink2);}
+.card p + p{margin-top:.6rem;}
+
+.rows{display:flex; flex-direction:column; gap:.7rem; margin:1rem 0 .3rem;}
+.row{display:flex; gap:1rem; align-items:flex-start; background:#F6F8FB; border-radius:.6rem; padding:.9rem 1.1rem;}
+.row__n{flex:none; width:2.1rem; height:2.1rem; border-radius:50%; background:var(--navy); color:#fff;
+  display:grid; place-items:center; font-weight:800;}
+.row__d{font-size:1rem; line-height:1.7; color:var(--ink2);}
+.row__d b{color:var(--navy);}
+
+.sum{background:var(--navy); color:#fff; border-radius:.8rem; padding:1.6rem 1.8rem; margin:1.4rem 0 .4rem;
+  display:flex; gap:1.2rem; flex-wrap:wrap;}
+.sum__c{flex:1 1 0; min-width:13rem;}
+.sum__t{font-size:1.5rem; font-weight:800; color:var(--accent); margin-bottom:.4rem;}
+.sum__d{font-size:.98rem; line-height:1.7; opacity:.95;}
+
+.note{margin:1.6rem 3rem 0; padding:1rem 1.2rem; background:#F3F5F8; border-left:5px solid var(--gray);
+  font-size:.9rem; line-height:1.75; color:var(--ink2);}
+.ft{margin-top:1.6rem; padding:1.4rem 3rem 0; border-top:2px solid var(--line);
+  font-size:.88rem; color:var(--gray); line-height:1.8; text-align:center;}
+</style>
+</head>
+<body>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+<div class="ig">
+
+  <div class="hd">
+    <div class="hd__brand">✚ 医知創造ラボ ／ 認知症×生活習慣病シリーズ 第8弾（まとめ回）</div>
+    <h1 class="hd__t">動脈硬化と<span class="hl">認知症</span><br>「アルツハイマー型」と「血管性」は<br>分けられません</h1>
+    <p class="hd__s">この図は、<b>動脈硬化が認知症の「原因」だと証明するものではありません。</b><br>そして、<b>血管を守れば認知症を防げると証明するものでもありません。</b></p>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">1</span>認知症を「2択」で考えていませんか</div>
+    <p class="lead">「アルツハイマー型」か「血管性」か——どちらか一方だと考えていませんか。<b>実際の脳を調べると、多くの場合、両方の変化が同時に見られます。</b>この図は、剖検データからそれを確認していきます。</p>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">2</span>剖検でわかったこと——141人の追跡</div>
+    <p class="lead">米国の研究チームは、地域に暮らす高齢者<b>141人</b>を生前から年1回評価し、死後に脳を調べました（Schneider 2007）。急性・慢性の脳異常がなかったのは20人（14.2%）でした。</p>
+    <table>
+      <thead><tr><th>認知症のあった50人の内訳</th><th>割合（人数）</th></tr></thead>
+      <tbody>
+        <tr><td>アルツハイマー病理＋脳梗塞</td><td><b>38.0%</b>（n=19）</td></tr>
+        <tr><td>純粋なアルツハイマー病理</td><td>30.0%（n=15）</td></tr>
+        <tr><td>血管性認知症</td><td>12%（n=6）</td></tr>
+        <tr><td>アルツハイマー病理＋パーキンソン病/レビー小体病</td><td>12%（n=6）</td></tr>
+      </tbody>
+    </table>
+    <p class="src">いちばん多かったのは、純粋なアルツハイマー病理ではなく「アルツハイマー病理＋脳梗塞」でした。141例の剖検コホートの実数です。一般人口の割合ではありません。</p>
+    <div class="big">
+      <div class="big__c big--accent">
+        <div class="big__n">2.8<span class="u">倍</span></div>
+        <div class="big__d">複数の病理を同時に持つ人は、単一の病理だけの人に比べ、認知症を呈するオッズが年齢調整後で約2.8倍でした（95%CI 1.2〜6.7）。<b>信頼区間の幅が広く</b>、値の精度は高くありません。</div>
+      </div>
+      <div class="big__c">
+        <div class="big__n">50<span class="u">%超</span></div>
+        <div class="big__d">認知症のあった50人のうち、<b>50%超が複数の病理</b>を同時に持っていました。認知症のなかった91人では、80%超が1つ以下でした。</div>
+      </div>
+    </div>
+    <p class="src">出典: Schneider JA, et al. Neurology. 2007;69(24):2197-2204.</p>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">3</span>病理があっても、発症していない人がいる</div>
+    <div class="card">
+      <div class="card__t">本弾でいちばん誠実な数字</div>
+      <p>認知症の<b>なかった</b>91人のうち、<b>24.2%（n=22）は純粋なアルツハイマー病理を持っていました</b>。慢性病理の異常がなかった人は28.6%（n=26）、梗塞があった人は17.6%（n=16）でした。</p>
+      <p><b>病理があることと、認知症を発症することは同じではありません。</b>複数の病理が併存すると、認知症が臨床的に表面化する「閾値」を下げると考えられています（Kapasi 2017・レビュー論文。ここから数値は出ていません）。</p>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">4</span>血管の変化そのものも、認知機能に関連する</div>
+    <p class="lead">1,143人（死亡時年齢の中央値88.8歳）を対象にした研究では、脳の動脈硬化・細動脈硬化と、アルツハイマー型認知症との関連を調べました（Arvanitakis 2016）。</p>
+    <table>
+      <thead><tr><th>血管の変化</th><th>オッズ比（95%CI）</th></tr></thead>
+      <tbody>
+        <tr><td>動脈硬化（大きな血管）</td><td><b>OR 1.33</b>（1.11〜1.58）</td></tr>
+        <tr><td>細動脈硬化（細い血管）</td><td><b>OR 1.20</b>（1.04〜1.40）</td></tr>
+      </tbody>
+    </table>
+    <p class="src">重症度が1段階上がるごとのオッズ比。アルツハイマー病理と脳梗塞を<b>調整してもなお関連が見られました</b>。APOE ε4遺伝子型や血管危険因子で調整しても結果は変わりませんでした。</p>
+    <div class="card card--warn">
+      <div class="card__t">ただし、これは「横断研究」です</div>
+      <p>「動脈硬化があるから認知症になった」という<b>時間の前後関係は示されていません</b>。著者自身も、血管病理は「気づかれていない危険因子かもしれない（might be）」と書くにとどめています。</p>
+      <p>対象は<b>死亡時年齢の中央値88.8歳という、きわめて高齢な人の集団</b>です。一般人口の代表ではありません。</p>
+    </div>
+    <p class="src">出典: Arvanitakis Z, et al. Lancet Neurol. 2016;15(9):934-943.</p>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">5</span>日本ではどうか——久山町の20年</div>
+    <p class="lead">福岡県久山町では、65歳以上の住民を対象に1985・1992・1998・2005年の4回、認知症の有病率を調べています（Sekita 2010）。</p>
+    <table>
+      <thead><tr><th>有病率（年齢・性で調整）</th><th>1985</th><th>1992</th><th>1998</th><th>2005</th></tr></thead>
+      <tbody>
+        <tr><td>アルツハイマー型</td><td>1.1%</td><td>1.3%</td><td>2.3%</td><td><b>3.8%</b></td></tr>
+        <tr><td>血管性認知症</td><td>2.3%</td><td>1.5%</td><td>1.5%</td><td><b>2.5%</b></td></tr>
+        <tr><td>血管性/アルツハイマー型 比</td><td>2.1</td><td>1.2</td><td>0.7</td><td><b>0.7</b></td></tr>
+      </tbody>
+    </table>
+    <p class="src">P for trend はアルツハイマー型 &lt;0.001、血管性は0.82（有意な傾向は検出されていません）。</p>
+    <div class="card card--warn">
+      <div class="card__t">血管性認知症は「減ったとは言えない」</div>
+      <p>血管性/アルツハイマー型の比は2.1から0.7へ動きましたが、<b>比が逆転したのは「血管性が減ったから」ではなく、「アルツハイマー型が増えたから」</b>です。血管性認知症そのものの有病率は、20年間で<b>「減ったとは言えない」</b>（P for trend = 0.82）。「血管性認知症は過去のもの」という語りは、このデータでは支持されません。</p>
+    </div>
+    <p class="src">出典: Sekita A, et al. Acta Psychiatr Scand. 2010;122(4):319-325.（有病率であり、発症率ではありません。1つの町のデータです）</p>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">6</span>それでも、「防げる」とは証明されていない</div>
+    <div class="card card--warn">
+      <div class="card__t">証明されていないこと</div>
+      <p>血管を守れば認知症を<b>確実に防げると証明されたわけではありません。</b>くじ引きで血管の危険因子への介入を割りつけ、認知症の発症を比べた大規模な試験（SPRINT MIND）では、厳格な降圧で有意に減ったのは軽度認知障害であり、<b>認知症そのものでは有意差が出ていません</b>。</p>
+    </div>
+    <div class="card">
+      <div class="card__t">それでも手を打つ理由</div>
+      <p>これらの血管の危険因子を持つ人で、認知症のリスクが高いことは、<b>複数の観察研究で示されています。</b>ただし、これは「危険因子を持つ人でリスクが高い」ことであって、「手を打てばリスクが下がる」ことの証明ではありません。</p>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">7</span>結局、何が言えるのか</div>
+    <div class="sum">
+      <div class="sum__c"><div class="sum__t">分けられない</div><div class="sum__d">認知症の脳は、たいてい<br>アルツハイマー型と血管、<br>両方の変化を持っています。</div></div>
+      <div class="sum__c"><div class="sum__t">別ルートで効く</div><div class="sum__d">血管の変化は、<br>アルツハイマー病理とは<br>別に認知機能と関連します。</div></div>
+      <div class="sum__c"><div class="sum__t">防げるとは言えない</div><div class="sum__d">それでも、血管の因子に<br>手を打つ理由はあります。<br>個別の数値は各弾で。</div></div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>この図の数字について。</b>主軸のArvanitakis 2016は<b>横断研究</b>で、対象は死亡時年齢の中央値88.8歳という、剖検に同意したきわめて高齢な人の集団です（一部は聖職者コホート）。一般人口の代表ではありません。Schneiderの141例は認知症50例と<b>症例数が小さく</b>、OR 2.8の95%信頼区間は1.2〜6.7と非常に広いものです。久山町のデータは<b>1つの町の有病率</b>であり、発症率ではなく、診断基準・画像診断の普及の影響も受けます。ここで扱った研究は<b>ほとんどが観察研究</b>で、示されているのは関連であり、介入で認知症が減ることの証明ではありません。第1〜7弾で扱った血圧・LDL・血糖などの個別の数値は、それぞれの回に譲ります。
+  </div>
+
+  <div class="ft">
+    監修: 今村久司（脳神経内科専門医・総合内科専門医）／医知創造ラボ<br>
+    本図は一般的な医学情報の提供を目的としたもので、個別の診断・治療方針を示すものではありません。<br>
+    血圧や血管の状態が気になるときは、自己判断せず、担当の先生にご相談ください。
+  </div>
+
+</div>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px auto 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+</body>
+</html>
