@@ -1,0 +1,256 @@
+<!doctype html>
+<!-- TODO(投稿後に要更新): blog_url と youtube_id が未確定（2026-08-18時点）。
+     ブログ・YouTube公開後に infographics/manifest.json の dementia-vision-loss エントリと
+     このコメントを実URL/実IDへ更新し、add_nav_and_image.py --only dementia-vision-loss を再実行すること。 -->
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="視力低下と認知症の関係を一次資料から整理したインフォグラフィック。2024年のLancet委員会は視力低下を認知症の危険因子に新しく加えました（晩年期・人口寄与割合2%）。白内障手術を受けた人ではその後の認知症が少なかったという観察研究があります（ハザード比0.71）。ただし「手術を受けられる人がもともと健康なだけ」という疑いに対し、視力を回復させない緑内障手術を陰性対照に置くと関連は見られませんでした（ハザード比1.08）。それでも白内障手術で認知症を防げることを示したランダム化試験は一つもなく、日本の藤原京アイスタディでは軽度認知障害とは関連したが認知症とは有意に関連しませんでした。">
+<title>視力低下と認知症｜白内障手術で認知症は防げるのか（インフォグラフィック）</title>
+<style>
+:root{
+  --navy:#1B3A5C;
+  --navyDeep:#0F2540;
+  --navyBg:#E9EEF5;
+  --accent:#1F7A8C;
+  --accentBg:#E7F2F4;
+  --accentInk:#15616F;
+  --onNavy:#6EE7B7;
+  --amber:#8A6100;
+  --amberBg:#FFF8E1;
+  --line:#D6E0E9;
+  --gray:#69737E;
+  --ink:#20242B;
+  --ink2:#3C4450;
+  --ok:#2E7D5B;
+  --font:"Noto Sans JP","BIZ UDPGothic","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+}
+html{font-size:16px;}
+*{box-sizing:border-box; margin:0; padding:0;}
+/* 日本語の語中改行を文節境界で切る */
+body,.lead,.card p,.row__d,td,th,.note,.src,.cav,.sum__d,.way__d{
+  word-break:auto-phrase; line-break:strict;
+}
+body{font-family:var(--font); background:#E4E9EF; color:var(--ink);
+  display:flex; flex-direction:column; align-items:center; overflow-x:hidden;}
+.nw{white-space:nowrap;}
+.ig{width:100%; max-width:1080px; background:#fff; padding:0 0 3rem;}
+
+.hd{background:linear-gradient(135deg,#0A1B2E 0%,#153352 55%,#1B3A5C 100%); color:#fff;
+  padding:2.6rem 3rem 2.2rem; text-align:center;}
+.hd__brand{font-size:.95rem; letter-spacing:.14em; opacity:.85; margin-bottom:1rem;}
+.hd__t{font-size:2.5rem; font-weight:800; line-height:1.3; letter-spacing:.01em;}
+/* ★ネイビー地に deep teal は輝度差が足りない（1.4-2.3:1）。明るいミントを使う（4.5:1超） */
+.hd__t .hl{color:var(--onNavy);}
+.hd__s{margin-top:1rem; font-size:1.12rem; opacity:.92; line-height:1.7;}
+
+.sec{padding:2.2rem 3rem 0;}
+.sec__h{display:flex; align-items:center; gap:.8rem; font-size:1.45rem; font-weight:800;
+  color:var(--navy); border-bottom:3px solid var(--navy); padding-bottom:.5rem; margin-bottom:1.2rem;}
+.sec__n{background:var(--accent); color:#fff; font-size:1.05rem; width:2rem; height:2rem;
+  border-radius:.4rem; display:grid; place-items:center; flex:none;}
+.lead{font-size:1.05rem; line-height:1.8; color:var(--ink2);}
+
+.big{display:flex; gap:1.4rem; margin:1.2rem 0 .4rem; flex-wrap:wrap;}
+.big__c{flex:1 1 0; min-width:14rem; background:var(--navyBg); border-radius:.7rem;
+  padding:1.2rem 1.3rem; border-left:6px solid var(--navy);}
+.big__n{font-size:2.6rem; font-weight:800; color:var(--navy); line-height:1.1;}
+.big__n .u{font-size:1.2rem; margin-left:.2rem;}
+.big__d{margin-top:.5rem; font-size:1rem; line-height:1.6; color:var(--ink2);}
+.big--accent{background:var(--accentBg); border-left-color:var(--accent);}
+.big--accent .big__n{color:var(--accentInk);}
+
+table{width:100%; border-collapse:collapse; margin:1rem 0 .3rem; font-size:1rem;}
+th{background:var(--navy); color:#fff; text-align:left; padding:.7rem .9rem; font-weight:700;}
+td{border-bottom:1px solid var(--line); padding:.7rem .9rem; line-height:1.6; vertical-align:top;}
+td.k{font-weight:700; color:var(--navy); width:44%;}
+.src{font-size:.86rem; color:var(--gray); margin-top:.35rem; line-height:1.6;}
+
+.card{border:2px solid var(--line); border-radius:.7rem; padding:1.1rem 1.3rem; margin:1rem 0 .3rem;}
+.card--warn{background:var(--accentBg); border-color:var(--accent);}
+.card--amber{background:var(--amberBg); border-color:#EBC46A;}
+.card__t{font-weight:800; color:var(--navy); font-size:1.1rem; margin-bottom:.5rem;}
+.card--warn .card__t{color:var(--accentInk);}
+.card p{font-size:1rem; line-height:1.75; color:var(--ink2);}
+.card p + p{margin-top:.6rem;}
+
+.rows{display:flex; flex-direction:column; gap:.7rem; margin:1rem 0 .3rem;}
+.row{display:flex; gap:1rem; align-items:flex-start; background:#F6F8FB; border-radius:.6rem; padding:.9rem 1.1rem;}
+.row__n{flex:none; width:2.1rem; height:2.1rem; border-radius:50%; background:var(--navy); color:#fff;
+  display:grid; place-items:center; font-weight:800;}
+.row__d{font-size:1rem; line-height:1.7; color:var(--ink2);}
+.row__d b{color:var(--navy);}
+
+.sum{background:var(--navy); color:#fff; border-radius:.8rem; padding:1.6rem 1.8rem; margin:1.4rem 0 .4rem;
+  display:flex; gap:1.2rem; flex-wrap:wrap;}
+.sum__c{flex:1 1 0; min-width:13rem;}
+/* ★同上。ネイビー地なのでミント */
+.sum__t{font-size:1.5rem; font-weight:800; color:var(--onNavy); margin-bottom:.4rem;}
+.sum__d{font-size:.98rem; line-height:1.7; opacity:.95;}
+
+.note{margin:1.6rem 3rem 0; padding:1rem 1.2rem; background:#F3F5F8; border-left:5px solid var(--gray);
+  font-size:.9rem; line-height:1.75; color:var(--ink2);}
+.ft{margin-top:1.6rem; padding:1.4rem 3rem 0; border-top:2px solid var(--line);
+  font-size:.88rem; color:var(--gray); line-height:1.8; text-align:center;}
+</style>
+</head>
+<body>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+<div class="ig">
+
+<div class="hd">
+  <div class="hd__brand">医知創造ラボ ／ 認知症×生活習慣病シリーズ #09</div>
+  <div class="hd__t">視力低下と認知症<br><span class="hl">白内障手術で認知症は防げるのか</span></div>
+  <div class="hd__s">「効きそうだが、まだ証明されていない」——<br class="nw">その中途半端に見える結論が、どんな研究から出てきたのかを順に確かめます。</div>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">1</span>2024年、危険因子に「視力低下」が加わりました</div>
+  <p class="lead">Lancet誌の委員会が定期的に更新している「変えられる危険因子」の一覧は、2020年版の12因子から<b>2024年版で14因子</b>になりました。新しく加わった2つのうちの一方が<b>視力低下（未矯正の視力低下）</b>です。</p>
+  <div class="big">
+    <div class="big__c"><div class="big__n">7<span class="u">%</span></div><div class="big__d">高LDLコレステロール<br>（中年期）— 新規因子のもう一方</div></div>
+    <div class="big__c big--accent"><div class="big__n">2<span class="u">%</span></div><div class="big__d"><b>視力低下（晩年期）</b><br>この記事のテーマ</div></div>
+  </div>
+  <p class="src">出典: Livingston G, et al. Lancet. 2024;404(10452):572-628.（人口寄与割合＝ライフコース3区分の重み付き）</p>
+  <div class="card card--amber">
+    <div class="card__t">この%の読み方</div>
+    <p>人口寄与割合は<b>集団についての目安</b>です。<b>あなた個人が2%減らせる、という意味ではありません。</b>因子どうしは互いに重なり合うため、単純に足し算できないことも委員会が明記しています。</p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">2</span>見えにくい人は、その後に認知症を発症しやすい</div>
+  <table>
+    <tr><th>研究</th><th>認知症の発症</th></tr>
+    <tr><td class="k">メタ解析（16研究・76,373人）</td><td><b>RR 1.44</b>（95%CI 1.19–1.75）</td></tr>
+    <tr><td class="k">UK Biobank（117,187人・前向き）</td><td><b>HR 1.78</b>（95%CI 1.18–2.68）</td></tr>
+  </table>
+  <p class="src">出典: Cao GY, et al. Aging Ment Health. 2023;27(2):350-356.／Zhu Z, et al. Am J Ophthalmol. 2022;235:7-14.</p>
+  <div class="card">
+    <div class="card__t">ただし「同時に測る」と、差は大きく見えます</div>
+    <p>同じメタ解析の中で、視力と認知機能を<b>同時に測った場合はオッズ比2.37</b>（95%CI 1.84–3.03）、<b>先に視力を測って追いかけた場合は相対リスク1.41</b>（95%CI 1.31–1.51）でした。認知症があると視力表を読むこと自体が難しくなるため、同時に測るとその分が「見えにくさ」として数えられます。</p>
+    <p>※ この説明は解釈であり、研究が証明したことではありません。指標（ORとRR）が異なるため大小比較はあくまで目安です。</p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">3</span>白内障の手術を受けた人では、認知症が少なかった</div>
+  <table>
+    <tr><th>比較</th><th>結果</th></tr>
+    <tr><td class="k">手術あり vs なし（認知症の発症・ACT研究）</td><td><b>HR 0.71</b>（95%CI 0.62–0.83）</td></tr>
+    <tr><td class="k">手術あり vs 未手術の白内障（認知機能低下・メタ解析）</td><td><b>HR 0.75</b>（95%CI 0.72–0.78）</td></tr>
+    <tr><td class="k">手術あり vs <b>白内障のない人</b></td><td><b>HR 0.84</b>（95%CI 0.66–1.06）＝<b>差なし</b></td></tr>
+  </table>
+  <p class="src">出典: Lee CS, et al. JAMA Intern Med. 2022;182(2):134-141.（3,038人・23,554人年・認知症853例）／Yeo BSY, et al. Ophthalmology. 2024;131(8):975-984.（24論文・558,276人）</p>
+  <div class="card card--amber">
+    <div class="card__t">著者自身の評価</div>
+    <p>メタ解析の著者は、この一連の証拠の確からしさを <b>GRADEで「very low〜low（とても低い〜低い）」</b>と評価しています。「手術をすれば白内障のない人と同じところまで戻る」とは読めません。</p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">4</span>「手術を受けられる人が、もともと健康なだけ」ではないのか</div>
+  <p class="lead">同じ程度の白内障でも、体力があり、通院ができ、判断がしっかりしている人ほど手術に踏み切れます。研究者はこの疑いに、<b>同じ集団の中で「視力を回復させない緑内障の手術」を陰性対照に置く</b>という方法で応えました。</p>
+  <table>
+    <tr><th>手術</th><th>認知症との関連</th></tr>
+    <tr><td class="k">白内障手術（<b>視力が戻る</b>）</td><td><b>HR 0.71</b>（95%CI 0.62–0.83）</td></tr>
+    <tr><td class="k">緑内障手術（<b>視力は戻らない</b>）</td><td><b>HR 1.08</b>（95%CI 0.75–1.56）＝<b>関連なし</b></td></tr>
+  </table>
+  <p class="src">出典: Lee CS, et al. JAMA Intern Med. 2022.（緑内障728人中105人が手術・5,029人年）。著者らは緑内障手術を "negative control"（陰性対照）と明記しています。</p>
+  <div class="card card--warn">
+    <div class="card__t">著者自身が書いている限界</div>
+    <p>「2つの手術は適応が異なるので、この比較はhealthy patient biasに対処する<b>おおよその方法にすぎない</b>」——<b>疑いは弱まりましたが、消えてはいません。</b>また、この研究の参加者は91%が自己申告の白人です。</p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">5</span>それでも、ランダム化試験は一つもありません</div>
+  <table>
+    <tr><th></th><th>難聴（中年期・PAF 7%）</th><th>視力低下（晩年期・PAF 2%）</th></tr>
+    <tr><td class="k">介入</td><td>補聴器</td><td>白内障手術・眼鏡</td></tr>
+    <tr><td class="k">ランダム化比較試験</td><td><b>ある</b>（ACHIEVE）</td><td><b>ない</b></td></tr>
+    <tr><td class="k">分かっていること</td><td>全体では有意差なし。高リスク層のサブ解析のみ</td><td>観察研究のみ</td></tr>
+  </table>
+  <div class="card card--warn">
+    <div class="card__t">メタ解析の著者の結論</div>
+    <p>「白内障手術の認知機能面での利益は、<b>ランダム化試験でさらに検証されるべきである</b>」——24論文・のべ55万人以上を集めた人たちが、それでもなお決着していないと書いています。</p>
+    <p>13のメタ解析・原著232本を格付けしたアンブレラレビューでも、<b>確からしさが「convincing（説得的）」「highly suggestive（強く示唆的）」に達した関連は一つもありませんでした。</b></p>
+  </div>
+  <p class="src">出典: Yeo BSY, et al. Ophthalmology. 2024.／Rahmati M, et al. Ageing Res Rev. 2024;101:102523.</p>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">6</span>遺伝子を使った解析（メンデルランダム化）</div>
+  <table>
+    <tr><th>調べた向き</th><th>結果</th></tr>
+    <tr><td class="k">認知症 → 白内障（<b>逆向き</b>）</td><td><b>関連なし</b>（OR 0.99・95%CI 0.96–1.01）</td></tr>
+    <tr><td class="k">白内障 → 認知症全体</td><td><b>有意でない</b>（OR 1.21・95%CI 0.98–1.50）</td></tr>
+    <tr><td class="k">白内障 → 血管性認知症</td><td>OR 1.92（95%CI 1.26–2.92）</td></tr>
+  </table>
+  <p class="src">出典: Ferguson EL, et al. JAMA Netw Open. 2024;7(7):e2424539.（UK Biobank 304,953人）</p>
+  <p class="lead">「認知症のせいで白内障ができている」という<b>逆向きの説明は否定されました</b>。ただし<b>白内障から認知症全体への向きは有意になっておらず</b>、有意だったのは血管性認知症だけです。</p>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">7</span>日本のデータでは、軽度認知障害までだった</div>
+  <table>
+    <tr><th>白内障手術の既往と</th><th>結果</th></tr>
+    <tr><td class="k">軽度認知障害（MCI）</td><td><b>OR 0.78</b>（95%CI 0.64–0.96・P=0.019）</td></tr>
+    <tr><td class="k">認知症</td><td><b>有意な関連なし</b></td></tr>
+  </table>
+  <p class="src">出典: Miyata K, et al. PLoS One. 2018;13(2):e0192677.（藤原京アイスタディ・奈良県・68歳以上2,764人・<b>横断研究</b>）</p>
+  <div class="card card--warn">
+    <div class="card__t">「日本でも同じ結果」とは書けません</div>
+    <p>著者の結論は「白内障手術は視力とは独立にMCIのリスクを下げる役割を果たすかもしれないが、<b>認知症についてはそうではない</b>」というものです。<b>日本のデータは、この話を弱める側にあります。</b>横断研究であり、認知症の判定もスクリーニング検査（MMSE 23点以下）によるものです。</p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">8</span>「視力は1.0あるから大丈夫」とは限りません</div>
+  <table>
+    <tr><th>測り方</th><th>認知症への寄与（PAF）</th></tr>
+    <tr><td class="k">14因子の重なりを割り引く（Lancet 2024）</td><td><b>2%</b></td></tr>
+    <tr><td class="k">自己申告・重み付き（Ehrlich 2022・16,690人）</td><td><b>1.8%</b></td></tr>
+    <tr><td class="k"><b>実際に測って単独で</b>（Smith 2024・71歳以上2,767人）</td><td><b>19.0%</b>（95%CI 8.2–29.7）</td></tr>
+    <tr><td class="k">うち<b>コントラスト感度</b>の障害</td><td><b>15.0%</b>（95%CI 6.6–23.6）</td></tr>
+  </table>
+  <p class="src">出典: Smith JR, et al. JAMA Ophthalmol. 2024;142(10):900-908.／Ehrlich JR, et al. JAMA Neurol. 2022;79(6):623-626.</p>
+  <div class="card">
+    <div class="card__t">コントラスト感度とは</div>
+    <p>濃淡の差が小さいものを見分ける力のことです。視力表は<b>白地に黒</b>という、いちばんくっきりした条件で測るため、薄暗い場所での見え方や、段差・縁石の見分けにくさは拾えません。</p>
+    <p>※ ただしSmithらの研究は<b>横断研究</b>で、著者自身も「因果関係を証明するものではない」と明記しています。<b>この図は検査を勧めるものではありません。</b></p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">9</span>「見えにくい＝認知症のはじまり」ではありません</div>
+  <div class="rows">
+    <div class="row"><div class="row__n">→</div><div class="row__d"><b>見えにくさ → 認知症</b>：ここまでの話。<b>目そのもの</b>の問題（白内障など）が出発点。まだ因果は証明されていない。</div></div>
+    <div class="row"><div class="row__n">←</div><div class="row__d"><b>認知症 → 見えにくさ</b>：<b>目に異常がないのに「見て理解する」ことが難しくなる</b>状態。脳の後ろ側から萎縮が始まるタイプ（後部皮質萎縮症）で起こる。</div></div>
+  </div>
+  <p class="lead">実際の区別は、<b>眼科で目を診てもらって、目の側に見えにくさを説明できる異常が見つかるかどうか</b>です。いずれにせよ、<b>見えにくさが続くならまず眼科で目を診てもらう</b>のが最初の一歩になります。</p>
+</div>
+
+<div class="sec">
+  <div class="sum">
+    <div class="sum__c"><div class="sum__t">1</div><div class="sum__d">2024年から、認知症の危険因子に<b>見えにくさ</b>が入りました。手術で取り戻せる、という点が異質です。ただしこれは<b>委員会の評価</b>であって、減るという証明ではありません。</div></div>
+    <div class="sum__c"><div class="sum__t">2</div><div class="sum__d">手術を受けた人ほど認知症が少ない、は本当です。「健康なだけ」という疑いに対し、<b>視力を戻さない緑内障手術では関連が出ませんでした</b>。ただし著者は「おおよその方法」と断っています。</div></div>
+    <div class="sum__c"><div class="sum__t">3</div><div class="sum__d">それでも、<b>手術で防げると示したランダム化試験は一つもありません</b>。日本のデータでも、関連したのは軽度認知障害まででした。</div></div>
+  </div>
+</div>
+
+<div class="note">
+  <b>この図で扱っていないこと。</b>白内障手術の術式や眼内レンズの選び方、手術を受けるべき時期は扱っていません。<b>手術の適応は目の状態と生活への支障で決まるものであり、認知症を理由に時期を早めるべきだと言える根拠はありません。</b>また、認知症の予防を目的とした検査を勧めるものでもありません。ここに挙げた研究はいずれも<b>観察研究</b>で、因果関係を示したものではありません。
+</div>
+
+<div class="ft">
+  医知創造ラボ ／ 認知症×生活習慣病シリーズ 第9弾<br>
+  本図は一般的な医学情報の提供を目的としたものであり、個別の診断・治療に代わるものではありません。<br>
+  見えにくさが続くとき、あるいは物忘れが気になるときは、自己判断せず医療機関にご相談ください。
+</div>
+
+</div>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px auto 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+</body>
+</html>

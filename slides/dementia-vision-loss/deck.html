@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>視力低下×認知症 — 認知症×生活習慣病シリーズ 第9弾</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* teal accent (vision theme) */
+  --accent: #1F7A8C;
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, #ffffff);
+  --accent-line: color-mix(in srgb, var(--accent) 60%, #ffffff);
+  --accent-ink: color-mix(in srgb, var(--accent) 70%, #5a2418);
+
+  /* type scale — multiply all via --type-mult (base enlarged for mobile readability) */
+  --type-mult: 1.38;
+  --type-display: calc(96px * var(--type-mult));
+  --type-title:   calc(82px * var(--type-mult));
+  --type-heading: calc(60px * var(--type-mult));
+  --type-subtitle:calc(44px * var(--type-mult));
+  --type-body:    calc(38px * var(--type-mult));
+  --type-small:   calc(30px * var(--type-mult));
+  --type-label:   calc(27px * var(--type-mult));
+  --type-chapter: calc(210px * var(--type-mult));
+  --type-stat:    calc(150px * var(--type-mult));
+
+  --pad-x: 112px;
+  --pad-top: 58px;
+  --pad-bottom: 116px;  /* フッター帯(bottom 36-40px + 行高53px = 89-93px)を必ず避ける。80pxだと content box 下端がフッター上端より下になり9-13px食い込む */
+  --gap-title: 24px;
+  --gap-item: 22px;
+
+  --grad-navy: linear-gradient(135deg, #1B3A5C 0%, #2C5AA0 100%);
+}
+
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#0c1622; }
+
+/* ---------- base slide ---------- */
+.slide{
+  box-sizing:border-box;
+  display:flex; flex-direction:column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--font-ja);
+  overflow:hidden;
+  position:relative;
+}
+.slide--navy{ background: var(--grad-navy); color: var(--white); }
+.slide--soft{ background: var(--bg-alt); }
+
+/* eyebrow — shared header marker across content slides */
+.eyebrow{
+  display:flex; align-items:center; gap:16px;
+  font-size: var(--type-label); font-weight:700; color: var(--blue);
+  letter-spacing:.04em;
+}
+.eyebrow::before{
+  content:""; width:18px; height:18px; border-radius:4px;
+  background: var(--accent); flex:none;
+}
+.eyebrow .num{ font-family: var(--font-en); color: var(--accent-ink); }
+
+.s-title{
+  font-size: var(--type-heading); line-height:1.22; color: var(--navy);
+  margin: var(--gap-title) 0 0; font-weight:700; letter-spacing:.01em;
+  text-wrap: pretty;
+}
+.slide--navy .s-title{ color:#fff; }
+
+.lead{
+  font-size: var(--type-body); line-height:1.7; color: var(--ink-2);
+  margin:0; text-wrap: pretty;
+}
+.muted{ color: var(--gray); }
+
+/* footer band w/ channel + page (decorative, consistent) */
+.slide__foot{
+  position:absolute; left: var(--pad-x); right: var(--pad-x); bottom: 40px;
+  display:flex; align-items:center; justify-content:space-between;
+  font-size: calc(24px * var(--type-mult)); color: var(--gray);
+  font-family: var(--font-ja);
+}
+.slide__foot .ch{ display:flex; align-items:center; gap:10px; }
+.slide__foot .cross{ color: var(--accent); font-weight:700; }
+.slide--navy .slide__foot{ color: rgba(255,255,255,.65); }
+.slide--navy .slide__foot .cross{ color:#fff; }
+
+/* ============ 1. COVER ============ */
+.cover{ justify-content:center; }
+.cover__badge{
+  display:inline-flex; align-items:center; gap:14px; align-self:flex-start;
+  background: rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.28);
+  color:#fff; padding:14px 26px; border-radius:999px;
+  font-size: var(--type-label); font-weight:700;
+}
+.cover__badge .cross{ color: var(--accent); font-size:1.2em; }
+.cover__title{
+  font-size: var(--type-display); line-height:1.18; color:#fff; font-weight:700;
+  margin:42px 0 0; letter-spacing:.01em; text-wrap:balance; max-width:24ch;
+}
+.cover__title .hl{ color: var(--accent); }
+.cover__sub{
+  font-size: var(--type-subtitle); color: rgba(255,255,255,.82);
+  margin:34px 0 0; font-weight:400;
+}
+.cover__meta{
+  display:flex; gap:34px; align-items:center; margin-top:60px;
+  font-size: var(--type-small); color: rgba(255,255,255,.78);
+}
+.cover__meta .ep{
+  font-family: var(--font-en); font-weight:700; color:#fff;
+  background: var(--accent); padding:8px 20px; border-radius:8px;
+}
+.cover__blob{
+  position:absolute; right:-160px; top:-160px; width:620px; height:620px;
+  border-radius:50%; background: radial-gradient(circle at 30% 30%, rgba(31,122,140,.55), rgba(31,122,140,0) 70%);
+  pointer-events:none;
+}
+
+/* ============ 2. THEME / CONCLUSION FIRST ============ */
+.theme__body{ display:flex; flex-direction:column; gap: var(--gap-title); margin-top: 28px; flex:1; justify-content:center; }
+.theme__q{ font-size: var(--type-title); line-height:1.25; color: var(--navy); font-weight:700; max-width:22ch; text-wrap:balance; }
+.theme__q .hl{ color: var(--accent-ink); border-bottom: 8px solid var(--accent-line); }
+.concl{
+  display:flex; align-items:flex-start; gap:28px;
+  background: var(--accent-soft); border-left: 12px solid var(--accent);
+  border-radius: 10px; padding: 32px 44px;
+}
+.concl__tag{
+  flex:none; background: var(--accent); color:#fff; font-weight:700;
+  font-size: var(--type-small); padding:10px 22px; border-radius:8px;
+}
+.concl__text{ font-size: var(--type-subtitle); line-height:1.5; color: var(--navy-ink); font-weight:700; margin:0; }
+
+/* ============ 4. CHAPTER DIVIDER ============ */
+.chapter{ justify-content:center; }
+.chapter__num{
+  font-family: var(--font-en); font-size: var(--type-chapter); line-height:.9;
+  font-weight:700; color: var(--accent); margin:0;
+}
+.chapter__kicker{ font-size: var(--type-subtitle); color: rgba(255,255,255,.75); font-weight:700; letter-spacing:.1em; }
+.chapter__title{ font-size: var(--type-title); color:#fff; font-weight:700; margin:18px 0 0; max-width:20ch; text-wrap:balance; }
+.chapter__rule{ width:120px; height:8px; background: var(--accent); border-radius:4px; margin-top:40px; }
+
+/* ============ 5. BODY 1 COLUMN ============ */
+.body1{ }
+.body1__main{ margin-top: 26px; max-width: 1640px; display:flex; flex-direction:column; gap:18px; }
+.body1 .lead{ margin-bottom: 0; }
+.important-box.lg{
+  background: var(--blue-tint); border-left: 12px solid var(--blue);
+  border-radius: 10px; padding: 26px 40px; margin:0;
+}
+.important-box.lg .ttl{ display:flex; align-items:center; gap:14px; font-size: var(--type-small); font-weight:700; color: var(--blue); margin-bottom:8px; }
+.important-box.lg p{ font-size: var(--type-body); line-height:1.6; color: var(--ink-2); margin:0; }
+.important-box.lg.warn{ background: var(--accent-soft); border-left-color: var(--accent); }
+.important-box.lg.warn .ttl{ color: var(--accent-ink); }
+
+/* ============ 8. COMPARISON TABLE ============ */
+.tablewrap{ margin-top:26px; flex:1; }
+table.cmp{ width:100%; border-collapse:collapse; font-size: var(--type-small); }
+table.cmp th, table.cmp td{ text-align:left; padding:16px 28px; vertical-align:middle; line-height:1.4; }
+table.cmp thead th{ background: var(--navy); color:#fff; font-weight:700; font-size: var(--type-body); }
+table.cmp thead th:first-child{ border-top-left-radius:10px; }
+table.cmp thead th:last-child{ border-top-right-radius:10px; }
+table.cmp tbody td{ border-bottom:1px solid var(--line); color: var(--ink-2); }
+table.cmp tbody tr:nth-child(even){ background: var(--bg-muted); }
+table.cmp tbody td:first-child{ font-weight:700; color: var(--navy); font-size: var(--type-body); white-space:nowrap; }
+table.cmp .pill{ display:inline-block; font-size: calc(24px * var(--type-mult)); font-weight:700; padding:6px 16px; border-radius:999px; }
+.pill--easy{ background: var(--green-soft); color:#1c7a3a; }
+.pill--mid{ background: var(--accent-soft); color: var(--accent-ink); }
+/* フッター衝突是正: 行数が多い表のみ行間を詰める */
+table.cmp.tight th, table.cmp.tight td{ padding-top:10px; padding-bottom:10px; }
+table.cmp.xtight th, table.cmp.xtight td{ padding-top:6px; padding-bottom:6px; }
+/* 4列表は1列目の nowrap を解除して桁あふれを避ける */
+table.cmp.wrap1 tbody td:first-child{ white-space:normal; }
+
+/* ============ 11. SUMMARY ============ */
+.sum__list{ display:grid; grid-template-columns: repeat(3,1fr); gap:36px; margin-top:44px; flex:1; align-content:center; }
+.sum__card{
+  background:#fff; border:2px solid var(--line); border-top:10px solid var(--blue);
+  border-radius:12px; padding:38px 34px; display:flex; flex-direction:column; gap:18px;
+  box-shadow: var(--shadow-sm);
+}
+.sum__card:nth-child(2){ border-top-color: var(--accent); }
+.sum__card:nth-child(3){ border-top-color: var(--navy); }
+.sum__n{ font-family: var(--font-en); font-size: calc(50px * var(--type-mult)); font-weight:700; color: var(--blue-soft); line-height:1; }
+.sum__card:nth-child(2) .sum__n{ color: var(--accent-soft); }
+.sum__card:nth-child(3) .sum__n{ color: var(--line); }
+.sum__h{ font-size: var(--type-subtitle); font-weight:700; color: var(--navy); line-height:1.3; }
+.sum__p{ font-size: var(--type-label); color: var(--ink-2); line-height:1.55; margin:0; }
+
+/* ============ 12. ENDING / CTA ============ */
+.end{ justify-content:center; align-items:center; text-align:center; }
+.end__cross{ font-size: var(--type-subtitle); color: var(--accent); font-weight:700; }
+.end__h{ font-size: var(--type-title); color:#fff; font-weight:700; margin:18px 0 0; text-wrap:balance; }
+.end__sub{ font-size: var(--type-subtitle); color: rgba(255,255,255,.82); margin:26px 0 0; font-weight:400; }
+.end__cta{ display:flex; gap:30px; margin-top:64px; }
+.btn{ display:inline-flex; align-items:center; gap:16px; font-size: var(--type-subtitle); font-weight:700; padding:24px 48px; border-radius:999px; }
+.btn--sub{ background: var(--accent); color:#fff; }
+.btn--like{ background: rgba(255,255,255,.14); color:#fff; border:2px solid rgba(255,255,255,.4); }
+.end__next{ margin-top:56px; font-size: var(--type-small); color: rgba(255,255,255,.7); }
+.end__next b{ color:#fff; }
+
+/* ============ 本弾追加: 結論メッセージ縦積み（02・17 共通） ============ */
+.concl__msgs{ counter-reset:cm; list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:14px; }
+.concl__msgs li{ counter-increment:cm; display:flex; align-items:flex-start; gap:20px; font-size: var(--type-small); font-weight:700; color: var(--navy-ink); line-height:1.4; }
+.concl__msgs li::before{
+  content: counter(cm); flex:none; width:40px; height:40px; border-radius:50%;
+  background: var(--accent); color:#fff; font-family: var(--font-en); font-weight:800;
+  display:flex; align-items:center; justify-content:center; font-size: calc(22px * var(--type-mult));
+}
+
+/* ============ EDITORIAL POLISH (shared utilities) ============ */
+.eyebrow .en{ font-family: var(--font-en); color: var(--accent-ink); letter-spacing:.15em; text-transform:uppercase; }
+.slide--navy .eyebrow{ color: rgba(255,255,255,.85); }
+.slide--navy .eyebrow .en{ color:#fff; }
+
+.hairline{ height:1px; background: var(--navy); opacity:.25; margin: 18px 0 0; border:0; }
+.slide--navy .hairline{ background:#fff; opacity:.3; }
+
+.chapter-ghost{
+  position:absolute; top: 30px; right: var(--pad-x);
+  font-family: var(--font-en); font-weight:700; line-height:.8;
+  font-size: calc(150px * var(--type-mult)); color: var(--navy);
+  opacity:.06; pointer-events:none; user-select:none;
+}
+.slide--navy .chapter-ghost{ color:#fff; opacity:.10; }
+
+.hl-underline{ border-bottom: 6px solid var(--accent-line); }
+
+/* entrance animation — fade-up */
+@media (prefers-reduced-motion:no-preference){
+  [data-deck-active] .anim{ animation: fade-up .5s both; }
+  [data-deck-active] .anim2{ animation: fade-up .5s .12s both; }
+  [data-deck-active] .anim3{ animation: fade-up .5s .24s both; }
+  [data-deck-active] .anim4{ animation: fade-up .5s .36s both; }
+  [data-deck-active] .anim5{ animation: fade-up .5s .48s both; }
+  [data-deck-active] .anim6{ animation: fade-up .5s .60s both; }
+  [data-deck-active] .anim-i{ animation: fade-up .5s both; animation-delay: calc(var(--i,0) * .1s); }
+  [data-deck-active] .a-fade { animation-name: a-fade; }
+  [data-deck-active] .a-up   { animation-name: fade-up; }
+  [data-deck-active] .a-down { animation-name: a-down; }
+  [data-deck-active] .a-right{ animation-name: a-right; }
+  [data-deck-active] .a-left { animation-name: a-left; }
+  [data-deck-active] .a-zoom { animation-name: a-zoom; }
+  [data-deck-active] .a-pop  { animation-name: a-pop; animation-timing-function: cubic-bezier(.34,1.56,.64,1); }
+  [data-deck-active] .a-blur { animation-name: a-blur; }
+  [data-deck-active] .grow-y { transform-origin:bottom center; animation: grow-y .7s .2s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .grow-x { transform-origin:left center;   animation: grow-x .55s .25s cubic-bezier(.2,.7,.2,1) both; }
+  [data-deck-active] .nudge-x{ animation: nudge-x .9s .35s ease-in-out both; }
+}
+.grow-y{ transform-origin:bottom center; } .grow-x{ transform-origin:left center; }
+@keyframes fade-up{ from{ opacity:0; transform: translateY(16px);} to{ opacity:1; transform:none;} }
+@keyframes a-fade { from{ opacity:0; } to{ opacity:1; } }
+@keyframes a-down { from{ opacity:0; transform: translateY(-16px);} to{ opacity:1; transform:none; } }
+@keyframes a-right{ from{ opacity:0; transform: translateX(-28px);} to{ opacity:1; transform:none; } }
+@keyframes a-left { from{ opacity:0; transform: translateX(28px); } to{ opacity:1; transform:none; } }
+@keyframes a-zoom { from{ opacity:0; transform: scale(.94);       } to{ opacity:1; transform:none; } }
+@keyframes a-pop  { from{ opacity:0; transform: scale(.8);        } to{ opacity:1; transform:none; } }
+@keyframes a-blur { from{ opacity:0; filter: blur(12px); transform: translateY(10px);} to{ opacity:1; filter: blur(0); transform:none; } }
+@keyframes grow-y { from{ transform: scaleY(0);} to{ transform: scaleY(1);} }
+@keyframes grow-x { from{ transform: scaleX(0);} to{ transform: scaleX(1);} }
+@keyframes nudge-x{ 0%{ transform:none;} 55%{ transform: translateX(10px);} 100%{ transform:none;} }
+
+/* tweaks mount */
+#tweaks-root{ position:fixed; inset:0; pointer-events:none; z-index:9999; }
+#tweaks-root > *{ pointer-events:auto; }
+/* ---------- ネイビー地の視認性（2026-08-18 ユーザー指摘で追加）----------
+   地の色は --grad-navy（#1B3A5C → #2C5AA0）。
+   ここに deep teal(#1F7A8C) を文字色で載せると輝度差が小さく、実測コントラストは
+   1.37:1（明るい端）〜2.34:1（暗い端）しかない＝ほぼ読めない。
+   ★ネイビー地のスライド（表紙01・エンディング18）だけ、明るいミントグリーンに差し替える。
+     #6EE7B7 の実測コントラストは 4.48:1（明るい端）〜7.63:1（暗い端）。
+   ★白地・薄地のスライドは deep teal のまま（そちらは十分な輝度差がある）。
+   ⚠️ この色は --accent から派生させていない。tweaks パネルで accent を変えても
+     追随しないので、accent を変えるときは【HTML の :root】【tweaks-app.jsx】に加えて
+     【この --accent-on-navy】の3箇所を直すこと。 */
+.slide--navy{ --accent-on-navy: #6EE7B7; --on-navy-ink: #10394A; }
+.slide--navy .cover__title .hl,
+.slide--navy .cover__badge .cross,
+.slide--navy .end__cross{ color: var(--accent-on-navy); }
+.slide--navy .cover__meta .ep,
+.slide--navy .btn--sub{ background: var(--accent-on-navy); color: var(--on-navy-ink); }
+
+</style>
+</head>
+<body style="font-size: 8px">
+
+<deck-stage width="1920" height="1080">
+  <!-- ===== 01. 表紙 ===== -->
+  <section data-label="表紙" data-screen-label="01 表紙" class="slide slide--navy cover">
+    <div class="cover__blob"></div>
+    <div class="cover__badge anim"><span class="cross">✚</span><span>医知創造ラボ</span></div>
+    <h1 class="cover__title anim2 a-blur">視力低下と<span class="hl">認知症</span></h1>
+    <p class="cover__sub anim3">「白内障の手術で認知症が減る」——<br>その研究、緑内障の手術と比べてみたら</p>
+    <div class="cover__meta anim3">
+      <span class="ep">#09</span>
+      <span>監修：脳神経内科専門医</span>
+    </div>
+  </section>
+
+  <!-- ===== 02. フック ===== -->
+  <section data-label="フック" data-screen-label="02 フック" class="slide">
+    <div class="chapter-ghost">02</div>
+    <div class="eyebrow anim">よくある言葉<span class="en">A COMMON PHRASE</span></div>
+    <div class="theme__body" style="gap:16px;">
+      <h2 class="theme__q anim" style="font-size:var(--type-heading); max-width:none;">「見えにくいのは、<span class="hl-underline">年のせい</span>でしょう」</h2>
+      <div class="concl anim2" data-cue="ところが2024年" style="flex-direction:column; align-items:stretch; padding:18px 40px;">
+        <span class="concl__tag" style="align-self:flex-start;">今日、確かめること</span>
+        <p class="concl__text" style="margin-top:14px;">見えにくさは、<span style="white-space:nowrap;">認知症の危険因子に入りました。</span></p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>02</span></div>
+  </section>
+
+  <!-- ===== 03. この動画で分かること ===== -->
+  <section data-label="この動画で分かること" data-screen-label="03 この動画で分かること" class="slide slide--soft">
+    <div class="chapter-ghost">03</div>
+    <div class="eyebrow anim">医知創造ラボ<span class="en">WHAT YOU'LL LEARN</span></div>
+    <h2 class="s-title anim">この動画で分かること、<span class="hl-underline">3つ</span></h2>
+    <hr class="hairline">
+    <div class="sum__list" style="margin-top:28px; gap:28px;">
+      <div class="sum__card anim2" data-cue="1つめ。認知症の危険因子に" style="padding:26px 26px; gap:10px;">
+        <div class="sum__n">01</div>
+        <div class="sum__h">危険因子に<br>「見えにくさ」が<span style="white-space:nowrap;">入った</span></div>
+        <p class="sum__p" style="line-height:1.4;">しかも手術という、<br>すでにある方法で<br>取り戻せる因子として。</p>
+      </div>
+      <div class="sum__card anim3" data-cue="2つめ。手術を受けた人ほど" style="padding:26px 26px; gap:10px;">
+        <div class="sum__n">02</div>
+        <div class="sum__h">疑いを検証した<br>研究がある</div>
+        <p class="sum__p" style="line-height:1.4;">「健康な人が手術を<br>受けているだけ」を、<br>別の手術と比べて検証。</p>
+      </div>
+      <div class="sum__card anim4" data-cue="3つめ。それでも、証明した" style="padding:26px 26px; gap:10px;">
+        <div class="sum__n">03</div>
+        <div class="sum__h">それでも試験は<br>一つもない</div>
+        <p class="sum__p" style="line-height:1.4;">「防げる」を示した<br>ランダム化試験は<br>まだ行われていない。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>03</span></div>
+  </section>
+
+  <!-- ===== 04. 2024年、危険因子に加わった ===== -->
+  <section data-label="2024年に加わった因子" data-screen-label="04 2024年に加わった因子" class="slide">
+    <div class="chapter-ghost">04</div>
+    <div class="eyebrow anim">Lancet 委員会 2024<span class="en">14 RISK FACTORS</span></div>
+    <h2 class="s-title anim">危険因子に、<span class="hl-underline">「視力低下」</span>が加わりました</h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <div class="important-box lg anim2" data-cue="2020年版では">
+        <div class="ttl">📋 12因子 → 14因子へ</div>
+        <p>2020年版の12因子に、2024年版で<span style="white-space:nowrap;"><strong>2つが新しく加わりました</strong>。</span></p>
+      </div>
+      <div class="important-box lg warn anim3" data-cue="新しく加わった2つは">
+        <div class="ttl">👁 新しい2つ</div>
+        <p>高LDLコレステロール（中年期・7%）と、<span style="white-space:nowrap;"><strong>視力低下（晩年期・2%）</strong>。</span></p>
+      </div>
+    </div>
+    <p class="lead muted anim4" data-cue="この%は、集団に" style="margin-top:18px; font-size:var(--type-small);">この%は<strong>集団についての目安</strong>です。<span style="white-space:nowrap;">個人が2%減らせる、という意味ではありません。</span></p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>04</span></div>
+  </section>
+
+  <!-- ===== 05. 介入可能性が高い ===== -->
+  <section data-label="介入可能性が高い" data-screen-label="05 介入可能性が高い" class="slide slide--soft">
+    <div class="chapter-ghost">05</div>
+    <div class="eyebrow anim">委員会が挙げた特徴<span class="en">Livingston 2024</span></div>
+    <h2 class="s-title anim">「すでにある、<span class="hl-underline">安価な介入</span>で対応できる」</h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <div class="important-box lg anim2" data-cue="委員会は、補聴器や">
+        <div class="ttl">🩺 委員会の評価</div>
+        <p>補聴器や白内障手術のように、<span style="white-space:nowrap;"><strong>既にある安価な介入で対応できる</strong>因子。</span></p>
+      </div>
+      <div class="important-box lg warn anim3" data-cue="ただし、ここが大事">
+        <div class="ttl">⚠ ただし</div>
+        <p>これは<strong>委員会の評価</strong>です。<span style="white-space:nowrap;">「減る」証明ではありません。</span></p>
+      </div>
+    </div>
+    <p class="lead muted anim4" data-cue="この違いを、ここから" style="margin-top:12px; font-size:var(--type-small);">この違いを、ここから順に確かめます。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>05</span></div>
+  </section>
+
+  <!-- ===== 06. 見えにくい人はその後 ===== -->
+  <section data-label="見えにくい人はその後" data-screen-label="06 見えにくい人はその後" class="slide">
+    <div class="chapter-ghost">06</div>
+    <div class="eyebrow anim">16研究のメタ解析<span class="en">Cao 2023 / Zhu 2022</span></div>
+    <h2 class="s-title anim">見えにくい人は、その後<span class="hl-underline">発症しやすい</span></h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2" data-cue="複数の研究が、同じ方向">
+      <table class="cmp wrap1">
+        <thead>
+          <tr><th>研究</th><th>認知症の発症</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>メタ解析<br>（16研究）</td><td><strong>RR 1.44</strong><span style="white-space:nowrap;">（1.19–1.75）</span></td></tr>
+          <tr><td>UK Biobank<br>（前向き）</td><td><strong>HR 1.78</strong><span style="white-space:nowrap;">（1.18–2.68）</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead anim3" data-cue="しかも、視力が悪いほど" style="margin-top:12px; font-size:var(--type-small);">視力が悪いほどリスクが高い、という<strong>傾向</strong>も見られています。</p>
+    <p class="lead muted anim4" data-cue="ただし、いずれも観察研究" style="margin-top:18px; font-size:var(--type-small);">ただし、いずれも<strong>観察研究</strong>です。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>06</span></div>
+  </section>
+
+  <!-- ===== 07. 同時に測ると差は大きく見える ===== -->
+  <section data-label="同時に測ると差は大きい" data-screen-label="07 同時に測ると差は大きい" class="slide slide--soft">
+    <div class="chapter-ghost">07</div>
+    <div class="eyebrow anim">同じメタ解析の中で<span class="en">Cao 2023</span></div>
+    <h2 class="s-title anim">「同時に測る」と、<span class="hl-underline">差は大きく見える</span></h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2" data-cue="同じメタ解析の中に">
+      <table class="cmp wrap1">
+        <thead>
+          <tr><th>測り方</th><th>認知機能障害との関連</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>同時に測る<br>（横断）</td><td><strong>OR 2.37</strong><span style="white-space:nowrap;">（1.84–3.03）</span></td></tr>
+          <tr><td>先に視力を測り<br>追いかける（縦断）</td><td><strong>RR 1.41</strong><span style="white-space:nowrap;">（1.31–1.51）</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead anim3" data-cue="認知症があると、視力表" style="margin-top:12px; font-size:var(--type-small);">認知症があると、<strong>視力表を読むこと自体</strong>が難しくなります。</p>
+    <p class="lead muted anim4" data-cue="ただし、この説明は解釈" style="margin-top:18px; font-size:var(--type-small);">この説明は<strong>解釈</strong>であって、研究が証明したことではありません。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>07</span></div>
+  </section>
+
+  <!-- ===== 08. 手術を受けた人では少なかった ===== -->
+  <section data-label="手術を受けた人では少ない" data-screen-label="08 手術を受けた人では少ない" class="slide">
+    <div class="chapter-ghost">08</div>
+    <div class="eyebrow anim">ACT研究（前向きコホート）<span class="en">Lee 2022</span></div>
+    <h2 class="s-title anim">手術を受けた人では、<span class="hl-underline">認知症が少なかった</span></h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2" data-cue="アメリカのコホート研究では">
+      <table class="cmp wrap1">
+        <thead>
+          <tr><th>研究</th><th>その後の結果</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>ACT研究<br>（認知症の発症）</td><td><strong>HR 0.71</strong><span style="white-space:nowrap;">（0.62–0.83）</span></td></tr>
+          <tr><td>メタ解析<br>（認知機能の低下）</td><td><strong>HR 0.75</strong><span style="white-space:nowrap;">（0.72–0.78）</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead anim3" data-cue="一方で、白内障のない人" style="margin-top:12px; font-size:var(--type-small);">ただし<strong>白内障のない人と比べると差はなく</strong>（HR 0.84・0.66–1.06）、</p>
+    <p class="lead muted anim4" data-cue="著者自身が、この一連" style="margin-top:18px; font-size:var(--type-small);">著者はこの一連の証拠の確からしさを<strong>「とても低い〜低い」</strong>と評価しています。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>08</span></div>
+  </section>
+
+  <!-- ===== 09. 健康な人が受けているだけでは？ ===== -->
+  <section data-label="健康な人が受けているだけ？" data-screen-label="09 健康な人が受けているだけ？" class="slide slide--soft">
+    <div class="chapter-ghost">09</div>
+    <div class="eyebrow anim">当然の疑い<span class="en">HEALTHY PATIENT BIAS</span></div>
+    <div class="theme__body" style="gap:16px;">
+      <h2 class="theme__q anim" style="font-size:var(--type-heading); max-width:none;">「手術を受けられる人が、<br><span class="hl-underline">もともと健康なだけ</span>」では？</h2>
+      <div class="concl anim2" data-cue="同じ程度の白内障でも" style="flex-direction:column; align-items:stretch; padding:18px 40px;">
+        <span class="concl__tag" style="align-self:flex-start;">疑いの中身</span>
+        <p class="concl__text" style="margin-top:14px;">体力があり、通院でき、判断ができる人ほど<span style="white-space:nowrap;">手術に踏み切れます。</span></p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>09</span></div>
+  </section>
+
+  <!-- ===== 10. 緑内障手術という陰性対照 ===== -->
+  <section data-label="緑内障手術という陰性対照" data-screen-label="10 緑内障手術という陰性対照" class="slide">
+    <div class="chapter-ghost">10</div>
+    <div class="eyebrow anim">同じ集団の中で比べる<span class="en">NEGATIVE CONTROL</span></div>
+    <h2 class="s-title anim">視力を戻さない<span class="hl-underline">緑内障手術</span>と比べる</h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2" data-cue="こちらは眼圧を下げて">
+      <table class="cmp wrap1">
+        <thead>
+          <tr><th>手術</th><th>認知症との関連</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>白内障手術<br>（視力が戻る）</td><td><strong>HR 0.71</strong><span style="white-space:nowrap;">（0.62–0.83）</span></td></tr>
+          <tr><td>緑内障手術<br>（視力は戻らない）</td><td><strong>HR 1.08</strong><span style="white-space:nowrap;">（0.75–1.56）</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead anim3" data-cue="もし、手術を受けられるほど" style="margin-top:12px; font-size:var(--type-small);">「健康だから」なら、<strong>緑内障手術でも減るはず</strong>——減りませんでした。</p>
+    <p class="lead muted anim4" data-cue="ただし、著者自身が" style="margin-top:18px; font-size:var(--type-small);">著者自身が<strong>「おおよその方法にすぎない」</strong>と書いています。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>10</span></div>
+  </section>
+
+  <!-- ===== 11. それでも試験は一つもない ===== -->
+  <section data-label="試験は一つもない" data-screen-label="11 試験は一つもない" class="slide slide--soft">
+    <div class="chapter-ghost">11</div>
+    <div class="eyebrow anim">ここが本題です<span class="en">NO RANDOMISED TRIAL</span></div>
+    <h2 class="s-title anim">それでも、<span class="hl-underline">ランダム化試験は一つもない</span></h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <div class="important-box lg warn anim2" data-cue="理由は単純で、決定的な検証">
+        <div class="ttl">🖊 メタ解析の著者の結論</div>
+        <p>「認知機能面での利益は、<span style="white-space:nowrap;"><strong>ランダム化試験でさらに検証されるべきだ</strong>」</span></p>
+      </div>
+      <div class="important-box lg anim3" data-cue="24の論文、のべ55万人">
+        <div class="ttl">📚 55万人分を集めてなお</div>
+        <p>24論文・のべ55万人以上をまとめた人たちが、<span style="white-space:nowrap;"><strong>決着していない</strong>と書いています。</span></p>
+      </div>
+    </div>
+    <p class="lead muted anim4" data-cue="だからこの動画の結論は" style="margin-top:18px; font-size:var(--type-small);">「効きそうだが、<strong>まだ証明されていない</strong>」——それが現在地です。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>11</span></div>
+  </section>
+
+  <!-- ===== 12. 難聴にはあった、視力にはない ===== -->
+  <section data-label="難聴との対比" data-screen-label="12 難聴との対比" class="slide">
+    <div class="chapter-ghost">12</div>
+    <div class="eyebrow anim">感覚器のもう一方と比べる<span class="en">HEARING vs VISION</span></div>
+    <h2 class="s-title anim">難聴には<span class="hl-underline">試験があった</span>。視力にはない</h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2" data-cue="難聴には、補聴器の">
+      <table class="cmp wrap1">
+        <thead>
+          <tr><th></th><th>難聴</th><th>視力低下</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>介入</td><td>補聴器</td><td>白内障手術・眼鏡</td></tr>
+          <tr><td>ランダム化<br>比較試験</td><td><strong>ある</strong></td><td><strong>ない</strong></td></tr>
+          <tr><td>結果</td><td>全体では<br>有意差なし</td><td><span style="white-space:nowrap;">観察研究のみ</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead muted anim3" data-cue="ちなみに、13のメタ解析" style="margin-top:18px; font-size:var(--type-small);">13のメタ解析を格付けした研究でも、<strong>「説得的」に達した関連は一つもありません</strong>でした。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>12</span></div>
+  </section>
+
+  <!-- ===== 13. 遺伝子を使った解析 ===== -->
+  <section data-label="遺伝子を使った解析" data-screen-label="13 遺伝子を使った解析" class="slide slide--soft">
+    <div class="chapter-ghost">13</div>
+    <div class="eyebrow anim">メンデルランダム化<span class="en">Ferguson 2024</span></div>
+    <h2 class="s-title anim">遺伝子を使うと、<span class="hl-underline">向きが調べられる</span></h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2" data-cue="遺伝子を使った解析では、3つ">
+      <table class="cmp tight wrap1">
+        <thead>
+          <tr><th>調べた向き</th><th>結果</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>認知症 → 白内障<br>（逆向き）</td><td><strong>関連なし</strong><span style="white-space:nowrap;">（0.96–1.01）</span></td></tr>
+          <tr><td>白内障 → 認知症全体</td><td><strong>有意でない</strong><span style="white-space:nowrap;">（0.98–1.50）</span></td></tr>
+          <tr><td>白内障 → 血管性認知症</td><td>OR 1.92<span style="white-space:nowrap;">（1.26–2.92）</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead muted anim3" data-cue="逆向きの説明は否定されました" style="margin-top:18px; font-size:var(--type-small);">逆向きの説明は否定されました。<span style="white-space:nowrap;">ただし<strong>認知症全体では有意になっていません</strong>。</span></p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>13</span></div>
+  </section>
+
+  <!-- ===== 14. 日本のデータ ===== -->
+  <section data-label="日本のデータ" data-screen-label="14 日本のデータ" class="slide">
+    <div class="chapter-ghost">14</div>
+    <div class="eyebrow anim">藤原京アイスタディ（奈良県）<span class="en">Miyata 2018</span></div>
+    <h2 class="s-title anim">日本では、<span class="hl-underline">MCIまで</span>でした</h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2" data-cue="日本のデータもあります">
+      <table class="cmp wrap1">
+        <thead>
+          <tr><th>白内障手術の既往と</th><th>結果</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>軽度認知障害<br>（MCI）</td><td><strong>OR 0.78</strong><span style="white-space:nowrap;">（0.64–0.96）</span></td></tr>
+          <tr><td>認知症</td><td><strong>有意な関連なし</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead anim3" data-cue="つまり「日本でも同じ結果" style="margin-top:12px; font-size:var(--type-small);">「<strong>日本でも同じ結果</strong>」とは言えません。</p>
+    <p class="lead muted anim4" data-cue="なお、これは横断研究で" style="margin-top:18px; font-size:var(--type-small);">これは<strong>横断研究</strong>で、認知症の判定もスクリーニング検査によるものです。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>14</span></div>
+  </section>
+
+  <!-- ===== 15. 視力1.0なら大丈夫とは限らない ===== -->
+  <section data-label="視力1.0なら大丈夫とは限らない" data-screen-label="15 視力1.0なら大丈夫とは限らない" class="slide slide--soft">
+    <div class="chapter-ghost">15</div>
+    <div class="eyebrow anim">測り方で答えが変わる<span class="en">Smith 2024</span></div>
+    <h2 class="s-title anim">「視力は1.0ある」<span class="hl-underline">とは限らない話</span></h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2" data-cue="ところが、同じ視覚障害の寄与">
+      <table class="cmp tight wrap1">
+        <thead>
+          <tr><th>測り方</th><th>認知症への寄与</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>重なりを割り引く<br>（Lancet）</td><td><strong>2%</strong></td></tr>
+          <tr><td>実際に測って単独で<br>（Smith 2024）</td><td><strong>19.0%</strong><span style="white-space:nowrap;">（8.2–29.7）</span></td></tr>
+          <tr><td>うちコントラスト感度</td><td><strong>15.0%</strong><span style="white-space:nowrap;">（6.6–23.6）</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="lead anim3" data-cue="視力表は、白地に黒" style="margin-top:12px; font-size:var(--type-small);">視力表は<strong>白地に黒</strong>という、最もくっきりした条件で測ります。</p>
+    <p class="lead muted anim4" data-cue="ただし、これも横断研究" style="margin-top:18px; font-size:var(--type-small);">これも横断研究です。<strong>検査を勧める話ではありません</strong>。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>15</span></div>
+  </section>
+
+  <!-- ===== 16. 向きが逆の病気もある ===== -->
+  <section data-label="向きが逆の病気" data-screen-label="16 向きが逆の病気" class="slide">
+    <div class="chapter-ghost">16</div>
+    <div class="eyebrow anim">よくある不安<span class="en">THE OTHER DIRECTION</span></div>
+    <h2 class="s-title anim">「見えにくい＝認知症」<span class="hl-underline">ではありません</span></h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <div class="important-box lg anim2" data-cue="この2つは、向きが違う">
+        <div class="ttl">👁 見えにくさ → 認知症</div>
+        <p>ここまでの話。<strong>目そのもの</strong>の問題が出発点です。</p>
+      </div>
+      <div class="important-box lg warn anim3" data-cue="一方で、目には異常が">
+        <div class="ttl">🧠 認知症 → 見えにくさ</div>
+        <p>目に異常がないのに<strong>「見て理解する」ことが難しくなる</strong>タイプ。</p>
+      </div>
+    </div>
+    <p class="lead muted anim4" data-cue="見分け方は、むずかしく" style="margin-top:18px; font-size:var(--type-small);">見分け方はむずかしくありません。<strong>まず眼科で目を診てもらう</strong>ことです。</p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>16</span></div>
+  </section>
+
+  <!-- ===== 17. まとめ ===== -->
+  <section data-label="まとめ" data-screen-label="17 まとめ" class="slide slide--soft">
+    <div class="chapter-ghost">17</div>
+    <div class="eyebrow anim">まとめ<span class="en">SUMMARY</span></div>
+    <h2 class="s-title anim">持ち帰るのは、<span class="hl-underline">3つ</span></h2>
+    <hr class="hairline">
+    <div class="sum__list" style="margin-top:28px; gap:28px;">
+      <div class="sum__card anim2" data-cue="1つめ。2024年から" style="padding:26px 26px; gap:10px;">
+        <div class="sum__n">01</div>
+        <div class="sum__h">危険因子に<br>「見えにくさ」が<span style="white-space:nowrap;">入った</span></div>
+        <p class="sum__p" style="line-height:1.4;">2024年に追加。<br>手術で取り戻せる、<br>という点が異質。</p>
+      </div>
+      <div class="sum__card anim3" data-cue="2つめ。手術を受けられる人が" style="padding:26px 26px; gap:10px;">
+        <div class="sum__n">02</div>
+        <div class="sum__h">疑いを検証した<br>研究がある</div>
+        <p class="sum__p" style="line-height:1.4;">視力を戻さない<br>緑内障手術では、<br>関連が出なかった。</p>
+      </div>
+      <div class="sum__card anim4" data-cue="3つめ。それでも「手術で防げる」" style="padding:26px 26px; gap:10px;">
+        <div class="sum__n">03</div>
+        <div class="sum__h">それでも試験は<br>一つもない</div>
+        <p class="sum__p" style="line-height:1.4;">日本のデータでも<br>MCIまで。<br>証明はされていない。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>17</span></div>
+  </section>
+
+  <!-- ===== 18. エンディング ===== -->
+  <section data-label="エンディング" data-screen-label="18 エンディング" class="slide slide--navy end">
+    <div class="cover__blob"></div>
+    <p class="end__cross anim">✚ 医知創造ラボ</p>
+    <h2 class="end__h anim2">この動画は情報提供です<br>個別の診断ではありません</h2>
+    <p class="end__sub anim2" data-cue="目のことでも、気になる">見えにくさが気になるときは、<br>まず眼科で目を診てもらってください</p>
+    <div class="end__cta anim3" data-cue="参考になりましたら">
+      <span class="btn btn--sub">🔔 チャンネル登録</span>
+      <span class="btn btn--like">👍 高評価</span>
+    </div>
+  </section>
+</deck-stage>
+
+<script src="deck-stage.js"></script>
+<script src="image-slot.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1B3A5C">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="見えにくさが気になる方とご家族へ。2024年に認知症の危険因子リストへ加わった『未矯正の視力低下』について、白内障の手術を受けた人では認知症の発症が少なかったという観察研究、その関連が「手術を受けられる人がもともと健康なだけ」では説明しきれないことを確かめた研究、それでも『手術で認知症を防げる』を証明したランダム化比較試験は一つもないこと、PAF（人口寄与割合）の測り方で数字が1.8%〜19.0%まで変わる理由、そして「見えにくさ」と「認知症」の向きが逆の病気があることを、一次文献の範囲でまとめています。">
+<title>見えにくさと認知症のこと｜ご本人・ご家族へ（A4・1枚）｜医知創造ラボ</title>
+<style>
+  :root{
+    --navy:#1B3A5C;          /* 構造色（見出し・罫線）*/
+    --accent:#1F7A8C;        /* テーマの差し色（ティール・デッキの --accent と同値） */
+    --accent-ink:#145E6D;
+    --accent-bg:#E8F3F5;
+    --danger:#C0392B;        /* 警告は別の赤（テーマ色と混同しない） */
+    --danger-bg:#FBEAE8;
+    --danger-line:#EAC5C0;
+    --navy-bg:#EEF2F6;
+    --line:#D6E0E9;
+    --ink:#1a1a1a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    font-family:"Yu Gothic","游ゴシック","Hiragino Kaku Gothic ProN","Segoe UI",sans-serif;
+    color:var(--ink); background:#eef1f4; line-height:1.6; padding:16px;
+    /* 日本語の語中改行を文節境界で切る */
+    word-break:auto-phrase; line-break:strict;
+  }
+  .sheet{background:#fff;max-width:820px;margin:0 auto 20px;padding:22px 26px 26px;box-shadow:0 2px 14px rgba(0,0,0,.12);}
+  .head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:14px;}
+  .kicker{display:inline-block;background:var(--accent);color:#fff;font-size:12px;font-weight:700;
+    letter-spacing:.06em;padding:3px 10px;border-radius:3px;margin-bottom:7px;}
+  h1{font-size:22px;font-weight:800;color:var(--navy);line-height:1.35;}
+  .sub{font-size:12.5px;color:var(--accent-ink);font-weight:700;margin-top:6px;}
+  .lead{font-size:13.5px;color:#333;margin-top:8px;}
+  .lead b{color:var(--navy);}
+  h2{font-size:15px;font-weight:800;color:#fff;background:var(--navy);padding:5px 12px;border-radius:4px;
+    margin:14px 0 9px;display:flex;align-items:center;gap:8px;}
+  h2 .num{background:#fff;color:var(--navy);font-size:12.5px;font-weight:800;width:21px;height:21px;
+    border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex:0 0 21px;}
+  h2.hd{background:var(--danger);}
+  h2.hd .num{color:var(--danger);}
+  ul.checks{list-style:none;margin-top:8px;}
+  ul.checks li{display:flex;gap:9px;align-items:flex-start;padding:4.5px 2px;
+    border-bottom:1px dashed var(--line);font-size:13px;}
+  ul.checks li:last-child{border-bottom:none;}
+  ul.checks .box{flex:0 0 17px;width:17px;height:17px;margin-top:1px;border:2px solid var(--navy);border-radius:3px;}
+  ul.checks li b{color:var(--navy);}
+  /* 補足は必ず別行にする（インラインだと本文と続き読みになる） */
+  ul.checks .why{display:block;color:#555;font-size:11.5px;margin-top:1px;}
+  .bothnote{margin-top:8px;background:var(--accent-bg);border-left:5px solid var(--accent);
+    padding:9px 13px;font-size:13px;color:#333;border-radius:0 6px 6px 0;}
+  .bothnote b{color:var(--accent-ink);}
+  .alert{border:2.5px solid var(--danger);border-radius:8px;padding:11px 14px;background:var(--danger-bg);}
+  .alert .at{color:var(--danger);font-weight:800;font-size:15px;margin-bottom:6px;}
+  .alert p{font-size:13px;line-height:1.62;}
+  .alert p + p{margin-top:6px;}
+  .alert b{color:var(--danger);}
+  .memo{border:1.5px solid var(--line);border-radius:8px;padding:10px 13px;margin-top:14px;font-size:12.5px;}
+  .memo .mtitle{font-weight:800;color:var(--navy);font-size:13.5px;margin-bottom:5px;}
+  .memo .mtext{font-size:12.5px;color:#333;margin-bottom:7px;}
+  .memo .mtext b{color:var(--accent-ink);}
+  .memo .mrow{display:flex;gap:6px;align-items:baseline;padding:5px 0;}
+  .memo .mlabel{flex:0 0 260px;font-weight:700;color:var(--navy);white-space:nowrap;}
+  .memo .mline{flex:1;border-bottom:1px solid #97a6b5;min-height:18px;}
+  .foot{margin-top:16px;padding-top:10px;border-top:1px solid var(--line);font-size:11px;color:#666;line-height:1.5;}
+  .foot .brand{font-weight:700;color:var(--navy);}
+  .noprint{margin:0 auto 18px;max-width:820px;text-align:center;}
+  .pbtn{display:inline-block;background:var(--navy);color:#fff;text-decoration:none;font-size:14px;
+    font-weight:700;padding:10px 24px;border-radius:24px;border:none;cursor:pointer;box-shadow:0 2px 10px rgba(27,58,92,.25);}
+  .pbtn:active{transform:scale(.98);}
+  .noprint p{font-size:12px;color:#777;margin-top:8px;}
+
+  @page{size:A4 portrait;margin:10mm 12mm;}
+  @media print{
+    body{background:#fff;padding:0;font-size:9.3pt;}
+    .sheet{box-shadow:none;margin:0;max-width:none;padding:0;}
+    .noprint{display:none !important;}
+    h1{font-size:16pt;line-height:1.25;}
+    h2{font-size:11.5pt;-webkit-print-color-adjust:exact;print-color-adjust:exact;margin:1px 0 1px;padding:1px 9px;}
+    h2 .num{width:17px;height:17px;flex:0 0 17px;font-size:10.5pt;}
+    .kicker,.alert,.bothnote{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .kicker{padding:2px 9px;margin-bottom:4px;}
+    .sub{margin-top:3px;}
+    ul.checks{margin-top:2px;}
+    ul.checks li{font-size:8.6pt;padding:0px 2px;line-height:1.22;}
+    ul.checks .why{font-size:8.3pt;}
+    .lead{font-size:8.3pt;margin-top:1px;line-height:1.32;}
+    .head{padding-bottom:1px;margin-bottom:1px;}
+    .alert{padding:2px 9px;}
+    .alert .at{font-size:9.7pt;margin-bottom:1px;}
+    .alert p{font-size:9pt;line-height:1.28;}
+    .alert p+p{margin-top:1px;}
+    .bothnote{margin-top:2px;padding:2px 9px;font-size:9pt;line-height:1.26;}
+    .memo{margin-top:2px;padding:2px 9px;font-size:9pt;}
+    .memo .mtitle{font-size:9.7pt;margin-bottom:1px;}
+    .memo .mtext{font-size:8.8pt;margin-bottom:1px;line-height:1.22;}
+    .memo .mrow{padding:0;}
+    .memo .mline{min-height:10px;}
+    .foot{margin-top:2px;padding-top:1px;font-size:7.4pt;line-height:1.22;}
+    a[href]{color:inherit;text-decoration:none;}
+    .alert,.memo,.bothnote{break-inside:avoid;page-break-inside:avoid;}
+    ul.checks li{break-inside:avoid;page-break-inside:avoid;}
+    h2{break-after:avoid;page-break-after:avoid;}
+  }
+  @media (max-width:560px){
+    body{padding:8px;} .sheet{padding:16px 15px 20px;} h1{font-size:19px;}
+    .memo .mlabel{flex:0 0 170px;}
+  }
+
+  .head{display:flex;align-items:flex-start;gap:12px;}
+  .head-main{flex:1;min-width:0;}
+  .qr{width:92px;flex:0 0 92px;text-align:center;border:1px solid #d8d8d8;border-radius:8px;padding:6px 5px 4px;-webkit-print-color-adjust:exact;print-color-adjust:exact;text-decoration:none;display:block;}
+  .qr-box{width:70px;height:70px;margin:0 auto;display:flex;align-items:center;justify-content:center;}
+  .qr-box svg{width:100%;height:100%;display:block;}
+  .qr .qr-cap{font-size:9px;color:#555;line-height:1.3;margin-top:3px;}
+</style>
+</head>
+<body>
+<div class="noprint">
+  <button class="pbtn" id="printBtn">&#128424;&#65039; この資料を印刷する（A4）</button>
+  <p>A4・1枚（危険因子に加わった経緯・白内障手術と認知症の関連・「もともと健康なだけ」への反証・ランダム化試験が無いこと・測り方でPAFが変わる理由・向きが逆の病気・相談メモ欄。カラー印刷推奨）</p>
+</div>
+
+<div class="sheet">
+
+  <!--
+    QR: 【未焼き込み】ブログ公開後に、採番された実URLで segno（error=m / border=4 / stroke=#000）を生成し、
+      ここに <a class="qr" href="<記事URL>"> … </a> のブロックを挿入する（第4〜8弾と同形式）。
+      ※ fix_qr_links.py は「既にあるQRを揃え直す」ツールで、QRブロックの新規追加はしない。
+      ※ 他弾の viewBox を流用しないこと（slug長で version が変わる）。照合はパス文字列の一致で行う。
+      URLの正本は slides/manifest.json の blog_url。
+  -->
+  <div class="head"><div class="head-main">
+    <span class="kicker">見えにくさが気になる方・ご家族へ</span>
+    <h1>見えにくさは、白内障の手術で<br>「取り戻せる」ことがあります</h1>
+    <p class="sub">——ただし、認知症を防げると証明されたわけではありません。</p>
+    <p class="lead">「年のせいで見えにくいのは仕方ない」——そう思って放っておいていませんか。この紙は、認知症×生活習慣病シリーズ第9弾として、2024年の認知症予防委員会報告が新しく取り上げた「見えにくさ」について、一次文献の範囲でまとめたものです。</p>
+    </div>
+  </div>
+
+  <h2><span class="num">1</span>「見えにくさ」も、2024年から危険因子リストに入りました</h2>
+  <ul class="checks">
+    <li><span class="box"></span><span><b>2024年、認知症の危険因子に新しく「未矯正の視力低下」が加わりました</b><span class="why">世界の認知症のうち、この因子が占める割合（人口寄与割合＝PAF）は、晩年期で2%と見積もられています。PAFは集団全体の指標で、「あなた個人が2%減らせる」という意味ではありません</span></span></li>
+    <li><span class="box"></span><span>委員会は、<b>補聴器や白内障の手術のように、すでにある安価な方法で対応できる点</b>を、新しく加わった2つの因子（もう一方は中年期の高いLDLコレステロール）の特徴として挙げています<span class="why">これは委員会の評価であって、手術をすれば認知症が減ると証明されたという意味ではありません（下記4）</span></span></li>
+  </ul>
+
+  <h2><span class="num">2</span>白内障の手術を受けた人では、その後の認知症が少なかった</h2>
+  <ul class="checks">
+    <li><span class="box"></span><span>約3,000人を平均7.8年追跡した米国の研究では、<b>白内障の手術を受けた人は、その後の認知症の発症が少ない</b>という結果でした（ハザード比0.71・95%信頼区間0.62〜0.83）<span class="why">これは「手術を受けた人のグループでは発症が少なかった」という観察研究の結果です。手術を受けたから発症しなかった、という因果関係を示したものではありません</span></span></li>
+    <li><span class="box"></span><span>24本の研究をまとめた解析でも、手術を受けた人は<b>手術前の白内障のままの人に比べて、長期の認知機能低下が少ない</b>結果でした（ハザード比0.75）<span class="why">ただし、<b>白内障のない健康な人との比較では差がありませんでした</b>（ハザード比0.84・差なし）。「手術を受ければ健康な人と同じところまで戻る」わけではありません</span></span></li>
+  </ul>
+
+  <h2><span class="num">3</span>「手術を受けられる人が、もともと健康なだけ」ではないか</h2>
+  <ul class="checks">
+    <li><span class="box"></span><span>この疑いを確かめるため、研究者は同じグループの中で、<b>視力を回復させない緑内障の手術を「比較のための手術」として置きました</b><span class="why">もし「手術を受けられる健康さ」だけが理由なら、緑内障の手術でも認知症は減るはずです</span></span></li>
+    <li><span class="box"></span><span>結果、<b>緑内障の手術では認知症は減りませんでした</b>（ハザード比1.08・差なし）<span class="why">著者自身も「2つの手術は適応が違うので、おおよその方法にすぎない」と述べています。疑いは弱まりますが、消えたわけではありません</span></span></li>
+  </ul>
+
+  <h2 class="hd"><span class="num">4</span>それでも、ランダム化比較試験は一つもありません</h2>
+  <div class="alert">
+    <div class="at">&#9888;&#65039; この紙が言っていないこと</div>
+    <p><b>「白内障の手術を受ければ、認知症を防げる」とは証明されていません。</b>ここまでの研究は、すべて手術を「受けた人」と「受けなかった人」を後から比べた観察研究です。手術を受ける人と受けない人を実際にくじ引きで分けて確かめた試験（ランダム化比較試験）は、一つもありません。</p>
+    <p>大規模な解析を行った研究者自身も「今後、ランダム化試験でさらに確かめられるべきだ」と結論しています。<b>日本のデータ</b>（奈良県・2,764人）でも、白内障の手術歴はもの忘れの軽い段階（軽度認知障害）とは関連しましたが、<b>認知症そのものとは関連が見られませんでした。</b></p>
+  </div>
+
+  <h2><span class="num">5</span>知っておきたい、あと2つのこと</h2>
+  <ul class="checks">
+    <li><span class="box"></span><span>視力低下が認知症に占める割合は、<b>測り方によって1.8%から19.0%まで</b>、大きく異なる報告があります（上記1の「2%」もこの中の一つです）<span class="why">数字が違うのはどちらかが間違っているからではなく、「視力表の数字だけを見るか」「見え方の質（コントラスト感度＝濃淡の見分けやすさ）まで含めるか」という測り方の違いによるものです。この結果は同時に測った研究によるもので、新たに検査を受けることをすすめる内容ではありません</span></span></li>
+    <li><span class="box"></span><span><b>「見えにくさ→認知症」とは向きが逆の、まれな病気もあります</b>（後部皮質萎縮症など、認知症の症状として見えにくさから始まるタイプ）<span class="why">遺伝子を使った解析では、「認知症が先に始まって、あとから白内障になる」という逆向きの関係は否定されています。ただしこれは白内障についての解析で、後部皮質萎縮症のようなまれな病気そのものを否定するものではありません</span></span></li>
+  </ul>
+
+  <h2><span class="num">6</span>今日、担当の先生に相談したいこと</h2>
+  <div class="memo">
+    <div class="mtitle">&#9997;&#65039; 今日やることは2つ。「見え方の変化を書き出す」と「相談する」</div>
+    <div class="mtext">手術を受けるかどうかは、この紙では決めません。<b>担当の眼科の先生と決めてください。</b></div>
+    <div class="mrow"><span class="mlabel">最近の見え方の変化（まぶしい・かすむ・二重に見える等）</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">前回の眼科受診日</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">白内障・緑内障などで指摘されたこと</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">もの忘れ以外に気になる変化</span><span class="mline"></span></div>
+    <div class="mrow"><span class="mlabel">次の受診日</span><span class="mline"></span></div>
+  </div>
+
+  <div class="foot">
+    <span class="brand">医知創造ラボ</span>｜監修：今村久司（脳神経内科専門医・総合内科専門医）<br>
+    この資料は、PubMedで実在を確認した一次文献（白内障手術と認知症のコホート研究・メタ解析・メンデルランダム化研究・藤原京アイスタディなど）をもとに作成しています。扱った研究はすべて観察研究またはメンデルランダム化研究で、<b>「白内障の手術で認知症を確実に防げる」ことは証明されたわけではありません。</b>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var b = document.getElementById('printBtn');
+  if (b) { b.addEventListener('click', function(){ window.print(); }); }
+})();
+</script>
+</body>
+</html>
