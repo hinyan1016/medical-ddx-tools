@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1080">
+<title>台風で増える病気はあるのか？｜脳卒中・心筋梗塞から感染症、持病の悪化まで（インフォグラフィック）</title>
+<meta name="description" content="台風の健康リスクを4つの経路（直接の危険・気象変化・避難停電・医療の中断）で整理。脳卒中・急性冠症候群のレッドフラッグ、避難生活の3つの危険、治療を中断させない備えを1枚にまとめたインフォグラフィック。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1B3A5C; --navy-dark:#0F2843; --sky:#2C5AA0; --sky-soft:#E9F0FA; --accent:#2C5AA0;
+  --red:#C0392B; --red-soft:#fdf3f2; --amber:#B9770E; --amber-soft:#FEF5E7;
+  --green:#1E7A46; --ink:#1f2d38; --ink2:#3c4d5a;
+  --line:#d6dfec; --bg:#f4f7fb;
+  --font:"BIZ UDPGothic","Yu Gothic","Meiryo",sans-serif;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:var(--font); background:#fff;}
+.info{width:1080px; background:#fff; color:var(--ink); padding:0 0 60px;}
+
+.info__head{background:linear-gradient(135deg,#0F2843 0%,#1B3A5C 55%,#2C5AA0 100%); color:#fff;
+  padding:56px 64px 50px; position:relative; overflow:hidden;}
+.info__head::after{content:""; position:absolute; right:-90px; top:-110px; width:340px; height:340px;
+  border-radius:50%; background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.30), rgba(255,255,255,0) 70%);}
+.info__badge{display:inline-flex; align-items:center; gap:10px;
+  background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.35);
+  border-radius:999px; padding:8px 22px; font-size:23px; font-weight:700; position:relative; z-index:2;}
+.info__title{font-size:50px; font-weight:700; line-height:1.28; margin-top:20px; position:relative; z-index:2;}
+.info__title .hl{color:#FFCB6B;}
+.info__sub{font-size:23px; color:rgba(255,255,255,.9); margin-top:14px; position:relative; z-index:2; line-height:1.55;}
+
+.lead{padding:0 64px; margin-top:34px;}
+.lead__box{background:var(--sky-soft); border-left:6px solid var(--sky); border-radius:0 12px 12px 0;
+  padding:20px 26px; font-size:22px; line-height:1.6; color:var(--ink2);}
+.lead__box b{color:var(--navy);}
+
+.sec{padding:0 64px; margin-top:46px;}
+.sec__h{display:flex; align-items:center; gap:16px; font-size:32px; font-weight:700;
+  color:var(--navy); margin-bottom:20px;}
+.sec__n{flex:none; width:52px; height:52px; border-radius:14px; background:var(--sky);
+  color:#fff; display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:700;}
+
+.pillars{display:flex; flex-direction:column; gap:13px;}
+.pillar{border:2px solid var(--line); border-radius:14px; display:flex; overflow:hidden; align-items:stretch; background:var(--bg);}
+.pillar__icon{flex:none; width:82px; display:flex; align-items:center; justify-content:center; font-size:36px; background:#fff;}
+.pillar__main{flex:1; padding:15px 22px;}
+.pillar__t{font-size:24px; font-weight:700; color:var(--navy); margin-bottom:5px;}
+.pillar__d{font-size:20px; line-height:1.55; color:var(--ink2);}
+.pillar__d b{color:var(--navy);}
+.pillar__d .rd{color:var(--red); font-weight:700;}
+
+.fast{display:flex; flex-direction:column; gap:12px;}
+.fast__row{border:2px solid #e3b7b2; background:var(--red-soft); border-radius:14px; display:flex; align-items:center; gap:18px; padding:14px 24px;}
+.fast__l{flex:none; width:64px; height:64px; border-radius:12px; background:var(--red); color:#fff;
+  display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:700;}
+.fast__t{font-size:21px; font-weight:700; color:var(--ink); line-height:1.45;}
+.fast__t b{color:var(--red);}
+.call-box{margin-top:14px; background:var(--red-soft); border:2px solid var(--red); border-radius:12px;
+  padding:16px 24px; font-size:22px; line-height:1.5; color:var(--red); font-weight:700; text-align:center;}
+
+.stat2{display:flex; gap:18px; margin-bottom:18px;}
+.stat2 .cell{flex:1; border:2px solid var(--line); border-radius:14px; padding:20px 22px; background:var(--bg); text-align:center;}
+.stat2 .cnum{font-size:44px; font-weight:900; color:var(--navy); line-height:1.1;}
+.stat2 .cnum small{font-size:20px; font-weight:700; color:var(--ink2);}
+.stat2 .clabel{margin-top:8px; font-size:19px; color:var(--ink2); line-height:1.5;}
+.stat2 .ctag{display:inline-block; margin-top:6px; font-size:15px; color:#8592a3;}
+
+.checklist{display:flex; flex-direction:column; gap:11px;}
+.check{display:flex; align-items:flex-start; gap:16px; border:2px solid var(--line); border-radius:12px;
+  padding:14px 22px; background:var(--bg);}
+.check__mark{flex:none; width:32px; height:32px; border-radius:8px; background:var(--green); color:#fff;
+  display:flex; align-items:center; justify-content:center; font-size:19px; font-weight:900; margin-top:2px;}
+.check__t{font-size:21px; line-height:1.5; color:var(--ink);}
+.check__t b{color:var(--navy);}
+
+.amber-box{margin-top:16px; background:var(--amber-soft); border:2px solid #f0c98a; border-radius:12px;
+  padding:16px 24px; font-size:20px; line-height:1.6; color:#7a5210;}
+.amber-box b{color:var(--amber);}
+
+.info__foot{margin-top:52px; padding:26px 64px 0; border-top:2px solid var(--line);
+  display:flex; align-items:center; justify-content:space-between; font-size:22px; color:#7a8a96; font-weight:700;}
+.info__foot .x{color:var(--sky);}
+.info__src{padding:0 64px; margin-top:20px; font-size:15.5px; line-height:1.6; color:#9aa8b2;}
+</style>
+</head>
+<body>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="https://youtu.be/GufP8Wb2rrw" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#C0392B;color:#fff;">▶ 解説動画（YouTube）</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+<div class="info">
+  <div class="info__head">
+    <span class="info__badge">🌀 台風シーズンの備え</span>
+    <div class="info__title">台風で増える<span class="hl">病気</span>はあるのか？</div>
+    <div class="info__sub">「気圧のせい」で片づけない ― 脳卒中・心筋梗塞から感染症、持病の悪化まで</div>
+  </div>
+
+  <div class="lead">
+    <div class="lead__box">台風の健康リスクは<b>気圧だけではありません</b>。①強風・洪水などの<b>直接の危険</b> ②気圧・湿度などの<b>気象変化</b> ③避難・停電という<b>生活環境</b> ④薬や透析など<b>医療の中断</b>――この4つの経路が重なって起こります。研究の多くは観察研究で、個人の発症を保証するものではありません。</div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">4</span>台風と病気を結ぶ4つの経路</div>
+    <div class="pillars">
+      <div class="pillar">
+        <div class="pillar__icon">🌊</div>
+        <div class="pillar__main">
+          <div class="pillar__t">① 直接の危険</div>
+          <div class="pillar__d">強風・飛来物・倒木・洪水・感電・溺水、<b>片付け中の転倒や外傷</b>にも注意。</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar__icon">🩺</div>
+        <div class="pillar__main">
+          <div class="pillar__t">② 気象の変化</div>
+          <div class="pillar__d">気圧・湿度・気温の変化が<b>片頭痛やめまい</b>などの症状に影響することがある。</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar__icon">🔦</div>
+        <div class="pillar__main">
+          <div class="pillar__t">③ 避難・停電</div>
+          <div class="pillar__d">脱水、睡眠不足、長時間の座位、汚水・カビ・粉じん、<span class="rd">発電機の誤使用</span>。</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar__icon">💊</div>
+        <div class="pillar__main">
+          <div class="pillar__t">④ 医療の中断</div>
+          <div class="pillar__d">薬、透析、在宅酸素、人工呼吸器などへの<b>アクセスが途切れる</b>こと。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">!</span>見逃してはいけない危険サイン</div>
+    <div class="fast">
+      <div class="fast__row"><span class="fast__l">脳</span><span class="fast__t"><b>顔のゆがみ・片側の手足の脱力やしびれ・ろれつが回らない・</b>経験したことのない激しい頭痛</span></div>
+      <div class="fast__row"><span class="fast__l">心</span><span class="fast__t"><b>胸が締めつけられる・押される感じ</b>、冷汗、吐き気、急な息切れ、失神</span></div>
+    </div>
+    <div class="call-box">⚠️ 「台風が過ぎてから」と様子を見ず、天候にかかわらず救急要請を</div>
+    <div class="stat2" style="margin-top:18px;">
+      <div class="cell">
+        <div class="cnum">1.049<small>倍</small></div>
+        <div class="clabel">台風曝露後0〜6日の<br>脳卒中入院リスク<br>（脳内出血は1.131倍）</div>
+        <div class="ctag">日本の全国入院データ</div>
+      </div>
+      <div class="cell">
+        <div class="cnum">1.14<small>倍</small></div>
+        <div class="clabel">台風曝露後0〜3日の<br>急性冠症候群リスク<br>（当日が最高値）</div>
+        <div class="ctag">中国の全国規模研究</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">3</span>避難生活で見逃せない3つの危険</div>
+    <div class="pillars">
+      <div class="pillar">
+        <div class="pillar__icon">🩹</div>
+        <div class="pillar__main">
+          <div class="pillar__t">深部静脈血栓症・肺塞栓症</div>
+          <div class="pillar__d">車中泊など長時間動かず水分も減ると血栓ができやすい。<b>こまめな水分と足首の運動</b>を（水分制限の指示がある人は主治医の指示を優先）。</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar__icon">🛢️</div>
+        <div class="pillar__main">
+          <div class="pillar__t">一酸化炭素中毒</div>
+          <div class="pillar__d">発電機・炭火は<span class="rd">室内・車庫・テントで絶対に使わない</span>。窓・ドア・換気口から<b>約6m（20フィート)</b>以上離した屋外で。</div>
+        </div>
+      </div>
+      <div class="pillar">
+        <div class="pillar__icon">🌡️</div>
+        <div class="pillar__main">
+          <div class="pillar__t">熱中症</div>
+          <div class="pillar__d">停電で冷房が使えない夜間の室内でも起こりうる。高齢者・乳幼児・心不全や腎不全のある人は<b>室温と体調をこまめに確認</b>。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec__h"><span class="sec__n">✓</span>治療を中断させないための備え</div>
+    <div class="checklist">
+      <div class="check"><span class="check__mark">✓</span><span class="check__t"><b>薬の残量・お薬手帳・処方内容</b>を確認する（インスリン・抗てんかん薬・抗凝固薬・吸入薬なども自己判断で中断しない）</span></div>
+      <div class="check"><span class="check__mark">✓</span><span class="check__t">かかりつけ医・薬局の<b>連絡先</b>を控えておく</span></div>
+      <div class="check"><span class="check__mark">✓</span><span class="check__t">在宅酸素・人工呼吸器の人は<b>予備電源・機器業者への連絡方法</b>を確認</span></div>
+      <div class="check"><span class="check__mark">✓</span><span class="check__t">透析予定の変更は<b>自己判断せず施設へ早めに相談</b></span></div>
+    </div>
+    <div class="amber-box">🕊 台風の後、数週間してから<b>不眠・不安・気分の落ち込み</b>が出ることもあります。長引く・生活に支障がある場合は医療機関や相談窓口へ。</div>
+  </div>
+
+  <div class="info__src">出典: Nishimura H, et al. Environ Int. 2025;205:109906（PMID 41213208）／Li S, et al. Eur Heart J. 2026;ehag066／Parks RM, et al. Nat Commun. 2021;12:1545／Amilasan AT, et al. Emerg Infect Dis. 2012;18:91-94／CDC・WHO・厚生労働省 公式ページ　ほか、詳細は元記事の参考文献を参照。すべて観察研究であり、個人の発症を保証するものではありません。一般的な医学情報であり、診断・治療の代わりにはなりません。</div>
+
+  <div class="info__foot">
+    <span><span class="x">✚</span> 医知創造ラボ（脳神経内科専門医監修）</span>
+    <span>ichisouzo-lab.com</span>
+  </div>
+</div>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px auto 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="https://youtu.be/GufP8Wb2rrw" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#C0392B;color:#fff;">▶ 解説動画（YouTube）</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+</body>
+</html>
