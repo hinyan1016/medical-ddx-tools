@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v117';
+const CACHE_NAME = 'ddx-tools-v118';
 const ASSETS = [
   './',
   './index.html',
@@ -68,6 +68,7 @@ const ASSETS = [
   './infographics/dementia-14-risk-factors/index.html',
   './infographics/dementia-atherosclerosis/index.html',
   './infographics/dementia-vision-loss/index.html',
+  './infographics/dementia-atrial-fibrillation/index.html',
   './infographics/dementia-diabetes/index.html',
   './infographics/dementia-alcohol/index.html',
   './infographics/dementia-hearing-loss/index.html',
@@ -142,6 +143,7 @@ const ASSETS = [
   './infographics/supplement-guide/index.html',
   './infographics/tension-headache-guidance/index.html',
   './infographics/tolosa_hunt.html',
+  './infographics/typhoon-health-risks/index.html',
   './infographics/type2-diabetes-lifestyle-guidance/index.html',
   './infographics/what-is-happiness/index.html',
   './handouts/index.html',
@@ -194,6 +196,7 @@ const ASSETS = [
   './handouts/dementia-alcohol/index.html',
   './handouts/dementia-atherosclerosis/index.html',
   './handouts/dementia-vision-loss/index.html',
+  './handouts/dementia-atrial-fibrillation/index.html',
   './status_epilepticus_sedation.html',
   './handouts/status-epilepticus-sedation/index.html',
   './manifest.json',

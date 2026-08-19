@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="心房細動と認知症の関係を一次資料から整理したインフォグラフィック。心房細動のある人では認知症の発症リスクが高く（43研究のメタ解析で調整オッズ比1.6）、臨床的な脳梗塞を考慮してもこの関連は残ります（ハザード比1.23など）。症状のない脳梗塞も高頻度に見つかります。では薬で下げられるのか——観察研究では抗凝固薬を使っている人で認知症が少なかった一方（ハザード比0.71）、バイアスを抑えて見直すと差は消え、日本のデータでも有意ではなく、最大のランダム化試験BRAIN-AFも無益と判定されて早期に中止されました（ハザード比1.10）。ただしこれは抗凝固薬が不要という意味ではありません。">
+<title>心房細動と認知症｜脳梗塞がなくてもリスクは上がるのか（インフォグラフィック）</title>
+<style>
+:root{
+  --navy:#1B3A5C;
+  --navyDeep:#0F2540;
+  --navyBg:#E9EEF5;
+  --accent:#1F7A8C;
+  --accentBg:#E7F2F4;
+  --accentInk:#15616F;
+  --onNavy:#6EE7B7;
+  --amber:#8A6100;
+  --amberBg:#FFF8E1;
+  --line:#D6E0E9;
+  --gray:#69737E;
+  --ink:#20242B;
+  --ink2:#3C4450;
+  --ok:#2E7D5B;
+  --font:"Noto Sans JP","BIZ UDPGothic","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+}
+html{font-size:16px;}
+*{box-sizing:border-box; margin:0; padding:0;}
+/* 日本語の語中改行を文節境界で切る */
+body,.lead,.card p,.row__d,td,th,.note,.src,.cav,.sum__d,.way__d,.lad__t,.lad__v,.lad__d{
+  word-break:auto-phrase; line-break:strict;
+}
+body{font-family:var(--font); background:#E4E9EF; color:var(--ink);
+  display:flex; flex-direction:column; align-items:center; overflow-x:hidden;}
+.nw{white-space:nowrap;}
+.ig{width:100%; max-width:1080px; background:#fff; padding:0 0 3rem;}
+
+.hd{background:linear-gradient(135deg,#0A1B2E 0%,#153352 55%,#1B3A5C 100%); color:#fff;
+  padding:2.6rem 3rem 2.2rem; text-align:center;}
+.hd__brand{font-size:.95rem; letter-spacing:.14em; opacity:.85; margin-bottom:1rem;}
+.hd__t{font-size:2.4rem; font-weight:800; line-height:1.35; letter-spacing:.01em;}
+/* ★ネイビー地に deep teal は輝度差が足りない（1.4-2.3:1）。明るいミントを使う（4.5:1超） */
+.hd__t .hl{color:var(--onNavy); font-size:1.55rem;}
+.hd__s{margin-top:1.1rem; font-size:1.08rem; opacity:.94; line-height:1.75;}
+
+.sec{padding:2.2rem 3rem 0;}
+.sec__h{display:flex; align-items:center; gap:.8rem; font-size:1.4rem; font-weight:800;
+  color:var(--navy); border-bottom:3px solid var(--navy); padding-bottom:.5rem; margin-bottom:1.2rem;}
+.sec__n{background:var(--accent); color:#fff; font-size:1.05rem; width:2rem; height:2rem;
+  border-radius:.4rem; display:grid; place-items:center; flex:none;}
+.lead{font-size:1.05rem; line-height:1.8; color:var(--ink2);}
+
+.big{display:flex; gap:1.4rem; margin:1.2rem 0 .4rem; flex-wrap:wrap;}
+.big__c{flex:1 1 0; min-width:14rem; background:var(--navyBg); border-radius:.7rem;
+  padding:1.2rem 1.3rem; border-left:6px solid var(--navy);}
+.big__n{font-size:2.6rem; font-weight:800; color:var(--navy); line-height:1.1;}
+.big__n .u{font-size:1.2rem; margin-left:.2rem;}
+.big__d{margin-top:.5rem; font-size:1rem; line-height:1.6; color:var(--ink2);}
+.big--accent{background:var(--accentBg); border-left-color:var(--accent);}
+.big--accent .big__n{color:var(--accentInk);}
+
+table{width:100%; border-collapse:collapse; margin:1rem 0 .3rem; font-size:1rem;}
+th{background:var(--navy); color:#fff; text-align:left; padding:.7rem .9rem; font-weight:700;}
+td{border-bottom:1px solid var(--line); padding:.7rem .9rem; line-height:1.6; vertical-align:top;}
+td.k{font-weight:700; color:var(--navy); width:46%;}
+.src{font-size:.86rem; color:var(--gray); margin-top:.35rem; line-height:1.6;}
+
+.card{border:2px solid var(--line); border-radius:.7rem; padding:1.1rem 1.3rem; margin:1rem 0 .3rem;}
+.card--warn{background:var(--accentBg); border-color:var(--accent);}
+.card--amber{background:var(--amberBg); border-color:#EBC46A;}
+.card__t{font-weight:800; color:var(--navy); font-size:1.1rem; margin-bottom:.5rem;}
+.card--warn .card__t{color:var(--accentInk);}
+.card p{font-size:1rem; line-height:1.75; color:var(--ink2);}
+.card p + p{margin-top:.6rem;}
+
+/* 4段の格付けラダー（本図の見せ場） */
+.ladder{display:flex; flex-direction:column; margin:1.2rem 0 .3rem;}
+.lad__item{display:flex; align-items:stretch; gap:1rem;}
+.lad__item:not(:last-child){margin-bottom:.7rem;}
+.lad__num{flex:none; width:4.6rem; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; font-weight:800; color:#fff; border-radius:.5rem; font-size:.82rem;
+  text-align:center; line-height:1.3; background:var(--navy); padding:.3rem;}
+.lad__num b{font-size:1.15rem; display:block;}
+.lad__body{flex:1; background:#F6F8FB; border-radius:.6rem; padding:.85rem 1.1rem; border-left:5px solid var(--navy);}
+.lad__t{font-weight:700; color:var(--navy); font-size:1rem;}
+.lad__v{font-size:1.35rem; font-weight:800; color:var(--navy); margin-top:.2rem;}
+.lad__d{font-size:.9rem; color:var(--ink2); margin-top:.3rem; line-height:1.6;}
+.lad--final .lad__num{background:var(--accent);}
+.lad--final .lad__body{background:var(--accentBg); border-left-color:var(--accent);}
+.lad--final .lad__v,.lad--final .lad__t{color:var(--accentInk);}
+
+.rows{display:flex; flex-direction:column; gap:.7rem; margin:1rem 0 .3rem;}
+.row{display:flex; gap:1rem; align-items:flex-start; background:#F6F8FB; border-radius:.6rem; padding:.9rem 1.1rem;}
+.row__n{flex:none; width:2.1rem; height:2.1rem; border-radius:50%; background:var(--navy); color:#fff;
+  display:grid; place-items:center; font-weight:800;}
+.row__d{font-size:1rem; line-height:1.7; color:var(--ink2);}
+.row__d b{color:var(--navy);}
+
+.sum{background:var(--navy); color:#fff; border-radius:.8rem; padding:1.6rem 1.8rem; margin:1.4rem 0 .4rem;
+  display:flex; gap:1.2rem; flex-wrap:wrap;}
+.sum__c{flex:1 1 0; min-width:13rem;}
+/* ★同上。ネイビー地なのでミント */
+.sum__t{font-size:1.5rem; font-weight:800; color:var(--onNavy); margin-bottom:.4rem;}
+.sum__d{font-size:.98rem; line-height:1.7; opacity:.95;}
+
+.note{margin:1.6rem 3rem 0; padding:1rem 1.2rem; background:#F3F5F8; border-left:5px solid var(--gray);
+  font-size:.9rem; line-height:1.75; color:var(--ink2);}
+.ft{margin-top:1.6rem; padding:1.4rem 3rem 0; border-top:2px solid var(--line);
+  font-size:.88rem; color:var(--gray); line-height:1.8; text-align:center;}
+</style>
+</head>
+<body>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+<div class="ig">
+
+<div class="hd">
+  <div class="hd__brand">医知創造ラボ ／ 認知症×生活習慣病シリーズ #10</div>
+  <div class="hd__t">心房細動と認知症<br><span class="hl">「薬で下げられる」はどこまで確かめられているか</span></div>
+  <div class="hd__s">心房細動のある人では、臨床的な脳梗塞を起こしていなくても、その後の認知症が多い——複数の大規模観察研究がその方向を示します。<br class="nw">——だが「薬でそのリスクを下げられる」を検証したランダム化試験は、すべて外れています。</div>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">1</span>心房細動と認知症——何がどこまで分かっているか</div>
+  <p class="lead">心房細動（心臓の上の部屋が細かく震える不整脈）のある人では、<b>臨床的な脳梗塞を起こしていなくても</b>その後の認知症が多い——という関連を、複数の大規模観察研究が示しています。では「<b>薬でそのリスクを下げられる</b>」のでしょうか。それを検証したランダム化試験（くじ引きで2つのグループに分けて比べる試験）は、<b>すべて外れています。</b>この図では、その両方を数字で追います。</p>
+  <div class="card card--amber">
+    <div class="card__t">「14因子に入っていない」について</div>
+    <p>心房細動は、Lancet誌2024年委員会の「認知症の変えられる14の危険因子」には<b>含まれていません</b>。したがって「心房細動の人口寄与割合（PAF）」という数字は<b>存在しません</b>。ただしこれは<b>「気にしなくていい」という意味ではありません</b>——次章以降のとおり、証拠がここまでしか進んでいない、ということです。</p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">2</span>心房細動のある人では、その後の認知症が多い</div>
+  <div class="big">
+    <div class="big__c big--accent"><div class="big__n">1.6<span class="u">倍</span></div><div class="big__d">認知症発症の<b>調整オッズ比</b><br>95%信頼区間 1.3–2.1</div></div>
+    <div class="big__c"><div class="big__n">43<span class="u">研究</span></div><div class="big__d">このメタ解析に含まれた研究数</div></div>
+  </div>
+  <p class="src">出典: Papanastasiou CA, et al. J Gen Intern Med. 2021;36(10):3122-3135.</p>
+  <div class="card">
+    <div class="card__t">この数字の読み方</div>
+    <p><b>観察研究のメタ解析であり、因果関係を示すものではありません。</b>「心房細動があるから認知症になる」と読み替えることはできません。</p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">3</span>「脳梗塞を起こしたからでは」——それだけでは説明しきれません</div>
+  <table>
+    <tr><th>研究</th><th>結果</th></tr>
+    <tr><td class="k">脳卒中の既往を考慮（メタ解析）</td><td><b>RR 1.34</b>（95%CI 1.13–1.58）</td></tr>
+    <tr><td class="k">虚血性脳卒中を含め調整（ARIC-NCS・20年追跡）</td><td><b>HR 1.23</b>（95%CI 1.04–1.45）</td></tr>
+    <tr><td class="k">臨床的脳卒中で打ち切り（Rotterdam研究）</td><td><b>HR 1.33</b>（95%CI 1.02–1.73）</td></tr>
+  </table>
+  <p class="src">出典: Kalantarian S, et al. Ann Intern Med. 2013;158(5 Pt 1):338-46.／Chen LY, et al. J Am Heart Assoc. 2018;7(6):e007301.／de Bruijn RF, et al. JAMA Neurol. 2015;72(11):1288-94.</p>
+  <div class="card card--warn">
+    <div class="card__t">年齢で分けると、内訳が変わります</div>
+    <p>Rotterdam研究の内訳では、<b>67歳未満はHR 1.81と有意</b>だった一方、<b>67歳以上はHR 1.12（95%CI 0.85–1.46）で有意ではありませんでした。</b>また「打ち切った」のは臨床的に診断された脳卒中のみで、<b>症状のない脳梗塞は打ち切れていません。</b></p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">4</span>症状のない脳梗塞は、実際にしばしば見つかります</div>
+  <div class="big">
+    <div class="big__c"><div class="big__n">15<span class="u">%</span></div><div class="big__d">大型の脳梗塞が見つかった割合</div></div>
+    <div class="big__c"><div class="big__n">18<span class="u">%</span></div><div class="big__d">小型の脳梗塞が見つかった割合</div></div>
+  </div>
+  <p class="lead">脳卒中・一過性脳虚血発作（TIA）の既往がない心房細動の人<b>1,390人</b>を調べた研究の結果です。<b>参加者の90%は抗凝固薬を服用中</b>で、この頻度でした。</p>
+  <p class="src">出典: Conen D, et al. J Am Coll Cardiol. 2019;73(9):989-999.（Swiss-AFコホート・横断研究）</p>
+  <div class="card card--amber">
+    <div class="card__t">この図で言えること</div>
+    <p>症状のない脳梗塞と認知機能低下との関係は、<b>ここではまだ確かめていません。</b>この研究の著者は「問いを提起する」と書くにとどめています。検査を勧めるものではありません。</p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">5</span>では、薬で下げられるのか——4段の格付け</div>
+  <div class="ladder">
+    <div class="lad__item">
+      <div class="lad__num">研究の質<br><b>①</b></div>
+      <div class="lad__body">
+        <div class="lad__t">観察研究：使っている人では認知症が少なかった</div>
+        <div class="lad__v">HR 0.71（95%CI 0.68–0.74）</div>
+        <div class="lad__d">スウェーデン 444,106人。DOACとワルファリンの差はなし（HR 0.97・0.67–1.40）</div>
+      </div>
+    </div>
+    <div class="lad__item">
+      <div class="lad__num">研究の質<br><b>②</b></div>
+      <div class="lad__body">
+        <div class="lad__t">バイアスを抑えて見直すと、差は消えます</div>
+        <div class="lad__v">RR 0.75（95%CI 0.51–1.10）＝<b>有意でない</b></div>
+        <div class="lad__d">観察研究のプール推定は元々RR 0.72。観察ウィンドウを設けた4研究に絞ると有意でなくなる（I²=97〜99%）</div>
+      </div>
+    </div>
+    <div class="lad__item">
+      <div class="lad__num">研究の質<br><b>③</b></div>
+      <div class="lad__body">
+        <div class="lad__t">日本のデータでも、全体では有意ではありません</div>
+        <div class="lad__v">HR 0.66（95%CI 0.40–1.08）</div>
+        <div class="lad__d">75歳未満のレセプトデータ・コホート全体の結果。「日本でも減った」とは言えません</div>
+      </div>
+    </div>
+    <div class="lad__item lad--final">
+      <div class="lad__num">研究の質<br><b>④</b></div>
+      <div class="lad__body">
+        <div class="lad__t">ランダム化試験は「無益」と判定され、早期中止されました</div>
+        <div class="lad__v">HR 1.10（95%CI 0.86–1.40）・P=0.46</div>
+        <div class="lad__d">BRAIN-AF試験。「無益」とは<b>これ以上続けても差が出ないと判断されたこと</b>で、「有害だった」という意味ではありません</div>
+      </div>
+    </div>
+  </div>
+  <p class="src">出典: Friberg L, Rosenqvist M. Eur Heart J. 2018;39(6):453-460.／Lin M, et al. Int J Clin Pract. 2021;75(10):e14269.／Komatsu Y, et al. Drugs Real World Outcomes. 2022;9(3):437-449.／Rivard L, et al. Nat Med. 2026;32(1):297-305.</p>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">6</span>それでも「抗凝固薬は要らない」ではありません</div>
+  <div class="card card--warn">
+    <div class="card__t">BRAIN-AF試験の対象について</div>
+    <p>この試験の対象は<b>平均53.4歳・脳梗塞の起こりやすさを点数にした指標が0〜1という低リスクの人たち</b>——<b>そもそも脳梗塞予防としての抗凝固薬の適応がない層</b>です。著者ら自身が「<b>結果を心房細動の患者全体に外挿すべきではない</b>」と明記しています。また使われた用量は低めに設定されており、標準的な用量や別の抗凝固薬なら結果が違ったかは分からないままだと著者は書いています。</p>
+  </div>
+  <div class="rows">
+    <div class="row"><div class="row__n">!</div><div class="row__d">この試験が示したのは「<b>抗凝固薬は認知症を減らす薬ではない</b>」ということであって、「<b>抗凝固薬は要らない</b>」ということではありません。</div></div>
+    <div class="row"><div class="row__n">!</div><div class="row__d">抗凝固薬は、そもそも<b>脳梗塞を防ぐために</b>使われている薬です。使うかどうか・続けるかどうかは、脳梗塞を防ぐという別の文脈で担当の先生が一人ひとり判断します。</div></div>
+    <div class="row"><div class="row__n">!</div><div class="row__d"><b>自己判断で薬を減らしたり、やめたりしないでください。</b>気になることがあれば、まず担当の先生に相談してください。</div></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sum">
+    <div class="sum__c"><div class="sum__t">1</div><div class="sum__d">心房細動のある人では、その後の認知症が多い——臨床的な脳梗塞を考慮しても、その関連は残ります（<b>OR 1.6・RR 1.34・HR 1.23・HR 1.33</b>）。</div></div>
+    <div class="sum__c"><div class="sum__t">2</div><div class="sum__d">薬で下げられるかを検証した最大のランダム化試験は、<b>無益と判定されて早期中止</b>されました。ただし対象はもともと抗凝固薬の適応がない低リスク層で、著者自身が外挿を戒めています。</div></div>
+    <div class="sum__c"><div class="sum__t">3</div><div class="sum__d">心房細動はLancetの14因子には入っていません。それは「重要でない」という意味ではなく、<b>証拠がここまでしか進んでいない</b>ということです。<b>自己判断で薬をやめないでください。</b></div></div>
+  </div>
+</div>
+
+<div class="note">
+  <b>この図で扱っていないこと。</b>薬剤の種類・用量の選び方、カテーテルアブレーションやリズムコントロールとの比較、遺伝子を使った解析（メンデルランダム化）の詳細は扱っていません。ここに挙げた研究の多くは<b>観察研究</b>で、因果関係を証明したものではありません。ランダム化試験で検証されたのは<b>抗凝固薬</b>であり、他の治療法の有効性・無効性について述べるものではありません。
+</div>
+
+<div class="ft">
+  医知創造ラボ ／ 認知症×生活習慣病シリーズ 第10弾<br>
+  本図は一般的な医学情報の提供を目的としたものであり、個別の診断・治療に代わるものではありません。<br>
+  脈の乱れを指摘されたとき、あるいは物忘れが気になるときは、自己判断せず医療機関にご相談ください。
+</div>
+
+</div>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px auto 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+</body>
+</html>
