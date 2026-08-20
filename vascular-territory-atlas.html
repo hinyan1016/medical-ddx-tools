@@ -171,7 +171,9 @@
     overflow-x: auto;
     white-space: nowrap;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
+  .preset-bar::-webkit-scrollbar { display: none; }
   .preset-label {
     font-size: 0.75rem;
     font-weight: 700;
@@ -196,33 +198,32 @@
     border-color: var(--accent-blue);
   }
 
-  /* Mobile Mode Switcher Tabs */
+  /* Mode Switcher Tabs (Desktop & Mobile) */
   .mobile-plane-tabs {
-    display: none;
+    display: flex;
     background: #0f172a;
     border: 1px solid var(--border-light);
     border-radius: 6px;
     overflow: hidden;
     margin-bottom: 2px;
-  }
-  @media (max-width: 900px) {
-    .mobile-plane-tabs {
-      display: flex;
-    }
+    flex-shrink: 0;
   }
   .mobile-plane-tab {
     flex: 1;
-    padding: 8px 4px;
+    padding: 6px 4px;
     text-align: center;
-    font-size: 0.8rem;
+    font-size: 0.76rem;
     font-weight: 700;
     color: var(--text-secondary);
     cursor: pointer;
     background: #0b1120;
     border-right: 1px solid var(--border-light);
     transition: all 0.15s ease;
+    user-select: none;
+    white-space: nowrap;
   }
   .mobile-plane-tab:last-child { border-right: none; }
+  .mobile-plane-tab:hover { background: #1e293b; color: #fff; }
   .mobile-plane-tab.active {
     background: #2563eb;
     color: #fff;
@@ -236,6 +237,27 @@
     grid-template-rows: 1fr 1fr;
     gap: 8px;
     min-height: 0;
+  }
+
+  /* Desktop Single Plane Mode */
+  @media (min-width: 901px) {
+    .viewports-grid.single-plane-mode {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .viewports-grid.single-plane-mode .view-panel {
+      display: none;
+      flex: 1;
+      min-height: 0;
+    }
+    .viewports-grid.single-plane-mode .view-panel.mobile-active {
+      display: flex !important;
+    }
+    .viewports-grid.single-plane-mode .summary-panel {
+      flex: none;
+      max-height: 185px;
+    }
   }
 
   /* Mobile: Single large view or scrollable */
@@ -347,6 +369,8 @@
     max-height: 100%;
     object-fit: contain;
     box-shadow: 0 0 20px rgba(0,0,0,0.8);
+    transform-origin: center center;
+    transition: transform 0.08s ease-out;
   }
 
   /* Anatomical orientation labels overlay */
@@ -395,14 +419,21 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
-    font-size: 0.78rem;
+    gap: 6px;
+    font-size: 0.76rem;
     color: var(--text-secondary);
+    white-space: nowrap;
+  }
+  .control-row span:first-child {
+    font-size: 0.74rem;
+    flex-shrink: 0;
   }
   .control-row input[type="range"] {
     flex: 1;
+    min-width: 50px;
     accent-color: var(--accent-blue);
     cursor: pointer;
+    height: 18px;
   }
 
   /* Right: Info & Clinical Knowledge Sidebar */
@@ -809,21 +840,28 @@
           </label>
         </div>
 
+        <div class="control-row" style="background: rgba(56, 189, 248, 0.08); padding: 3px 6px; border-radius: 4px; border: 1px solid rgba(56, 189, 248, 0.25);">
+          <span style="font-weight: 700; color: var(--accent-blue);">🔍 画像ズーム:</span>
+          <input type="range" id="slider-zoom" min="100" max="250" value="100" step="5" oninput="onZoomChange(this.value)">
+          <span id="label-zoom" style="width:34px; font-family:monospace; font-weight:700; color:var(--accent-blue); text-align:right;">100%</span>
+          <button class="btn btn-secondary" onclick="resetZoom()" style="padding:1px 5px; font-size:0.68rem;" title="100%（標準サイズ）にリセット">標準</button>
+        </div>
+
         <div class="control-row">
-          <span>血管カラー透明度:</span>
+          <span>カラー透明度:</span>
           <input type="range" id="slider-opacity" min="0" max="100" value="65" oninput="onOpacityChange(this.value)">
           <span id="label-opacity" style="width:30px; font-family:monospace;">65%</span>
         </div>
 
         <div class="control-row">
-          <span>T1背景コントラスト:</span>
+          <span>背景コントラスト:</span>
           <input type="range" id="slider-contrast" min="50" max="200" value="110" oninput="onContrastChange(this.value)">
           <span id="label-contrast" style="width:30px; font-family:monospace;">1.1x</span>
         </div>
 
         <div class="control-row">
-          <span>血管系統フィルタ:</span>
-          <select id="select-filter" onchange="onFilterChange(this.value)" style="background:#090d16; color:#fff; border:1px solid var(--border-light); padding:4px 6px; border-radius:4px; flex:1; font-size:0.75rem;">
+          <span>血管フィルタ:</span>
+          <select id="select-filter" onchange="onFilterChange(this.value)" style="background:#090d16; color:#fff; border:1px solid var(--border-light); padding:3px 6px; border-radius:4px; flex:1; font-size:0.74rem;">
             <option value="ALL">すべて表示 (All)</option>
             <option value="ACA">ACA系 (前大脳動脈・Heubner)</option>
             <option value="MCA">MCA皮質枝 (前頭・頭頂・側頭・後頭・島)</option>
@@ -836,9 +874,9 @@
 
         <div class="control-row">
           <span>左右表示規約:</span>
-          <select id="select-view-convention" onchange="onConventionChange(this.value)" style="background:#090d16; color:#fff; border:1px solid var(--border-light); padding:4px 6px; border-radius:4px; flex:1; font-size:0.75rem;">
-            <option value="radiological" selected>Radiological (画面左=患者右 R)</option>
-            <option value="neurological">Neurological (画面左=患者左 L)</option>
+          <select id="select-view-convention" onchange="onConventionChange(this.value)" style="background:#090d16; color:#fff; border:1px solid var(--border-light); padding:3px 6px; border-radius:4px; flex:1; font-size:0.74rem;">
+            <option value="radiological" selected>Radiological (左=患者右 R)</option>
+            <option value="neurological">Neurological (左=患者左 L)</option>
           </select>
         </div>
 
@@ -1599,6 +1637,7 @@ let curX = 45, curY = 58, curZ = 48; // Default to Basal Ganglia level
 let curLevel = 1;
 let opacity = 0.65;
 let contrast = 1.1;
+let currentZoom = 1.0;
 let currentFilter = 'ALL';
 let showCrosshair = true;
 let viewConvention = 'radiological';
@@ -1647,6 +1686,12 @@ async function initData() {
     initLegend();
     updateCoordsUI();
     updateInfoCard(getLabelAt(curX, curY, curZ));
+    if (window.innerWidth > 900) {
+      setMobilePlane('all');
+    } else {
+      setMobilePlane('axial');
+    }
+    applyZoom();
     drawAll();
   } catch (err) {
     console.error("Init data error:", err);
@@ -1942,17 +1987,23 @@ function getCanvasCoords(canvas, clientX, clientY, type) {
   const rect = canvas.getBoundingClientRect();
   const scaleX = canvas.width / rect.width;
   const scaleY = canvas.height / rect.height;
-  const px = Math.floor((clientX - rect.left) * scaleX);
-  const py = Math.floor((clientY - rect.top) * scaleY);
+  let px = Math.floor((clientX - rect.left) * scaleX);
+  let py = Math.floor((clientY - rect.top) * scaleY);
   const isRadio = (viewConvention === 'radiological');
 
   if (type === 'axial') {
+    px = Math.max(0, Math.min(dimX - 1, px));
+    py = Math.max(0, Math.min(dimY - 1, py));
     const srcX = isRadio ? px : (dimX - 1 - px);
     return { x: srcX, y: (dimY - 1 - py), z: curZ };
   } else if (type === 'coronal') {
+    px = Math.max(0, Math.min(dimX - 1, px));
+    py = Math.max(0, Math.min(dimZ - 1, py));
     const srcX = isRadio ? px : (dimX - 1 - px);
     return { x: srcX, y: curY, z: (dimZ - 1 - py) };
   } else if (type === 'sagittal') {
+    px = Math.max(0, Math.min(dimY - 1, px));
+    py = Math.max(0, Math.min(dimZ - 1, py));
     return { x: curX, y: (dimY - 1 - px), z: (dimZ - 1 - py) };
   }
   return { x: curX, y: curY, z: curZ };
@@ -2032,6 +2083,24 @@ function setLevel(lvl) {
   drawAll();
 }
 
+function onZoomChange(val) {
+  currentZoom = parseInt(val, 10) / 100.0;
+  document.getElementById('label-zoom').textContent = `${val}%`;
+  applyZoom();
+}
+
+function resetZoom() {
+  document.getElementById('slider-zoom').value = 100;
+  onZoomChange(100);
+}
+
+function applyZoom() {
+  const transformVal = (currentZoom === 1.0) ? 'none' : `scale(${currentZoom})`;
+  if (canvasAxial) canvasAxial.style.transform = transformVal;
+  if (canvasCoronal) canvasCoronal.style.transform = transformVal;
+  if (canvasSagittal) canvasSagittal.style.transform = transformVal;
+}
+
 function onOpacityChange(val) {
   opacity = val / 100.0;
   document.getElementById('label-opacity').textContent = `${val}%`;
@@ -2064,7 +2133,7 @@ function onConventionChange(val) {
   drawAll();
 }
 
-// Mobile Plane Mode
+// Plane Display Mode (Desktop & Mobile)
 function setMobilePlane(mode) {
   activeMobilePlane = mode;
   ['axial', 'coronal', 'sagittal', 'all'].forEach(m => {
@@ -2074,6 +2143,7 @@ function setMobilePlane(mode) {
 
   const grid = document.getElementById('viewports-grid');
   grid.classList.toggle('show-all-planes', mode === 'all');
+  grid.classList.toggle('single-plane-mode', mode !== 'all');
 
   ['axial', 'coronal', 'sagittal'].forEach(p => {
     const panel = document.getElementById(`panel-${p}`);
