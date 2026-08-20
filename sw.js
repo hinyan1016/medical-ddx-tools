@@ -1,7 +1,8 @@
-const CACHE_NAME = 'ddx-tools-v125';
+const CACHE_NAME = 'ddx-tools-v126';
 const ASSETS = [
   './',
   './index.html',
+  './vascular-territory-atlas.html',
   './aki.html',
   './edema.html',
   './edema_distribution.html',
