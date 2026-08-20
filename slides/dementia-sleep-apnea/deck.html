@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>睡眠時無呼吸×認知症 — 認知症×生活習慣病シリーズ 第11弾</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* deep teal accent (sleep & respiratory theme) */
+  --accent: #0E7490;
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, #ffffff);
+  --accent-line: color-mix(in srgb, var(--accent) 60%, #ffffff);
+  --accent-ink: color-mix(in srgb, var(--accent) 70%, #164e63);
+
+  /* type scale */
+  --type-mult: 1.34;
+  --type-display: calc(96px * var(--type-mult));
+  --type-title:   calc(80px * var(--type-mult));
+  --type-heading: calc(56px * var(--type-mult));
+  --type-subtitle:calc(42px * var(--type-mult));
+  --type-body:    calc(36px * var(--type-mult));
+  --type-small:   calc(28px * var(--type-mult));
+  --type-label:   calc(26px * var(--type-mult));
+  --type-chapter: calc(200px * var(--type-mult));
+  --type-stat:    calc(140px * var(--type-mult));
+
+  --pad-x: 108px;
+  --pad-top: 52px;
+  --pad-bottom: 116px;
+  --gap-title: 20px;
+  --gap-item: 18px;
+
+  --grad-navy: linear-gradient(135deg, #020617 0%, #0F172A 50%, #164E63 100%);
+}
+
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#0c1622; }
+
+/* ---------- base slide ---------- */
+.slide{
+  box-sizing:border-box;
+  display:flex; flex-direction:column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--font-ja);
+  overflow:hidden;
+  position:relative;
+}
+.slide--soft{ background: var(--bg-alt); }
+
+/* ---------- ネイビー地の視認性強化（高コントラスト設計） ---------- */
+.slide--navy{
+  background: var(--grad-navy);
+  color: #ffffff;
+  --accent-on-navy: #38BDF8; /* 明るいスカイブルー（コントラスト比5.5:1以上） */
+  --on-navy-ink: #020617;
+}
+.slide--navy .cover__title .hl,
+.slide--navy .cover__badge .cross,
+.slide--navy .end__cross{ color: var(--accent-on-navy); }
+.slide--navy .cover__meta .ep,
+.slide--navy .btn--sub{ background: var(--accent-on-navy); color: var(--on-navy-ink); font-weight:700; }
+
+.eyebrow{
+  display:flex; align-items:center; gap:16px;
+  font-size: var(--type-label); font-weight:700; color: var(--blue);
+  letter-spacing:.04em;
+}
+.eyebrow::before{
+  content:""; width:18px; height:18px; border-radius:4px;
+  background: var(--accent); flex:none;
+}
+.eyebrow .num{ font-family: var(--font-en); color: var(--accent-ink); }
+
+.s-title{
+  font-size: var(--type-heading); line-height:1.22; color: var(--navy);
+  margin: var(--gap-title) 0 0; font-weight:700; letter-spacing:.01em;
+  text-wrap: pretty;
+}
+.slide--navy .s-title{ color:#fff; }
+
+.lead{
+  font-size: var(--type-body); line-height:1.65; color: var(--ink-2);
+  margin:0; text-wrap: pretty;
+}
+.muted{ color: var(--gray); }
+
+/* footer */
+.footer{
+  position:absolute; left: var(--pad-x); right: var(--pad-x); bottom:32px;
+  display:flex; justify-content:space-between; align-items:center;
+  font-size: var(--type-small); color: var(--gray);
+  border-top:1px solid #e2e8f0; padding-top:10px;
+}
+.slide--navy .footer{ border-color: rgba(255,255,255,0.25); color: rgba(255,255,255,0.85); font-weight:700; }
+
+/* cards & grids */
+.grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:28px; margin-top:22px; }
+.grid-3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; margin-top:22px; }
+
+.card{
+  background:#fff; border:2px solid #e2e8f0; border-radius:14px;
+  padding:22px 26px; box-shadow:0 4px 12px rgba(0,0,0,0.04);
+}
+.card--accent{ border-color: var(--accent); background: var(--accent-soft); }
+.card--navy{ background:#1E293B; border-color:#334155; color:#fff; }
+
+.stat-box{ text-align:center; padding:18px; }
+.stat-val{ font-size: calc(60px * var(--type-mult)); font-weight:700; color: var(--accent); line-height:1.1; }
+.stat-lbl{ font-size: var(--type-body); color: var(--ink-2); margin-top:8px; font-weight:700; }
+
+.highlight-box{
+  background:#F0FDFA; border-left:8px solid var(--accent); border-radius:8px;
+  padding:20px 28px; margin-top:22px; font-size: var(--type-body); line-height:1.65;
+}
+
+.myth-fact{ display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:20px; }
+.myth-box{ background:#FEF2F2; border:2px solid #F87171; border-radius:12px; padding:20px 24px; }
+.fact-box{ background:#F0FDF4; border:2px solid #4ADE80; border-radius:12px; padding:20px 24px; }
+
+/* ============ COVER ============ */
+.cover{ justify-content:center; }
+.cover__badge{
+  display:inline-flex; align-items:center; gap:14px; align-self:flex-start;
+  background: rgba(255,255,255,.14); border:1.5px solid rgba(255,255,255,.35);
+  color:#fff; padding:12px 24px; border-radius:999px;
+  font-size: var(--type-label); font-weight:700;
+}
+.cover__badge .cross{ color: var(--accent-on-navy); font-size:1.2em; }
+.cover__title{
+  font-size: calc(64px * var(--type-mult)); line-height:1.2; color:#fff; font-weight:700;
+  margin:32px 0 0; letter-spacing:.01em; text-wrap:balance;
+}
+.cover__title .hl{ color: #FDE047; }
+.cover__sub{
+  font-size: var(--type-heading); color: rgba(255,255,255,.94);
+  margin:24px 0 0; font-weight:700; line-height:1.4;
+}
+.cover__meta{
+  display:flex; gap:28px; align-items:center; margin-top:40px;
+  font-size: var(--type-small); color: rgba(255,255,255,.85);
+}
+.cover__meta .ep{
+  font-family: var(--font-en); font-weight:700; color: var(--on-navy-ink);
+  background: var(--accent-on-navy); padding:6px 18px; border-radius:8px;
+}
+.cover__blob{
+  position:absolute; right:-160px; top:-160px; width:620px; height:620px;
+  border-radius:50%; background: radial-gradient(circle at 30% 30%, rgba(14,116,144,.6), rgba(14,116,144,0) 70%);
+  pointer-events:none;
+}
+
+/* ============ ENDING / CTA ============ */
+.end{ justify-content:center; align-items:center; text-align:center; }
+.end__cross{ font-size: var(--type-subtitle); color: var(--accent-on-navy); font-weight:700; }
+.end__h{ font-size: calc(56px * var(--type-mult)); color:#fff; font-weight:700; margin:16px 0 0; text-wrap:balance; }
+.end__sub{ font-size: var(--type-subtitle); color: rgba(255,255,255,.9); margin:20px 0 0; font-weight:400; }
+.end__cta{ display:flex; gap:24px; margin-top:40px; }
+.btn{ display:inline-flex; align-items:center; gap:14px; font-size: var(--type-subtitle); font-weight:700; padding:18px 40px; border-radius:999px; }
+.btn--sub{ background: var(--accent-on-navy); color: var(--on-navy-ink); }
+.btn--like{ background: rgba(255,255,255,.16); color:#fff; border:2px solid rgba(255,255,255,.45); }
+
+/* animations */
+.anim1,.anim2,.anim3,.anim4,.anim5{ transition: all 0.4s ease-out; }
+</style>
+</head>
+<body>
+
+<deck-stage width="1920" height="1080">
+
+  <!-- ===== 01. 表紙 ===== -->
+<section data-label="表紙" data-screen-label="01 表紙" class="slide slide--navy cover" data-slide="1">
+  <div class="cover__blob"></div>
+  <div class="cover__badge anim"><span class="cross">✚</span><span>医知創造ラボ ｜ 認知症×生活習慣病 第11弾</span></div>
+  <h1 class="cover__title anim2">睡眠時無呼吸と<span class="hl">認知症</span></h1>
+  <p class="cover__sub anim3" data-cue="CPAPで予防できるのか">「CPAPでボケを防げる」は本当か？——<br>医学エビデンスの結論</p>
+  <div class="cover__meta anim3">
+    <span class="ep">#11</span>
+    <span>監修：脳神経内科専門医・総合内科専門医 今村久司</span>
+  </div>
+</section>
+
+  <!-- ===== 02. 問い ===== -->
+<section class="slide slide--soft" data-slide="2">
+  <div class="eyebrow"><span class="num">01</span><span>はじめに</span></div>
+  <h2 class="s-title anim1">「大きないびき」と将来の物忘れへの不安</h2>
+  <div class="grid-2">
+    <div class="card anim2" data-cue="「夜中に息が止まっている">
+      <h3 style="font-size:var(--type-subtitle); color:var(--navy); margin-top:0;">よくある外来での相談</h3>
+      <ul style="font-size:var(--type-body); line-height:1.75; margin:0; padding-left:24px; color:var(--ink-2);">
+        <li>「夜中に息が止まっていると<br>言われた」</li>
+        <li>「昼間に耐えがたい眠気がある」</li>
+        <li>「無呼吸を放置すると将来ボケてしまう？」</li>
+      </ul>
+    </div>
+    <div class="card card--accent anim3" data-cue="放置すると将来ボケてしま">
+      <h3 style="font-size:var(--type-subtitle); color:var(--accent-ink); margin-top:0;">ネット上の情報と不安</h3>
+      <p class="lead">「無呼吸で認知症リスク倍増」「CPAPで認知症予防」という見出しが並ぶが、医学論文の事実はどうなのか？</p>
+    </div>
+  </div>
+  <div class="footer"><span>睡眠時無呼吸と認知症</span><span>2 / 18</span></div>
+</section>
+
+  <!-- ===== 03. 結論 ===== -->
+<section class="slide" data-slide="3">
+  <div class="eyebrow"><span class="num">02</span><span>本日の結論</span></div>
+  <h2 class="s-title anim1">この記事・動画でお伝えする核心の2点</h2>
+  <div class="highlight-box anim2" style="margin-top:32px; font-size:calc(34px * var(--type-mult)); line-height:1.65;" data-cue="ひとつ目、睡眠時無呼吸が">
+    <strong>① 睡眠時無呼吸（OSA）があると、認知症リスクが高まる</strong><br>
+    <span style="font-size:var(--type-body); color:var(--ink-2);">——夜間の低酸素血症と睡眠分断を背景に、多くの観察研究が支持。</span>
+  </div>
+  <div class="highlight-box anim3" style="border-left-color:#E11D48; background:#FFF1F2; margin-top:24px; font-size:calc(34px * var(--type-mult)); line-height:1.65;" data-cue="ふたつ目、だがCPAPで">
+    <strong>② だが「CPAPで認知症を防げる」と証明したRCTは存在しない</strong><br>
+    <span style="font-size:var(--type-body); color:var(--ink-2);">——ただし、眠気改善・心血管病予防という確立した役割がある。</span>
+  </div>
+  <div class="footer"><span>睡眠時無呼吸と認知症</span><span>3 / 18</span></div>
+</section>
+
+  <!-- ===== 04. 病態 ===== -->
+<section class="slide slide--soft" data-slide="4">
+  <div class="eyebrow"><span class="num">03</span><span>病態の整理</span></div>
+  <h2 class="s-title anim1">閉塞性睡眠時無呼吸（OSA）とは<br>どんな病気か</h2>
+  <div class="grid-2">
+    <div class="card anim2" data-cue="睡眠中に気道が塞がり10">
+      <h3 style="font-size:var(--type-subtitle); color:var(--navy); margin-top:0;">気道閉塞のメカニズム</h3>
+      <p class="lead">睡眠中に舌根や軟口蓋が沈下し、気道が物理的に塞がって10秒以上の窒息（無呼吸）を繰り返す。</p>
+    </div>
+    <div class="card anim3" data-cue="1時間あたりの回数で重症">
+      <h3 style="font-size:var(--type-subtitle); color:var(--navy); margin-top:0;">重症度の基準（AHI）</h3>
+      <ul style="font-size:var(--type-body); line-height:1.75; margin:0; padding-left:24px;">
+        <li><strong>軽症</strong>: AHI 5〜15 回/時</li>
+        <li><strong>中等症</strong>: AHI 15〜30 回/時</li>
+        <li><strong>重症</strong>: AHI 30 回/時 以上</li>
+      </ul>
+    </div>
+  </div>
+  <p class="lead anim4" style="margin-top:20px; font-weight:700; color:var(--accent-ink);" data-cue="日本人は痩せていても顎の">
+    ★ 日本人は顎が小さい骨格のため、痩せていても無呼吸になりやすい特徴がある。
+  </p>
+  <div class="footer"><span>睡眠時無呼吸と認知症</span><span>4 / 18</span></div>
+</section>
+
+  <!-- ===== 05. 観察研究 ===== -->
+<section class="slide" data-slide="5">
+  <div class="eyebrow"><span class="num">04</span><span>観察研究の知見</span></div>
+  <h2 class="s-title anim1">高齢女性コホートでのリスク上昇（SOF研究）</h2>
+  <div class="grid-2">
+    <div class="stat-box card card--accent anim2" data-cue="無呼吸のある群で認知機能">
+      <div class="stat-val">1.85 倍</div>
+      <div class="stat-lbl">MCI / 認知症発症リスク（調整OR）</div>
+      <div style="font-size:var(--type-small); color:var(--gray); margin-top:6px;">95%信頼区間 1.11〜3.08（Yaffe et al. JAMA 2011）</div>
+    </div>
+    <div class="card anim3" data-cue="特に酸素飽和度が90%を">
+      <h3 style="font-size:var(--type-subtitle); color:var(--navy); margin-top:0;">SOF研究の知見（298例追跡）</h3>
+      <ul style="font-size:var(--type-body); line-height:1.7; margin:0; padding-left:24px;">
+        <li>SDB群で認知障害発症率が有意に高い（44.8% vs 31.1%）</li>
+        <li>低酸素指標（ODI≥15）で <strong>OR 1.71</strong></li>
+        <li>SpO2&lt;90%時間が7%超で <strong>OR 2.04</strong></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer"><span>Yaffe K, et al. JAMA. 2011;306(6):613-9.</span><span>5 / 18</span></div>
+</section>
+
+  <!-- ===== 06. 大規模データ ===== -->
+<section class="slide slide--soft" data-slide="6">
+  <div class="eyebrow"><span class="num">05</span><span>大規模データ</span></div>
+  <h2 class="s-title anim1">ARIC研究15年追跡とメタ解析の統合結果</h2>
+  <div class="grid-2">
+    <div class="card anim2" data-cue="重症の無呼吸で認知症リス">
+      <h3 style="font-size:var(--type-subtitle); color:var(--navy); margin-top:0;">ARIC研究の知見（15年追跡）</h3>
+      <p class="lead">重症OSA（AHI≥30）で全認知症粗リスク比 <strong>RR 2.35</strong>（95%CI 1.06〜5.18）。心血管因子調整後は 2.19（0.92〜5.19）に減衰（Lutsey 2018）。</p>
+    </div>
+    <div class="card anim3" data-cue="多くの研究をまとめたメタ">
+      <h3 style="font-size:var(--type-subtitle); color:var(--navy); margin-top:0;">メタ解析（Bubu 2017 / Li 2024）</h3>
+      <p class="lead">睡眠障害・OSA全体で認知障害・アルツハイマー病リスクは <strong>RR 1.26〜1.4倍</strong> 上昇。多くの観察研究が同方向を支持。</p>
+    </div>
+  </div>
+  <div class="footer"><span>Lutsey PL, et al. Alzheimers Dement. 2018 / Bubu OM, et al. Sleep. 2017</span><span>6 / 18</span></div>
+</section>
+
+  <!-- ===== 07. 機序① ===== -->
+<section class="slide" data-slide="7">
+  <div class="eyebrow"><span class="num">06</span><span>メカニズム①</span></div>
+  <h2 class="s-title anim1">夜間間欠的低酸素血症（Intermittent Hypoxia）</h2>
+  <div class="grid-3">
+    <div class="card anim2" data-cue="息が止まるたびに酸素が急">
+      <h3 style="font-size:var(--type-subtitle); color:var(--navy); margin-top:0;">1. 呼吸停止</h3>
+      <p class="lead">気道閉塞により血液中の酸素飽和度が急降下する。</p>
+    </div>
+    <div class="card anim3" data-cue="活性酸素による酸化ストレ">
+      <h3 style="font-size:var(--type-subtitle); color:var(--navy); margin-top:0;">2. 酸化ストレス</h3>
+      <p class="lead">急激な低酸素と再酸素化の反復で活性酸素が発生、神経炎症を惹起。</p>
+    </div>
+    <div class="card anim4" data-cue="脳血管や神経が障害されま">
+      <h3 style="font-size:var(--type-subtitle); color:var(--navy); margin-top:0;">3. 血管障害</h3>
+      <p class="lead">血管内皮が傷つき、脳の微小血管障害や白質病変が進行。</p>
+    </div>
+  </div>
+  <p class="lead anim5" style="margin-top:16px; color:var(--accent-ink); font-weight:700;" data-cue="SOF研究でも低酸素の重">
+    ★ SOF研究でも「無呼吸の回数」より「低酸素の重症度」が認知機能低下と強く相関。
+  </p>
+  <div class="footer"><span>睡眠時無呼吸と認知症</span><span>7 / 18</span></div>
+</section>
+
+  <!-- ===== 08. 機序② ===== -->
+<section class="slide slide--soft" data-slide="8">
+  <div class="eyebrow"><span class="num">07</span><span>メカニズム②</span></div>
+  <h2 class="s-title anim1">睡眠分断とグリンパティックシステムの破綻</h2>
+  <div class="grid-2">
+    <div class="card anim2" data-cue="深い睡眠中には脳脊髄液が">
+      <h3 style="font-size:var(--type-subtitle); color:var(--navy); margin-top:0;">脳のゴミ掃除（Xie 2013 Science）</h3>
+      <p class="lead">深いノンレム睡眠中に脳細胞の隙間が広がり、脳脊髄液がアミロイドβなどの老廃物を洗い流す。</p>
+    </div>
+    <div class="card card--accent anim3" data-cue="無呼吸で何度も目が覚める">
+      <h3 style="font-size:var(--type-subtitle); color:var(--accent-ink); margin-top:0;">無呼吸による排出不全</h3>
+      <p class="lead">窒息による頻回の中途覚醒で深睡眠が失われ、アミロイドβの蓄積が促される（Sharma 2018）。</p>
+    </div>
+  </div>
+  <div class="footer"><span>Xie L, et al. Science. 2013 / Sharma RA, et al. AJRCCM. 2018</span><span>8 / 18</span></div>
+</section>
+
+  <!-- ===== 09. 14因子の外側 ===== -->
+<section class="slide" data-slide="9">
+  <div class="eyebrow"><span class="num">08</span><span>エビデンスの格付け</span></div>
+  <h2 class="s-title anim1">なぜ Lancet 2024 の<br>「14因子」に入っていないのか</h2>
+  <div class="grid-3">
+    <div class="card anim2" data-cue="認知症の初期病変が無呼吸">
+      <h3 style="font-size:var(--type-subtitle); color:var(--navy); margin-top:0;">① 逆因果の壁</h3>
+      <p class="lead">初期の認知症脳病理が睡眠中枢を障害し、無呼吸を起こしている可能性。</p>
+    </div>
+    <div class="card anim3" data-cue="肥満など他因子との重複、">
+      <h3 style="font-size:var(--type-subtitle); color:var(--navy); margin-top:0;">② 強い交絡</h3>
+      <p class="lead">肥満・高血圧・糖尿病など他の14因子と重複し、独立した寄与が算定困難。</p>
+    </div>
+    <div class="card anim4" data-cue="そして予防を証明した介入">
+      <h3 style="font-size:var(--type-subtitle); color:var(--navy); margin-top:0;">③ 予防RCT欠如</h3>
+      <p class="lead">治療介入で認知症発症が減ることを証明した長期RCTが未だ存在しない。</p>
+    </div>
+  </div>
+  <div class="footer"><span>Livingston G, et al. Lancet. 2024</span><span>9 / 18</span></div>
+</section>
+
+  <!-- ===== 10. CPAP観察研究 ===== -->
+<section class="slide slide--soft" data-slide="10">
+  <div class="eyebrow"><span class="num">09</span><span>CPAP観察研究</span></div>
+  <h2 class="s-title anim1">Medicare 5.3万例データにおける<br>CPAPと認知症</h2>
+  <div class="grid-2">
+    <div class="stat-box card card--accent anim2" data-cue="CPAP治療を受けた群で">
+      <div class="stat-val">0.78 倍</div>
+      <div class="stat-lbl">アルツハイマー病新規診断<br>（オッズ比）</div>
+      <div style="font-size:var(--type-small); color:var(--gray); margin-top:6px;">95%CI 0.69〜0.89（Dunietz 2021）</div>
+    </div>
+    <div class="card anim3" data-cue="0.78倍と低下していま">
+      <h3 style="font-size:var(--type-subtitle); color:var(--navy); margin-top:0;">Dunietz 2021 の主な知見</h3>
+      <ul style="font-size:var(--type-body); line-height:1.7; margin:0; padding-left:24px;">
+        <li>PAP治療群で全認知症新規診断が低下（<strong>OR 0.69</strong>）</li>
+        <li>アドヒアランス良好群でAD診断さらに低下（<strong>OR 0.65</strong>）</li>
+        <li>観察研究として<br>強い保護的関連を示唆</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer"><span>Dunietz GL, et al. Sleep. 2021;44(9):zsab076.</span><span>10 / 18</span></div>
+</section>
+
+  <!-- ===== 11. 観察研究の限界 ===== -->
+<section class="slide" data-slide="11">
+  <div class="eyebrow"><span class="num">10</span><span>データの読み解き</span></div>
+  <h2 class="s-title anim1">観察研究の限界：健康使用者バイアス</h2>
+  <div class="grid-2">
+    <div class="card anim2" data-cue="毎晩CPAPをしっかり使">
+      <h3 style="font-size:var(--type-subtitle); color:var(--navy); margin-top:0;">CPAPをしっかり<br>継続できる人の特徴</h3>
+      <p class="lead">毎晩マスクを装着できる人は、もともと健康意識が高く、食事や運動に気を配り、高血圧や糖尿病の治療もしっかり受けている傾向がある。</p>
+    </div>
+    <div class="card card--accent anim3" data-cue="生活習慣の管理も良いとい">
+      <h3 style="font-size:var(--type-subtitle); color:var(--accent-ink); margin-top:0;">因果関係の証明には<br>ならない</h3>
+      <p class="lead">「CPAPそのものが認知症を防いだのか」、それとも「健康意識の高さが防いだのか」を観察研究だけで切り分けることはできない。</p>
+    </div>
+  </div>
+  <div class="footer"><span>睡眠時無呼吸と認知症</span><span>11 / 18</span></div>
+</section>
+
+  <!-- ===== 12. RCTの現実 ===== -->
+<section class="slide slide--soft" data-slide="12">
+  <div class="eyebrow"><span class="num">11</span><span>ランダム化試験</span></div>
+  <h2 class="s-title anim1">世界最大の二重盲検RCT：APPLES試験</h2>
+  <div class="card anim2" style="margin-top:20px; padding:18px 24px;" data-cue="6ヶ月時点での全般的な認">
+    <table style="width:100%; border-collapse:collapse; font-size:var(--type-body); line-height:1.6;">
+      <tr style="border-bottom:2px solid #cbd5e1; background:#f1f5f9;">
+        <th style="padding:10px 14px; text-align:left; color:var(--navy);">評価項目（1,105例・6ヶ月）</th>
+        <th style="padding:10px 14px; text-align:left; color:var(--navy);">結果（Kushida et al. Sleep 2012）</th>
+      </tr>
+      <tr style="border-bottom:1px solid #e2e8f0;">
+        <td style="padding:10px 14px; font-weight:700;">日中の眠気（ESS / MWT）</td>
+        <td style="padding:10px 14px; color:#059669; font-weight:700;">P &lt; 0.001 で有意に劇的改善</td>
+      </tr>
+      <tr style="border-bottom:1px solid #e2e8f0;">
+        <td style="padding:10px 14px; font-weight:700;">実行・前頭葉機能</td>
+        <td style="padding:10px 14px;">2ヶ月時に軽度改善（P=0.01）も、<strong>6ヶ月時は有意差なし（P=0.13）</strong></td>
+      </tr>
+      <tr>
+        <td style="padding:10px 14px; font-weight:700;">記憶・学習／<br>注意機能</td>
+        <td style="padding:10px 14px; color:var(--gray);">2ヶ月時・6ヶ月時ともに<strong>群間差なし</strong></td>
+      </tr>
+    </table>
+  </div>
+  <div class="footer"><span>Kushida CA, et al. Sleep. 2012;35(12):1593-602.</span><span>12 / 18</span></div>
+</section>
+
+  <!-- ===== 13. エビデンス総括 ===== -->
+<section class="slide slide--soft" data-slide="13">
+  <div class="eyebrow"><span class="num">12</span><span>エビデンス総括</span></div>
+  <h2 class="s-title anim1">神経学会公式誌『Neurology』総説の結論</h2>
+  <div class="grid-2 anim2" style="margin-top:24px;">
+    <div class="card card--navy" style="padding:28px 32px; display:flex; flex-direction:column; justify-content:space-between;">
+      <div>
+        <div style="font-size:var(--type-label); color:var(--accent-on-navy); font-weight:700; margin-bottom:12px;">
+          📖 システマティックレビューの総括
+        </div>
+        <p style="font-size:calc(28px * var(--type-mult)); line-height:1.65; color:#FFFFFF; margin:0;">
+          「観察研究ではPAPの保護的関連が示唆されるが、<br>
+          <strong style="color:#FDE047;">長期的な認知症発症予防を直接証明したRCTは現時点で存在しない</strong>」
+        </p>
+      </div>
+      <div style="font-size:var(--type-small); color:rgba(255,255,255,0.7); margin-top:18px; text-align:right;">
+        —— Shieu MM, et al. Neurology. 2022
+      </div>
+    </div>
+    <div class="card card--accent" style="padding:28px 32px; display:flex; flex-direction:column; justify-content:center;">
+      <h3 style="font-size:var(--type-subtitle); color:var(--accent-ink); margin-top:0;">このエビデンスが<br>意味すること</h3>
+      <ul style="font-size:var(--type-body); line-height:1.7; margin:10px 0 0; padding-left:24px; color:var(--ink);">
+        <li>「CPAPで認知症予防」という過度な期待は医学的に時期尚早</li>
+        <li>ただし<strong>「未証明＝無意味」ではない</strong></li>
+        <li>眠気改善・生活の質向上・脳卒中予防という本来の役割を重視すべき</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer"><span>Shieu MM, et al. Neurology. 2022;99(4):e334-e346.</span><span>13 / 18</span></div>
+</section>
+
+  <!-- ===== 14. 誤解と事実 ===== -->
+<section class="slide slide--soft" data-slide="14">
+  <div class="eyebrow"><span class="num">13</span><span>誤解と事実</span></div>
+  <h2 class="s-title anim1">睡眠時無呼吸と認知症：よくある誤解の整理</h2>
+  <div class="myth-fact anim2" data-cue="いびきをかいたら必ずボケ">
+    <div class="myth-box">
+      <h3 style="color:#DC2626; font-size:var(--type-subtitle); margin-top:0;">❌ よくある誤解（Myth）</h3>
+      <ul style="font-size:var(--type-body); line-height:1.65; margin:0; padding-left:20px; color:#7F1D1D;">
+        <li>いびきをかいたら必ずボケる</li>
+        <li>CPAPを使えば<br>100%認知症を防げる</li>
+        <li>認知症予防にならないならCPAPはやめる</li>
+      </ul>
+    </div>
+    <div class="fact-box">
+      <h3 style="color:#16A34A; font-size:var(--type-subtitle); margin-top:0;">✅ 医学的事実（Fact）</h3>
+      <ul style="font-size:var(--type-body); line-height:1.65; margin:0; padding-left:20px; color:#14532D;">
+        <li>無呼吸はリスク因子だが全員が発症しない</li>
+        <li>CPAPの認知症発症予防は<br>未証明</li>
+        <li>CPAPは眠気・事故防止・心血管病予防に必須</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer"><span>睡眠時無呼吸と認知症</span><span>14 / 18</span></div>
+</section>
+
+  <!-- ===== 15. CPAPの真の価値 ===== -->
+<section class="slide" data-slide="15">
+  <div class="eyebrow"><span class="num">14</span><span>治療の真の価値</span></div>
+  <h2 class="s-title anim1">では、なぜCPAP治療が必要なのか？</h2>
+  <div class="grid-3">
+    <div class="card anim2" data-cue="日中の眠気をなくし事故を">
+      <h3 style="font-size:var(--type-subtitle); color:var(--navy); margin-top:0;">日中の覚醒と<br>QOL向上</h3>
+      <p class="lead">居眠り運転や労働災害を防ぎ、日中すっきりと生活できる。</p>
+    </div>
+    <div class="card anim3" data-cue="そして脳梗塞を防いで血管">
+      <h3 style="font-size:var(--type-subtitle); color:var(--navy); margin-top:0;">血圧の安定化</h3>
+      <p class="lead">夜間の交感神経興奮を鎮め、難治性高血圧を改善する。</p>
+    </div>
+    <div class="card card--accent anim4" data-cue="直結するからです。">
+      <h3 style="font-size:var(--type-subtitle); color:var(--accent-ink); margin-top:0;">脳卒中の予防</h3>
+      <p class="lead">脳梗塞を防ぐことで、<strong>血管性認知症の予防に直結</strong>する。</p>
+    </div>
+  </div>
+  <div class="footer"><span>睡眠時無呼吸と認知症</span><span>15 / 18</span></div>
+</section>
+
+  <!-- ===== 16. 生活対策 ===== -->
+<section class="slide slide--soft" data-slide="16">
+  <div class="eyebrow"><span class="num">15</span><span>今日からできること</span></div>
+  <h2 class="s-title anim1">あなたとご家族ができる具体的なアクション</h2>
+  <div class="grid-2">
+    <div class="card anim2" data-cue="いびきや呼吸停止があれば">
+      <h3 style="font-size:var(--type-subtitle); color:var(--navy); margin-top:0;">受診と検査</h3>
+      <ul style="font-size:var(--type-body); line-height:1.75; margin:0; padding-left:24px;">
+        <li>いびき・呼吸停止の指摘があれば睡眠外来へ</li>
+        <li>簡易検査・PSG検査で<br>正確に診断</li>
+      </ul>
+    </div>
+    <div class="card anim3" data-cue="適正体重の維持、寝酒をや">
+      <h3 style="font-size:var(--type-subtitle); color:var(--navy); margin-top:0;">生活習慣の工夫</h3>
+      <ul style="font-size:var(--type-body); line-height:1.75; margin:0; padding-left:24px;">
+        <li>適正体重の維持（減量で気道閉塞が改善）</li>
+        <li>寝酒の中止（アルコールは気道を弛緩させる）</li>
+        <li>横向き寝（側臥位）の活用</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer"><span>睡眠時無呼吸と認知症</span><span>16 / 18</span></div>
+</section>
+
+  <!-- ===== 17. まとめ ===== -->
+<section class="slide" data-slide="17">
+  <div class="eyebrow"><span class="num">16</span><span>本日のまとめ</span></div>
+  <h2 class="s-title anim1">睡眠時無呼吸と認知症：3つの要点</h2>
+  <div class="card anim2" style="margin-top:28px; padding:28px 32px;" data-cue="ふたつ目、CPAPによる">
+    <ol style="font-size:calc(32px * var(--type-mult)); line-height:1.8; margin:0; padding-left:36px; color:var(--navy);">
+      <li><strong>無呼吸は認知症リスクを高める（低酸素と睡眠分断が主因）</strong></li>
+      <li><strong>CPAPによる認知症予防は未証明（過度な期待は禁物）</strong></li>
+      <li><strong>だがCPAPは眠気改善・脳梗塞予防のために極めて重要</strong></li>
+    </ol>
+  </div>
+  <div class="footer"><span>睡眠時無呼吸と認知症</span><span>17 / 18</span></div>
+</section>
+
+  <!-- ===== 18. エンディング ===== -->
+<section data-label="エンディング" data-screen-label="18 エンディング" class="slide slide--navy end" data-slide="18">
+  <div class="cover__blob"></div>
+  <p class="end__cross anim">✚ 医知創造ラボ</p>
+  <h2 class="end__h anim2">この動画は情報提供です<br>個別の診断ではありません</h2>
+  <p class="end__sub anim2" data-cue="気になる症状は担当の先生">睡眠やCPAPのことで気になるときは、<br>自己判断せず担当の先生にご相談ください</p>
+  <div class="end__cta anim3">
+    <span class="btn btn--sub">🔔 チャンネル登録</span>
+    <span class="btn btn--like">👍 高評価</span>
+  </div>
+</section>
+
+</deck-stage>
+
+<div id="tweaks-root"></div>
+
+<script src="deck-stage.js"></script>
+<script src="image-slot.js"></script>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="tweaks-app.jsx"></script>
+
+</body>
+</html>
