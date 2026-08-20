@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>危険因子は重なる（生活習慣病の集積と認知症） — 認知症×生活習慣病シリーズ 第13弾</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* deep violet / royal blue accent (multimorbidity theme) */
+  --accent: #4F46E5;
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, #ffffff);
+  --accent-line: color-mix(in srgb, var(--accent) 60%, #ffffff);
+  --accent-ink: color-mix(in srgb, var(--accent) 70%, #1e1b4b);
+
+  /* type scale */
+  --type-mult: 1.25;
+  --type-display: calc(96px * var(--type-mult));
+  --type-title:   calc(80px * var(--type-mult));
+  --type-heading: calc(52px * var(--type-mult));
+  --type-subtitle:calc(38px * var(--type-mult));
+  --type-body:    calc(32px * var(--type-mult));
+  --type-small:   calc(26px * var(--type-mult));
+  --type-label:   calc(24px * var(--type-mult));
+  --type-chapter: calc(200px * var(--type-mult));
+  --type-stat:    calc(120px * var(--type-mult));
+
+  --pad-x: 108px;
+  --pad-top: 44px;
+  --pad-bottom: 90px;
+  --gap-title: 14px;
+  --gap-item: 14px;
+
+  --grad-navy: linear-gradient(135deg, #020617 0%, #0F172A 50%, #1E1B4B 100%);
+}
+
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#0c1622; }
+
+/* ---------- base slide ---------- */
+.slide{
+  box-sizing:border-box;
+  display:flex; flex-direction:column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--font-ja);
+  overflow:hidden;
+  position:relative;
+}
+.slide--soft{ background: var(--bg-alt); }
+
+/* ---------- ネイビー地の視認性強化 ---------- */
+.slide--navy{
+  background: var(--grad-navy);
+  color: #ffffff;
+  --accent-on-navy: #818CF8;
+  --on-navy-ink: #020617;
+}
+.slide--navy .cover__title .hl,
+.slide--navy .cover__badge .cross,
+.slide--navy .end__cross{ color: var(--accent-on-navy); }
+.slide--navy .cover__meta .ep,
+.slide--navy .btn--sub{ background: var(--accent-on-navy); color: var(--on-navy-ink); font-weight:700; }
+
+.eyebrow{
+  display:flex; align-items:center; gap:14px;
+  font-size: var(--type-label); font-weight:700; color: var(--blue);
+  letter-spacing:.04em;
+}
+.eyebrow::before{
+  content:""; width:16px; height:16px; border-radius:4px;
+  background: var(--accent); flex:none;
+}
+.eyebrow .num{ font-family: var(--font-en); color: var(--accent-ink); }
+
+.s-title{
+  font-size: var(--type-heading); line-height:1.2; color: var(--navy);
+  margin: var(--gap-title) 0 0; font-weight:700; letter-spacing:.01em;
+  text-wrap: pretty;
+}
+.slide--navy .s-title{ color:#fff; }
+
+.lead{
+  font-size: var(--type-body); line-height:1.55; color: var(--ink-2);
+  margin:0; text-wrap: pretty;
+}
+.muted{ color: var(--gray); }
+
+/* footer */
+.footer{
+  position:absolute; left: var(--pad-x); right: var(--pad-x); bottom:24px;
+  display:flex; justify-content:space-between; align-items:center;
+  font-size: var(--type-small); color: var(--gray);
+  border-top:1px solid #e2e8f0; padding-top:8px;
+}
+.slide--navy .footer{ border-color: rgba(255,255,255,0.25); color: rgba(255,255,255,0.85); font-weight:700; }
+
+/* grid layouts */
+.grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:28px; }
+.grid-3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; }
+.grid-4{ display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:16px; }
+
+/* cards */
+.card{
+  background: var(--white); border:2px solid #e2e8f0; border-radius:16px;
+  padding:24px 28px; box-sizing:border-box;
+}
+.card--soft{ background: var(--accent-soft); border-color: var(--accent-line); }
+.card--navy{ background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
+.card--alert{ background: #FEF2F2; border-color: #FCA5A5; }
+
+.c-tag{
+  display:inline-block; font-size: var(--type-small); font-weight:700;
+  padding:4px 14px; border-radius:20px; background: var(--accent-soft); color: var(--accent-ink);
+  margin-bottom:12px;
+}
+.c-head{ font-size: var(--type-subtitle); font-weight:700; margin:0 0 10px; color: var(--navy); }
+.slide--navy .c-head{ color:#fff; }
+.c-text{ font-size: var(--type-body); line-height:1.5; color: var(--ink-2); margin:0; }
+.slide--navy .c-text{ color: rgba(255,255,255,0.85); }
+
+/* comparison / vs block */
+.vs-block{ display:grid; grid-template-columns:1fr auto 1fr; gap:24px; align-items:center; }
+.vs-divider{ font-size: var(--type-heading); font-weight:700; color: var(--accent); }
+
+/* stat callout */
+.stat-box{
+  background: var(--accent-soft); border:2px solid var(--accent-line);
+  border-radius:16px; padding:20px 24px; text-align:center;
+}
+.stat-num{ font-size: var(--type-stat); font-weight:700; color: var(--accent); font-family: var(--font-en); line-height:1; }
+.stat-unit{ font-size: var(--type-heading); margin-left:4px; }
+.stat-label{ font-size: var(--type-body); font-weight:700; color: var(--navy); margin-top:8px; }
+
+/* list items */
+.item-list{ display:flex; flex-direction:column; gap:16px; margin-top:16px; }
+.item-row{
+  display:flex; align-items:center; gap:20px;
+  background: var(--white); border:2px solid #e2e8f0; border-radius:12px; padding:16px 24px;
+}
+.item-num{
+  width:44px; height:44px; border-radius:50%; background: var(--accent); color:#fff;
+  font-size: var(--type-subtitle); font-weight:700; display:flex; align-items:center; justify-content:center;
+  flex:none; font-family: var(--font-en);
+}
+.item-body{ flex:1; font-size: var(--type-body); font-weight:700; color: var(--navy); line-height:1.4; }
+
+/* cover specific */
+.cover__badge{
+  font-size: var(--type-small); font-weight:700; color: rgba(255,255,255,0.8);
+  letter-spacing:.08em; display:flex; align-items:center; gap:10px; margin-bottom:16px;
+}
+.cover__title{
+  font-size: calc(64px * var(--type-mult)); line-height:1.25; font-weight:700;
+  color:#fff; margin:0 0 20px;
+}
+.cover__sub{
+  font-size: var(--type-subtitle); color: rgba(255,255,255,0.9);
+  line-height:1.4; margin:0 0 32px;
+}
+.cover__meta{
+  display:flex; align-items:center; gap:16px;
+}
+.cover__meta .ep{
+  padding:6px 18px; border-radius:24px; font-size: var(--type-small);
+}
+.cover__meta .author{
+  font-size: var(--type-body); color: rgba(255,255,255,0.9);
+}
+
+/* end slide specific */
+.end__box{ text-align:center; max-width:1100px; margin:auto; }
+.end__h{ font-size: calc(60px * var(--type-mult)); font-weight:700; line-height:1.3; color:#fff; margin:0 0 24px; }
+.end__p{ font-size: var(--type-subtitle); color: rgba(255,255,255,0.85); line-height:1.5; margin:0 0 32px; }
+.end__cta{
+  display:inline-block; padding:16px 40px; border-radius:40px;
+  background: var(--accent-on-navy); color: var(--on-navy-ink); font-size: var(--type-subtitle);
+  font-weight:700; text-decoration:none;
+}
+</style>
+</head>
+<body>
+<deck-stage width="1920" height="1080">
+
+  <!-- ===== 01. 表紙 ===== -->
+<section class="slide slide--navy">
+  <div style="margin:auto 0;">
+    <div class="cover__badge anim1">認知症 × 生活習慣病シリーズ <span class="cross">✕</span> 第13弾</div>
+    <h1 class="cover__title anim2">
+      「血圧も血糖もコレステロールも高い」と<br>
+      認知症リスクはどうなる？
+    </h1>
+    <p class="cover__sub anim3" data-cue="認知症と生活習慣病シリー">生活習慣病の「同時多発（クラスタリング）」と脳の関係を医師が解説</p>
+    <div class="cover__meta anim4">
+      <span class="ep">第13弾：観察編</span>
+      <span class="author">脳神経内科医 今村</span>
+    </div>
+  </div>
+  <div class="footer">
+    <span>認知症×生活習慣病シリーズ</span>
+    <span>第13弾</span>
+  </div>
+</section>
+
+  <!-- ===== 02. フック ===== -->
+<section class="slide slide--soft">
+  <div class="eyebrow anim1"><span class="num">01</span> 健診結果の不安</div>
+  <h2 class="s-title anim2">健診で「あれもこれも」引っかかったあなたへ</h2>
+  <div class="grid-2" style="margin-top:28px; flex:1;">
+    <div class="card card--alert anim3" data-cue="健診結果で、いくつも要再">
+      <span class="c-tag" style="background:#FEE2E2; color:#991B1B;">よくあるお悩み</span>
+      <h3 class="c-head">複数の要再検・要指導マーク</h3>
+      <p class="c-text" style="margin-top:14px; line-height:1.6;">
+        「血圧も高い、血糖値も上がった、コレステロールも中性脂肪も再検査……」<br><br>
+        「1つ改善するだけでも大変なのに、いくつも重なったら将来認知症になる確率は何倍にも跳ね上がるのでは？」
+      </p>
+    </div>
+    <div class="card card--soft anim4" data-cue="こんにちは、脳神経内科医">
+      <span class="c-tag">医学的な真実</span>
+      <h3 class="c-head">生活習慣病は「重なる」もの</h3>
+      <p class="c-text" style="margin-top:14px; line-height:1.6;">
+        生活習慣病や認知症リスク因子は、単独ではなく<strong>「同じ根っこ」から同時多発</strong>します。<br><br>
+        そして、因子は単純な足し算ではなく<strong>相互に絡み合って作用</strong>します。
+      </p>
+    </div>
+  </div>
+  <div class="footer">
+    <span>健診結果と脳の関係</span>
+    <span>2 / 18</span>
+  </div>
+</section>
+
+  <!-- ===== 03. なぜ重なるのか ===== -->
+<section class="slide">
+  <div class="eyebrow anim1"><span class="num">02</span> 病態の連関</div>
+  <h2 class="s-title anim2">危険因子はなぜ「同時多発」するのか？</h2>
+  <p class="lead anim3" style="margin-top:14px;" data-cue="血圧、血糖値、脂質、体重">血圧、血糖、脂質、体重は別々の病気ではなく、共通の土台から生じています</p>
+  <div class="grid-3 anim4" style="margin-top:24px; flex:1;" data-cue="実は同じ根っこから、同時">
+    <div class="card">
+      <h3 class="c-head" style="color:var(--accent);">高血圧</h3>
+      <p class="c-text">血管抵抗の上昇、動脈硬化、塩分感受性の亢進が関与します。</p>
+    </div>
+    <div class="card">
+      <h3 class="c-head" style="color:var(--accent);">糖尿病・高血糖</h3>
+      <p class="c-text">インスリンの効きが悪くなり、血管内皮を糖化・損傷。</p>
+    </div>
+    <div class="card">
+      <h3 class="c-head" style="color:var(--accent);">脂質異常・肥満</h3>
+      <p class="c-text">内臓脂肪の蓄積が全身の慢性微小炎症と酸化ストレスを惹起。</p>
+    </div>
+  </div>
+  <div class="footer">
+    <span>生活習慣病のクラスタリング</span>
+    <span>3 / 18</span>
+  </div>
+</section>
+
+  <!-- ===== 04. 共通の根っこ ===== -->
+<section class="slide slide--soft">
+  <div class="eyebrow anim1"><span class="num">03</span> 共通基盤</div>
+  <h2 class="s-title anim2">生活習慣病を結ぶ「4大共通メカニズム」</h2>
+  <div class="grid-2 anim3" style="margin-top:24px; flex:1;" data-cue="インスリン抵抗性、慢性の">
+    <div class="card">
+      <h3 class="c-head">① インスリン抵抗性</h3>
+      <p class="c-text">血糖だけでなく血圧上昇・脂質代謝異常を同時に引き起こす中心核。</p>
+    </div>
+    <div class="card">
+      <h3 class="c-head">② 慢性微小炎症</h3>
+      <p class="c-text">肥大した脂肪細胞から炎症性物質が分泌され、血管を継続的に刺激。</p>
+    </div>
+    <div class="card">
+      <h3 class="c-head">③ 血管内皮障害・動脈硬化</h3>
+      <p class="c-text">血管のしなやかさが失われ、脳への微小循環障害を加速。</p>
+    </div>
+    <div class="card">
+      <h3 class="c-head">④ 酸化ストレス</h3>
+      <p class="c-text">過剰な栄養代謝で生じた活性酸素が神経細胞と血管壁を攻撃。</p>
+    </div>
+  </div>
+  <div class="footer">
+    <span>生活習慣病の共通基盤</span>
+    <span>4 / 18</span>
+  </div>
+</section>
+
+  <!-- ===== 05. エビデンス① ===== -->
+<section class="slide">
+  <div class="eyebrow anim1"><span class="num">04</span> エビデンス①</div>
+  <h2 class="s-title anim2">疾患が重なると認知症リスクはどう跳ね上がるか</h2>
+  <p class="lead anim3" style="margin-top:14px;" data-cue="イギリスの20万人を対象">UK Biobank 203,038人を10.7年追跡（Taiら, Lancet Healthy Longev 2022）</p>
+  <div class="grid-3 anim4" style="margin-top:20px; flex:1;" data-cue="認知症リスクが階段状に上">
+    <div class="stat-box">
+      <div class="stat-num">1.7<span class="stat-unit">倍</span></div>
+      <div class="stat-label">1疾患保有（HR 1.69）</div>
+      <p class="c-text" style="font-size:var(--type-small); margin-top:8px;">糖尿病・脳卒中・心筋梗塞のいずれか1つ</p>
+    </div>
+    <div class="stat-box" style="border-color:#F59E0B; background:#FFFBEB;">
+      <div class="stat-num" style="color:#D97706;">2.9<span class="stat-unit">倍</span></div>
+      <div class="stat-label">2疾患保有（HR 2.94）</div>
+      <p class="c-text" style="font-size:var(--type-small); margin-top:8px;">マルチモビディティ（疾患の併存）</p>
+    </div>
+    <div class="stat-box" style="border-color:#EF4444; background:#FEF2F2;">
+      <div class="stat-num" style="color:#DC2626;">4.9<span class="stat-unit">倍</span></div>
+      <div class="stat-label">3疾患すべて（HR 4.88）</div>
+      <p class="c-text" style="font-size:var(--type-small); margin-top:8px;">心血管代謝疾患の重積状態</p>
+    </div>
+  </div>
+  <div class="footer">
+    <span>Tai XY, et al. Lancet Healthy Longev 2022</span>
+    <span>5 / 18</span>
+  </div>
+</section>
+
+  <!-- ===== 06. 脳への影響 ===== -->
+<section class="slide slide--soft">
+  <div class="eyebrow anim1"><span class="num">05</span> 脳画像エビデンス</div>
+  <h2 class="s-title anim2">脳MRIが示す「構造的萎縮の加速」</h2>
+  <div class="grid-2 anim3" style="margin-top:24px; flex:1;" data-cue="脳のMRIでも、海馬の萎">
+    <div class="card">
+      <span class="c-tag">血管へのダメージ</span>
+      <h3 class="c-head">脳小血管病変の多発</h3>
+      <p class="c-text" style="line-height:1.6;">
+        血圧・血糖・脂質の乱れが脳の細い動脈を直接傷つけ、<strong>無症候性の微小梗塞（ラクナ梗塞）や白質病変</strong>を増やします。
+      </p>
+    </div>
+    <div class="card">
+      <span class="c-tag">神経へのダメージ</span>
+      <h3 class="c-head">海馬萎縮と全脳容積の減少</h3>
+      <p class="c-text" style="line-height:1.6;">
+        疾患数が増えるごとに、記憶の中枢である<strong>「海馬体積」と「全脳容積」が段階的に萎縮</strong>することがMRI解析で確認されています。
+      </p>
+    </div>
+  </div>
+  <div class="footer">
+    <span>脳の微小循環障害と萎縮</span>
+    <span>6 / 18</span>
+  </div>
+</section>
+
+  <!-- ===== 07. パラドックス ===== -->
+<section class="slide">
+  <div class="eyebrow anim1"><span class="num">06</span> 疑問の検証</div>
+  <h2 class="s-title anim2">「14因子を全部足すと70%超」の謎</h2>
+  <p class="lead anim3" style="margin-top:14px;" data-cue="ランセット認知症委員会の">Lancet 2024 委員会報告：修正可能な14因子の全体PAFは約45%</p>
+  <div class="grid-2 anim4" style="margin-top:20px; flex:1;" data-cue="なぜ全体では45%なので">
+    <div class="card">
+      <span class="c-tag" style="background:#F1F5F9; color:#475569;">単純加算の落とし穴</span>
+      <h3 class="c-head">個別の数値をそのまま足すと…</h3>
+      <p class="c-text" style="line-height:1.6;">
+        LDLコレステロール(7%) ＋ 難聴(7%) ＋ 孤立(5%) ＋ 教育(5%) ＋ 高血圧(2%) ＋ 糖尿病(2%) ＋ 喫煙(2%) ＋ 肥満(1%) ＋ 飲酒(1%) ……<br>
+        <strong>合計すると70%を優に超えてしまう！</strong>
+      </p>
+    </div>
+    <div class="card card--soft">
+      <span class="c-tag">疫学の真実</span>
+      <h3 class="c-head">全体の予防割合が45%の理由</h3>
+      <p class="c-text" style="line-height:1.6;">
+        人間は「1つの危険因子だけを持つ」わけではありません。<br>
+        因子同士が<strong>互いに深く重複（共有）</strong>しているため、単純な足し算はできないのです。
+      </p>
+    </div>
+  </div>
+  <div class="footer">
+    <span>Livingston G, et al. Lancet 2024</span>
+    <span>7 / 18</span>
+  </div>
+</section>
+
+  <!-- ===== 08. エビデンス② ===== -->
+<section class="slide slide--soft">
+  <div class="eyebrow anim1"><span class="num">07</span> エビデンス②</div>
+  <h2 class="s-title anim2">危険因子は孤立せず重なり合っている（Communality）</h2>
+  <div class="card card--navy anim3" style="background:var(--navy); color:#fff; margin-top:20px; padding:24px 32px;" data-cue="それは、危険因子が孤立せ">
+    <h3 class="c-head" style="color:#93C5FD; font-size:var(--type-heading);">重複性（Communality）が意味すること</h3>
+    <p class="c-text" style="color:rgba(255,255,255,0.9); font-size:var(--type-subtitle); line-height:1.6; margin-top:12px;">
+      「運動不足」の人は「肥満」や「高血圧」「糖尿病」を併せ持ちやすい。<br>
+      因子が重なり合っているからこそ、<strong>1つの生活習慣を改善すれば複数の危険因子が同時に良くなる</strong>。
+    </p>
+  </div>
+  <div class="grid-2 anim4" style="margin-top:20px; flex:1;" data-cue="これをコミュニナリティ、">
+    <div class="card">
+      <h3 class="c-head">悪化の連鎖（ドミノ倒し）</h3>
+      <p class="c-text">運動不足 → 内臓脂肪蓄積 → インスリン抵抗性 → 高血圧・高血糖・脂質異常</p>
+    </div>
+    <div class="card card--soft">
+      <h3 class="c-head">改善の連鎖（逆ドミノ倒し）</h3>
+      <p class="c-text">ウォーキング開始 → 体重減少＋血流改善 → 血圧・血糖・脂質が同時に好転！</p>
+    </div>
+  </div>
+  <div class="footer">
+    <span>重複性（Communality）と相乗効果</span>
+    <span>8 / 18</span>
+  </div>
+</section>
+
+  <!-- ===== 09. Norton 2014 ===== -->
+<section class="slide">
+  <div class="eyebrow anim1"><span class="num">08</span> 疫学の基礎</div>
+  <h2 class="s-title anim2">単純加算できない理由（Nortonら 2014）</h2>
+  <p class="lead anim3" style="margin-top:8px;" data-cue="Nortonらの研究でも">アルツハイマー病7大因子の世界PAFを算出したランドマーク研究</p>
+  <div class="vs-block anim4" style="margin-top:24px; flex:1;" data-cue="因子が重なっている証拠で">
+    <div class="card" style="text-align:center; padding:32px 20px;">
+      <span class="c-tag" style="background:#F1F5F9; color:#475569;">単純合計（非加重）</span>
+      <div class="stat-num" style="color:var(--gray); margin-top:12px;">49.4<span class="stat-unit">%</span></div>
+      <p class="c-text" style="margin-top:12px;">因子の重複を無視した足し算</p>
+    </div>
+    <div class="vs-divider">▶</div>
+    <div class="card card--soft" style="text-align:center; padding:32px 20px;">
+      <span class="c-tag">重複調整後の実態</span>
+      <div class="stat-num" style="margin-top:12px;">28.2<span class="stat-unit">%</span></div>
+      <p class="c-text" style="margin-top:12px; font-weight:700; color:var(--navy);">因子の共有性を統計学的に調整</p>
+    </div>
+  </div>
+  <div class="footer">
+    <span>Norton S, et al. Lancet Neurol 2014</span>
+    <span>9 / 18</span>
+  </div>
+</section>
+
+  <!-- ===== 10. エビデンス③ ===== -->
+<section class="slide slide--soft">
+  <div class="eyebrow anim1"><span class="num">09</span> エビデンス③</div>
+  <h2 class="s-title anim2">遺伝リスクがあっても諦めなくていい</h2>
+  <p class="lead anim3" style="margin-top:14px;" data-cue="家族に認知症の人がいるか">UK Biobank 196,383人・遺伝リスク×生活習慣（Louridaら, JAMA 2019）</p>
+  <div class="grid-2 anim4" style="margin-top:24px; flex:1;" data-cue="米国医師会雑誌の研究が、">
+    <div class="card">
+      <span class="c-tag">よくある誤解</span>
+      <h3 class="c-head">「遺伝があるから無駄？」</h3>
+      <p class="c-text" style="line-height:1.6;">
+        「親や親族が認知症になったから、自分も生活習慣病と合わさって逃れられないのでは…」という宿命論。
+      </p>
+    </div>
+    <div class="card card--soft">
+      <span class="c-tag">科学の実証</span>
+      <h3 class="c-head">生活習慣が遺伝を上書きする</h3>
+      <p class="c-text" style="line-height:1.6;">
+        健康的な生活習慣（非喫煙・運動・食事・適度な飲酒）の組み合わせで、<strong>高遺伝リスク層でも認知症リスクが大幅に低下</strong>します。
+      </p>
+    </div>
+  </div>
+  <div class="footer">
+    <span>Lourida I, et al. JAMA 2019</span>
+    <span>10 / 18</span>
+  </div>
+</section>
+
+  <!-- ===== 11. リスク32%低下 ===== -->
+<section class="slide">
+  <div class="eyebrow anim1"><span class="num">10</span> 希望のエビデンス</div>
+  <h2 class="s-title anim2">高遺伝リスクでも認知症リスクが32%低下</h2>
+  <div class="card card--soft anim3" style="margin-top:20px; text-align:center; padding:28px;" data-cue="遺伝的リスクが最も高いグ">
+    <div class="stat-num">32<span class="stat-unit">% 低下</span></div>
+    <div class="stat-label" style="font-size:var(--type-subtitle); margin-top:8px;">ハザード比 HR 0.68（95%CI 0.51–0.90）</div>
+    <p class="c-text" style="margin-top:10px;">高遺伝リスク群において、好ましい生活習慣群 vs 不健康群の比較</p>
+  </div>
+  <div class="item-list anim4" style="margin-top:16px;" data-cue="認知症リスクが32%低下">
+    <div class="item-row">
+      <div class="item-num">✓</div>
+      <div class="item-body">遺伝的になりやすい体質であっても、健康習慣の束が強力なブレーキになる</div>
+    </div>
+    <div class="item-row">
+      <div class="item-num">✓</div>
+      <div class="item-body">「遺伝か生活習慣か」の二者択一ではなく、生活習慣が運命を大きく変える</div>
+    </div>
+  </div>
+  <div class="footer">
+    <span>遺伝リスクと生活習慣の相互作用</span>
+    <span>11 / 18</span>
+  </div>
+</section>
+
+  <!-- ===== 12. CAIDEスコア ===== -->
+<section class="slide slide--soft">
+  <div class="eyebrow anim1"><span class="num">11</span> エビデンス④</div>
+  <h2 class="s-title anim2">中年期の複合リスクを測る「CAIDEスコア」</h2>
+  <p class="lead anim3" style="margin-top:14px;" data-cue="中年期の複合リスクを測定">中年期（40〜50代）の危険因子の集積をスコア化（Kivipeltoら, Lancet Neurol 2006）</p>
+  <div class="grid-4 anim4" style="margin-top:20px; flex:1;" data-cue="総合的に点数化します。">
+    <div class="card">
+      <h3 class="c-head" style="font-size:var(--type-body);">年齢・教育歴</h3>
+      <p class="c-text" style="font-size:var(--type-small);">基本属性と認知予備能</p>
+    </div>
+    <div class="card">
+      <h3 class="c-head" style="font-size:var(--type-body);">血圧</h3>
+      <p class="c-text" style="font-size:var(--type-small);">収縮期140以上で加点</p>
+    </div>
+    <div class="card">
+      <h3 class="c-head" style="font-size:var(--type-body);">BMI（肥満）</h3>
+      <p class="c-text" style="font-size:var(--type-small);">BMI 30以上で加点</p>
+    </div>
+    <div class="card">
+      <h3 class="c-head" style="font-size:var(--type-body);">脂質と運動</h3>
+      <p class="c-text" style="font-size:var(--type-small);">脂質異常・運動不足</p>
+    </div>
+  </div>
+  <div class="footer">
+    <span>Kivipelto M, et al. Lancet Neurol 2006</span>
+    <span>12 / 18</span>
+  </div>
+</section>
+
+  <!-- ===== 13. 20年後の脳 ===== -->
+<section class="slide">
+  <div class="eyebrow anim1"><span class="num">12</span> 20年追跡の結果</div>
+  <h2 class="s-title anim2">因子の集積が20年後の認知症発症率を決める</h2>
+  <p class="lead anim3" style="margin-top:8px;" data-cue="20年間の追跡で、低スコ">CAIDE研究 1,409人を20年間追跡した認知症発症率の比較</p>
+  <div class="vs-block anim4" style="margin-top:24px; flex:1;">
+    <div class="card card--soft" style="text-align:center; padding:32px 20px;">
+      <span class="c-tag">低スコア群（0〜5点）</span>
+      <div class="stat-num" style="color:var(--blue); margin-top:12px;">1.0<span class="stat-unit">%</span></div>
+      <p class="c-text" style="margin-top:12px;">中年期のリスク因子が少ない層</p>
+    </div>
+    <div class="vs-divider">VS</div>
+    <div class="card card--alert" style="text-align:center; padding:32px 20px;">
+      <span class="c-tag" style="background:#FEE2E2; color:#991B1B;">高スコア群（12〜15点）</span>
+      <div class="stat-num" style="color:#DC2626; margin-top:12px;">16.4<span class="stat-unit">%</span></div>
+      <p class="c-text" style="margin-top:12px; font-weight:700;">中年期のリスク因子が重積した層</p>
+    </div>
+  </div>
+  <div class="footer">
+    <span>中年期の複合管理が20年後を左右する</span>
+    <span>13 / 18</span>
+  </div>
+</section>
+
+  <!-- ===== 14. 誤解を解く ===== -->
+<section class="slide slide--soft">
+  <div class="eyebrow anim1"><span class="num">13</span> 臨床の知恵</div>
+  <h2 class="s-title anim2">「全部完璧」を目指さなくていい理由</h2>
+  <div class="grid-2 anim3" style="margin-top:24px; flex:1;" data-cue="一部の習慣を保つだけで低">
+    <div class="card">
+      <span class="c-tag" style="background:#F1F5F9; color:#475569;">挫折の原因</span>
+      <h3 class="c-head">「全部100点」の罠</h3>
+      <p class="c-text" style="line-height:1.6;">
+        食事制限も運動も節酒も禁煙も…と一度に完璧を目指すと、ストレスで挫折してしまいます。
+      </p>
+    </div>
+    <div class="card card--soft">
+      <span class="c-tag">多コホート研究の知見</span>
+      <h3 class="c-head">一部の改善でも効果大（Jin 2023）</h3>
+      <p class="c-text" style="line-height:1.6;">
+        複数疾患を持つ人でも、<strong>良好な習慣を少し保つだけで認知機能低下が緩徐化</strong>することが実証されています。
+      </p>
+    </div>
+  </div>
+  <div class="footer">
+    <span>Jin Y, et al. Lancet Healthy Longev 2023</span>
+    <span>14 / 18</span>
+  </div>
+</section>
+
+  <!-- ===== 15. 相乗効果 ===== -->
+<section class="slide">
+  <div class="eyebrow anim1"><span class="num">14</span> 波及効果</div>
+  <h2 class="s-title anim2">1つの改善がもたらす「波及効果」</h2>
+  <div class="item-list anim3" style="margin-top:20px; flex:1;" data-cue="1日15分の早歩きや、減">
+    <div class="item-row">
+      <div class="item-num">1</div>
+      <div class="item-body">
+        <strong>毎日15分の早歩きを始める</strong><br>
+        <span class="muted" style="font-size:var(--type-small);">→ インスリン感受性が向上し血糖低下 ＋ 血管拡張で血圧低下 ＋ 内臓脂肪減少</span>
+      </div>
+    </div>
+    <div class="item-row">
+      <div class="item-num">2</div>
+      <div class="item-body">
+        <strong>夕食の塩分とアルコールを少し控える</strong><br>
+        <span class="muted" style="font-size:var(--type-small);">→ 夜間血圧の安定 ＋ 睡眠の質向上 ＋ 脳の老廃物排出促進</span>
+      </div>
+    </div>
+    <div class="item-row">
+      <div class="item-num">3</div>
+      <div class="item-body">
+        <strong>かかりつけ医と相談して適切に内服治療を行う</strong><br>
+        <span class="muted" style="font-size:var(--type-small);">→ 脳血管への直接的な物理ストレスを遮断し、生活改善の効果を最大化</span>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    <span>逆ドミノ倒しの好循環</span>
+    <span>15 / 18</span>
+  </div>
+</section>
+
+  <!-- ===== 16. 次回予告への架け橋 ===== -->
+<section class="slide slide--soft">
+  <div class="eyebrow anim1"><span class="num">15</span> 次回への架け橋</div>
+  <h2 class="s-title anim2">なぜ「多因子介入」が最強の戦略なのか？</h2>
+  <div class="card card--navy anim3" style="background:var(--navy); color:#fff; margin-top:20px; padding:24px 32px;" data-cue="危険因子が束で来るからこ">
+    <h3 class="c-head" style="color:#93C5FD; font-size:var(--type-heading);">第14弾（シリーズ完結回）への予告</h3>
+    <p class="c-text" style="color:rgba(255,255,255,0.9); font-size:var(--type-subtitle); line-height:1.6; margin-top:12px;">
+      危険因子が「束（多因子）」で襲ってくるからこそ、予防も<strong>「食事 ＋ 運動 ＋ 認知刺激 ＋ 生活習慣管理」を束ねて介入する</strong>のが最も強力。
+    </p>
+  </div>
+  <div class="grid-3 anim4" style="margin-top:20px; flex:1;" data-cue="これが多因子介入、マルチ">
+    <div class="card">
+      <h3 class="c-head" style="font-size:var(--type-body);">FINGER研究</h3>
+      <p class="c-text" style="font-size:var(--type-small);">世界初・多因子介入RCT</p>
+    </div>
+    <div class="card">
+      <h3 class="c-head" style="font-size:var(--type-body);">J-MINT研究</h3>
+      <p class="c-text" style="font-size:var(--type-small);">日本発の大規模多因子臨床試験</p>
+    </div>
+    <div class="card">
+      <h3 class="c-head" style="font-size:var(--type-body);">U.S. POINTER</h3>
+      <p class="c-text" style="font-size:var(--type-small);">米国で走る最新の大規模検証</p>
+    </div>
+  </div>
+  <div class="footer">
+    <span>第14弾：多因子介入（完結回）へ続く</span>
+    <span>16 / 18</span>
+  </div>
+</section>
+
+  <!-- ===== 17. 今日のまとめ ===== -->
+<section class="slide">
+  <div class="eyebrow anim1"><span class="num">16</span> 本日のまとめ</div>
+  <h2 class="s-title anim2">脳を守るための3つの真実</h2>
+  <div class="item-list anim3" style="margin-top:24px; flex:1;" data-cue="遺伝リスクがあっても生活">
+    <div class="item-row">
+      <div class="item-num">1</div>
+      <div class="item-body">
+        <strong>危険因子は足し算ではなく重なって現れる</strong><br>
+        <span class="muted" style="font-size:var(--type-small);">生活習慣病は共通の代謝基盤を持ち、重なるほどリスクは急増するが、脳の萎縮は防げる。</span>
+      </div>
+    </div>
+    <div class="item-row">
+      <div class="item-num">2</div>
+      <div class="item-body">
+        <strong>遺伝や重複に絶望する必要はない</strong><br>
+        <span class="muted" style="font-size:var(--type-small);">高遺伝リスクでも健康習慣でリスク32%減。因子の重複は「1つの改善が全体に波及する」証拠。</span>
+      </div>
+    </div>
+    <div class="item-row">
+      <div class="item-num">3</div>
+      <div class="item-body">
+        <strong>完璧を目指さず、できること1つから始める</strong><br>
+        <span class="muted" style="font-size:var(--type-small);">悪循環のドミノを1枚止めるだけで十分。かかりつけ医と相談しながら最初の一歩を。</span>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    <span>危険因子の重なりと認知症 まとめ</span>
+    <span>17 / 18</span>
+  </div>
+</section>
+
+  <!-- ===== 18. エンディング ===== -->
+<section class="slide slide--navy">
+  <div class="end__box">
+    <h2 class="end__h anim2">この動画は情報提供です<br>個別の診断ではありません</h2>
+    <p class="end__p anim3" data-cue="個々の治療方針は、担当の">気になる症状や健診結果は、かかりつけの先生にご相談ください。</p>
+    <a href="#" class="end__cta anim4">チャンネル登録で最新の医学解説をチェック</a>
+  </div>
+  <div class="footer">
+    <span>認知症×生活習慣病シリーズ 第13弾</span>
+    <span>ご視聴ありがとうございました</span>
+  </div>
+</section>
+
+</deck-stage>
+<script type="module" src="deck-stage.js"></script>
+</body>
+</html>
