@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<script>if(window.location.protocol.startsWith('http')&&'serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})}).catch(function(){});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0b1120">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -704,7 +704,8 @@
       <button class="btn-group-item active" id="btn-level-1" onclick="setLevel(1)">Level 1 (詳細)</button>
       <button class="btn-group-item" id="btn-level-2" onclick="setLevel(2)">Level 2 (4大血管)</button>
     </div>
-    <button class="btn btn-secondary" onclick="exportCurrentSlicePNG()">📷 画像保存</button>
+    <button class="btn btn-secondary" onclick="exportCurrentSlicePNG()" title="現在の3断面画像を保存">📷 画像保存</button>
+    <button class="btn btn-secondary" onclick="downloadStandaloneHTML()" title="完全オフラインで動く単一HTMLファイルをダウンロード" style="background:#1e3a8a; border-color:#3b82f6;">💾 単体HTML保存</button>
   </div>
 </header>
 
@@ -2251,6 +2252,16 @@ function exportCurrentSlicePNG() {
   link.download = `MNI_Vascular_Atlas_Z${mniZ}_Y${mniY}_X${mniX}.png`;
   link.href = exportCanvas.toDataURL('image/png');
   link.click();
+}
+
+function downloadStandaloneHTML() {
+  const htmlContent = '<!DOCTYPE html>' + document.documentElement.outerHTML;
+  const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+  const link = document.createElement('a');
+  link.download = 'MNI_脳血管支配領域_3Dアトラス_オフライン版.html';
+  link.href = URL.createObjectURL(blob);
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(link.href), 1000);
 }
 
 function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
