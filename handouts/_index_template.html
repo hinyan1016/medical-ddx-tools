@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1B3A5C">
+<meta name="description" content="外来でそのまま印刷して渡せる患者さん・ご家族向けのA4配布資料（ハンドアウト）一覧。脳梗塞二次予防・パーキンソン病リハビリ・認知症BPSD・起立性低血圧・認知症予防・高血圧・慢性めまい・2型糖尿病・てんかん・脂質異常症・片頭痛・高尿酸血症・かぜ・手根管症候群・慢性腎臓病・むずむず脚症候群・不安症・逆流性食道炎・糖尿病性末梢神経障害のフットケア・慢性便秘・肥満/減量・花粉症/アレルギー性鼻炎・顔面神経麻痺・脂肪肝・インフルエンザ/コロナ・鉄欠乏性貧血・本態性振戦・禁煙・緊張型頭痛/肩こり頭痛・両足のむくみ・骨粗鬆症・頻尿/尿もれ・節酒/減酒・むせる方の誤嚥予防の生活指導シリーズ。">
+<title>ハンドアウト一覧（患者さん・ご家族向け配布資料）｜医知創造ラボ</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Yu Gothic', '游ゴシック', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+    background: #F4F6F8;
+    color: #222;
+    line-height: 1.7;
+  }
+  header {
+    background: linear-gradient(135deg, #1B3A5C 0%, #2C5AA0 100%);
+    color: #fff;
+    padding: 34px 20px 30px;
+    text-align: center;
+  }
+  header h1 { font-size: 1.5em; letter-spacing: .03em; }
+  header p { margin-top: 8px; font-size: 0.92em; color: #cfe0ee; }
+  .container { max-width: 860px; margin: 0 auto; padding: 26px 18px 40px; }
+  .note {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-left: 5px solid #2C5AA0;
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 0.9em;
+    color: #444;
+    margin-bottom: 22px;
+  }
+  .ho-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #fff;
+    border-left: 5px solid #1B3A5C;
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 12px rgba(27,58,92,0.10);
+    text-decoration: none;
+    color: #222;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .ho-card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(27,58,92,0.18); }
+  .ho-emoji { font-size: 1.9em; line-height: 1; }
+  .ho-body { flex: 1; }
+  .ho-meta { font-size: 0.76em; font-weight: 700; letter-spacing: .04em; margin-bottom: 3px; }
+  .ho-meta .num { color: #5A6B7E; margin-right: 8px; }
+  .ho-meta .aud {
+    display: inline-block;
+    padding: 1px 9px;
+    border-radius: 10px;
+    background: #E8F0FE;
+    color: #2C5AA0;
+  }
+  .ho-title { font-weight: 700; font-size: 1.04em; color: #1B3A5C; }
+  .ho-desc { font-size: 0.86em; color: #555; margin-top: 3px; }
+  .ho-arrow { font-size: 1.4em; line-height: 1; color: #1B3A5C; }
+  .ho-teal { border-left-color: #2A5D54; }
+  .ho-teal .ho-title, .ho-teal .ho-arrow { color: #2A5D54; }
+  .ho-teal .ho-meta .aud { background: #E7F1EF; color: #2A5D54; }
+  .ho-visionteal { border-left-color: #1F7A8C; }
+  .ho-visionteal .ho-title, .ho-visionteal .ho-arrow { color: #1F7A8C; }
+  .ho-visionteal .ho-meta .aud { background: #E8F3F5; color: #145E6D; }
+  .ho-green { border-left-color: #1E7A46; }
+  .ho-green .ho-title, .ho-green .ho-arrow { color: #1E7A46; }
+  .ho-red { border-left-color: #B0263A; }
+  .ho-red .ho-title, .ho-red .ho-arrow { color: #B0263A; }
+  .ho-indigo { border-left-color: #3D4E9E; }
+  .ho-indigo .ho-title, .ho-indigo .ho-arrow { color: #3D4E9E; }
+  .ho-indigo .ho-meta .aud { background: #EAECF7; color: #3D4E9E; }
+  .ho-mblue { border-left-color: #1565C0; }
+  .ho-mblue .ho-title, .ho-mblue .ho-arrow { color: #1565C0; }
+  .ho-mblue .ho-meta .aud { background: #E4EEF9; color: #1565C0; }
+  .ho-violet { border-left-color: #6A4C9C; }
+  .ho-violet .ho-title, .ho-violet .ho-arrow { color: #6A4C9C; }
+  .ho-violet .ho-meta .aud { background: #EDE7F6; color: #6A4C9C; }
+  .ho-tealb { border-left-color: #00695C; }
+  .ho-tealb .ho-title, .ho-tealb .ho-arrow { color: #00695C; }
+  .ho-tealb .ho-meta .aud { background: #E0F2F1; color: #00695C; }
+  .ho-rose { border-left-color: #C2185B; }
+  .ho-rose .ho-title, .ho-rose .ho-arrow { color: #880E4F; }
+  .ho-rose .ho-meta .aud { background: #FCE4EC; color: #C2185B; }
+  .ho-amber { border-left-color: #B26A00; }
+  .ho-amber .ho-title, .ho-amber .ho-arrow { color: #A15C00; }
+  .ho-amber .ho-meta .aud { background: #FFF3E0; color: #B26A00; }
+  .ho-bronze { border-left-color: #8D6E00; }
+  .ho-bronze .ho-title, .ho-bronze .ho-arrow { color: #6B5300; }
+  .ho-bronze .ho-meta .aud { background: #F7F3E6; color: #6B5300; }
+  .ho-sky { border-left-color: #0288D1; }
+  .ho-sky .ho-title, .ho-sky .ho-arrow { color: #01579B; }
+  .ho-sky .ho-meta .aud { background: #E1F5FE; color: #0277BD; }
+  .ho-cyan { border-left-color: #00838F; }
+  .ho-cyan .ho-title, .ho-cyan .ho-arrow { color: #00595C; }
+  .ho-cyan .ho-meta .aud { background: #E0F4F5; color: #00838F; }
+  .ho-slate { border-left-color: #546E7A; }
+  .ho-slate .ho-title, .ho-slate .ho-arrow { color: #37474F; }
+  .ho-slate .ho-meta .aud { background: #ECEFF1; color: #546E7A; }
+  .ho-brown { border-left-color: #6D4C41; }
+  .ho-brown .ho-title, .ho-brown .ho-arrow { color: #4E342E; }
+  .ho-brown .ho-meta .aud { background: #EFEBE9; color: #6D4C41; }
+  .ho-periwinkle { border-left-color: #5C6BC0; }
+  .ho-periwinkle .ho-title, .ho-periwinkle .ho-arrow { color: #28306B; }
+  .ho-periwinkle .ho-meta .aud { background: #EAECF7; color: #3F51B5; }
+  .ho-dorange { border-left-color: #D84315; }
+  .ho-dorange .ho-title, .ho-dorange .ho-arrow { color: #8C2F0D; }
+  .ho-dorange .ho-meta .aud { background: #FBE6DD; color: #D84315; }
+  .ho-olive { border-left-color: #558B2F; }
+  .ho-olive .ho-title, .ho-olive .ho-arrow { color: #33691E; }
+  .ho-olive .ho-meta .aud { background: #EAF1E1; color: #558B2F; }
+  .ho-plum { border-left-color: #7B1FA2; }
+  .ho-plum .ho-title, .ho-plum .ho-arrow { color: #6A1B9A; }
+  .ho-plum .ho-meta .aud { background: #F3E5F5; color: #7B1FA2; }
+  .ho-lime { border-left-color: #7CB342; }
+  .ho-lime .ho-title, .ho-lime .ho-arrow { color: #33691E; }
+  .ho-lime .ho-meta .aud { background: #F1F8E9; color: #558B2F; }
+  .ho-dviolet { border-left-color: #311B92; }
+  .ho-dviolet .ho-title, .ho-dviolet .ho-arrow { color: #311B92; }
+  .ho-dviolet .ho-meta .aud { background: #EDE7F6; color: #4527A0; }
+  .ho-burgundy { border-left-color: #6D1B3E; }
+  .ho-burgundy .ho-title, .ho-burgundy .ho-arrow { color: #6D1B3E; }
+  .ho-burgundy .ho-meta .aud { background: #FBEAF0; color: #4E1029; }
+  .ho-darkgold { border-left-color: #5D540E; }
+  .ho-darkgold .ho-title, .ho-darkgold .ho-arrow { color: #5D540E; }
+  .ho-darkgold .ho-meta .aud { background: #F8F5E2; color: #3E3807; }
+  .ho-rust { border-left-color: #8B4513; }
+  .ho-rust .ho-title, .ho-rust .ho-arrow { color: #8B4513; }
+  .ho-rust .ho-meta .aud { background: #FBF1EA; color: #4A2410; }
+  .ho-aubergine { border-left-color: #4A235A; }
+  .ho-aubergine .ho-title, .ho-aubergine .ho-arrow { color: #4A235A; }
+  .ho-aubergine .ho-meta .aud { background: #F2EAF6; color: #2E1438; }
+  .ho-maroon { border-left-color: #7B241C; }
+  .ho-maroon .ho-title, .ho-maroon .ho-arrow { color: #7B241C; }
+  .ho-maroon .ho-meta .aud { background: #FBF0EE; color: #5A1A15; }
+  .ho-forest { border-left-color: #294B15; }
+  .ho-forest .ho-title, .ho-forest .ho-arrow { color: #294B15; }
+  .ho-forest .ho-meta .aud { background: #EAF0E4; color: #1D360F; }
+  .ho-deepteal { border-left-color: #0F5257; }
+  .ho-deepteal .ho-title, .ho-deepteal .ho-arrow { color: #0F5257; }
+  .ho-deepteal .ho-meta .aud { background: #E4EFEE; color: #073238; }
+  .ho-amethyst { border-left-color: #5B3E8E; }
+  .ho-amethyst .ho-title, .ho-amethyst .ho-arrow { color: #5B3E8E; }
+  .ho-amethyst .ho-meta .aud { background: #F0ECF7; color: #3B2660; }
+  .ho-navy { border-left-color: #012360; }
+  .ho-navy .ho-title, .ho-navy .ho-arrow { color: #012360; }
+  .ho-navy .ho-meta .aud { background: #E3EAF5; color: #012360; }
+  .ho-steelblue { border-left-color: #2B5F8A; }
+  .ho-steelblue .ho-title, .ho-steelblue .ho-arrow { color: #2B5F8A; }
+  .ho-steelblue .ho-meta .aud { background: #E6EEF5; color: #1D4463; }
+  .ho-mauve { border-left-color: #7F5A83; }
+  .ho-mauve .ho-title, .ho-mauve .ho-arrow { color: #634167; }
+  .ho-mauve .ho-meta .aud { background: #F5F0F6; color: #4E3252; }
+  .ho-crimson { border-left-color: #9B1B30; }
+  .ho-crimson .ho-title, .ho-crimson .ho-arrow { color: #7A1526; }
+  .ho-crimson .ho-meta .aud { background: #FBEDEF; color: #6E0F22; }
+  .ho-fuchsia { border-left-color: #8A0F6B; }
+  .ho-fuchsia .ho-title, .ho-fuchsia .ho-arrow { color: #6E0C56; }
+  .ho-fuchsia .ho-meta .aud { background: #F7EEF4; color: #5A0844; }
+  .ho-coral { border-left-color: #B23A1E; }
+  .ho-coral .ho-title, .ho-coral .ho-arrow { color: #B23A1E; }
+  .ho-coral .ho-meta .aud { background: #FDEEE8; color: #B23A1E; }
+  .back {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 0.92em;
+    color: #2C5AA0;
+    text-decoration: none;
+    font-weight: 700;
+  }
+  .back:hover { text-decoration: underline; }
+  footer {
+    text-align: center;
+    font-size: 0.78em;
+    color: #888;
+    padding: 0 18px 34px;
+  }
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.2em; }
+    .ho-card { padding: 13px 14px; gap: 10px; }
+    .ho-emoji { font-size: 1.5em; }
+  }
+</style>
+</head>
+<body>
+<nav id="ics-globalnav" style="background:#15324E;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
+<div style="max-width:1040px;margin:0 auto;padding:9px 16px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+<a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;">医知創造ラボ</a>
+<a href="https://ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">ホーム</a>
+<a href="https://blog.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">ブログ</a>
+<a href="https://tools.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">ツール</a>
+<a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">YouTube</a>
+</div>
+</nav>
+
+<header>
+  <h1>📄 ハンドアウト一覧</h1>
+  <p>外来でそのまま印刷して渡せる、患者さん・ご家族向けのA4配布資料</p>
+</header>
+
+<div class="container">
+  <div class="note">
+    各資料は1ページのA4印刷に最適化しています。開いたページのボタン（またはブラウザの印刷機能）からそのまま印刷できます。内容は外来生活指導シリーズのブログ記事・動画と連動しています。
+  </div>
+
+<!--CARDS-->
+
+  <a class="back" href="https://tools.ichisouzo-lab.com/">← 診断ツール一覧へ戻る</a>
+</div>
+
+<footer>
+  ⚠️ 本資料は一般的な医療情報であり、個別の診断・治療に代わるものではありません。気になる症状があれば主治医にご相談ください。
+</footer>
+</body>
+</html>
