@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0b1120">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.json">
@@ -11,7 +11,7 @@
 <title>MNI脳血管支配領域 3Dアトラス | Vascular Territory Atlas</title>
 <style>
   :root {
-    --bg-main: #090d16;
+    --bg-main: #070b14;
     --bg-panel: #0f172a;
     --bg-card: #1e293b;
     --bg-card-hover: #334155;
@@ -34,65 +34,108 @@
     background-color: var(--bg-main);
     color: var(--text-primary);
     line-height: 1.5;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    overflow: hidden;
-    user-select: none;
+    overflow-x: hidden;
+  }
+
+  /* Desktop layout (default) */
+  @media (min-width: 901px) {
+    body {
+      height: 100vh;
+      overflow: hidden;
+    }
+  }
+
+  /* Global Nav */
+  #ics-globalnav {
+    background: #050811;
+    font-size: 13px;
+    line-height: 1.4;
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+    z-index: 30;
+  }
+  .nav-inner {
+    max-width: 100%;
+    padding: 6px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
   }
 
   /* Header */
   header {
     background-color: #0b1120;
     border-bottom: 1px solid var(--border-light);
-    padding: 8px 18px;
+    padding: 8px 14px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-shrink: 0;
     z-index: 20;
+    gap: 8px;
   }
   .brand {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
+    min-width: 0;
   }
   .brand-icon {
-    font-size: 24px;
-    filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.4));
+    font-size: 22px;
+    flex-shrink: 0;
   }
   .brand-title {
-    font-size: 1.1rem;
+    font-size: 1.02rem;
     font-weight: 700;
-    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
   }
   .brand-subtitle {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .header-actions {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+    flex-shrink: 0;
   }
   .badge {
-    padding: 3px 8px;
+    padding: 2px 6px;
     border-radius: 4px;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 600;
     background-color: #1e293b;
     border: 1px solid var(--border-light);
     color: var(--accent-blue);
+    white-space: nowrap;
   }
 
   /* Main Container */
   .main-layout {
     display: flex;
     flex: 1;
-    overflow: hidden;
+    min-height: 0;
+  }
+
+  @media (max-width: 900px) {
+    .main-layout {
+      flex-direction: column;
+      overflow-y: auto;
+      height: auto;
+    }
   }
 
   /* Left: Viewport Area */
@@ -101,9 +144,18 @@
     display: flex;
     flex-direction: column;
     background-color: #030712;
-    padding: 10px;
+    padding: 8px;
     gap: 8px;
+    min-height: 0;
     overflow: hidden;
+  }
+
+  @media (max-width: 900px) {
+    .viewport-container {
+      overflow: visible;
+      padding: 8px 10px;
+      flex: none;
+    }
   }
 
   /* Quick Presets Bar */
@@ -111,17 +163,20 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    flex-wrap: wrap;
     background: rgba(15, 23, 42, 0.85);
     padding: 6px 10px;
     border-radius: 6px;
     border: 1px solid var(--border-light);
     flex-shrink: 0;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
   }
   .preset-label {
     font-size: 0.75rem;
     font-weight: 700;
     color: var(--accent-blue);
+    flex-shrink: 0;
   }
   .btn-preset {
     background: #1e293b;
@@ -131,12 +186,46 @@
     border-radius: 4px;
     font-size: 0.72rem;
     cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
     transition: all 0.15s ease;
   }
-  .btn-preset:hover {
+  .btn-preset:active, .btn-preset:hover {
     background: #334155;
     color: #fff;
     border-color: var(--accent-blue);
+  }
+
+  /* Mobile Mode Switcher Tabs */
+  .mobile-plane-tabs {
+    display: none;
+    background: #0f172a;
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 2px;
+  }
+  @media (max-width: 900px) {
+    .mobile-plane-tabs {
+      display: flex;
+    }
+  }
+  .mobile-plane-tab {
+    flex: 1;
+    padding: 8px 4px;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    cursor: pointer;
+    background: #0b1120;
+    border-right: 1px solid var(--border-light);
+    transition: all 0.15s ease;
+  }
+  .mobile-plane-tab:last-child { border-right: none; }
+  .mobile-plane-tab.active {
+    background: #2563eb;
+    color: #fff;
   }
 
   /* Viewports Grid */
@@ -148,11 +237,22 @@
     gap: 8px;
     min-height: 0;
   }
-  @media (max-width: 1024px) {
+
+  /* Mobile: Single large view or scrollable */
+  @media (max-width: 900px) {
     .viewports-grid {
-      grid-template-columns: 1fr;
-      grid-template-rows: repeat(3, 1fr);
-      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .view-panel {
+      display: none; /* Controlled by activePlaneTab */
+    }
+    .view-panel.mobile-active {
+      display: flex !important;
+    }
+    .viewports-grid.show-all-planes .view-panel {
+      display: flex !important;
     }
   }
 
@@ -164,36 +264,63 @@
     flex-direction: column;
     overflow: hidden;
     position: relative;
-  }
-  .view-panel.active {
-    border-color: var(--accent-blue);
+    min-height: 0;
   }
   .view-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 5px 8px;
-    background-color: rgba(15, 23, 42, 0.9);
+    padding: 6px 10px;
+    background-color: rgba(15, 23, 42, 0.95);
     border-bottom: 1px solid var(--border-light);
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     font-weight: 600;
     z-index: 10;
+    gap: 8px;
   }
   .view-title {
     display: flex;
     align-items: center;
     gap: 6px;
+    white-space: nowrap;
   }
   .view-controls {
     display: flex;
     align-items: center;
     gap: 6px;
+    flex: 1;
+    justify-content: flex-end;
+    max-width: 280px;
   }
   .slice-indicator {
     color: var(--accent-blue);
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     font-size: 0.78rem;
+    white-space: nowrap;
   }
+  .slice-slider {
+    flex: 1;
+    accent-color: var(--accent-blue);
+    cursor: pointer;
+    min-width: 70px;
+    height: 24px;
+  }
+  .btn-step {
+    background: #1e293b;
+    border: 1px solid var(--border-light);
+    color: #fff;
+    width: 26px;
+    height: 26px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .btn-step:active { background: #334155; }
+
   .canvas-wrapper {
     flex: 1;
     display: flex;
@@ -203,12 +330,21 @@
     overflow: hidden;
     cursor: crosshair;
     background-color: #000;
+    touch-action: none;
   }
+
+  @media (max-width: 900px) {
+    .canvas-wrapper {
+      height: 320px;
+      max-height: 60vw;
+    }
+  }
+
   canvas {
     image-rendering: -moz-crisp-edges;
     image-rendering: pixelated;
-    width: 92%;
-    height: 92%;
+    max-width: 100%;
+    max-height: 100%;
     object-fit: contain;
     box-shadow: 0 0 20px rgba(0,0,0,0.8);
   }
@@ -218,7 +354,7 @@
     position: absolute;
     font-size: 0.7rem;
     font-weight: 700;
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(255, 255, 255, 0.8);
     pointer-events: none;
     text-shadow: 0 0 4px #000;
     z-index: 5;
@@ -233,11 +369,16 @@
     background-color: #0b1120;
     border: 1px solid var(--border-light);
     border-radius: 6px;
-    padding: 10px 14px;
+    padding: 10px 12px;
     display: flex;
     flex-direction: column;
     gap: 8px;
     overflow-y: auto;
+  }
+  @media (max-width: 900px) {
+    .summary-panel {
+      overflow-y: visible;
+    }
   }
   .summary-header {
     font-size: 0.85rem;
@@ -254,7 +395,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
+    gap: 8px;
     font-size: 0.78rem;
     color: var(--text-secondary);
   }
@@ -274,8 +415,16 @@
     overflow: hidden;
     flex-shrink: 0;
   }
-  @media (max-width: 1280px) {
+  @media (max-width: 1280px) and (min-width: 901px) {
     .sidebar { width: 380px; }
+  }
+  @media (max-width: 900px) {
+    .sidebar {
+      width: 100%;
+      border-left: none;
+      border-top: 1px solid var(--border-light);
+      flex: none;
+    }
   }
 
   .sidebar-tabs {
@@ -287,7 +436,7 @@
     flex: 1;
     padding: 9px;
     text-align: center;
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     font-weight: 600;
     color: var(--text-secondary);
     cursor: pointer;
@@ -319,9 +468,9 @@
     background-color: #090d16;
     border: 1px solid var(--border-light);
     border-radius: 6px;
-    padding: 6px 10px 6px 28px;
+    padding: 8px 10px 8px 28px;
     color: #fff;
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     outline: none;
   }
   .search-input:focus {
@@ -385,11 +534,11 @@
     margin-top: 2px;
   }
   .section-body {
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     color: #e2e8f0;
-    line-height: 1.5;
+    line-height: 1.55;
     background: rgba(30, 41, 59, 0.4);
-    padding: 7px 9px;
+    padding: 8px 10px;
     border-radius: 5px;
     border-left: 3px solid var(--accent-blue);
     user-select: text;
@@ -411,15 +560,15 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 5px 8px;
+    padding: 7px 10px;
     border-radius: 5px;
     background-color: #090d16;
     border: 1px solid var(--border-light);
-    font-size: 0.76rem;
+    font-size: 0.78rem;
     cursor: pointer;
     transition: all 0.15s ease;
   }
-  .legend-item:hover, .legend-item.active {
+  .legend-item:active, .legend-item:hover, .legend-item.active {
     background-color: #1e293b;
     border-color: var(--accent-blue);
   }
@@ -432,8 +581,8 @@
     text-overflow: ellipsis;
   }
   .legend-color {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     border-radius: 2px;
     flex-shrink: 0;
   }
@@ -462,6 +611,7 @@
     align-items: center;
     gap: 5px;
     transition: all 0.15s ease;
+    white-space: nowrap;
   }
   .btn:hover { background-color: #1d4ed8; }
   .btn-secondary {
@@ -480,12 +630,13 @@
   .btn-group-item {
     background: #0f172a;
     color: var(--text-secondary);
-    padding: 4px 10px;
-    font-size: 0.75rem;
+    padding: 4px 8px;
+    font-size: 0.72rem;
     font-weight: 600;
     cursor: pointer;
     border: none;
     border-right: 1px solid var(--border-light);
+    white-space: nowrap;
   }
   .btn-group-item:last-child { border-right: none; }
   .btn-group-item.active {
@@ -495,16 +646,17 @@
 
   .coord-pill {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     background: #090d16;
-    padding: 2px 7px;
+    padding: 2px 6px;
     border-radius: 4px;
     border: 1px solid var(--border-light);
     color: var(--accent-green);
+    white-space: nowrap;
   }
 
   .loading-overlay {
-    position: absolute;
+    position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(9, 13, 22, 0.95);
     display: flex;
@@ -527,14 +679,13 @@
 </head>
 <body>
 
-<nav id="ics-globalnav" style="background:#070b14;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:13px;line-height:1.4;border-bottom:1px solid #1e293b;flex-shrink:0;">
-  <div style="max-width:100%;margin:0 auto;padding:6px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-    <a href="index.html" style="color:#38bdf8;text-decoration:none;font-weight:700;display:flex;align-items:center;gap:4px;margin-right:8px;">← ツール一覧</a>
+<nav id="ics-globalnav">
+  <div class="nav-inner">
+    <a href="index.html" style="color:#38bdf8;text-decoration:none;font-weight:700;display:flex;align-items:center;gap:4px;white-space:nowrap;">← ツール一覧</a>
     <span style="color:#475569;">|</span>
-    <a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;">医知創造ラボ</a>
-    <a href="https://ichisouzo-lab.com/" style="color:#94a3b8;text-decoration:none;padding:2px 8px;border-radius:4px;">ホーム</a>
-    <a href="https://blog.ichisouzo-lab.com/" style="color:#94a3b8;text-decoration:none;padding:2px 8px;border-radius:4px;">ブログ</a>
-    <a href="https://tools.ichisouzo-lab.com/" style="color:#94a3b8;text-decoration:none;padding:2px 8px;border-radius:4px;">ツール</a>
+    <a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;white-space:nowrap;">医知創造ラボ</a>
+    <a href="https://blog.ichisouzo-lab.com/" style="color:#94a3b8;text-decoration:none;padding:2px 6px;border-radius:4px;white-space:nowrap;">ブログ</a>
+    <a href="https://tools.ichisouzo-lab.com/" style="color:#94a3b8;text-decoration:none;padding:2px 6px;border-radius:4px;white-space:nowrap;">ツール</a>
   </div>
 </nav>
 
@@ -543,49 +694,56 @@
     <span class="brand-icon">🧠</span>
     <div>
       <div class="brand-title">
-        <span>MNI152 脳血管支配領域 3Dアトラス</span>
-        <span class="badge">Scientific Data 2023 準拠</span>
+        <span>MNI脳血管支配領域 3Dアトラス</span>
       </div>
-      <div class="brand-subtitle">Digital 3D Brain MRI Arterial Territories Atlas (Liu et al., 1,298例Stroke病変)</div>
+      <div class="brand-subtitle">Liu et al. Scientific Data 2023 (1,298例Stroke病変)</div>
     </div>
   </div>
   <div class="header-actions">
     <div class="btn-group">
-      <button class="btn-group-item active" id="btn-level-1" onclick="setLevel(1)">Level 1 (詳細30領域)</button>
-      <button class="btn-group-item" id="btn-level-2" onclick="setLevel(2)">Level 2 (主要4大血管)</button>
+      <button class="btn-group-item active" id="btn-level-1" onclick="setLevel(1)">Level 1 (詳細)</button>
+      <button class="btn-group-item" id="btn-level-2" onclick="setLevel(2)">Level 2 (4大血管)</button>
     </div>
-    <button class="btn btn-secondary" onclick="exportCurrentSlicePNG()">📷 スライス画像出力</button>
+    <button class="btn btn-secondary" onclick="exportCurrentSlicePNG()">📷 画像保存</button>
   </div>
 </header>
 
 <div class="main-layout">
-  <!-- Left Viewports -->
+  <!-- Left Viewports Area -->
   <div class="viewport-container">
-    <!-- Presets Bar -->
+    <!-- Presets Bar (Horizontally scrollable) -->
     <div class="preset-bar">
       <span class="preset-label">📌 代表断面:</span>
-      <button class="btn-preset" onclick="setVoxelCoords(45, 58, 48)">基底核・内包 (Z=0)</button>
+      <button class="btn-preset" onclick="setVoxelCoords(45, 58, 48)">基底核 (Z=0)</button>
       <button class="btn-preset" onclick="setVoxelCoords(45, 54, 63)">半卵円中心 (Z=+30)</button>
-      <button class="btn-preset" onclick="setVoxelCoords(45, 58, 51)">視床・第3脳室 (Z=+6)</button>
-      <button class="btn-preset" onclick="setVoxelCoords(45, 48, 38)">橋・中脳 (Z=-20)</button>
-      <button class="btn-preset" onclick="setVoxelCoords(45, 44, 28)">延髄・下小脳 (Z=-40)</button>
-      <button class="btn-preset" onclick="setVoxelCoords(45, 54, 73)">頭頂・中心溝 (Z=+50)</button>
-      <div style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
-        <span class="coord-pill" id="coord-display">MNI: X=0 Y=0 Z=0 mm</span>
-      </div>
+      <button class="btn-preset" onclick="setVoxelCoords(45, 58, 51)">視床 (Z=+6)</button>
+      <button class="btn-preset" onclick="setVoxelCoords(45, 48, 38)">橋 (Z=-20)</button>
+      <button class="btn-preset" onclick="setVoxelCoords(45, 44, 28)">延髄小脳 (Z=-40)</button>
+      <button class="btn-preset" onclick="setVoxelCoords(45, 54, 73)">中心溝 (Z=+50)</button>
+      <span class="coord-pill" id="coord-display" style="margin-left:auto;">MNI: X=0 Y=0 Z=0 mm</span>
     </div>
 
-    <!-- 4-Grid Multiplanar Viewports -->
-    <div class="viewports-grid">
+    <!-- Mobile Plane Selector Tabs -->
+    <div class="mobile-plane-tabs">
+      <div class="mobile-plane-tab active" id="mtab-axial" onclick="setMobilePlane('axial')">🟦 横断像 (Axial)</div>
+      <div class="mobile-plane-tab" id="mtab-coronal" onclick="setMobilePlane('coronal')">🟩 冠状断 (Coronal)</div>
+      <div class="mobile-plane-tab" id="mtab-sagittal" onclick="setMobilePlane('sagittal')">🟥 矢状断 (Sagittal)</div>
+      <div class="mobile-plane-tab" id="mtab-all" onclick="setMobilePlane('all')">🔲 3断面</div>
+    </div>
+
+    <!-- Viewports Grid -->
+    <div class="viewports-grid" id="viewports-grid">
       <!-- Axial (Transverse) -->
-      <div class="view-panel" id="panel-axial">
+      <div class="view-panel mobile-active" id="panel-axial">
         <div class="view-header">
           <div class="view-title">
-            <span>🟦 Axial (横断像 / 水平面)</span>
+            <span>🟦 Axial (横断像)</span>
           </div>
           <div class="view-controls">
-            <span class="slice-indicator" id="label-axial">Z: 48 (MNI: 0mm)</span>
-            <input type="range" id="slider-axial" min="0" max="90" value="48" oninput="onSliderChange('axial', this.value)">
+            <button class="btn-step" onclick="stepSlice('axial', -1)">◀</button>
+            <input type="range" class="slice-slider" id="slider-axial" min="0" max="90" value="48" oninput="onSliderChange('axial', this.value)">
+            <button class="btn-step" onclick="stepSlice('axial', 1)">▶</button>
+            <span class="slice-indicator" id="label-axial">Z: 48 (0mm)</span>
           </div>
         </div>
         <div class="canvas-wrapper" id="wrap-axial">
@@ -601,11 +759,13 @@
       <div class="view-panel" id="panel-coronal">
         <div class="view-header">
           <div class="view-title">
-            <span>🟩 Coronal (冠状断 / 前額面)</span>
+            <span>🟩 Coronal (冠状断)</span>
           </div>
           <div class="view-controls">
-            <span class="slice-indicator" id="label-coronal">Y: 58 (MNI: -10mm)</span>
-            <input type="range" id="slider-coronal" min="0" max="108" value="58" oninput="onSliderChange('coronal', this.value)">
+            <button class="btn-step" onclick="stepSlice('coronal', -1)">◀</button>
+            <input type="range" class="slice-slider" id="slider-coronal" min="0" max="108" value="58" oninput="onSliderChange('coronal', this.value)">
+            <button class="btn-step" onclick="stepSlice('coronal', 1)">▶</button>
+            <span class="slice-indicator" id="label-coronal">Y: 58 (-10mm)</span>
           </div>
         </div>
         <div class="canvas-wrapper" id="wrap-coronal">
@@ -621,11 +781,13 @@
       <div class="view-panel" id="panel-sagittal">
         <div class="view-header">
           <div class="view-title">
-            <span>🟥 Sagittal (矢状断 / 側面)</span>
+            <span>🟥 Sagittal (矢状断)</span>
           </div>
           <div class="view-controls">
-            <span class="slice-indicator" id="label-sagittal">X: 45 (MNI: 0mm)</span>
-            <input type="range" id="slider-sagittal" min="0" max="90" value="45" oninput="onSliderChange('sagittal', this.value)">
+            <button class="btn-step" onclick="stepSlice('sagittal', -1)">◀</button>
+            <input type="range" class="slice-slider" id="slider-sagittal" min="0" max="90" value="45" oninput="onSliderChange('sagittal', this.value)">
+            <button class="btn-step" onclick="stepSlice('sagittal', 1)">▶</button>
+            <span class="slice-indicator" id="label-sagittal">X: 45 (0mm)</span>
           </div>
         </div>
         <div class="canvas-wrapper" id="wrap-sagittal">
@@ -637,30 +799,30 @@
         </div>
       </div>
 
-      <!-- Controls & Quick Legend Panel -->
-      <div class="summary-panel">
+      <!-- Controls & Quick Adjustment Panel -->
+      <div class="summary-panel" id="panel-controls">
         <div class="summary-header">
-          <span>⚙️ 表示設定・オーバーレイ調整</span>
+          <span>⚙️ 表示設定</span>
           <label style="font-size:0.72rem; display:flex; align-items:center; gap:4px; cursor:pointer;">
-            <input type="checkbox" id="chk-crosshair" checked onchange="toggleCrosshair(this.checked)"> 十字カーソル
+            <input type="checkbox" id="chk-crosshair" checked onchange="toggleCrosshair(this.checked)"> 十字線
           </label>
         </div>
 
         <div class="control-row">
           <span>血管カラー透明度:</span>
           <input type="range" id="slider-opacity" min="0" max="100" value="65" oninput="onOpacityChange(this.value)">
-          <span id="label-opacity" style="width:32px; font-family:monospace;">65%</span>
+          <span id="label-opacity" style="width:30px; font-family:monospace;">65%</span>
         </div>
 
         <div class="control-row">
           <span>T1背景コントラスト:</span>
           <input type="range" id="slider-contrast" min="50" max="200" value="110" oninput="onContrastChange(this.value)">
-          <span id="label-contrast" style="width:32px; font-family:monospace;">1.1x</span>
+          <span id="label-contrast" style="width:30px; font-family:monospace;">1.1x</span>
         </div>
 
         <div class="control-row">
           <span>血管系統フィルタ:</span>
-          <select id="select-filter" onchange="onFilterChange(this.value)" style="background:#090d16; color:#fff; border:1px solid var(--border-light); padding:3px 6px; border-radius:4px; flex:1; font-size:0.75rem;">
+          <select id="select-filter" onchange="onFilterChange(this.value)" style="background:#090d16; color:#fff; border:1px solid var(--border-light); padding:4px 6px; border-radius:4px; flex:1; font-size:0.75rem;">
             <option value="ALL">すべて表示 (All)</option>
             <option value="ACA">ACA系 (前大脳動脈・Heubner)</option>
             <option value="MCA">MCA皮質枝 (前頭・頭頂・側頭・後頭・島)</option>
@@ -671,26 +833,26 @@
           </select>
         </div>
 
-        <div class="control-row" style="margin-top:2px;">
+        <div class="control-row">
           <span>左右表示規約:</span>
-          <select id="select-view-convention" onchange="onConventionChange(this.value)" style="background:#090d16; color:#fff; border:1px solid var(--border-light); padding:3px 6px; border-radius:4px; flex:1; font-size:0.75rem;">
+          <select id="select-view-convention" onchange="onConventionChange(this.value)" style="background:#090d16; color:#fff; border:1px solid var(--border-light); padding:4px 6px; border-radius:4px; flex:1; font-size:0.75rem;">
             <option value="radiological" selected>Radiological (画面左=患者右 R)</option>
             <option value="neurological">Neurological (画面左=患者左 L)</option>
           </select>
         </div>
 
-        <div style="font-size: 0.72rem; color: var(--text-muted); line-height: 1.35; margin-top:2px;">
-          💡 <strong>操作:</strong> 断面クリックで座標移動、マウスホイールでスライス前後移動、矢印キーで微調整。
+        <div style="font-size: 0.72rem; color: var(--text-muted); line-height: 1.35;">
+          💡 <strong>操作:</strong> 画像タップで十字線移動、スライダー/ボタンでスライス前後移動。
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Right Sidebar -->
+  <!-- Right Sidebar (Clinical Information) -->
   <div class="sidebar">
     <div class="sidebar-tabs">
       <div class="sidebar-tab active" id="tab-btn-info" onclick="switchTab('info')">🩺 選択部位の臨床所見</div>
-      <div class="sidebar-tab" id="tab-btn-legend" onclick="switchTab('legend')">📚 血管支配領域一覧</div>
+      <div class="sidebar-tab" id="tab-btn-legend" onclick="switchTab('legend')">📚 血管領域一覧 (30)</div>
     </div>
 
     <div class="sidebar-content" id="tab-info">
@@ -752,7 +914,7 @@
 <!-- Loading Overlay -->
 <div class="loading-overlay" id="loading-overlay">
   <div class="spinner"></div>
-  <div style="font-weight: 600; font-size: 1.05rem; color: var(--accent-blue);">アトラスボリュームを展開・初期化中...</div>
+  <div style="font-weight: 600; font-size: 1.05rem; color: var(--accent-blue);">アトラスボリュームを展開中...</div>
   <div style="font-size: 0.8rem; color: var(--text-secondary);">MNI152 3D Arterial Territories Atlas</div>
 </div>
 
@@ -1438,7 +1600,8 @@ let opacity = 0.65;
 let contrast = 1.1;
 let currentFilter = 'ALL';
 let showCrosshair = true;
-let viewConvention = 'radiological'; // 'radiological' (L on right) or 'neurological' (L on left)
+let viewConvention = 'radiological';
+let activeMobilePlane = 'axial';
 
 function b64ToUint8Array(b64) {
   const binaryString = atob(b64);
@@ -1539,7 +1702,6 @@ function setupCanvases() {
   attachCanvasEvents(canvasCoronal, 'coronal');
   attachCanvasEvents(canvasSagittal, 'sagittal');
 
-  // Key navigation
   window.addEventListener('keydown', handleKeyDown);
 }
 
@@ -1556,6 +1718,7 @@ function isVisibleByFilter(item) {
 }
 
 function drawAxial() {
+  if (!ctxAxial) return;
   const imgData = ctxAxial.createImageData(dimX, dimY);
   const data = imgData.data;
   const z = curZ;
@@ -1564,8 +1727,6 @@ function drawAxial() {
   for (let y = 0; y < dimY; y++) {
     const srcY = (dimY - 1 - y);
     for (let x = 0; x < dimX; x++) {
-      // In radiological: right hemisphere (low x) is on left of screen (low x in canvas)
-      // MNI X: 0 is Right, dimX-1 is Left
       const srcX = isRadio ? x : (dimX - 1 - x);
       const idx = getVoxelIdx(srcX, srcY, z);
       const t1 = Math.min(255, t1Vol[idx] * contrast);
@@ -1594,7 +1755,7 @@ function drawAxial() {
   ctxAxial.putImageData(imgData, 0, 0);
 
   if (showCrosshair) {
-    ctxAxial.strokeStyle = 'rgba(56, 189, 248, 0.75)';
+    ctxAxial.strokeStyle = 'rgba(56, 189, 248, 0.85)';
     ctxAxial.lineWidth = 1;
     const drawY = dimY - 1 - curY;
     const drawX = isRadio ? curX : (dimX - 1 - curX);
@@ -1612,6 +1773,7 @@ function drawAxial() {
 }
 
 function drawCoronal() {
+  if (!ctxCoronal) return;
   const imgData = ctxCoronal.createImageData(dimX, dimZ);
   const data = imgData.data;
   const y = curY;
@@ -1648,7 +1810,7 @@ function drawCoronal() {
   ctxCoronal.putImageData(imgData, 0, 0);
 
   if (showCrosshair) {
-    ctxCoronal.strokeStyle = 'rgba(74, 222, 128, 0.75)';
+    ctxCoronal.strokeStyle = 'rgba(74, 222, 128, 0.85)';
     ctxCoronal.lineWidth = 1;
     const drawZ = dimZ - 1 - curZ;
     const drawX = isRadio ? curX : (dimX - 1 - curX);
@@ -1666,6 +1828,7 @@ function drawCoronal() {
 }
 
 function drawSagittal() {
+  if (!ctxSagittal) return;
   const imgData = ctxSagittal.createImageData(dimY, dimZ);
   const data = imgData.data;
   const x = curX;
@@ -1701,7 +1864,7 @@ function drawSagittal() {
   ctxSagittal.putImageData(imgData, 0, 0);
 
   if (showCrosshair) {
-    ctxSagittal.strokeStyle = 'rgba(248, 113, 113, 0.75)';
+    ctxSagittal.strokeStyle = 'rgba(248, 113, 113, 0.85)';
     ctxSagittal.lineWidth = 1;
     const drawZ = dimZ - 1 - curZ;
     const drawY = dimY - 1 - curY;
@@ -1726,17 +1889,18 @@ function drawAll() {
 }
 
 // =================================================================
-// 3. User Interactions & Events
+// 3. User Interactions & Touch/Mouse Events
 // =================================================================
 function attachCanvasEvents(canvas, type) {
+  // Mouse
   canvas.addEventListener('mousedown', (e) => {
-    const coords = getCanvasCoords(canvas, e, type);
+    const coords = getCanvasCoords(canvas, e.clientX, e.clientY, type);
     setVoxelCoords(coords.x, coords.y, coords.z);
   });
 
   canvas.addEventListener('mousemove', (e) => {
     if (e.buttons === 1) {
-      const coords = getCanvasCoords(canvas, e, type);
+      const coords = getCanvasCoords(canvas, e.clientX, e.clientY, type);
       setVoxelCoords(coords.x, coords.y, coords.z);
     }
   });
@@ -1751,15 +1915,34 @@ function attachCanvasEvents(canvas, type) {
     } else if (type === 'sagittal') {
       setVoxelCoords(Math.max(0, Math.min(dimX - 1, curX - delta)), curY, curZ);
     }
-  });
+  }, { passive: false });
+
+  // Touch Support
+  canvas.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+      e.preventDefault();
+      const t = e.touches[0];
+      const coords = getCanvasCoords(canvas, t.clientX, t.clientY, type);
+      setVoxelCoords(coords.x, coords.y, coords.z);
+    }
+  }, { passive: false });
+
+  canvas.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 1) {
+      e.preventDefault();
+      const t = e.touches[0];
+      const coords = getCanvasCoords(canvas, t.clientX, t.clientY, type);
+      setVoxelCoords(coords.x, coords.y, coords.z);
+    }
+  }, { passive: false });
 }
 
-function getCanvasCoords(canvas, e, type) {
+function getCanvasCoords(canvas, clientX, clientY, type) {
   const rect = canvas.getBoundingClientRect();
   const scaleX = canvas.width / rect.width;
   const scaleY = canvas.height / rect.height;
-  const px = Math.floor((e.clientX - rect.left) * scaleX);
-  const py = Math.floor((e.clientY - rect.top) * scaleY);
+  const px = Math.floor((clientX - rect.left) * scaleX);
+  const py = Math.floor((clientY - rect.top) * scaleY);
   const isRadio = (viewConvention === 'radiological');
 
   if (type === 'axial') {
@@ -1788,6 +1971,16 @@ function handleKeyDown(e) {
   } else if (e.key === 'ArrowRight') {
     e.preventDefault();
     setVoxelCoords(Math.min(dimX - 1, curX + 1), curY, curZ);
+  }
+}
+
+function stepSlice(type, delta) {
+  if (type === 'axial') {
+    setVoxelCoords(curX, curY, Math.max(0, Math.min(dimZ - 1, curZ + delta)));
+  } else if (type === 'coronal') {
+    setVoxelCoords(curX, Math.max(0, Math.min(dimY - 1, curY + delta)), curZ);
+  } else if (type === 'sagittal') {
+    setVoxelCoords(Math.max(0, Math.min(dimX - 1, curX + delta)), curY, curZ);
   }
 }
 
@@ -1822,9 +2015,9 @@ function updateCoordsUI() {
   const mniY = (curY - 63) * 2;
   const mniZ = (curZ - 36) * 2;
 
-  document.getElementById('label-axial').textContent = `Z: ${curZ} (MNI: ${mniZ >= 0 ? '+' : ''}${mniZ}mm)`;
-  document.getElementById('label-coronal').textContent = `Y: ${curY} (MNI: ${mniY >= 0 ? '+' : ''}${mniY}mm)`;
-  document.getElementById('label-sagittal').textContent = `X: ${curX} (MNI: ${mniX >= 0 ? '+' : ''}${mniX}mm)`;
+  document.getElementById('label-axial').textContent = `Z: ${curZ} (${mniZ >= 0 ? '+' : ''}${mniZ}mm)`;
+  document.getElementById('label-coronal').textContent = `Y: ${curY} (${mniY >= 0 ? '+' : ''}${mniY}mm)`;
+  document.getElementById('label-sagittal').textContent = `X: ${curX} (${mniX >= 0 ? '+' : ''}${mniX}mm)`;
 
   document.getElementById('coord-display').textContent = `MNI: X=${mniX} Y=${mniY} Z=${mniZ} mm`;
 }
@@ -1867,6 +2060,27 @@ function onConventionChange(val) {
   document.getElementById('tag-ax-r').textContent = isRadio ? 'L' : 'R';
   document.getElementById('tag-cor-l').textContent = isRadio ? 'R' : 'L';
   document.getElementById('tag-cor-r').textContent = isRadio ? 'L' : 'R';
+  drawAll();
+}
+
+// Mobile Plane Mode
+function setMobilePlane(mode) {
+  activeMobilePlane = mode;
+  ['axial', 'coronal', 'sagittal', 'all'].forEach(m => {
+    const tab = document.getElementById(`mtab-${m}`);
+    if (tab) tab.classList.toggle('active', m === mode);
+  });
+
+  const grid = document.getElementById('viewports-grid');
+  grid.classList.toggle('show-all-planes', mode === 'all');
+
+  ['axial', 'coronal', 'sagittal'].forEach(p => {
+    const panel = document.getElementById(`panel-${p}`);
+    if (panel) {
+      panel.classList.toggle('mobile-active', mode === p || mode === 'all');
+    }
+  });
+
   drawAll();
 }
 
@@ -1925,12 +2139,11 @@ function initLegend(filterQuery = '') {
         <span class="legend-code">${item.code}</span>
         <span class="legend-name">${item.name_ja}</span>
       </div>
-      <span style="font-size:0.7rem; color:var(--text-muted);">${item.system || ''}</span>
+      <span style="font-size:0.7rem; color:var(--text-muted); flex-shrink:0;">${item.system || ''}</span>
     `;
     div.onclick = () => {
       updateInfoCard(item);
       switchTab('info');
-      // Jump to representative center voxel for this label
       findAndJumpToLabel(item.id);
     };
     container.appendChild(div);
@@ -2000,21 +2213,17 @@ function exportCurrentSlicePNG() {
   const labelText = label ? `${label.code}: ${label.name_ja} (${label.system_ja || ''})` : '選択領域: 血管支配外';
   eCtx.fillText(labelText, 20, 70);
 
-  // Draw Axial
   eCtx.drawImage(canvasAxial, 20, 90, 280, 280 * (dimY / dimX));
   eCtx.fillStyle = '#fff';
   eCtx.font = 'bold 12px sans-serif';
   eCtx.fillText(`Axial (Z = ${mniZ >= 0 ? '+' : ''}${mniZ} mm)`, 25, 110);
 
-  // Draw Coronal
   eCtx.drawImage(canvasCoronal, 320, 90, 280, 280 * (dimZ / dimX));
   eCtx.fillText(`Coronal (Y = ${mniY >= 0 ? '+' : ''}${mniY} mm)`, 325, 110);
 
-  // Draw Sagittal
   eCtx.drawImage(canvasSagittal, 20, 420, 280, 280 * (dimZ / dimY));
   eCtx.fillText(`Sagittal (X = ${mniX >= 0 ? '+' : ''}${mniX} mm)`, 25, 440);
 
-  // Clinical Summary box on bottom right
   eCtx.fillStyle = '#1e293b';
   eCtx.fillRect(320, 420, 300, 250);
   eCtx.strokeStyle = '#334155';
