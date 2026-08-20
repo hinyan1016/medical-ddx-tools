@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="多因子介入（マルチドメイン介入）と認知症の関係を一次資料から整理したインフォグラフィック。危険因子は重なるので対策も束ねる——この考え方は世界中で試され、フィンランドのFINGER試験は認知機能テストの点数で有意差を出しました（年あたり差0.022）。しかし日本のJ-MINT試験は主要評価項目で差がつかず（群間差0.047・95%CI −0.029〜0.124）、米国のU.S. POINTER試験は構造化群と自己流群の比較で両群とも点数が上がりました。認知症の発症そのものを数えたpreDIVA試験はハザード比0.92で差がなく、MAPTとpreDIVAを統合した5,205人・最長12年の解析でも全体でもどのサブグループでも差はありませんでした。109試験のネットワークメタ解析では運動＋認知トレーニングが最も強く、ドメインを増やすほど良いわけではないことが示されています。">
+<title>多因子介入と認知症｜「運動も食事も脳トレも」はどこまで効くのか（インフォグラフィック）</title>
+<style>
+:root{
+  --navy:#1B3A5C;
+  --navyDeep:#0F2540;
+  --navyBg:#E9EEF5;
+  --accent:#1F7A8C;
+  --accentBg:#E7F2F4;
+  --accentInk:#15616F;
+  --onNavy:#6EE7B7;
+  --amber:#8A6100;
+  --amberBg:#FFF8E1;
+  --line:#D6E0E9;
+  --gray:#69737E;
+  --ink:#20242B;
+  --ink2:#3C4450;
+  --ok:#2E7D5B;
+  --font:"Noto Sans JP","BIZ UDPGothic","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+}
+html{font-size:16px;}
+*{box-sizing:border-box; margin:0; padding:0;}
+/* 日本語の語中改行を文節境界で切る */
+body,.lead,.card p,.row__d,td,th,.note,.src,.cav,.sum__d,.way__d,.lad__t,.lad__v,.lad__d{
+  word-break:auto-phrase; line-break:strict;
+}
+body{font-family:var(--font); background:#E4E9EF; color:var(--ink);
+  display:flex; flex-direction:column; align-items:center; overflow-x:hidden;}
+.nw{white-space:nowrap;}
+.ig{width:100%; max-width:1080px; background:#fff; padding:0 0 3rem;}
+
+.hd{background:linear-gradient(135deg,#0A1B2E 0%,#153352 55%,#1B3A5C 100%); color:#fff;
+  padding:2.6rem 3rem 2.2rem; text-align:center;}
+.hd__brand{font-size:.95rem; letter-spacing:.14em; opacity:.85; margin-bottom:1rem;}
+.hd__t{font-size:2.4rem; font-weight:800; line-height:1.35; letter-spacing:.01em;}
+/* ★ネイビー地に deep teal は輝度差が足りない（1.4-2.3:1）。明るいミントを使う（4.5:1超） */
+.hd__t .hl{color:var(--onNavy); font-size:1.55rem;}
+.hd__s{margin-top:1.1rem; font-size:1.08rem; opacity:.94; line-height:1.75;}
+
+.sec{padding:2.2rem 3rem 0;}
+.sec__h{display:flex; align-items:center; gap:.8rem; font-size:1.4rem; font-weight:800;
+  color:var(--navy); border-bottom:3px solid var(--navy); padding-bottom:.5rem; margin-bottom:1.2rem;}
+.sec__n{background:var(--accent); color:#fff; font-size:1.05rem; width:2rem; height:2rem;
+  border-radius:.4rem; display:grid; place-items:center; flex:none;}
+.lead{font-size:1.05rem; line-height:1.8; color:var(--ink2);}
+
+.big{display:flex; gap:1.4rem; margin:1.2rem 0 .4rem; flex-wrap:wrap;}
+.big__c{flex:1 1 0; min-width:14rem; background:var(--navyBg); border-radius:.7rem;
+  padding:1.2rem 1.3rem; border-left:6px solid var(--navy);}
+.big__n{font-size:2.6rem; font-weight:800; color:var(--navy); line-height:1.1;}
+.big__n .u{font-size:1.2rem; margin-left:.2rem;}
+.big__d{margin-top:.5rem; font-size:1rem; line-height:1.6; color:var(--ink2);}
+.big--accent{background:var(--accentBg); border-left-color:var(--accent);}
+.big--accent .big__n{color:var(--accentInk);}
+
+table{width:100%; border-collapse:collapse; margin:1rem 0 .3rem; font-size:1rem;}
+th{background:var(--navy); color:#fff; text-align:left; padding:.7rem .9rem; font-weight:700;}
+td{border-bottom:1px solid var(--line); padding:.7rem .9rem; line-height:1.6; vertical-align:top;}
+td.k{font-weight:700; color:var(--navy); width:46%;}
+.src{font-size:.86rem; color:var(--gray); margin-top:.35rem; line-height:1.6;}
+
+.card{border:2px solid var(--line); border-radius:.7rem; padding:1.1rem 1.3rem; margin:1rem 0 .3rem;}
+.card--warn{background:var(--accentBg); border-color:var(--accent);}
+.card--amber{background:var(--amberBg); border-color:#EBC46A;}
+.card__t{font-weight:800; color:var(--navy); font-size:1.1rem; margin-bottom:.5rem;}
+.card--warn .card__t{color:var(--accentInk);}
+.card p{font-size:1rem; line-height:1.75; color:var(--ink2);}
+.card p + p{margin-top:.6rem;}
+
+/* 4段の格付けラダー（本図の見せ場） */
+.ladder{display:flex; flex-direction:column; margin:1.2rem 0 .3rem;}
+.lad__item{display:flex; align-items:stretch; gap:1rem;}
+.lad__item:not(:last-child){margin-bottom:.7rem;}
+.lad__num{flex:none; width:4.6rem; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; font-weight:800; color:#fff; border-radius:.5rem; font-size:.82rem;
+  text-align:center; line-height:1.3; background:var(--navy); padding:.3rem;}
+.lad__num b{font-size:1.15rem; display:block;}
+.lad__body{flex:1; background:#F6F8FB; border-radius:.6rem; padding:.85rem 1.1rem; border-left:5px solid var(--navy);}
+.lad__t{font-weight:700; color:var(--navy); font-size:1rem;}
+.lad__v{font-size:1.35rem; font-weight:800; color:var(--navy); margin-top:.2rem;}
+.lad__d{font-size:.9rem; color:var(--ink2); margin-top:.3rem; line-height:1.6;}
+.lad--final .lad__num{background:var(--accent);}
+.lad--final .lad__body{background:var(--accentBg); border-left-color:var(--accent);}
+.lad--final .lad__v,.lad--final .lad__t{color:var(--accentInk);}
+
+.rows{display:flex; flex-direction:column; gap:.7rem; margin:1rem 0 .3rem;}
+.row{display:flex; gap:1rem; align-items:flex-start; background:#F6F8FB; border-radius:.6rem; padding:.9rem 1.1rem;}
+.row__n{flex:none; width:2.1rem; height:2.1rem; border-radius:50%; background:var(--navy); color:#fff;
+  display:grid; place-items:center; font-weight:800;}
+.row__d{font-size:1rem; line-height:1.7; color:var(--ink2);}
+.row__d b{color:var(--navy);}
+
+.sum{background:var(--navy); color:#fff; border-radius:.8rem; padding:1.6rem 1.8rem; margin:1.4rem 0 .4rem;
+  display:flex; gap:1.2rem; flex-wrap:wrap;}
+.sum__c{flex:1 1 0; min-width:13rem;}
+/* ★同上。ネイビー地なのでミント */
+.sum__t{font-size:1.5rem; font-weight:800; color:var(--onNavy); margin-bottom:.4rem;}
+.sum__d{font-size:.98rem; line-height:1.7; opacity:.95;}
+
+.note{margin:1.6rem 3rem 0; padding:1rem 1.2rem; background:#F3F5F8; border-left:5px solid var(--gray);
+  font-size:.9rem; line-height:1.75; color:var(--ink2);}
+.ft{margin-top:1.6rem; padding:1.4rem 3rem 0; border-top:2px solid var(--line);
+  font-size:.88rem; color:var(--gray); line-height:1.8; text-align:center;}
+</style>
+</head>
+<body>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="https://youtu.be/_-D1Iw9A3D0" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#C0392B;color:#fff;">▶ 解説動画（YouTube）</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+<div class="ig">
+
+<div class="hd">
+  <div class="hd__brand">医知創造ラボ ／ 認知症×生活習慣病シリーズ #14</div>
+  <div class="hd__t">多因子介入と認知症<br><span class="hl">「運動も食事も脳トレも」は、どこまで効くのか</span></div>
+  <div class="hd__s">危険因子は重なる。だから対策も束ねる——この考え方は世界中で試されてきました。<br class="nw">だが「認知症の発症そのものを減らせた」試験は、いまのところ一つもありません。<br class="nw">それでも、言えることは残っています。</div>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">1</span>束ねて手を打つ、という発想はどこから来たのか</div>
+  <div class="big">
+    <div class="big__c big--accent"><div class="big__n">14<span class="u">因子</span></div><div class="big__d">Lancet 2024 委員会が挙げた<br><b>修正できる危険因子</b>の数</div></div>
+    <div class="big__c"><div class="big__n">45<span class="u">%</span></div><div class="big__d">その重み付き<b>人口寄与割合の合計</b></div></div>
+  </div>
+  <p class="src">出典: Livingston G, et al. Lancet. 2024;404(10452):572-628.</p>
+  <div class="card card--amber">
+    <div class="card__t">この「45%」の読み方</div>
+    <p>これは<b>集団についての人口寄与割合</b>であって、「あなたが生活を変えれば45%減らせる」という<b>個人の確率ではありません</b>。委員会自身が、因子は互いに重なり合うので<b>単純な足し算にはできない</b>と書いています。因子が重なり合っているのなら、対策も同時に複数へ——これが「多因子介入（マルチドメイン介入）」の設計思想です。</p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">2</span>5つの大規模試験が、それぞれ違う答えを出した</div>
+  <table>
+    <tr><th>試験（国・規模・期間）</th><th>何を測ったか / 結果</th></tr>
+    <tr><td class="k">FINGER<br>（フィンランド・1,260人・2年）</td><td>認知機能テストの点数<br><b>年あたり差 0.022</b>（95%CI 0.002–0.042・p=0.030）＝<b>陽性</b>。ただし効果量は小さい</td></tr>
+    <tr><td class="k">J-MINT<br>（<b>日本</b>・531人・18か月）</td><td>認知合成Zスコア<br><b>群間差 0.047</b>（95%CI −0.029〜0.124）＝<b>差がつかなかった</b></td></tr>
+    <tr><td class="k">U.S. POINTER<br>（米国・2,111人・2年）</td><td>全般認知機能の年あたり変化<br>構造化 0.243 vs 自己流 0.213 SD／年・<b>差 0.029</b>（0.008–0.050・P=.008）。<b>両群とも点数は上がった</b></td></tr>
+    <tr><td class="k">preDIVA<br>（オランダ・3,526人・6年）</td><td><b>認知症の発症</b>（主要評価項目）<br><b>HR 0.92</b>（95%CI 0.71–1.19・p=0.54）＝<b>差なし</b></td></tr>
+    <tr><td class="k">MAPT<br>（フランス・1,680人・3年）</td><td>認知合成Zスコア<br><b>3群とも対照と有意差なし</b>（オメガ3単独は 0.011・p=0.812）</td></tr>
+  </table>
+  <p class="src">出典: Ngandu T, et al. Lancet. 2015;385(9984):2255-63.／Sakurai T, et al. Alzheimers Dement. 2024;20(6):3918-3930.／Baker LD, et al. JAMA. 2025;334(8):681-691.／Moll van Charante EP, et al. Lancet. 2016;388(10046):797-805.／Andrieu S, et al. Lancet Neurol. 2017;16(5):377-389.</p>
+  <div class="card card--warn">
+    <div class="card__t">横並びで「勝ち負け」を比べないでください</div>
+    <p>5つの試験は<b>対象者が違います</b>（リスクの高い一般高齢者／<b>軽度認知障害の方</b>／座りがちで食事が最適でない方／一般の70〜78歳／記憶の訴えがある70歳以上）。また<b>J-MINT と U.S. POINTER には「何もしない群」がありません</b>——どちらも対照群に何らかの介入が入っています。</p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">3</span>認知症の発症そのものは、まだ減っていません</div>
+  <div class="big">
+    <div class="big__c"><div class="big__n">5,205<span class="u">人</span></div><div class="big__d">MAPT と preDIVA を統合した<br>個別データ解析の対象</div></div>
+    <div class="big__c"><div class="big__n">12<span class="u">年</span></div><div class="big__d">最長の追跡期間<br>（486人が認知症を発症）</div></div>
+  </div>
+  <div class="rows">
+    <div class="row"><div class="row__n">!</div><div class="row__d">この解析で、多因子介入は<b>全体でも、あらかじめ決めたどのサブグループでも、認知症の発症を減らしませんでした。</b>データ駆動のアルゴリズムでも、効果の違う集団は検出されませんでした。</div></div>
+    <div class="row"><div class="row__n">!</div><div class="row__d">脳の画像（<b>アミロイドβ・タウ・海馬体積</b>）も動きませんでした（U.S. POINTER の画像付随研究・983人）。<b>「生活習慣を変えればアミロイドが減る」「脳が若返る」——この試験はそれを直接否定しています。</b></div></div>
+  </div>
+  <p class="src">出典: Coley N, et al. Alzheimers Dement. 2025;21(2):e14472.／Harrison TM, et al. JAMA Neurol. 2026;83(6):521-529.</p>
+  <div class="card card--amber">
+    <div class="card__t">「無効」ではなく「まだ確かめられていない」</div>
+    <p><b>認知症になる人が減ったと主要な評価項目で示した試験は、いまのところありません。</b>ただしそれは「効果が無いと証明された」ということではありません。この二つは違います。</p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">4</span>「多ければ多いほど良い」ではありませんでした</div>
+  <div class="ladder">
+    <div class="lad__item lad--final">
+      <div class="lad__num">最も<br><b>強い</b></div>
+      <div class="lad__body">
+        <div class="lad__t">運動 ＋ 認知トレーニング（2つ）</div>
+        <div class="lad__v">SMD 0.26（95%CI 0.10–0.42）</div>
+        <div class="lad__d">p=0.0011。健康教育と比べた全般認知機能への効果</div>
+      </div>
+    </div>
+    <div class="lad__item">
+      <div class="lad__num">次点<br><b>2</b></div>
+      <div class="lad__body">
+        <div class="lad__t">認知トレーニング単独（1つ）</div>
+        <div class="lad__v">SMD 0.21（95%CI 0.08–0.33）</div>
+        <div class="lad__d">p=0.00092</div>
+      </div>
+    </div>
+    <div class="lad__item">
+      <div class="lad__num">束ねる<br><b>4</b></div>
+      <div class="lad__body">
+        <div class="lad__t">食事 ＋ 運動 ＋ 認知トレーニング ＋ 健康教育（4つ）</div>
+        <div class="lad__v">SMD 0.14（95%CI 0.02–0.27）</div>
+        <div class="lad__d">p=0.028。<b>ドメインを増やしても、自動的に大きくはならない</b></div>
+      </div>
+    </div>
+  </div>
+  <p class="src">出典: Mendes AJ, et al. Lancet Healthy Longev. 2025;6(9):100762.（109試験・23,010人のネットワークメタ解析／認知機能が保たれている高齢者が対象）</p>
+  <div class="card card--warn">
+    <div class="card__t">この解析の但し書き</div>
+    <p>著者は、<b>109試験のうち44試験（40%）でバイアスのリスクが高かった</b>こと、健康教育を対照にした比較では<b>出版バイアスが示唆された</b>ことを明記しています。数値だけを取り出して使えるデータではありません。</p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">5</span>それでも言えること——4つ</div>
+  <div class="rows">
+    <div class="row"><div class="row__n">1</div><div class="row__d"><b>「多いほど良い」ではない。</b>最も効果が大きかったのは<b>運動＋認知トレーニングという2つの組み合わせ</b>でした。全部やらないと意味がない、ということではありません。</div></div>
+    <div class="row"><div class="row__n">2</div><div class="row__d"><b>続けられる形にすることが、効いている可能性があります。</b>J-MINT で運動教室に<b>70%以上出席した人</b>は、対照群より 0.080（95%CI 0.001–0.159・p=0.047）点数が良い結果でした。<b>※サブ解析であり、通える人はもともと元気だという交絡は残ります。</b></div></div>
+    <div class="row"><div class="row__n">3</div><div class="row__d"><b>自己流でも、点数は動いていました。</b>U.S. POINTER では自己流の群でも年あたり 0.213 SD 上がり、伴走がつくとそこにさらに 0.029 が乗る、という構図でした。</div></div>
+    <div class="row"><div class="row__n">4</div><div class="row__d"><b>血圧・血糖・コレステロールを「放置している人」ほど、恩恵が大きい結果でした。</b>未治療または管理不良の血管危険因子がある298人で Zスコア差 0.11（95%CI 0.02–0.20・交互作用 p=0.032）。<b>※サブグループ解析であり、J-MINT の主要評価項目は陰性のままです。</b></div></div>
+  </div>
+  <p class="src">出典: Sakurai T, et al. Alzheimers Dement. 2024;20(6):3918-3930.／Baker LD, et al. JAMA. 2025;334(8):681-691.／Sugimoto T, et al. Alzheimers Dement. 2025;21(11):e70822.</p>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">6</span>では、何から始めるか</div>
+  <div class="rows">
+    <div class="row"><div class="row__n">◯</div><div class="row__d"><b>体を動かす習慣と、頭を使う習慣を、続けられる形で。</b>数を増やすことより、続くことを優先してよさそうです。</div></div>
+    <div class="row"><div class="row__n">◯</div><div class="row__d"><b>血圧・血糖・コレステロールを、放置したままにしない。</b>数値を指摘されているのに何もしていないなら、そこはかかりつけの先生に相談してください。</div></div>
+    <div class="row"><div class="row__n">◯</div><div class="row__d"><b>痛くなったら休む。種目を変える。相談する。</b>FINGER では有害事象が介入群 7%（対照群 1%）で、最も多かったのは<b>筋骨格系の痛み</b>でした。無理をして続かなくなるのが、いちばん惜しい。</div></div>
+  </div>
+  <div class="card card--warn">
+    <div class="card__t">この図は運動の量を指示するものではありません</div>
+    <p>「週に何回、何分」は一人ひとり違います。<b>持病のある方、関節や心臓に不安のある方は、量を増やす前に必ず主治医にご相談ください。</b>また本図は、いま飲んでいる薬をやめたり減らしたりする根拠にはなりません。</p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sum">
+    <div class="sum__c"><div class="sum__t">1</div><div class="sum__d">束ねて手を打つ発想は<b>FINGER 試験で成功</b>しました。ただし測ったのは<b>認知機能テストの点数</b>で、効果量は小さいものでした。</div></div>
+    <div class="sum__c"><div class="sum__t">2</div><div class="sum__d">日本の <b>J-MINT は主要評価項目で差がつかず</b>、<b>認知症の発症を減らせた試験も、いまのところありません</b>。脳の画像も動きませんでした。</div></div>
+    <div class="sum__c"><div class="sum__t">3</div><div class="sum__d">それでも言えることは残っています。<b>多いほど良いではない。続く形を選ぶ。放置している数値があるなら、そこから相談する。</b></div></div>
+  </div>
+</div>
+
+<div class="note">
+  <b>この図で扱っていないこと。</b>個別の危険因子（血圧・コレステロール・難聴・糖尿病・喫煙・肥満・飲酒・視力など）の深掘り、抗アミロイド薬との比較、特定の脳トレアプリやサプリメントについては扱っていません。オメガ3脂肪酸の単独摂取は MAPT 試験で完全に陰性でした（0.011・95%CI −0.081〜0.103・p=0.812）。また、本図に挙げた「サブ解析」「サブグループ解析」は、あらかじめ決めた主要な評価項目の結果を置き換えるものではありません。
+</div>
+
+<div class="ft">
+  医知創造ラボ ／ 認知症×生活習慣病シリーズ 第14弾<br>
+  本図は一般的な医学情報の提供を目的としたものであり、個別の診断・治療に代わるものではありません。<br>
+  運動量を増やすとき、生活習慣の指摘を受けたとき、物忘れが気になるときは、自己判断せず医療機関にご相談ください。
+</div>
+
+</div>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px auto 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="https://youtu.be/_-D1Iw9A3D0" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#C0392B;color:#fff;">▶ 解説動画（YouTube）</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+</body>
+</html>

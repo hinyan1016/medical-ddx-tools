@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v126';
+const CACHE_NAME = 'ddx-tools-v127';
 const ASSETS = [
   './',
   './index.html',
@@ -72,6 +72,9 @@ const ASSETS = [
   './infographics/dementia-atrial-fibrillation/index.html',
   './infographics/dementia-sleep-apnea/index.html',
   './infographics/dementia-ckd/index.html',
+  './infographics/dementia-multidomain-intervention/index.html',
+  './handouts/dementia-multidomain-intervention/index.html',
+  './slides/dementia-multidomain-intervention/index.html',
   './infographics/dementia-multiple-risk-factors/index.html',
   './handouts/dementia-multiple-risk-factors/index.html',
   './slides/dementia-multiple-risk-factors/index.html',
