@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0F172A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="健康診断でeGFR低下や蛋白尿を指摘された方・ご家族へ。腎機能低下と認知症リスクの関係、脳と腎臓が共有する「ひずみ血管」の仕組み、腎機能改善による認知症予防RCTは未確立であること、それでも減塩や血圧管理で腎臓を守ることが脳卒中を防ぐ最強の基盤であることをA4・1枚で簡潔にまとめています。">
+<title>腎機能の低下と認知症のこと｜ご本人・ご家族へ（A4・1枚）｜医知創造ラボ</title>
+<style>
+  :root{
+    --navy:#0F172A;
+    --accent:#2563EB;
+    --accent-ink:#1E3A8A;
+    --accent-bg:#EFF6FF;
+    --danger:#C0392B;
+    --danger-bg:#FBEAE8;
+    --danger-line:#EAC5C0;
+    --navy-bg:#EEF2F6;
+    --line:#D6E0E9;
+    --ink:#1a1a1a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    font-family:"Yu Gothic","游ゴシック","Hiragino Kaku Gothic ProN","Segoe UI",sans-serif;
+    color:var(--ink); background:#eef1f4; line-height:1.6; padding:16px;
+    word-break:auto-phrase; line-break:strict;
+  }
+  .sheet{background:#fff;max-width:820px;margin:0 auto 20px;padding:22px 26px 26px;box-shadow:0 2px 14px rgba(0,0,0,.12);}
+  .head{border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:14px;}
+  .kicker{display:inline-block;background:var(--accent);color:#fff;font-size:12px;font-weight:700;
+    letter-spacing:.06em;padding:3px 10px;border-radius:3px;margin-bottom:7px;}
+  h1{font-size:21px;font-weight:800;color:var(--navy);line-height:1.35;}
+  .sub{font-size:12.5px;color:var(--accent-ink);font-weight:700;margin-top:6px;}
+  .lead{font-size:13px;color:#333;margin-top:8px;}
+  .lead b{color:var(--navy);}
+  h2{font-size:15px;font-weight:800;color:#fff;background:var(--navy);padding:5px 12px;border-radius:4px;
+    margin:14px 0 9px;display:flex;align-items:center;gap:8px;}
+  h2 .num{background:#fff;color:var(--navy);font-size:12.5px;font-weight:800;width:21px;height:21px;
+    border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex:0 0 21px;}
+  ul.checks{list-style:none;margin-top:8px;}
+  ul.checks li{display:flex;gap:9px;align-items:flex-start;padding:4.5px 2px;
+    border-bottom:1px dashed var(--line);font-size:13px;}
+  ul.checks li:last-child{border-bottom:none;}
+  ul.checks .box{flex:0 0 17px;width:17px;height:17px;margin-top:1px;border:2px solid var(--navy);border-radius:3px;}
+  ul.checks li b{color:var(--navy);}
+  ul.checks .why{display:block;color:#555;font-size:11.5px;margin-top:1px;}
+  .alert{border:2.5px solid var(--danger);border-radius:8px;padding:11px 14px;background:var(--danger-bg);}
+  .alert.top{margin-top:12px;}
+  .alert .at{color:var(--danger);font-weight:800;font-size:15px;margin-bottom:6px;}
+  .alert p{font-size:12.8px;line-height:1.58;}
+  .alert p + p{margin-top:6px;}
+  .alert b{color:var(--danger);}
+  .memo{border:1.5px solid var(--line);border-radius:8px;padding:10px 13px;margin-top:14px;font-size:12.5px;}
+  .memo .mtitle{font-weight:800;color:var(--navy);font-size:13.5px;margin-bottom:5px;}
+  .memo .mtext{font-size:12.5px;color:#333;margin-bottom:7px;}
+  .memo .mtext b{color:var(--accent-ink);}
+  .memo .mrow{display:flex;gap:6px;align-items:baseline;padding:5px 0;}
+  .memo .mlabel{flex:0 0 210px;font-weight:700;color:var(--navy);white-space:nowrap;}
+  .memo .mline{flex:1;border-bottom:1px solid #97a6b5;min-height:18px;}
+  .foot{margin-top:16px;padding-top:10px;border-top:1px solid var(--line);font-size:11px;color:#666;line-height:1.5;}
+  .foot .brand{font-weight:700;color:var(--navy);}
+  .noprint{margin:0 auto 18px;max-width:820px;text-align:center;}
+  .pbtn{display:inline-block;background:var(--navy);color:#fff;text-decoration:none;font-size:14px;
+    font-weight:700;padding:10px 24px;border-radius:24px;border:none;cursor:pointer;box-shadow:0 2px 10px rgba(27,58,92,.25);}
+  .pbtn:active{transform:scale(.98);}
+  .noprint p{font-size:12px;color:#777;margin-top:8px;}
+
+  @page{size:A4 portrait;margin:10mm 12mm;}
+  @media print{
+    body{background:#fff;padding:0;font-size:9.3pt;}
+    .sheet{box-shadow:none;margin:0;max-width:none;padding:0;}
+    .noprint{display:none !important;}
+    h1{font-size:13.7pt;line-height:1.2;}
+    h2{font-size:11.3pt;-webkit-print-color-adjust:exact;print-color-adjust:exact;margin:1px 0 1px;padding:1px 9px;}
+    h2 .num{width:17px;height:17px;flex:0 0 17px;font-size:10.5pt;}
+    .kicker,.alert{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .kicker{padding:2px 9px;margin-bottom:4px;}
+    .sub{margin-top:3px;}
+    ul.checks{margin-top:2px;}
+    ul.checks li{font-size:8.5pt;padding:0px 2px;line-height:1.15;}
+    ul.checks .why{font-size:8.1pt;}
+    .lead{font-size:8pt;margin-top:1px;line-height:1.3;}
+    .head{padding-bottom:1px;margin-bottom:1px;}
+    .alert{padding:2px 9px;}
+    .alert.top{margin-top:1px;}
+    .alert .at{font-size:9.6pt;margin-bottom:1px;}
+    .alert p{font-size:8.7pt;line-height:1.24;}
+    .alert p+p{margin-top:1px;}
+    .memo{margin-top:2px;padding:2px 9px;font-size:8.7pt;}
+    .memo .mtitle{font-size:9.5pt;margin-bottom:1px;}
+    .memo .mtext{font-size:8.4pt;margin-bottom:1px;line-height:1.2;}
+    .memo .mrow{padding:0;}
+    .memo .mline{min-height:8px;}
+    .foot{margin-top:2px;padding-top:1px;font-size:7.2pt;line-height:1.2;}
+    a[href]{color:inherit;text-decoration:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="noprint">
+  <button class="pbtn" onclick="window.print()">🖨️ このハンドアウトを印刷する（A4・1枚）</button>
+  <p>※ ブラウザの印刷メニューからPDFとして保存することもできます</p>
+</div>
+
+<div class="sheet">
+  <div class="head">
+    <div class="kicker">認知症×生活習慣病シリーズ 第12弾 ｜ 患者・ご家族向けハンドアウト</div>
+    <h1>健康診断で「eGFR低下」「蛋白尿」と言われた方へ</h1>
+    <div class="sub">腎機能と脳の関係（腎脳連関）と、今日からできること</div>
+    <div class="lead">
+      健診で「eGFRが50台」「尿蛋白（±）」と指摘されると、将来の物忘れが心配になるかもしれません。<b>脳と腎臓は「低抵抗・高血流」の同じ血管構造を共有しており、血管の傷みが同時に進みやすい</b>関係にあります。医学的事実を整理し、正しい向き合い方をお伝えします。
+    </div>
+  </div>
+
+  <h2><span class="num">1</span>何が分かっていて、何が未証明なのか</h2>
+  <ul class="checks">
+    <li>
+      <div class="box"></div>
+      <div>
+        <b>eGFR低下や蛋白尿があると、認知症リスクは約1.3〜1.5倍に高まる（観察研究）</b>
+        <span class="why">大動脈の硬化による拍動圧ストレスが、糸球体と脳深部血管（穿通枝）を同時に傷めるためです。</span>
+      </div>
+    </li>
+    <li>
+      <div class="box"></div>
+      <div>
+        <b>「腎臓の数値を良くすれば認知症を防げる」と証明したRCTは存在しない</b>
+        <span class="why">「腎臓の薬を飲めばボケが治る」という魔法はありません。過剰な期待やサプリへの依存は禁物です。</span>
+      </div>
+    </li>
+    <li>
+      <div class="box"></div>
+      <div>
+        <b>それでも腎臓を守る最大の価値は「明らかな脳梗塞を1回も起こさせない」こと</b>
+        <span class="why">減塩と血圧管理で腎臓の血管を守ることは、そのまま脳卒中による認知症を防ぐ最強の盾になります。</span>
+      </div>
+    </li>
+  </ul>
+
+  <h2><span class="num">2</span>今日から始める4つのアクション</h2>
+  <ul class="checks">
+    <li>
+      <div class="box"></div>
+      <div>
+        <b>① 家庭血圧の測定と「減塩」（1日6g未満を目指す）</b>
+        <span class="why">高圧の拍動ストレスを和らげる基本。朝晩の家庭血圧を記録し、味付けを工夫しましょう。</span>
+      </div>
+    </li>
+    <li>
+      <div class="box"></div>
+      <div>
+        <b>② こまめな水分補給で「脱水」を防ぐ</b>
+        <span class="why">急激な腎血流低下（AKI：急性腎障害）を防ぎます（※主治医から水分制限の指示がある方は指示に従ってください）。</span>
+      </div>
+    </li>
+    <li>
+      <div class="box"></div>
+      <div>
+        <b>③ 市販の鎮痛薬（NSAIDs：ロキソプロフェン等）の連用に注意する</b>
+        <span class="why">常用すると腎臓の血流が低下します。頭痛や関節痛が続くときは医師に相談しましょう。</span>
+      </div>
+    </li>
+    <li>
+      <div class="box"></div>
+      <div>
+        <b>④ 健診結果を放置せず、かかりつけ医で定期的に再検査を受ける</b>
+        <span class="why">尿蛋白やeGFRの推移を医師とともに確認し、必要に応じたお薬や食事の相談を行いましょう。</span>
+      </div>
+    </li>
+  </ul>
+
+  <div class="alert top">
+    <div class="at">⚠️ 自己判断の「サプリメント」や「極端な水分制限」は危険です</div>
+    <p>現時点で腎機能を改善して認知症を防ぐと証明されたサプリメントはありません。かえって腎臓に負担をかける危険があります。また「ボケたくないから」と水分を極端に減らすと脱水による急激な腎機能悪化を招きます。必ず担当の先生にご相談ください。</p>
+  </div>
+
+  <div class="memo">
+    <div class="mtitle">📝 診察室でのメモ・次回の確認事項</div>
+    <div class="mtext">次回の受診時に主治医と共有したい数値や疑問をご記入ください。</div>
+    <div class="mrow"><div class="mlabel">直近のeGFR / 尿蛋白の数値：</div><div class="mline"></div></div>
+    <div class="mrow"><div class="mlabel">家庭血圧の目安（朝 / 晩）：</div><div class="mline"></div></div>
+    <div class="mrow"><div class="mlabel">先生に相談したいこと：</div><div class="mline"></div></div>
+  </div>
+
+  <div class="foot">
+    <span class="brand">医知創造ラボ</span> ｜ 監修：脳神経内科専門医・総合内科専門医 今村久司<br>
+    ※ 本ハンドアウトは一般的な医学情報の提供を目的としています。個別の診療方針については担当医にご相談ください。
+  </div>
+</div>
+
+</body>
+</html>
