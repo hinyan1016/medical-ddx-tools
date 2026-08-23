@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="脳梗塞急性期の血圧管理を1枚の判断フローに整理したインフォグラフィック（医療従事者向け）。分かれ目は「再灌流療法を行うか、行ったか」。行わない場合は原則として降圧せず、収縮期220または拡張期120を超える持続例で慎重に考慮する。行う場合はrt-PA投与前185/110未満・投与後24時間は180/105以下、血栓回収後は速やかに180以下へ、ただし140以下への過度な低下は避ける。内服は神経症状が安定していれば発症24時間以降に再開を考慮。脳卒中治療ガイドライン2021〔改訂2025〕およびAHA/ASA 2026に基づく。">
+<title>脳梗塞急性期の血圧 判断フロー｜再灌流療法の有無で変わる降圧の判断（インフォグラフィック）</title>
+<style>
+:root{
+  --navy:#1B3A5C;
+  --navyDeep:#0F2540;
+  --navyBg:#E9EEF5;
+  --blue:#2C5AA0;
+  --blueBg:#EAF0F9;
+  --coral:#FF7A59;
+  --coralBg:#FFF1EC;
+  --coralInk:#B8431F;
+  --amber:#C77800;
+  --amberBg:#FFF8E1;
+  --line:#D6E0E9;
+  --gray:#69737E;
+  --ink:#20242B;
+  --ink2:#3C4450;
+  --font:"Noto Sans JP","BIZ UDPGothic","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+}
+html{font-size:16px;}
+*{box-sizing:border-box; margin:0; padding:0;}
+body,.lead,p,td,th,li,.n__d,.b__d{word-break:auto-phrase; line-break:strict;}
+body{font-family:var(--font); background:#E4E9EF; color:var(--ink);
+  display:flex;flex-direction:column;align-items:center; overflow-x:hidden;}
+.nw{white-space:nowrap;}
+.ig{width:1600px; background:#fff;}
+
+/* ヘッダー */
+.hd{background:linear-gradient(135deg,#0A1B2E 0%,#153352 55%,#1B3A5C 100%); color:#fff;
+  padding:2.1rem 3rem 1.8rem;}
+.hd__brand{font-size:.92rem; letter-spacing:.14em; opacity:.85; margin-bottom:.8rem;
+  display:flex; justify-content:space-between; align-items:baseline; gap:2rem;}
+.hd__ver{font-size:.82rem; letter-spacing:.02em; opacity:.8; text-align:right;}
+.hd__t{font-size:2.5rem; font-weight:800; line-height:1.28;}
+.hd__t .hl{color:var(--coral);}
+.hd__s{margin-top:.85rem; font-size:1.12rem; opacity:.93; line-height:1.65;}
+.hd__tag{display:inline-block; border:1.5px solid rgba(255,255,255,.6); border-radius:.35rem;
+  padding:.15rem .6rem; font-size:.85rem; letter-spacing:.06em; margin-left:.7rem; vertical-align:.22em;}
+
+/* 本体 */
+.bd{padding:2rem 3rem 1.4rem;}
+
+/* 起点 */
+.start{display:flex; flex-direction:column; align-items:center;}
+.start__box{background:var(--navy); color:#fff; font-size:1.4rem; font-weight:800;
+  padding:.85rem 2.6rem; border-radius:.6rem; letter-spacing:.02em;}
+.q{margin-top:.9rem; background:var(--coralBg); border:3px solid var(--coral); border-radius:.7rem;
+  padding:.9rem 2.2rem; text-align:center;}
+.q__l{font-size:.9rem; font-weight:700; color:var(--coralInk); letter-spacing:.1em;}
+.q__t{font-size:1.55rem; font-weight:800; color:var(--navy); line-height:1.35; margin-top:.2rem;}
+.q__n{font-size:.95rem; color:var(--ink2); margin-top:.35rem;}
+
+/* 分岐の腕 */
+.arms{position:relative; height:3.2rem;}
+.arms::before{content:""; position:absolute; left:50%; top:0; width:3px; height:1.1rem;
+  background:var(--navy); transform:translateX(-1.5px);}
+.arms::after{content:""; position:absolute; left:25%; right:25%; top:1.1rem; height:3px;
+  background:var(--navy);}
+.arms i{position:absolute; top:1.1rem; width:3px; height:2.1rem; background:var(--navy);}
+.arms i.l{left:25%;} .arms i.r{left:75%;}
+
+/* 2列 */
+.cols{display:flex; gap:1.6rem; align-items:stretch;}
+.col{flex:1 1 0; border-radius:.8rem; overflow:hidden; border:3px solid var(--line);
+  display:flex; flex-direction:column;}
+.col--no{border-color:var(--blue);}
+.col--yes{border-color:var(--coral);}
+.col__h{padding:.85rem 1.3rem; color:#fff; text-align:center;}
+.col--no .col__h{background:var(--blue);}
+.col--yes .col__h{background:var(--coralInk);}
+.col__hl{font-size:.9rem; letter-spacing:.12em; opacity:.9;}
+.col__ht{font-size:1.5rem; font-weight:800; line-height:1.3; margin-top:.1rem;}
+.col__b{padding:1.15rem 1.3rem 1.3rem; flex:1;}
+
+/* ノード */
+.n{border:2px solid var(--line); border-radius:.6rem; padding:.8rem 1rem; background:#fff;}
+.n + .n{margin-top:.7rem;}
+.n__t{font-size:1.02rem; font-weight:800; color:var(--navy); line-height:1.45;}
+.n__d{font-size:.95rem; line-height:1.65; color:var(--ink2); margin-top:.3rem;}
+.n--ask{background:var(--navyBg); border-color:var(--navy); text-align:center;}
+.n--ask .n__t{font-size:1.15rem;}
+
+/* 判定行（No / Yes） */
+.ans{display:flex; gap:.7rem; margin-top:.7rem;}
+.ans__c{flex:1 1 0; border-radius:.6rem; padding:.8rem .95rem; border:2px solid var(--line);}
+.ans__k{display:inline-block; font-size:.82rem; font-weight:800; letter-spacing:.08em;
+  color:#fff; background:var(--gray); border-radius:.3rem; padding:.1rem .5rem; margin-bottom:.4rem;}
+.ans__t{font-size:1.08rem; font-weight:800; line-height:1.45; color:var(--navy);}
+.ans__d{font-size:.92rem; line-height:1.6; color:var(--ink2); margin-top:.3rem;}
+.ans--keep{background:var(--blueBg); border-color:var(--blue);}
+.ans--keep .ans__k{background:var(--blue);}
+.ans--act{background:var(--amberBg); border-color:#EBC46A;}
+.ans--act .ans__k{background:var(--amber);}
+
+/* 数値バッジ */
+.num{font-size:1.75rem; font-weight:800; color:var(--navy); line-height:1.15; letter-spacing:.01em;}
+.num .u{font-size:.95rem; font-weight:700; margin-left:.25rem; color:var(--gray);}
+.num--coral{color:var(--coralInk);}
+
+/* 段（rt-PA / 回収） */
+.step{display:flex; gap:.8rem; align-items:stretch; margin-top:.7rem;}
+.step__c{flex:1 1 0; border:2px solid var(--line); border-radius:.6rem; padding:.8rem .95rem; background:#fff;}
+.step__l{font-size:.85rem; font-weight:800; letter-spacing:.06em; color:var(--gray);}
+.step__t{margin-top:.2rem;}
+.step__d{font-size:.9rem; line-height:1.6; color:var(--ink2); margin-top:.3rem;}
+
+/* 下限の警告帯 */
+.floor{margin-top:.85rem; background:var(--coralBg); border:3px solid var(--coral);
+  border-radius:.7rem; padding:.95rem 1.15rem; display:flex; align-items:center; gap:1.1rem;}
+.floor__n{font-size:3.1rem; font-weight:800; color:var(--coralInk); line-height:1; flex:none;}
+.floor__b{flex:1;}
+.floor__t{font-size:1.2rem; font-weight:800; color:var(--coralInk); line-height:1.4;}
+.floor__d{font-size:.95rem; line-height:1.65; color:var(--ink2); margin-top:.3rem;}
+
+/* 推奨度タグ */
+.gr{display:inline-block; font-size:.8rem; font-weight:800; letter-spacing:.04em;
+  border-radius:.3rem; padding:.08rem .45rem; margin-left:.4rem; vertical-align:.1em;
+  background:var(--navyBg); color:var(--navy); border:1px solid var(--line);}
+.gr--e{background:var(--coral); color:#fff; border-color:var(--coral);}
+.gr--a{background:var(--blue); color:#fff; border-color:var(--blue);}
+
+/* 合流 */
+.merge{position:relative; height:2.8rem;}
+.merge::before{content:""; position:absolute; left:25%; right:25%; top:1.7rem; height:3px; background:var(--navy);}
+.merge::after{content:""; position:absolute; left:50%; top:1.7rem; width:3px; height:1.1rem;
+  background:var(--navy); transform:translateX(-1.5px);}
+.merge i{position:absolute; top:0; width:3px; height:1.7rem; background:var(--navy);}
+.merge i.l{left:25%;} .merge i.r{left:75%;}
+
+.exit{background:var(--navy); color:#fff; border-radius:.7rem; padding:1rem 1.4rem;
+  display:flex; align-items:center; gap:1.2rem;}
+.exit__n{font-size:2.1rem; font-weight:800; line-height:1; flex:none;}
+.exit__t{font-size:1.18rem; font-weight:800; line-height:1.45;}
+.exit__d{font-size:.94rem; line-height:1.6; opacity:.92; margin-top:.25rem;}
+
+/* 補足の2枚 */
+.side{display:flex; gap:1.6rem; margin-top:1.2rem;}
+.b{flex:1 1 0; border:2px solid var(--line); border-radius:.7rem; padding:.9rem 1.1rem;}
+.b--warn{background:var(--amberBg); border-color:#EBC46A;}
+.b__t{font-size:1.05rem; font-weight:800; color:var(--navy); margin-bottom:.35rem;}
+.b--warn .b__t{color:var(--amber);}
+.b__d{font-size:.94rem; line-height:1.7; color:var(--ink2);}
+.b__d b{color:var(--navy);}
+
+/* 脚注 */
+.note{margin:1.2rem 3rem 0; background:var(--navyBg); border-left:6px solid var(--navy);
+  border-radius:.4rem; padding:.9rem 1.2rem; font-size:.92rem; line-height:1.75; color:var(--ink2);}
+.note b{color:var(--navy);}
+.ft{margin-top:1.1rem; background:var(--navyDeep); color:#fff; padding:1.15rem 3rem;
+  font-size:.9rem; line-height:1.75;}
+.ft b{color:var(--coral);}
+</style>
+</head>
+<body>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+<div class="ig">
+
+  <div class="hd">
+    <div class="hd__brand"><span>✚ 医知創造ラボ ／ 脳神経内科</span><span class="hd__ver">脳卒中治療ガイドライン2021〔改訂2025〕・AHA/ASA 2026 に基づく</span></div>
+    <div class="hd__t">脳梗塞急性期の血圧 <span class="hl">判断フロー</span><span class="hd__tag">医療従事者向け</span></div>
+    <div class="hd__s">分かれ目は「下げる／下げない」ではなく、<b>再灌流療法を行うのか、行ったのか</b>。<br>
+      そして再開通したあとは、<b>下げすぎないこと</b>のほうが重要になった。</div>
+  </div>
+
+  <div class="bd">
+
+    <div class="start">
+      <div class="start__box">脳梗塞 急性期（発症数日以内・入院中）</div>
+      <div class="q">
+        <div class="q__l">分 岐 点</div>
+        <div class="q__t">rt-PA 静注療法／血栓回収療法を行うか、行ったか</div>
+        <div class="q__n">この1点で、降圧の可否と目標値が正反対になる</div>
+      </div>
+    </div>
+
+    <div class="arms"><i class="l"></i><i class="r"></i></div>
+
+    <div class="cols">
+
+      <!-- 左: 再灌流を行わない -->
+      <div class="col col--no">
+        <div class="col__h">
+          <div class="col__hl">再灌流療法を</div>
+          <div class="col__ht">行わない</div>
+        </div>
+        <div class="col__b">
+
+          <div class="n n--ask">
+            <div class="n__t">血圧が <span class="num" style="vertical-align:-.12em;">220/120</span><span class="u" style="font-size:.95rem;color:var(--gray);">mmHg</span> を超える状態が続いているか</div><div class="n__d" style="text-align:center;">＝ 収縮期 220 超 または 拡張期 120 超</div>
+          </div>
+
+          <div class="ans">
+            <div class="ans__c ans--keep">
+              <div class="ans__k">NO</div>
+              <div class="ans__t">降圧しない</div>
+              <div class="ans__d">許容的高血圧。虚血巣周囲では自動調節能が破綻し、<b>灌流圧＝血圧</b>になっている。下げると penumbra が失われる<span class="gr">推奨度 D／エビデンスレベル 高</span></div>
+            </div>
+            <div class="ans__c ans--act">
+              <div class="ans__k">YES</div>
+              <div class="ans__t">慎重に降圧を考慮</div>
+              <div class="ans__d">米国のガイドラインは、血栓溶解を行わない場合に下げるとしても <b>15% 程度</b>にとどめるとしている<span class="gr">推奨度 C／レベル 低</span></div>
+            </div>
+          </div>
+
+          <div class="n" style="margin-top:.85rem;">
+            <div class="n__t">推奨度 D は「曖昧だから下げない」ではない</div>
+            <div class="n__d"><b>エビデンスレベル 高で推奨度 D</b>＝質の高い証拠で「効かない」ことが<span class="nw">分かっている、という意味。</span><br>
+              CATIS・SCAST・13試験のメタ解析は、いずれも転帰を改善しなかった。</div>
+          </div>
+
+          <div class="n">
+            <div class="n__t">ただし、次があれば降圧する側にまわる</div>
+            <div class="n__d">大動脈解離／急性心筋梗塞／心不全／腎不全 — 脳ではなく<b>他臓器の適応</b>で下げる。</div>
+          </div>
+
+          <div class="n">
+            <div class="n__t">低すぎるほうも害になる</div>
+            <div class="n__d">著しい低血圧・循環血液量減少は、輸液・昇圧薬で<b>速やかに是正する</b><span class="gr gr--a">推奨度 A</span></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 右: 再灌流を行う／行った -->
+      <div class="col col--yes">
+        <div class="col__h">
+          <div class="col__hl">再灌流療法を</div>
+          <div class="col__ht">行う／行った</div>
+        </div>
+        <div class="col__b">
+
+          <div class="step">
+            <div class="step__c">
+              <div class="step__l">rt-PA 投与 前</div>
+              <div class="step__t"><span class="num">185/110</span><span class="u">mmHg 未満</span></div>
+              <div class="step__d">これは目標値ではなく<b>適応の可否を分ける線</b>。降圧薬で維持できないなら、<span class="nw">rt-PA を行わない。</span></div>
+            </div>
+            <div class="step__c">
+              <div class="step__l">rt-PA 投与 後 24時間</div>
+              <div class="step__t"><span class="num">180/105</span><span class="u">mmHg 以下</span></div>
+              <div class="step__d">測定間隔は <span class="nw">2時間まで15分毎</span> → <span class="nw">2–8時間は30分毎</span> → <span class="nw">8–24時間は1時間毎</span>。</div>
+            </div>
+          </div>
+
+          <div class="n" style="margin-top:.7rem;">
+            <div class="n__t">降圧に用いる静注薬（例）</div>
+            <div class="n__d"><span class="nw">ニカルジピン 0.5〜6 μg/kg/分</span>／<span class="nw">ジルチアゼム 5〜15 μg/kg/分</span>／<span class="nw">ニトログリセリン 5〜100 μg/分</span><span class="nw">（要遮光）</span><br>
+              <b>投与量は施設のプロトコルと添付文書で最終確認する。</b></div>
+          </div>
+
+          <div class="step">
+            <div class="step__c">
+              <div class="step__l">血栓回収 後</div>
+              <div class="step__t"><span class="num">180</span><span class="u">mmHg 以下へ速やかに</span></div>
+              <div class="step__d">回収前の降圧は必ずしも必要ない<span class="gr">推奨度 B</span></div>
+            </div>
+            <div class="step__c" style="background:var(--navyBg); border-color:var(--navy);">
+              <div class="step__l">なぜ下限があるのか</div>
+              <div class="step__d" style="margin-top:.35rem;">回収後にさらに強く下げた <b>4つの無作為化試験</b>（<span class="nw">ENCHANTED2/MT</span>・<span class="nw">OPTIMAL-BP</span>・<span class="nw">BEST-II</span>・<span class="nw">BP-TARGET</span>）は、いずれも利益を示せなかった。<b>メタ解析でも機能的自立は増えていない。</b></div>
+            </div>
+          </div>
+
+          <div class="floor">
+            <div class="floor__n">140</div>
+            <div class="floor__b">
+              <div class="floor__t">回収中・回収後に 140 mmHg 以下へ下げない<span class="gr gr--e">推奨度 E</span></div>
+              <div class="floor__d"><b>E は「行わないよう勧められる」</b>。日本のガイドラインでは珍しい強さの否定。<br>
+                出血を減らす目的で下げても、出血は減らず、低血圧だけが増えた。</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <div class="merge"><i class="l"></i><i class="r"></i></div>
+
+    <div class="exit">
+      <div class="exit__n">24時間</div>
+      <div>
+        <div class="exit__t">神経症状が安定していれば、禁忌がない限り発症24時間以降に内服再開を考慮してよい<span class="gr" style="background:#fff;">推奨度 C</span></div>
+        <div class="exit__d">急いで戻す利益はない（COSSACS・ENOS）。<b>嚥下障害・意識障害があれば、内服そのものが危険</b>。ここから二次予防へ渡す。</div>
+      </div>
+    </div>
+
+    <div class="side">
+      <div class="b">
+        <div class="b__t">脚注: 血糖</div>
+        <div class="b__d">高血糖は是正し <b>180 mg/dL 未満</b>を保つことを考慮してよい（推奨度 C）。<br>
+          <b>80–130 mg/dL の厳格管理は推奨されない</b>（AHA/ASA 2026 も Class 3・低血糖リスク）。</div>
+      </div>
+      <div class="b b--warn">
+        <div class="b__t">注意: 同じ「140」が正反対の意味になる</div>
+        <div class="b__d">脳<b>梗塞</b>の再開通後、140 は<b>割ってはいけない下限</b>。<br>
+          脳<b>出血</b>急性期では、140 未満が<b>目指す目標</b>。<b>疾患を取り違えると判断が反転する。</b></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="note">
+    <b>この図の使い方。</b>これは<b>入院中の急性期（発症数日以内）</b>の血圧管理を整理したものであり、外来で降圧薬を服用中の方に中止を勧めるものではありません。<br>
+    <b>推奨度・目標値の出典は</b>脳卒中治療ガイドライン2021〔改訂2025〕および AHA/ASA 2026 で、本図はその要点を要約したものです（推奨文の転載ではありません）。<b>個々の症例の判断、および薬剤の投与量は、施設のプロトコルと添付文書で最終確認してください。</b>
+  </div>
+
+  <div class="ft">
+    監修: 今村久司（脳神経内科専門医・総合内科専門医）／医知創造ラボ<br>
+    本図は医療従事者向けの一般的な医学情報の提供を目的としたもので、個別の診断・治療方針を示すものではありません。<br>
+    <b>患者さんへ: 服用中の降圧薬を自己判断で中止しないでください。</b>
+  </div>
+
+</div>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px auto 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+</body>
+</html>

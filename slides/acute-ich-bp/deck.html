@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>脳出血急性期_降圧治療</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* テーマ「セミナー紺」 */
+  --navy: #012360;
+  --navy-ink: #001B4D;
+  --blue: #1D4189;
+  --accent: #F27E03;
+  --accent-soft: #FFF4E5;
+  --accent-line: #FFB366;
+  --accent-ink: #A65300;
+  --danger: #DC3323;
+  --danger-soft: #FDEDEC;
+  --line: #D8DDE6;
+  --line-soft: #C9D2DF;
+  --bg-alt: #F6F6F6;
+  --navy-line: rgba(1, 35, 96, 0.2);
+
+  /* type scale */
+  --type-mult: 1.38;
+  --type-display: calc(96px * var(--type-mult));
+  --type-title:   calc(82px * var(--type-mult));
+  --type-heading: calc(60px * var(--type-mult));
+  --type-subtitle:calc(44px * var(--type-mult));
+  --type-body:    calc(38px * var(--type-mult));
+  --type-small:   calc(30px * var(--type-mult));
+  --type-label:   calc(27px * var(--type-mult));
+  --type-chapter: calc(210px * var(--type-mult));
+  --type-stat:    calc(150px * var(--type-mult));
+
+  --pad-x: 112px;
+  --pad-top: 58px;
+  --pad-bottom: 116px;
+  --gap-title: 24px;
+  --gap-item: 22px;
+
+  --font-ja: "Noto Sans JP", "BIZ UDPGothic", "Yu Gothic", "Meiryo", sans-serif;
+  --grad-navy: linear-gradient(160deg, #012360 0%, #001B4D 100%);
+}
+
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#0a1430; font-family:var(--font-ja); }
+
+/* ---------- base slide ---------- */
+.slide{
+  box-sizing:border-box;
+  display:flex; flex-direction:column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--font-ja);
+  overflow:hidden;
+  position:relative;
+}
+.slide::after{
+  content:""; position:absolute; left:0; right:0; bottom:0; height:10px;
+  background: var(--navy); pointer-events:none;
+}
+.slide--navy{ background: var(--grad-navy); color: var(--white); }
+.slide--navy::after{ background: var(--accent); }
+.slide--soft{ background: var(--bg-alt); }
+
+/* eyebrow */
+.eyebrow{
+  display:flex; align-items:center; gap:18px;
+  font-size: var(--type-label); font-weight:700; color: var(--navy);
+  letter-spacing:.04em;
+}
+.eyebrow::before{
+  content:""; width:12px; height:44px; border-radius:3px;
+  background: linear-gradient(180deg, var(--navy) 0 68%, var(--accent) 68% 100%);
+  flex:none;
+}
+.slide--navy .eyebrow{ color: rgba(255,255,255,.88); }
+.slide--navy .eyebrow::before{ background: linear-gradient(180deg, #fff 0 68%, var(--accent) 68% 100%); }
+
+.s-title{
+  font-size: var(--type-heading); line-height:1.22; color: var(--navy);
+  margin: var(--gap-title) 0 0; font-weight:800; letter-spacing:.01em;
+  text-wrap: pretty;
+}
+.slide--navy .s-title{ color:#fff; }
+
+.lead{
+  font-size: var(--type-body); line-height:1.7; color: var(--ink-2);
+  margin:0; text-wrap: pretty;
+}
+
+.hairline{
+  height:4px; border:0; margin:20px 0 0;
+  background: linear-gradient(90deg, var(--accent) 0 150px, var(--navy) 150px);
+  opacity:1;
+}
+.slide--navy .hairline{ background: linear-gradient(90deg, var(--accent) 0 150px, rgba(255,255,255,.85) 150px); }
+
+.slide__foot{
+  position:absolute; left: var(--pad-x); right: var(--pad-x); bottom: 36px;
+  display:flex; align-items:center; justify-content:space-between;
+  font-size: calc(24px * var(--type-mult)); color: var(--gray);
+  font-family: var(--font-ja);
+}
+.slide__foot .ch{ display:flex; align-items:center; gap:10px; font-weight:700; color: var(--navy); }
+.slide__foot .cross{ color: var(--accent); font-weight:700; }
+.slide--navy .slide__foot{ color: rgba(255,255,255,.65); }
+.slide--navy .slide__foot .ch{ color:#fff; }
+.slide--navy .slide__foot .cross{ color: var(--accent); }
+
+/* ============ COMPONENTS ============ */
+.cover{ justify-content:center; }
+.cover__badge{
+  display:inline-flex; align-items:center; gap:14px; align-self:flex-start;
+  background: rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.28);
+  color:#fff; padding:12px 26px; border-radius:999px;
+  font-size: var(--type-label); font-weight:700;
+}
+.cover__badge .cross{ color: var(--accent); font-size:1.2em; }
+.cover__title{
+  font-size: var(--type-display); line-height:1.18; color:#fff; font-weight:800;
+  margin:38px 0 0; letter-spacing:.01em; max-width:24ch;
+}
+.cover__title .hl{ color: #FFB366; }
+.cover__sub{
+  font-size: var(--type-subtitle); color: rgba(255,255,255,.88);
+  margin:30px 0 0; font-weight:500;
+}
+.cover__meta{
+  display:flex; gap:34px; align-items:center; margin-top:54px;
+  font-size: var(--type-small); color: rgba(255,255,255,.8);
+}
+.cover__meta .ep{
+  font-weight:700; color:#fff; background: var(--accent);
+  padding:8px 20px; border-radius:8px;
+}
+
+.concl-box{
+  display:flex; flex-direction:column; gap:24px; margin-top:36px;
+  background: var(--accent-soft); border-left:12px solid var(--accent);
+  border-radius:12px; padding:36px 44px;
+}
+.concl-box__tag{
+  align-self:flex-start; background: var(--accent); color:#fff; font-weight:700;
+  font-size: var(--type-small); padding:8px 20px; border-radius:6px;
+}
+.concl-box__text{
+  font-size: var(--type-subtitle); line-height:1.5; color: var(--navy-ink);
+  font-weight:700; margin:0;
+}
+
+.agenda-list{ display:flex; flex-direction:column; gap:18px; margin-top:28px; }
+.agenda-item{
+  display:flex; align-items:center; gap:26px;
+  background:#fff; border:2px solid var(--line); border-left:8px solid var(--navy);
+  border-radius:10px; padding:18px 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.agenda-item__num{
+  width:58px; height:58px; border-radius:50%; background: var(--navy); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:800; font-size: var(--type-subtitle); flex:none;
+}
+.agenda-item__text{ font-size: var(--type-subtitle); font-weight:700; color: var(--ink); margin:0; }
+
+.chapter{ justify-content:center; align-items:center; text-align:center; }
+.chapter__kicker{
+  font-size: var(--type-label); color: rgba(255,255,255,.55);
+  font-weight:700; letter-spacing:.4em; text-transform:uppercase;
+}
+.chapter__num{
+  font-size: calc(140px * var(--type-mult)); line-height:1.05;
+  font-weight:800; color:#FFB366; margin:10px 0 0;
+}
+.chapter__rule{ width:560px; height:6px; background: var(--accent); border-radius:3px; margin-top:36px; }
+.chapter__title{ font-size: var(--type-subtitle); color:#fff; font-weight:700; margin:36px 0 0; max-width:26ch; text-wrap:balance; }
+
+.compare-grid{ display:grid; grid-template-columns:1fr 1fr; gap:36px; margin-top:32px; }
+.comp-card{
+  background:#fff; border-radius:12px; padding:32px 36px;
+  border:2px solid var(--line); display:flex; flex-direction:column; gap:18px;
+}
+.comp-card--navy{ border-top:8px solid var(--navy); }
+.comp-card--accent{ border-top:8px solid var(--accent); background: var(--accent-soft); }
+.comp-card__title{ font-size: var(--type-subtitle); font-weight:700; margin:0; color: var(--navy); }
+.comp-card__text{ font-size: var(--type-body); line-height:1.6; color: var(--ink); margin:0; }
+
+.stat-box{
+  background: var(--white); border:3px solid var(--accent); border-radius:16px;
+  padding:36px 48px; margin-top:32px; display:flex; align-items:center; gap:40px;
+}
+.stat-val{ font-size: var(--type-stat); font-weight:800; color: var(--accent); line-height:1; }
+.stat-desc{ font-size: var(--type-subtitle); line-height:1.5; color: var(--navy); font-weight:700; margin:0; }
+
+.deck-table{ width:100%; border-collapse:collapse; margin-top:20px; font-size: calc(26px * var(--type-mult)); }
+.deck-table th{
+  background: var(--navy); color:#fff; padding:12px 18px; font-weight:700;
+  text-align:left; border:1px solid var(--navy);
+}
+.deck-table td{
+  padding:12px 18px; border:1px solid var(--line); background:#fff;
+  color: var(--ink); line-height:1.45;
+}
+.deck-table tr:nth-child(even) td{ background: var(--bg-alt); }
+
+.card-grid-3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:24px; margin-top:32px; }
+.mini-card{
+  background:#fff; border:2px solid var(--line); border-top:6px solid var(--navy);
+  border-radius:10px; padding:24px; display:flex; flex-direction:column; gap:12px;
+}
+.mini-card__num{ font-size: var(--type-label); font-weight:700; color: var(--accent); }
+.mini-card__title{ font-size: var(--type-body); font-weight:700; color: var(--navy); margin:0; }
+.mini-card__text{ font-size: var(--type-small); line-height:1.5; color: var(--ink-2); margin:0; }
+
+/* ============ ENTRANCE ANIMATIONS ============ */
+@media (prefers-reduced-motion:no-preference){
+  [data-deck-active] .anim{ animation: fade-up .5s both; }
+  [data-deck-active] .anim2{ animation: fade-up .5s .12s both; }
+  [data-deck-active] .anim3{ animation: fade-up .5s .24s both; }
+  [data-deck-active] .anim4{ animation: fade-up .5s .36s both; }
+  [data-deck-active] .anim5{ animation: fade-up .5s .48s both; }
+  [data-deck-active] .a-pop{ animation: a-pop .55s cubic-bezier(.34,1.56,.64,1) both; }
+  [data-deck-active] .grow-x{ transform-origin:left center; animation: grow-x .55s .25s cubic-bezier(.2,.7,.2,1) both; }
+}
+.grow-x{ transform-origin:left center; }
+@keyframes fade-up{ from{ opacity:0; transform: translateY(16px);} to{ opacity:1; transform:none;} }
+@keyframes a-pop  { from{ opacity:0; transform: scale(.8); } to{ opacity:1; transform:none; } }
+@keyframes grow-x { from{ transform: scaleX(0);} to{ transform: scaleX(1);} }
+
+#tweaks-root{ position:fixed; inset:0; pointer-events:none; z-index:9999; }
+#tweaks-root > *{ pointer-events:auto; }
+</style>
+</head>
+<body>
+
+<deck-stage width="1920" height="1080">
+
+<!-- Slide 1: Cover -->
+<section class="slide slide--navy cover" data-label="タイトル" data-screen-label="01 表紙">
+  <div class="cover__badge anim"><span class="cross">&#10010;</span> 脳卒中急性期管理シリーズ</div>
+  <h1 class="cover__title anim2">脳出血急性期の<br><span class="hl">血圧管理と降圧目標</span></h1>
+  <div class="cover__rule grow-x" style="width:1400px; height:4px; background:#FFB366; margin-top:28px;"></div>
+  <p class="cover__sub anim3">なぜ140未満を目指し、110未満を避けるのか【INTERACT / ATACH-2】</p>
+  <div class="cover__meta anim4">
+    <span class="ep">医師・医療従事者向け解説</span>
+    <span>脳卒中治療ガイドライン2021［改訂2023］対応</span>
+  </div>
+  <div class="slide__foot">
+    <div class="ch"><span class="cross">&#10010;</span> 脳神経内科医 今村</div>
+    <div>1 / 18</div>
+  </div>
+</section>
+
+<!-- Slide 2: Conclusion First -->
+<section class="slide" data-label="結論" data-screen-label="02 結論ファースト">
+  <div class="eyebrow anim">KEY TAKEAWAY</div>
+  <h2 class="s-title anim">脳出血の血圧は、どこまで下げるべきか？</h2>
+  <hr class="hairline anim">
+  <div class="concl-box anim2">
+    <div class="concl-box__tag">本日の結論</div>
+    <p class="concl-box__text">発症早期は「速やかに SBP 140 mmHg 未満」を目指す。</p>
+    <p class="concl-box__text" style="color:var(--danger);">ただし「110 mmHg 未満への過度な急速降圧」は避ける。</p>
+  </div>
+  <p class="lead anim3" style="margin-top:24px;">脳梗塞の permissive hypertension（下げない）とは真逆の病態生理です。</p>
+  <div class="slide__foot">
+    <div class="ch"><span class="cross">&#10010;</span> 脳神経内科医 今村</div>
+    <div>2 / 18</div>
+  </div>
+</section>
+
+<!-- Slide 3: Agenda -->
+<section class="slide slide--soft" data-label="目次" data-screen-label="03 アジェンダ">
+  <div class="eyebrow anim">AGENDA</div>
+  <h2 class="s-title anim">本日の流れ</h2>
+  <hr class="hairline anim">
+  <div class="agenda-list">
+    <div class="agenda-item anim">
+      <div class="agenda-item__num">1</div>
+      <p class="agenda-item__text">なぜ脳出血では早期に下げるのか（脳梗塞との対比）</p>
+    </div>
+    <div class="agenda-item anim2">
+      <div class="agenda-item__num">2</div>
+      <p class="agenda-item__text">2大臨床試験の結論（INTERACT2 vs ATACH-2）</p>
+    </div>
+    <div class="agenda-item anim3">
+      <div class="agenda-item__num">3</div>
+      <p class="agenda-item__text">最新ガイドライン推奨と「140」の二面性</p>
+    </div>
+    <div class="agenda-item anim4">
+      <div class="agenda-item__num">4</div>
+      <p class="agenda-item__text">急性期実務（ニカルジピン・変動性・凝固中和）</p>
+    </div>
+    <div class="agenda-item anim5">
+      <div class="agenda-item__num">5</div>
+      <p class="agenda-item__text">慢性期・二次予防への接続（130/80未満）</p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch"><span class="cross">&#10010;</span> 脳神経内科医 今村</div>
+    <div>3 / 18</div>
+  </div>
+</section>
+
+<!-- Slide 4: Chapter 1 Cover -->
+<section class="slide slide--navy chapter" data-label="第1章扉" data-screen-label="04 第1章扉">
+  <p class="chapter__kicker anim">CHAPTER 01</p>
+  <h2 class="chapter__num anim a-pop">第1章</h2>
+  <div class="chapter__rule grow-x"></div>
+  <h3 class="chapter__title anim3">なぜ脳出血では早期に下げるのか</h3>
+  <div class="slide__foot">
+    <div class="ch"><span class="cross">&#10010;</span> 脳神経内科医 今村</div>
+    <div>4 / 18</div>
+  </div>
+</section>
+
+<!-- Slide 5: Pathophysiology Comparison -->
+<section class="slide" data-label="病態比較" data-screen-label="05 脳梗塞と脳出血の対比">
+  <div class="eyebrow anim">PATHOPHYSIOLOGY</div>
+  <h2 class="s-title anim">病態生理の根本的な違い</h2>
+  <hr class="hairline anim">
+  <div class="compare-grid" style="margin-top:24px;">
+    <div class="comp-card comp-card--navy anim2" style="padding:24px 28px;">
+      <h3 class="comp-card__title">脳梗塞（虚血）</h3>
+      <p class="comp-card__text">
+        <strong>Permissive hypertension（下げない）</strong><br>
+        閉塞血管周囲の虚血ペナンブラを救済するため、側副血行路の灌流圧を維持する。
+      </p>
+    </div>
+    <div class="comp-card comp-card--accent anim3" style="padding:24px 28px;">
+      <h3 class="comp-card__title" style="color:var(--accent-ink);">脳出血（出血）</h3>
+      <p class="comp-card__text">
+        <strong>Active Bleeding（早期に下げる）</strong><br>
+        破綻血管からの活動性出血を止め、早期の血腫拡大を阻止するため速やかな降圧が必要。
+      </p>
+    </div>
+  </div>
+  <p class="lead anim4" style="margin-top:16px;">脳出血では虚血ペナンブラが存在しないため、過度な低血圧を避ければ降圧が安全です。</p>
+  <div class="slide__foot">
+    <div class="ch"><span class="cross">&#10010;</span> 脳神経内科医 今村</div>
+    <div>5 / 18</div>
+  </div>
+</section>
+
+<!-- Slide 6: Hematoma Expansion Risk -->
+<section class="slide" data-label="血腫拡大" data-screen-label="06 血腫拡大のリスク">
+  <div class="eyebrow anim">HEMATOMA EXPANSION</div>
+  <h2 class="s-title anim">発症早期の血腫拡大が生命予後を直撃する</h2>
+  <hr class="hairline anim">
+  <div class="stat-box anim2">
+    <div class="stat-val">38%</div>
+    <p class="stat-desc">
+      発症3時間以内の脳出血患者の約38%で、<br>
+      <strong>24時間以内に実質的な血腫拡大</strong>（&gt;33%または&gt;6mL）が発生する。
+    </p>
+  </div>
+  <div style="background:var(--danger-soft);border-left:8px solid var(--danger);border-radius:10px;padding:20px 28px;margin-top:24px;" class="anim3">
+    <p style="font-size:var(--type-body);color:var(--danger);font-weight:700;margin:0;">
+      血腫拡大が生じた患者では、<strong>死亡リスクが約5倍（OR 5.0）</strong>に跳ね上がる（Davis 2006）。
+    </p>
+  </div>
+  <div class="slide__foot">
+    <div class="ch"><span class="cross">&#10010;</span> 脳神経内科医 今村</div>
+    <div>6 / 18</div>
+  </div>
+</section>
+
+<!-- Slide 7: Chapter 2 Cover -->
+<section class="slide slide--navy chapter" data-label="第2章扉" data-screen-label="07 第2章扉">
+  <p class="chapter__kicker anim">CHAPTER 02</p>
+  <h2 class="chapter__num anim a-pop">第2章</h2>
+  <div class="chapter__rule grow-x"></div>
+  <h3 class="chapter__title anim3">どこまで下げるか 2大試験の結論</h3>
+  <div class="slide__foot">
+    <div class="ch"><span class="cross">&#10010;</span> 脳神経内科医 今村</div>
+    <div>7 / 18</div>
+  </div>
+</section>
+
+<!-- Slide 8: INTERACT2 -->
+<section class="slide" data-label="INTERACT2" data-screen-label="08 INTERACT2試験">
+  <div class="eyebrow anim">CLINICAL TRIAL 01</div>
+  <h2 class="s-title anim">INTERACT2：収縮期 140 未満目標の有効性と安全性</h2>
+  <hr class="hairline anim">
+  <div style="background:#fff;border:2px solid var(--line);border-top:8px solid var(--navy);border-radius:12px;padding:24px 32px;margin-top:24px;" class="anim2">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <span style="font-size:var(--type-small);font-weight:700;color:var(--accent);">対象 2,839例（発症6h以内、SBP 150-220）</span>
+      <span style="font-size:var(--type-label);color:var(--gray);">Anderson CS et al. NEJM 2013</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+      <div style="background:var(--accent-soft);padding:18px;border-radius:8px;">
+        <div style="font-size:var(--type-label);font-weight:700;color:var(--accent-ink);">積極降圧群（目標 SBP &lt; 140）</div>
+        <p style="font-size:var(--type-small);color:var(--navy-ink);margin:8px 0 0 0;line-height:1.45;">
+          90日後 mRS 順序シフト解析で<strong>良好な機能回復へ有意にシフト（OR 0.87, p=0.04）</strong>。
+        </p>
+      </div>
+      <div style="background:var(--bg-alt);padding:18px;border-radius:8px;">
+        <div style="font-size:var(--type-label);font-weight:700;color:var(--gray);">標準降圧群（目標 SBP &lt; 180）</div>
+        <p style="font-size:var(--type-small);color:var(--ink-2);margin:8px 0 0 0;line-height:1.45;">
+          死亡率・重篤有害事象に有意差なし（<strong>積極降圧の安全性を確立</strong>）。
+        </p>
+      </div>
+    </div>
+  </div>
+  <p class="lead anim3" style="margin-top:16px;">血腫増大率も積極降圧群で低値傾向を示しました。</p>
+  <div class="slide__foot">
+    <div class="ch"><span class="cross">&#10010;</span> 脳神経内科医 今村</div>
+    <div>8 / 18</div>
+  </div>
+</section>
+
+<!-- Slide 9: ATACH-2 -->
+<section class="slide" data-label="ATACH-2" data-screen-label="09 ATACH-2試験">
+  <div class="eyebrow anim">CLINICAL TRIAL 02</div>
+  <h2 class="s-title anim">ATACH-2：過度な急速降圧（110未満）の害と無益性</h2>
+  <hr class="hairline anim">
+  <div style="background:#fff;border:2px solid var(--line);border-top:8px solid var(--danger);border-radius:12px;padding:24px 32px;margin-top:24px;" class="anim2">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <span style="font-size:var(--type-small);font-weight:700;color:var(--danger);">対象 1,000例（発症4.5h以内、ニカルジピン静注）</span>
+      <span style="font-size:var(--type-label);color:var(--gray);">Qureshi AI et al. NEJM 2016</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+      <div style="background:var(--danger-soft);padding:18px;border-radius:8px;">
+        <div style="font-size:var(--type-label);font-weight:700;color:var(--danger);">超積極降圧群（目標 110〜139）</div>
+        <p style="font-size:var(--type-small);color:var(--ink);margin:8px 0 0 0;line-height:1.45;">
+          死亡・重度障害（mRS 4-6）は 38.7% vs 37.7% で<strong>予後改善効果なし</strong>。
+        </p>
+      </div>
+      <div style="background:#fff;border:2px solid var(--danger);padding:18px;border-radius:8px;">
+        <div style="font-size:var(--type-label);font-weight:700;color:var(--danger);">腎有害事象の有意な増加</div>
+        <p style="font-size:var(--type-small);color:var(--danger);margin:8px 0 0 0;font-weight:700;line-height:1.45;">
+          7日以内の腎イベントが <strong>9.0% vs 4.0%（p=0.002）と有意に増加</strong>。無益性中止。
+        </p>
+      </div>
+    </div>
+  </div>
+  <p class="lead anim3" style="margin-top:16px;">下げすぎ（110〜120未満）は臓器灌流障害を引き起こすことが示されました。</p>
+  <div class="slide__foot">
+    <div class="ch"><span class="cross">&#10010;</span> 脳神経内科医 今村</div>
+    <div>9 / 18</div>
+  </div>
+</section>
+
+<!-- Slide 10: 2 RCT Summary -->
+<section class="slide" data-label="2大試験統合" data-screen-label="10 2大試験の統合結論">
+  <div class="eyebrow anim">SYNTHESIS</div>
+  <h2 class="s-title anim">2大試験から導かれる実務目標</h2>
+  <hr class="hairline anim">
+  <div class="card-grid-3">
+    <div class="mini-card anim2">
+      <div class="mini-card__num">UPPER LIMIT</div>
+      <h3 class="mini-card__title">目指すべき上限</h3>
+      <p class="mini-card__text">
+        <strong>収縮期 140 未満</strong><br>
+        血腫拡大を防ぐため、速やかにこの域まで下げる。
+      </p>
+    </div>
+    <div class="mini-card anim3" style="border-top-color:var(--danger);">
+      <div class="mini-card__num" style="color:var(--danger);">LOWER LIMIT</div>
+      <h3 class="mini-card__title" style="color:var(--danger);">避けるべき下限</h3>
+      <p class="mini-card__text">
+        <strong>110〜120 未満</strong><br>
+        急速な過度降圧は腎障害等の臓器虚血を招く。
+      </p>
+    </div>
+    <div class="mini-card anim4" style="border-top-color:var(--accent);background:var(--accent-soft);">
+      <div class="mini-card__num" style="color:var(--accent-ink);">TARGET WINDOW</div>
+      <h3 class="mini-card__title" style="color:var(--accent-ink);">安全な目標域</h3>
+      <p class="mini-card__text">
+        <strong>130 〜 140 mmHg</strong><br>
+        実務上はこの狭い安全ゾーンの平滑な維持を目指す。
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch"><span class="cross">&#10010;</span> 脳神経内科医 今村</div>
+    <div>10 / 18</div>
+  </div>
+</section>
+
+<!-- Slide 11: Chapter 3 Cover -->
+<section class="slide slide--navy chapter" data-label="第3章扉" data-screen-label="11 第3章扉">
+  <p class="chapter__kicker anim">CHAPTER 03</p>
+  <h2 class="chapter__num anim a-pop">第3章</h2>
+  <div class="chapter__rule grow-x"></div>
+  <h3 class="chapter__title anim3">最新ガイドライン推奨と「140」の意味</h3>
+  <div class="slide__foot">
+    <div class="ch"><span class="cross">&#10010;</span> 脳神経内科医 今村</div>
+    <div>11 / 18</div>
+  </div>
+</section>
+
+<!-- Slide 12: Guideline Recommendations -->
+<section class="slide" data-label="ガイドライン" data-screen-label="12 ガイドライン推奨">
+  <div class="eyebrow anim">GUIDELINES</div>
+  <h2 class="s-title anim">国内外のガイドラインにおける降圧推奨</h2>
+  <hr class="hairline anim">
+  <div style="display:flex;flex-direction:column;gap:20px;margin-top:28px;">
+    <div style="background:#fff;border-left:8px solid var(--navy);border-radius:10px;padding:20px 28px;box-shadow:0 1px 3px rgba(0,0,0,0.06);" class="anim2">
+      <div style="font-size:var(--type-small);font-weight:700;color:var(--navy);">日本 脳卒中治療ガイドライン2021［改訂2023］</div>
+      <p style="font-size:var(--type-body);color:var(--ink);margin:8px 0 0 0;line-height:1.5;">
+        発症早期の脳出血に対し、<strong>収縮期血圧 140 mmHg 未満を目指す速やかな降圧</strong>が勧められる（推奨度 B）。
+      </p>
+    </div>
+    <div style="background:#fff;border-left:8px solid var(--accent);border-radius:10px;padding:20px 28px;box-shadow:0 1px 3px rgba(0,0,0,0.06);" class="anim3">
+      <div style="font-size:var(--type-small);font-weight:700;color:var(--accent-ink);">AHA/ASA 2022 ガイドライン</div>
+      <p style="font-size:var(--type-body);color:var(--ink);margin:8px 0 0 0;line-height:1.5;">
+        SBP 150-220 mmHg では <strong>目標 140 mmHg が安全かつ妥当（Class 2a）</strong>。<br>
+        ただし SBP &lt; 130 mmHg への過度な急速降圧は有害の可能性あり（Class 3: Harm）。
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch"><span class="cross">&#10010;</span> 脳神経内科医 今村</div>
+    <div>12 / 18</div>
+  </div>
+</section>
+
+<!-- Slide 13: 140 Ceiling vs Floor -->
+<section class="slide slide--soft" data-label="140の対比" data-screen-label="13 140という数値の二面性">
+  <div class="eyebrow anim">CONTRAST</div>
+  <h2 class="s-title anim">脳梗塞と脳出血で「140」の意味が逆転する</h2>
+  <hr class="hairline anim">
+  <div class="compare-grid" style="margin-top:24px;">
+    <div class="comp-card comp-card--navy anim2" style="padding:24px 28px;">
+      <h3 class="comp-card__title">脳梗塞（血栓回収後）</h3>
+      <p class="comp-card__text">
+        <strong>「140」は避けるべき底（下限）</strong><br>
+        回収成功後に 140 mmHg 以下へ過度に下げることは避ける（推奨度 E）。
+      </p>
+    </div>
+    <div class="comp-card comp-card--accent anim3" style="padding:24px 28px;">
+      <h3 class="comp-card__title" style="color:var(--accent-ink);">脳出血（発症早期）</h3>
+      <p class="comp-card__text">
+        <strong>「140」は目指すべき天井（上限）</strong><br>
+        血腫拡大を阻止するため、140 mmHg 未満を速やかに目指す（推奨度 B）。
+      </p>
+    </div>
+  </div>
+  <p class="lead anim4" style="margin-top:16px;">同じ「140」という数値でも、病態により「下限」か「上限」かが正反対になります。</p>
+  <div class="slide__foot">
+    <div class="ch"><span class="cross">&#10010;</span> 脳神経内科医 今村</div>
+    <div>13 / 18</div>
+  </div>
+</section>
+
+<!-- Slide 14: INTERACT3 Care Bundle -->
+<section class="slide" data-label="ケアバンドル" data-screen-label="14 INTERACT3ケアバンドル">
+  <div class="eyebrow anim">CARE BUNDLE</div>
+  <h2 class="s-title anim">INTERACT3：包括的ケアバンドルの証明</h2>
+  <hr class="hairline anim">
+  <div style="background:#fff;border:2px solid var(--line);border-top:8px solid var(--navy);border-radius:12px;padding:24px 32px;margin-top:20px;" class="anim2">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <span style="font-size:var(--type-small);font-weight:700;color:var(--navy);">7,036例の大規模ステップウェッジRCT（Lancet 2023）</span>
+      <span style="font-size:var(--type-label);color:var(--accent-ink);font-weight:700;">6か月機能予後改善（aOR 0.86）</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;margin-top:12px;">
+      <div style="background:var(--bg-alt);padding:14px;border-radius:8px;text-align:center;">
+        <div style="font-size:var(--type-label);font-weight:700;color:var(--navy);">① 早期降圧</div>
+        <div style="font-size:var(--type-small);color:var(--accent-ink);margin-top:4px;font-weight:700;">SBP &lt; 140</div>
+      </div>
+      <div style="background:var(--bg-alt);padding:14px;border-radius:8px;text-align:center;">
+        <div style="font-size:var(--type-label);font-weight:700;color:var(--navy);">② 血糖管理</div>
+        <div style="font-size:var(--type-small);color:var(--accent-ink);margin-top:4px;font-weight:700;">110-140 mg/dL</div>
+      </div>
+      <div style="background:var(--bg-alt);padding:14px;border-radius:8px;text-align:center;">
+        <div style="font-size:var(--type-label);font-weight:700;color:var(--navy);">③ 体温管理</div>
+        <div style="font-size:var(--type-small);color:var(--accent-ink);margin-top:4px;font-weight:700;">&lt; 37.5 ℃</div>
+      </div>
+      <div style="background:var(--bg-alt);padding:14px;border-radius:8px;text-align:center;">
+        <div style="font-size:var(--type-label);font-weight:700;color:var(--navy);">④ 凝固中和</div>
+        <div style="font-size:var(--type-small);color:var(--accent-ink);margin-top:4px;font-weight:700;">直ちに中和</div>
+      </div>
+    </div>
+  </div>
+  <p class="lead anim3" style="margin-top:16px;">単独の降圧だけでなく、4要素を束ねたプロトコル介入が転帰を改善します。</p>
+  <div class="slide__foot">
+    <div class="ch"><span class="cross">&#10010;</span> 脳神経内科医 今村</div>
+    <div>14 / 18</div>
+  </div>
+</section>
+
+<!-- Slide 15: Chapter 4 Cover -->
+<section class="slide slide--navy chapter" data-label="第4章扉" data-screen-label="15 第4章扉">
+  <p class="chapter__kicker anim">CHAPTER 04</p>
+  <h2 class="chapter__num anim a-pop">第4章</h2>
+  <div class="chapter__rule grow-x"></div>
+  <h3 class="chapter__title anim3">急性期の実務ポイントと血圧変動性</h3>
+  <div class="slide__foot">
+    <div class="ch"><span class="cross">&#10010;</span> 脳神経内科医 今村</div>
+    <div>15 / 18</div>
+  </div>
+</section>
+
+<!-- Slide 16: Nicardipine & BPV & Reversal -->
+<section class="slide" data-label="薬剤実務" data-screen-label="16 ニカルジピン・変動性・中和">
+  <div class="eyebrow anim">PRACTICE</div>
+  <h2 class="s-title anim">急性期の実務：薬剤選択・変動性抑制・抗凝固中和</h2>
+  <hr class="hairline anim">
+  <div class="card-grid-3">
+    <div class="mini-card anim2">
+      <div class="mini-card__num">DRUG OF CHOICE</div>
+      <h3 class="mini-card__title">ニカルジピン持続静注</h3>
+      <p class="mini-card__text">
+        第一選択。0.5〜6 &micro;g/kg/分（2〜10 mg/h）で開始し、シリンジポンプで漸増・漸減。
+      </p>
+    </div>
+    <div class="mini-card anim3" style="border-top-color:var(--accent);">
+      <div class="mini-card__num" style="color:var(--accent);">VARIABILITY</div>
+      <h3 class="mini-card__title">血圧変動性（BPV）の抑制</h3>
+      <p class="mini-card__text">
+        血圧のばらつきが大きいと<strong>予後不良オッズが 1.41倍</strong>（Manning 2014）。急降下・スパイクを避ける。
+      </p>
+    </div>
+    <div class="mini-card anim4" style="border-top-color:var(--danger);">
+      <div class="mini-card__num" style="color:var(--danger);">REVERSAL</div>
+      <h3 class="mini-card__title">抗凝固薬の緊急中和</h3>
+      <p class="mini-card__text">
+        ワルファリン→ケセントラ＋Vit K、ダビガトラン→イダルシズマブ、FXa阻害薬→オンデキサを直ちに併用。
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch"><span class="cross">&#10010;</span> 脳神経内科医 今村</div>
+    <div>16 / 18</div>
+  </div>
+</section>
+
+<!-- Slide 17: Secondary Prevention -->
+<section class="slide slide--soft" data-label="二次予防" data-screen-label="17 慢性期・二次予防降圧">
+  <div class="eyebrow anim">SECONDARY PREVENTION</div>
+  <h2 class="s-title anim">慢性期は 130/80 未満の厳格管理へ移行</h2>
+  <hr class="hairline anim">
+  <div style="background:#fff;border-left:8px solid var(--navy);border-radius:10px;padding:20px 32px;margin-top:20px;" class="anim2">
+    <h3 style="font-size:var(--type-subtitle);color:var(--navy);margin:0 0 8px 0;">慢性期目標血圧</h3>
+    <p style="font-size:calc(54px * var(--type-mult));font-weight:800;color:var(--navy);margin:0;">
+      診察室 &lt; 130/80 mmHg / 家庭 &lt; 125/75 mmHg
+    </p>
+  </div>
+  <div style="background:#fff;border-radius:10px;padding:18px 32px;margin-top:16px;border:2px solid var(--line);" class="anim3">
+    <p style="font-size:var(--type-body);color:var(--ink);margin:0;line-height:1.5;">
+      脳アミロイド血管症（CAA）や多発微小出血（CMBs）合併例においても、<br>
+      <strong>再出血予防のエビデンスが確立している唯一の介入は厳格な降圧治療</strong>です。
+    </p>
+  </div>
+  <div class="slide__foot">
+    <div class="ch"><span class="cross">&#10010;</span> 脳神経内科医 今村</div>
+    <div>17 / 18</div>
+  </div>
+</section>
+
+<!-- Slide 18: Summary -->
+<section class="slide slide--navy" data-label="まとめ" data-screen-label="18 まとめ">
+  <div class="eyebrow anim">SUMMARY</div>
+  <h2 class="s-title anim">持ち帰ってほしい3つのポイント</h2>
+  <hr class="hairline anim">
+  <div style="display:flex;flex-direction:column;gap:20px;margin-top:32px;">
+    <div style="background:rgba(255,255,255,.1);border-left:8px solid #FFB366;padding:20px 28px;border-radius:8px;" class="anim2">
+      <p style="font-size:var(--type-body);font-weight:700;color:#fff;margin:0;">
+        1. 早期に「SBP 140 mmHg 未満」を目指して速やかに降圧する
+      </p>
+    </div>
+    <div style="background:rgba(255,255,255,.1);border-left:8px solid #FFB366;padding:20px 28px;border-radius:8px;" class="anim3">
+      <p style="font-size:var(--type-body);font-weight:700;color:#fff;margin:0;">
+        2. ただし「110〜120 未満」への過度な急速降圧は避ける（腎障害回避）
+      </p>
+    </div>
+    <div style="background:rgba(255,255,255,.1);border-left:8px solid #FFB366;padding:20px 28px;border-radius:8px;" class="anim4">
+      <p style="font-size:var(--type-body);font-weight:700;color:#fff;margin:0;">
+        3. ニカルジピンで血圧のばらつきを抑え、抗凝固中和を併用する
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch"><span class="cross">&#10010;</span> 脳神経内科医 今村</div>
+    <div>18 / 18</div>
+  </div>
+</section>
+
+</deck-stage>
+
+<script src="deck-stage.js"></script>
+<script src="image-slot.js"></script>
+
+</body>
+</html>
