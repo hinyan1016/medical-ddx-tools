@@ -29,7 +29,12 @@ body,.lead,p,td,th,li,.n__d,.b__d{word-break:auto-phrase; line-break:strict;}
 body{font-family:var(--font); background:#E4E9EF; color:var(--ink);
   display:flex;flex-direction:column;align-items:center; overflow-x:hidden;}
 .nw{white-space:nowrap;}
-.ig{width:1600px; background:#fff;}
+/* 1600px は「上限」であって固定幅ではない。body が align-items:center なので、
+   固定幅のままウィンドウが 1600px を切ると左右に均等にはみ出し、**左側は負の座標に
+   行ってスクロールでも到達できない**（1366px で左 117px が永久に読めなかった）。
+   PNG 書き出しは add_nav_and_image.py が .ig の宣言幅からビューポートを決めるので、
+   ここを流動にしても infographic.png は 1600px のまま出る。 */
+.ig{width:100%; max-width:1600px; background:#fff;}
 
 /* ヘッダー */
 .hd{background:linear-gradient(135deg,#0A1B2E 0%,#153352 55%,#1B3A5C 100%); color:#fff;
@@ -158,13 +163,11 @@ body{font-family:var(--font); background:#E4E9EF; color:var(--ink);
 
 /* ============================================================
    スマホ・タブレット対応（2026-08-23 追加）
-   1600px の固定キャンバスは 1025px 以上ではそのまま。PNG書き出し
-   （render_html_to_png.py の既定 viewport=1200）が .ig の実幅を撮るため、
-   広い側を流動化すると infographic.png が黙って 1200px に縮むから。
+   .ig 自体は全幅で流動（width:100% / max-width:1600px）。ここでは
+   1024px 以下で2カラムを1列に畳む。**flex:1 1 0 の子は column に
+   すると「高さ0」になる**ので、該当要素を flex:0 0 auto に戻すこと。
    ============================================================ */
 @media (max-width:1024px){
-  .ig{width:100%;}
-
   .hd{padding:1.3rem 1rem 1.15rem;}
   .hd__brand{flex-wrap:wrap; gap:.3rem; font-size:.8rem; margin-bottom:.55rem;}
   .hd__ver{text-align:left; font-size:.74rem;}
@@ -213,13 +216,6 @@ body{font-family:var(--font); background:#E4E9EF; color:var(--ink);
 
   .note{margin:1rem 1rem 0; padding:.85rem 1rem; font-size:.88rem;}
   .ft{padding:1rem; font-size:.85rem;}
-}
-
-/* 1025〜1660px（ノートPCの狭いウィンドウ）。ここは 1600px 固定のままなので、
-   body の overflow-x:hidden だと右側が「切り落とされて掴めない」。横スクロール
-   できるようにするだけに留める（.ig を流動化すると PNG 書き出し幅が変わる）。 */
-@media (min-width:1025px) and (max-width:1660px){
-  body{overflow-x:auto;}
 }
 
 /* スマホ実機（〜600px）。1列化はそのままに、字だけもう一段落とす。 */

@@ -29,6 +29,27 @@ def build_nav(youtube_id: str, mt: str, mb: str) -> str:
     ).format(mark=MARK, mt=mt, mb=mb, b=_BTN, yt=yt)
 
 
+# render_html_to_png.py の既定ビューポートは 1200。要素スクショなので、.ig が
+# 固定幅ならビューポート幅は結果に効かないが、**流動幅（width:100%）のページでは
+# ビューポート幅がそのまま PNG 幅になる**。1200 を超えるキャンバスを持つページを
+# 既定のまま撮ると、狭いビューポートに合わせて黙って縮む。
+# そこでページ自身が宣言している幅を読み、それが収まるビューポートを渡す。
+_IG_RULE = re.compile(r"\.ig\s*\{([^}]*)\}")
+_PX = re.compile(r"(?:max-)?width\s*:\s*(\d+)px")
+
+
+def canvas_width(html: str):
+    """.ig の基底ルールが宣言している最大の px 幅。見つからなければ None。
+
+    最初に現れる .ig ルールだけを見る（media query 内の上書きは基底より後ろ）。
+    """
+    m = _IG_RULE.search(html)
+    if not m:
+        return None
+    vals = [int(v) for v in _PX.findall(m.group(1))]
+    return max(vals) if vals else None
+
+
 def process(item: dict, do_png: bool):
     slug = item["slug"]; yid = item.get("youtube_id", "")
     f = HERE / slug / "index.html"
@@ -36,8 +57,12 @@ def process(item: dict, do_png: bool):
         print("  [skip] no index:", slug); return
     if do_png:
         out = HERE / slug / "infographic.png"
-        r = subprocess.run([sys.executable, str(RENDER), "--html", str(f), "--out", str(out),
-                            "--selector", ".ig", "--dsf", "2"], capture_output=True, text=True, encoding="utf-8")
+        cw = canvas_width(f.read_text(encoding="utf-8"))
+        cmd = [sys.executable, str(RENDER), "--html", str(f), "--out", str(out),
+               "--selector", ".ig", "--dsf", "2"]
+        if cw and cw > 1200:
+            cmd += ["--width", str(cw + 100)]   # 余白100pxはスクロールバー分
+        r = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8")
         print("  png:", slug, "OK" if out.exists() else "FAIL", (r.stderr or "").strip()[:100])
     s = f.read_text(encoding="utf-8")
     # body を縦並び中央寄せに（旧版で未変更なら）
