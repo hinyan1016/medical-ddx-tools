@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v134';
+const CACHE_NAME = 'ddx-tools-v135';
 const ASSETS = [
   './',
   './index.html',
@@ -28,6 +28,7 @@ const ASSETS = [
   './fuo.html',
   './hypercalcemia.html',
   './tremor.html',
+  './levodopa_equivalent_calculator.html',
   './gait_ataxia.html',
   './liver_dysfunction.html',
   './anemia.html',

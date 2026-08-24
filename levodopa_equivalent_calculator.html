@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#123D4A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="日本神経学会2018の換算表を最優先に、抗パーキンソン病薬の1日レボドパ換算量（LEDD）を計算する医療従事者向けツール。">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>抗パーキンソン病薬 LEDD換算・変換ツール</title>
+<style>
+  :root {
+    --ink: #17282e;
+    --muted: #607078;
+    --deep: #123d4a;
+    --primary: #176f7c;
+    --primary-2: #2395a1;
+    --wash: #e8f5f5;
+    --paper: #ffffff;
+    --line: #d7e3e5;
+    --amber: #c16d10;
+    --amber-wash: #fff5df;
+    --red: #a53a35;
+    --red-wash: #fff0ed;
+    --green: #27784d;
+    --blue: #235fa4;
+    --blue-wash: #edf4ff;
+    --shadow: 0 12px 34px rgba(18,61,74,.09);
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; color: var(--ink); line-height: 1.6;
+    font-family: "Yu Gothic", "游ゴシック", "Segoe UI", sans-serif;
+    background:
+      radial-gradient(circle at 8% -5%, rgba(35,149,161,.18), transparent 28rem),
+      linear-gradient(180deg, #f7fbfb 0, #eef5f5 100%);
+    min-height: 100vh;
+  }
+  button, input, select { font: inherit; }
+  a { color: var(--primary); }
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 3px solid rgba(35,149,161,.35); outline-offset: 2px;
+  }
+  .global-nav { background: #102f3a; color: #fff; }
+  .global-nav__inner {
+    max-width: 1160px; margin: auto; padding: 9px 18px; display: flex;
+    align-items: center; gap: 4px; flex-wrap: wrap; font-size: 14px;
+  }
+  .global-nav a { color: #cfe3e7; text-decoration: none; padding: 5px 10px; border-radius: 7px; }
+  .global-nav a:first-child { color: #fff; font-weight: 800; letter-spacing: .04em; margin-right: auto; }
+  .hero { background: linear-gradient(125deg, var(--deep), #176574 62%, #218d98); color: #fff; }
+  .hero__inner { max-width: 1160px; margin: auto; padding: 22px 18px 30px; }
+  .back { color: #d8edf0; text-decoration: none; font-size: .86rem; }
+  .eyebrow { margin-top: 18px; font-size: .78rem; font-weight: 800; letter-spacing: .12em; opacity: .8; }
+  h1 { margin: 5px 0 7px; font-size: clamp(1.65rem, 4vw, 2.55rem); line-height: 1.18; letter-spacing: .01em; }
+  .hero p { margin: 0; max-width: 780px; color: #d9f0f2; font-size: .96rem; }
+  .hero-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .hero-badge { padding: 5px 10px; border: 1px solid rgba(255,255,255,.34); border-radius: 999px; font-size: .78rem; background: rgba(255,255,255,.08); }
+  main { max-width: 1160px; margin: -14px auto 0; padding: 0 18px 48px; position: relative; }
+  .notice {
+    background: var(--amber-wash); border: 1px solid #efd6a7; border-left: 5px solid var(--amber);
+    border-radius: 12px; padding: 13px 15px; color: #66400f; box-shadow: var(--shadow); font-size: .9rem;
+  }
+  .source-strip {
+    margin: 14px 0 16px; display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px;
+  }
+  .source-chip { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 11px 13px; }
+  .source-chip strong { display: block; color: var(--deep); font-size: .86rem; }
+  .source-chip span { display: block; color: var(--muted); font-size: .76rem; margin-top: 2px; }
+  .tabs { display: flex; gap: 6px; overflow-x: auto; padding: 3px; background: #dce9ea; border-radius: 13px; margin-bottom: 16px; }
+  .tab-btn { flex: 1 0 auto; border: 0; background: transparent; color: #41565c; padding: 10px 14px; border-radius: 10px; font-weight: 800; cursor: pointer; }
+  .tab-btn[aria-selected="true"] { background: var(--paper); color: var(--deep); box-shadow: 0 3px 10px rgba(18,61,74,.11); }
+  .tab-panel[hidden] { display: none; }
+  .layout { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(270px, .75fr); gap: 16px; align-items: start; }
+  .card { background: var(--paper); border: 1px solid rgba(188,210,214,.75); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+  .card + .card { margin-top: 16px; }
+  .card__head { padding: 15px 17px 12px; border-bottom: 1px solid var(--line); display: flex; align-items: flex-start; gap: 10px; justify-content: space-between; }
+  .card__head h2 { margin: 0; font-size: 1.02rem; color: var(--deep); }
+  .card__head p { margin: 2px 0 0; color: var(--muted); font-size: .8rem; }
+  .card__body { padding: 16px; }
+  .mode-box { display: flex; gap: 10px; align-items: flex-start; padding: 12px; background: var(--blue-wash); border: 1px solid #cadcf4; border-radius: 11px; margin-bottom: 14px; }
+  .mode-box input { width: 20px; height: 20px; margin-top: 1px; }
+  .mode-box label { cursor: pointer; }
+  .mode-box strong { display: block; color: #174d86; font-size: .9rem; }
+  .mode-box span { display: block; color: #49647e; font-size: .76rem; }
+  .regimen-head { display: grid; grid-template-columns: minmax(210px,1.6fr) minmax(115px,.7fr) minmax(112px,.65fr) 40px; gap: 9px; padding: 0 7px 6px; color: var(--muted); font-size: .72rem; font-weight: 800; }
+  .drug-row { display: grid; grid-template-columns: minmax(210px,1.6fr) minmax(115px,.7fr) minmax(112px,.65fr) 40px; gap: 9px; align-items: stretch; padding: 9px 7px; border-top: 1px solid #edf2f3; }
+  .drug-row select, .dose-wrap input { width: 100%; border: 1px solid #bdcfd2; border-radius: 9px; background: #fff; color: var(--ink); }
+  .drug-row select { padding: 9px 10px; font-size: .86rem; font-weight: 700; }
+  .dose-wrap { position: relative; }
+  .dose-wrap input { height: 100%; min-height: 43px; padding: 8px 53px 8px 10px; text-align: right; font-variant-numeric: tabular-nums; font-weight: 800; }
+  .dose-wrap span { position: absolute; right: 9px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: .72rem; pointer-events: none; }
+  .row-result { border-radius: 9px; background: var(--wash); color: var(--deep); padding: 6px 8px; min-height: 43px; display: flex; flex-direction: column; justify-content: center; text-align: right; }
+  .row-result strong { font-size: .94rem; font-variant-numeric: tabular-nums; }
+  .row-result span { font-size: .67rem; color: var(--muted); }
+  .remove-btn { border: 1px solid #e1c9c7; color: var(--red); background: #fff; border-radius: 9px; cursor: pointer; font-size: 1.1rem; }
+  .remove-btn:hover { background: var(--red-wash); }
+  .row-meta { grid-column: 1 / 5; display: flex; flex-wrap: wrap; gap: 6px; color: var(--muted); font-size: .7rem; margin-top: -3px; }
+  .pill { display: inline-flex; align-items: center; border-radius: 999px; padding: 2px 7px; font-weight: 800; }
+  .pill.jns { color: #15513a; background: #e2f4e9; }
+  .pill.mds { color: #194e8b; background: #e6f0ff; }
+  .pill.pmda { color: #65420e; background: #fff0cf; }
+  .pill.off { color: #6b5b45; background: #f2ede5; }
+  .btn { border: 0; border-radius: 9px; padding: 9px 13px; cursor: pointer; font-weight: 800; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--deep); }
+  .btn-quiet { background: #eef3f4; color: var(--deep); }
+  .button-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 13px; }
+  .total-card { position: sticky; top: 12px; }
+  .total-hero { padding: 20px 16px; text-align: center; background: linear-gradient(140deg, var(--deep), var(--primary)); color: #fff; }
+  .total-label { font-size: .78rem; opacity: .83; }
+  .total-value { font-size: clamp(2.35rem, 7vw, 3.7rem); line-height: 1.12; font-weight: 900; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+  .total-unit { font-size: .78rem; opacity: .85; }
+  .total-detail { padding: 14px 16px; }
+  .metric { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; border-bottom: 1px dashed var(--line); font-size: .83rem; }
+  .metric:last-child { border-bottom: 0; }
+  .metric strong { font-variant-numeric: tabular-nums; }
+  .mini-warning { margin-top: 11px; padding: 10px 11px; border-radius: 9px; background: var(--red-wash); color: #6e2622; font-size: .75rem; }
+  .inline-alert { margin-top: 12px; padding: 10px 12px; border-radius: 9px; background: var(--amber-wash); color: #68430e; font-size: .78rem; }
+  .inline-alert.error { background: var(--red-wash); color: #6e2622; }
+  .convert-grid { display: grid; grid-template-columns: minmax(0,1fr) 42px minmax(0,1fr); gap: 12px; align-items: end; }
+  .field label { display: block; margin-bottom: 5px; color: var(--deep); font-size: .78rem; font-weight: 800; }
+  .field select, .field input, .search-input {
+    width: 100%; border: 1px solid #bdcfd2; border-radius: 9px; background: #fff;
+    color: var(--ink); padding: 10px 11px;
+  }
+  .field-note { min-height: 2.5em; color: var(--muted); font-size: .71rem; margin-top: 5px; }
+  .swap-btn { width: 42px; height: 42px; border: 1px solid var(--line); border-radius: 50%; background: var(--wash); color: var(--primary); font-size: 1.2rem; cursor: pointer; }
+  .convert-output { margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .output-cell { background: var(--wash); border: 1px solid #cce3e4; border-radius: 12px; padding: 14px; text-align: center; }
+  .output-cell .label { color: var(--muted); font-size: .74rem; }
+  .output-cell .value { color: var(--deep); font-weight: 900; font-size: 1.65rem; font-variant-numeric: tabular-nums; line-height: 1.25; }
+  .formula-box { margin-top: 12px; padding: 11px 12px; border-radius: 9px; background: #132f38; color: #e3f3f4; font: .77rem/1.6 Consolas, "Courier New", monospace; overflow-wrap: anywhere; }
+  .band-box { margin-top: 12px; padding: 12px; border: 1px solid #d5e2e4; border-radius: 10px; background: #fbfdfd; }
+  .band-box h3 { margin: 0 0 5px; color: var(--deep); font-size: .86rem; }
+  .band-box p { margin: 0; color: var(--muted); font-size: .76rem; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+  .search-input { flex: 1 1 280px; }
+  .filter-btn { border: 1px solid var(--line); border-radius: 999px; background: #fff; color: var(--deep); padding: 7px 11px; cursor: pointer; font-size: .76rem; font-weight: 800; }
+  .filter-btn.active { background: var(--deep); color: #fff; border-color: var(--deep); }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 11px; }
+  .drug-table { width: 100%; border-collapse: collapse; min-width: 850px; font-size: .76rem; }
+  .drug-table th, .drug-table td { padding: 9px 10px; border-bottom: 1px solid #e6edef; vertical-align: top; text-align: left; }
+  .drug-table th { background: var(--deep); color: #fff; position: sticky; top: 0; z-index: 1; white-space: nowrap; }
+  .drug-table tbody tr:hover { background: #f5fafa; }
+  .drug-table td:first-child { color: var(--deep); font-weight: 800; white-space: nowrap; }
+  .drug-table td:nth-child(4) { min-width: 210px; }
+  .status { display: inline-block; border-radius: 999px; padding: 2px 7px; font-size: .68rem; font-weight: 900; white-space: nowrap; }
+  .status.current { color: #15513a; background: #e2f4e9; }
+  .status.jns { color: #15513a; background: #e2f4e9; }
+  .status.mds { color: #194e8b; background: #e6f0ff; }
+  .status.pmda { color: #65420e; background: #fff0cf; }
+  .status.none { color: #665a4d; background: #f0ece7; }
+  .status.stop { color: #782f2a; background: #fae8e5; }
+  .table-caption { margin: 9px 2px 0; color: var(--muted); font-size: .72rem; }
+  .count-note { color: var(--muted); font-size: .76rem; margin-left: auto; }
+  .evidence-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+  .evidence-card { border: 1px solid var(--line); border-radius: 12px; padding: 14px; background: #fbfdfd; }
+  .evidence-card h3 { margin: 0 0 6px; color: var(--deep); font-size: .92rem; }
+  .evidence-card p, .evidence-card li { color: #4b6066; font-size: .77rem; }
+  .evidence-card ul { margin: 7px 0 0; padding-left: 18px; }
+  .reference-list { margin: 0; padding-left: 20px; }
+  .reference-list li { margin-bottom: 9px; color: #42595f; font-size: .79rem; }
+  .reference-list a { font-weight: 700; }
+  details { border-top: 1px solid var(--line); padding: 11px 0; }
+  details:first-child { border-top: 0; }
+  summary { color: var(--deep); font-weight: 800; cursor: pointer; font-size: .84rem; }
+  details p { margin: 7px 0 0; color: var(--muted); font-size: .77rem; }
+  .copy-status { color: var(--green); font-size: .74rem; align-self: center; min-height: 1.2em; }
+  footer { max-width: 1160px; margin: auto; padding: 24px 18px 34px; color: var(--muted); font-size: .76rem; text-align: center; }
+  @media (max-width: 780px) {
+    .source-strip { grid-template-columns: 1fr; }
+    .layout { grid-template-columns: 1fr; }
+    .total-card { position: static; }
+    .evidence-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 620px) {
+    main { padding-left: 10px; padding-right: 10px; }
+    .hero__inner { padding-left: 14px; padding-right: 14px; }
+    .regimen-head { display: none; }
+    .drug-row { grid-template-columns: minmax(0,1fr) 40px; gap: 8px; padding: 12px 2px; }
+    .drug-row select { grid-column: 1; }
+    .remove-btn { grid-column: 2; grid-row: 1; }
+    .dose-wrap { grid-column: 1; }
+    .row-result { grid-column: 2; grid-row: 2; min-width: 78px; }
+    .row-meta { grid-column: 1 / 3; }
+    .global-nav__inner a:not(:first-child) { display: none; }
+    .convert-grid { grid-template-columns: 1fr; }
+    .swap-btn { transform: rotate(90deg); justify-self: center; }
+    .convert-output { grid-template-columns: 1fr; }
+  }
+  @media print {
+    body { background: #fff; }
+    .global-nav, .back, .tabs, .mode-box, .button-row, .remove-btn { display: none !important; }
+    .hero { color: #000; background: #fff; border-bottom: 2px solid #000; }
+    .hero p, .eyebrow { color: #333; }
+    main { margin: 0 auto; padding-top: 14px; }
+    .card, .notice { box-shadow: none; break-inside: avoid; }
+    .total-hero { color: #000; background: #fff; border-bottom: 1px solid #000; }
+  }
+</style>
+</head>
+<body>
+<nav class="global-nav" aria-label="サイト共通ナビゲーション">
+  <div class="global-nav__inner">
+    <a href="https://ichisouzo-lab.com/">医知創造ラボ</a>
+    <a href="https://blog.ichisouzo-lab.com/">ブログ</a>
+    <a href="https://tools.ichisouzo-lab.com/">ツール</a>
+    <a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ">YouTube</a>
+  </div>
+</nav>
+<header class="hero">
+  <div class="hero__inner">
+    <a class="back" href="index.html">← 医療ツール一覧へ</a>
+    <div class="eyebrow">FOR HEALTHCARE PROFESSIONALS</div>
+    <h1>抗パーキンソン病薬<br>LEDD換算・変換ツール</h1>
+    <p>日本神経学会の換算表を最優先に、複数薬剤の1日レボドパ換算量を見える化します。</p>
+    <div class="hero-badges">
+      <span class="hero-badge">日本神経学会2018を既定</span>
+      <span class="hero-badge">国内現行薬を確認</span>
+      <span class="hero-badge">端末内で計算</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="notice"><strong>重要：</strong>LEDDは薬剤負荷を比較する目安であり、同じ数値でも同じ効果・安全性を保証しません。表示値を処方切替量、開始量、漸減量として使用せず、患者ごとに調整してください。</div>
+  <div class="source-strip" aria-label="根拠の優先順位">
+    <div class="source-chip"><strong>1｜日本神経学会 2018</strong><span>換算係数の正本・既定ON</span></div>
+    <div class="source-chip"><strong>2｜厚労省・PMDA 2026</strong><span>国内現行薬と剤形の確認</span></div>
+    <div class="source-chip"><strong>3｜学会表外補足（初期OFF）</strong><span>MDS 2023とハルロピPMDA橋渡し</span></div>
+  </div>
+
+  <div class="tabs" role="tablist" aria-label="ツール機能">
+    <button class="tab-btn" type="button" role="tab" aria-selected="true" aria-controls="panel-total" id="tab-total">総LEDD</button>
+    <button class="tab-btn" type="button" role="tab" aria-selected="false" aria-controls="panel-convert" id="tab-convert">薬剤間換算</button>
+    <button class="tab-btn" type="button" role="tab" aria-selected="false" aria-controls="panel-list" id="tab-list">国内薬剤一覧</button>
+    <button class="tab-btn" type="button" role="tab" aria-selected="false" aria-controls="panel-evidence" id="tab-evidence">根拠・注意</button>
+  </div>
+
+  <section class="tab-panel" role="tabpanel" id="panel-total" aria-labelledby="tab-total">
+    <div class="layout">
+      <div>
+        <div class="card">
+          <div class="card__head"><div><h2>現在の1日処方を入力</h2><p>薬剤の1日総量を入力してください。配合剤はL-dopa含有量で入力します。</p></div></div>
+          <div class="card__body">
+            <div class="mode-box">
+              <input type="checkbox" id="supplementToggle">
+              <label for="supplementToggle"><strong>学会表外の補足値を含める</strong><span>MDS 2023補足に加え、ハルロピテープのPMDA橋渡し推定を含めます。いずれも日本神経学会の直接係数ではありません。</span></label>
+            </div>
+            <div class="regimen-head" aria-hidden="true"><span>薬剤・製剤</span><span>1日量</span><span>LEDD寄与</span><span></span></div>
+            <div id="regimenRows"></div>
+            <div id="regimenAlerts" aria-live="polite"></div>
+            <div class="button-row">
+              <button class="btn btn-primary" type="button" id="addDrugBtn">＋ 薬剤を追加</button>
+              <button class="btn btn-quiet" type="button" id="resetBtn">リセット</button>
+              <button class="btn btn-quiet" type="button" id="printBtn">印刷</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <aside class="card total-card" aria-live="polite" aria-atomic="true">
+        <div class="total-hero">
+          <div class="total-label">推定 総LEDD</div>
+          <div class="total-value" id="totalValue">0</div>
+          <div class="total-unit">mg/日</div>
+        </div>
+        <div class="total-detail">
+          <div class="metric"><span>日本神経学会2018</span><strong id="jnsValue">0 mg</strong></div>
+          <div class="metric"><span>学会表外の補足</span><strong id="suppValue">含めない</strong></div>
+          <div class="metric"><span>計算対象</span><strong id="countValue">0剤</strong></div>
+          <div class="mini-warning">薬剤間の直接切替や急な中止を指示する値ではありません。</div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="tab-panel" role="tabpanel" id="panel-convert" aria-labelledby="tab-convert" hidden>
+    <div class="card">
+      <div class="card__head"><div><h2>薬剤間の数学的参考換算</h2><p>日本神経学会2018の単純係数だけを用い、同じ推定LEDDとなる量を逆算します。</p></div></div>
+      <div class="card__body">
+        <div class="inline-alert error"><strong>処方切替量ではありません。</strong> 製剤特性、作用時間、忍容性、離脱・増悪リスクは換算されません。実際の変更は添付文書と患者状態に基づき個別に行ってください。</div>
+        <div class="convert-grid">
+          <div class="field">
+            <label for="convertFrom">換算元</label>
+            <select id="convertFrom"></select>
+            <input id="convertDose" type="number" min="0" step="any" inputmode="decimal" value="1.5" aria-label="換算元の1日量">
+            <div class="field-note" id="convertFromNote"></div>
+          </div>
+          <button class="swap-btn" type="button" id="swapBtn" aria-label="換算元と換算先を入れ替える">⇄</button>
+          <div class="field">
+            <label for="convertTo">換算先</label>
+            <select id="convertTo"></select>
+            <div class="field-note" id="convertToNote"></div>
+          </div>
+        </div>
+        <div class="convert-output" aria-live="polite">
+          <div class="output-cell"><div class="label">換算元の推定LEDD</div><div class="value" id="convertLed">0 mg/日</div></div>
+          <div class="output-cell"><div class="label">換算先の数学的参考量</div><div class="value" id="convertResult">0 mg/日</div></div>
+        </div>
+        <div class="formula-box" id="convertFormula"></div>
+        <div class="band-box" id="bandBox"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <div class="card__head"><div><h2>ハルロピテープ：PMDA臨床試験時の切替開始量表</h2><p>国内第III相試験で、他のドパミンアゴニストから切り替えた際の開始量です。</p></div></div>
+      <div class="card__body">
+        <div class="inline-alert error"><strong>処方切替を自動指示する表ではありません。</strong> 電子添文17.1.3に記載された臨床試験の開始量で、用法・用量6／用法・用量に関連する注意7に一般的な切替規定はありません。帯間を補間せず、患者状態に応じて個別に判断してください。</div>
+        <div class="table-wrap">
+          <table class="drug-table">
+            <thead><tr><th>切替前薬（mg/日）</th><th>8mg</th><th>16mg</th><th>24mg</th><th>32mg</th><th>40mg</th><th>48mg</th><th>56mg</th><th>64mg</th></tr></thead>
+            <tbody>
+              <tr><td>ロピニロール徐放錠</td><td>2</td><td>4</td><td>6</td><td>8</td><td>10</td><td>12</td><td>14</td><td>16</td></tr>
+              <tr><td>ロピニロール速放錠</td><td>2.25以下</td><td>3–4.5</td><td>6</td><td>7.5–9</td><td>10.5</td><td>12</td><td>13.5</td><td>15</td></tr>
+              <tr><td>プラミペキソール速放錠</td><td>0.5以下</td><td>1</td><td>1.5</td><td>2</td><td>2.5</td><td>3</td><td>3.5</td><td>4以上</td></tr>
+              <tr><td>プラミペキソール徐放錠</td><td>0.375</td><td>0.75</td><td>1.5</td><td>2.25</td><td>3</td><td>—</td><td>3.75</td><td>4.5</td></tr>
+              <tr><td>カベルゴリン</td><td>1以下</td><td>1.5</td><td>2–2.5</td><td>3</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+              <tr><td>ロチゴチン（国内総含量）</td><td>4.5</td><td>9</td><td>13.5</td><td>18</td><td>22.5</td><td>27</td><td>31.5</td><td>36</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-caption">列はハルロピテープの1日総量。国内製品は8・16・24・32・40mgで、48〜64mgは複数枚の合計です。出典：PMDA審査報告書／電子添文17.1.3。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="tab-panel" role="tabpanel" id="panel-list" aria-labelledby="tab-list" hidden>
+    <div class="card">
+      <div class="card__head"><div><h2>日本で使用できる抗パーキンソン病薬</h2><p>厚生労働省の薬価基準収載品目リスト（2026-08-13適用）を成分・剤形単位に整理しました。</p></div></div>
+      <div class="card__body">
+        <div class="toolbar">
+          <input class="search-input" id="drugSearch" type="search" placeholder="成分名・商品名・剤形を検索" aria-label="国内薬剤一覧を検索">
+          <button class="filter-btn active" type="button" data-filter="all">すべて</button>
+          <button class="filter-btn" type="button" data-filter="jns">学会換算</button>
+          <button class="filter-btn" type="button" data-filter="mds">MDS補完</button>
+          <button class="filter-btn" type="button" data-filter="pmda">PMDA橋渡し</button>
+          <button class="filter-btn" type="button" data-filter="none">自動換算なし</button>
+          <span class="count-note" id="drugCount"></span>
+        </div>
+        <div class="table-wrap">
+          <table class="drug-table">
+            <thead><tr><th>成分・製剤</th><th>代表的な国内製品</th><th>経路</th><th>LEDD換算</th><th>扱い</th></tr></thead>
+            <tbody id="drugTableBody"></tbody>
+          </table>
+        </div>
+        <p class="table-caption">24成分・150品目（現行147、経過措置3）を確認し、剤形差を26行に整理。薬価収載は実流通・在庫を保証しません。商品名は代表例です。</p>
+        <details>
+          <summary>経過措置・対象外として扱った製品</summary>
+          <p>メネシット配合錠100/250とブロモクリプチン錠2.5mg「フソー」は2027-03-31までの経過措置品で、現行の代表製品欄から除外しました。ドパストンカプセル250mg、トリモール、ドパゾール200mgなど現行薬価リストにない製品も主一覧に含めていません。</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="tab-panel" role="tabpanel" id="panel-evidence" aria-labelledby="tab-evidence" hidden>
+    <div class="card">
+      <div class="card__head"><div><h2>根拠・計算の境界</h2><p>換算表の優先順位、単位、実装しない換算を明示します。</p></div></div>
+      <div class="card__body">
+        <div class="evidence-grid">
+          <article class="evidence-card"><h3>最優先：日本神経学会2018</h3><p>「資料2｜L-ドパ換算用量」の係数を既定値として実装しています。同資料自身が、統一された標準ではなく目安で、患者ごとの調整が必要と注意しています。</p></article>
+          <article class="evidence-card"><h3>学会表外の値は補足・初期OFF</h3><p>MDS 2023の研究用提案とハルロピのPMDA橋渡し推定は、国内学会値と混在させず、利用者が明示的にONにした場合だけ加算します。</p></article>
+          <article class="evidence-card"><h3>ロチゴチンの単位に注意</h3><p>日本のニュープロパッチに表示される<strong>総含量mg</strong>へ×13.3を適用します。海外の放出量mg/24hに対する×30.3とは単位が異なるため、置き換えません。</p></article>
+          <article class="evidence-card"><h3>ハルロピは直接係数ではない</h3><p>日本神経学会2018は2019年承認のハルロピを収載していません。PMDA試験表の「貼付総量4mg＝経口徐放1mg」と学会の経口ロピニロール×20を橋渡しし、<strong>貼付総量×5</strong>を補足推定します。貼付総量へ経口係数×20を直接適用しません。</p></article>
+          <article class="evidence-card"><h3>実装しない自動換算</h3><p>経口L-dopaと静注L-dopaの正確な換算式は確立していないため自動変換しません。ドロキシドパ、ビペリデンにも採用可能な標準係数を設定していません。</p></article>
+        </div>
+        <div class="card" style="margin-top:16px;box-shadow:none">
+          <div class="card__head"><h2>主な換算ルール</h2></div>
+          <div class="card__body">
+            <details open><summary>エンタカポン／スタレボ</summary><p>単剤エンタカポンは錠剤のmgを入力せず、併用対象となるL-dopa量×0.33を加算します。スタレボは含有L-dopa量×1.33で、別のエンタカポン行を重ねると二重計上になります。</p></details>
+            <details><summary>オピカポン／イストラデフィリン（MDS補足）</summary><p>オピカポンはL-dopa系基礎LEDDの50%を加算。イストラデフィリンはL-dopa系基礎LEDDとCOMT寄与の合計の20%を加算します。いずれもMDS補足ON時のみです。</p></details>
+            <details><summary>サフィナミド／ゾニサミド（MDS補足）</summary><p>サフィナミド50または100mg/日は固定150mg LEDD、ゾニサミド25または50mg/日は固定100mg LEDDです。用量比例計算はしません。</p></details>
+            <details><summary>ハルロピテープ（PMDA橋渡し補足）</summary><p>1日貼付総量8〜64mgを8mg刻みで入力した場合だけ、総量×5を学会表外の補足として加算します。8→40、16→80、24→120、32→160、40→200、48→240、56→280、64→320mg LEDDです。これは日本神経学会の直接係数でも、処方切替量でもありません。</p></details>
+            <details><summary>抗コリン薬</summary><p>MDS 2023は個人内の単回投与でUPDRS-IIIが5点以上改善した場合に限る条件付き提案です。通常のmg/日換算に適用できないため、本ツールでは自動計算しません。</p></details>
+          </div>
+        </div>
+        <div class="card" style="margin-top:16px;box-shadow:none">
+          <div class="card__head"><h2>参照資料</h2></div>
+          <div class="card__body">
+            <ol class="reference-list">
+              <li><a href="https://www.neurology-jp.org/guidelinem/parkinson_2018.html" target="_blank" rel="noopener">日本神経学会 パーキンソン病診療ガイドライン2018</a> — <a href="https://www.neurology-jp.org/guidelinem/pdgl/parkinson_2018_08.pdf" target="_blank" rel="noopener">第I編 資料2（PDF p4／冊子p24）</a></li>
+              <li><a href="https://www.neurology-jp.org/guidelinem/pdgl/parkinson_2018_25.pdf" target="_blank" rel="noopener">同ガイドライン Q&amp;A 2-6</a> — 経口投与困難時のL-dopa投与</li>
+              <li><a href="https://www.mhlw.go.jp/topics/2026/04/tp20260401-01.html" target="_blank" rel="noopener">厚生労働省 薬価基準収載品目リスト（2026-08-13適用）</a></li>
+              <li><a href="https://www.info.pmda.go.jp/psearch/PackinsSearch?count=1000&amp;effect=116" target="_blank" rel="noopener">PMDA 医療用医薬品情報：薬効分類116</a></li>
+              <li>Jost ST, et al. Mov Disord. 2023;38:1236-1252. <a href="https://pubmed.ncbi.nlm.nih.gov/37147135/" target="_blank" rel="noopener">PMID 37147135</a>／<a href="https://movementdisorders.onlinelibrary.wiley.com/doi/10.1002/mds.29410" target="_blank" rel="noopener">doi:10.1002/mds.29410</a></li>
+              <li>Tomlinson CL, et al. Mov Disord. 2010;25:2649-2653. <a href="https://pubmed.ncbi.nlm.nih.gov/21069833/" target="_blank" rel="noopener">PMID 21069833</a></li>
+              <li><a href="https://www.pmda.go.jp/drugs/2012/P201200165/180078000_22400AMX01492000_B100_1.pdf" target="_blank" rel="noopener">PMDA ニュープロパッチ審査報告書</a> — 国内総含量と海外放出量の対応</li>
+              <li><a href="https://www.pmda.go.jp/PmdaSearch/rdDetail/iyaku/1169701S1020_1?user=1" target="_blank" rel="noopener">PMDA ハルロピテープ8・16・24・32・40mg</a> — 久光製薬（製造販売元）／協和キリン（発売元）</li>
+              <li><a href="https://www.pmda.go.jp/drugs/2019/P20190917004/650034000_30100AMX00248_K102_1.pdf" target="_blank" rel="noopener">PMDA ハルロピテープ審査報告書</a> — 国内第III相試験の切替開始量表</li>
+              <li><a href="https://medical.kyowakirin.co.jp/druginfo/qa/hrp/index.html" target="_blank" rel="noopener">協和キリン ハルロピテープQ&amp;A</a> — 切替は患者状態を踏まえて医師が判断</li>
+              <li>Fukuoka University group. Pol J Neurol Neurosurg. 2024. <a href="https://doi.org/10.5603/pjnns.99328" target="_blank" rel="noopener">doi:10.5603/pjnns.99328</a> — 同じ×5換算を用いた国内観察研究</li>
+            </ol>
+          </div>
+        </div>
+        <div class="button-row"><button class="btn btn-primary" type="button" id="copyBtn">計算結果をコピー</button><span class="copy-status" id="copyStatus" role="status"></span></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>医療従事者向け参考ツール｜更新基準日 2026-08-24｜入力内容は送信・保存されません</footer>
+
+<script type="application/json" id="calcDrugData">
+[
+  {"id":"levodopa_dci","name":"L-dopa/DCI配合剤（経口）","category":"L-dopa","source":"jns","calc":"linear","factor":1,"unit":"mg/日","inputLabel":"含有L-dopa量","formula":"L-dopa ×1","convertible":true,"base":true,"note":"錠数ではなく1日L-dopa含有量"},
+  {"id":"stalevo","name":"スタレボ配合錠","category":"L-dopa","source":"jns","calc":"stalevo","factor":1.33,"unit":"mg/日","inputLabel":"含有L-dopa量","formula":"L-dopa ×1.33","convertible":false,"base":true,"note":"L-dopa本体とエンタカポン寄与を含む"},
+  {"id":"duodopa","name":"デュオドーパ（LCIG）","category":"L-dopa","source":"jns","calc":"linear","factor":1.11,"unit":"mg/日","inputLabel":"投与L-dopa量","formula":"L-dopa ×1.11","convertible":true,"base":true,"note":"実投与L-dopa量"},
+  {"id":"entacapone","name":"エンタカポン（寄与分）","category":"COMT阻害薬","source":"jns","calc":"entacapone","factor":0.33,"unit":"mg/日","inputLabel":"併用対象L-dopa量","formula":"対象L-dopa ×0.33","convertible":false,"note":"エンタカポン錠のmgは入力しない"},
+  {"id":"selegiline","name":"セレギリン","category":"MAO-B阻害薬","source":"jns","calc":"linear","factor":10,"unit":"mg/日","inputLabel":"1日量","formula":"用量 ×10","convertible":true},
+  {"id":"rasagiline","name":"ラサギリン","category":"MAO-B阻害薬","source":"jns","calc":"linear","factor":100,"unit":"mg/日","inputLabel":"1日量","formula":"用量 ×100","convertible":true},
+  {"id":"bromocriptine","name":"ブロモクリプチン","category":"ドパミンアゴニスト","source":"jns","calc":"linear","factor":10,"unit":"mg/日","inputLabel":"1日量","formula":"用量 ×10","convertible":true,"band":true},
+  {"id":"cabergoline","name":"カベルゴリン","category":"ドパミンアゴニスト","source":"jns","calc":"linear","factor":66.7,"unit":"mg/日","inputLabel":"1日量","formula":"用量 ×66.7","convertible":true,"band":true},
+  {"id":"pergolide","name":"ペルゴリド","category":"ドパミンアゴニスト","source":"jns","calc":"linear","factor":100,"unit":"mg/日","inputLabel":"1日量","formula":"用量 ×100","convertible":true,"band":true},
+  {"id":"pramipexole","name":"プラミペキソール","category":"ドパミンアゴニスト","source":"jns","calc":"linear","factor":100,"unit":"mg/日","inputLabel":"1日量","formula":"用量 ×100","convertible":true,"band":true},
+  {"id":"ropinirole_oral","name":"ロピニロール（経口）","category":"ドパミンアゴニスト","source":"jns","calc":"linear","factor":20,"unit":"mg/日","inputLabel":"1日量","formula":"用量 ×20","convertible":true,"band":true},
+  {"id":"rotigotine","name":"ロチゴチン（国内パッチ総含量）","category":"ドパミンアゴニスト","source":"jns","calc":"linear","factor":13.3,"unit":"mg/日","inputLabel":"国内表示の貼付量","formula":"国内表示mg ×13.3","convertible":true,"band":true,"note":"mg/24h放出量ではなく国内パッチ総含量"},
+  {"id":"apomorphine","name":"アポモルヒネ（間欠皮下注）","category":"ドパミンアゴニスト","source":"jns","calc":"linear","factor":10,"unit":"mg/日","inputLabel":"1日実投与量","formula":"用量 ×10","convertible":true},
+  {"id":"amantadine","name":"アマンタジン","category":"その他","source":"jns","calc":"linear","factor":1,"unit":"mg/日","inputLabel":"1日量","formula":"用量 ×1","convertible":true},
+  {"id":"ropinirole_patch","name":"ハルロピテープ（ロピニロール貼付）","category":"学会表外の補足","source":"pmda","calc":"haruropi","factor":5,"unit":"mg/日","inputLabel":"国内表示の貼付総量","formula":"国内表示mg ×5（PMDA 4:1橋渡し）","validStep":8,"minDose":8,"maxDose":64,"convertible":false,"note":"JNS 2018表外。久光製薬／協和キリン。学会公式係数ではない"},
+  {"id":"foslevodopa","name":"ホスレボドパ（ヴィアレブ）","category":"MDS 2023補足","source":"mds","calc":"linear","factor":0.75,"unit":"mg/日","inputLabel":"ホスレボドパ1日量","formula":"ホスレボドパ ×0.75","convertible":false,"base":true},
+  {"id":"opicapone","name":"オピカポン","category":"MDS 2023補足","source":"mds","calc":"opicapone","factor":0.5,"unit":"mg/日","inputLabel":"オピカポン1日量","formula":"L-dopa系基礎LEDD ×0.5","validDoses":[25],"convertible":false},
+  {"id":"safinamide","name":"サフィナミド","category":"MDS 2023補足","source":"mds","calc":"fixed","factor":150,"unit":"mg/日","inputLabel":"1日量","formula":"50/100mgとも固定150","validDoses":[50,100],"convertible":false},
+  {"id":"zonisamide","name":"ゾニサミド（PD適応）","category":"MDS 2023補足","source":"mds","calc":"fixed","factor":100,"unit":"mg/日","inputLabel":"1日量","formula":"25/50mgとも固定100","validDoses":[25,50],"convertible":false},
+  {"id":"istradefylline","name":"イストラデフィリン","category":"MDS 2023補足","source":"mds","calc":"istradefylline","factor":0.2,"unit":"mg/日","inputLabel":"1日量","formula":"（L-dopa系基礎＋COMT寄与）×0.2","validDoses":[20,40],"convertible":false}
+]
+</script>
+<script type="application/json" id="japanDrugData">
+[
+  {"ingredient":"レボドパ単剤","products":"ドパストン散98.5％／ドパストン静注25・50mg","route":"経口・静注","basis":"none","conversion":"自動換算なし：学会表は経口L-dopa/DCI配合剤。経口↔静注の正確な式なし"},
+  {"ingredient":"L-dopa／ベンセラジド","products":"イーシー・ドパール、ネオドパゾール、マドパーL50・L100","route":"経口","basis":"jns","conversion":"含有L-dopa量 ×1"},
+  {"ingredient":"L-dopa／カルビドパ","products":"ネオドパストンL100・L250、カルコーパ、ドパコール","route":"経口","basis":"jns","conversion":"含有L-dopa量 ×1"},
+  {"ingredient":"L-dopa／カルビドパ（LCIG）","products":"デュオドーパ配合経腸用液","route":"PEG-J持続投与","basis":"jns","conversion":"実投与L-dopa量 ×1.11"},
+  {"ingredient":"L-dopa／カルビドパ／エンタカポン","products":"スタレボL50・L100","route":"経口","basis":"jns","conversion":"含有L-dopa量 ×1.33"},
+  {"ingredient":"ホスレボドパ／ホスカルビドパ","products":"ヴィアレブ配合持続皮下注","route":"24時間持続皮下注","basis":"mds","conversion":"ホスレボドパ量 ×0.75（補足）"},
+  {"ingredient":"エンタカポン","products":"コムタン100mg、後発品","route":"経口","basis":"jns","conversion":"併用対象L-dopa量 ×0.33を加算"},
+  {"ingredient":"オピカポン","products":"オンジェンティス25mg","route":"経口","basis":"mds","conversion":"L-dopa系基礎LEDD ×0.5を加算（補足）"},
+  {"ingredient":"セレギリン","products":"エフピーOD2.5、後発品","route":"経口","basis":"jns","conversion":"1日量 ×10"},
+  {"ingredient":"ラサギリン","products":"アジレクト0.5・1mg","route":"経口","basis":"jns","conversion":"1日量 ×100"},
+  {"ingredient":"サフィナミド","products":"エクフィナ50mg","route":"経口","basis":"mds","conversion":"50/100mgとも固定150mg（補足）"},
+  {"ingredient":"ブロモクリプチン","products":"パーロデル2.5mg、後発品","route":"経口","basis":"jns","conversion":"1日量 ×10"},
+  {"ingredient":"カベルゴリン","products":"カバサール0.25・1mg、後発品","route":"経口","basis":"jns","conversion":"1日量 ×66.7"},
+  {"ingredient":"ペルゴリド","products":"ペルマックス50・250μg、後発品","route":"経口","basis":"jns","conversion":"mg換算した1日量 ×100"},
+  {"ingredient":"プラミペキソール","products":"ビ・シフロール、ミラペックスLA、後発品","route":"経口","basis":"jns","conversion":"1日量 ×100"},
+  {"ingredient":"ロピニロール（経口）","products":"レキップ、レキップCR、後発品","route":"経口","basis":"jns","conversion":"1日量 ×20"},
+  {"ingredient":"ロピニロール（貼付）","products":"ハルロピテープ8・16・24・32・40mg（久光製薬：製造販売／協和キリン：発売）","route":"貼付","basis":"pmda","conversion":"補足推定：国内表示総量 ×5（PMDA 4:1橋渡し、JNS 2018表外・初期OFF）"},
+  {"ingredient":"ロチゴチン","products":"ニュープロパッチ2.25・4.5・9・13.5・18mg","route":"貼付","basis":"jns","conversion":"国内パッチ総含量 ×13.3"},
+  {"ingredient":"アポモルヒネ","products":"アポカイン皮下注30mg","route":"間欠皮下注","basis":"jns","conversion":"1日実投与量 ×10"},
+  {"ingredient":"アマンタジン","products":"シンメトレル50・100mg、後発品","route":"経口","basis":"jns","conversion":"1日量 ×1"},
+  {"ingredient":"ゾニサミド","products":"トレリーフOD25・50mg、TRE後発品","route":"経口","basis":"mds","conversion":"25/50mgとも固定100mg（補足）"},
+  {"ingredient":"イストラデフィリン","products":"ノウリアスト20mg","route":"経口","basis":"mds","conversion":"L-dopa系基礎＋COMT寄与の20％（補足）"},
+  {"ingredient":"ドロキシドパ","products":"ドプスOD100・200mg、後発品","route":"経口","basis":"none","conversion":"採用可能な標準LEDD係数なし"},
+  {"ingredient":"トリヘキシフェニジル","products":"アーテン散1％、後発錠・散","route":"経口","basis":"none","conversion":"MDSの個人内反応条件付き提案のみ。自動換算なし"},
+  {"ingredient":"ビペリデン（内用）","products":"アキネトン錠1mg・細粒1％、後発品","route":"経口","basis":"none","conversion":"採用可能な標準LEDD係数なし"},
+  {"ingredient":"ビペリデン（注射）","products":"アキネトン注射液5mg、後発品","route":"筋注・静注","basis":"none","conversion":"採用可能な標準LEDD係数なし"}
+]
+</script>
+<script type="application/json" id="dopamineBandData">
+[
+  {"band":1,"ropinirole_oral":{"text":"2","value":2},"pramipexole":{"text":"0.5","value":0.5},"bromocriptine":{"text":"5","value":5},"cabergoline":{"text":"0.8","value":0.8},"pergolide":{"text":"0.5","value":0.5},"rotigotine":{"text":"4.5","value":4.5}},
+  {"band":2,"ropinirole_oral":{"text":"4","value":4},"pramipexole":{"text":"1","value":1},"bromocriptine":{"text":"10","value":10},"cabergoline":{"text":"1.5","value":1.5},"pergolide":{"text":"1","value":1},"rotigotine":{"text":"9","value":9}},
+  {"band":3,"ropinirole_oral":{"text":"6","value":6},"pramipexole":{"text":"1.5","value":1.5},"bromocriptine":{"text":"15","value":15},"cabergoline":{"text":"2–2.5","value":2.25},"pergolide":{"text":"1.5（適応外）","value":1.5},"rotigotine":{"text":"13.5","value":13.5}},
+  {"band":4,"ropinirole_oral":{"text":"8–9","value":8.5},"pramipexole":{"text":"2","value":2},"bromocriptine":{"text":"20","value":20},"cabergoline":{"text":"3","value":3},"pergolide":{"text":"2（適応外）","value":2},"rotigotine":{"text":"18","value":18}}
+]
+</script>
+<script>
+(function(){
+  'use strict';
+  var DRUGS = JSON.parse(document.getElementById('calcDrugData').textContent);
+  var JAPAN_DRUGS = JSON.parse(document.getElementById('japanDrugData').textContent);
+  var DA_BANDS = JSON.parse(document.getElementById('dopamineBandData').textContent);
+  var rows = [];
+  var rowSequence = 0;
+  var activeFilter = 'all';
+  var lastCalculation = null;
+
+  function formatNumber(value){
+    if(!isFinite(value)){ return '—'; }
+    var rounded = Math.round(value * 10) / 10;
+    return rounded.toLocaleString('ja-JP', {maximumFractionDigits:1});
+  }
+  function escapeHtml(value){
+    return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function getDrug(id){
+    var i;
+    for(i=0;i<DRUGS.length;i+=1){ if(DRUGS[i].id===id){ return DRUGS[i]; } }
+    return DRUGS[0];
+  }
+  function sourceLabel(source){
+    var labels = {jns:'日本神経学会2018',mds:'MDS 2023補足',pmda:'PMDA橋渡し補足'};
+    return labels[source] || '学会表外';
+  }
+  function drugOptions(selected){
+    var html = '';
+    var lastCategory = '';
+    var i;
+    for(i=0;i<DRUGS.length;i+=1){
+      if(DRUGS[i].category!==lastCategory){
+        if(lastCategory){ html += '</optgroup>'; }
+        html += '<optgroup label="'+DRUGS[i].category+'">';
+        lastCategory = DRUGS[i].category;
+      }
+      html += '<option value="'+DRUGS[i].id+'"'+(DRUGS[i].id===selected?' selected':'')+'>'+DRUGS[i].name+'</option>';
+    }
+    if(lastCategory){ html += '</optgroup>'; }
+    return html;
+  }
+  function addRow(drugId, dose){
+    rowSequence += 1;
+    rows.push({key:rowSequence, drugId:drugId||'levodopa_dci', dose:typeof dose==='number'?dose:0});
+    renderRows();
+  }
+  function removeRow(key){
+    rows = rows.filter(function(row){ return row.key!==key; });
+    if(!rows.length){ addRow('levodopa_dci',0); return; }
+    renderRows();
+  }
+  function renderRows(){
+    var host = document.getElementById('regimenRows');
+    var html = '';
+    rows.forEach(function(row){
+      var drug = getDrug(row.drugId);
+      var inputStep = drug.validStep || 'any';
+      var inputMin = drug.minDose || 0;
+      var inputMax = drug.maxDose ? ' max="'+drug.maxDose+'"' : '';
+      html += '<div class="drug-row" data-key="'+row.key+'">';
+      html += '<select class="drug-select" aria-label="薬剤">'+drugOptions(row.drugId)+'</select>';
+      html += '<div class="dose-wrap"><input class="dose-input" type="number" min="'+inputMin+'"'+inputMax+' step="'+inputStep+'" inputmode="decimal" value="'+(row.dose||'')+'" aria-label="'+drug.inputLabel+'"><span>'+drug.unit+'</span></div>';
+      html += '<div class="row-result"><strong>0 mg</strong><span>LEDD寄与</span></div>';
+      html += '<button class="remove-btn" type="button" aria-label="この薬剤を削除">×</button>';
+      html += '<div class="row-meta"><span class="pill '+drug.source+'">'+sourceLabel(drug.source)+'</span><span>'+drug.formula+'</span><span>入力：'+drug.inputLabel+'</span>'+(drug.note?'<span>注意：'+drug.note+'</span>':'')+'</div>';
+      html += '</div>';
+    });
+    host.innerHTML = html;
+    bindRowEvents();
+    calculate();
+  }
+  function bindRowEvents(){
+    var rowEls = document.querySelectorAll('.drug-row');
+    Array.prototype.forEach.call(rowEls,function(el){
+      var key = Number(el.getAttribute('data-key'));
+      var select = el.querySelector('.drug-select');
+      var input = el.querySelector('.dose-input');
+      var remove = el.querySelector('.remove-btn');
+      select.addEventListener('change',function(){
+        rows.forEach(function(row){ if(row.key===key){ row.drugId=select.value; } });
+        renderRows();
+      });
+      input.addEventListener('input',function(){
+        rows.forEach(function(row){ if(row.key===key){ row.dose=Math.max(0,Number(input.value)||0); } });
+        calculate();
+      });
+      remove.addEventListener('click',function(){ removeRow(key); });
+    });
+  }
+  function calculate(){
+    var supplementOn = document.getElementById('supplementToggle').checked;
+    var jnsTotal = 0;
+    var supplementTotal = 0;
+    var levodopaBase = 0;
+    var comtContribution = 0;
+    var rowValues = {};
+    var positiveById = {};
+    var unique = {};
+    var alerts = [];
+    var i;
+
+    rows.forEach(function(row){
+      var dose = Math.max(0,Number(row.dose)||0);
+      var drug = getDrug(row.drugId);
+      var contribution = 0;
+      rowValues[row.key] = 0;
+      if(dose<=0){ return; }
+      unique[row.drugId] = true;
+      if(!positiveById[row.drugId]){ positiveById[row.drugId] = []; }
+      positiveById[row.drugId].push(row);
+      if(drug.source==='jns'){
+        if(drug.calc==='stalevo'){
+          contribution = dose * 1.33;
+          levodopaBase += dose;
+          comtContribution += dose * 0.33;
+        } else if(drug.calc==='entacapone'){
+          contribution = dose * 0.33;
+          comtContribution += contribution;
+        } else {
+          contribution = dose * drug.factor;
+          if(drug.base){ levodopaBase += contribution; }
+        }
+        jnsTotal += contribution;
+        rowValues[row.key] = contribution;
+      } else if(supplementOn && drug.calc==='linear'){
+        contribution = dose * drug.factor;
+        supplementTotal += contribution;
+        if(drug.base){ levodopaBase += contribution; }
+        rowValues[row.key] = contribution;
+      }
+    });
+
+    function summedDose(id){
+      var total = 0;
+      if(!positiveById[id]){ return 0; }
+      positiveById[id].forEach(function(row){ total += row.dose; });
+      return total;
+    }
+    function assignSpecial(id, value){
+      var specialRows = positiveById[id] || [];
+      specialRows.forEach(function(row,index){ rowValues[row.key] = index===0 ? value : 0; });
+      if(specialRows.length>1){ alerts.push(getDrug(id).name+'が複数行に分かれています。合計用量で1回だけ計算しました。'); }
+    }
+    function validDose(drug,dose){
+      for(i=0;i<drug.validDoses.length;i+=1){ if(Math.abs(drug.validDoses[i]-dose)<0.0001){ return true; } }
+      return false;
+    }
+
+    if(supplementOn){
+      var opicaponeDose = summedDose('opicapone');
+      if(opicaponeDose>0){
+        if(validDose(getDrug('opicapone'),opicaponeDose)){
+          var opicaponeContribution = levodopaBase * 0.5;
+          assignSpecial('opicapone',opicaponeContribution);
+          supplementTotal += opicaponeContribution;
+          comtContribution += opicaponeContribution;
+          if(levodopaBase===0){ alerts.push('オピカポンの基礎となるL-dopa系薬剤が入力されていません。'); }
+        } else {
+          assignSpecial('opicapone',0);
+          alerts.push('オピカポンは国内製剤の25mg/日だけを補足計算します。');
+        }
+      }
+
+      ['safinamide','zonisamide'].forEach(function(id){
+        var dose = summedDose(id);
+        var drug = getDrug(id);
+        if(dose>0){
+          if(validDose(drug,dose)){
+            assignSpecial(id,drug.factor);
+            supplementTotal += drug.factor;
+          } else {
+            assignSpecial(id,0);
+            alerts.push(drug.name+'は対象用量（'+drug.validDoses.join('または')+'mg/日）の場合だけ固定値を加算します。');
+          }
+        }
+      });
+
+      var haruropiDose = summedDose('ropinirole_patch');
+      if(haruropiDose>0){
+        var haruropi = getDrug('ropinirole_patch');
+        var stepCount = haruropiDose / haruropi.validStep;
+        var validHaruropi = haruropiDose>=haruropi.minDose && haruropiDose<=haruropi.maxDose && Math.abs(stepCount-Math.round(stepCount))<0.0001;
+        if(validHaruropi){
+          var haruropiContribution = haruropiDose * haruropi.factor;
+          assignSpecial('ropinirole_patch',haruropiContribution);
+          supplementTotal += haruropiContribution;
+        } else {
+          assignSpecial('ropinirole_patch',0);
+          alerts.push('ハルロピテープは国内用法の1日総量8〜64mgを8mg刻みで入力した場合だけ、PMDA橋渡し補足を計算します。');
+        }
+      }
+
+      var istradefyllineDose = summedDose('istradefylline');
+      if(istradefyllineDose>0){
+        if(validDose(getDrug('istradefylline'),istradefyllineDose)){
+          var istradefyllineContribution = (levodopaBase + comtContribution) * 0.2;
+          assignSpecial('istradefylline',istradefyllineContribution);
+          supplementTotal += istradefyllineContribution;
+          if(levodopaBase===0){ alerts.push('イストラデフィリンの基礎となるL-dopa系薬剤が入力されていません。'); }
+        } else {
+          assignSpecial('istradefylline',0);
+          alerts.push('イストラデフィリンは20または40mg/日の場合だけ補足計算します。');
+        }
+      }
+    } else {
+      var excluded = [];
+      rows.forEach(function(row){
+        if(row.dose>0 && getDrug(row.drugId).source!=='jns' && excluded.indexOf(getDrug(row.drugId).name)===-1){ excluded.push(getDrug(row.drugId).name); }
+      });
+      if(excluded.length){ alerts.push('学会表外の補足がOFFのため除外：'+excluded.join('、')); }
+    }
+
+    if(positiveById.entacapone){ alerts.push('エンタカポン欄には薬剤量ではなく、併用対象となるL-dopa量を入力します。'); }
+    if(positiveById.stalevo && positiveById.entacapone){ alerts.push('スタレボとエンタカポン寄与の二重計上がないか確認してください。'); }
+    var comtKinds = 0;
+    ['stalevo','entacapone','opicapone'].forEach(function(id){ if(positiveById[id]){ comtKinds += 1; } });
+    if(comtKinds>1){ alerts.push('複数のCOMT阻害薬関連行があります。実処方と重複入力を確認してください。'); }
+
+    var total = jnsTotal + supplementTotal;
+    var count = Object.keys(unique).length;
+    var rowElements = document.querySelectorAll('.drug-row');
+    Array.prototype.forEach.call(rowElements,function(el){
+      var key = Number(el.getAttribute('data-key'));
+      var row = null;
+      rows.forEach(function(candidate){ if(candidate.key===key){ row=candidate; } });
+      var drug = row ? getDrug(row.drugId) : DRUGS[0];
+      var result = el.querySelector('.row-result strong');
+      if(row && row.dose>0 && drug.source!=='jns' && !supplementOn){ result.textContent='除外'; }
+      else { result.textContent=formatNumber(rowValues[key]||0)+' mg'; }
+    });
+    document.getElementById('totalValue').textContent = formatNumber(total);
+    document.getElementById('jnsValue').textContent = formatNumber(jnsTotal)+' mg';
+    document.getElementById('suppValue').textContent = supplementOn ? formatNumber(supplementTotal)+' mg' : '含めない';
+    document.getElementById('countValue').textContent = count+'剤';
+    document.getElementById('regimenAlerts').innerHTML = alerts.map(function(message){ return '<div class="inline-alert">'+escapeHtml(message)+'</div>'; }).join('');
+    lastCalculation = {total:total,jns:jnsTotal,supplement:supplementTotal,supplementOn:supplementOn,count:count,alerts:alerts,rowValues:rowValues};
+  }
+
+  function setupConverter(){
+    var from = document.getElementById('convertFrom');
+    var to = document.getElementById('convertTo');
+    var options = '';
+    DRUGS.forEach(function(drug){
+      if(drug.source==='jns' && drug.convertible){ options += '<option value="'+drug.id+'">'+drug.name+'</option>'; }
+    });
+    from.innerHTML = options;
+    to.innerHTML = options;
+    from.value = 'pramipexole';
+    to.value = 'levodopa_dci';
+    from.addEventListener('change',updateConversion);
+    to.addEventListener('change',updateConversion);
+    document.getElementById('convertDose').addEventListener('input',updateConversion);
+    document.getElementById('swapBtn').addEventListener('click',function(){
+      var oldFrom = from.value;
+      from.value = to.value;
+      to.value = oldFrom;
+      updateConversion();
+    });
+    updateConversion();
+  }
+  function nearestBand(drugId,dose){
+    var best = null;
+    var bestDistance = Infinity;
+    DA_BANDS.forEach(function(band){
+      var entry = band[drugId];
+      if(entry && Math.abs(entry.value-dose)<bestDistance){ best=band; bestDistance=Math.abs(entry.value-dose); }
+    });
+    return best;
+  }
+  function updateConversion(){
+    var from = getDrug(document.getElementById('convertFrom').value);
+    var to = getDrug(document.getElementById('convertTo').value);
+    var dose = Math.max(0,Number(document.getElementById('convertDose').value)||0);
+    var led = dose * from.factor;
+    var result = to.factor>0 ? led/to.factor : 0;
+    document.getElementById('convertFromNote').textContent='入力単位：'+from.unit+'｜'+from.formula;
+    document.getElementById('convertToNote').textContent='出力単位：'+to.unit+'｜係数 ×'+to.factor;
+    document.getElementById('convertLed').textContent=formatNumber(led)+' mg/日';
+    document.getElementById('convertResult').textContent=formatNumber(result)+' '+to.unit;
+    document.getElementById('convertFormula').textContent=formatNumber(dose)+' × '+from.factor+' ÷ '+to.factor+' ＝ '+formatNumber(result)+' '+to.unit;
+    var bandBox = document.getElementById('bandBox');
+    if(from.band && to.band && dose>0){
+      var band = nearestBand(from.id,dose);
+      bandBox.innerHTML='<h3>日本神経学会 表2：最も近い掲載用量帯</h3><p>用量帯'+band.band+'では、'+escapeHtml(from.name)+' '+band[from.id].text+'mg/日 ↔ '+escapeHtml(to.name)+' '+band[to.id].text+'mg/日。これは表の原値で、上の線形逆算値とは別表示です。用量帯間を補間しません。</p>';
+    } else {
+      bandBox.innerHTML='<h3>ドパミンアゴニスト用量帯</h3><p>選択した組合せには学会「表2」の直接対応を表示できません。上段は資料2の係数による数学的逆算です。</p>';
+    }
+  }
+
+  function renderDrugTable(){
+    var query = document.getElementById('drugSearch').value.toLowerCase();
+    var visible = JAPAN_DRUGS.filter(function(item){
+      var matchesFilter = activeFilter==='all' || item.basis===activeFilter;
+      var haystack = (item.ingredient+' '+item.products+' '+item.route+' '+item.conversion).toLowerCase();
+      return matchesFilter && haystack.indexOf(query)!==-1;
+    });
+    var labels = {jns:'日本神経学会2018',mds:'MDS 2023補足',pmda:'PMDA橋渡し補足',none:'自動換算なし'};
+    document.getElementById('drugTableBody').innerHTML=visible.map(function(item){
+      return '<tr><td>'+escapeHtml(item.ingredient)+'</td><td>'+escapeHtml(item.products)+'</td><td>'+escapeHtml(item.route)+'</td><td>'+escapeHtml(item.conversion)+'</td><td><span class="status '+item.basis+'">'+labels[item.basis]+'</span></td></tr>';
+    }).join('');
+    document.getElementById('drugCount').textContent=visible.length+' / '+JAPAN_DRUGS.length+'行';
+  }
+  function setupDrugList(){
+    document.getElementById('drugSearch').addEventListener('input',renderDrugTable);
+    Array.prototype.forEach.call(document.querySelectorAll('.filter-btn'),function(button){
+      button.addEventListener('click',function(){
+        activeFilter=button.getAttribute('data-filter');
+        Array.prototype.forEach.call(document.querySelectorAll('.filter-btn'),function(other){ other.classList.toggle('active',other===button); });
+        renderDrugTable();
+      });
+    });
+    renderDrugTable();
+  }
+
+  function copySummary(){
+    if(!lastCalculation){ calculate(); }
+    var lines = [
+      '抗パーキンソン病薬 推定LEDD',
+      '総LEDD: '+formatNumber(lastCalculation.total)+' mg/日',
+      '日本神経学会2018: '+formatNumber(lastCalculation.jns)+' mg/日',
+      '学会表外補足: '+(lastCalculation.supplementOn?formatNumber(lastCalculation.supplement)+' mg/日':'含めない'),
+      '注意: 処方切替量ではなく比較の目安。患者ごとに調整。'
+    ];
+    var textValue=lines.join('\n');
+    var status=document.getElementById('copyStatus');
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(textValue).then(function(){ status.textContent='コピーしました'; },function(){ status.textContent='コピーできませんでした'; });
+    } else {
+      var area=document.createElement('textarea');
+      area.value=textValue;
+      document.body.appendChild(area);
+      area.select();
+      try { document.execCommand('copy'); status.textContent='コピーしました'; }
+      catch(error){ status.textContent='コピーできませんでした'; }
+      document.body.removeChild(area);
+    }
+  }
+
+  function setupTabs(){
+    var tabs = document.querySelectorAll('[role="tab"]');
+    Array.prototype.forEach.call(tabs,function(tab){
+      tab.addEventListener('click',function(){
+        Array.prototype.forEach.call(tabs,function(other){
+          var active = other===tab;
+          other.setAttribute('aria-selected',active?'true':'false');
+          document.getElementById(other.getAttribute('aria-controls')).hidden=!active;
+        });
+        tab.focus();
+      });
+      tab.addEventListener('keydown',function(event){
+        var tabArray=Array.prototype.slice.call(tabs);
+        var index=tabArray.indexOf(tab);
+        if(event.key==='ArrowRight'){ event.preventDefault(); tabArray[(index+1)%tabArray.length].click(); }
+        if(event.key==='ArrowLeft'){ event.preventDefault(); tabArray[(index-1+tabArray.length)%tabArray.length].click(); }
+      });
+    });
+  }
+  document.getElementById('addDrugBtn').addEventListener('click',function(){ addRow('levodopa_dci',0); });
+  document.getElementById('resetBtn').addEventListener('click',function(){ rows=[]; rowSequence=0; document.getElementById('supplementToggle').checked=false; addRow('levodopa_dci',0); });
+  document.getElementById('printBtn').addEventListener('click',function(){ window.print(); });
+  document.getElementById('supplementToggle').addEventListener('change',function(){ calculate(); });
+  document.getElementById('copyBtn').addEventListener('click',copySummary);
+  setupTabs();
+  setupConverter();
+  setupDrugList();
+  addRow('levodopa_dci',300);
+  addRow('pramipexole',1.5);
+}());
+</script>
+</body>
+</html>
