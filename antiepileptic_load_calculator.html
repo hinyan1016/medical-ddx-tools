@@ -167,7 +167,7 @@
 
 <main>
   <div class="notice">
-    <strong>⚠️ 臨床使用上の注意：</strong>本ツールは多剤併用時の薬剤負荷（過鎮静・認知機能低下リスク）の客観的評価や処方監査を支援するものです。抗てんかん薬は作用機序や発作型適合性が薬剤ごとに異なるため、<strong>単純な等価換算に基づく即日置換は原則禁忌</strong>です。切替時は必ず<strong>Transitional Polytherapy（移行期併用療法）</strong>の手順に従ってください。
+    <strong>⚠️ 臨床使用上の注意：</strong>本ツールは多剤併用時の薬剤負荷（過鎮静・認知機能低下リスク）の客観的評価や処方監査を支援するものです。抗てんかん薬は作用機序や発作型適合性が薬剤ごとに異なるため、<strong>単純な等価換算に基づく即日置換は原則として行いません</strong>。切替時は<strong>Transitional Polytherapy（移行期併用療法）</strong>の手順に従ってください（同一標的のLEV→BRV切替など、即日置換が許容される例外はあります）。
   </div>
 
   <div class="tabs" role="tablist">
@@ -260,6 +260,7 @@
             <p style="margin:0 0 6px;"><strong style="color:var(--green);">● Load &le; 1.0（標準負荷）:</strong> 単剤維持量の範囲内。副作用リスクは最小限。</p>
             <p style="margin:0 0 6px;"><strong style="color:var(--amber);">● 1.0 &lt; Load &le; 2.0（中等度負荷）:</strong> 標準的な2剤併用または高用量単剤。眠気やふらつきに注意。</p>
             <p style="margin:0;"><strong style="color:var(--red);">● Load &gt; 2.0（高負荷）:</strong> 3剤以上の併用または多剤高用量。認知機能低下・転倒・中枢神経毒性リスクが有意に上昇。</p>
+            <p style="margin:10px 0 0;font-size:.78rem;color:var(--muted);line-height:1.6;">※ WHO-DDDは実際の維持量より低く設定されている薬剤があり、国内承認用量内の<strong>単剤</strong>でも高負荷と判定されることがあります（例: ゾニサミド600mg/日＝3.00 DDD、トピラマート600mg/日＝2.00 DDD）。本指標は多剤併用時の相対比較に用い、単剤処方の評価には承認用量と臨床症状を優先してください。</p>
             <button class="copy-btn" id="btnCopy" onclick="copySummary()">📋 評価結果をカルテ用にコピー</button>
             <div id="copyStatus" style="font-size:.72rem;color:var(--green);text-align:center;margin-top:4px;display:none;">コピーしました！</div>
           </div>
@@ -409,7 +410,7 @@ var DRUGS = [
     mechanism: "電位依存性Naチャネル遮断",
     therapeuticRange: "4 〜 12",
     rangeUnit: "μg/mL",
-    notes: "強力な自己誘導薬（投与開始2〜4週でクリアランス上昇）。TDM必須。"
+    notes: "強力な自己誘導薬（投与開始2〜4週でクリアランス上昇）。TDM必須。日本人ではHLA-A*31:01保有者で重症薬疹（SJS/TEN/DIHS）リスクが上昇する。"
   },
   {
     id: "pht",
@@ -425,7 +426,7 @@ var DRUGS = [
     mechanism: "電位依存性Naチャネル遮断",
     therapeuticRange: "10 〜 20",
     rangeUnit: "μg/mL",
-    notes: "ミカエリス・メンテン型非線形代謝。常用量付近でのわずかな増量で血中濃度が急上昇するため頻回のTDMが必須。"
+    notes: "ミカエリス・メンテン型非線形代謝。常用量付近でのわずかな増量で血中濃度が急上昇するため頻回のTDMが必須。重症薬疹（HLA-B*15:02等との関連）にも注意。"
   },
   {
     id: "pb",
@@ -439,7 +440,7 @@ var DRUGS = [
     defaultDose: 60,
     ratio: 0.1,
     mechanism: "GABA_A受容体機能増強",
-    therapeuticRange: "15 〜 40",
+    therapeuticRange: "10 〜 40",
     rangeUnit: "μg/mL",
     notes: "半減期が極めて長い（80〜120時間）。定常状態到達・消失に数週間を要する。"
   },
@@ -449,7 +450,7 @@ var DRUGS = [
     shortName: "VPA",
     category: "第一世代（古典的）",
     ddd: 1500,
-    maxDose: 2000,
+    maxDose: 1200,
     unit: "mg",
     step: 100,
     defaultDose: 600,
@@ -457,7 +458,7 @@ var DRUGS = [
     mechanism: "広域複合（T型Ca/GABA増強/Na阻害）",
     therapeuticRange: "50 〜 100",
     rangeUnit: "μg/mL",
-    notes: "全般てんかんの第一選択薬。LTGのグルクロン酸抱合を強力に阻害（LTG濃度を約2倍に上昇）。"
+    notes: "全般てんかんの第一選択薬。LTGのグルクロン酸抱合を強力に阻害（LTG濃度を約2倍に上昇）。妊娠可能女性では催奇形性・児の認知発達遅延リスクのため原則として他剤を優先する。"
   },
   {
     id: "lev",
@@ -477,7 +478,7 @@ var DRUGS = [
   },
   {
     id: "brv",
-    name: "ブリバラセタム（ブレビアクト）",
+    name: "ブリバラセタム（ブリィビアクト）",
     shortName: "BRV",
     category: "新規世代（第三世代）",
     ddd: 100,
@@ -503,7 +504,7 @@ var DRUGS = [
     defaultDose: 100,
     ratio: 0.3,
     mechanism: "Naチャネル緩徐不活性化促進",
-    therapeuticRange: "2.5 〜 10",
+    therapeuticRange: "10 〜 20",
     rangeUnit: "μg/mL",
     notes: "PR間隔延長に注意（房室ブロック等）。相互作用が少なく高齢者にも使いやすい。"
   },
@@ -519,7 +520,7 @@ var DRUGS = [
     defaultDose: 100,
     ratio: 0.3,
     mechanism: "電位依存性Naチャネル遮断",
-    therapeuticRange: "3 〜 14",
+    therapeuticRange: "2.5 〜 15",
     rangeUnit: "μg/mL",
     notes: "併用薬で半減期が激変（VPA併用で約60h、酵素誘導薬併用で約15h）。重篤薬疹（SJS）防止のため超低速漸増。"
   },
@@ -609,7 +610,7 @@ var DRUGS = [
     shortName: "ESM",
     category: "第一世代（欠神発作特効薬）",
     ddd: 1250,
-    maxDose: 1500,
+    maxDose: 1000,
     unit: "mg",
     step: 250,
     defaultDose: 500,
@@ -821,6 +822,16 @@ function renderAlerts(activeDrugs, totalLoad) {
   var container = document.getElementById('regimenAlerts');
   var alerts = [];
 
+  // VPA 妊娠可能女性への催奇形性
+  if (activeDrugs['vpa']) {
+    alerts.push('<div class="alert-box alert-danger"><strong>🚨 バルプロ酸（VPA）と妊娠：</strong>VPAは他の抗てんかん薬に比べ催奇形性（神経管閉鎖障害等）が高く、児の認知発達遅延・自閉スペクトラム症リスク上昇も報告されています。<strong>妊娠可能な女性では原則として他剤を優先</strong>し、やむを得ず使用する場合は必要最小限の用量・徐放製剤・葉酸補充と、妊娠可能性についての事前説明を行ってください。</div>');
+  }
+
+  // CBZ / PHT 重症薬疹（HLA）
+  if (activeDrugs['cbz'] || activeDrugs['pht']) {
+    alerts.push('<div class="alert-box alert-warn"><strong>⚠️ 重症薬疹リスク（CBZ・PHT）：</strong>日本人ではHLA-A*31:01保有者でカルバマゼピンによる重症薬疹（SJS/TEN/DIHS）リスクが上昇します（漢民族等ではHLA-B*15:02とCBZ・PHTの関連が既知）。投与開始後2〜8週は皮疹・発熱・粘膜症状の問診を行い、出現時は速やかに中止を検討してください。</div>');
+  }
+
   // PHT 非線形動態
   if (activeDrugs['pht']) {
     alerts.push('<div class="alert-box alert-danger"><strong>⚠️ フェニトイン（PHT）の非線形代謝：</strong>PHTはミカエリス・メンテン型代謝のため、常用量付近の微小な増量で血中濃度が跳ね上がります（目標血中濃度: 10〜20 &mu;g/mL）。定期的なTDMが必須です。</div>');
@@ -890,7 +901,10 @@ function copySummary() {
       }
     }
   }
-  text += '※ 医知創造ラボ 抗てんかん薬AED Loadツールにて計算 (WHO-DDD / ILAE基準)';
+  text += '※ 医知創造ラボ 抗てんかん薬AED Loadツールにて計算 (WHO-DDD / ILAE基準)\n';
+  text += '※【重要】WHO-DDDは医薬品使用統計のための単位であり、推奨用量や処方指示ではありません。\n';
+  text += '　上記の等価換算量は薬剤負荷を比較するための数学的参考値であって、そのまま投与する用量ではありません。\n';
+  text += '　薬剤切替はTransitional Polytherapy（漸増・漸減）とTDMにより、発作型・患者状態に応じて個別に判断してください。';
 
   navigator.clipboard.writeText(text).then(function() {
     var st = document.getElementById('copyStatus');
