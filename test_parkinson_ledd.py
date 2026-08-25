@@ -339,6 +339,44 @@ def main() -> None:
         finally:
             temp_path.unlink(missing_ok=True)
 
+    # --- Haruropi in the converter tab (supplement-only) ----------------
+    patch = by_id["ropinirole_patch"]
+    assert patch["convertible"] is False, "Haruropi must stay out of the JNS-only list"
+    assert patch["convertibleSupplement"] is True, "Haruropi must be selectable when supplement is ON"
+    assert_close(patch["doseLimit"], 64, "Haruropi doseLimit")
+    assert patch["doseLimitType"] == "max", "Haruropi limit is a package-insert maximum"
+    supplement_convertible = {
+        item["id"] for item in drugs if item.get("convertibleSupplement")
+    }
+    assert supplement_convertible == {"ropinirole_patch"}, supplement_convertible
+    # the JNS-only option set must be unchanged by adding the supplement group
+    assert convertible_jns_ids == {
+        "levodopa_dci", "duodopa", "bromocriptine", "cabergoline",
+        "pergolide", "pramipexole", "ropinirole_oral", "rotigotine",
+    }
+    # converter math must reproduce the PMDA 17.1.3 switching table exactly
+    patch_factor = patch["factor"]
+    oral_factor = by_id["ropinirole_oral"]["factor"]
+    pmda_switch_table = [(8, 2), (16, 4), (24, 6), (32, 8), (40, 10), (48, 12), (56, 14), (64, 16)]
+    for patch_dose, oral_dose in pmda_switch_table:
+        assert_close(
+            patch_dose * patch_factor / oral_factor, oral_dose,
+            f"patch {patch_dose}mg -> oral ER (PMDA 17.1.3)",
+        )
+        assert_close(
+            oral_dose * oral_factor / patch_factor, patch_dose,
+            f"oral ER {oral_dose}mg -> patch (PMDA 17.1.3)",
+        )
+        assert not over_limit(patch, patch_dose), f"patch {patch_dose}mg is within the approved range"
+    assert over_limit(patch, 64 + 0.1), "above 64mg/day must warn"
+    for marker in (
+        "convertibleSupplement",
+        "renderConverterOptions",
+        "学会係数ではありません",
+        "8mg刻みでのみ使用します",
+    ):
+        assert marker in html, f"missing converter-supplement marker: {marker}"
+
     print("PASS: society coefficients, Haruropi bridge, supplemental formulas, Japan list, integration, safety text, and JS syntax")
 
 

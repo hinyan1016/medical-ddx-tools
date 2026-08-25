@@ -368,7 +368,7 @@
           <article class="evidence-card"><h3>ロチゴチンの単位に注意</h3><p>日本のニュープロパッチに表示される<strong>総含量mg</strong>へ×13.3を適用します。海外の放出量mg/24hに対する×30.3とは単位が異なるため、置き換えません。</p></article>
           <article class="evidence-card"><h3>ハルロピは直接係数ではない</h3><p>日本神経学会2018は2019年承認のハルロピを収載していません。PMDA試験表の「貼付総量4mg＝経口徐放1mg」と学会の経口ロピニロール×20を橋渡しし、<strong>貼付総量×5</strong>を補足推定します。貼付総量へ経口係数×20を直接適用しません。</p></article>
           <article class="evidence-card"><h3>実装しない自動換算</h3><p>経口L-dopaと静注L-dopaの正確な換算式は確立していないため自動変換しません。ドロキシドパ、ビペリデンにも採用可能な標準係数を設定していません。</p></article>
-          <article class="evidence-card"><h3>換算タブは用量を超えたら警告する</h3><p>逆算値が電子添文の規定を超える場合は赤字で警告します。カベルゴリン3mg、プラミペキソール4.5mg、ロピニロール15mg（速放。徐放は16mg）、ロチゴチン36mgは「これを超えないこと」と定められた上限です。ペルゴリド1.25mgとブロモクリプチン22.5mgは上限規定ではなく標準維持量の上限で、警告文言を分けています。またLEDDは置換可能量ではないため、MAO-B阻害薬、アポモルヒネ、アマンタジンは換算先の選択肢に含めていません（総LEDDの加算対象からは外していません）。</p></article>
+          <article class="evidence-card"><h3>換算タブは用量を超えたら警告する</h3><p>逆算値が電子添文の規定を超える場合は赤字で警告します。カベルゴリン3mg、プラミペキソール4.5mg、ロピニロール15mg（速放。徐放は16mg）、ロチゴチン36mgは「これを超えないこと」と定められた上限です。ペルゴリド1.25mgとブロモクリプチン22.5mgは上限規定ではなく標準維持量の上限で、警告文言を分けています。またLEDDは置換可能量ではないため、MAO-B阻害薬、アポモルヒネ、アマンタジンは換算先の選択肢に含めていません（総LEDDの加算対象からは外していません）。ハルロピテープは学会係数を持たないため既定では選択肢に出しませんが、「学会表外の補足値を含める」をONにすると別グループとして選べます。選択中は橋渡し推定である旨と、8〜64mgの8mg刻みという国内用法を併記します。</p></article>
         </div>
         <div class="card" style="margin-top:16px;box-shadow:none">
           <div class="card__head"><h2>主な換算ルール</h2></div>
@@ -422,7 +422,7 @@
   {"id":"rotigotine","name":"ロチゴチン（国内パッチ総含量）","category":"ドパミンアゴニスト","source":"jns","calc":"linear","factor":13.3,"unit":"mg/日","inputLabel":"国内表示の貼付量","formula":"国内表示mg ×13.3","convertible":true,"band":true,"note":"mg/24h放出量ではなく国内パッチ総含量","doseLimit":36,"doseLimitType":"max"},
   {"id":"apomorphine","name":"アポモルヒネ（間欠皮下注）","category":"ドパミンアゴニスト","source":"jns","calc":"linear","factor":10,"unit":"mg/日","inputLabel":"1日実投与量","formula":"用量 ×10","convertible":false},
   {"id":"amantadine","name":"アマンタジン","category":"その他","source":"jns","calc":"linear","factor":1,"unit":"mg/日","inputLabel":"1日量","formula":"用量 ×1","convertible":false},
-  {"id":"ropinirole_patch","name":"ハルロピテープ（ロピニロール貼付）","category":"学会表外の補足","source":"pmda","calc":"haruropi","factor":5,"unit":"mg/日","inputLabel":"国内表示の貼付総量","formula":"国内表示mg ×5（PMDA 4:1橋渡し）","validStep":8,"minDose":8,"maxDose":64,"convertible":false,"note":"JNS 2018表外。久光製薬／協和キリン。学会公式係数ではない"},
+  {"id":"ropinirole_patch","name":"ハルロピテープ（ロピニロール貼付）","category":"学会表外の補足","source":"pmda","calc":"haruropi","factor":5,"unit":"mg/日","inputLabel":"国内表示の貼付総量","formula":"国内表示mg ×5（PMDA 4:1橋渡し）","validStep":8,"minDose":8,"maxDose":64,"convertible":false,"convertibleSupplement":true,"doseLimit":64,"doseLimitType":"max","note":"JNS 2018表外。久光製薬／協和キリン。学会公式係数ではない"},
   {"id":"foslevodopa","name":"ホスレボドパ（ヴィアレブ）","category":"MDS 2023補足","source":"mds","calc":"linear","factor":0.75,"unit":"mg/日","inputLabel":"ホスレボドパ1日量","formula":"ホスレボドパ ×0.75","convertible":false,"base":true},
   {"id":"opicapone","name":"オピカポン","category":"MDS 2023補足","source":"mds","calc":"opicapone","factor":0.5,"unit":"mg/日","inputLabel":"オピカポン1日量","formula":"L-dopa系基礎LEDD ×0.5","validDoses":[25],"convertible":false,"note":"MDS 2023の×0.5は海外50mg製剤への提案値。国内承認は25mg 1日1回で、25mgへの適用は外挿"},
   {"id":"safinamide","name":"サフィナミド","category":"MDS 2023補足","source":"mds","calc":"fixed","factor":150,"unit":"mg/日","inputLabel":"1日量","formula":"50/100mgとも固定150","validDoses":[50,100],"convertible":false},
@@ -708,17 +708,40 @@
     lastCalculation = {total:total,jns:jnsTotal,supplement:supplementTotal,supplementOn:supplementOn,count:count,alerts:alerts,rowValues:rowValues};
   }
 
+  function renderConverterOptions(keepFrom,keepTo){
+    var from = document.getElementById('convertFrom');
+    var to = document.getElementById('convertTo');
+    var supplementOn = document.getElementById('supplementToggle').checked;
+    var previousFrom = keepFrom || from.value;
+    var previousTo = keepTo || to.value;
+    var html = '<optgroup label="日本神経学会2018">';
+    var valid = {};
+    DRUGS.forEach(function(drug){
+      if(drug.source==='jns' && drug.convertible){
+        html += '<option value="'+drug.id+'">'+drug.name+'</option>';
+        valid[drug.id] = true;
+      }
+    });
+    html += '</optgroup>';
+    if(supplementOn){
+      var supplementHtml = '';
+      DRUGS.forEach(function(drug){
+        if(drug.convertibleSupplement){
+          supplementHtml += '<option value="'+drug.id+'">'+drug.name+'</option>';
+          valid[drug.id] = true;
+        }
+      });
+      if(supplementHtml){ html += '<optgroup label="学会表外の補足（学会係数ではありません）">'+supplementHtml+'</optgroup>'; }
+    }
+    from.innerHTML = html;
+    to.innerHTML = html;
+    from.value = valid[previousFrom] ? previousFrom : 'pramipexole';
+    to.value = valid[previousTo] ? previousTo : 'levodopa_dci';
+  }
   function setupConverter(){
     var from = document.getElementById('convertFrom');
     var to = document.getElementById('convertTo');
-    var options = '';
-    DRUGS.forEach(function(drug){
-      if(drug.source==='jns' && drug.convertible){ options += '<option value="'+drug.id+'">'+drug.name+'</option>'; }
-    });
-    from.innerHTML = options;
-    to.innerHTML = options;
-    from.value = 'pramipexole';
-    to.value = 'levodopa_dci';
+    renderConverterOptions('pramipexole','levodopa_dci');
     from.addEventListener('change',updateConversion);
     to.addEventListener('change',updateConversion);
     document.getElementById('convertDose').addEventListener('input',updateConversion);
@@ -760,9 +783,23 @@
     var resultEl = document.getElementById('convertResult');
     resultEl.textContent=formatNumber(result)+' '+to.unit+(overLimit?'（上限超）':'');
     resultEl.classList.toggle('over-limit',overLimit);
-    document.getElementById('convertLimitAlert').innerHTML = overLimit
-      ? '<div class="inline-alert error"><strong>'+label.head+'</strong> '+escapeHtml(to.name)+'（'+label.short+' '+limit+' mg/日）'+label.body+'</div>'
-      : '';
+    var notes = '';
+    if(overLimit){
+      notes += '<div class="inline-alert error"><strong>'+label.head+'</strong> '+escapeHtml(to.name)+'（'+label.short+' '+limit+' mg/日）'+label.body+'</div>';
+    }
+    if(from.source==='pmda' || to.source==='pmda'){
+      notes += '<div class="inline-alert"><strong>学会係数ではありません。</strong> ハルロピテープの×5は、PMDA臨床試験表の「貼付総量4mg＝経口徐放1mg」と日本神経学会2018の経口ロピニロール×20をつないだ橋渡し推定です。日本神経学会もPMDAも、この値をLEDD係数として定めていません。</div>';
+    }
+    if(to.id==='ropinirole_patch' && dose>0){
+      var stepCount = result / to.validStep;
+      var offStep = Math.abs(stepCount-Math.round(stepCount))>0.0001;
+      if(result < to.minDose || offStep){
+        notes += '<div class="inline-alert">国内のハルロピテープは1日総量8〜64mgを8mg刻みでのみ使用します（8・16・24・32・40mg製剤の組合せ）。'
+          +(result < to.minDose ? '逆算値は最小用量8mgを下回っています。' : '逆算値'+formatNumber(result)+'mgに対応する貼付組合せはありません。')
+          +'帯の間を補間せず、患者状態に応じて個別に判断してください。</div>';
+      }
+    }
+    document.getElementById('convertLimitAlert').innerHTML = notes;
     document.getElementById('convertFormula').textContent=formatNumber(dose)+' × '+from.factor+' ÷ '+to.factor+' ＝ '+formatNumber(result)+' '+to.unit;
     var bandBox = document.getElementById('bandBox');
     if(from.band && to.band && dose>0){
@@ -842,9 +879,9 @@
     });
   }
   document.getElementById('addDrugBtn').addEventListener('click',function(){ addRow('levodopa_dci',0); });
-  document.getElementById('resetBtn').addEventListener('click',function(){ rows=[]; rowSequence=0; document.getElementById('supplementToggle').checked=false; addRow('levodopa_dci',0); });
+  document.getElementById('resetBtn').addEventListener('click',function(){ rows=[]; rowSequence=0; document.getElementById('supplementToggle').checked=false; addRow('levodopa_dci',0); renderConverterOptions(); updateConversion(); });
   document.getElementById('printBtn').addEventListener('click',function(){ window.print(); });
-  document.getElementById('supplementToggle').addEventListener('change',function(){ calculate(); });
+  document.getElementById('supplementToggle').addEventListener('change',function(){ calculate(); renderConverterOptions(); updateConversion(); });
   document.getElementById('copyBtn').addEventListener('click',copySummary);
   setupTabs();
   setupConverter();
