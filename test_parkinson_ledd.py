@@ -225,7 +225,7 @@ def main() -> None:
     dose_limits = {
         "cabergoline": (3, "max"),
         "pramipexole": (4.5, "max"),
-        "ropinirole_oral": (15, "max"),
+        "ropinirole_oral": (16, "max"),
         "rotigotine": (36, "max"),
         "selegiline": (10, "max"),
         "amantadine": (300, "max"),

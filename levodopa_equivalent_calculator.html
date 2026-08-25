@@ -369,7 +369,7 @@
           <article class="evidence-card"><h3>ロチゴチンの単位に注意</h3><p>日本のニュープロパッチに表示される<strong>総含量mg</strong>へ×13.3を適用します。海外の放出量mg/24hに対する×30.3とは単位が異なるため、置き換えません。</p></article>
           <article class="evidence-card"><h3>ハルロピは直接係数ではない</h3><p>日本神経学会2018は2019年承認のハルロピを収載していません。PMDA試験表の「貼付総量4mg＝経口徐放1mg」と学会の経口ロピニロール×20を橋渡しし、<strong>貼付総量×5</strong>を補足推定します。貼付総量へ経口係数×20を直接適用しません。</p></article>
           <article class="evidence-card"><h3>実装しない自動換算</h3><p>経口L-dopaと静注L-dopaの正確な換算式は確立していないため自動変換しません。ドロキシドパ、ビペリデンにも採用可能な標準係数を設定していません。</p></article>
-          <article class="evidence-card"><h3>換算タブは用量を超えたら警告する</h3><p>逆算値が電子添文の規定を超える場合は赤字で警告します。カベルゴリン3mg、プラミペキソール4.5mg、ロピニロール15mg（速放。徐放は16mg）、ロチゴチン36mgは「これを超えないこと」と定められた上限です。ペルゴリド1.25mgとブロモクリプチン22.5mgは上限規定ではなく標準維持量の上限で、警告文言を分けています。またLEDDは置換可能量ではないため、MAO-B阻害薬、アポモルヒネ、アマンタジンは換算先の選択肢に含めていません（総LEDDの加算対象からは外していません）。ハルロピテープは学会係数を持たないため既定では選択肢に出しませんが、「学会表外の補足値を含める」をONにすると別グループとして選べます。選択中は橋渡し推定である旨と、8〜64mgの8mg刻みという国内用法を併記します。</p></article>
+          <article class="evidence-card"><h3>換算タブは用量を超えたら警告する</h3><p>逆算値が電子添文の規定を超える場合は赤字で警告します。カベルゴリン3mg、プラミペキソール4.5mg、ロピニロール16mg（速放錠は15mg、徐放錠は16mg。1行で扱うため高いほうを閾値にし、PMDA切替表の徐放16mg＝貼付64mgで誤警告しないようにしています）、ロチゴチン36mg、セレギリン10mg、アマンタジン300mgは「これを超えないこと」と定められた上限です。ペルゴリド1.25mgとブロモクリプチン22.5mgは上限規定ではなく標準維持量の上限で、警告文言を分けています。またLEDDは置換可能量ではないため、MAO-B阻害薬、アポモルヒネ、アマンタジンは換算先の選択肢に含めていません（総LEDDの加算対象からは外していません）。ハルロピテープとホスレボドパは学会係数を持たないため「学会表外の補足」グループに分けていますが、換算タブでは総LEDDタブのトグルとは独立に常時選べます。合算ではなく1剤ずつ選ぶ画面のため、選択中は橋渡し推定である旨を必ず表示し、ハルロピには8〜64mgの8mg刻みという国内用法も併記します。</p></article>
         </div>
         <div class="card" style="margin-top:16px;box-shadow:none">
           <div class="card__head"><h2>主な換算ルール</h2></div>
@@ -419,7 +419,7 @@
   {"id":"cabergoline","name":"カベルゴリン","category":"ドパミンアゴニスト","source":"jns","calc":"linear","factor":66.7,"unit":"mg/日","inputLabel":"1日量","formula":"用量 ×66.7","convertible":true,"band":true,"doseLimit":3,"doseLimitType":"max"},
   {"id":"pergolide","name":"ペルゴリド","category":"ドパミンアゴニスト","source":"jns","calc":"linear","factor":100,"unit":"mg/日","inputLabel":"1日量","formula":"用量 ×100","convertible":true,"band":true,"doseLimit":1.25,"doseLimitType":"maintenance"},
   {"id":"pramipexole","name":"プラミペキソール","category":"ドパミンアゴニスト","source":"jns","calc":"linear","factor":100,"unit":"mg/日","inputLabel":"1日量","formula":"用量 ×100","convertible":true,"band":true,"doseLimit":4.5,"doseLimitType":"max"},
-  {"id":"ropinirole_oral","name":"ロピニロール（経口）","category":"ドパミンアゴニスト","source":"jns","calc":"linear","factor":20,"unit":"mg/日","inputLabel":"1日量","formula":"用量 ×20","convertible":true,"band":true,"doseLimit":15,"doseLimitType":"max"},
+  {"id":"ropinirole_oral","name":"ロピニロール（経口）","category":"ドパミンアゴニスト","source":"jns","calc":"linear","factor":20,"unit":"mg/日","inputLabel":"1日量","formula":"用量 ×20","convertible":true,"band":true,"doseLimit":16,"doseLimitType":"max","doseLimitNote":"速放錠（レキップ）は15mg/日、徐放錠（レキップCR）は16mg/日"},
   {"id":"rotigotine","name":"ロチゴチン（国内パッチ総含量）","category":"ドパミンアゴニスト","source":"jns","calc":"linear","factor":13.3,"unit":"mg/日","inputLabel":"国内表示の貼付量","formula":"国内表示mg ×13.3","convertible":true,"band":true,"note":"mg/24h放出量ではなく国内パッチ総含量","doseLimit":36,"doseLimitType":"max"},
   {"id":"apomorphine","name":"アポモルヒネ（間欠皮下注）","category":"ドパミンアゴニスト","source":"jns","calc":"linear","factor":10,"unit":"mg/日","inputLabel":"1日実投与量","formula":"用量 ×10","convertible":true,"doseLimit":30,"doseLimitType":"derived","note":"オフ時頓用。1回最高6mg×1日5回まで"},
   {"id":"amantadine","name":"アマンタジン","category":"その他","source":"jns","calc":"linear","factor":1,"unit":"mg/日","inputLabel":"1日量","formula":"用量 ×1","convertible":true,"doseLimit":300,"doseLimitType":"max"},
@@ -712,7 +712,6 @@
   function renderConverterOptions(keepFrom,keepTo){
     var from = document.getElementById('convertFrom');
     var to = document.getElementById('convertTo');
-    var supplementOn = document.getElementById('supplementToggle').checked;
     var previousFrom = keepFrom || from.value;
     var previousTo = keepTo || to.value;
     var html = '<optgroup label="日本神経学会2018">';
@@ -724,16 +723,16 @@
       }
     });
     html += '</optgroup>';
-    if(supplementOn){
-      var supplementHtml = '';
-      DRUGS.forEach(function(drug){
-        if(drug.convertibleSupplement){
-          supplementHtml += '<option value="'+drug.id+'">'+drug.name+'</option>';
-          valid[drug.id] = true;
-        }
-      });
-      if(supplementHtml){ html += '<optgroup label="学会表外の補足（学会係数ではありません）">'+supplementHtml+'</optgroup>'; }
-    }
+    // 補足薬は総LEDDタブのトグルとは独立に常時選べる。合算されるのではなく
+    // 1剤ずつ明示的に選ぶ画面で、選択中は必ず橋渡し推定である旨を表示するため。
+    var supplementHtml = '';
+    DRUGS.forEach(function(drug){
+      if(drug.convertibleSupplement){
+        supplementHtml += '<option value="'+drug.id+'">'+drug.name+'</option>';
+        valid[drug.id] = true;
+      }
+    });
+    if(supplementHtml){ html += '<optgroup label="学会表外の補足（学会係数ではありません）">'+supplementHtml+'</optgroup>'; }
     from.innerHTML = html;
     to.innerHTML = html;
     from.value = valid[previousFrom] ? previousFrom : 'pramipexole';
@@ -783,14 +782,14 @@
     var label = LIMIT_LABEL[to.doseLimitType] || LIMIT_LABEL.max;
     var overLimit = limit!==null && result > limit + 1e-9;
     document.getElementById('convertFromNote').textContent='入力単位：'+from.unit+'｜'+from.formula;
-    document.getElementById('convertToNote').textContent='出力単位：'+to.unit+'｜係数 ×'+to.factor+(limit!==null?'｜'+label.short+' '+limit+' mg/日':'');
+    document.getElementById('convertToNote').textContent='出力単位：'+to.unit+'｜係数 ×'+to.factor+(limit!==null?'｜'+label.short+' '+limit+' mg/日'+(to.doseLimitNote?'（'+to.doseLimitNote+'）':''):'');
     document.getElementById('convertLed').textContent=formatNumber(led)+' mg/日';
     var resultEl = document.getElementById('convertResult');
     resultEl.textContent=formatNumber(result)+' '+to.unit+(overLimit?'（上限超）':'');
     resultEl.classList.toggle('over-limit',overLimit);
     var notes = '';
     if(overLimit){
-      notes += '<div class="inline-alert error"><strong>'+label.head+'</strong> '+escapeHtml(to.name)+'（'+label.short+' '+limit+' mg/日）'+label.body+'</div>';
+      notes += '<div class="inline-alert error"><strong>'+label.head+'</strong> '+escapeHtml(to.name)+'（'+label.short+' '+limit+' mg/日'+(to.doseLimitNote?'：'+escapeHtml(to.doseLimitNote):'')+'）'+label.body+'</div>';
     }
     if(from.source==='pmda' || to.source==='pmda'){
       notes += '<div class="inline-alert"><strong>学会係数ではありません。</strong> ハルロピテープの×5は、PMDA臨床試験表の「貼付総量4mg＝経口徐放1mg」と日本神経学会2018の経口ロピニロール×20をつないだ橋渡し推定です。日本神経学会もPMDAも、この値をLEDD係数として定めていません。</div>';
@@ -884,9 +883,9 @@
     });
   }
   document.getElementById('addDrugBtn').addEventListener('click',function(){ addRow('levodopa_dci',0); });
-  document.getElementById('resetBtn').addEventListener('click',function(){ rows=[]; rowSequence=0; document.getElementById('supplementToggle').checked=false; addRow('levodopa_dci',0); renderConverterOptions(); updateConversion(); });
+  document.getElementById('resetBtn').addEventListener('click',function(){ rows=[]; rowSequence=0; document.getElementById('supplementToggle').checked=false; addRow('levodopa_dci',0); });
   document.getElementById('printBtn').addEventListener('click',function(){ window.print(); });
-  document.getElementById('supplementToggle').addEventListener('change',function(){ calculate(); renderConverterOptions(); updateConversion(); });
+  document.getElementById('supplementToggle').addEventListener('change',function(){ calculate(); });
   document.getElementById('copyBtn').addEventListener('click',copySummary);
   setupTabs();
   setupConverter();
