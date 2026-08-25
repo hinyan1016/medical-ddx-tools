@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#1A5276">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="description" content="WHO-DDD（Defined Daily Dose）とILAE基準に基づき、抗てんかん薬（ASM）の1日総負荷量（AED Load）、カルバマゼピン換算比、薬剤間ダイレクト換算、有効血中濃度（TDM）を計算・評価する医療従事者向けツール。">
+<meta name="description" content="WHO-DDD（Defined Daily Dose）とILAE基準に基づき、抗てんかん薬（ASM）の1日総負荷量（AED Load）、カルバマゼピン換算比、複数薬剤から単剤への一括換算、薬剤間ダイレクト換算、有効血中濃度（TDM）を計算・評価する医療従事者向けツール。">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>抗てんかん薬 AED Load・等価換算ツール（WHO-DDD / 有効血中濃度）</title>
@@ -154,12 +154,13 @@
     <a class="back" href="index.html">&larr; ツール一覧へ戻る</a>
     <div class="eyebrow">ANTISEIZURE MEDICATION LOAD &amp; TDM CALCULATOR</div>
     <h1>抗てんかん薬 AED Load・等価換算ツール</h1>
-    <p>WHO-DDD（Defined Daily Dose）とILAEガイドラインに基づき、処方中の抗てんかん薬の総薬剤負荷量（AED Load）、カルバマゼピン等価量、薬剤間ダイレクト換算、有効血中濃度（TDM基準値）を即時計算・評価します。</p>
+    <p>WHO-DDD（Defined Daily Dose）とILAEガイドラインに基づき、処方中の抗てんかん薬の総薬剤負荷量（AED Load）、カルバマゼピン等価量、複数処方から単剤への一括換算、薬剤間ダイレクト換算、有効血中濃度（TDM基準値）を即時計算・評価します。</p>
     <div class="hero-badges">
       <span class="hero-badge">WHO ATC/DDD 2026準拠</span>
+      <span class="hero-badge">多剤併用 &rarr; 単剤一括換算</span>
       <span class="hero-badge">薬剤間ダイレクト相互換算</span>
+      <span class="hero-badge">承認最大用量超過アラート</span>
       <span class="hero-badge">ILAE TDM推奨治療域</span>
-      <span class="hero-badge">SV2A (LEV/BRV) 換算対応</span>
     </div>
   </div>
 </header>
@@ -229,6 +230,28 @@
           </div>
         </div>
 
+        <!-- NEW: MULTI-DRUG TO SINGLE TARGET CONVERSION CARD -->
+        <div class="card" style="margin-top:16px;">
+          <div class="card__head">
+            <div>
+              <h2>多剤併用 &rarr; 単剤一括換算</h2>
+              <p>現在の総負荷量を特定の1剤に集約した場合の参考量</p>
+            </div>
+          </div>
+          <div class="card__body" style="font-size:.84rem;">
+            <label for="targetDrugSelect" style="font-weight:800;color:var(--deep);display:block;margin-bottom:4px;">換算先の目標薬剤:</label>
+            <select id="targetDrugSelect" onchange="updateTargetDrugConversion()" style="width:100%;border:1px solid #aed6f1;border-radius:8px;padding:8px 9px;font-size:.86rem;background:#fff;"></select>
+            
+            <div style="background:var(--wash);border:1px solid #d4e6f1;border-radius:10px;padding:12px;margin-top:10px;text-align:center;">
+              <div style="font-size:.76rem;color:var(--muted);">数学的参考等価用量</div>
+              <div style="font-size:1.4rem;font-weight:900;color:var(--deep);margin:2px 0;" id="targetEquivVal">0 mg/日</div>
+              <div style="font-size:.74rem;color:var(--primary);font-weight:700;" id="targetTdmVal">基準治療域: -</div>
+            </div>
+            
+            <div id="targetMaxWarning" style="margin-top:8px;"></div>
+          </div>
+        </div>
+
         <div class="card" style="margin-top:16px;">
           <div class="card__head">
             <h2>負荷量の判定基準</h2>
@@ -250,7 +273,7 @@
     <div class="card">
       <div class="card__head">
         <div>
-          <h2>抗てんかん薬 薬剤間ダイレクト換算（数学的参考等価量）</h2>
+          <h2>抗てんかん薬 薬剤間ダイレクト換算（1対1 数学的参考等価量）</h2>
           <p>WHO-DDDの標準維持用量比に基づき、同じ薬剤負荷量（AED Load）となる投与量を相互逆算します。</p>
         </div>
       </div>
@@ -378,6 +401,7 @@ var DRUGS = [
     shortName: "CBZ",
     category: "第一世代（古典的）",
     ddd: 1000,
+    maxDose: 1200,
     unit: "mg",
     step: 100,
     defaultDose: 400,
@@ -393,6 +417,7 @@ var DRUGS = [
     shortName: "PHT",
     category: "第一世代（古典的）",
     ddd: 300,
+    maxDose: 300,
     unit: "mg",
     step: 25,
     defaultDose: 200,
@@ -408,6 +433,7 @@ var DRUGS = [
     shortName: "PB",
     category: "第一世代（古典的）",
     ddd: 100,
+    maxDose: 200,
     unit: "mg",
     step: 30,
     defaultDose: 60,
@@ -423,6 +449,7 @@ var DRUGS = [
     shortName: "VPA",
     category: "第一世代（古典的）",
     ddd: 1500,
+    maxDose: 2000,
     unit: "mg",
     step: 100,
     defaultDose: 600,
@@ -438,6 +465,7 @@ var DRUGS = [
     shortName: "LEV",
     category: "新規世代（第二世代）",
     ddd: 1500,
+    maxDose: 3000,
     unit: "mg",
     step: 250,
     defaultDose: 1000,
@@ -453,6 +481,7 @@ var DRUGS = [
     shortName: "BRV",
     category: "新規世代（第三世代）",
     ddd: 100,
+    maxDose: 200,
     unit: "mg",
     step: 25,
     defaultDose: 50,
@@ -468,6 +497,7 @@ var DRUGS = [
     shortName: "LCM",
     category: "新規世代（第三世代）",
     ddd: 300,
+    maxDose: 400,
     unit: "mg",
     step: 50,
     defaultDose: 100,
@@ -483,6 +513,7 @@ var DRUGS = [
     shortName: "LTG",
     category: "新規世代（第二世代）",
     ddd: 300,
+    maxDose: 400,
     unit: "mg",
     step: 25,
     defaultDose: 100,
@@ -498,6 +529,7 @@ var DRUGS = [
     shortName: "TPM",
     category: "新規世代（第二世代）",
     ddd: 300,
+    maxDose: 600,
     unit: "mg",
     step: 50,
     defaultDose: 100,
@@ -513,6 +545,7 @@ var DRUGS = [
     shortName: "ZNS",
     category: "新規世代（日本発）",
     ddd: 200,
+    maxDose: 600,
     unit: "mg",
     step: 50,
     defaultDose: 100,
@@ -528,6 +561,7 @@ var DRUGS = [
     shortName: "PER",
     category: "新規世代（第三世代）",
     ddd: 8,
+    maxDose: 12,
     unit: "mg",
     step: 2,
     defaultDose: 4,
@@ -543,6 +577,7 @@ var DRUGS = [
     shortName: "CLB",
     category: "ベンゾジアゼピン系",
     ddd: 20,
+    maxDose: 40,
     unit: "mg",
     step: 5,
     defaultDose: 10,
@@ -558,6 +593,7 @@ var DRUGS = [
     shortName: "GBP",
     category: "新規世代（第二世代）",
     ddd: 1800,
+    maxDose: 2400,
     unit: "mg",
     step: 200,
     defaultDose: 600,
@@ -573,6 +609,7 @@ var DRUGS = [
     shortName: "ESM",
     category: "第一世代（欠神発作特効薬）",
     ddd: 1250,
+    maxDose: 1500,
     unit: "mg",
     step: 250,
     defaultDose: 500,
@@ -594,6 +631,8 @@ function getDrugById(id) {
 var currentRegimen = [
   { drugId: "lev", dose: 1000 }
 ];
+
+var cachedTotalLoad = 0;
 
 function switchTab(panelId) {
   var panels = document.querySelectorAll('.tab-panel');
@@ -722,6 +761,8 @@ function updateCalculations() {
     }
   }
 
+  cachedTotalLoad = totalLoad;
+
   document.getElementById('totalLoadVal').textContent = totalLoad.toFixed(2);
   document.getElementById('cbzEqVal').textContent = Math.round(totalCbzEq).toLocaleString() + ' mg/日';
   document.getElementById('drugCountVal').textContent = activeCount + ' 剤';
@@ -742,6 +783,38 @@ function updateCalculations() {
   }
 
   renderAlerts(activeDrugs, totalLoad);
+  updateTargetDrugConversion();
+}
+
+function initTargetDrugSelect() {
+  var sel = document.getElementById('targetDrugSelect');
+  sel.innerHTML = '';
+  for (var i = 0; i < DRUGS.length; i++) {
+    var opt = document.createElement('option');
+    opt.value = DRUGS[i].id;
+    opt.textContent = DRUGS[i].name;
+    if (DRUGS[i].id === 'cbz') opt.selected = true;
+    sel.appendChild(opt);
+  }
+}
+
+function updateTargetDrugConversion() {
+  var targetId = document.getElementById('targetDrugSelect').value;
+  var drug = getDrugById(targetId);
+  if (!drug) return;
+
+  var equivDose = Math.round(cachedTotalLoad * drug.ddd * 10) / 10;
+  document.getElementById('targetEquivVal').textContent = equivDose.toLocaleString() + ' ' + drug.unit + '/日';
+  document.getElementById('targetTdmVal').textContent = '基準治療域: ' + drug.therapeuticRange + ' ' + drug.rangeUnit;
+
+  var warnEl = document.getElementById('targetMaxWarning');
+  if (cachedTotalLoad === 0) {
+    warnEl.innerHTML = '';
+  } else if (equivDose > drug.maxDose) {
+    warnEl.innerHTML = '<div class="alert-box alert-danger" style="margin-top:6px;font-size:.76rem;padding:8px 10px;"><strong>⚠️ 承認最大用量超過：</strong>' + drug.shortName + 'の承認最大用量（' + drug.maxDose + ' ' + drug.unit + '/日）を超過しています。多剤処方を単一薬剤に完全集約するのは過量毒性リスクがあるため、作用機序の異なる2剤併用等をご検討ください。</div>';
+  } else {
+    warnEl.innerHTML = '<div style="font-size:.74rem;color:var(--muted);margin-top:4px;">※ 最大承認用量: ' + drug.maxDose + ' ' + drug.unit + '/日（範囲内）</div>';
+  }
 }
 
 function renderAlerts(activeDrugs, totalLoad) {
@@ -794,10 +867,16 @@ function copySummary() {
   var totalLoad = document.getElementById('totalLoadVal').textContent;
   var cbzEq = document.getElementById('cbzEqVal').textContent;
   var drugCount = document.getElementById('drugCountVal').textContent;
+  var targetId = document.getElementById('targetDrugSelect').value;
+  var targetDrug = getDrugById(targetId);
+  var targetEquiv = document.getElementById('targetEquivVal').textContent;
 
   var text = '【抗てんかん薬 処方負荷（AED Load）評価】\n';
   text += '■ 合計 AED Load: ' + totalLoad + ' DDD\n';
   text += '■ カルバマゼピン等価換算: ' + cbzEq + '\n';
+  if (targetDrug && targetDrug.id !== 'cbz') {
+    text += '■ ' + targetDrug.shortName + '等価換算: ' + targetEquiv + '\n';
+  }
   text += '■ 処方薬剤数: ' + drugCount + '\n';
   text += '■ 処方内訳:\n';
 
@@ -894,6 +973,11 @@ function calcInterDrugConversion() {
   // ペア別ガイダンス
   var guidance = [];
 
+  // 最大用量超過チェック
+  if (toDose > drugTo.maxDose) {
+    guidance.push('<div class="alert-box alert-danger"><strong>⚠️ 換算先の承認最大用量超過：</strong>換算量（' + toDose + ' ' + drugTo.unit + '）が' + drugTo.shortName + 'の承認最大用量（' + drugTo.maxDose + ' ' + drugTo.unit + '/日）を超過しています。</div>');
+  }
+
   // LEV ↔ BRV
   if ((fromId === 'lev' && toId === 'brv') || (fromId === 'brv' && toId === 'lev')) {
     guidance.push('<div class="alert-box alert-info"><strong>💡 SV2Aリガンド間の切替（LEV ↔ BRV）：</strong>両剤は同じSV2A標的で、DDD比および臨床力価比は <strong>約 15 : 1</strong>（LEV 1,500mg ≒ BRV 100mg）です。LEV誘発性の易刺激性・精神症状に対するBRVへの切替では、翌日からの即日一括置換（Overnight Switch）も臨床試験等で行われています。</div>');
@@ -937,6 +1021,7 @@ function initQuickRefTable() {
 
 // 初期化
 document.addEventListener('DOMContentLoaded', function() {
+  initTargetDrugSelect();
   renderRegimen();
   initConvertTab();
   initQuickRefTable();
