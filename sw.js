@@ -1,7 +1,8 @@
-const CACHE_NAME = 'ddx-tools-v135';
+const CACHE_NAME = 'ddx-tools-v136';
 const ASSETS = [
   './',
   './index.html',
+  './antiepileptic_load_calculator.html',
   './vascular-territory-atlas.html',
   './aki.html',
   './edema.html',
