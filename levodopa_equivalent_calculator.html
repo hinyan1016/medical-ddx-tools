@@ -285,6 +285,7 @@
       <div class="card__head"><div><h2>薬剤間の数学的参考換算</h2><p>日本神経学会2018の単純係数だけを用い、同じ推定LEDDとなる量を逆算します。</p></div></div>
       <div class="card__body">
         <div class="inline-alert error"><strong>処方切替量ではありません。</strong> 製剤特性、作用時間、忍容性、離脱・増悪リスクは換算されません。実際の変更は添付文書と患者状態に基づき個別に行ってください。</div>
+        <div class="inline-alert">逆算値が国内用法の上限を超える場合は警告を表示します。<strong>エンタカポン・オピカポン・イストラデフィリン</strong>は自身の用量ではなく併用L-dopa量に対する加算のため、<strong>サフィナミド・ゾニサミド</strong>は用量によらず固定LEDDのため、いずれも逆算できず選択肢に含めていません。</div>
         <div class="convert-grid">
           <div class="field">
             <label for="convertFrom">換算元</label>
@@ -409,21 +410,21 @@
 <script type="application/json" id="calcDrugData">
 [
   {"id":"levodopa_dci","name":"L-dopa/DCI配合剤（経口）","category":"L-dopa","source":"jns","calc":"linear","factor":1,"unit":"mg/日","inputLabel":"含有L-dopa量","formula":"L-dopa ×1","convertible":true,"base":true,"note":"錠数ではなく1日L-dopa含有量"},
-  {"id":"stalevo","name":"スタレボ配合錠","category":"L-dopa","source":"jns","calc":"stalevo","factor":1.33,"unit":"mg/日","inputLabel":"含有L-dopa量","formula":"L-dopa ×1.33","convertible":false,"base":true,"note":"L-dopa本体とエンタカポン寄与を含む"},
+  {"id":"stalevo","name":"スタレボ配合錠","category":"L-dopa","source":"jns","calc":"stalevo","factor":1.33,"unit":"mg/日","inputLabel":"含有L-dopa量","formula":"L-dopa ×1.33","convertible":true,"base":true,"note":"L-dopa本体とエンタカポン寄与を含む"},
   {"id":"duodopa","name":"デュオドーパ（LCIG）","category":"L-dopa","source":"jns","calc":"linear","factor":1.11,"unit":"mg/日","inputLabel":"投与L-dopa量","formula":"L-dopa ×1.11","convertible":true,"base":true,"baseFactor":1,"note":"実投与L-dopa量"},
   {"id":"entacapone","name":"エンタカポン（寄与分）","category":"COMT阻害薬","source":"jns","calc":"entacapone","factor":0.33,"unit":"mg/日","inputLabel":"併用対象L-dopa量","formula":"対象L-dopa ×0.33","convertible":false,"note":"エンタカポン錠のmgは入力しない"},
-  {"id":"selegiline","name":"セレギリン","category":"MAO-B阻害薬","source":"jns","calc":"linear","factor":10,"unit":"mg/日","inputLabel":"1日量","formula":"用量 ×10","convertible":false},
-  {"id":"rasagiline","name":"ラサギリン","category":"MAO-B阻害薬","source":"jns","calc":"linear","factor":100,"unit":"mg/日","inputLabel":"1日量","formula":"用量 ×100","convertible":false},
+  {"id":"selegiline","name":"セレギリン","category":"MAO-B阻害薬","source":"jns","calc":"linear","factor":10,"unit":"mg/日","inputLabel":"1日量","formula":"用量 ×10","convertible":true,"doseLimit":10,"doseLimitType":"max"},
+  {"id":"rasagiline","name":"ラサギリン","category":"MAO-B阻害薬","source":"jns","calc":"linear","factor":100,"unit":"mg/日","inputLabel":"1日量","formula":"用量 ×100","convertible":true,"doseLimit":1,"doseLimitType":"fixed"},
   {"id":"bromocriptine","name":"ブロモクリプチン","category":"ドパミンアゴニスト","source":"jns","calc":"linear","factor":10,"unit":"mg/日","inputLabel":"1日量","formula":"用量 ×10","convertible":true,"band":true,"doseLimit":22.5,"doseLimitType":"maintenance"},
   {"id":"cabergoline","name":"カベルゴリン","category":"ドパミンアゴニスト","source":"jns","calc":"linear","factor":66.7,"unit":"mg/日","inputLabel":"1日量","formula":"用量 ×66.7","convertible":true,"band":true,"doseLimit":3,"doseLimitType":"max"},
   {"id":"pergolide","name":"ペルゴリド","category":"ドパミンアゴニスト","source":"jns","calc":"linear","factor":100,"unit":"mg/日","inputLabel":"1日量","formula":"用量 ×100","convertible":true,"band":true,"doseLimit":1.25,"doseLimitType":"maintenance"},
   {"id":"pramipexole","name":"プラミペキソール","category":"ドパミンアゴニスト","source":"jns","calc":"linear","factor":100,"unit":"mg/日","inputLabel":"1日量","formula":"用量 ×100","convertible":true,"band":true,"doseLimit":4.5,"doseLimitType":"max"},
   {"id":"ropinirole_oral","name":"ロピニロール（経口）","category":"ドパミンアゴニスト","source":"jns","calc":"linear","factor":20,"unit":"mg/日","inputLabel":"1日量","formula":"用量 ×20","convertible":true,"band":true,"doseLimit":15,"doseLimitType":"max"},
   {"id":"rotigotine","name":"ロチゴチン（国内パッチ総含量）","category":"ドパミンアゴニスト","source":"jns","calc":"linear","factor":13.3,"unit":"mg/日","inputLabel":"国内表示の貼付量","formula":"国内表示mg ×13.3","convertible":true,"band":true,"note":"mg/24h放出量ではなく国内パッチ総含量","doseLimit":36,"doseLimitType":"max"},
-  {"id":"apomorphine","name":"アポモルヒネ（間欠皮下注）","category":"ドパミンアゴニスト","source":"jns","calc":"linear","factor":10,"unit":"mg/日","inputLabel":"1日実投与量","formula":"用量 ×10","convertible":false},
-  {"id":"amantadine","name":"アマンタジン","category":"その他","source":"jns","calc":"linear","factor":1,"unit":"mg/日","inputLabel":"1日量","formula":"用量 ×1","convertible":false},
+  {"id":"apomorphine","name":"アポモルヒネ（間欠皮下注）","category":"ドパミンアゴニスト","source":"jns","calc":"linear","factor":10,"unit":"mg/日","inputLabel":"1日実投与量","formula":"用量 ×10","convertible":true,"doseLimit":30,"doseLimitType":"derived","note":"オフ時頓用。1回最高6mg×1日5回まで"},
+  {"id":"amantadine","name":"アマンタジン","category":"その他","source":"jns","calc":"linear","factor":1,"unit":"mg/日","inputLabel":"1日量","formula":"用量 ×1","convertible":true,"doseLimit":300,"doseLimitType":"max"},
   {"id":"ropinirole_patch","name":"ハルロピテープ（ロピニロール貼付）","category":"学会表外の補足","source":"pmda","calc":"haruropi","factor":5,"unit":"mg/日","inputLabel":"国内表示の貼付総量","formula":"国内表示mg ×5（PMDA 4:1橋渡し）","validStep":8,"minDose":8,"maxDose":64,"convertible":false,"convertibleSupplement":true,"doseLimit":64,"doseLimitType":"max","note":"JNS 2018表外。久光製薬／協和キリン。学会公式係数ではない"},
-  {"id":"foslevodopa","name":"ホスレボドパ（ヴィアレブ）","category":"MDS 2023補足","source":"mds","calc":"linear","factor":0.75,"unit":"mg/日","inputLabel":"ホスレボドパ1日量","formula":"ホスレボドパ ×0.75","convertible":false,"base":true},
+  {"id":"foslevodopa","name":"ホスレボドパ（ヴィアレブ）","category":"MDS 2023補足","source":"mds","calc":"linear","factor":0.75,"unit":"mg/日","inputLabel":"ホスレボドパ1日量","formula":"ホスレボドパ ×0.75","convertible":false,"convertibleSupplement":true,"base":true},
   {"id":"opicapone","name":"オピカポン","category":"MDS 2023補足","source":"mds","calc":"opicapone","factor":0.5,"unit":"mg/日","inputLabel":"オピカポン1日量","formula":"L-dopa系基礎LEDD ×0.5","validDoses":[25],"convertible":false,"note":"MDS 2023の×0.5は海外50mg製剤への提案値。国内承認は25mg 1日1回で、25mgへの適用は外挿"},
   {"id":"safinamide","name":"サフィナミド","category":"MDS 2023補足","source":"mds","calc":"fixed","factor":150,"unit":"mg/日","inputLabel":"1日量","formula":"50/100mgとも固定150","validDoses":[50,100],"convertible":false},
   {"id":"zonisamide","name":"ゾニサミド（PD適応）","category":"MDS 2023補足","source":"mds","calc":"fixed","factor":100,"unit":"mg/日","inputLabel":"1日量","formula":"25/50mgとも固定100","validDoses":[25,50],"convertible":false},
@@ -766,7 +767,11 @@
     max: {short:'国内承認最大1日量', head:'国内承認最大用量を超える計算値です。',
           body:'の電子添文は1日量の上限を定めています。表示値は係数の数学的逆算にすぎず、投与量・切替量として使用しないでください。'},
     maintenance: {short:'電子添文の標準維持量上限', head:'電子添文の標準維持量を大きく超える計算値です。',
-          body:'の電子添文に「これを超えないこと」に相当する上限規定はありませんが、標準維持量の範囲を超えています。表示値は係数の数学的逆算にすぎず、投与量・切替量として使用しないでください。'}
+          body:'の電子添文に「これを超えないこと」に相当する上限規定はありませんが、標準維持量の範囲を超えています。表示値は係数の数学的逆算にすぎず、投与量・切替量として使用しないでください。'},
+    fixed: {short:'電子添文の固定用量', head:'電子添文が定める固定用量を超える計算値です。',
+          body:'の電子添文は増量規定を持たない固定用量を定めています。表示値は係数の数学的逆算にすぎず、投与量・切替量として使用しないでください。'},
+    derived: {short:'1回量と回数上限からの算出値', head:'電子添文の1日上限として算出される量を超える計算値です。',
+          body:'は1日量そのものの規定を持たず、1回最高量と1日投与回数の上限から算出した値と比較しています。表示値は係数の数学的逆算にすぎず、投与量・切替量として使用しないでください。'}
   };
   function updateConversion(){
     var from = getDrug(document.getElementById('convertFrom').value);

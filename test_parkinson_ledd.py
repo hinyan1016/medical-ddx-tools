@@ -212,27 +212,34 @@ def main() -> None:
         item["id"] for item in drugs if item["source"] == "jns" and item.get("convertible")
     }
     assert convertible_jns_ids == {
-        "levodopa_dci", "duodopa", "bromocriptine", "cabergoline",
-        "pergolide", "pramipexole", "ropinirole_oral", "rotigotine",
+        "levodopa_dci", "stalevo", "duodopa", "selegiline", "rasagiline",
+        "bromocriptine", "cabergoline", "pergolide", "pramipexole",
+        "ropinirole_oral", "rotigotine", "apomorphine", "amantadine",
     }, convertible_jns_ids
-    for excluded_id in ("selegiline", "rasagiline", "apomorphine", "amantadine"):
-        assert by_id[excluded_id]["convertible"] is False, excluded_id
-        assert by_id[excluded_id]["source"] == "jns", excluded_id
+    # inverse conversion is undefined for these, so they stay out of the tab
+    for excluded_id in ("entacapone", "opicapone", "istradefylline", "safinamide", "zonisamide"):
+        assert by_id[excluded_id].get("convertible") is False, excluded_id
+        assert not by_id[excluded_id].get("convertibleSupplement"), excluded_id
 
+    # values verified against the current PMDA package inserts on 2026-08-25
     dose_limits = {
         "cabergoline": (3, "max"),
         "pramipexole": (4.5, "max"),
         "ropinirole_oral": (15, "max"),
         "rotigotine": (36, "max"),
+        "selegiline": (10, "max"),
+        "amantadine": (300, "max"),
         "pergolide": (1.25, "maintenance"),
         "bromocriptine": (22.5, "maintenance"),
+        "rasagiline": (1, "fixed"),
+        "apomorphine": (30, "derived"),
     }
     for drug_id, (limit, limit_type) in dose_limits.items():
         assert_close(by_id[drug_id]["doseLimit"], limit, drug_id + " doseLimit")
         assert by_id[drug_id]["doseLimitType"] == limit_type, drug_id
     for item in drugs:
         if "doseLimitType" in item:
-            assert item["doseLimitType"] in ("max", "maintenance"), item["id"]
+            assert item["doseLimitType"] in ("max", "maintenance", "fixed", "derived"), item["id"]
 
     for drug_id, (limit, limit_type) in dose_limits.items():
         factor = by_id[drug_id]["factor"]
@@ -348,12 +355,9 @@ def main() -> None:
     supplement_convertible = {
         item["id"] for item in drugs if item.get("convertibleSupplement")
     }
-    assert supplement_convertible == {"ropinirole_patch"}, supplement_convertible
+    assert supplement_convertible == {"ropinirole_patch", "foslevodopa"}, supplement_convertible
     # the JNS-only option set must be unchanged by adding the supplement group
-    assert convertible_jns_ids == {
-        "levodopa_dci", "duodopa", "bromocriptine", "cabergoline",
-        "pergolide", "pramipexole", "ropinirole_oral", "rotigotine",
-    }
+    assert len(convertible_jns_ids) == 13
     # converter math must reproduce the PMDA 17.1.3 switching table exactly
     patch_factor = patch["factor"]
     oral_factor = by_id["ropinirole_oral"]["factor"]
@@ -372,6 +376,8 @@ def main() -> None:
     for marker in (
         "convertibleSupplement",
         "renderConverterOptions",
+        "電子添文が定める固定用量を超える",
+        "1回最高量と1日投与回数の上限から算出",
         "学会係数ではありません",
         "8mg刻みでのみ使用します",
     ):
