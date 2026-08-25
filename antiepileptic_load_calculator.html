@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#1A5276">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="description" content="WHO-DDD（Defined Daily Dose）とILAE基準に基づき、抗てんかん薬（ASM）の1日総負荷量（AED Load）、カルバマゼピン換算比、有効血中濃度（TDM）を計算・評価する医療従事者向けツール。">
+<meta name="description" content="WHO-DDD（Defined Daily Dose）とILAE基準に基づき、抗てんかん薬（ASM）の1日総負荷量（AED Load）、カルバマゼピン換算比、薬剤間ダイレクト換算、有効血中濃度（TDM）を計算・評価する医療従事者向けツール。">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>抗てんかん薬 AED Load・等価換算ツール（WHO-DDD / 有効血中濃度）</title>
@@ -107,13 +107,34 @@
   table.data-table tr:hover { background: #fcfdfd; }
   .copy-btn { width: 100%; margin-top: 10px; padding: 9px; background: #fff; border: 1px solid #bdc3c7; border-radius: 8px; font-weight: 700; cursor: pointer; color: var(--ink); }
   .copy-btn:hover { background: #f2f4f4; }
+  
+  /* Inter-Drug Conversion Styles */
+  .convert-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; margin: 16px 0; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-size: .84rem; font-weight: 800; color: var(--deep); }
+  .field select, .field input { width: 100%; border: 1px solid #aed6f1; border-radius: 8px; padding: 9px 10px; font-size: .9rem; background:#fff; }
+  .field input { text-align: right; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .swap-btn { width: 42px; height: 42px; border-radius: 50%; border: 1px solid #aed6f1; background: var(--wash); color: var(--primary); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; margin-top: 18px; }
+  .swap-btn:hover { background: #d4e6f1; }
+  .convert-output { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+  .output-cell { background: var(--wash); border: 1px solid #d4e6f1; border-radius: 10px; padding: 14px; text-align: center; }
+  .output-cell .label { font-size: .78rem; color: var(--muted); margin-bottom: 4px; }
+  .output-cell .value { font-size: 1.45rem; font-weight: 900; color: var(--deep); font-variant-numeric: tabular-nums; }
+  .output-cell .sub { font-size: .75rem; color: var(--primary); margin-top: 2px; }
+  .formula-box { background: #fdfefe; border: 1px dashed #aed6f1; border-radius: 8px; padding: 10px 14px; margin-top: 14px; font-size: .82rem; color: #444; }
+  
   footer { margin-top: 36px; padding-top: 18px; border-top: 1px solid #d5dbdb; text-align: center; color: var(--muted); font-size: .8rem; }
   @media (max-width: 780px) {
     .layout { grid-template-columns: 1fr; }
     .regimen-head, .drug-row { grid-template-columns: minmax(130px,1.4fr) minmax(85px,.7fr) minmax(75px,.6fr) 34px; gap: 5px; }
   }
+  @media (max-width: 620px) {
+    .convert-grid { grid-template-columns: 1fr; }
+    .swap-btn { margin: 4px auto; transform: rotate(90deg); }
+    .convert-output { grid-template-columns: 1fr; }
+  }
   @media print {
-    .global-nav, .tabs, .btn-add, .remove-btn, .copy-btn { display: none !important; }
+    .global-nav, .tabs, .btn-add, .remove-btn, .copy-btn, .swap-btn { display: none !important; }
     .card { box-shadow: none; border: 1px solid #ccc; }
   }
 </style>
@@ -133,11 +154,11 @@
     <a class="back" href="index.html">&larr; ツール一覧へ戻る</a>
     <div class="eyebrow">ANTISEIZURE MEDICATION LOAD &amp; TDM CALCULATOR</div>
     <h1>抗てんかん薬 AED Load・等価換算ツール</h1>
-    <p>WHO-DDD（Defined Daily Dose）とILAEガイドラインに基づき、処方中の抗てんかん薬の総薬剤負荷量（AED Load）、カルバマゼピン等価量、有効血中濃度（TDM基準値）を即時計算・評価します。</p>
+    <p>WHO-DDD（Defined Daily Dose）とILAEガイドラインに基づき、処方中の抗てんかん薬の総薬剤負荷量（AED Load）、カルバマゼピン等価量、薬剤間ダイレクト換算、有効血中濃度（TDM基準値）を即時計算・評価します。</p>
     <div class="hero-badges">
       <span class="hero-badge">WHO ATC/DDD 2026準拠</span>
+      <span class="hero-badge">薬剤間ダイレクト相互換算</span>
       <span class="hero-badge">ILAE TDM推奨治療域</span>
-      <span class="hero-badge">多剤併用・相互作用アラート</span>
       <span class="hero-badge">SV2A (LEV/BRV) 換算対応</span>
     </div>
   </div>
@@ -149,12 +170,13 @@
   </div>
 
   <div class="tabs" role="tablist">
-    <button class="tab-btn" role="tab" id="tab1" aria-selected="true" aria-controls="panel1" onclick="switchTab('panel1')">🧮 AED Load 計算機</button>
-    <button class="tab-btn" role="tab" id="tab2" aria-selected="false" aria-controls="panel2" onclick="switchTab('panel2')">📋 標準用量・TDM早見表</button>
-    <button class="tab-btn" role="tab" id="tab3" aria-selected="false" aria-controls="panel3" onclick="switchTab('panel3')">📖 臨床解説・切替の原則</button>
+    <button class="tab-btn" role="tab" id="tab1" aria-selected="true" aria-controls="panel1" onclick="switchTab('panel1')">🧮 総AED Load 計算機</button>
+    <button class="tab-btn" role="tab" id="tab2" aria-selected="false" aria-controls="panel2" onclick="switchTab('panel2')">🔄 薬剤間ダイレクト換算</button>
+    <button class="tab-btn" role="tab" id="tab3" aria-selected="false" aria-controls="panel3" onclick="switchTab('panel3')">📋 標準用量・TDM早見表</button>
+    <button class="tab-btn" role="tab" id="tab4" aria-selected="false" aria-controls="panel4" onclick="switchTab('panel4')">📖 臨床解説・切替の原則</button>
   </div>
 
-  <!-- TAB 1: CALCULATOR -->
+  <!-- TAB 1: REGIMEN LOAD CALCULATOR -->
   <div id="panel1" class="tab-panel" role="tabpanel" aria-labelledby="tab1">
     <div class="layout">
       <div>
@@ -223,8 +245,62 @@
     </div>
   </div>
 
-  <!-- TAB 2: TABLE -->
+  <!-- TAB 2: INTER-DRUG CONVERSION -->
   <div id="panel2" class="tab-panel" role="tabpanel" aria-labelledby="tab2" hidden>
+    <div class="card">
+      <div class="card__head">
+        <div>
+          <h2>抗てんかん薬 薬剤間ダイレクト換算（数学的参考等価量）</h2>
+          <p>WHO-DDDの標準維持用量比に基づき、同じ薬剤負荷量（AED Load）となる投与量を相互逆算します。</p>
+        </div>
+      </div>
+      <div class="card__body">
+        <div class="alert-box alert-warn" style="margin-top:0;">
+          <strong>⚠️ 処方切替量ではありません：</strong>本換算はWHO-DDDに基づく数学的等価量です。抗てんかん薬は標的受容体や発作型適合性が異なり、直接即日置換すると発作重積や薬疹などの危険があります。実際の切替は漸増・漸減（Transitional Polytherapy）とTDMを行い、患者状態に応じて個別に調整してください。
+        </div>
+
+        <div class="convert-grid">
+          <div class="field">
+            <label for="convertFromSelect">換算元 薬剤（From）</label>
+            <select id="convertFromSelect" onchange="calcInterDrugConversion()"></select>
+            <label for="convertFromDose" style="margin-top:4px;font-size:.76rem;color:var(--muted);">1日投与量</label>
+            <input type="number" id="convertFromDose" min="0" step="10" value="1000" oninput="calcInterDrugConversion()">
+            <div id="convertFromMeta" style="font-size:.74rem;color:var(--muted);margin-top:2px;"></div>
+          </div>
+
+          <button class="swap-btn" type="button" id="btnSwap" title="換算元と換算先を入れ替える" onclick="swapConvertDrugs()">⇄</button>
+
+          <div class="field">
+            <label for="convertToSelect">換算先 薬剤（To）</label>
+            <select id="convertToSelect" onchange="calcInterDrugConversion()"></select>
+            <div style="margin-top:4px;font-size:.76rem;color:transparent;">スペース</div>
+            <div style="min-height:42px;display:flex;align-items:center;padding:0 4px;font-size:.84rem;color:var(--deep);font-weight:700;" id="convertToDddNote"></div>
+            <div id="convertToMeta" style="font-size:.74rem;color:var(--muted);margin-top:2px;"></div>
+          </div>
+        </div>
+
+        <div class="convert-output">
+          <div class="output-cell">
+            <div class="label">換算元の負荷量 &amp; CBZ等価量</div>
+            <div class="value" id="convertFromLoadVal">0.67 DDD</div>
+            <div class="sub" id="convertFromCbzVal">CBZ 667 mg相当</div>
+          </div>
+          <div class="output-cell" style="background:#eafaf1;border-color:#a9dfbf;">
+            <div class="label" style="color:#145a32;">換算先の数学的参考投与量</div>
+            <div class="value" id="convertToResultVal" style="color:#145a32;">67 mg/日</div>
+            <div class="sub" id="convertToTdmVal" style="color:#196f3d;">基準治療域: 0.2 〜 2.0 μg/mL</div>
+          </div>
+        </div>
+
+        <div class="formula-box" id="convertFormulaBox"></div>
+
+        <div id="convertPairGuidance" style="margin-top:14px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: TABLE -->
+  <div id="panel3" class="tab-panel" role="tabpanel" aria-labelledby="tab3" hidden>
     <div class="card">
       <div class="card__head">
         <div>
@@ -252,8 +328,8 @@
     </div>
   </div>
 
-  <!-- TAB 3: EXPLANATION -->
-  <div id="panel3" class="tab-panel" role="tabpanel" aria-labelledby="tab3" hidden>
+  <!-- TAB 4: EXPLANATION -->
+  <div id="panel4" class="tab-panel" role="tabpanel" aria-labelledby="tab4" hidden>
     <div class="card">
       <div class="card__head">
         <h2>抗てんかん薬の等価換算・AED Loadの臨床解説</h2>
@@ -746,6 +822,102 @@ function copySummary() {
   });
 }
 
+/* Inter-Drug Conversion Functions */
+function initConvertTab() {
+  var fromSel = document.getElementById('convertFromSelect');
+  var toSel = document.getElementById('convertToSelect');
+  fromSel.innerHTML = '';
+  toSel.innerHTML = '';
+
+  for (var i = 0; i < DRUGS.length; i++) {
+    var d = DRUGS[i];
+    var opt1 = document.createElement('option');
+    opt1.value = d.id;
+    opt1.textContent = d.name;
+    if (d.id === 'lev') opt1.selected = true;
+    fromSel.appendChild(opt1);
+
+    var opt2 = document.createElement('option');
+    opt2.value = d.id;
+    opt2.textContent = d.name;
+    if (d.id === 'brv') opt2.selected = true;
+    toSel.appendChild(opt2);
+  }
+
+  calcInterDrugConversion();
+}
+
+function swapConvertDrugs() {
+  var fromSel = document.getElementById('convertFromSelect');
+  var toSel = document.getElementById('convertToSelect');
+  var fromVal = fromSel.value;
+  var toVal = toSel.value;
+
+  fromSel.value = toVal;
+  toSel.value = fromVal;
+
+  var resText = document.getElementById('convertToResultVal').textContent;
+  var resNum = parseFloat(resText.replace(/[^0-9.]/g, ''));
+  if (!isNaN(resNum) && resNum > 0) {
+    document.getElementById('convertFromDose').value = Math.round(resNum);
+  }
+
+  calcInterDrugConversion();
+}
+
+function calcInterDrugConversion() {
+  var fromId = document.getElementById('convertFromSelect').value;
+  var toId = document.getElementById('convertToSelect').value;
+  var fromDose = parseFloat(document.getElementById('convertFromDose').value) || 0;
+
+  var drugFrom = getDrugById(fromId);
+  var drugTo = getDrugById(toId);
+  if (!drugFrom || !drugTo) return;
+
+  var load = fromDose / drugFrom.ddd;
+  var cbzEq = Math.round(fromDose * (1000 / drugFrom.ddd));
+  var toDose = Math.round(load * drugTo.ddd * 10) / 10;
+
+  document.getElementById('convertFromMeta').textContent = 'DDD: ' + drugFrom.ddd + 'mg | 作用機序: ' + drugFrom.mechanism;
+  document.getElementById('convertToMeta').textContent = 'DDD: ' + drugTo.ddd + 'mg | 作用機序: ' + drugTo.mechanism;
+  document.getElementById('convertToDddNote').textContent = '換算先 DDD: ' + drugTo.ddd + ' mg/日';
+
+  document.getElementById('convertFromLoadVal').textContent = load.toFixed(2) + ' DDD';
+  document.getElementById('convertFromCbzVal').textContent = 'CBZ ' + cbzEq.toLocaleString() + ' mg相当';
+  document.getElementById('convertToResultVal').textContent = toDose.toLocaleString() + ' ' + drugTo.unit + '/日';
+  document.getElementById('convertToTdmVal').textContent = '基準治療域: ' + drugTo.therapeuticRange + ' ' + drugTo.rangeUnit;
+
+  // 計算式
+  var formulaHtml = '<strong>換算式:</strong> ' + drugFrom.shortName + ' ' + fromDose + 'mg &divide; ' + drugFrom.ddd + 'mg (DDD) &times; ' + drugTo.ddd + 'mg (DDD) ＝ <strong>' + drugTo.shortName + ' ' + toDose + 'mg</strong>（用量比 ' + drugFrom.shortName + ':' + drugTo.shortName + ' ＝ ' + (drugFrom.ddd / drugTo.ddd).toFixed(2) + ' : 1）';
+  document.getElementById('convertFormulaBox').innerHTML = formulaHtml;
+
+  // ペア別ガイダンス
+  var guidance = [];
+
+  // LEV ↔ BRV
+  if ((fromId === 'lev' && toId === 'brv') || (fromId === 'brv' && toId === 'lev')) {
+    guidance.push('<div class="alert-box alert-info"><strong>💡 SV2Aリガンド間の切替（LEV ↔ BRV）：</strong>両剤は同じSV2A標的で、DDD比および臨床力価比は <strong>約 15 : 1</strong>（LEV 1,500mg ≒ BRV 100mg）です。LEV誘発性の易刺激性・精神症状に対するBRVへの切替では、翌日からの即日一括置換（Overnight Switch）も臨床試験等で行われています。</div>');
+  }
+
+  // 同一Naチャネル遮断薬同士 (CBZ, PHT, LCM, LTG)
+  var naDrugs = { cbz: true, pht: true, lcm: true, ltg: true };
+  if (naDrugs[fromId] && naDrugs[toId] && fromId !== toId) {
+    guidance.push('<div class="alert-box alert-info"><strong>💡 Naチャネル阻害薬同士の切替（' + drugFrom.shortName + ' &rarr; ' + drugTo.shortName + '）：</strong>同じNaチャネル遮断作用を持つため、重複による過度のめまい・ふらつき・複視に注意しつつ、交差漸増漸減（Cross-tapering）を行います。</div>');
+  }
+
+  // PHTへの換算
+  if (toId === 'pht') {
+    guidance.push('<div class="alert-box alert-danger"><strong>🚨 フェニトインへの換算注意：</strong>PHTは非線形（飽和）動態を示すため、計算上の参考値（' + toDose + 'mg）をそのまま投与すると血中濃度が予測を超えて中毒域（>20 μg/mL）に達する危険があります。初期量は少なめ（150〜200mg）から開始し、TDMで確認してください。</div>');
+  }
+
+  // 全般発作悪化リスク (CBZ/PHTへの換算時)
+  if (toId === 'cbz' || toId === 'pht') {
+    guidance.push('<div class="alert-box alert-warn"><strong>⚠️ 発作型適合性の確認：</strong>' + drugTo.shortName + 'は全般てんかん（欠神発作・ミオクロニー発作）を悪化させます。焦点てんかんであることを確認の上で選択してください。</div>');
+  }
+
+  document.getElementById('convertPairGuidance').innerHTML = guidance.join('');
+}
+
 function initQuickRefTable() {
   var tbody = document.getElementById('drugTableBody');
   tbody.innerHTML = '';
@@ -766,6 +938,7 @@ function initQuickRefTable() {
 // 初期化
 document.addEventListener('DOMContentLoaded', function() {
   renderRegimen();
+  initConvertTab();
   initQuickRefTable();
 });
 </script>
