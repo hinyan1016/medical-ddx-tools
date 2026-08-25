@@ -62,12 +62,14 @@ def calculate(data, doses, supplement=False):
                 contribution = dose * drug["factor"]
                 jns += contribution
                 if drug.get("base"):
-                    levodopa_base += contribution
+                    base_factor = drug.get("baseFactor")
+                    levodopa_base += dose * base_factor if base_factor is not None else contribution
         elif supplement and drug["calc"] == "linear":
             contribution = dose * drug["factor"]
             supplemental += contribution
             if drug.get("base"):
-                levodopa_base += contribution
+                base_factor = drug.get("baseFactor")
+                levodopa_base += dose * base_factor if base_factor is not None else contribution
 
     if supplement and doses.get("opicapone") == 25:
         contribution = levodopa_base * 0.5
@@ -86,8 +88,16 @@ def calculate(data, doses, supplement=False):
         ):
             supplemental += dose * drug["factor"]
     if supplement and doses.get("istradefylline") in (20, 40):
-        supplemental += (levodopa_base + comt) * 0.2
+        supplemental += levodopa_base * 0.2
     return jns, supplemental, jns + supplemental
+
+
+def over_limit(drug, result):
+    """Independent model of updateConversion()'s over-limit warning condition."""
+    limit = drug.get("doseLimit")
+    if not isinstance(limit, (int, float)):
+        return False
+    return result > limit + 1e-9
 
 
 def main() -> None:
@@ -169,8 +179,8 @@ def main() -> None:
         {"levodopa_dci": 600, "opicapone": 25, "istradefylline": 20},
         supplement=True,
     )
-    assert_close(supplement, 480, "Opicapone plus istradefylline supplement")
-    assert_close(total, 1080, "Opicapone plus istradefylline total")
+    assert_close(supplement, 420, "Opicapone plus istradefylline supplement")
+    assert_close(total, 1020, "Opicapone plus istradefylline total")
     for dose in (50, 100):
         _, supplement, _ = calculate(drugs, {"safinamide": dose}, supplement=True)
         assert_close(supplement, 150, f"Safinamide {dose}")
@@ -196,6 +206,71 @@ def main() -> None:
     _, supplement, total = calculate(drugs, {"ropinirole_patch": 16})
     assert_close(supplement, 0, "Haruropi default off supplement")
     assert_close(total, 0, "Haruropi default off total")
+
+    # --- Fix A: dose-limit guard on convertible drugs -------------------
+    convertible_jns_ids = {
+        item["id"] for item in drugs if item["source"] == "jns" and item.get("convertible")
+    }
+    assert convertible_jns_ids == {
+        "levodopa_dci", "duodopa", "bromocriptine", "cabergoline",
+        "pergolide", "pramipexole", "ropinirole_oral", "rotigotine",
+    }, convertible_jns_ids
+    for excluded_id in ("selegiline", "rasagiline", "apomorphine", "amantadine"):
+        assert by_id[excluded_id]["convertible"] is False, excluded_id
+        assert by_id[excluded_id]["source"] == "jns", excluded_id
+
+    dose_limits = {
+        "cabergoline": (3, "max"),
+        "pramipexole": (4.5, "max"),
+        "ropinirole_oral": (15, "max"),
+        "rotigotine": (36, "max"),
+        "pergolide": (1.25, "maintenance"),
+        "bromocriptine": (22.5, "maintenance"),
+    }
+    for drug_id, (limit, limit_type) in dose_limits.items():
+        assert_close(by_id[drug_id]["doseLimit"], limit, drug_id + " doseLimit")
+        assert by_id[drug_id]["doseLimitType"] == limit_type, drug_id
+    for item in drugs:
+        if "doseLimitType" in item:
+            assert item["doseLimitType"] in ("max", "maintenance"), item["id"]
+
+    for drug_id, (limit, limit_type) in dose_limits.items():
+        factor = by_id[drug_id]["factor"]
+        boundary_led = limit * factor
+        result_at_boundary = boundary_led / factor
+        assert not over_limit(by_id[drug_id], result_at_boundary), (
+            f"{drug_id} at exactly the dose limit should not warn"
+        )
+        result_over = (boundary_led + 0.1) / factor
+        assert over_limit(by_id[drug_id], result_over), (
+            f"{drug_id} just over the dose limit should warn"
+        )
+    assert_close(by_id["rotigotine"]["doseLimit"] * by_id["rotigotine"]["factor"], 478.8, "rotigotine limit LEDD")
+    assert not over_limit(by_id["rotigotine"], 478.8 / by_id["rotigotine"]["factor"])
+    assert over_limit(by_id["rotigotine"], 478.9 / by_id["rotigotine"]["factor"])
+
+    # --- Fix C: istradefylline follows Jost (no COMT contribution) ------
+    _, supplement, total = calculate(
+        drugs,
+        {"levodopa_dci": 400, "opicapone": 25, "istradefylline": 20},
+        supplement=True,
+    )
+    assert_close(supplement, 280, "L-dopa400+opicapone25+istradefylline20 supplement")
+    assert_close(supplement - 200, 80, "istradefylline contribution (not 120)")
+    assert_close(total, 680, "L-dopa400+opicapone25+istradefylline20 total")
+
+    # --- Fix D: duodopa base uses raw dose (baseFactor), not ×1.11 ------
+    _, supplement, total = calculate(
+        drugs, {"duodopa": 1000, "opicapone": 25}, supplement=True
+    )
+    assert_close(supplement, 500, "duodopa1000+opicapone25 supplement (not 555)")
+    assert_close(total, 1610, "duodopa1000+opicapone25 total (not 1665)")
+
+    # --- Regression: existing behaviour must not break -------------------
+    _, supplement, total = calculate(
+        drugs, {"levodopa_dci": 400, "ropinirole_patch": 40}, supplement=True
+    )
+    assert_close(total, 600, "L-dopa400+haruropi40 total")
 
     required_strings = [
         "日本神経学会2018",
