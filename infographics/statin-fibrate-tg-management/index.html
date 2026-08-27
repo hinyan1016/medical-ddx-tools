@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="スタチン内服中にTGが残る患者へのペマフィブラート上乗せ判断を、一次資料の数値だけで整理した内科医向けインフォグラフィック。PROMINENTはTGを26.2%下げながら一次エンドポイントのハザード比1.03。上乗せの前に採血条件・二次性・スタチン自体のTG低下能（10〜20%）を潰し、目的が急性膵炎の予防（TG 500以上）かASCVD残余リスクの低減（TG 150〜499）かを宣言する。併用禁忌の二段階解除の射程、腎機能別の製剤選択、ACCORD-Lipidが示した「実害は筋より腎」、上がったクレアチニンの扱い、イコサペント酸エチルの位置づけまで。">
+<title>スタチンでも中性脂肪が下がらない｜上乗せ判断の順序（インフォグラフィック・内科医向け）</title>
+<style>
+:root{
+  --navy:#1B3A5C;
+  --navyDeep:#0F2540;
+  --navyBg:#E9EEF5;
+  --accent:#1F7A8C;
+  --accentBg:#E7F2F4;
+  --accentInk:#15616F;
+  --onNavy:#6EE7B7;
+  --amber:#8A6100;
+  --amberBg:#FFF8E1;
+  --red:#C0392B;
+  --redBg:#FCEDEA;
+  --line:#D6E0E9;
+  --gray:#69737E;
+  --ink:#20242B;
+  --ink2:#3C4450;
+  --font:"Noto Sans JP","BIZ UDPGothic","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+}
+html{font-size:16px;}
+*{box-sizing:border-box; margin:0; padding:0;}
+/* 日本語の語中改行を文節境界で切る */
+body,.lead,.card p,.row__d,td,th,.note,.src,.big__d,.sum__d,.tl__d,.stp__d,.q__d{
+  word-break:auto-phrase; line-break:strict;
+}
+body{font-family:var(--font); background:#E4E9EF; color:var(--ink);
+  display:flex; flex-direction:column; align-items:center; overflow-x:hidden;}
+.nw{white-space:nowrap;}
+.ig{width:100%; max-width:1080px; background:#fff; padding:0 0 3rem;}
+
+.hd{background:linear-gradient(135deg,#0A1B2E 0%,#153352 55%,#1B3A5C 100%); color:#fff;
+  padding:2.6rem 3rem 2.2rem; text-align:center;}
+.hd__brand{font-size:.95rem; letter-spacing:.14em; opacity:.85; margin-bottom:1rem;}
+.hd__t{font-size:2.4rem; font-weight:800; line-height:1.35; letter-spacing:.01em;}
+.hd__t .hl{color:var(--onNavy); font-size:1.5rem;}
+.hd__s{margin-top:1.1rem; font-size:1.08rem; opacity:.94; line-height:1.75;}
+
+.sec{padding:2.2rem 3rem 0;}
+.sec__h{display:flex; align-items:center; gap:.8rem; font-size:1.4rem; font-weight:800;
+  color:var(--navy); border-bottom:3px solid var(--navy); padding-bottom:.5rem; margin-bottom:1.2rem;}
+.sec__n{background:var(--accent); color:#fff; font-size:1.05rem; width:2rem; height:2rem;
+  border-radius:.4rem; display:grid; place-items:center; flex:none;}
+.lead{font-size:1.05rem; line-height:1.8; color:var(--ink2);}
+.lead + .lead{margin-top:.7rem;}
+
+.big{display:flex; gap:1.4rem; margin:1.2rem 0 .4rem; flex-wrap:wrap;}
+.big__c{flex:1 1 0; min-width:13rem; background:var(--navyBg); border-radius:.7rem;
+  padding:1.2rem 1.3rem; border-left:6px solid var(--navy);}
+.big__n{font-size:2.5rem; font-weight:800; color:var(--navy); line-height:1.1;}
+.big__n .u{font-size:1.15rem; margin-left:.15rem;}
+.big__d{margin-top:.5rem; font-size:.98rem; line-height:1.6; color:var(--ink2);}
+.big--accent{background:var(--accentBg); border-left-color:var(--accent);}
+.big--accent .big__n{color:var(--accentInk);}
+.big--red{background:var(--redBg); border-left-color:var(--red);}
+.big--red .big__n{color:var(--red);}
+
+table{width:100%; border-collapse:collapse; margin:1rem 0 .3rem; font-size:1rem;}
+th{background:var(--navy); color:#fff; text-align:left; padding:.7rem .9rem; font-weight:700;}
+td{border-bottom:1px solid var(--line); padding:.7rem .9rem; line-height:1.65; vertical-align:top;}
+td.k{font-weight:700; color:var(--navy); width:34%;}
+.src{font-size:.86rem; color:var(--gray); margin-top:.35rem; line-height:1.6;}
+
+.card{border:2px solid var(--line); border-radius:.7rem; padding:1.1rem 1.3rem; margin:1rem 0 .3rem;}
+.card--warn{background:var(--accentBg); border-color:var(--accent);}
+.card--amber{background:var(--amberBg); border-color:#EBC46A;}
+.card--red{background:var(--redBg); border-color:#E8A79E;}
+.card__t{font-weight:800; color:var(--navy); font-size:1.1rem; margin-bottom:.5rem;}
+.card--warn .card__t{color:var(--accentInk);}
+.card--red .card__t{color:var(--red);}
+.card p{font-size:1rem; line-height:1.75; color:var(--ink2);}
+.card p + p{margin-top:.6rem;}
+.card blockquote{font-size:.98rem; line-height:1.75; color:var(--ink2);
+  border-left:4px solid var(--accent); padding-left:.9rem; margin:.5rem 0;}
+
+/* 目的の二分岐 */
+.fork{display:flex; gap:1.2rem; margin:1.2rem 0 .3rem; flex-wrap:wrap;}
+.fork__c{flex:1 1 0; min-width:15rem; border-radius:.7rem; padding:1.2rem 1.3rem;
+  border:2px solid var(--line); background:#F6F8FB;}
+.fork__tag{display:inline-block; font-size:.85rem; font-weight:700; color:#fff;
+  background:var(--navy); border-radius:.3rem; padding:.15rem .6rem; margin-bottom:.6rem;}
+.fork__v{font-size:1.5rem; font-weight:800; color:var(--navy); line-height:1.3;}
+.fork__d{margin-top:.55rem; font-size:.96rem; line-height:1.7; color:var(--ink2);}
+.fork--b{background:var(--accentBg); border-color:var(--accent);}
+.fork--b .fork__tag{background:var(--accent);}
+.fork--b .fork__v{color:var(--accentInk);}
+
+/* タイムライン */
+.tl{display:flex; flex-direction:column; margin:1.1rem 0 .3rem;}
+.tl__i{display:flex; gap:1rem; align-items:stretch;}
+.tl__i:not(:last-child){margin-bottom:.7rem;}
+.tl__d8{flex:none; width:11rem; background:var(--navy); color:#fff; border-radius:.5rem;
+  display:grid; place-items:center; font-weight:800; font-size:1rem; text-align:center;
+  padding:.6rem .5rem; line-height:1.4;}
+.tl__b{flex:1; background:#F6F8FB; border-radius:.6rem; padding:.85rem 1.1rem;
+  border-left:5px solid var(--navy);}
+.tl__t{font-weight:700; color:var(--navy); font-size:1.02rem;}
+.tl__d{font-size:.94rem; color:var(--ink2); margin-top:.3rem; line-height:1.65;}
+.tl--last .tl__d8{background:var(--accent);}
+.tl--last .tl__b{background:var(--accentBg); border-left-color:var(--accent);}
+.tl--last .tl__t{color:var(--accentInk);}
+
+/* STEP 手順 */
+.stp{display:flex; flex-direction:column; gap:.6rem; margin:1.1rem 0 .3rem;}
+.stp__i{display:flex; gap:1rem; align-items:flex-start; background:#F6F8FB;
+  border-radius:.6rem; padding:.85rem 1.1rem;}
+.stp__n{flex:none; width:4.4rem; border-radius:.4rem; background:var(--navy); color:#fff;
+  font-weight:800; font-size:.9rem; text-align:center; padding:.35rem .2rem; line-height:1.3;}
+.stp__d{font-size:.98rem; line-height:1.7; color:var(--ink2);}
+.stp__d b{color:var(--navy);}
+.stp--last .stp__n{background:var(--accent);}
+
+/* Q&A 誤解 */
+.q{background:#F6F8FB; border-radius:.6rem; padding:1rem 1.2rem; margin:1rem 0 .3rem;
+  border-left:5px solid var(--amber);}
+.q__q{font-weight:800; color:var(--amber); font-size:1.05rem; margin-bottom:.45rem;}
+.q__d{font-size:1rem; line-height:1.75; color:var(--ink2);}
+
+.rows{display:flex; flex-direction:column; gap:.7rem; margin:1rem 0 .3rem;}
+.row{display:flex; gap:1rem; align-items:flex-start; background:#F6F8FB; border-radius:.6rem; padding:.9rem 1.1rem;}
+.row__n{flex:none; width:2.1rem; height:2.1rem; border-radius:50%; background:var(--navy); color:#fff;
+  display:grid; place-items:center; font-weight:800;}
+.row__d{font-size:1rem; line-height:1.7; color:var(--ink2);}
+.row__d b{color:var(--navy);}
+
+.sum{background:var(--navy); color:#fff; border-radius:.8rem; padding:1.6rem 1.8rem; margin:1.4rem 0 .4rem;
+  display:flex; gap:1.2rem; flex-wrap:wrap;}
+.sum__c{flex:1 1 0; min-width:13rem;}
+.sum__t{font-size:1.5rem; font-weight:800; color:var(--onNavy); margin-bottom:.4rem;}
+.sum__d{font-size:.98rem; line-height:1.7; opacity:.95;}
+
+.note{margin:1.6rem 3rem 0; padding:1rem 1.2rem; background:#F3F5F8; border-left:5px solid var(--gray);
+  font-size:.9rem; line-height:1.75; color:var(--ink2);}
+.ft{margin-top:1.6rem; padding:1.4rem 3rem 0; border-top:2px solid var(--line);
+  font-size:.88rem; color:var(--gray); line-height:1.8; text-align:center;}
+</style>
+</head>
+<body>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="https://youtu.be/jRNOWP_T4v4" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#C0392B;color:#fff;">▶ 解説動画（YouTube）</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+<div class="ig">
+
+<div class="hd">
+  <div class="hd__brand">医知創造ラボ ／ 内科医向け・脂質異常症の実務</div>
+  <div class="hd__t">スタチンでも中性脂肪が下がらない<br><span class="hl">上乗せの前に決めるのは「何のためにTGを下げるのか」</span></div>
+  <div class="hd__s">LDL-Cは目標に入ったのにTGだけが残る——外来でごく普通に起きる場面です。<br class="nw">PROMINENTはTGを26.2%下げながら、一次エンドポイントのハザード比は1.03でした。<br class="nw">「TGが下がること」と「イベントが減ること」は別問題です。</div>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">0</span>この図の位置づけ（医療従事者向け）</div>
+  <div class="card card--amber">
+    <div class="card__t">お読みください</div>
+    <p>本図は<b>医療従事者向けの情報整理</b>であり、患者さんご自身の判断のために使用しないでください。用量・禁忌・モニタリング間隔は<b>2026年8月時点</b>の電子添文およびガイドラインの記載に基づく整理で、個々の患者さんの治療方針を決定するものではありません。<b>電子添文とガイドラインは改訂されます。</b>実際の処方判断では必ず最新の原典をご確認ください。</p>
+    <p>なお本図の「モニタリング間隔」の一部は電子添文とガイドラインの記載を<b>実務的に合成</b>したもので、ガイドラインが数値として規定したものではありません。</p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">1</span>上乗せを検討する前に潰す3つ</div>
+  <p class="lead">ここで上乗せが<b>不要になる例</b>があります。順に潰してから薬の話に進みます。</p>
+  <table>
+    <tr><th>潰すもの</th><th>基準・数値</th></tr>
+    <tr><td class="k">① 採血条件</td><td>高TG血症の診断基準は<b>空腹時TG 150 mg/dL以上</b>／<b>随時TG 175 mg/dL以上</b>。<b>TG 400 mg/dL以上または随時採血ではnon-HDL-Cを管理目標に</b>用いる</td></tr>
+    <tr><td class="k">② 二次性高TG血症</td><td><b>二次性脂質異常症は全脂質異常症の30〜40%</b>を占める。洗い出す前にフィブラートを足さない</td></tr>
+    <tr><td class="k">③ スタチン自体の限界</td><td>スタチンの<b>TG低下効果は10〜20%程度</b>。「増量したのにTGが動かない」は失敗ではなく想定内</td></tr>
+  </table>
+  <p class="src">出典: 日本動脈硬化学会 動脈硬化性疾患予防ガイドライン2022年版（第2章 表2-1・第3章／p.120本文）</p>
+  <div class="card">
+    <div class="card__t">スタチンのTG低下はベースラインTG依存</div>
+    <p>TG変化%÷LDL-C変化%比は、<b>ベースラインTG 150未満で 0.0±0.3</b>、<b>150–250で 0.5±0.2</b>、<b>250超で 1.2±0.3</b>。<b>TG 250超では全スタチンで22–45%低下</b>する一方、<b>150未満ではほとんど動きません</b>。LDL-C変化とTG変化の相関は <b>r=0.14</b> にとどまります。</p>
+    <p class="src">出典: Stein EA, et al. Am J Cardiol. 1998;81(4A):66B-69B.／Nicholls SJ, et al.（VOYAGER）</p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">2</span>何のためにTGを下げるのか——ここで分岐する</div>
+  <p class="lead">目的を<b>カルテに宣言してから</b>薬を選びます。膵炎予防とASCVD残余リスクでは、選ぶ薬が変わります。</p>
+  <div class="fork">
+    <div class="fork__c">
+      <span class="fork__tag">TG 150〜499（随時 175〜499）</span>
+      <div class="fork__v">ASCVD残余リスクの低減</div>
+      <div class="fork__d">心血管イベントを減らすのが目的。ここで問われるのは<b>心血管アウトカムのエビデンスがある薬かどうか</b>です<span class="nw">（→ 第6章）</span>。</div>
+    </div>
+    <div class="fork__c fork--b">
+      <span class="fork__tag">TG 500以上</span>
+      <div class="fork__v">急性膵炎の予防</div>
+      <div class="fork__d"><b>空腹時TG 500以上で専門医紹介</b>、<b>TG 1,000以上で動脈硬化専門医へすみやかに紹介</b>。フィブラート系／SPPARMαが主役になります。</div>
+    </div>
+  </div>
+  <p class="src">出典: Kirkpatrick CF, et al. 2026／動脈硬化性疾患予防ガイドライン2022年版・包括的リスク管理チャート2025</p>
+  <div class="card card--warn">
+    <div class="card__t">膵炎リスクは閾値ではなく連続的に上がる——ただし絶対発生率は別に説明する</div>
+    <p><b>随時TG +89 mg/dL ごとに急性膵炎 HR 1.17</b>（95%CI 1.10–1.24）。<b>TG 177–265 で HR 2.3</b>、<b>TG 443以上で HR 8.7</b>。一方で<b>絶対発生率は最高区分でも12件/1万人年</b>です。相対リスクだけを見せると過大に伝わります。</p>
+    <p class="src">出典: Pedersen SB, et al. JAMA Intern Med. 2016;176(12):1834-1842.</p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">3</span>PROMINENTが示したこと／示さなかったこと</div>
+  <p class="lead">対象は<b>2型糖尿病＋TG 200–499＋HDL-C 40以下</b>、スタチン下のLDL-C中央値78、<b>n=10,497</b>、追跡中央値3.4年。</p>
+  <div class="big">
+    <div class="big__c"><div class="big__n">−26.2<span class="u">%</span></div><div class="big__d">中性脂肪（TG）</div></div>
+    <div class="big__c"><div class="big__n">−25.6<span class="u">%</span></div><div class="big__d">レムナントコレステロール</div></div>
+    <div class="big__c"><div class="big__n">−27.6<span class="u">%</span></div><div class="big__d">apoC-III</div></div>
+  </div>
+  <div class="big">
+    <div class="big__c"><div class="big__n">−25.8<span class="u">%</span></div><div class="big__d">VLDL-C</div></div>
+    <div class="big__c big--red"><div class="big__n">＋4.8<span class="u">%</span></div><div class="big__d"><b>apoB</b>——ここだけ上がった</div></div>
+    <div class="big__c big--red"><div class="big__n">1.03</div><div class="big__d">一次エンドポイントの<b>ハザード比</b><br>95%CI 0.91–1.15</div></div>
+  </div>
+  <p class="src">出典: Das Pradhan A, et al. N Engl J Med. 2022;387(21):1923-1934.（PROMINENT）</p>
+  <div class="card card--red">
+    <div class="card__t">示さなかったこと</div>
+    <p><b>apoBが上がった＝粒子数が減っていない。</b>狙った脂質はすべて下がったのに一次エンドポイントが動かなかった読みどころはここです。</p>
+    <p><b>対象は TG 200–499 mg/dL で、TG 500以上は試験対象外です。</b>したがって<b>PROMINENTは膵炎予防目的を否定した試験ではありません。</b></p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">4</span>「併用禁忌」は二段階で解除された——そして解除≠自由化</div>
+  <div class="tl">
+    <div class="tl__i">
+      <div class="tl__d8">2018年<br>10月16日・23日</div>
+      <div class="tl__b">
+        <div class="tl__t">スタチン・フィブラート併用の枠が外れた</div>
+        <div class="tl__d">改訂指示／医薬品・医療機器等安全性情報 No.358。<b>この項目8にはパルモディア錠も含まれています。</b></div>
+      </div>
+    </div>
+    <div class="tl__i">
+      <div class="tl__d8">2022年<br>9月27日</div>
+      <div class="tl__b">
+        <div class="tl__t">薬事・食品衛生審議会 医薬品等安全対策部会 安全対策調査会</div>
+        <div class="tl__d">ペマフィブラートの腎機能に関する禁忌の見直しが検討されました。</div>
+      </div>
+    </div>
+    <div class="tl__i tl--last">
+      <div class="tl__d8">2022年<br>10月12日付</div>
+      <div class="tl__b">
+        <div class="tl__t">厚生労働省通知</div>
+        <div class="tl__d">ペマフィブラートの<b>腎機能に関する禁忌が削除</b>されました。日付はこの形で確定させます。</div>
+      </div>
+    </div>
+  </div>
+  <div class="card card--red">
+    <div class="card__t">［重要な基本的注意］へ移った文言は、現在も生きている</div>
+    <blockquote>「腎機能に関する臨床検査値に異常が認められる患者に、本剤とHMG-CoA還元酵素阻害薬を併用する場合には、治療上やむを得ないと判断される場合にのみ併用すること」</blockquote>
+    <p>さらに<b>シンバスタチンには 10 mg/日を超えないこと</b>という用量上限が付きます。<b>「2018年の改訂で併用は自由になった」ではありません。</b></p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">5</span>腎機能低下例では、使える薬が変わる——ただし「使える≠安全」</div>
+  <table>
+    <tr><th>薬剤</th><th>腎機能に関する記載</th></tr>
+    <tr><td class="k">ペマフィブラート</td><td><b>腎機能に関する禁忌なし。</b>eGFR 30 mL/min/1.73m²未満では<b>低用量から開始し投与間隔を延長</b>、<b>最大1日0.2 mg</b></td></tr>
+    <tr><td class="k">フェノフィブラート</td><td><b>血清Cr 2.5 mg/dL以上またはCCr 40 mL/min未満は禁忌</b></td></tr>
+    <tr><td class="k">ベザフィブラート</td><td><b>血清Cr 2.0 mg/dL以上は禁忌</b></td></tr>
+  </table>
+  <p class="src">出典: 各薬剤の電子添文（パルモディア錠は2024年8月改訂 第2版）。フェノフィブラートは後発品（武田テバ）の電子添文で確認したもの。</p>
+  <div class="card card--red">
+    <div class="card__t">「胆汁排泄性だから腎に安全」とは言えない</div>
+    <p>PROMINENTでは<b>腎有害事象が多く報告</b>されており、電子添文も投与前の腎機能検査を求めています。<b>使える＝安全ではありません。</b>（発生率はNEJM本文・補遺が未確認のため数値を示しません。）</p>
+    <p>高度腎障害・透析を含む第4相試験の<b>AUCτ 幾何平均比 0.92</b>（90%CI 0.62–1.36）は<b>反復投与</b>の話で、電子添文16.6.1の<b>単回投与</b>試験で曝露の増加が認められることとは別の論点です。</p>
+    <p class="src">出典: Ishibashi S, et al.（PALT02）／パルモディア錠 電子添文</p>
+  </div>
+  <div class="card card--amber">
+    <div class="card__t">ガイドライン2022年版の禁忌記載は改訂前の情報</div>
+    <p>GL2022の「血清Cr 2.5以上でペマフィブラートは禁忌」という記載は<b>2022年10月改訂より前の情報</b>です。現行運用は<b>電子添文（2024年8月改訂 第2版）</b>に従います。</p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">6</span>実害は、筋より腎に出る（ACCORD-Lipid）</div>
+  <p class="lead">CKだけを追うと見落とします。<b>血清Cr／eGFRをセットで追う設計</b>にします。</p>
+  <table>
+    <tr><th>アウトカム</th><th>併用群</th><th>スタチン単独群</th></tr>
+    <tr><td class="k">CK 基準上限の10倍超</td><td>10例（<b>0.4%</b>）</td><td>9例（<b>0.3%</b>）</td></tr>
+    <tr><td class="k">eGFR低下による減量</td><td>440例（<b>15.9%</b>）</td><td>194例（<b>7.0%</b>）</td></tr>
+    <tr><td class="k">eGFR低下による中止</td><td>66例（<b>2.4%</b>）</td><td>30例（<b>1.1%</b>）</td></tr>
+    <tr><td class="k">一次エンドポイント</td><td colspan="2"><b>HR 0.92</b>（95%CI 0.79–1.08）</td></tr>
+  </table>
+  <p class="src">出典: ACCORD Study Group; Ginsberg HN, et al. N Engl J Med. 2010;362(17):1563-1574.</p>
+  <p class="lead">CK基準値は<b>男 50–200／女 40–170 IU/L</b>。フィブラート併用開始後は<b>初回4週後を目安</b>に確認します。</p>
+  <p class="src">出典: スタチン不耐に関する診療指針2018</p>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">7</span>上がったクレアチニンをどう扱うか</div>
+  <div class="q">
+    <div class="q__q">Q. シスタチンCを測れば「見かけのCr上昇」かどうか分かる？</div>
+    <div class="q__d"><b>分かりません。</b>実測GFR（イヌリンクリアランス）は<b>不変</b>（Δ0.8 mL/min, 95%CI −10.5〜12.2, P=0.9）である一方、<b>血漿シスタチンCもCrと並行して上昇</b>します（Δ+0.18 mg/L, 95%CI 0.03〜0.34, P=0.02）。上昇率の中央値は<b>Cr 15.1%・<span class="nw">シスタチンC 9.9%</span></b>。<b>判別の道具にはなりません。</b></div>
+  </div>
+  <p class="src">出典: Ansquer JC, et al. Am J Kidney Dis. 2008;51(6):904-913.／Ncube V, et al. Ann Clin Biochem. 2012;49(Pt 5):491-493. ほか</p>
+  <div class="rows">
+    <div class="row"><div class="row__n">1</div><div class="row__d"><b>他に原因がなく血清Crが30%上昇したら中止を考える</b>（専門家意見）。</div></div>
+    <div class="row"><div class="row__n">2</div><div class="row__d"><b>中止6〜8週後の再検が実務のリトマス試験。</b>ACCORDでは中止51日後に <b>Cr 1.11→0.97</b>、<b>eGFR 68.4→77.8</b> でプラセボ群と有意差なし。FIELDでは中止8週後に <b>eGFR 5.0 mL/min/1.73m²</b>（2.3–7.7）が温存されていました。</div></div>
+    <div class="row"><div class="row__n">3</div><div class="row__d"><b>「無害な検査値変動」と決めつけない。</b>66歳以上のコホートではCr上昇による入院の補正OR <b>2.4</b>（1.7–3.3）、<b>Cr 50%以上の上昇が9.1% vs 0.3%</b>。中止後24例中18例が回復した一方、<b>6例（全例が移植レシピエント）では非可逆</b>でした。</div></div>
+  </div>
+  <p class="src">出典: Sica DA. 2009／Mychaleckyj JC, et al. 2012／Davis TM, et al.（FIELD）2011／Zhao YY, et al. 2012／Broeders N, et al. 2000</p>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">8</span>ASCVD残余リスクが目的なら、先に置くのはイコサペント酸エチル</div>
+  <p class="lead">心血管アウトカムのデータがある薬から検討します。ただし<b>用量ギャップと心房細動</b>を同時に説明します。</p>
+  <table>
+    <tr><th>試験</th><th>主要評価項目</th><th>心房細動</th></tr>
+    <tr><td class="k">JELIS</td><td>主要冠動脈イベント <b>2.8% vs 3.5%</b>（19%減, p=0.011）</td><td>—</td></tr>
+    <tr><td class="k">REDUCE-IT</td><td><b>17.2% vs 22.0%</b>、<b>HR 0.75</b>（0.68–0.83）</td><td>AF/粗動による入院 <b>3.1% vs 2.1%</b>（P=0.004）</td></tr>
+    <tr><td class="k">RESPECT-EPA</td><td><b>9.1% vs 12.6%</b>、<b>HR 0.79</b>（0.62–1.00, P=0.055）</td><td>新規AF <b>3.1% vs 1.6%</b>（P=0.017）</td></tr>
+    <tr><td class="k">STRENGTH</td><td><b>HR 0.99</b>（0.90–1.09）</td><td>—</td></tr>
+    <tr><td class="k">PROMINENT（参考）</td><td><b>HR 1.03</b>（0.91–1.15）</td><td>—</td></tr>
+  </table>
+  <p class="src">出典: Yokoyama M, et al. Lancet. 2007;369(9567):1090-1098.／Bhatt DL, et al. N Engl J Med. 2019;380(1):11-22.／Miyauchi K, et al. Circulation. 2024;150(6):425-434.／Nicholls SJ, et al. JAMA. 2020;324(22):2268-2280.／Das Pradhan A, et al. N Engl J Med. 2022;387(21):1923-1934.</p>
+  <div class="card card--amber">
+    <div class="card__t">同時に説明すべき2点</div>
+    <p><b>用量ギャップ。</b>エパデールの高脂血症における<b>承認1日最高用量は2,700 mg</b>で、REDUCE-ITの用量とは異なります。</p>
+    <p><b>対照の問題。</b>REDUCE-ITの対照は薬用鉱物油で、鉱物油群のhsCRPは試験終了時に群間差38.5%でした。RESPECT-EPAは主要評価項目で有意に届いていません（P=0.055）。<b>「25%減る」を単独で断定的に紹介しない</b>のはこのためです。</p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec__h"><span class="sec__n">9</span>外来で上から順に使う——上乗せ判断アルゴリズム</div>
+  <div class="stp">
+    <div class="stp__i"><div class="stp__n">STEP<br>1</div><div class="stp__d"><b>採血条件を確認する。</b>空腹時TG 150／随時TG 175。<b>TG 400以上または随時採血ならnon-HDL-C</b>を管理目標に。</div></div>
+    <div class="stp__i"><div class="stp__n">STEP<br>2</div><div class="stp__d"><b>二次性を洗う。</b>TSH・fT4／HbA1c／eGFR・尿定性／γ-GT／<b>薬剤歴</b>。</div></div>
+    <div class="stp__i"><div class="stp__n">STEP<br>3</div><div class="stp__d"><b>目的を宣言する。</b>TG 500以上＝膵炎予防、150〜499＝ASCVD残余リスク。</div></div>
+    <div class="stp__i"><div class="stp__n">STEP<br>4</div><div class="stp__d"><b>スタチンの限界を織り込む。</b>スタチン自体のTG低下は10〜20%。</div></div>
+    <div class="stp__i"><div class="stp__n">STEP<br>5</div><div class="stp__d"><b>non-HDL-C目標を確認する。</b>原則「<b>LDL-C目標＋30 mg/dL</b>」。</div></div>
+    <div class="stp__i stp--last"><div class="stp__n">STEP<br>6</div><div class="stp__d"><b>ここで初めて上乗せ。</b>上乗せは最後です。決めた後のモニタリング設計までセットにします。</div></div>
+  </div>
+  <div class="card card--warn">
+    <div class="card__t">モニタリング設計</div>
+    <p><b>開始前 → 開始4週後 → 開始後半年に2〜3回 → 以後3〜6か月に1回。</b>血清Cr／eGFRとCKをセットで追います。</p>
+    <p><b>この間隔はガイドラインが数値として規定したものではありません。</b>電子添文＋動脈硬化性疾患予防ガイドライン2022年版 BQ21＋スタチン不耐に関する診療指針2018を<b>実務的に合成</b>したものです。</p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sum">
+    <div class="sum__c"><div class="sum__t">1</div><div class="sum__d">心血管予防が目的なら、<b>ペマフィブラート上乗せの心血管アウトカム根拠は現時点でない</b>（PROMINENT <b>HR 1.03</b>, <span class="nw">95%CI 0.91–1.15</span>）。先に確認するのはLDL-C／<span class="nw">non-HDL-C</span>目標の達成、上乗せを考えるなら<b>イコサペント酸エチルが先</b>。</div></div>
+    <div class="sum__c"><div class="sum__t">2</div><div class="sum__d">上乗せを決める前に「<b>何のためにTGを下げるのか</b>」をカルテに宣言する。<b>TG 500以上</b>なら膵炎予防、<b>150〜499</b>ならASCVD残余リスク。<b>PROMINENTは膵炎予防目的を否定していない。</b></div></div>
+    <div class="sum__c"><div class="sum__t">3</div><div class="sum__d">併用の実害は<b>筋より腎</b>に出る。<b>eGFR低下による減量 15.9% vs 7.0%</b>（CK 10×ULN超は 0.4% vs 0.3%）。他に原因がなく<b>血清Cr 30%上昇</b>なら中止を考え、<b>中止6〜8週後に再検</b>する。</div></div>
+  </div>
+</div>
+
+<div class="note">
+  <b>この図で扱っていないこと。</b>フィブラート以外の上乗せ選択肢の網羅、家族性高脂血症の診断・治療、TG 1,000以上の急性期管理、保険審査上の取り扱いは扱っていません。ペマフィブラートで腎有害事象が生じる<b>機序は未解明</b>で、国内試験との不整合も未解決です。ESC/EAS 2025 フォーカスアップデートおよび2026 ACC/AHA ガイドラインの推奨クラスは<b>原文未照合のため引用していません</b>。
+</div>
+
+<div class="ft">
+  医知創造ラボ ／ 監修：今村久司（脳神経内科専門医・指導医／総合内科専門医・指導医）<br>
+  本図は<b>医療従事者向け</b>の情報整理であり、個別の診断・治療方針を示すものではありません。<br>
+  用量・禁忌・併用注意は必ず最新の電子添文とガイドラインの一次資料でご確認ください。
+</div>
+
+</div>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px auto 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="https://youtu.be/jRNOWP_T4v4" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#C0392B;color:#fff;">▶ 解説動画（YouTube）</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+</body>
+</html>

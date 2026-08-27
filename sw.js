@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v144';
+const CACHE_NAME = 'ddx-tools-v145';
 const ASSETS = [
   './',
   './index.html',
@@ -153,6 +153,7 @@ const ASSETS = [
   './infographics/sinusitis/index.html',
   './infographics/smoking-cessation-guidance/index.html',
   './infographics/status-epilepticus-sedation/index.html',
+  './infographics/statin-fibrate-tg-management/index.html',
   './infographics/stroke-secondary-prevention/index.html',
   './infographics/supplement-guide/index.html',
   './infographics/tension-headache-guidance/index.html',
