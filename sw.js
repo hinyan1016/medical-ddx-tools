@@ -1,5 +1,12 @@
-const CACHE_NAME = 'ddx-tools-v145';
+const CACHE_NAME = 'ddx-tools-v146';
 const ASSETS = [
+  './infographics/cerebral-venous-thrombosis/index.html',
+  './infographics/cerebral-venous-thrombosis/infographic.png',
+  './infographics/cerebral-venous-thrombosis/thumb.png',
+  './slides/cerebral-venous-thrombosis/index.html',
+  './slides/cerebral-venous-thrombosis/deck.html',
+  './slides/cerebral-venous-thrombosis/slides.pdf',
+  './slides/cerebral-venous-thrombosis/slide-01.png',
   './',
   './index.html',
   './periop_antithrombotic_consult.html',
