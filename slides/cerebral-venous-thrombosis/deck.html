@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>脳静脈血栓症（CVT）の診断と治療</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent: #2E86C1;
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, #ffffff);
+  --accent-line: color-mix(in srgb, var(--accent) 60%, #ffffff);
+  --accent-ink: color-mix(in srgb, var(--accent) 70%, #1A5276);
+
+  --type-mult: 1.15;
+  --type-display: calc(88px * var(--type-mult));
+  --type-title:   calc(72px * var(--type-mult));
+  --type-heading: calc(48px * var(--type-mult));
+  --type-subtitle:calc(36px * var(--type-mult));
+  --type-body:    calc(30px * var(--type-mult));
+  --type-small:   calc(24px * var(--type-mult));
+  --type-label:   calc(22px * var(--type-mult));
+  --type-chapter: calc(180px * var(--type-mult));
+  --type-stat:    calc(120px * var(--type-mult));
+
+  --pad-x: 100px;
+  --pad-top: 48px;
+  --pad-bottom: 110px;
+  --gap-title: 18px;
+  --gap-item: 16px;
+
+  --grad-navy: linear-gradient(135deg, #10253F 0%, #1B3A5C 60%, #2E86C1 100%);
+}
+
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#0c1622; }
+
+.slide{
+  box-sizing:border-box;
+  display:flex; flex-direction:column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--font-ja);
+  overflow:hidden;
+  position:relative;
+}
+.slide--navy{ background: var(--grad-navy); color: var(--white); }
+.slide--soft{ background: var(--bg-alt); }
+
+.eyebrow{
+  display:flex; align-items:center; gap:14px;
+  font-size: var(--type-label); font-weight:700; color: var(--blue);
+  letter-spacing:.04em;
+}
+.eyebrow::before{
+  content:""; width:16px; height:16px; border-radius:4px;
+  background: var(--accent); flex:none;
+}
+.eyebrow .num{ font-family: var(--font-en); color: var(--accent-ink); }
+
+.s-title{
+  font-size: var(--type-heading); line-height:1.24; color: var(--navy);
+  margin: var(--gap-title) 0 0; font-weight:700; letter-spacing:.01em;
+  text-wrap: pretty;
+}
+.slide--navy .s-title{ color:#fff; }
+
+.lead{
+  font-size: var(--type-body); line-height:1.6; color: var(--ink-2);
+  margin:0; text-wrap: pretty;
+}
+.muted{ color: var(--gray); }
+
+.slide__foot{
+  position:absolute; left: var(--pad-x); right: var(--pad-x); bottom: 36px;
+  display:flex; align-items:center; justify-content:space-between;
+  font-size: calc(20px * var(--type-mult)); color: var(--gray);
+  font-family: var(--font-ja);
+}
+.slide__foot .ch{ display:flex; align-items:center; gap:10px; }
+.slide__foot .cross{ color: var(--accent); font-weight:700; }
+.slide--navy .slide__foot{ color: rgba(255,255,255,.65); }
+.slide--navy .slide__foot .cross{ color:#7FE0A8; }
+
+/* Components */
+.grid2{ display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:20px; }
+.grid3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; margin-top:20px; }
+
+.card{
+  background:#fff; border:2px solid var(--line); border-radius:14px;
+  padding:20px 22px; display:flex; flex-direction:column; gap:10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+.card--navy{ background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.25); color:#fff; }
+.card--warn{ background: #fdf3f2; border-color: #f5b7b1; }
+.card--accent{ background: #eaf2f8; border-color: #aed6f1; }
+
+.card__t{ font-size: var(--type-subtitle); font-weight:700; color: var(--navy); line-height:1.3; }
+.card--navy .card__t{ color:#7FE0A8; }
+.card--warn .card__t{ color: var(--red); }
+.card__d{ font-size: var(--type-body); color: var(--ink-2); line-height:1.5; }
+.card--navy .card__d{ color: rgba(255,255,255,0.9); }
+
+.pill{
+  display:inline-block; font-size: calc(18px * var(--type-mult)); font-weight:700;
+  padding:3px 12px; border-radius:6px; background:var(--accent); color:#fff;
+  align-self:flex-start;
+}
+
+.tbl-box{ margin-top:18px; border:2px solid var(--line); border-radius:14px; overflow:hidden; }
+.tbl-custom{ width:100%; border-collapse:collapse; font-size: calc(21px * var(--type-mult)); }
+.tbl-custom th{ background: var(--navy); color:#fff; padding:12px 18px; font-weight:700; text-align:left; }
+.tbl-custom td{ padding:12px 18px; border-top:1px solid var(--line); color: var(--ink); line-height:1.45; }
+.tbl-custom tr:nth-child(even) td{ background: var(--bg-alt); }
+</style>
+</head>
+<body>
+<deck-stage width="1920" height="1080">
+
+  <!-- ==================== 1. COVER ==================== -->
+  <section class="slide slide--navy">
+    <div style="margin-top:auto; margin-bottom:auto; display:flex; flex-direction:column; gap:18px;">
+      <div class="eyebrow" style="color:#7FE0A8;"><span class="num">CLINICAL REVIEW</span> 脳神経内科 実践医学講座</div>
+      <h1 class="s-title" style="font-size:calc(64px * var(--type-mult)); line-height:1.2;" data-cue="今回は、見逃されやすい">脳静脈血栓症（CVT）の<br><span style="color:#7FE0A8;">診断と治療マネジメント</span></h1>
+      <p class="lead" style="color:rgba(255,255,255,0.88); font-size:calc(30px * var(--type-mult));">頭痛だけの軽症例から出血性梗塞まで ─ 最新エビデンスに基づく完全解説</p>
+    </div>
+    <div class="slide__foot">
+      <div class="ch"><span class="cross">✚</span> 医知創造ラボ</div>
+      <div>1 / 14</div>
+    </div>
+  </section>
+
+  <!-- ==================== 2. 3大重要ポイント ==================== -->
+  <section class="slide slide--soft">
+    <div class="eyebrow"><span class="num">01</span> KEY TAKEAWAYS</div>
+    <h2 class="s-title">本日の3大重要メッセージ</h2>
+    <div class="grid3">
+      <div class="card card--warn" data-cue="1つ目は、単純CT正常や">
+        <div class="pill" style="background:var(--red);">重要盲点 1</div>
+        <div class="card__t">単純CT正常でも<br>CVTは否定不可</div>
+        <div class="card__d">D-dimer陰性でも除外できません。<br>疑えば直ちに<strong>CTVまたは造影MRV</strong>を施行します。</div>
+      </div>
+      <div class="card card--accent" data-cue="2つ目は、脳出血があっても">
+        <div class="pill" style="background:var(--navy);">重要原則 2</div>
+        <div class="card__t">脳出血があっても<br>抗凝固療法が原則</div>
+        <div class="card__d">静脈圧上昇による破綻出血です。<br><strong>ヘパリンで静脈圧を下げる</strong>ことが最大の止血策です。</div>
+      </div>
+      <div class="card" data-cue="そして3つ目は、DOACの">
+        <div class="pill" style="background:var(--accent);">最新知見 3</div>
+        <div class="card__t">DOACエビデンスと<br>治療期間の判断基準</div>
+        <div class="card__d">前向き研究でDOACの有効性を確認。<br>期間は再開通ではなく<strong>誘因の性質</strong>で判断します。</div>
+      </div>
+    </div>
+    <div class="slide__foot">
+      <div class="ch"><span class="cross">✚</span> 医知創造ラボ</div>
+      <div>2 / 14</div>
+    </div>
+  </section>
+
+  <!-- ==================== 3. 病態生理 ==================== -->
+  <section class="slide">
+    <div class="eyebrow"><span class="num">02</span> PATHOPHYSIOLOGY</div>
+    <h2 class="s-title">なぜ脳梗塞と脳出血が同時に起こるのか</h2>
+    <div class="grid2">
+      <div class="card" data-cue="静脈圧が上がると毛細血管から">
+        <div class="card__t" style="color:var(--navy);">① 静脈圧上昇と血管破綻</div>
+        <div class="card__d">
+          ・静脈血流遮断 ➔ 毛細血管圧の上昇<br>
+          ・血液脳関門の破綻 ➔ <strong>血管原性浮腫</strong><br>
+          ・灌流圧低下 ➔ <strong>細胞障害性浮腫（静脈性梗塞）</strong><br>
+          ・毛細血管の破裂 ➔ <strong>出血性静脈梗塞・脳内出血</strong>
+        </div>
+      </div>
+      <div class="card card--accent" data-cue="また、くも膜顆粒での髄液吸収が">
+        <div class="card__t" style="color:var(--blue);">② 髄液吸収障害（高頭蓋内圧）</div>
+        <div class="card__d">
+          ・静脈洞閉塞によりくも膜顆粒からの髄液吸収が障害<br>
+          ・脳実質病変がなくても生じる<strong>孤立性頭蓋内圧亢進症候群</strong><br>
+          ・難治性頭痛、悪心、うっ血乳頭、外転神経麻痺を主徴とします
+        </div>
+      </div>
+    </div>
+    <div class="slide__foot">
+      <div class="ch"><span class="cross">✚</span> 医知創造ラボ</div>
+      <div>3 / 14</div>
+    </div>
+  </section>
+
+  <!-- ==================== 4. 危険因子 ==================== -->
+  <section class="slide slide--soft">
+    <div class="eyebrow"><span class="num">03</span> ETIOLOGY & RISK FACTORS</div>
+    <h2 class="s-title">危険因子と原因疾患 ─ 4割以上で複数重複</h2>
+    <div class="tbl-box">
+      <table class="tbl-custom">
+        <tr>
+          <th style="width:30%;">カテゴリー</th>
+          <th style="width:70%;">主な原因・危険因子</th>
+        </tr>
+        <tr data-cue="特に若い女性では、">
+          <td style="font-weight:700; color:var(--navy);">女性ホルモン・妊娠</td>
+          <td>経口避妊薬（OC）、妊娠中、産褥期（産後6週以内）、ホルモン補充療法</td>
+        </tr>
+        <tr data-cue="さらに、抗リン脂質抗体症候群や">
+          <td style="font-weight:700; color:var(--navy);">後天性血栓素因</td>
+          <td>抗リン脂質抗体症候群（APS）、悪性腫瘍、ネフローゼ症候群</td>
+        </tr>
+        <tr>
+          <td style="font-weight:700; color:var(--navy);">血液・全身・局所要因</td>
+          <td>骨髄増殖性腫瘍（<i>JAK2</i>変異）、鉄欠乏性貧血、副鼻腔炎・中耳炎、脱水</td>
+        </tr>
+      </table>
+    </div>
+    <div class="slide__foot">
+      <div class="ch"><span class="cross">✚</span> 医知創造ラボ</div>
+      <div>4 / 14</div>
+    </div>
+  </section>
+
+  <!-- ==================== 5. 臨床症状 ==================== -->
+  <section class="slide">
+    <div class="eyebrow"><span class="num">04</span> CLINICAL PRESENTATION</div>
+    <h2 class="s-title">症状は極めて多彩 ─ 「頭痛だけ」を見逃さない</h2>
+    <div class="grid2">
+      <div class="card" data-cue="症状は非常に多彩ですが、">
+        <div class="card__t">最頻症状：頭痛（約90%）</div>
+        <div class="card__d">
+          ・数日〜数週間かけて増悪する持続性頭痛<br>
+          ・<strong>横になると悪化、いきみ・咳で悪化</strong>（ICP亢進）<br>
+          ・片頭痛様、緊張型様、雷鳴頭痛様など多彩<br>
+          ・「局所神経症状がない」ことだけで否定はできません
+        </div>
+      </div>
+      <div class="card card--accent" data-cue="また、約3割から4割で">
+        <div class="card__t">多彩な症候群</div>
+        <div class="card__d">
+          ・<strong>てんかん発作（24〜40%）</strong>：皮質病変で高頻度<br>
+          ・<strong>局所脳障害</strong>：片麻痺、失語、半盲<br>
+          ・<strong>深部静脈血栓</strong>：両側視床病変、意識障害、昏睡<br>
+          ・<strong>海綿静脈洞血栓</strong>：眼球突出、外眼筋の麻痺
+        </div>
+      </div>
+    </div>
+    <div class="slide__foot">
+      <div class="ch"><span class="cross">✚</span> 医知創造ラボ</div>
+      <div>5 / 14</div>
+    </div>
+  </section>
+
+  <!-- ==================== 6. 検査の落とし穴 ==================== -->
+  <section class="slide slide--soft">
+    <div class="eyebrow"><span class="num">05</span> DIAGNOSTIC PITFALLS</div>
+    <h2 class="s-title">検査の落とし穴：単純CTとD-dimerの限界</h2>
+    <div class="grid2">
+      <div class="card card--warn" data-cue="単純CTの感度は約30%">
+        <div class="card__t">単純CT正常でも除外不可</div>
+        <div class="card__d">
+          ・単純CTの感度は<strong>約30%程度</strong><br>
+          ・直接所見（Dense sinus sign / Cord sign）は一部<br>
+          ・動脈支配領域に一致しない浮腫や出血で疑う<br>
+          ・<strong>正常CTだからと帰宅させてはなりません</strong>
+        </div>
+      </div>
+      <div class="card card--warn" data-cue="また、頭痛単独例や発症から">
+        <div class="card__t">D-dimer陰性でも除外不可</div>
+        <div class="card__d">
+          ・頭痛単独例では偽陰性が多発<br>
+          ・発症から時間が経過した亜急性・慢性例<br>
+          ・限局した小さな血栓症例<br>
+          ・<strong>臨床的に疑えば直ちに血管造影画像へ進みます</strong>
+        </div>
+      </div>
+    </div>
+    <div class="slide__foot">
+      <div class="ch"><span class="cross">✚</span> 医知創造ラボ</div>
+      <div>6 / 14</div>
+    </div>
+  </section>
+
+  <!-- ==================== 7. 推奨画像検査 ==================== -->
+  <section class="slide">
+    <div class="eyebrow"><span class="num">06</span> IMAGING MODALITIES</div>
+    <h2 class="s-title">推奨される画像診断プロトコル</h2>
+    <div class="tbl-box">
+      <table class="tbl-custom">
+        <tr>
+          <th style="width:25%;">モダリティ</th>
+          <th style="width:40%;">長所・特徴的サイン</th>
+          <th style="width:35%;">読影の注意点</th>
+        </tr>
+        <tr data-cue="救急では短時間で撮影できる">
+          <td style="font-weight:700; color:var(--navy);">CTV（造影CT）</td>
+          <td>迅速・救急で最適。静脈洞内欠損を取り囲む造影効果（<strong>Empty delta sign</strong>）</td>
+          <td>皮質静脈単独血栓は見逃されやすい</td>
+        </tr>
+        <tr>
+          <td style="font-weight:700; color:var(--navy);">MRI ＋ 造影MRV</td>
+          <td>脳実質病変と静脈閉塞の最高精度評価</td>
+          <td>撮像時間、体動、金属禁忌</td>
+        </tr>
+        <tr data-cue="非造影のTOF法では">
+          <td style="font-weight:700; color:var(--navy);">TOF-MRV（非造影）</td>
+          <td>非侵襲的で造影剤不要</td>
+          <td><strong>遅い血流で欠損に見える</strong><br>（低形成との鑑別が必要）</td>
+        </tr>
+        <tr data-cue="孤立性の皮質静脈血栓には">
+          <td style="font-weight:700; color:var(--navy);">SWI / T2*強調像</td>
+          <td><strong>皮質静脈単独血栓</strong>、微小出血の描出に必須</td>
+          <td>静脈洞全体の血流評価は不可</td>
+        </tr>
+      </table>
+    </div>
+    <div class="slide__foot">
+      <div class="ch"><span class="cross">✚</span> 医知創造ラボ</div>
+      <div>7 / 14</div>
+    </div>
+  </section>
+
+  <!-- ==================== 8. 急性期治療 ==================== -->
+  <section class="slide slide--soft">
+    <div class="eyebrow"><span class="num">07</span> ACUTE MANAGEMENT</div>
+    <h2 class="s-title">急性期治療：出血があっても抗凝固療法を行う</h2>
+    <div class="grid2">
+      <div class="card card--accent" data-cue="ここで最も重要なのは、">
+        <div class="card__t">出血合併時もヘパリンを投与する理由</div>
+        <div class="card__d">
+          ・出血の原因は「静脈圧の上昇」<br>
+          ・抗凝固を中止すると血栓が進展し静脈圧がさらに上昇<br>
+          ・<strong>治療量ヘパリンで血栓進展を防ぎ静脈圧を下げることこそが出血拡大防止の根治療法です</strong>
+        </div>
+      </div>
+      <div class="card" data-cue="海外では低分子量ヘパリン、">
+        <div class="card__t">急性期の薬剤選択</div>
+        <div class="card__d">
+          ・<strong>低分子量ヘパリン（LMWH）</strong>：海外ガイドライン第一選択<br>
+          ・<strong>未分画ヘパリン持続静注</strong>：高度腎障害、手術・処置の可能性がある重症例、日本の保険診療標準
+        </div>
+      </div>
+    </div>
+    <div class="slide__foot">
+      <div class="ch"><span class="cross">✚</span> 医知創造ラボ</div>
+      <div>8 / 14</div>
+    </div>
+  </section>
+
+  <!-- ==================== 9. 発作とICP管理 ==================== -->
+  <section class="slide">
+    <div class="eyebrow"><span class="num">08</span> COMPLICATION MANAGEMENT</div>
+    <h2 class="s-title">てんかん発作と頭蓋内圧亢進への対応</h2>
+    <div class="grid2">
+      <div class="card" data-cue="合併症の管理です。">
+        <div class="card__t">てんかん発作の管理</div>
+        <div class="card__d">
+          ・<strong>発作予防薬の全例予防投与は非推奨</strong><br>
+          ・急性発症時は直ちに抗発作薬（<strong>レベチラセタム等</strong>）開始<br>
+          ・DOAC併用時は酵素誘導薬（CBZ/PHT等）を避ける<br>
+          ・病変改善後は3〜6か月で減量終了を検討
+        </div>
+      </div>
+      <div class="card card--accent" data-cue="頭蓋内圧亢進でうっ血乳頭を">
+        <div class="card__t">頭蓋内圧亢進・視機能障害</div>
+        <div class="card__d">
+          ・うっ血乳頭を認めたら緊急で視力・視野評価<br>
+          ・頭部挙上、アセタゾラミド経口投与<br>
+          ・視力低下が進行する場合は<strong>視神経鞘開窓術やシャント術</strong>を躊躇しない
+        </div>
+      </div>
+    </div>
+    <div class="slide__foot">
+      <div class="ch"><span class="cross">✚</span> 医知創造ラボ</div>
+      <div>9 / 14</div>
+    </div>
+  </section>
+
+  <!-- ==================== 10. 難治例・救済治療 ==================== -->
+  <section class="slide slide--soft">
+    <div class="eyebrow"><span class="num">09</span> REFRACTORY CASES</div>
+    <h2 class="s-title">難治重症例への救済治療<br>（TO-ACT試験と減圧開頭術）</h2>
+    <div class="grid2" style="margin-top:14px;">
+      <div class="card" data-cue="カテーテルによる血栓回収などの">
+        <div class="card__t">血管内治療（TO-ACT試験）</div>
+        <div class="card__d">
+          ・第一選択としてのルーチン施行は非推奨<br>
+          ・<strong>TO-ACT試験（RCT）</strong>：良好予後 67% vs 68%（無益性中止）<br>
+          ・十分な抗凝固を行っても急速に悪化する症例への<strong>救済治療（rescue）</strong>として検討
+        </div>
+      </div>
+      <div class="card card--warn" data-cue="一方、大きな出血性梗塞で">
+        <div class="card__t">減圧開頭術の救命効果</div>
+        <div class="card__d">
+          ・大きな出血性梗塞、正中偏位、切迫ヘルニアで適応<br>
+          ・若年者が多く、<strong>重症画像であっても減圧術により劇的な機能回復を遂げる症例が多い</strong><br>
+          ・重症だからと諦めず脳神経外科へ直ちに相談します
+        </div>
+      </div>
+    </div>
+    <div class="slide__foot">
+      <div class="ch"><span class="cross">✚</span> 医知創造ラボ</div>
+      <div>10 / 14</div>
+    </div>
+  </section>
+
+  <!-- ==================== 11. 経口抗凝固薬 ==================== -->
+  <section class="slide">
+    <div class="eyebrow"><span class="num">10</span> ORAL ANTICOAGULATION</div>
+    <h2 class="s-title">経口抗凝固薬への移行：DOAC vs ワルファリン</h2>
+    <div class="grid2">
+      <div class="card card--accent" data-cue="RE-SPECT CVT試験や">
+        <div class="card__t">DOACのエビデンス確立</div>
+        <div class="card__d">
+          ・<strong>RE-SPECT CVT試験（RCT）</strong>：再発0% vs 0%<br>
+          ・<strong>DOAC-CVT研究（2025年 前向きn=619）</strong>：VKAと同等の有効性・安全性<br>
+          ・国際的には急性期安定後の合理的選択肢です
+        </div>
+      </div>
+      <div class="card" data-cue="ただし、高リスクの">
+        <div class="card__t">ワルファリンを<br>優先すべき状況</div>
+        <div class="card__d">
+          ・<strong>高リスク抗リン脂質抗体症候群（APS）</strong>（DOAC禁忌）<br>
+          ・重度腎機能障害例<br>
+          ・妊娠中・授乳中<br>
+          ・<strong>日本国内の保険適応を重視するケース</strong>
+        </div>
+      </div>
+    </div>
+    <div class="slide__foot">
+      <div class="ch"><span class="cross">✚</span> 医知創造ラボ</div>
+      <div>11 / 14</div>
+    </div>
+  </section>
+
+  <!-- ==================== 12. 治療期間 ==================== -->
+  <section class="slide slide--soft">
+    <div class="eyebrow"><span class="num">11</span> DURATION OF THERAPY</div>
+    <h2 class="s-title">抗凝固療法の期間設定 ─ リスクに応じた個別化</h2>
+    <div class="tbl-box">
+      <table class="tbl-custom">
+        <tr>
+          <th style="width:40%;">臨床状況</th>
+          <th style="width:25%;">推奨期間</th>
+          <th style="width:35%;">判断の根拠</th>
+        </tr>
+        <tr data-cue="避妊薬や脱水など一過性の原因であれば">
+          <td style="font-weight:700; color:var(--navy);">一過性誘因あり（OC/妊娠/脱水/感染）</td>
+          <td style="font-weight:700; color:var(--accent);">3〜6か月</td>
+          <td>誘因排除確認後に終了（産後最低6週）</td>
+        </tr>
+        <tr>
+          <td style="font-weight:700; color:var(--navy);">明らかな誘因なし（初回特発例）</td>
+          <td style="font-weight:700; color:var(--accent);">6〜12か月</td>
+          <td>潜在的血栓リスクを考慮し十分治療</td>
+        </tr>
+        <tr>
+          <td style="font-weight:700; color:var(--navy);">再発例 / 高リスクAPS / 活動性悪性腫瘍</td>
+          <td style="font-weight:700; color:var(--red);">長期 〜 無期限</td>
+          <td>再発リスク高く無期限継続を検討</td>
+        </tr>
+      </table>
+    </div>
+    <p class="lead" style="margin-top:16px; font-size:calc(24px * var(--type-mult));" data-cue="数か月後の画像で静脈洞が完全に">※ 3〜6か月後の画像で静脈洞が完全再開通していなくても、それ単独で無期限抗凝固とする根拠はありません。</p>
+    <div class="slide__foot">
+      <div class="ch"><span class="cross">✚</span> 医知創造ラボ</div>
+      <div>12 / 14</div>
+    </div>
+  </section>
+
+  <!-- ==================== 13. 実践フロー ==================== -->
+  <section class="slide">
+    <div class="eyebrow"><span class="num">12</span> CLINICAL ALGORITHM</div>
+    <h2 class="s-title">診療アルゴリズムと国内実務のポイント</h2>
+    <div class="grid2">
+      <div class="card" data-cue="診療の流れを整理します。">
+        <div class="card__t">診療実践ステップ</div>
+        <div class="card__d" style="font-size:calc(27px * var(--type-mult)); line-height:1.45;">
+          1. <strong>疑う</strong>：新規・進行性頭痛、若年・女性・けいれん<br>
+          2. <strong>画像</strong>：単純CT＋CTV、またはMRI＋造影MRV<br>
+          3. <strong>急性期</strong>：治療量ヘパリン（脳出血合併時も開始）<br>
+          4. <strong>経口移行</strong>：安定後DOACまたはワルファリン<br>
+          5. <strong>評価</strong>：3〜6か月後画像＋誘因に応じた期間決定
+        </div>
+      </div>
+      <div class="card card--accent" data-cue="日本の保険診療では、">
+        <div class="card__t">日本国内における保険適応</div>
+        <div class="card__d" style="font-size:calc(27px * var(--type-mult)); line-height:1.45;">
+          ・LMWH・DOACは添付文書上CVT適応外<br>
+          ・国内標準は<strong>未分画ヘパリン ➔ ワルファリン（INR 2.0〜3.0）</strong><br>
+          ・DOAC使用時は適応外手続きや十分な説明を行います
+        </div>
+      </div>
+    </div>
+    <div class="slide__foot">
+      <div class="ch"><span class="cross">✚</span> 医知創造ラボ</div>
+      <div>13 / 14</div>
+    </div>
+  </section>
+
+  <!-- ==================== 14. まとめ & エンディング ==================== -->
+  <section class="slide slide--navy">
+    <div style="margin-top:auto; margin-bottom:auto; display:flex; flex-direction:column; gap:18px;">
+      <div class="eyebrow" style="color:#7FE0A8;"><span class="num">CONCLUSION</span> まとめ</div>
+      <h2 class="s-title" style="font-size:calc(52px * var(--type-mult)); line-height:1.24;" data-cue="脳静脈血栓症は、">脳静脈血栓症は<br>「疑って造影画像を撮る」ことがすべて</h2>
+      <div class="card card--navy" style="margin-top:8px;" data-cue="個々の治療方針は、">
+        <div class="card__d" style="font-size:calc(28px * var(--type-mult)); line-height:1.55;">
+          ・単純CT正常・D-dimer陰性でも除外せずCTV/MRVへ進む<br>
+          ・脳出血があっても治療量抗凝固療法を開始・継続する<br>
+          ・個々の治療方針は担当医の判断によります。気になる症状は主治医にご相談ください。
+        </div>
+      </div>
+    </div>
+    <div class="slide__foot">
+      <div class="ch"><span class="cross">✚</span> 医知創造ラボ</div>
+      <div>14 / 14</div>
+    </div>
+  </section>
+
+</deck-stage>
+<script src="deck-stage.js"></script>
+<script src="image-slot.js"></script>
+</body>
+</html>
