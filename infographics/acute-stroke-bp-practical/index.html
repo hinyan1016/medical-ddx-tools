@@ -1,0 +1,271 @@
+﻿<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="脳卒中（脳梗塞・脳出血）急性期のニカルジピン持続静注・増減調整・内服移行の実務手順を1枚に整理したインフォグラフィック（医療従事者向け）。開始量0.5 µg/kg/分から体重×0.15 mL/時の換算式、安全な上げ下げプロトコル、偽高血圧（尿閉・疼痛等）の除外、嚥下評価後のオーバーラップ内服移行まで。脳卒中治療ガイドライン2021〔改訂2025〕・添付文書準拠。">
+<title>脳卒中急性期の降圧実務フロー｜ニカルジピン持続静注・増減・内服移行（インフォグラフィック）</title>
+<style>
+:root{
+  --navy:#1B3A5C;
+  --navyDeep:#0F2540;
+  --navyBg:#E9EEF5;
+  --blue:#2C5AA0;
+  --blueBg:#EAF0F9;
+  --coral:#FF7A59;
+  --coralBg:#FFF1EC;
+  --coralInk:#B8431F;
+  --amber:#C77800;
+  --amberBg:#FFF8E1;
+  --green:#2E7D32;
+  --greenBg:#E8F5E9;
+  --line:#D6E0E9;
+  --gray:#69737E;
+  --ink:#20242B;
+  --ink2:#3C4450;
+  --font:"Noto Sans JP","BIZ UDPGothic","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+}
+html{font-size:16px;}
+*{box-sizing:border-box; margin:0; padding:0;}
+body,.lead,p,td,th,li,.n__d,.b__d{word-break:auto-phrase; line-break:strict;}
+body{font-family:var(--font); background:#E4E9EF; color:var(--ink);
+  display:flex;flex-direction:column;align-items:center; overflow-x:hidden;}
+.nw{white-space:nowrap;}
+.ig{width:100%; max-width:1400px; background:#fff; box-shadow:0 4px 20px rgba(0,0,0,0.08); margin:20px 0;}
+
+/* ヘッダー */
+.hd{background:linear-gradient(135deg,#0A1B2E 0%,#153352 55%,#1B3A5C 100%); color:#fff; padding:2.2rem 3rem 1.8rem;}
+.hd__brand{font-size:.92rem; letter-spacing:.14em; opacity:.85; margin-bottom:.8rem; display:flex; justify-content:space-between; align-items:baseline; gap:2rem;}
+.hd__ver{font-size:.82rem; letter-spacing:.02em; opacity:.8; text-align:right;}
+.hd__t{font-size:2.3rem; font-weight:800; line-height:1.28;}
+.hd__t .hl{color:var(--coral);}
+.hd__s{margin-top:.85rem; font-size:1.1rem; opacity:.93; line-height:1.65;}
+.hd__tag{display:inline-block; border:1.5px solid rgba(255,255,255,.6); border-radius:.35rem; padding:.15rem .6rem; font-size:.85rem; letter-spacing:.06em; margin-left:.7rem; vertical-align:.22em;}
+
+/* 本文 */
+.bd{padding:2.2rem 3rem 1.8rem;}
+
+/* セクションブロック */
+.sec{border:2px solid var(--line); border-radius:12px; padding:1.5rem; margin-bottom:1.6rem; background:#fff;}
+.sec__h{display:flex; align-items:center; gap:10px; font-size:1.3rem; font-weight:800; color:var(--navy); margin-bottom:1rem; border-bottom:2px solid var(--navyBg); padding-bottom:0.6rem;}
+.sec__num{background:var(--navy); color:#fff; border-radius:50%; width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center; font-size:1rem; font-weight:800;}
+
+/* グリッドレイアウト */
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:1.4rem;}
+.grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:1.2rem;}
+
+/* カード */
+.card{background:var(--navyBg); border-radius:8px; padding:1.1rem 1.2rem; border-left:5px solid var(--navy);}
+.card--coral{background:var(--coralBg); border-left-color:var(--coral);}
+.card--blue{background:var(--blueBg); border-left-color:var(--blue);}
+.card--amber{background:var(--amberBg); border-left-color:var(--amber);}
+.card--green{background:var(--greenBg); border-left-color:var(--green);}
+
+.card__t{font-size:1.08rem; font-weight:800; color:var(--navy); margin-bottom:0.4rem;}
+.card__d{font-size:0.94rem; line-height:1.6; color:var(--ink2);}
+
+/* テーブル */
+.tbl{width:100%; border-collapse:collapse; margin-top:0.8rem; font-size:0.92rem;}
+.tbl th{background:var(--navy); color:#fff; padding:8px 10px; border:1px solid var(--navy); font-weight:700; text-align:center;}
+.tbl td{padding:8px 10px; border:1px solid #cbd5e1; text-align:center;}
+.tbl tr:nth-child(even){background:#f8fafc;}
+
+/* フッター */
+.ft{background:var(--navyDeep); color:#fff; padding:1.5rem 3rem; font-size:0.85rem; line-height:1.6;}
+.ft a{color:#64B5F6; text-decoration:none;}
+</style>
+</head>
+<body>
+
+<nav data-ig-nav-v2 style="width:100%;max-width:1400px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:16px auto 8px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;">
+  <a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a>
+  <a href="https://youtu.be/cd2kMzEt6HI" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#C0392B;color:#fff;">▶ 解説動画（YouTube）</a>
+  <a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a>
+</nav>
+
+<div class="ig">
+  <!-- ヘッダー -->
+  <div class="hd">
+    <div class="hd__brand">
+      <span>ICHISOUZO MEDICAL INFOGRAPHICS</span>
+      <span class="hd__ver">ガイドライン2025・添付文書準拠</span>
+    </div>
+    <div class="hd__t">
+      脳卒中急性期の降圧 <span class="hl">実践マスターガイド</span>
+      <span class="hd__tag">医療従事者向け</span>
+    </div>
+    <div class="hd__s">
+      脳梗塞・脳出血に共通する「ニカルジピン持続静注」の換算計算・安全な増減・内服移行プロトコル
+    </div>
+  </div>
+
+  <div class="bd">
+    <!-- セクション1: 目標値の前提 -->
+    <div class="sec">
+      <div class="sec__h">
+        <span class="sec__num">1</span>
+        <span>病型による目標値の違いと共通する実務</span>
+      </div>
+      <div class="grid2">
+        <div class="card card--blue">
+          <div class="card__t">🧠 脳梗塞急性期（permissive hypertension）</div>
+          <div class="card__d">
+            ・<strong>非再灌流</strong>: 原則下げない（>220/120 mmHgのみ慎重考慮）<br>
+            ・<strong>rt-PA投与前</strong>: <185/110 mmHg ／ <strong>投与後24h</strong>: <180/105 mmHg<br>
+            ・<strong>血栓回収後</strong>: 速やかに<180 mmHg（<140 mmHgへの過降圧は避ける）
+          </div>
+        </div>
+        <div class="card card--coral">
+          <div class="card__t">🩸 脳出血急性期（血腫拡大予防）</div>
+          <div class="card__d">
+            ・<strong>目標</strong>: SBP 140 mmHg未満を目指す（INTERACT2）<br>
+            ・<strong>下限</strong>: SBP 110 mmHg未満は腎障害・有害帰結リスク（ATACH-2）<br>
+            ・<strong>実務</strong>: 第一選択薬・希釈計算・増減手順は脳梗塞と共通
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- セクション2: 希釈と開始量計算 -->
+    <div class="sec">
+      <div class="sec__h">
+        <span class="sec__num">2</span>
+        <span>ニカルジピン持続静注の計算式・早見表</span>
+      </div>
+      <div class="grid2" style="margin-bottom:1rem;">
+        <div class="card card--green">
+          <div class="card__t">💡 基本公式（添付文書ルール）</div>
+          <div class="card__d">
+            ・<strong>開始量</strong>: 0.5 µg/kg/分（＝0.03 mg/kg/時）<br>
+            ・<strong>上限量</strong>: 6.0 µg/kg/分（＝0.36 mg/kg/時）<br>
+            ・<strong>希釈濃度</strong>: 0.1 mg/mL（10倍）または 0.2 mg/mL（5倍希釈）
+          </div>
+        </div>
+        <div class="card card--amber">
+          <div class="card__t">⚡ 暗算ショートカット（開始速度 mL/時）</div>
+          <div class="card__d">
+            ・<strong>0.2 mg/mL希釈（5倍）</strong>: 体重(kg) × <strong>0.15</strong> mL/時<br>
+            ・<strong>0.1 mg/mL希釈（10倍）</strong>: 体重(kg) × <strong>0.30</strong> mL/時<br>
+            ※ 例: 60kgなら 0.2mg/mLで 9 mL/時、0.1mg/mLで 18 mL/時
+          </div>
+        </div>
+      </div>
+
+      <table class="tbl">
+        <tr>
+          <th>体重</th>
+          <th>開始投与量 (mg/時)</th>
+          <th>0.2 mg/mL希釈 (5倍)</th>
+          <th>0.1 mg/mL希釈 (10倍)</th>
+          <th>最大投与量 (mg/時)</th>
+        </tr>
+        <tr>
+          <td><strong>50 kg</strong></td>
+          <td>1.5 mg/時</td>
+          <td><strong>7.5 mL/時</strong></td>
+          <td><strong>15.0 mL/時</strong></td>
+          <td>18.0 mg/時</td>
+        </tr>
+        <tr>
+          <td><strong>60 kg</strong></td>
+          <td>1.8 mg/時</td>
+          <td><strong>9.0 mL/時</strong></td>
+          <td><strong>18.0 mL/時</strong></td>
+          <td>21.6 mg/時</td>
+        </tr>
+        <tr>
+          <td><strong>70 kg</strong></td>
+          <td>2.1 mg/時</td>
+          <td><strong>10.5 mL/時</strong></td>
+          <td><strong>21.0 mL/時</strong></td>
+          <td>25.2 mg/時</td>
+        </tr>
+        <tr>
+          <td><strong>80 kg</strong></td>
+          <td>2.4 mg/時</td>
+          <td><strong>12.0 mL/時</strong></td>
+          <td><strong>24.0 mL/時</strong></td>
+          <td>28.8 mg/時</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- セクション3: 増減プロトコルと注意点 -->
+    <div class="sec">
+      <div class="sec__h">
+        <span class="sec__num">3</span>
+        <span>安全な増減調整と偽高血圧の除外</span>
+      </div>
+      <div class="grid3">
+        <div class="card">
+          <div class="card__t">📈 増量ステップ</div>
+          <div class="card__d">
+            ・血圧測定は5分毎<br>
+            ・5〜15分間隔で 0.5〜1.0 mg/時ずつ増量<br>
+            ・急激な血圧低下を避ける
+          </div>
+        </div>
+        <div class="card card--coral">
+          <div class="card__t">⚠️ 増量前の6大チェック</div>
+          <div class="card__d">
+            ① 膀胱充満・尿閉<br>
+            ② 疼痛・悪心<br>
+            ③ 不安・不穏<br>
+            ④ カフサイズ不適合<br>
+            ⑤ ルート漏れ・屈曲<br>
+            ⑥ シリンジ残量不足
+          </div>
+        </div>
+        <div class="card card--green">
+          <div class="card__t">📉 減量・離脱ステップ</div>
+          <div class="card__d">
+            ・目標達成後は維持<br>
+            ・安定後 0.5〜1.0 mg/時ずつ段階的に減量<br>
+            ・SBP 110未満または目標下限到達で直ちに減量/停止
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- セクション4: 内服移行手順 -->
+    <div class="sec" style="margin-bottom:0;">
+      <div class="sec__h">
+        <span class="sec__num">4</span>
+        <span>経口移行（内服切り替え）の4ステップ</span>
+      </div>
+      <div class="grid2">
+        <div class="card card--amber">
+          <div class="card__t">🛡️ 内服開始の必須前提条件</div>
+          <div class="card__d">
+            ・発症24〜48時間以降、神経症状が安定<br>
+            ・<strong>嚥下機能評価（MWST / 改訂水飲みテスト等）に合格</strong><br>
+            ・※ 誤嚥リスクがある場合は経胃管または静注継続
+          </div>
+        </div>
+        <div class="card card--blue">
+          <div class="card__t">🔄 オーバーラップ移行手順</div>
+          <div class="card__d">
+            ① 長時間作用型CCB（アムロジピン等）を開始<br>
+            ② 内服薬の血中濃度立ち上がりまで2〜4時間静注を併用<br>
+            ③ 血圧安定を確認しながらニカルジピン静注を段階的に漸減・中止
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- フッター -->
+  <div class="ft">
+    <p><strong>【参考文献・エビデンス】</strong> 日本脳卒中学会 脳卒中治療ガイドライン2021〔改訂2025〕／rt-PA静注療法適正治療指針 第三版／ペルジピン添付文書／Powers WJ, et al. Stroke 2019 (AHA)／Greenberg SM, et al. Stroke 2022 (AHA ICH)／Qureshi AI, et al. NEJM 2016 (ATACH-2)／Anderson CS, et al. NEJM 2013 (INTERACT2)／Yang P, et al. Lancet 2022 (ENCHANTED2/MT)</p>
+    <p style="margin-top:6px;opacity:0.8;">※ 本資料は医療従事者向けの教育・知識整理を目的としたものであり、個別の患者の診療方針を指示するものではありません。各施設の規程・プロトコルに従ってください。</p>
+  </div>
+</div>
+
+<nav data-ig-nav-v2 style="width:100%;max-width:1400px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px auto 24px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;">
+  <a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a>
+  <a href="https://youtu.be/cd2kMzEt6HI" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#C0392B;color:#fff;">▶ 解説動画（YouTube）</a>
+  <a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a>
+</nav>
+
+</body>
+</html>

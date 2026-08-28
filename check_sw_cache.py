@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """【デプロイ前ゲート】Service Worker のキャッシュ更新漏れを検出する。
 
@@ -126,7 +126,12 @@ def git_head_sw(repo: Path, rel: str) -> str | None:
 
 def is_page_name(name: str) -> bool:
     """テンプレ・作業用のファイル／ディレクトリ名でないなら True。"""
-    return not name.startswith(IGNORED_PREFIXES) and name not in IGNORED_NAMES
+    if name.startswith(IGNORED_PREFIXES) or name in IGNORED_NAMES:
+        return False
+    # OneDrive 同期による端末別競合ファイルを除外
+    if "-OmniBook9hx" in name or "-Envy14faHI" in name or "-Envy" in name:
+        return False
+    return True
 
 
 def collect_pages(root: Path) -> set[str]:

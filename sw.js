@@ -1,5 +1,8 @@
-const CACHE_NAME = 'ddx-tools-v146';
+﻿const CACHE_NAME = 'ddx-tools-v147';
 const ASSETS = [
+  './infographics/acute-stroke-bp-practical/index.html',
+  './infographics/acute-stroke-bp-practical/infographic.png',
+  './infographics/acute-stroke-bp-practical/thumb.png',
   './infographics/cerebral-venous-thrombosis/index.html',
   './infographics/cerebral-venous-thrombosis/infographic.png',
   './infographics/cerebral-venous-thrombosis/thumb.png',

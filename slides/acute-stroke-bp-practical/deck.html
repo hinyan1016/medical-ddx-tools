@@ -1,0 +1,546 @@
+﻿<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>脳卒中急性期の降圧 具体的手順</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;700;800&display=swap" rel="stylesheet">
+<script src="deck-stage.js" defer></script>
+<script src="image-slot.js" defer></script>
+<style>
+:root{
+  --navy:#012360;
+  --navy-ink:#001B4D;
+  --accent:#F27E03;
+  --accent-soft:#FFF4E8;
+  --danger:#DC3323;
+  --danger-soft:#FDECEB;
+  --bg:#FDFDFD;
+  --blue:#1D4189;
+  --blue-soft:#E9EEF8;
+  --card-bg:#FFFFFF;
+  --card-border:#D8DDE6;
+  --font-ja:"Noto Sans JP", "BIZ UDPGothic", sans-serif;
+  --grad-navy:linear-gradient(160deg, #012360 0%, #001B4D 100%);
+}
+html,body{ margin:0; background:#0a1430; font-family:var(--font-ja); }
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#0a1430; overflow:hidden; }
+.slide{
+  box-sizing:border-box;
+  
+  display:flex; flex-direction:column;
+  padding: 55px 90px 65px;
+  background: var(--bg);
+  color: #111;
+  position:relative;
+  overflow:hidden;
+}
+.slide--navy{ background: var(--grad-navy); color: #fff; }
+.slide::after{
+  content:""; position:absolute; left:0; right:0; bottom:0; height:10px;
+  background: var(--navy); pointer-events:none;
+}
+.slide--navy::after{ background: var(--accent); }
+.eyebrow{
+  display:flex; align-items:center; gap:16px;
+  font-size: 28px; font-weight:700; color: var(--navy);
+  letter-spacing:.04em; margin-bottom: 10px;
+}
+.eyebrow::before{
+  content:""; width:10px; height:36px; border-radius:3px;
+  background: linear-gradient(180deg, var(--navy) 0 68%, var(--accent) 68% 100%);
+}
+.slide-title{ font-size: 52px; font-weight:800; color: var(--navy-ink); margin: 0 0 32px 0; line-height: 1.25; }
+.slide--navy .eyebrow{ color: #A5C4F5; }
+.slide--navy .eyebrow::before{ background: var(--accent); }
+.slide--navy .slide-title{ color: #fff; }
+
+/* Grid Layouts */
+.grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap: 36px; }
+.grid-3{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 28px; }
+.card{
+  background: var(--card-bg); border: 2px solid var(--card-border);
+  border-radius: 16px; padding: 28px 32px; box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+.card-header{ font-size: 32px; font-weight: 700; color: var(--navy); margin-bottom: 16px; border-bottom: 2px solid var(--blue-soft); padding-bottom: 8px; }
+.card-body{ font-size: 26px; line-height: 1.6; color: #333; }
+
+/* Table style */
+.slide-table{ width: 100%; border-collapse: collapse; font-size: 28px; margin-top: 8px; }
+.slide-table th{ background: var(--navy); color: #fff; padding: 16px 20px; text-align: center; border: 1px solid var(--navy); }
+.slide-table td{ padding: 16px 20px; text-align: center; border: 1px solid #C9D2DF; background: #fff; }
+.slide-table tr:nth-child(even) td{ background: #F8FAFD; }
+.highlight-row td{ background: var(--blue-soft) !important; font-weight: 700; color: var(--navy); }
+
+/* Highlight Badge / Boxes */
+.badge{ display:inline-block; padding: 6px 18px; border-radius: 8px; font-size: 24px; font-weight: 700; margin-bottom: 12px; }
+.badge--accent{ background: var(--accent); color: #fff; }
+.badge--danger{ background: var(--danger); color: #fff; }
+.badge--navy{ background: var(--navy); color: #fff; }
+
+.callout{
+  background: var(--blue-soft); border-left: 8px solid var(--blue);
+  border-radius: 8px; padding: 20px 28px; margin-top: 20px; font-size: 26px; line-height: 1.5;
+}
+.callout--warn{
+  background: var(--danger-soft); border-left: 8px solid var(--danger);
+}
+</style>
+</head>
+<body>
+
+<deck-stage width="1920" height="1080">
+<!-- Slide 1: タイトル -->
+<section class="slide slide--navy" data-slide="1">
+  <div style="margin-top:auto; margin-bottom:auto;">
+    <span class="badge badge--accent">脳卒中急性期 診療実務</span>
+    <h1 style="font-size:66px; font-weight:800; line-height:1.25; margin:20px 0 28px 0; color:#FFFFFF;">脳卒中急性期の降圧<br><span style="color:#F27E03;">ニカルジピン持続静注・内服移行の具体的手順</span></h1>
+    <p style="font-size:32px; color:#CCDDF8; margin:0;">脳梗塞・脳出血における計算式・増減プロトコル・内服切り替えの完全実務</p>
+    <div style="margin-top:40px; font-size:26px; color:#95B6EB;">監修：今村久司（脳神経内科専門医・指導医）</div>
+  </div>
+</section>
+
+<!-- Slide 2: 目標値の違い -->
+<section class="slide" data-slide="2">
+  <div class="eyebrow">背景と位置づけ</div>
+  <h2 class="slide-title">脳梗塞と脳出血：目標値の違い</h2>
+  <div class="grid-2">
+    <div class="card" style="border-top:8px solid var(--navy);">
+      <div class="card-header">脳梗塞（虚血性）</div>
+      <div class="card-body">
+        <p style="font-size:26px; margin:8px 0;">• <strong>非再灌流</strong>: 220/120未満は<strong>原則下げない</strong></p>
+        <p style="font-size:26px; margin:8px 0;">• <strong>rt-PA前</strong>: 185/110 未満へ降圧</p>
+        <p style="font-size:26px; margin:8px 0;">• <strong>血栓回収後</strong>: 180 以下へ（<strong>140未満は避ける</strong>）</p>
+        <div class="callout" style="font-size:24px; padding:16px;">目的: 虚血ペナンブラの血流維持</div>
+      </div>
+    </div>
+    <div class="card" style="border-top:8px solid var(--accent); background:#FFFDF8;">
+      <div class="card-header" style="color:var(--accent);">脳出血（出血性）</div>
+      <div class="card-body">
+        <p style="font-size:26px; margin:8px 0;">• <strong>発症早期</strong>: <strong>SBP &lt; 140 mmHg</strong> 目標</p>
+        <p style="font-size:26px; margin:8px 0;">• 血腫拡大予防のため速やかに降圧</p>
+        <p style="font-size:26px; margin:8px 0;">• ただし <strong>SBP &lt; 130 未満への過度降圧は避ける</strong>（ATACH-2試験）</p>
+        <div class="callout" style="font-size:24px; padding:16px; background:#FFF4E8; border-color:var(--accent);">目的: 早期の血腫拡大防止</div>
+      </div>
+    </div>
+  </div>
+  <p style="font-size:26px; font-weight:700; color:var(--navy); margin-top:24px; text-align:center;">
+    👉 目標値は異なるが、<strong>ニカルジピン持続静注の実務・内服移行手順は共通！</strong>
+  </p>
+</section>
+
+<!-- Slide 3: なぜニカルジピンか -->
+<section class="slide" data-slide="3">
+  <div class="eyebrow">第一選択薬</div>
+  <h2 class="slide-title">なぜニカルジピン持続静注が第一選択か</h2>
+  <div class="grid-3">
+    <div class="card">
+      <span class="badge badge--navy">特長 1</span>
+      <div class="card-header">速効性と調節性</div>
+      <div class="card-body" style="font-size:25px;">投与後数分で降圧効果が発現。半減期が短く、速度調整によるコントロールが極めて容易。</div>
+    </div>
+    <div class="card">
+      <span class="badge badge--navy">特長 2</span>
+      <div class="card-header">脳血管選択性</div>
+      <div class="card-body" style="font-size:25px;">ジヒドロピリジン系Ca拮抗薬。頭蓋内圧を著明に亢進させることなく脳血流量を保持しやすい。</div>
+    </div>
+    <div class="card">
+      <span class="badge badge--navy">特長 3</span>
+      <div class="card-header">豊富なエビデンス</div>
+      <div class="card-body" style="font-size:25px;">国内GL、AHA/ASA、ATACH-2、ENCHANTEDなど、急性期脳卒中RCTの標準薬として確立。</div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 4: 国内添付文書ルール -->
+<section class="slide" data-slide="4">
+  <div class="eyebrow">添付文書基準</div>
+  <h2 class="slide-title">国内添付文書のルール（希釈と開始量）</h2>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">規格と希釈方法</div>
+      <div class="card-body">
+        <p style="font-size:26px; margin:10px 0;">• 製剤規格: <strong>1 mg/mL</strong>（ペルジピン注等）</p>
+        <p style="font-size:26px; margin:10px 0;">• 希釈: 生食または5%ブドウ糖で<br><strong>0.01〜0.02%（0.1〜0.2 mg/mL）</strong>に希釈</p>
+        <p style="font-size:24px; color:#666; margin:10px 0;">※原液投与は添付文書外。静脈炎リスクあり施設規定要</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">投与速度の範囲</div>
+      <div class="card-body">
+        <p style="font-size:26px; margin:10px 0;">• <strong>開始投与速度</strong>: <span style="font-size:36px; font-weight:800; color:var(--accent);">0.5 µg/kg/分</span></p>
+        <p style="font-size:26px; margin:10px 0;">• <strong>調整範囲</strong>: 0.5 〜 6.0 µg/kg/分</p>
+        <p style="font-size:26px; margin:10px 0;">• 患者の血圧反応を5分毎に観察しながら調整</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 5: 速度換算式 -->
+<section class="slide" data-slide="5">
+  <div class="eyebrow">臨床計算</div>
+  <h2 class="slide-title">開始速度（mL/時）の計算式</h2>
+  <div style="background:#F4F7FB; border:2px solid var(--blue-soft); border-radius:16px; padding:28px; margin-bottom:26px;">
+    <div style="font-size:30px; font-weight:700; color:var(--navy); margin-bottom:10px;">開始用量の換算:</div>
+    <div style="font-size:38px; font-weight:800; color:var(--blue); font-family:monospace;">
+      0.5 µg/kg/分 × 60分 ＝ 30 µg/kg/時 ＝ <strong>0.03 mg/kg/時</strong>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card" style="border-left:8px solid var(--accent);">
+      <div style="font-size:28px; font-weight:700; color:var(--navy);">0.2 mg/mL 希釈液（5倍希釈）</div>
+      <div style="font-size:36px; font-weight:800; color:var(--accent); margin:14px 0; font-family:monospace;">
+        体重(kg) × 0.15 mL/時
+      </div>
+      <div style="font-size:25px; color:#444;">（例: 60 kg × 0.15 ＝ <strong>9.0 mL/時</strong>）</div>
+    </div>
+    <div class="card" style="border-left:8px solid var(--blue);">
+      <div style="font-size:28px; font-weight:700; color:var(--navy);">0.1 mg/mL 希釈液（10倍希釈）</div>
+      <div style="font-size:36px; font-weight:800; color:var(--blue); margin:14px 0; font-family:monospace;">
+        体重(kg) × 0.30 mL/時
+      </div>
+      <div style="font-size:25px; color:#444;">（例: 60 kg × 0.30 ＝ <strong>18.0 mL/時</strong>）</div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 6: 早見表 -->
+<section class="slide" data-slide="6">
+  <div class="eyebrow">早見表</div>
+  <h2 class="slide-title">体重別・濃度別 開始速度早見表</h2>
+  <table class="slide-table">
+    <tr>
+      <th>患者体重</th>
+      <th>0.2 mg/mL 希釈液（5倍）</th>
+      <th>0.1 mg/mL 希釈液（10倍）</th>
+      <th>原液 1.0 mg/mL（参考）</th>
+    </tr>
+    <tr>
+      <td><strong>40 kg</strong></td>
+      <td>6.0 mL/時</td>
+      <td>12.0 mL/時</td>
+      <td>1.2 mL/時</td>
+    </tr>
+    <tr>
+      <td><strong>50 kg</strong></td>
+      <td>7.5 mL/時</td>
+      <td>15.0 mL/時</td>
+      <td>1.5 mL/時</td>
+    </tr>
+    <tr class="highlight-row">
+      <td><strong>60 kg（標準）</strong></td>
+      <td><strong>9.0 mL/時</strong></td>
+      <td><strong>18.0 mL/時</strong></td>
+      <td>1.8 mL/時</td>
+    </tr>
+    <tr>
+      <td><strong>70 kg</strong></td>
+      <td>10.5 mL/時</td>
+      <td>21.0 mL/時</td>
+      <td>2.1 mL/時</td>
+    </tr>
+    <tr>
+      <td><strong>80 kg</strong></td>
+      <td>12.0 mL/時</td>
+      <td>24.0 mL/時</td>
+      <td>2.4 mL/時</td>
+    </tr>
+  </table>
+</section>
+
+<!-- Slide 7: 増量ステップ -->
+<section class="slide" data-slide="7">
+  <div class="eyebrow">増減プロトコル</div>
+  <h2 class="slide-title">安全な投与速度の上げ方・維持</h2>
+  <div class="grid-3">
+    <div class="card">
+      <div class="badge badge--navy">STEP 1</div>
+      <div class="card-header">開始と測定</div>
+      <div class="card-body" style="font-size:25px;">0.5 µg/kg/分で開始（60kg・0.2mg/mLなら9mL/時）。<strong>5分ごと</strong>に血圧測定。</div>
+    </div>
+    <div class="card">
+      <div class="badge badge--accent">STEP 2</div>
+      <div class="card-header">段階的増量</div>
+      <div class="card-body" style="font-size:25px;">目標上限を超えていれば、<strong>5〜15分間隔</strong>で0.5 µg/kg/分ずつ増量（9→18→27 mL/時）。</div>
+    </div>
+    <div class="card">
+      <div class="badge badge--navy">STEP 3</div>
+      <div class="card-header">目標到達と維持</div>
+      <div class="card-body" style="font-size:25px;">目標範囲に<strong>2回連続</strong>で入ったら増量を止め、最小必要速度で維持する。</div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 8: 減量ステップと停止基準 -->
+<section class="slide" data-slide="8">
+  <div class="eyebrow">安全性管理</div>
+  <h2 class="slide-title">減量ステップと緊急停止基準</h2>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">安全な減量ステップ</div>
+      <div class="card-body">
+        <p style="font-size:26px; margin:10px 0;">• 目標下限に近づいたら <strong>0.5 µg/kg/分 減量</strong></p>
+        <p style="font-size:26px; margin:10px 0;">• 効果減衰を待つため、<strong>15〜30分待機</strong>して血圧観察</p>
+        <p style="font-size:26px; margin:10px 0;">• 頻回な減量は血圧変動（variability）を招くため避ける</p>
+      </div>
+    </div>
+    <div class="card" style="border-left:8px solid var(--danger); background:#FFF8F8;">
+      <div class="card-header" style="color:var(--danger);">直ちに中止・再評価するサイン</div>
+      <div class="card-body">
+        <p style="font-size:26px; margin:8px 0;">⚠️ 目標下限を割り込む場合</p>
+        <p style="font-size:26px; margin:8px 0;">⚠️ <strong>収縮期血圧が急に 20〜30 mmHg 以上低下</strong></p>
+        <p style="font-size:26px; margin:8px 0;">⚠️ 麻痺や意識など神経症状が悪化した場合</p>
+        <div style="font-size:24px; color:var(--danger); font-weight:700; margin-top:12px;">→ 直ちに停止し脱水・再閉塞・出血等を再評価</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 9: AHA方式との比較 -->
+<section class="slide" data-slide="9">
+  <div class="eyebrow">ガイドライン対比</div>
+  <h2 class="slide-title">AHA方式との比較と上限の違い</h2>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">AHA/ASA方式（固定用量）</div>
+      <div class="card-body">
+        <p style="font-size:26px; margin:10px 0;">• <strong>開始</strong>: 5 mg/時（持続静注）</p>
+        <p style="font-size:26px; margin:10px 0;">• <strong>増量</strong>: 5〜15分毎に 2.5 mg/時 増量</p>
+        <p style="font-size:26px; margin:10px 0;">• <strong>最大上限</strong>: <strong style="color:var(--accent);">15 mg/時</strong></p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">国内添付文書の上限</div>
+      <div class="card-body">
+        <p style="font-size:26px; margin:10px 0;">• 上限 6.0 µg/kg/分（60kgで <strong style="color:var(--danger);">21.6 mg/時</strong>）</p>
+        <p style="font-size:26px; margin:10px 0;">• AHA上限（15 mg/時）を大きく上回る！</p>
+        <p style="font-size:26px; margin:10px 0;">• 機械的に国内上限まで上げず、<strong>10〜15 mg/時相当</strong>を目安に安全管理する。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 10: 偽高血圧チェック -->
+<section class="slide" data-slide="10">
+  <div class="eyebrow">投与前チェック</div>
+  <h2 class="slide-title">増量前に確認すべき6つのストレス要因</h2>
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-header" style="font-size:28px;">① 測定エラー</div>
+      <div class="card-body" style="font-size:24px;">カフサイズの不適合、巻きの緩み、<br>血圧の左右差を確認</div>
+    </div>
+    <div class="card" style="background:#FFF9F2;">
+      <div class="card-header" style="font-size:28px; color:var(--accent);">② 尿閉（膀胱緊満）</div>
+      <div class="card-body" style="font-size:24px;">急性期に極めて頻度高。導尿で血圧が急低下することが多い</div>
+    </div>
+    <div class="card">
+      <div class="card-header" style="font-size:28px;">③ 疼痛・不穏</div>
+      <div class="card-body" style="font-size:24px;">頭痛・麻痺部疼痛、せん妄、<br>体動による交感神経の緊張</div>
+    </div>
+    <div class="card">
+      <div class="card-header" style="font-size:28px;">④ 低酸素・発熱</div>
+      <div class="card-body" style="font-size:24px;">気道閉塞、誤嚥、中枢性発熱・感染症による頻脈・血圧上昇</div>
+    </div>
+    <div class="card">
+      <div class="card-header" style="font-size:28px;">⑤ ルート不良</div>
+      <div class="card-body" style="font-size:24px;">ライン閉塞、三方活栓の向き、<br>刺入部の薬液漏れや腫脹</div>
+    </div>
+    <div class="card">
+      <div class="card-header" style="font-size:28px;">⑥ 他の緊急病態</div>
+      <div class="card-body" style="font-size:24px;">急性大動脈解離、急性冠症候群、<br>心不全などの合併を除外</div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 11: なぜ急激に下げてはいけないか -->
+<section class="slide" data-slide="11">
+  <div class="eyebrow">病態生理とRCT</div>
+  <h2 class="slide-title">なぜ急激な血圧低下を避けるのか</h2>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">脳梗塞（ペナンブラ虚血）</div>
+      <div class="card-body">
+        <p style="font-size:26px; margin:10px 0;">• 脳血管自動調節能が破綻している</p>
+        <p style="font-size:26px; margin:10px 0;">• 血圧低下 ＝ 脳血流の直接的低下</p>
+        <p style="font-size:26px; margin:10px 0;">• 初期24hの降圧幅は<strong>約15%にとどめる</strong></p>
+        <p style="font-size:26px; margin:10px 0;">• 回収後も <strong>SBP &lt; 140 は予後悪化</strong>（ENCHANTED2）</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">脳出血（腎虚血・過度変動）</div>
+      <div class="card-body">
+        <p style="font-size:26px; margin:10px 0;">• SBP &lt; 140 は血腫拡大防止に有効</p>
+        <p style="font-size:26px; margin:10px 0;">• しかし <strong>110〜139 mmHg への過度降圧は腎イベント有意増</strong>（ATACH-2試験）</p>
+        <p style="font-size:26px; margin:10px 0;">• 急激な過度降圧・変動を避ける</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 12: 内服移行タイミング -->
+<section class="slide" data-slide="12">
+  <div class="eyebrow">内服移行実務</div>
+  <h2 class="slide-title">内服薬への切り替えタイミング</h2>
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-header">再灌流療法後</div>
+      <div class="card-body">
+        <p style="font-size:26px; margin:10px 0;">• <strong>24時間後CT/MRI</strong>で<br>頭蓋内出血がないことを確認</p>
+        <p style="font-size:26px; margin:10px 0;">• 神経症状・血圧が安定してから移行</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">非再灌流（脳梗塞）</div>
+      <div class="card-body">
+        <p style="font-size:26px; margin:10px 0;">• 発症 <strong>48〜72時間</strong> 待機</p>
+        <p style="font-size:26px; margin:10px 0;">• 神経学的に安定してなお高血圧が続く場合に開始</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">脳出血</div>
+      <div class="card-body">
+        <p style="font-size:26px; margin:10px 0;">• 発症 <strong>24〜48時間</strong> 安定後</p>
+        <p style="font-size:26px; margin:10px 0;">• 血腫増大がなく<br>全身状態が安定してから移行</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 13: 嚥下評価の必須性 -->
+<section class="slide" data-slide="13">
+  <div class="eyebrow">安全性大原則</div>
+  <h2 class="slide-title">内服開始前の絶対条件：嚥下機能評価</h2>
+  <div style="background:#FFF8F2; border:2px solid var(--accent); border-radius:16px; padding:32px; margin-bottom:26px;">
+    <div style="font-size:32px; font-weight:800; color:var(--accent); margin-bottom:12px;">
+      ⚠️ 水分・内服薬を口にする前に必ず嚥下スクリーニングを実施！
+    </div>
+    <div style="font-size:26px; line-height:1.6; color:#333;">
+      急性期脳卒中患者の不顕性誤嚥による「誤嚥性肺炎」は、生命予後および機能回復を著しく悪化させます（NICEガイドライン推奨）。
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">代表的スクリーニング</div>
+      <div class="card-body" style="font-size:26px;">水飲みテスト（30mL）、反復唾液嚥下テスト（RSST）、改訂水飲みテスト（MWST）</div>
+    </div>
+    <div class="card">
+      <div class="card-header">嚥下障害がある場合</div>
+      <div class="card-body" style="font-size:26px;">経口投与を無理に行わず、経鼻胃管等の投与経路または静注管理を継続。</div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 14: 内服薬の選択と禁忌 -->
+<section class="slide" data-slide="14">
+  <div class="eyebrow">薬剤選択</div>
+  <h2 class="slide-title">内服薬の選択と絶対禁忌</h2>
+  <div class="grid-3">
+    <div class="card" style="border-top:8px solid #27AE60;">
+      <span class="badge" style="background:#27AE60; color:#fff;">第一選択</span>
+      <div class="card-header">長時間作用型Ca拮抗薬</div>
+      <div class="card-body" style="font-size:25px;"><strong>アムロジピン（2.5〜5mg/日）</strong>など。立ち上がりが緩徐で血圧が安定。</div>
+    </div>
+    <div class="card" style="border-top:8px solid var(--blue);">
+      <span class="badge badge--navy">慎重併用</span>
+      <div class="card-header">RAS阻害薬・利尿薬</div>
+      <div class="card-body" style="font-size:25px;">脱水・急性腎障害・血清K値に注意。利尿薬は全身安定後に考慮。</div>
+    </div>
+    <div class="card" style="border-top:8px solid var(--danger); background:#FFF8F8;">
+      <span class="badge badge--danger">絶対禁忌</span>
+      <div class="card-header" style="color:var(--danger);">舌下ニフェジピン</div>
+      <div class="card-body" style="font-size:25px;">急激で予測不能な過度降圧を招き、<br>脳虚血を悪化させるため<strong>絶対禁忌</strong></div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 15: オーバーラップ移行手順 -->
+<section class="slide" data-slide="15">
+  <div class="eyebrow">離脱プロトコル</div>
+  <h2 class="slide-title">静注から内服へのオーバーラップ移行手順</h2>
+  <div class="grid-3">
+    <div class="card">
+      <div class="badge badge--navy">STEP 1</div>
+      <div class="card-header">内服開始＋静注維持</div>
+      <div class="card-body" style="font-size:25px;">内服薬を投与後、効果が立ち上がるまでの<strong>数時間はニカルジピン静注を維持</strong>。</div>
+    </div>
+    <div class="card">
+      <div class="badge badge--navy">STEP 2</div>
+      <div class="card-header">段階的漸減</div>
+      <div class="card-body" style="font-size:25px;">内服効果発現を確認後、<strong>30〜60分間隔で 0.5 µg/kg/分 ずつ</strong>漸減していく。</div>
+    </div>
+    <div class="card">
+      <div class="badge badge--accent">STEP 3</div>
+      <div class="card-header">中止後モニタリング</div>
+      <div class="card-body" style="font-size:25px;">静注中止後もリバウンド（再上昇）がないか<strong>数時間血圧を監視</strong>する。</div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 16: 副作用と安全管理 -->
+<section class="slide" data-slide="16">
+  <div class="eyebrow">リスク管理</div>
+  <h2 class="slide-title">副作用・投与中の安全管理</h2>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">注意すべき副作用</div>
+      <div class="card-body">
+        <p style="font-size:26px; margin:10px 0;">• <strong>反射性頻脈</strong>: 交感神経刺激による脈拍上昇</p>
+        <p style="font-size:26px; margin:10px 0;">• <strong>過度な血圧低下</strong>: 脱水合併例で生じやすい</p>
+        <p style="font-size:26px; margin:10px 0;">• <strong>静脈炎・血管痛</strong>: 刺入部発赤時はルート変更</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">安全管理のポイント</div>
+      <div class="card-body">
+        <p style="font-size:26px; margin:10px 0;">• 心電図モニター・SpO2モニターを常時装着</p>
+        <p style="font-size:26px; margin:10px 0;">• 輸液による適切な循環血液量（脱水補正）の維持</p>
+        <p style="font-size:26px; margin:10px 0;">• 頭蓋内圧亢進症状（嘔吐・徐脈）の監視</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 17: まとめ 3つの原則 -->
+<section class="slide" data-slide="17">
+  <div class="eyebrow">まとめ</div>
+  <h2 class="slide-title">臨床現場で持ち帰るべき3つの原則</h2>
+  <div class="grid-3">
+    <div class="card" style="border-top:8px solid var(--navy);">
+      <div style="font-size:28px; font-weight:800; color:var(--navy); margin-bottom:12px;">① 計算式を整理</div>
+      <div style="font-size:24px; line-height:1.6; color:#333;">0.5 µg/kg/分 ＝ 0.03 mg/kg/時。<br>0.2mg/mLなら<strong>体重×0.15 mL/時</strong>、0.1mg/mLなら<strong>体重×0.30 mL/時</strong>。</div>
+    </div>
+    <div class="card" style="border-top:8px solid var(--accent);">
+      <div style="font-size:28px; font-weight:800; color:var(--accent); margin-bottom:12px;">② 増量前に除外</div>
+      <div style="font-size:24px; line-height:1.6; color:#333;">尿閉・疼痛・カフ不良を先に是正。増減は5〜15分間隔、急激な変動を避ける。</div>
+    </div>
+    <div class="card" style="border-top:8px solid var(--blue);">
+      <div style="font-size:28px; font-weight:800; color:var(--blue); margin-bottom:12px;">③ 嚥下とオーバーラップ</div>
+      <div style="font-size:24px; line-height:1.6; color:#333;">嚥下テスト合格後に長時間作用薬を開始。静注と数時間重ねて段階的に離脱。</div>
+    </div>
+  </div>
+</section>
+
+<!-- Slide 18: 出典・エンディング -->
+<section class="slide slide--navy" data-slide="18">
+  <div class="eyebrow">参考文献・出典</div>
+  <h2 class="slide-title" style="font-size:44px;">参考文献・ガイドライン</h2>
+  <div style="font-size:24px; line-height:1.8; color:#D0E2FF; margin-bottom:28px;">
+    • 脳卒中治療ガイドライン2021〔改訂2025〕（日本脳卒中学会）<br>
+    • rt-PA静注療法 適正治療指針 第三版（日本脳卒中学会）<br>
+    • ペルジピン注射液 添付文書（PMDA）<br>
+    • AHA/ASA 2019/2026 Acute Ischemic Stroke Guidelines<br>
+    • AHA/ASA 2022 Spontaneous Intracerebral Hemorrhage Guidelines<br>
+    • ATACH-2 (NEJM 2016) / INTERACT2 (NEJM 2013) / ENCHANTED2/MT (Lancet 2022)
+  </div>
+  <div style="font-size:26px; color:#F27E03; font-weight:700;">
+    チャンネル登録・高評価をよろしくお願いいたします！
+  </div>
+</section>
+
+</deck-stage>
+</body>
+</html>
