@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = 'ddx-tools-v147';
+const CACHE_NAME = 'ddx-tools-v148';
 const ASSETS = [
   './infographics/acute-stroke-bp-practical/index.html',
   './infographics/acute-stroke-bp-practical/infographic.png',
