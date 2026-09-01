@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>帯状疱疹と大人のワクチン安心ガイド｜インフォグラフィック</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy: #1B3A5C;
+  --navy-deep: #0A1B2E;
+  --accent: #E65100;
+  --accent-ink: #BF360C;
+  --accent-bg: #FFF3E0;
+  --accent-line: #FFE0B2;
+  --danger: #C0392B;
+  --danger-bg: #FDF2F0;
+  --danger-line: #F5B7B1;
+  --bg: #EEF2F6;
+  --line: #D6E0E9;
+  --ink: #20242B;
+  --ink-sub: #3C4450;
+  --font: "BIZ UDPGothic", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+}
+
+*{ box-sizing: border-box; margin: 0; padding: 0; }
+body{
+  font-family: var(--font);
+  background: #E4E9EF;
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+  padding: 0;
+  margin: 0;
+  word-break: auto-phrase;
+  line-break: strict;
+}
+
+.info-container{
+  width: 100%;
+  max-width: 1080px;
+  background: #ffffff;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.hd{
+  background: linear-gradient(135deg, #0A1B2E 0%, #153352 55%, #1B3A5C 100%);
+  color: #fff;
+  padding: 50px 60px 45px;
+  position: relative;
+  overflow: hidden;
+}
+.hd::after{
+  content: "";
+  position: absolute;
+  right: -60px;
+  top: -60px;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(230,81,0,0.35), rgba(230,81,0,0) 70%);
+}
+.hd__badge{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.14);
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 999px;
+  padding: 8px 24px;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+.hd__badge span{ color: #FFB74D; }
+.hd__title{
+  font-size: 42px;
+  font-weight: 800;
+  line-height: 1.35;
+  margin-top: 18px;
+}
+.hd__title .hl{ color: #FFB74D; }
+.hd__sub{
+  font-size: 22px;
+  color: rgba(255,255,255,0.9);
+  margin-top: 14px;
+  line-height: 1.6;
+}
+
+/* Lead */
+.lead{
+  padding: 36px 60px 0;
+}
+.lead__box{
+  background: #F4F7F9;
+  border-left: 6px solid var(--navy);
+  border-radius: 0 12px 12px 0;
+  padding: 24px 30px;
+  font-size: 21px;
+  line-height: 1.75;
+  color: var(--ink-sub);
+}
+.lead__box b{ color: var(--navy); }
+.lead__box .c{ color: var(--accent-ink); }
+
+/* Section */
+.sec{
+  padding: 36px 60px 0;
+}
+.sec__h{
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--navy);
+  margin-bottom: 20px;
+  border-bottom: 3px solid var(--navy);
+  padding-bottom: 12px;
+}
+.sec__num{
+  background: var(--navy);
+  color: #fff;
+  font-size: 20px;
+  font-weight: 800;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.grid-2{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.card{
+  background: #FFFFFF;
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  padding: 26px 28px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+.card--accent{
+  background: var(--accent-bg);
+  border-color: var(--accent-line);
+}
+.card--danger{
+  background: var(--danger-bg);
+  border-color: var(--danger-line);
+}
+.card--navy{
+  background: #EBF3FA;
+  border-color: #BDD4E7;
+}
+
+.card__title{
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--navy);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.card__title.accent{ color: var(--accent-ink); }
+.card__title.danger{ color: var(--danger); }
+
+.card__body{
+  font-size: 19px;
+  line-height: 1.7;
+  color: var(--ink-sub);
+}
+.card__body b{ color: var(--ink); }
+
+/* Banner highlight */
+.banner-action{
+  background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+  border: 2.5px solid var(--accent);
+  border-radius: 16px;
+  padding: 28px 34px;
+  margin-top: 10px;
+}
+.banner-action__title{
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--accent-ink);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.banner-action__text{
+  font-size: 20px;
+  line-height: 1.75;
+  color: #4E2600;
+}
+
+/* Table */
+.tbl-wrap{
+  overflow-x: auto;
+  margin-top: 10px;
+}
+.tbl{
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 18.5px;
+}
+.tbl th{
+  background: var(--navy);
+  color: #fff;
+  padding: 16px 18px;
+  border: 1px solid var(--navy);
+  font-weight: 700;
+  text-align: center;
+}
+.tbl td{
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  text-align: center;
+  background: #fff;
+  color: var(--ink);
+  line-height: 1.5;
+}
+.tbl tr:nth-child(even) td{
+  background: #F8FAFC;
+}
+.tbl td.bold{ font-weight: 700; color: var(--navy); }
+.tbl td.accent{ font-weight: 700; color: var(--accent-ink); }
+
+/* Footer */
+.foot{
+  margin-top: 48px;
+  padding: 30px 60px 40px;
+  background: #F4F7F9;
+  border-top: 2px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 17px;
+  color: #69737E;
+}
+.foot a{
+  color: var(--navy);
+  text-decoration: none;
+  font-weight: 700;
+}
+</style>
+</head>
+<body>
+<div class="info-container">
+
+  <!-- Header -->
+  <header class="hd">
+    <div class="hd__badge">外来患者指導シリーズ <span>第43弾</span></div>
+    <h1 class="hd__title">帯状疱疹と<span class="hl">大人のワクチン</span>安心ガイド</h1>
+    <div class="hd__sub">ピリピリする痛みに気づいたら「その日」に受診｜50歳からの安心予防戦略</div>
+  </header>
+
+  <!-- Lead -->
+  <div class="lead">
+    <div class="lead__box">
+      帯状疱疹は80歳までに<b>およそ3人に1人が発症する身近な病気</b>です。治った後も激痛が続く「帯状疱疹後神経痛（PHN）」を防ぐためには、<span class="c"><b>「初期サインを見逃さず72時間以内に受診すること」</b></span>と<span class="c"><b>「50歳を過ぎたらワクチンで予防すること」</b></span>が最大のポイントです。
+    </div>
+  </div>
+
+  <!-- Section 1 -->
+  <section class="sec">
+    <h2 class="sec__h"><span class="sec__num">1</span> 帯状疱疹の基本と初期サイン</h2>
+    <div class="grid-2">
+      <div class="card card--accent">
+        <div class="card__title accent">⚡ 80歳までに約3人に1人が発症</div>
+        <div class="card__body">
+          子どもの頃の水ぼうそうウイルスが神経の根元に潜伏。加齢や疲労・ストレスで免疫が低下すると再活性化します。
+        </div>
+      </div>
+      <div class="card card--danger">
+        <div class="card__title danger">⚠️ 体の「片側」のピリピリ感</div>
+        <div class="card__body">
+          痛む場所に一致して、数日後に赤い発疹や小水ぶくれが帯状に出現。肩こりや筋肉痛と間違えやすいので注意が必要です。
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 2 -->
+  <section class="sec">
+    <h2 class="sec__h"><span class="sec__num">2</span> 発症時の鉄則：72時間以内の受診！</h2>
+    <div class="banner-action">
+      <div class="banner-action__title">🕒 なぜ「72時間（できれば48時間）以内」なのか？</div>
+      <div class="banner-action__text">
+        発疹に気づいたらその日のうちに皮膚科や内科を受診し、速やかに抗ウイルス薬を開始することで、ウイルスの増殖と神経の破壊を食い止め、<strong>数ヶ月〜数年にわたり激しい痛みが続く「帯状疱疹後神経痛（PHN）」への移行リスクを大幅に減らす</strong>ことができます。
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3 -->
+  <section class="sec">
+    <h2 class="sec__h"><span class="sec__num">3</span> 帯状疱疹ワクチンの徹底比較（50歳以上）</h2>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>比較項目</th>
+            <th>組換え不活化（シングリックス®）</th>
+            <th>乾燥弱毒生ワクチン（ビケン®）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="bold">接種回数</td>
+            <td class="accent">2回（2ヶ月間隔・筋肉注射）</td>
+            <td>1回（皮下注射）</td>
+          </tr>
+          <tr>
+            <td class="bold">発症予防効果</td>
+            <td class="accent">約90〜97%（全年齢で高効果）</td>
+            <td>約50%（加齢とともに低下）</td>
+          </tr>
+          <tr>
+            <td class="bold">効果の持続期間</td>
+            <td class="accent">10年以上持続確認</td>
+            <td>約5年程度で減衰</td>
+          </tr>
+          <tr>
+            <td class="bold">免疫低下時の接種</td>
+            <td class="accent">接種可能（ステロイド使用中など）</td>
+            <td style="color:var(--danger);font-weight:700;">禁忌（接種不可）</td>
+          </tr>
+          <tr>
+            <td class="bold">おすすめの方</td>
+            <td>高い効果を長く保ちたい方（70代以上など）</td>
+            <td>1回で手軽に費用を抑えたい方</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Section 4 -->
+  <section class="sec">
+    <h2 class="sec__h"><span class="sec__num">4</span> シニア世代が知っておくべき「3大ワクチン」</h2>
+    <div class="grid-2">
+      <div class="card card--navy">
+        <div class="card__title">① 肺炎球菌ワクチン</div>
+        <div class="card__body">
+          成人の市中肺炎の最多原因菌を防ぐ。65歳の定期接種（PPSV23）や、より強固な結合型ワクチン（PCV15/20）が選択肢となります。
+        </div>
+      </div>
+      <div class="card card--navy">
+        <div class="card__title">② 新型RSVワクチン</div>
+        <div class="card__body">
+          60歳以上の成人や喘息・心疾患等の基礎疾患がある方で重症化しやすいRSウイルス感染症を約9割予防（アレックスビー®）。
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="foot">
+    <div>
+      監修・発行: <strong>医知創造ラボ</strong>（脳神経内科専門医・指導医 今村久司）
+    </div>
+    <div>
+      <a href="https://tools.ichisouzo-lab.com/" target="_blank">tools.ichisouzo-lab.com</a>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

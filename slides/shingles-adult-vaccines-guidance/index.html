@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>帯状疱疹と大人のワクチン完全ガイド｜ピリピリする痛みと発疹に気づいたら — 外来患者指導シリーズ第43弾</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent: #E65100;
+  --accent-soft: #FFF3E0;
+  --accent-line: #FFE0B2;
+  --accent-ink: #BF360C;
+
+  --type-mult: 1.30;
+  --type-display: calc(84px * var(--type-mult));
+  --type-title:   calc(70px * var(--type-mult));
+  --type-heading: calc(46px * var(--type-mult));
+  --type-subtitle:calc(35px * var(--type-mult));
+  --type-body:    calc(29px * var(--type-mult));
+  --type-small:   calc(24px * var(--type-mult));
+  --type-label:   calc(23px * var(--type-mult));
+
+  --pad-x: 96px;
+  --pad-top: 56px;
+  --pad-bottom: 110px;
+
+  --grad-navy: linear-gradient(135deg, #1B3A5C 0%, #2C5AA0 100%);
+  --grad-card: linear-gradient(180deg, #ffffff 0%, #f8fbfd 100%);
+}
+
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#0c1622; font-family:'BIZ UDPGothic', sans-serif; }
+
+.slide{
+  box-sizing:border-box;
+  display:flex; flex-direction:column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  background: #ffffff;
+  color: #2c3e50;
+  overflow:hidden;
+  position:relative;
+  width:1920px; height:1080px;
+}
+.slide--navy{ background: var(--grad-navy); color: #ffffff; }
+.slide--soft{ background: #f4f7f9; }
+
+.eyebrow{
+  display:flex; align-items:center; gap:14px;
+  font-size: var(--type-label); font-weight:700; color: #2C5AA0;
+  letter-spacing:.04em; margin-bottom: 18px;
+}
+.eyebrow::before{
+  content:""; width:16px; height:16px; border-radius:4px;
+  background: var(--accent); flex:none;
+}
+.slide--navy .eyebrow{ color: #90CAF9; }
+.slide--navy .eyebrow::before{ background: #FFB74D; }
+
+.s-title{
+  font-size: var(--type-heading); line-height:1.28; color: #1B3A5C;
+  margin: 0 0 28px 0; font-weight:700;
+}
+.slide--navy .s-title{ color:#ffffff; }
+
+.lead{
+  font-size: var(--type-body); line-height:1.6; color: #4b6584;
+  margin:0 0 20px 0;
+}
+
+.slide__foot{
+  position:absolute; left: var(--pad-x); right: var(--pad-x); bottom: 36px;
+  display:flex; align-items:center; justify-content:space-between;
+  font-size: calc(22px * var(--type-mult)); color: #8395a7;
+}
+.slide--navy .slide__foot{ color: rgba(255,255,255,.7); }
+
+.grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap: 32px; flex:1; }
+.grid-3{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; flex:1; }
+
+.card{
+  background: #ffffff; border: 2px solid #e1e8ed; border-radius: 20px;
+  padding: 38px 36px; display:flex; flex-direction:column; justify-content:flex-start;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+}
+.card--highlight{ border-color: var(--accent); background: var(--accent-soft); }
+.card--blue{ border-color: #2C5AA0; background: #EBF3FA; }
+
+.card__title{ font-size: var(--type-subtitle); font-weight:700; color: #1B3A5C; margin-bottom: 24px; }
+.card__text{ font-size: var(--type-body); line-height:1.65; color: #34495e; margin:0; }
+
+.stat-box{ display:flex; align-items:baseline; gap:16px; margin: 16px 0 24px 0; }
+.stat-num{ font-size: calc(96px * var(--type-mult)); font-weight:700; color: var(--accent); line-height:1; }
+.stat-unit{ font-size: var(--type-subtitle); font-weight:700; color: #1B3A5C; }
+
+.table-custom{ width:100%; border-collapse:collapse; margin-top:20px; font-size:calc(23px * var(--type-mult)); }
+.table-custom th{ background:#1B3A5C; color:#fff; padding:18px 20px; border:1px solid #1B3A5C; text-align:center; font-weight:700; }
+.table-custom td{ padding:18px 20px; border:1px solid #cfd9e0; background:#fff; text-align:center; color:#2c3e50; }
+.table-custom tr:nth-child(even) td{ background:#f8fafc; }
+.table-custom td.bold{ font-weight:700; color:#1B3A5C; }
+.table-custom td.accent{ font-weight:700; color:var(--accent); }
+</style>
+</head>
+<body>
+<deck-stage>
+
+<!-- Slide 1: Cover -->
+<section class="slide slide--navy" style="justify-content:center;align-items:flex-start;">
+  <div style="display:inline-block;background:rgba(255,255,255,0.15);padding:10px 24px;border-radius:30px;font-size:var(--type-label);font-weight:700;margin-bottom:24px;">
+    外来患者指導シリーズ 第43弾
+  </div>
+  <h1 class="s-title" style="font-size:var(--type-display);line-height:1.2;margin-bottom:20px;">
+    帯状疱疹と<br><span style="color:#FFB74D;">大人のワクチン</span>完全ガイド
+  </h1>
+  <p style="font-size:var(--type-subtitle);color:#E1F5FE;line-height:1.6;margin:0;">
+    ピリピリする痛みに気づいたら「その日」に受診<br>50歳からの安心予防戦略
+  </p>
+  <div class="slide__foot">
+    <span>医知創造ラボ</span>
+    <span>01 / 14</span>
+  </div>
+</section>
+
+<!-- Slide 2: 疫学 -->
+<section class="slide">
+  <div class="eyebrow">帯状疱疹の基本</div>
+  <h2 class="s-title">日本人のおよそ3人に1人がかかる身近な病気</h2>
+  <div class="grid-2">
+    <div class="card card--highlight">
+      <div class="card__title" style="color:var(--accent-ink);">80歳までの発症率</div>
+      <div class="stat-box">
+        <span class="stat-num">3人に1人</span>
+      </div>
+      <p class="card__text">50代から発症率が急上昇し70代で最多<br>（宮崎県スタディ4.8万例調査）</p>
+    </div>
+    <div class="card">
+      <div class="card__title">なぜ発症するのか？</div>
+      <ul style="font-size:var(--type-body);line-height:1.8;padding-left:24px;margin:0;color:#34495e;">
+        <li>水ぼうそうウイルスが神経に潜伏</li>
+        <li>加齢や疲労・ストレスで再活性化</li>
+        <li>誰にでも起こりうる身近な病気です</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span>帯状疱疹と成人ワクチン指導</span>
+    <span>02 / 14</span>
+  </div>
+</section>
+
+<!-- Slide 3: 初期サイン -->
+<section class="slide">
+  <div class="eyebrow">見逃してはいけないサイン</div>
+  <h2 class="s-title">「体の片側のピリピリ感」と「赤いブツブツ」</h2>
+  <div class="grid-2">
+    <div class="card card--blue">
+      <div class="card__title">① 先行する神経痛（初期症状）</div>
+      <p class="card__text" style="font-size:calc(28px * var(--type-mult));line-height:1.7;">
+        ・体の左右どちらか「片側」にピリピリ感<br><br>
+        ・肩こりや筋肉痛と間違えやすいのが特徴
+      </p>
+    </div>
+    <div class="card card--highlight">
+      <div class="card__title" style="color:var(--accent-ink);">② 帯状の皮疹（急性期）</div>
+      <p class="card__text" style="font-size:calc(28px * var(--type-mult));line-height:1.7;">
+        ・痛む場所に一致して赤い発疹や小水ぶくれ<br><br>
+        ・神経の走行に沿って帯状に広がります
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span>帯状疱疹と成人ワクチン指導</span>
+    <span>03 / 14</span>
+  </div>
+</section>
+
+<!-- Slide 4: 合併症 PHN -->
+<section class="slide">
+  <div class="eyebrow">最も警戒すべき後遺症</div>
+  <h2 class="s-title">本当に怖いのは治った後も続く「帯状疱疹後神経痛」</h2>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card__title">帯状疱疹後神経痛（PHN）とは</div>
+      <p class="card__text" style="line-height:1.7;">
+        皮疹が治癒した後も、数ヶ月から数年にわたり刺すような激しい痛みが持続する状態。<br><br>
+        衣服が擦れるだけで痛むなど、生活の質（QOL）を大きく損ないます。
+      </p>
+    </div>
+    <div class="card card--highlight">
+      <div class="card__title" style="color:var(--accent-ink);">高齢者ほど移行リスクが高い</div>
+      <p class="card__text" style="line-height:1.7;">
+        ・50歳以上で発症するとPHN移行率が急増<br><br>
+        ・顔面発症では視力障害リスクも併発<br><br>
+        ・「後遺症ゼロ」が最大の診療目標
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span>帯状疱疹と成人ワクチン指導</span>
+    <span>04 / 14</span>
+  </div>
+</section>
+
+<!-- Slide 5: 早期受診 72時間 -->
+<section class="slide slide--soft">
+  <div class="eyebrow">発症時の鉄則</div>
+  <h2 class="s-title">発疹に気づいたら「その日（72時間以内）」に受診</h2>
+  <div class="grid-3">
+    <div class="card" style="text-align:center;align-items:center;">
+      <div style="font-size:calc(40px * var(--type-mult));font-weight:700;color:var(--accent);margin-bottom:12px;">72時間以内</div>
+      <div class="card__title" style="font-size:var(--type-body);margin-bottom:16px;">抗ウイルス薬の開始</div>
+      <p class="card__text" style="font-size:var(--type-small);">ウイルスの増殖を抑え、皮膚と神経の破壊を防ぐ</p>
+    </div>
+    <div class="card" style="text-align:center;align-items:center;">
+      <div style="font-size:calc(40px * var(--type-mult));font-weight:700;color:#2C5AA0;margin-bottom:12px;">早期治癒</div>
+      <div class="card__title" style="font-size:var(--type-body);margin-bottom:16px;">急性期痛の軽減</div>
+      <p class="card__text" style="font-size:var(--type-small);">水ぶくれの拡大を止め、激しい痛みを短縮</p>
+    </div>
+    <div class="card card--highlight" style="text-align:center;align-items:center;">
+      <div style="font-size:calc(40px * var(--type-mult));font-weight:700;color:var(--accent-ink);margin-bottom:12px;">後遺症予防</div>
+      <div class="card__title" style="font-size:var(--type-body);margin-bottom:16px;">PHNリスク軽減</div>
+      <p class="card__text" style="font-size:var(--type-small);">痛みの長期化を食い止める確実な分かれ道</p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span>帯状疱疹と成人ワクチン指導</span>
+    <span>05 / 14</span>
+  </div>
+</section>
+
+<!-- Slide 6: ワクチン予防の時代 -->
+<section class="slide">
+  <div class="eyebrow">予防医療の進化</div>
+  <h2 class="s-title">帯状疱疹は「ワクチンで予防できる」時代へ</h2>
+  <div class="grid-2">
+    <div class="card card--blue">
+      <div class="card__title">50歳を過ぎたら予防を検討</div>
+      <p class="card__text" style="line-height:1.7;">
+        加齢とともに低下する免疫力をワクチンで再強化。<br><br>
+        発症そのものを防ぎ、万が一の重症化も予防します。
+      </p>
+    </div>
+    <div class="card card--highlight">
+      <div class="card__title" style="color:var(--accent-ink);">日本で選べる2種類のワクチン</div>
+      <ul style="font-size:var(--type-body);line-height:1.8;padding-left:24px;margin:0;color:#34495e;">
+        <li><strong>組換え不活化ワクチン（シングリックス®）</strong><br>高い予防効果と長期持続</li>
+        <li style="margin-top:14px;"><strong>乾燥弱毒生水痘ワクチン（ビケン®）</strong><br>1回接種で費用が手頃</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span>帯状疱疹と成人ワクチン指導</span>
+    <span>06 / 14</span>
+  </div>
+</section>
+
+<!-- Slide 7: 2つのワクチン比較 -->
+<section class="slide">
+  <div class="eyebrow">徹底比較</div>
+  <h2 class="s-title">不活化ワクチン（シングリックス）vs 生ワクチン</h2>
+  <table class="table-custom">
+    <thead>
+      <tr>
+        <th>項目</th>
+        <th>組換え不活化（シングリックス®）</th>
+        <th>弱毒生ワクチン（ビケン®）</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="bold">接種回数</td>
+        <td class="accent">2回（2ヶ月間隔・筋肉注射）</td>
+        <td>1回（皮下注射）</td>
+      </tr>
+      <tr>
+        <td class="bold">発症予防効果</td>
+        <td class="accent">約90〜97%（全年齢で高効果）</td>
+        <td>約50%（加齢で低下）</td>
+      </tr>
+      <tr>
+        <td class="bold">効果の持続期間</td>
+        <td class="accent">10年以上持続確認</td>
+        <td>約5年程度で減衰</td>
+      </tr>
+      <tr>
+        <td class="bold">免疫低下時の接種</td>
+        <td class="accent">接種可能</td>
+        <td style="color:#d9534f;font-weight:700;">禁忌（不可）</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="slide__foot">
+    <span>帯状疱疹と成人ワクチン指導</span>
+    <span>07 / 14</span>
+  </div>
+</section>
+
+<!-- Slide 8: 選び方の基準 -->
+<section class="slide">
+  <div class="eyebrow">選択のポイント</div>
+  <h2 class="s-title">どちらを選ぶ？ あなたに合ったワクチンの決め手</h2>
+  <div class="grid-2">
+    <div class="card card--highlight">
+      <div class="card__title" style="color:var(--accent-ink);">シングリックスがおすすめの方</div>
+      <ul style="font-size:calc(26px * var(--type-mult));line-height:1.8;padding-left:22px;margin:0;color:#34495e;">
+        <li>高い予防効果を長く保ちたい方（70代以上等）</li>
+        <li>ステロイドや免疫抑制薬を使用中の方</li>
+        <li>※ 接種部位の痛みや発熱に備え翌日休養</li>
+      </ul>
+    </div>
+    <div class="card card--blue">
+      <div class="card__title">生ワクチンが選択肢となる方</div>
+      <ul style="font-size:calc(26px * var(--type-mult));line-height:1.8;padding-left:22px;margin:0;color:#34495e;">
+        <li>1回で手軽に接種を済ませたい方</li>
+        <li>費用を抑えたい方・副反応を軽くしたい方</li>
+        <li>※ 免疫不全の方は接種できません</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span>帯状疱疹と成人ワクチン指導</span>
+    <span>08 / 14</span>
+  </div>
+</section>
+
+<!-- Slide 9: 大人のワクチン① 肺炎球菌 -->
+<section class="slide">
+  <div class="eyebrow">大人の重要ワクチン ①</div>
+  <h2 class="s-title">日本人の死因上位「肺炎」を防ぐ 肺炎球菌ワクチン</h2>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card__title">なぜ重要なのか？</div>
+      <p class="card__text" style="line-height:1.8;">
+        ・成人の市中肺炎の最多原因菌<br><br>
+        ・高齢者や慢性疾患で重症化しやすい<br><br>
+        ・侵襲性感染症（菌血症・髄膜炎）を予防
+      </p>
+    </div>
+    <div class="card card--blue">
+      <div class="card__title">ワクチンの特徴</div>
+      <p class="card__text" style="line-height:1.8;">
+        ・65歳の定期接種（PPSV23）の機会を逃さない<br><br>
+        ・より強固な結合型ワクチン（PCV15/20）も選択肢
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span>帯状疱疹と成人ワクチン指導</span>
+    <span>09 / 14</span>
+  </div>
+</section>
+
+<!-- Slide 10: 大人のワクチン② RSV -->
+<section class="slide">
+  <div class="eyebrow">大人の重要ワクチン ②</div>
+  <h2 class="s-title">高齢者の重症呼吸器感染を防ぐ 新型RSVワクチン</h2>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card__title">RSウイルスは大人も重症化</div>
+      <p class="card__text" style="line-height:1.8;">
+        ・子どもの風邪だけでなく、高齢者で重症肺炎を引き起こす<br><br>
+        ・喘息・COPD・心疾患・糖尿病患者で入院リスクが高い
+      </p>
+    </div>
+    <div class="card card--highlight">
+      <div class="card__title" style="color:var(--accent-ink);">組換えRSVワクチン</div>
+      <p class="card__text" style="line-height:1.8;">
+        ・対象: 60歳以上の成人<br><br>
+        ・下気道疾患を約83%、重症例を約94%予防<br><br>
+        ・秋〜冬の流行前の接種が有効
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span>帯状疱疹と成人ワクチン指導</span>
+    <span>10 / 14</span>
+  </div>
+</section>
+
+<!-- Slide 11: 3大ワクチンまとめ表 -->
+<section class="slide">
+  <div class="eyebrow">一覧まとめ</div>
+  <h2 class="s-title">シニア世代が知っておくべき「3大ワクチン」</h2>
+  <table class="table-custom">
+    <thead>
+      <tr>
+        <th>ワクチン</th>
+        <th>主な対象</th>
+        <th>防ぐ主な病気・目的</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="bold">帯状疱疹</td>
+        <td>50歳以上</td>
+        <td>激しい神経痛と帯状疱疹後神経痛（PHN）</td>
+      </tr>
+      <tr>
+        <td class="bold">肺炎球菌</td>
+        <td>65歳以上 / 基礎疾患</td>
+        <td>肺炎球菌による肺炎・敗血症・重症化</td>
+      </tr>
+      <tr>
+        <td class="bold">RSウイルス</td>
+        <td>60歳以上 / 基礎疾患</td>
+        <td>RSウイルスによる気管支炎・重症下気道感染</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="slide__foot">
+    <span>帯状疱疹と成人ワクチン指導</span>
+    <span>11 / 14</span>
+  </div>
+</section>
+
+<!-- Slide 12: よくある質問 -->
+<section class="slide">
+  <div class="eyebrow">外来 Q&A</div>
+  <h2 class="s-title">患者さんからよく受ける3つの質問</h2>
+  <div class="grid-3">
+    <div class="card">
+      <div class="card__title" style="font-size:var(--type-body);color:var(--accent-ink);">Q. 過去にかかった人でも打てる？</div>
+      <p class="card__text" style="font-size:var(--type-small);line-height:1.6;">A. 接種可能です。時間が経つと再発リスクがあるため、免疫再強化におすすめです。</p>
+    </div>
+    <div class="card">
+      <div class="card__title" style="font-size:var(--type-body);color:#2C5AA0;">Q. 同日接種は可能？</div>
+      <p class="card__text" style="font-size:var(--type-small);line-height:1.6;">A. インフルエンザやコロナワクチンとの同時接種は医師の判断で可能です。</p>
+    </div>
+    <div class="card">
+      <div class="card__title" style="font-size:var(--type-body);color:#1B3A5C;">Q. 費用助成はある？</div>
+      <p class="card__text" style="font-size:var(--type-small);line-height:1.6;">A. 帯状疱疹ワクチンは多くの自治体で助成があります。お住まいの自治体をご確認ください。</p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span>帯状疱疹と成人ワクチン指導</span>
+    <span>12 / 14</span>
+  </div>
+</section>
+
+<!-- Slide 13: 本日のまとめ -->
+<section class="slide slide--soft">
+  <div class="eyebrow">本日のまとめ</div>
+  <h2 class="s-title">痛みを残さないための2大アクション</h2>
+  <div class="grid-2">
+    <div class="card card--highlight">
+      <div class="card__title" style="color:var(--accent-ink);">① 怪しい発疹は「その日」受診</div>
+      <p class="card__text" style="line-height:1.7;">
+        片側のピリピリ感や発疹が出たら、72時間以内に受診してPHNを予防。
+      </p>
+    </div>
+    <div class="card card--blue">
+      <div class="card__title">② 50歳からは「ワクチン」予防</div>
+      <p class="card__text" style="line-height:1.7;">
+        帯状疱疹・肺炎球菌・RSVなど、かかりつけ医と接種計画を相談。
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span>帯状疱疹と成人ワクチン指導</span>
+    <span>13 / 14</span>
+  </div>
+</section>
+
+<!-- Slide 14: エンディング -->
+<section class="slide slide--navy" style="justify-content:center;align-items:center;text-align:center;">
+  <h2 class="s-title" style="font-size:var(--type-display);margin-bottom:28px;">
+    ご視聴ありがとうございました
+  </h2>
+  <p style="font-size:var(--type-subtitle);color:#E1F5FE;line-height:1.7;max-width:1400px;margin-bottom:36px;">
+    内容が気に入っていただけましたら<br>
+    <strong style="color:#FFB74D;">いいね・チャンネル登録</strong>で応援をお願いします！
+  </p>
+  <div style="background:rgba(255,255,255,0.12);padding:14px 36px;border-radius:999px;font-size:var(--type-label);color:#fff;">
+    医知創造ラボ ～脳神経内科医がAIで紡ぐ最新医療情報～
+  </div>
+  <div class="slide__foot">
+    <span>帯状疱疹と成人ワクチン指導</span>
+    <span>14 / 14</span>
+  </div>
+</section>
+
+</deck-stage>
+<script src="deck-stage.js"></script>
+</body>
+</html>
