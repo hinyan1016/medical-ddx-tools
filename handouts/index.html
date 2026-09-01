@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#1B3A5C">
 <meta name="description" content="外来でそのまま印刷して渡せる患者さん・ご家族向けのA4配布資料（ハンドアウト）一覧。脳梗塞二次予防・パーキンソン病リハビリ・認知症BPSD・起立性低血圧・認知症予防・高血圧・慢性めまい・2型糖尿病・てんかん・脂質異常症・片頭痛・高尿酸血症・かぜ・手根管症候群・慢性腎臓病・むずむず脚症候群・不安症・逆流性食道炎・糖尿病性末梢神経障害のフットケア・慢性便秘・肥満/減量・花粉症/アレルギー性鼻炎・顔面神経麻痺・脂肪肝・インフルエンザ/コロナ・鉄欠乏性貧血・本態性振戦・禁煙・緊張型頭痛/肩こり頭痛・両足のむくみ・骨粗鬆症・頻尿/尿もれ・節酒/減酒・むせる方の誤嚥予防の生活指導シリーズ。">
@@ -189,6 +190,60 @@
     .ho-card { padding: 13px 14px; gap: 10px; }
     .ho-emoji { font-size: 1.5em; }
   }
+  .search-box {
+    position: relative;
+    margin-bottom: 16px;
+  }
+  .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.1em;
+    color: #8898AA;
+    pointer-events: none;
+  }
+  .search-input {
+    width: 100%;
+    padding: 13px 14px 13px 44px;
+    border: 2px solid #D1D9E0;
+    border-radius: 10px;
+    font-size: 1em;
+    font-family: inherit;
+    color: #222;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(27,58,92,0.06);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .search-input:focus {
+    border-color: #2C5AA0;
+    box-shadow: 0 0 0 3px rgba(44,90,160,0.15);
+  }
+  .search-input::placeholder { color: #9AA7B4; }
+  .count-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.86em;
+    color: #5A6B7E;
+    margin-bottom: 16px;
+    padding: 0 2px;
+  }
+  .ho-card.is-hidden {
+    display: none !important;
+  }
+  .empty-search {
+    text-align: center;
+    padding: 48px 16px;
+    color: #6C7A89;
+    font-size: 0.96em;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px dashed #CAD4DE;
+    display: none;
+    margin-bottom: 20px;
+  }
 </style>
 </head>
 <body>
@@ -211,6 +266,18 @@
   <div class="note">
     各資料は1ページのA4印刷に最適化しています。開いたページのボタン（またはブラウザの印刷機能）からそのまま印刷できます。内容は外来生活指導シリーズのブログ記事・動画と連動しています。
   </div>
+
+  <div class="search-box">
+    <span class="search-icon">🔍</span>
+    <input type="search" class="search-input" id="searchQ" placeholder="キーワードで絞り込み（例：めまい、BPPV、耳石、血圧、認知症、糖尿病、骨粗鬆症）" oninput="filterCards()" autofocus>
+  </div>
+  <div class="count-bar">
+    <span id="resultCount">56 件のハンドアウト</span>
+  </div>
+  <div class="empty-search" id="emptyState">
+    🔍 該当するハンドアウトが見つかりませんでした。<br>別のキーワード（病名・症状・体操名など）でお試しください。
+  </div>
+
 
   <a class="ho-card" href="stroke-secondary-prevention/">
     <div class="ho-emoji">🧠</div>
@@ -282,7 +349,7 @@
     <div class="ho-arrow">→</div>
   </a>
 
-  <a class="ho-card ho-deepnavy" href="bppv-exercises-guidance/">
+  <a class="ho-card ho-deepnavy" href="bppv-exercises-guidance/" data-search="良性発作性頭位めまい症 BPPV bppv びーぴーぴーぶい めまい メマイ 眩暈 頭位めまい 治療体操 エプリー法 Epley URM法 ユニバーサル法 Brandt-Daroff ブランドットダロフ 自宅エクササイズ 半規管 後半規管 水平半規管 前半規管 耳石 浮遊耳石 結石 再発予防">
     <div class="ho-emoji">🌀</div>
     <div class="ho-body">
       <div class="ho-meta"><span class="num">めまい・耳石</span><span class="aud">患者さん向け</span></div>

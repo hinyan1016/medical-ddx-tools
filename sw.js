@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v149';
+const CACHE_NAME = 'ddx-tools-v150';
 const ASSETS = [
   './infographics/aa-2024-biomarker-classification/index.html',
   './infographics/acute-stroke-bp-practical/index.html',
