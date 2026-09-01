@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1D2A44">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="良性発作性頭位めまい症（BPPV）の治療体操ハンドアウト。どの半規管でも使えるユニバーサル法（URM）と、自宅で安全に続けられるブランドット-ダロフ法（Brandt-Daroff）の2つの手順、選び方、注意点、危険なサインをA4 2枚にまとめた患者さん向け配布資料です。">
+<title>BPPVの治療体操｜どの半規管でも使える2つの方法（患者さん向け配布資料）</title>
+<style>
+  :root{
+    --navy:#1D2A44;
+    --blue:#24527A;
+    --accent:#C0392B;
+    --accent-deep:#1D2A44;
+    --danger:#C0392B;
+    --light:#F0F4F8;
+    --line:#CBD5E1;
+    --ink:#1A1A1A;
+    --step-bg:#EBF2F8;
+    --step-border:#BFD3E6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    font-family:"Yu Gothic","游ゴシック","Hiragino Kaku Gothic ProN","Segoe UI",sans-serif;
+    color:var(--ink);
+    background:#eef2f6;
+    line-height:1.6;
+    padding:16px;
+  }
+  .sheet{
+    background:#fff;
+    max-width:820px;
+    margin:0 auto 20px;
+    padding:22px 26px 26px;
+    box-shadow:0 2px 14px rgba(0,0,0,.12);
+  }
+  .head{
+    display:flex;align-items:flex-start;gap:14px;
+    border-bottom:3px solid var(--navy);
+    padding-bottom:12px;margin-bottom:12px;
+  }
+  .head-main{flex:1;}
+  .kicker{
+    display:inline-block;background:var(--navy);color:#fff;
+    font-size:12px;font-weight:700;letter-spacing:.06em;
+    padding:3px 10px;border-radius:3px;margin-bottom:6px;
+  }
+  h1{font-size:21px;font-weight:800;color:var(--navy);line-height:1.35;letter-spacing:.01em;}
+  .sub{font-size:12.5px;color:var(--blue);font-weight:700;margin-top:5px;}
+  .lead{font-size:13px;color:#333;margin-top:7px;line-height:1.55;}
+  .lead b{color:var(--navy);}
+  .qr{
+    width:104px;flex:0 0 104px;text-align:center;
+    border:1px solid var(--line);border-radius:8px;padding:7px 6px 5px;
+    text-decoration:none;display:block;
+  }
+  .qr svg{width:78px;height:78px;display:block;margin:0 auto;}
+  .qr .qr-cap{font-size:9.5px;color:#555;line-height:1.35;margin-top:4px;}
+  
+  h2{
+    font-size:14.5px;font-weight:800;color:#fff;background:var(--navy);
+    padding:5px 12px;border-radius:4px;margin:12px 0 8px;
+    display:flex;align-items:center;gap:8px;
+  }
+  h2 .num{
+    background:#fff;color:var(--navy);font-size:12px;font-weight:800;
+    width:20px;height:20px;border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;flex:0 0 20px;
+  }
+  h2.hd{background:var(--danger);}
+  h2.hd .num{color:var(--danger);}
+
+  /* 説明カード・ステップ */
+  .info-box{
+    border:1.5px solid var(--step-border);border-radius:7px;
+    padding:9px 12px;background:var(--light);margin-bottom:8px;
+    font-size:12.5px;
+  }
+  .info-box b{color:var(--navy);}
+  
+  .step-grid{
+    display:grid;grid-template-columns:1fr;gap:7px;margin:8px 0;
+  }
+  .step-item{
+    display:flex;align-items:flex-start;gap:10px;
+    background:#fff;border:1.5px solid var(--step-border);
+    border-radius:6px;padding:7px 11px;font-size:12.5px;
+  }
+  .step-num{
+    background:var(--blue);color:#fff;font-weight:800;font-size:11.5px;
+    padding:2px 7px;border-radius:4px;white-space:nowrap;flex:0 0 auto;margin-top:1px;
+  }
+  .step-content{flex:1;}
+  .step-title{font-weight:800;color:var(--navy);font-size:13px;}
+  .step-desc{color:#333;font-size:12px;margin-top:2px;line-height:1.45;}
+  .step-time{
+    display:inline-block;background:#e2e8f0;color:#475569;
+    font-weight:700;font-size:11px;padding:1px 6px;border-radius:3px;margin-left:6px;
+  }
+
+  /* メタ情報（頻度・利点） */
+  .meta-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;
+  }
+  .meta-card{
+    background:var(--light);border:1px solid var(--line);
+    border-radius:6px;padding:7px 10px;font-size:12px;
+  }
+  .meta-card .lbl{font-weight:800;color:var(--navy);margin-bottom:3px;display:block;font-size:12px;}
+  .meta-card ul{padding-left:16px;margin:0;}
+  .meta-card li{margin-bottom:2px;}
+
+  /* 比較表 */
+  .tbl-wrap{margin:8px 0;overflow-x:auto;}
+  table.comp-tbl{
+    width:100%;border-collapse:collapse;font-size:12px;text-align:left;
+  }
+  table.comp-tbl th, table.comp-tbl td{
+    border:1px solid var(--line);padding:6px 9px;line-height:1.4;
+  }
+  table.comp-tbl th{
+    background:var(--navy);color:#fff;font-weight:700;
+  }
+  table.comp-tbl tr:nth-child(even){background:var(--light);}
+  table.comp-tbl b{color:var(--navy);}
+
+  /* コツ・チェック */
+  ul.checks{list-style:none;margin-top:4px;}
+  ul.checks li{
+    display:flex;gap:8px;align-items:flex-start;
+    padding:4px 2px;border-bottom:1px dashed var(--line);
+    font-size:12.5px;
+  }
+  ul.checks li:last-child{border-bottom:none;}
+  ul.checks .box{
+    flex:0 0 16px;width:16px;height:16px;margin-top:2px;
+    border:2px solid var(--navy);border-radius:3px;
+  }
+  ul.checks li b{color:var(--navy);}
+  ul.checks .why{color:#555;font-size:11.5px;}
+
+  /* 警告枠 */
+  .alert{
+    border:2px solid var(--danger);border-radius:7px;
+    padding:9px 12px;background:#FDF3F2;margin-top:8px;
+  }
+  .alert .at{color:var(--danger);font-weight:800;font-size:14px;margin-bottom:5px;}
+  .fast{display:flex;gap:6px;flex-wrap:wrap;margin-top:3px;}
+  .fast div{
+    flex:1 1 45%;font-size:12px;background:#fff;border:1px solid #EAC5C0;
+    border-radius:5px;padding:5px 8px;line-height:1.4;
+  }
+  .fast .l{color:var(--danger);font-weight:800;margin-right:4px;}
+  .alert .call{
+    margin-top:6px;font-size:11.5px;font-weight:700;color:var(--danger);text-align:center;
+  }
+
+  /* メモ欄 */
+  .memo{
+    border:1.5px solid var(--line);border-radius:7px;padding:8px 12px;margin-top:10px;
+    font-size:12px;background:#fff;
+  }
+  .memo .mtitle{font-weight:800;color:var(--navy);font-size:12.5px;margin-bottom:4px;}
+  .memo .mrow{display:flex;gap:6px;align-items:baseline;padding:3.5px 0;}
+  .memo .mlabel{flex:0 0 170px;font-weight:700;color:var(--navy);white-space:nowrap;}
+  .memo .mline{flex:1;border-bottom:1px solid #94A3B8;min-height:16px;}
+
+  /* フッター */
+  .foot{
+    margin-top:10px;padding-top:8px;border-top:1px solid var(--line);
+    font-size:10.5px;color:#666;line-height:1.45;
+  }
+  .foot .brand{font-weight:700;color:var(--navy);}
+
+  /* 印刷ボタン */
+  .noprint{margin:0 auto 16px;max-width:820px;text-align:center;}
+  .pbtn{
+    display:inline-block;background:var(--navy);color:#fff;text-decoration:none;
+    font-size:14px;font-weight:700;padding:9px 24px;border-radius:24px;border:none;cursor:pointer;
+    box-shadow:0 2px 10px rgba(29,42,68,.25);
+  }
+  .pbtn:active{transform:scale(.98);}
+  .noprint p{font-size:12px;color:#777;margin-top:6px;}
+
+  @page{size:A4 portrait;margin:9mm 11mm;}
+  @media print{
+    body{background:#fff;padding:0;font-size:9.2pt;line-height:1.35;}
+    .sheet{box-shadow:none;margin:0;max-width:none;padding:0;}
+    .noprint{display:none !important;}
+    h1{font-size:15.5pt;line-height:1.25;}
+    h2{font-size:10.5pt;margin:5px 0 3px;padding:2.5px 8px;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    h2 .num{width:16px;height:16px;flex:0 0 16px;font-size:9pt;}
+    .kicker,.alert,.info-box,.meta-card,.step-item,.step-num,.step-time,table.comp-tbl th,table.comp-tbl tr:nth-child(even),.fast div,.qr{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .kicker{padding:2px 7px;margin-bottom:2px;font-size:8.5pt;}
+    .sub{margin-top:2px;font-size:9pt;}
+    .lead{font-size:8.6pt;margin-top:3px;line-height:1.35;}
+    .head{padding-bottom:4px;margin-bottom:4px;}
+    .info-box{padding:4px 7px;font-size:8.6pt;margin-bottom:3px;line-height:1.35;}
+    .step-grid{gap:3px;margin:3px 0;}
+    .step-item{padding:3.5px 6px;font-size:8.6pt;}
+    .step-title{font-size:9pt;}
+    .step-desc{font-size:8.3pt;line-height:1.25;margin-top:1px;}
+    .step-time{font-size:7.8pt;padding:0px 3px;}
+    .meta-grid{gap:4px;margin-top:3px;}
+    .meta-card{padding:3.5px 6px;font-size:8.3pt;line-height:1.3;}
+    .meta-card .lbl{font-size:8.6pt;margin-bottom:1px;}
+    table.comp-tbl{font-size:8.3pt;}
+    table.comp-tbl th, table.comp-tbl td{padding:3px 5px;line-height:1.3;}
+    .tbl-wrap{margin:4px 0;}
+    ul.checks{margin-top:2px;}
+    ul.checks li{font-size:8.5pt;padding:1.5px 1px;line-height:1.3;}
+    ul.checks .why{font-size:8pt;}
+    .alert{padding:4px 7px;margin-top:4px;}
+    .alert .at{font-size:9.2pt;margin-bottom:2px;}
+    .fast div{padding:2px 5px;font-size:8.2pt;line-height:1.3;}
+    .fast{gap:3px;margin-top:2px;}
+    .alert .call{margin-top:3px;font-size:7.8pt;}
+    .memo{margin-top:4px;padding:3.5px 7px;font-size:8.3pt;}
+    .memo .mtitle{font-size:8.8pt;margin-bottom:1px;}
+    .memo .mrow{padding:1px 0;}
+    .memo .mline{min-height:13px;}
+    .foot{margin-top:4px;padding-top:3px;font-size:7.5pt;line-height:1.25;}
+    a[href]{color:inherit;text-decoration:none;}
+    
+    /* 改ページ制御 */
+    .info-box,.step-item,.meta-card,.alert,.memo,.fast div,table.comp-tbl{break-inside:avoid;page-break-inside:avoid;}
+    ul.checks li{break-inside:avoid;page-break-inside:avoid;}
+    h2{break-after:avoid;page-break-after:avoid;}
+    .pg2{break-before:page;page-break-before:always;}
+  }
+  @media (max-width:560px){
+    body{padding:8px;}
+    .sheet{padding:16px 14px 20px;}
+    .head{flex-direction:column;align-items:center;text-align:center;}
+    h1{font-size:18px;}
+    .meta-grid{grid-template-columns:1fr;}
+    .fast div{flex:1 1 100%;}
+    .memo .mlabel{flex:0 0 130px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="noprint">
+  <button class="pbtn" id="printBtn">&#x1F5A8;&#xFE0F; この資料を印刷する（A4・表裏2ページ）</button>
+  <p>外来で患者さんにそのまま印刷してお渡しいただけます。スマホで見る方は右上のQRコードから。</p>
+</div>
+
+<div class="sheet">
+
+  <!-- ==================== 1ページ目（表面） ==================== -->
+  <div class="head">
+    <div class="head-main">
+      <span class="kicker">めまいで困っている方・ご自宅で治したい方へ</span>
+      <h1>良性発作性頭位めまい症（BPPV）の治療体操</h1>
+      <p class="sub">どの半規管に入った耳石でも使える 2つのセルフケア体操</p>
+      <p class="lead">朝起き上がるときや寝返りを打ったときに「ぐるぐる回るめまい」が起きるのは、内耳の<b>耳石（じせき）</b>が原因のことがほとんどです。お薬で抑えるより、<b>頭を特定の順序で動かして耳石を元の場所に戻す「体操」が最も確実な根本治療</b>になります。</p>
+    </div>
+    <a class="qr" href="https://blog.ichisouzo-lab.com/entry/2025/06/03/082611" target="_blank" rel="noopener">
+      <svg role="img" aria-label="QRコード" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 41 41" class="segno"><path class="qrline" stroke="#1D2A44" d="M4 4.5h7m2 0h2m5 0h1m1 0h3m2 0h1m2 0h7m-33 1h1m5 0h1m2 0h1m1 0h2m2 0h2m1 0h1m3 0h1m1 0h1m1 0h1m5 0h1m-33 1h1m1 0h3m1 0h1m1 0h2m4 0h1m1 0h1m2 0h1m1 0h3m2 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h3m1 0h1m4 0h4m2 0h2m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h1m2 0h7m1 0h1m2 0h3m1 0h1m1 0h3m1 0h1m-33 1h1m5 0h1m1 0h1m1 0h3m1 0h1m2 0h1m3 0h1m2 0h1m1 0h1m5 0h1m-33 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-25 1h2m4 0h1m1 0h1m2 0h5m-24 1h1m1 0h5m2 0h2m2 0h1m3 0h2m1 0h1m1 0h1m1 0h1m1 0h5m-31 1h4m3 0h2m1 0h2m1 0h1m2 0h1m1 0h4m1 0h2m1 0h2m1 0h4m-33 1h2m2 0h3m2 0h8m1 0h1m1 0h2m6 0h1m1 0h2m-31 1h1m2 0h2m3 0h1m2 0h2m6 0h2m1 0h1m4 0h3m1 0h1m-33 1h2m1 0h2m1 0h2m6 0h3m1 0h1m1 0h1m7 0h2m1 0h2m-33 1h1m1 0h2m6 0h2m1 0h1m1 0h1m1 0h3m1 0h7m1 0h4m-33 1h2m4 0h1m4 0h6m7 0h5m1 0h2m-31 1h5m1 0h3m1 0h2m1 0h2m3 0h1m1 0h2m1 0h4m1 0h2m-30 1h1m4 0h1m2 0h1m2 0h4m1 0h1m2 0h1m1 0h1m1 0h2m1 0h3m2 0h1m-32 1h2m1 0h1m3 0h1m3 0h3m1 0h1m1 0h4m1 0h1m2 0h2m1 0h2m1 0h1m-33 1h1m1 0h2m2 0h4m1 0h1m1 0h1m1 0h1m2 0h1m1 0h1m6 0h2m1 0h2m-32 1h1m1 0h2m4 0h4m1 0h1m2 0h1m1 0h6m2 0h6m-32 1h1m2 0h2m1 0h2m2 0h3m1 0h1m3 0h3m2 0h1m4 0h2m1 0h1m-32 1h2m1 0h3m1 0h1m1 0h2m4 0h5m3 0h5m2 0h1m1 0h1m-33 1h1m2 0h2m1 0h3m2 0h4m6 0h1m6 0h1m2 0h1m-32 1h1m1 0h1m5 0h1m4 0h2m1 0h1m1 0h1m2 0h1m1 0h1m2 0h1m1 0h3m1 0h1m-33 1h1m1 0h2m2 0h2m3 0h1m2 0h1m2 0h1m1 0h1m2 0h8m1 0h1m-24 1h6m3 0h4m3 0h1m3 0h1m1 0h1m1 0h1m-33 1h7m2 0h1m2 0h1m2 0h1m1 0h1m2 0h1m1 0h3m1 0h1m1 0h1m1 0h2m-32 1h1m5 0h1m1 0h5m4 0h3m1 0h4m3 0h5m-33 1h1m1 0h3m1 0h1m1 0h1m1 0h3m1 0h3m3 0h1m3 0h6m1 0h2m-33 1h1m1 0h3m1 0h1m1 0h2m4 0h2m2 0h2m2 0h1m1 0h2m2 0h1m2 0h2m-33 1h1m1 0h3m1 0h1m1 0h1m1 0h3m1 0h3m1 0h1m2 0h1m1 0h1m2 0h2m1 0h2m-31 1h1m5 0h1m3 0h2m2 0h2m5 0h2m2 0h1m2 0h1m1 0h1m-31 1h7m1 0h1m2 0h5m1 0h1m2 0h1m1 0h1m1 0h2m1 0h1m3 0h1"/></svg>
+      <div class="qr-cap">解説記事・動画はこちら</div>
+    </a>
+  </div>
+
+  <h2><span class="num">1</span>なぜ「頭を動かす体操」で治るのか？</h2>
+  <div class="info-box">
+    <b>耳石がバランスのセンサー（半規管）に迷い込むのが原因です</b><br>
+    耳の奥には、体の傾きを感じる「耳石器（卵形嚢）」と、回転を感じる3つの「半規管（後半規管・外側半規管・前半規管）」があります。本来の場所から剥がれ落ちた耳石が半規管に入り込むと、頭を動かしたときにリンパ液を揺らし、強い回転性めまいを起こします。<br>
+    &rarr; <b>飲み薬は「一時的に症状を和らげる」だけ</b>ですが、<b>治療体操は「耳石を元の場所へ戻す・散らす」根本治療</b>です。
+  </div>
+
+  <h2><span class="num">2</span>【方法①】ユニバーサル法（URM：片耳のどの半規管でも1回で戻す）</h2>
+  <div class="info-box">
+    <b>患側（症状が強い方の耳）が分かっているときにおすすめ</b><br>
+    キムら（2023年）が提唱した新しい体操です。後・外側・前どの半規管に耳石があっても、<b>片耳1回の一連の動きで耳石を元の卵形嚢へ戻す</b>ことを目指します（所要時間：1回 約2〜3分）。
+  </div>
+
+  <div class="step-grid">
+    <div class="step-item">
+      <span class="step-num">手順 1</span>
+      <div class="step-content">
+        <div class="step-title">【座位】頭を「患側（めまいが強い耳の方）」へ45°向ける</div>
+        <div class="step-desc">ベッドや布団に背筋を伸ばして座り、顔を悪い方の耳へ斜め45度向けます。</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <span class="step-num">手順 2</span>
+      <div class="step-content">
+        <div class="step-title">【患側下の横向き】頭の向きを保ったまま、患側を下にして倒れる<span class="step-time">30秒キープ</span></div>
+        <div class="step-desc">顔の向き（患側45°）を変えずに、患側の肩を下にして横向きに寝ます。めまいが起きても30秒静止します。</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <span class="step-num">手順 3</span>
+      <div class="step-content">
+        <div class="step-title">【あお向け】頭の向きを変えずに、体をあお向けに転がす<span class="step-time">30秒キープ</span></div>
+        <div class="step-desc">頭を患側45°に向けたまま、体をゴロンとあお向け（仰臥位）にします。そのまま30秒静止します。</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <span class="step-num">手順 4</span>
+      <div class="step-content">
+        <div class="step-title">【健側下の横向き＋うつむき】健側を下にし、頭を床側へ45°うつむける<span class="step-time">30秒キープ</span></div>
+        <div class="step-desc">体をさらに90°回転させて良い方の耳（健側）を下にし、頭を床側へ斜め45°うつむかせます（30秒静止）。</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <span class="step-num">手順 5</span>
+      <div class="step-content">
+        <div class="step-title">【座位へ復帰】頭を軽くうつむけたまま、ゆっくり起き上がる</div>
+        <div class="step-desc">頭をうつむけた姿勢を保ちながら、足をベッドから下ろしてゆっくり座った姿勢に戻ります。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="meta-grid">
+    <div class="meta-card">
+      <span class="lbl">&#x23F1;&#xFE0F; 実施の頻度と目安</span>
+      <ul>
+        <li><b>1日 2〜3回、3日間</b>を目安に行います。</li>
+        <li>1回で症状がピタッと治まることもあります。</li>
+        <li>めまいが強い場合は、各姿勢で治まるまで静止してください。</li>
+      </ul>
+    </div>
+    <div class="meta-card">
+      <span class="lbl">&#x2728; メリットと注意点</span>
+      <ul>
+        <li><b>半規管の特定が不要</b>で、複数の半規管に入っている場合も有効。</li>
+        <li><b>即効性</b>が期待できます。</li>
+        <li>首に強い痛みや脊髄の病気がある方は事前に医師へご相談を。</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ==================== 2ページ目（裏面） ==================== -->
+  <div class="pg2"></div>
+
+  <h2><span class="num">3</span>【方法②】ブランドット-ダロフ法（Brandt-Daroff：自宅で安全・再発予防）</h2>
+  <div class="info-box">
+    <b>左右どちらの耳か分からないとき・自宅で安全に続けたいときにおすすめ</b><br>
+    左右交互に体を倒す古典的なホームエクササイズです。耳石を細かく分散させ、脳がめまいに慣れる（前庭代償）のを促します。半規管や左右の特定が不要で、誰でも安全に実施できます。
+  </div>
+
+  <div class="step-grid">
+    <div class="step-item">
+      <span class="step-num">手順 1</span>
+      <div class="step-content">
+        <div class="step-title">【座位】ベッドの中央に座り、まっすぐ前を向く</div>
+        <div class="step-desc">足をおろして座り、正面を向いて姿勢を整えます。</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <span class="step-num">手順 2</span>
+      <div class="step-content">
+        <div class="step-title">【左へ倒れる】頭を右45°に向けたまま、左へバタンと倒れる<span class="step-time">30秒キープ</span></div>
+        <div class="step-desc">顔は天井（斜め上）を向く形になります。めまいが消えるまで少なくとも30秒間じっとします。</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <span class="step-num">手順 3</span>
+      <div class="step-content">
+        <div class="step-title">【座位に戻る】起き上がって正面を向き、30秒休む<span class="step-time">30秒休憩</span></div>
+        <div class="step-desc">ゆっくり元の座った姿勢に戻り、まっすぐ前を向いて30秒間静止します。</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <span class="step-num">手順 4</span>
+      <div class="step-content">
+        <div class="step-title">【右へ倒れる】頭を左45°に向けたまま、右へバタンと倒れる<span class="step-time">30秒キープ</span></div>
+        <div class="step-desc">今度は顔を左に向けたまま右へ倒れ、顔は天井（斜め上）を向けます。30秒間じっとします。</div>
+      </div>
+    </div>
+    <div class="step-item">
+      <span class="step-num">手順 5</span>
+      <div class="step-content">
+        <div class="step-title">【座位に戻る】起き上がって正面を向き、30秒休む（これで1往復完了）</div>
+        <div class="step-desc">座った姿勢に戻り30秒休みます。これを<b>連続5往復（＝1セット）</b>行います。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="meta-grid">
+    <div class="meta-card">
+      <span class="lbl">&#x23F1;&#xFE0F; 実施の頻度と目安</span>
+      <ul>
+        <li><b>1セット＝左右往復5回</b>。</li>
+        <li><b>1日 3セット（朝・昼・就寝前）を2週間継続</b>します。</li>
+        <li>治った後も週1〜2回続けると「再発予防（体操貯金）」になります。</li>
+      </ul>
+    </div>
+    <div class="meta-card">
+      <span class="lbl">&#x2728; メリットと注意点</span>
+      <ul>
+        <li><b>左右も半規管も特定不要</b>で、自宅で安全に行えます。</li>
+        <li>URM法に比べると効果が出るまでに数日〜2週間ほどかかります。</li>
+        <li>めまいが強い日は無理せず回数を減らしてください。</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2><span class="num">4</span>2つの体操の選び方 ＆ 実践のコツ</h2>
+  <div class="tbl-wrap">
+    <table class="comp-tbl">
+      <thead>
+        <tr>
+          <th>体操名</th>
+          <th>左右・半規管の特定</th>
+          <th>即効性</th>
+          <th>おすすめの場面</th>
+          <th>推奨回数・期間</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>URM法（ユニバーサル）</b></td>
+          <td>患側（悪い耳）のみ必要</td>
+          <td><b>◎ 高い</b></td>
+          <td>外来指導後・早く治したいとき</td>
+          <td>1回2〜3分 &times; 1日2〜3回（3日間）</td>
+        </tr>
+        <tr>
+          <td><b>Brandt-Daroff法</b></td>
+          <td><b>不要</b>（左右どちらも可）</td>
+          <td>△ じっくり</td>
+          <td>自宅セルフケア・再発予防</td>
+          <td>1日3セット（計15往復・2週間）</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ul class="checks">
+    <li><span class="box"></span><span><b>各姿勢で「めまいが治まるまで30秒」必ず静止する</b><br><span class="why">&rarr; 動かすと一瞬めまいが強くなりますが、耳石が動いている証拠です。怖がらずじっと待ちましょう。</span></span></li>
+    <li><span class="box"></span><span><b>ベッドの中央や布団など、転落しない安全な場所で行う</b></span></li>
+    <li><span class="box"></span><span><b>再発しやすい方は、治った後もBrandt-Daroff法を週1〜2回続けると予防になります</b></span></li>
+  </ul>
+
+  <h2 class="hd"><span class="num">5</span>こんな時はすぐに受診・救急（119）を</h2>
+  <div class="alert">
+    <div class="at">&#x26A0;&#xFE0F; 脳卒中など危険なめまいのサイン（BPPV以外の病気）</div>
+    <div class="fast">
+      <div><span class="l">手足・顔の麻痺</span>片側の手足に力が入らない・しびれる</div>
+      <div><span class="l">ろれつ・言葉</span>ろれつが回らない・言いたい言葉が出ない</div>
+      <div><span class="l">見え方の異常</span>物が二重に見える・視野の半分が欠ける</div>
+      <div><span class="l">激しい頭痛</span>経験したことのない強い頭痛・首の激痛</div>
+    </div>
+    <div class="call">※ BPPVは「頭を動かしたときだけ数十秒起こる」のが特徴です。安静にしていても続くめまいや上記症状は救急受診してください。</div>
+  </div>
+
+  <div class="memo">
+    <div class="mtitle">&#x270D;&#xFE0F; 外来指導・メモ欄（医師と一緒に確認しましょう）</div>
+    <div class="mrow"><span class="mlabel">原因と思われる耳：</span><span>［　右　・　左　・　特定困難（両側）　］</span></div>
+    <div class="mrow"><span class="mlabel">処方された体操：</span><span>［　① URM法（1日2〜3回）　・　② Brandt-Daroff法（1日3セット）　］</span></div>
+    <div class="mrow"><span class="mlabel">次回受診日・相談先：</span><span class="mline"></span></div>
+  </div>
+
+  <div class="foot">
+    <span class="brand">医知創造ラボ</span>｜監修：今村久司（脳神経内科専門医・指導医／総合内科専門医・指導医）<br>
+    この資料は一般的な医療情報の提供を目的としています。めまいの原因や体操の適応については、必ず主治医の診断・指示に従ってください。<br>
+    くわしい動画・解説記事は <b>blog.ichisouzo-lab.com</b>（右上のQRコード）からご覧いただけます。
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var btn=document.getElementById('printBtn');
+  if(btn){btn.addEventListener('click',function(){window.print();});}
+})();
+</script>
+
+</body>
+</html>

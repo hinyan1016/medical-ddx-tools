@@ -1,5 +1,6 @@
-const CACHE_NAME = 'ddx-tools-v148';
+const CACHE_NAME = 'ddx-tools-v149';
 const ASSETS = [
+  './infographics/aa-2024-biomarker-classification/index.html',
   './infographics/acute-stroke-bp-practical/index.html',
   './infographics/acute-stroke-bp-practical/infographic.png',
   './infographics/acute-stroke-bp-practical/thumb.png',
@@ -226,6 +227,7 @@ const ASSETS = [
   './handouts/dementia-ckd/index.html',
   './status_epilepticus_sedation.html',
   './handouts/status-epilepticus-sedation/index.html',
+  './handouts/bppv-exercises-guidance/index.html',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png'
