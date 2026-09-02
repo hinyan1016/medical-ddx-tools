@@ -1,0 +1,774 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>頭部CTの被ばくは何回までなら大丈夫？</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#012360;
+  --navy-ink:#001B4D;
+  --accent:#F27E03;
+  --accent-soft: color-mix(in srgb, var(--accent) 11%, #ffffff);
+  --accent-line: color-mix(in srgb, var(--accent) 62%, #ffffff);
+  --accent-ink: color-mix(in srgb, var(--accent) 74%, #4a2604);
+  --danger:#DC3323;
+  --danger-soft: color-mix(in srgb, var(--danger) 9%, #ffffff);
+  --bg:#FDFDFD;
+
+  --blue:#1D4189;
+  --blue-soft:#E9EEF8;
+  --blue-tint:#EEF2FA;
+  --red: var(--danger);
+  --red-soft: var(--danger-soft);
+  --orange: var(--accent);
+  --orange-soft: var(--accent-soft);
+  --line:#D8DDE6;
+  --line-soft:#C9D2DF;
+  --bg-muted:#F8F8F8;
+  --bg-alt:#F6F6F6;
+  --navy-line: color-mix(in srgb, var(--navy) 22%, #ffffff);
+
+  --type-mult: 1.38;
+  --type-display: calc(96px * var(--type-mult));
+  --type-title:   calc(82px * var(--type-mult));
+  --type-heading: calc(52px * var(--type-mult));
+  --type-subtitle:calc(40px * var(--type-mult));
+  --type-body:    calc(34px * var(--type-mult));
+  --type-small:   calc(27px * var(--type-mult));
+  --type-label:   calc(25px * var(--type-mult));
+  --type-chapter: calc(200px * var(--type-mult));
+  --type-stat:    calc(110px * var(--type-mult));
+
+  --pad-x: 112px;
+  --pad-top: 54px;
+  --pad-bottom: 116px;
+  --gap-title: 18px;
+  --gap-item: 20px;
+
+  --font-ja: "Noto Sans JP", "BIZ UDPGothic", "Yu Gothic", "Meiryo", sans-serif;
+  --font-serif: var(--font-ja);
+  --grad-navy: linear-gradient(160deg, #012360 0%, #001B4D 100%);
+}
+.serif{ font-family: var(--font-serif); font-weight:800; letter-spacing:.02em; }
+
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#0a1430; }
+
+.slide{
+  box-sizing:border-box;
+  display:flex; flex-direction:column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-ja);
+  overflow:hidden;
+  position:relative;
+}
+.slide::after{
+  content:""; position:absolute; left:0; right:0; bottom:0; height:10px;
+  background: var(--navy); pointer-events:none;
+}
+.slide--navy{ background: var(--grad-navy); color: var(--white); }
+.slide--navy::after{ background: var(--accent); }
+.slide--soft{ background: var(--bg-alt); }
+
+.eyebrow{
+  display:flex; align-items:center; gap:18px;
+  font-size: var(--type-label); font-weight:700; color: var(--navy);
+  letter-spacing:.04em;
+}
+.eyebrow::before{
+  content:""; width:12px; height:38px; border-radius:3px;
+  background: linear-gradient(180deg, var(--navy) 0 68%, var(--accent) 68% 100%);
+  flex:none;
+}
+.eyebrow .num{ font-family: var(--font-en); color: var(--accent-ink); }
+.eyebrow .en{ font-family: var(--font-en); color: var(--accent-ink); letter-spacing:.15em; text-transform:uppercase; }
+.slide--navy .eyebrow{ color: rgba(255,255,255,.88); }
+.slide--navy .eyebrow .en{ color:#fff; }
+.slide--navy .eyebrow::before{ background: linear-gradient(180deg, #fff 0 68%, var(--accent) 68% 100%); }
+
+.s-title{
+  font-size: var(--type-heading); line-height:1.22; color: var(--navy);
+  margin: var(--gap-title) 0 0; font-weight:800; letter-spacing:.01em;
+  text-wrap: pretty;
+}
+.slide--navy .s-title{ color:#fff; }
+
+.lead{
+  font-size: var(--type-body); line-height:1.65; color: var(--ink-2);
+  margin:0; text-wrap: pretty;
+}
+.muted{ color: var(--gray); }
+
+.hairline{
+  height:4px; border:0; margin:16px 0 0;
+  background: linear-gradient(90deg, var(--accent) 0 150px, var(--navy) 150px);
+  opacity:1;
+}
+.slide--navy .hairline{ background: linear-gradient(90deg, var(--accent) 0 150px, rgba(255,255,255,.85) 150px); }
+
+.chapter-ghost{
+  position:absolute; top: 30px; right: var(--pad-x);
+  font-family: var(--font-en); font-weight:700; line-height:.8;
+  font-size: calc(150px * var(--type-mult)); color: var(--navy);
+  opacity:.05; pointer-events:none; user-select:none;
+}
+.slide--navy .chapter-ghost{ color:#fff; opacity:.10; }
+
+.card{
+  background: var(--white);
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  padding: 28px 26px;
+  display:flex; flex-direction:column;
+  justify-content:flex-start;
+}
+.card--navy{ background: var(--navy); color:#fff; border-color: var(--navy); }
+.card--soft{ background: var(--blue-soft); border-color: var(--blue-tint); }
+.card--accent{ background: var(--accent-soft); border-color: var(--accent-line); }
+.card--warn{ background: var(--danger-soft); border-color: var(--red-soft); }
+
+.grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:32px; }
+.grid-3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:24px; }
+.flex-col{ display:flex; flex-direction:column; gap:16px; }
+.flex-row-item{ display:flex; flex-direction:row; align-items:center; gap:24px; padding:18px 26px; }
+
+.badge{
+  display:inline-block; font-size:calc(18px * var(--type-mult));
+  font-weight:700; padding:4px 14px; border-radius:6px; width:fit-content;
+}
+.badge--navy{ background: var(--navy); color:#fff; }
+.badge--accent{ background: var(--accent); color:#fff; }
+.badge--warn{ background: var(--danger); color:#fff; }
+
+.stat-num{
+  font-size: calc(64px * var(--type-mult)); font-weight:800; line-height:1;
+  color: var(--accent); font-family: var(--font-en);
+}
+.stat-num--navy{ color: var(--navy); }
+.stat-num--warn{ color: var(--danger); }
+.stat-unit{ font-size: calc(28px * var(--type-mult)); font-weight:700; margin-left:4px; }
+
+.dose-table{ width:100%; border-collapse:collapse; }
+.dose-table th, .dose-table td{
+  border-bottom: 2px solid var(--line);
+  padding: 14px 16px;
+  text-align:left;
+  font-size: var(--type-small);
+  line-height:1.35;
+}
+.dose-table thead th{
+  background: var(--navy); color:#fff; font-weight:700;
+  border-bottom: 2px solid var(--navy);
+}
+.dose-table tbody tr:nth-child(even){ background: var(--bg-alt); }
+.dose-table td.num{ font-family: var(--font-en); font-weight:700; color: var(--navy); }
+.dose-table td.eq{ color: var(--ink-2); }
+
+.slide__foot{
+  position:absolute; left: var(--pad-x); right: var(--pad-x); bottom: 36px;
+  display:flex; justify-content:space-between; align-items:center;
+  font-size: calc(19px * var(--type-mult)); color: var(--gray);
+  border-top: 1px solid var(--line-soft); padding-top: 12px;
+}
+.slide--navy .slide__foot{
+  color: rgba(255,255,255,.55);
+  border-top-color: rgba(255,255,255,.18);
+}
+.slide__foot .ch-title{ font-weight:700; color: var(--ink-2); }
+.slide--navy .slide__foot .ch-title{ color: rgba(255,255,255,.85); }
+.slide__foot .page-num{ font-family: var(--font-en); font-weight:700; }
+</style>
+</head>
+<body>
+
+<deck-stage width="1920" height="1080">
+
+<!-- SLIDE 1: 表紙 -->
+<section class="slide slide--navy" data-label="title" data-screen-label="表紙" style="justify-content:center; align-items:flex-start;">
+  <div class="chapter-ghost">RADIATION</div>
+  <div class="eyebrow" style="margin-bottom:24px;"><span class="en">CLINICAL &amp; PATIENT GUIDE</span><span>診療放射線による被ばくの実際</span></div>
+  <h1 class="serif" style="font-size:calc(60px * var(--type-mult)); line-height:1.25; margin:0 0 24px; color:#fff;">
+    「頭部CTの被ばくは<br><span style="color:var(--accent);">何回まで</span>なら大丈夫？」
+  </h1>
+  <p style="font-size:calc(27px * var(--type-mult)); color:rgba(255,255,255,.9); line-height:1.6; margin:0 0 36px;">
+    脳神経内科医が実際の数値で答えます｜レントゲン・頭部CT・DATスキャン・PET・脳血管撮影の被ばく量一覧
+  </p>
+  <div class="badge badge--accent" style="font-size:calc(22px * var(--type-mult)); padding:8px 20px;">
+    脳神経内科専門医 監修
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">頭部CTの被ばくは何回までなら大丈夫？</div>
+    <div class="page-num">1 / 22</div>
+  </div>
+</section>
+
+<!-- SLIDE 2: フック -->
+<section class="slide slide--soft" data-label="hook" data-screen-label="導入">
+  <div class="eyebrow"><span class="num">01</span><span class="en">INTRODUCTION</span><span>検索されるその疑問に</span></div>
+  <h2 class="s-title">「頭部CTは何回まで大丈夫？」——実は上限という考え方をしない</h2>
+  <div class="hairline"></div>
+  <div class="grid-2" style="margin-top:36px; flex:1;">
+    <div class="card card--warn anim anim-1">
+      <div class="badge badge--warn" style="margin-bottom:14px;">よくある質問</div>
+      <p style="font-size:var(--type-body); font-weight:700; color:var(--danger); line-height:1.5; margin:0 0 14px;">
+        「もう3回もCTを撮った。次はもう受けても大丈夫？」
+      </p>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:0;">
+        「何回まで」という上限を探して不安になる患者さんは少なくありません。
+      </p>
+    </div>
+    <div class="card card--accent anim anim-2">
+      <div class="badge badge--accent" style="margin-bottom:14px;">医学的な答え</div>
+      <p style="font-size:var(--type-body); font-weight:700; color:var(--navy); line-height:1.5; margin:0 0 14px;">
+        医療被ばくに回数の上限は設けられていません
+      </p>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:0;">
+        1回ごとに「その検査で得られる情報が被ばくに見合うか」で判断します。
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">頭部CTの被ばくは何回までなら大丈夫？</div>
+    <div class="page-num">2 / 22</div>
+  </div>
+</section>
+
+<!-- SLIDE 3: アジェンダ -->
+<section class="slide" data-label="agenda" data-screen-label="アジェンダ">
+  <div class="eyebrow"><span class="num">02</span><span class="en">AGENDA</span><span>本日のアジェンダ</span></div>
+  <h2 class="s-title">本日のアジェンダ</h2>
+  <div class="hairline"></div>
+  <div class="flex-col" style="margin-top:32px; flex:1; justify-content:center; gap:18px;">
+    <div class="card card--soft anim anim-1 flex-row-item">
+      <div style="font-size:calc(30px * var(--type-mult)); font-weight:800; color:var(--navy);">01</div>
+      <div style="font-size:var(--type-small); color:var(--ink); line-height:1.4;">単位と自然放射線——Gy・Sv と年2.1 mSv</div>
+    </div>
+    <div class="card anim anim-2 flex-row-item">
+      <div style="font-size:calc(30px * var(--type-mult)); font-weight:800; color:var(--accent);">02</div>
+      <div style="font-size:var(--type-small); color:var(--ink); line-height:1.4;">症状はどこから出るか——確定的影響のしきい値</div>
+    </div>
+    <div class="card card--soft anim anim-3 flex-row-item">
+      <div style="font-size:calc(30px * var(--type-mult)); font-weight:800; color:var(--navy);">03</div>
+      <div style="font-size:var(--type-small); color:var(--ink); line-height:1.4;">検査ごとの線量——胸部X線から小児CTまで</div>
+    </div>
+    <div class="card anim anim-4 flex-row-item">
+      <div style="font-size:calc(30px * var(--type-mult)); font-weight:800; color:var(--accent);">04</div>
+      <div style="font-size:var(--type-small); color:var(--ink); line-height:1.4;">脳神経内科の各論——RI検査・PET・脳血管撮影</div>
+    </div>
+    <div class="card card--soft anim anim-5 flex-row-item">
+      <div style="font-size:calc(30px * var(--type-mult)); font-weight:800; color:var(--navy);">05</div>
+      <div style="font-size:var(--type-small); color:var(--ink); line-height:1.4;">「何回まで」への答え</div>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">頭部CTの被ばくは何回までなら大丈夫？</div>
+    <div class="page-num">3 / 22</div>
+  </div>
+</section>
+
+<!-- SLIDE 4: 総論・単位 -->
+<section class="slide" data-label="units" data-screen-label="被ばくの単位">
+  <div class="eyebrow"><span class="num">03</span><span class="en">UNITS</span><span>総論・単位</span></div>
+  <h2 class="s-title">Gy と Sv、mSv と μSv——被ばくの単位を1枚で</h2>
+  <div class="hairline"></div>
+  <div class="grid-2" style="margin-top:36px; flex:1;">
+    <div class="card anim anim-1">
+      <div class="badge badge--navy" style="margin-bottom:14px;">吸収線量：Gy（グレイ）</div>
+      <p style="font-size:var(--type-body); line-height:1.6; color:var(--ink); margin:0;">
+        物質1kgが吸収したエネルギー量。装置の出力（CTDIvol・Ka,r）や皮膚線量はこの単位で表す。
+      </p>
+    </div>
+    <div class="card card--accent anim anim-2">
+      <div class="badge badge--accent" style="margin-bottom:14px;">実効線量：Sv（シーベルト）</div>
+      <p style="font-size:var(--type-body); line-height:1.6; color:var(--ink); margin:0;">
+        臓器ごとの感受性を加味し、全身への影響を1つの数値に換算したもの。検査の比較にはこちらを使う。
+      </p>
+    </div>
+  </div>
+  <div class="card card--soft anim anim-3" style="margin-top:16px; padding:20px 26px; align-items:center;">
+    <p style="font-size:var(--type-body); font-weight:700; color:var(--navy); margin:0;">
+      1 mSv（ミリシーベルト）＝ 1,000 μSv（マイクロシーベルト）——以降の表はすべてこの単位で読む。
+    </p>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">ICRP Publication 103 の考え方に基づく整理</div>
+    <div class="page-num">4 / 22</div>
+  </div>
+</section>
+
+<!-- SLIDE 5: 総論・自然放射線 -->
+<section class="slide" data-label="natural" data-screen-label="自然放射線">
+  <div class="eyebrow"><span class="num">04</span><span class="en">NATURAL BACKGROUND</span><span>総論・自然放射線</span></div>
+  <h2 class="s-title">何もしなくても日本で年 2.1 mSv</h2>
+  <div class="hairline"></div>
+  <div class="grid-3" style="margin-top:32px;">
+    <div class="card anim anim-1" style="align-items:center; text-align:center;">
+      <div class="stat-num stat-num--navy" style="font-size:calc(42px * var(--type-mult));">0.30<span class="stat-unit">mSv</span></div>
+      <p style="font-size:var(--type-small); color:var(--ink-2); margin-top:8px;">宇宙から</p>
+    </div>
+    <div class="card anim anim-2" style="align-items:center; text-align:center;">
+      <div class="stat-num stat-num--navy" style="font-size:calc(42px * var(--type-mult));">0.33<span class="stat-unit">mSv</span></div>
+      <p style="font-size:var(--type-small); color:var(--ink-2); margin-top:8px;">大地から</p>
+    </div>
+    <div class="card anim anim-3" style="align-items:center; text-align:center;">
+      <div class="stat-num stat-num--navy" style="font-size:calc(42px * var(--type-mult));">0.48<span class="stat-unit">mSv</span></div>
+      <p style="font-size:var(--type-small); color:var(--ink-2); margin-top:8px;">ラドン・トロン等</p>
+    </div>
+  </div>
+  <div class="grid-2" style="margin-top:24px; flex:1;">
+    <div class="card card--accent anim anim-4" style="align-items:center; text-align:center; justify-content:center;">
+      <div class="stat-num" style="font-size:calc(42px * var(--type-mult));">0.99<span class="stat-unit">mSv</span></div>
+      <p style="font-size:var(--type-small); color:var(--accent-ink); margin-top:8px; font-weight:700;">食物から（合計 年2.1 mSv）</p>
+    </div>
+    <div class="card anim anim-5" style="justify-content:center;">
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:0;">
+        世界平均は年 2.4 mSv。東京―ニューヨーク間の飛行機往復でも 0.11〜0.16 mSv 浴びており、生活そのものが被ばく源になっている。
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">環境省 放射線による健康影響等に関する統一的な基礎資料</div>
+    <div class="page-num">5 / 22</div>
+  </div>
+</section>
+
+<!-- SLIDE 6: 総論・医療被ばく -->
+<section class="slide slide--soft" data-label="medical-exposure" data-screen-label="医療被ばくの平均">
+  <div class="eyebrow"><span class="num">05</span><span class="en">MEDICAL EXPOSURE</span><span>総論・医療被ばく</span></div>
+  <h2 class="s-title">日本の医療被ばく平均は年 2.6 mSv——自然放射線より多い</h2>
+  <div class="hairline"></div>
+  <div class="grid-2" style="margin-top:36px; flex:1;">
+    <div class="card card--warn anim anim-1" style="align-items:center; text-align:center;">
+      <div class="stat-num stat-num--warn">2.6<span class="stat-unit">mSv/年</span></div>
+      <p style="font-size:var(--type-small); color:var(--ink-2); margin-top:12px; line-height:1.5;">
+        日本の医療被ばくの平均（環境省）。全国のCT装置は14,595台（Urikura 2023）。
+      </p>
+    </div>
+    <div class="card anim anim-2" style="justify-content:center;">
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:0 0 10px;">
+        2004年の Lancet 誌は「年間の検査頻度が世界で最も高い」日本を最高値と推計したが、著者自身が「リスクを過大評価している可能性は否定できない」と明記している。
+      </p>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:0;">
+        この推計には複数の反論書簡が寄せられ、著者が誌上で返答した（Nagataki 2004 ほか）。
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">環境省／Berrington de González A, Darby S. Lancet. 2004.</div>
+    <div class="page-num">6 / 22</div>
+  </div>
+</section>
+
+<!-- SLIDE 7: 総論・確定的影響 -->
+<section class="slide" data-label="deterministic" data-screen-label="確定的影響">
+  <div class="eyebrow"><span class="num">06</span><span class="en">DETERMINISTIC EFFECTS</span><span>総論・確定的影響</span></div>
+  <h2 class="s-title">症状はどこから出るのか——しきい値は Gy の桁</h2>
+  <div class="hairline"></div>
+  <div class="grid-3" style="margin-top:32px; flex:1;">
+    <div class="card anim anim-1">
+      <div class="badge badge--navy" style="margin-bottom:12px;">0.5 Gy</div>
+      <p style="font-size:var(--type-small); line-height:1.6; color:var(--ink); margin:0;">造血能低下・白内障のしきい線量（ICRP 118）</p>
+    </div>
+    <div class="card card--accent anim anim-2">
+      <div class="badge badge--accent" style="margin-bottom:12px;">3〜6 Gy</div>
+      <p style="font-size:var(--type-small); line-height:1.6; color:var(--ink); margin:0;">皮膚発赤のしきい線量（環境省資料）</p>
+    </div>
+    <div class="card anim anim-3">
+      <div class="badge badge--navy" style="margin-bottom:12px;">約4 Gy</div>
+      <p style="font-size:var(--type-small); line-height:1.6; color:var(--ink); margin:0;">一時的脱毛のしきい線量</p>
+    </div>
+  </div>
+  <div class="card card--warn anim anim-4" style="margin-top:20px; padding:20px 26px;">
+    <p style="font-size:var(--type-body); font-weight:700; color:var(--danger); margin:0;">
+      全身1 Gy以上で嘔気・嘔吐——診断検査は mSv（1/1000）の桁でこの領域には届かない。
+    </p>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">ICRP Publication 118（2012）／環境省 基礎資料</div>
+    <div class="page-num">7 / 22</div>
+  </div>
+</section>
+
+<!-- SLIDE 8: 総論・確率的影響 -->
+<section class="slide" data-label="stochastic" data-screen-label="確率的影響">
+  <div class="eyebrow"><span class="num">07</span><span class="en">STOCHASTIC EFFECTS</span><span>総論・確率的影響</span></div>
+  <h2 class="s-title">発がんは「確率」で増える——LNT モデルの考え方</h2>
+  <div class="hairline"></div>
+  <div class="grid-2" style="margin-top:36px; flex:1;">
+    <div class="card anim anim-1">
+      <div class="badge badge--navy" style="margin-bottom:14px;">LNT（線形しきい値なし）モデル</div>
+      <p style="font-size:var(--type-body); line-height:1.6; color:var(--ink); margin:0;">
+        ICRP 103 の防護上の考え方。線量が下がるほどリスクも小さくなるが、ゼロになる境界（しきい値）は仮定しない。
+      </p>
+    </div>
+    <div class="card card--accent anim anim-2">
+      <div class="badge badge--accent" style="margin-bottom:14px;">医療被ばくの管理方法</div>
+      <p style="font-size:var(--type-body); line-height:1.6; color:var(--ink); margin:0;">
+        職業被ばくと違い線量限度は適用されない。代わりに「正当化」「最適化」「診断参考レベル（DRL）」の3本柱で管理する。
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">ICRP Publication 103 の考え方に基づく整理</div>
+    <div class="page-num">8 / 22</div>
+  </div>
+</section>
+
+<!-- SLIDE 9: 各論・一覧表 -->
+<section class="slide" data-label="dose-table" data-screen-label="検査別の実効線量">
+  <div class="eyebrow"><span class="num">08</span><span class="en">DOSE TABLE</span><span>各論・一覧表</span></div>
+  <h2 class="s-title">検査別の典型実効線量（1枚の表）</h2>
+  <div class="hairline"></div>
+  <table class="dose-table anim anim-1" style="margin-top:28px;">
+    <thead>
+      <tr><th>検査</th><th>典型実効線量</th><th>自然放射線（年2.1 mSv）換算の目安</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>胸部単純X線写真</td><td class="num">0.1 mSv</td><td class="eq">約2〜3週間分</td></tr>
+      <tr><td>頭部CT（単純・中央値2 mSv）</td><td class="num">1.6〜2 mSv</td><td class="eq">約9か月〜1年分</td></tr>
+      <tr><td>胸部CT</td><td class="num">6.1 mSv</td><td class="eq">約3年分</td></tr>
+      <tr><td>腹部骨盤CT</td><td class="num">7.7 mSv</td><td class="eq">約4年分</td></tr>
+      <tr><td>全身PET-CT</td><td class="num">22.7 mSv</td><td class="eq">約11年分</td></tr>
+      <tr><td>MRI</td><td class="num">0 mSv</td><td class="eq">電離放射線ゼロ</td></tr>
+    </tbody>
+  </table>
+  <div class="slide__foot">
+    <div class="ch-title">RadiologyInfo.org（RSNA/ACR）／Smith-Bindman R, et al. Arch Intern Med. 2009.</div>
+    <div class="page-num">9 / 22</div>
+  </div>
+</section>
+
+<!-- SLIDE 10: 各論・胸部X線と頭部CT -->
+<section class="slide" data-label="chest-brain" data-screen-label="胸部X線と頭部CT">
+  <div class="eyebrow"><span class="num">09</span><span class="en">CHEST X-RAY &amp; BRAIN CT</span><span>各論・日常の2検査</span></div>
+  <h2 class="s-title">胸部単純写真と頭部CT——日常の2検査</h2>
+  <div class="hairline"></div>
+  <div class="grid-2" style="margin-top:36px; flex:1;">
+    <div class="card anim anim-1">
+      <div class="badge badge--navy" style="margin-bottom:14px;">胸部単純X線</div>
+      <p style="font-size:var(--type-body); font-weight:700; color:var(--navy); line-height:1.5; margin:0 0 10px;">
+        自然放射線の約2〜3週間分
+      </p>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:0;">
+        典型実効線量0.1 mSv。日常診療で最も頻用される検査の1つ。
+      </p>
+    </div>
+    <div class="card card--accent anim anim-2">
+      <div class="badge badge--accent" style="margin-bottom:14px;">頭部CT（単純）</div>
+      <p style="font-size:var(--type-body); font-weight:700; color:var(--navy); line-height:1.5; margin:0 0 10px;">
+        自然放射線の約1年分
+      </p>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:0;">
+        Japan DRLs 2025：CTDIvol 67 mGy／DLP 1260 mGy・cm（頭部単純ルーチン）。水晶体は撮影範囲の工夫で守る。
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">日本核医学会・J-RIME「Japan DRLs 2025」</div>
+    <div class="page-num">10 / 22</div>
+  </div>
+</section>
+
+<!-- SLIDE 11: 各論・小児CT -->
+<section class="slide slide--soft" data-label="pediatric-ct" data-screen-label="小児CTと発がん">
+  <div class="eyebrow"><span class="num">10</span><span class="en">PEDIATRIC CT</span><span>各論・小児CT</span></div>
+  <h2 class="s-title">子どものCTと発がん——3つの大規模コホート</h2>
+  <div class="hairline"></div>
+  <div class="grid-3" style="margin-top:32px; flex:1;">
+    <div class="card anim anim-1">
+      <div class="badge badge--navy" style="margin-bottom:12px;">英国・Pearce 2012</div>
+      <p style="font-size:var(--type-small); line-height:1.55; color:var(--ink); margin:0;">
+        累積30 mGy以上で白血病の相対リスク3.18、累積50〜74 mGyで脳腫瘍の相対リスク2.82。
+      </p>
+    </div>
+    <div class="card card--accent anim anim-2">
+      <div class="badge badge--accent" style="margin-bottom:12px;">豪州・Mathews 2013</div>
+      <p style="font-size:var(--type-small); line-height:1.55; color:var(--ink); margin:0;">
+        1090万人規模の解析。CT被曝群のがん罹患率は非被曝群より24%高かった（IRR 1.24）。
+      </p>
+    </div>
+    <div class="card anim anim-3">
+      <div class="badge badge--navy" style="margin-bottom:12px;">欧州9か国・EPI-CT 2023</div>
+      <p style="font-size:var(--type-small); line-height:1.55; color:var(--ink); margin:0;">
+        今日CTを受ける小児1万人のうち、12年以内に1〜2人が血液腫瘍を発症する。
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">Pearce 2012／Mathews 2013／Bosch de Basea 2023（EPI-CT）</div>
+    <div class="page-num">11 / 22</div>
+  </div>
+</section>
+
+<!-- SLIDE 12: 各論・反復CT -->
+<section class="slide" data-label="repeat-ct" data-screen-label="累積線量の実態">
+  <div class="eyebrow"><span class="num">11</span><span class="en">CUMULATIVE DOSE</span><span>各論・反復CT</span></div>
+  <h2 class="s-title">同じ人が何度も受けるとき——累積線量の実態</h2>
+  <div class="hairline"></div>
+  <div class="grid-2" style="margin-top:36px; flex:1;">
+    <div class="card anim anim-1">
+      <div class="badge badge--navy" style="margin-bottom:14px;">Sodickson 2009（成人3.1万人）</div>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:0;">
+        33%が生涯で5回以上、15%が累積実効線量100 mSv超、4%は250〜1375 mSvだった。
+      </p>
+    </div>
+    <div class="card card--accent anim anim-2">
+      <div class="badge badge--accent" style="margin-bottom:14px;">Smith-Bindman 2025（米国2023年）</div>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:0;">
+        6151万人が9300万件のCTを受け（小児4.2%）、BEIR VIIモデルによる推計で生涯約10.3万件の放射線起因がんが発生すると予測（実測値ではない）。
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">Sodickson A, et al. Radiology. 2009／Smith-Bindman R, et al. JAMA Intern Med. 2025.</div>
+    <div class="page-num">12 / 22</div>
+  </div>
+</section>
+
+<!-- SLIDE 13: 章扉 -->
+<section class="slide slide--navy" data-label="chapter-neuro" data-screen-label="脳神経内科の各論章扉" style="justify-content:center; align-items:flex-start;">
+  <div class="chapter-ghost">NEUROLOGY</div>
+  <div class="eyebrow" style="margin-bottom:20px;"><span class="en">PART 4</span><span>脳神経内科の各論</span></div>
+  <h2 class="serif" style="font-size:calc(56px * var(--type-mult)); line-height:1.3; color:#fff; margin:0 0 24px;">
+    脳神経内科でよく出す検査の<br><span style="color:var(--accent);">各論を数値で見る</span>
+  </h2>
+  <div style="font-size:calc(28px * var(--type-mult)); color:rgba(255,255,255,.9); line-height:1.6;">
+    ① RI検査（DAT・MIBG・SPECT） ｜ ② アミロイドPET ｜ ③ 脳血管撮影・血管内治療
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">頭部CTの被ばくは何回までなら大丈夫？</div>
+    <div class="page-num">13 / 22</div>
+  </div>
+</section>
+
+<!-- SLIDE 14: 各論・RI -->
+<section class="slide" data-label="ri" data-screen-label="DATスキャン・MIBG">
+  <div class="eyebrow"><span class="num">12</span><span class="en">RI STUDIES</span><span>各論・RI検査</span></div>
+  <h2 class="s-title">DATスキャン・心筋MIBG・脳血流SPECT</h2>
+  <div class="hairline"></div>
+  <div class="grid-2" style="margin-top:32px; flex:1;">
+    <div class="card card--accent anim anim-1">
+      <div class="badge badge--accent" style="margin-bottom:12px;">DATスキャン（123I-ioflupane）</div>
+      <p style="font-size:var(--type-body); font-weight:700; color:var(--navy); line-height:1.5; margin:0 0 10px;">
+        DRL 190 MBq／185 MBqで3.94〜4.35 mSv（PMDA）
+      </p>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.55; margin:0;">
+        実効線量当量0.024 mSv/MBq（Booij 1998）×190 MBqでは約4.6 mSv。量の体系が異なる点に注意。
+      </p>
+    </div>
+    <div class="card anim anim-2">
+      <div class="badge badge--navy" style="margin-bottom:12px;">心筋MIBGシンチ（123I-MIBG）</div>
+      <p style="font-size:var(--type-body); font-weight:700; color:var(--navy); line-height:1.5; margin:0 0 10px;">
+        DRL 130 MBq×0.025 mSv/MBq＝約3.3 mSv（実効線量当量）
+      </p>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.55; margin:0;">
+        脳血流SPECT（ECD 800 MBq／IMP 200 MBq）は投与量DRLのみで、実効線量は未確認。
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">Booij J, et al. Eur J Nucl Med. 1998／Verberne HJ, et al. 2008／PMDA</div>
+    <div class="page-num">14 / 22</div>
+  </div>
+</section>
+
+<!-- SLIDE 15: 各論・アミロイドPET -->
+<section class="slide slide--soft" data-label="amyloid-pet" data-screen-label="アミロイドPET">
+  <div class="eyebrow"><span class="num">13</span><span class="en">AMYLOID PET</span><span>各論・アミロイドPET</span></div>
+  <h2 class="s-title">アミロイドPET——頭部CT の数回分</h2>
+  <div class="hairline"></div>
+  <div class="grid-2" style="margin-top:36px; flex:1;">
+    <div class="card anim anim-1" style="align-items:center; text-align:center;">
+      <div class="badge badge--navy" style="margin-bottom:14px;">flutemetamol 185 MBq</div>
+      <div class="stat-num stat-num--navy">4<span class="stat-unit">mSv</span></div>
+      <p style="font-size:var(--type-small); color:var(--ink-2); margin-top:10px;">実効線量21 μSv/MBq（Leide-Svegborn 2026）</p>
+    </div>
+    <div class="card card--accent anim anim-2" style="align-items:center; text-align:center;">
+      <div class="badge badge--accent" style="margin-bottom:14px;">florbetapir 370 MBq</div>
+      <div class="stat-num">6.88<span class="stat-unit">mSv</span></div>
+      <p style="font-size:var(--type-small); color:var(--accent-ink); margin-top:10px;">実効線量18.60 μSv/MBq（Joshi 2014）</p>
+    </div>
+  </div>
+  <div class="card anim anim-3" style="margin-top:16px; padding:18px 26px;">
+    <p style="font-size:var(--type-small); color:var(--ink-2); margin:0;">
+      florbetaben・脳FDG-PETはDRL投与量のみが公表されており、実効線量係数は未確認のため定性にとどめる。
+    </p>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">Joshi AD, et al. EJNMMI Res. 2014／Leide-Svegborn S, et al. Radiat Prot Dosimetry. 2026.</div>
+    <div class="page-num">15 / 22</div>
+  </div>
+</section>
+
+<!-- SLIDE 16: 各論・血管撮影 -->
+<section class="slide" data-label="angiography" data-screen-label="脳血管撮影とIVR">
+  <div class="eyebrow"><span class="num">14</span><span class="en">CEREBRAL ANGIOGRAPHY</span><span>各論・血管撮影</span></div>
+  <h2 class="s-title">脳血管撮影と血管内治療——Gy の桁に届きうる代表的な日常手技</h2>
+  <div class="hairline"></div>
+  <div class="grid-2" style="margin-top:32px; flex:1;">
+    <div class="card anim anim-1">
+      <div class="badge badge--navy" style="margin-bottom:12px;">基準点空気カーマ Ka,r（DRL）</div>
+      <p style="font-size:var(--type-body); line-height:1.6; color:var(--ink); margin:0;">
+        診断的脳血管撮影 470〜490 mGy、血管内治療（IVR）は1,000〜4,300 mGy。
+      </p>
+    </div>
+    <div class="card card--warn anim anim-2">
+      <div class="badge badge--warn" style="margin-bottom:12px;">実測皮膚線量（機械的血栓回収術）</div>
+      <p style="font-size:var(--type-body); font-weight:700; color:var(--danger); line-height:1.5; margin:0;">
+        平均1.00 Gy・最大4.80 Gy（Bärenfänger 2019）——一時的脱毛が実際に報告されている（Freysz 2014）。
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">日本核医学会・J-RIME「Japan DRLs 2025」／Bärenfänger F, et al. Rofo. 2019／Freysz M, et al. Ann Dermatol Venereol. 2014.</div>
+    <div class="page-num">16 / 22</div>
+  </div>
+</section>
+
+<!-- SLIDE 17: 各論・CT perfusion -->
+<section class="slide" data-label="ct-perfusion" data-screen-label="CT perfusion">
+  <div class="eyebrow"><span class="num">15</span><span class="en">CT PERFUSION</span><span>各論・CT perfusion</span></div>
+  <h2 class="s-title">脳卒中の CT perfusion——2009年の米国での過剰被ばく事例</h2>
+  <div class="hairline"></div>
+  <div class="card anim anim-1" style="margin-top:36px; flex:1; justify-content:center;">
+    <p style="font-size:var(--type-body); line-height:1.7; color:var(--ink); margin:0;">
+      2009年、米国で脳卒中診療のCT perfusionによる過剰被ばく事例が発覚し、FDAが安全性調査を行った。<br><br>
+      この経緯はAJNR誌上で論説として取り上げられている。具体的な患者数や過剰線量の倍率は一次資料が未確認のため、ここでは事実関係のみを扱う。
+    </p>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">Wintermark M, Lev MH. AJNR Am J Neuroradiol. 2010.</div>
+    <div class="page-num">17 / 22</div>
+  </div>
+</section>
+
+<!-- SLIDE 18: 特殊状況 -->
+<section class="slide slide--soft" data-label="pregnancy-pediatric" data-screen-label="妊娠・授乳・小児">
+  <div class="eyebrow"><span class="num">16</span><span class="en">SPECIAL POPULATIONS</span><span>特殊状況</span></div>
+  <h2 class="s-title">妊娠・授乳・小児——<br>検査を「差し控えない」ために</h2>
+  <div class="hairline"></div>
+  <div class="grid-2" style="margin-top:36px; flex:1;">
+    <div class="card anim anim-1">
+      <div class="badge badge--navy" style="margin-bottom:14px;">妊娠中の画像検査（ACOG 723）</div>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:0;">
+        超音波・MRIが第一選択だが、必要ならX線・CT・核医学を妊婦だからといって差し控えるべきではないと明記されている。
+      </p>
+    </div>
+    <div class="card card--accent anim anim-2">
+      <div class="badge badge--accent" style="margin-bottom:14px;">授乳中の造影検査</div>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:0;">
+        ガドリニウム造影剤投与後に授乳を中断する必要はない（ACOG 723）。
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">ACOG Committee Opinion No. 723. Obstet Gynecol. 2017.</div>
+    <div class="page-num">18 / 22</div>
+  </div>
+</section>
+
+<!-- SLIDE 19: 切り分け -->
+<section class="slide" data-label="mri-vs-contrast" data-screen-label="MRIと造影剤リスクの切り分け">
+  <div class="eyebrow"><span class="num">17</span><span class="en">MRI IS DIFFERENT</span><span>切り分け</span></div>
+  <h2 class="s-title">MRI は電離放射線ゼロ／造影剤のリスクは別物</h2>
+  <div class="hairline"></div>
+  <div class="grid-2" style="margin-top:36px; flex:1;">
+    <div class="card card--accent anim anim-1" style="align-items:center; text-align:center; justify-content:center;">
+      <div class="stat-num">0<span class="stat-unit">mSv</span></div>
+      <p style="font-size:var(--type-small); color:var(--accent-ink); margin-top:12px; font-weight:700;">MRIの電離放射線被ばく</p>
+    </div>
+    <div class="card anim anim-2" style="justify-content:center;">
+      <p style="font-size:var(--type-body); line-height:1.6; color:var(--ink); margin:0;">
+        「造影剤のアレルギー・腎症」は放射線被ばくとは別の話。詳細は姉妹記事「CT造影剤アレルギー」「MRI造影剤アレルギー」へ。
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">RadiologyInfo.org（RSNA/ACR）</div>
+    <div class="page-num">19 / 22</div>
+  </div>
+</section>
+
+<!-- SLIDE 20: 答え -->
+<section class="slide slide--soft" data-label="answer" data-screen-label="何回までへの答え">
+  <div class="eyebrow"><span class="num">18</span><span class="en">THE ANSWER</span><span>答え</span></div>
+  <h2 class="s-title">「何回まで？」への答え——不要な検査を避け、必要な検査を怖がらない</h2>
+  <div class="hairline"></div>
+  <div class="grid-2" style="margin-top:32px; flex:1;">
+    <div class="card anim anim-1">
+      <div class="badge badge--navy" style="margin-bottom:12px;">医療被ばくの管理原則</div>
+      <p style="font-size:var(--type-small); line-height:1.6; color:var(--ink); margin:0;">
+        正当化（本当に必要か）と最適化（線量を下げられないか）、診断参考レベル（DRL）で1回ごとに判断する。
+      </p>
+    </div>
+    <div class="card card--accent anim anim-2">
+      <div class="badge badge--accent" style="margin-bottom:12px;">患者説明の言い回し例</div>
+      <p style="font-size:var(--type-small); line-height:1.6; color:var(--ink); margin:0;">
+        「今回の頭部CTは自然放射線の約1年分です」と、日数・年数で伝えると理解されやすい。
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">頭部CTの被ばくは何回までなら大丈夫？</div>
+    <div class="page-num">20 / 22</div>
+  </div>
+</section>
+
+<!-- SLIDE 21: まとめ -->
+<section class="slide" data-label="summary" data-screen-label="まとめ">
+  <div class="eyebrow"><span class="num">19</span><span class="en">SUMMARY</span><span>本日のまとめ</span></div>
+  <h2 class="s-title">本日のまとめ：3つのポイント</h2>
+  <div class="hairline"></div>
+  <div class="flex-col" style="margin-top:30px; flex:1;">
+    <div class="card card--accent anim anim-1" style="padding:22px 30px;">
+      <p style="font-size:var(--type-body); font-weight:700; color:var(--navy); margin:0;">
+        ① 日本で暮らすだけで年 2.1 mSv、頭部CTはその約1年分
+      </p>
+    </div>
+    <div class="card card--accent anim anim-2" style="padding:22px 30px;">
+      <p style="font-size:var(--type-body); font-weight:700; color:var(--navy); margin:0;">
+        ② 症状のしきい値は Gy の桁——届くのは脳血管内治療などの透視手技だけ
+      </p>
+    </div>
+    <div class="card card--accent anim anim-3" style="padding:22px 30px;">
+      <p style="font-size:var(--type-body); font-weight:700; color:var(--navy); margin:0;">
+        ③ 小児CTの発がんリスクは小さいがゼロではなく、1回ごとの正当化がすべての基本
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">頭部CTの被ばくは何回までなら大丈夫？</div>
+    <div class="page-num">21 / 22</div>
+  </div>
+</section>
+
+<!-- SLIDE 22: おわりに -->
+<section class="slide slide--navy" data-label="ending" data-screen-label="おわりに" style="justify-content:center; align-items:center; text-align:center;">
+  <div class="chapter-ghost">THANK YOU</div>
+  <div class="badge badge--accent anim anim-1" style="margin-bottom:24px; font-size:calc(24px * var(--type-mult));">
+    ご視聴ありがとうございました
+  </div>
+  <h2 class="serif anim anim-2" style="font-size:calc(56px * var(--type-mult)); color:#fff; line-height:1.3; margin:0 0 24px;">
+    チャンネル登録・高評価を<br>よろしくお願いいたします
+  </h2>
+  <p class="anim anim-3" style="font-size:calc(26px * var(--type-mult)); color:rgba(255,255,255,.85); line-height:1.6; margin:0;">
+    詳しい解説や参考文献は概要欄・ブログ記事をご覧ください
+  </p>
+  <div class="slide__foot">
+    <div class="ch-title">頭部CTの被ばくは何回までなら大丈夫？</div>
+    <div class="page-num">22 / 22</div>
+  </div>
+</section>
+
+</deck-stage>
+
+<script src="deck-stage.js"></script>
+</body>
+</html>
