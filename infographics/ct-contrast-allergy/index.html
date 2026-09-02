@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>インフォグラフィック - CT造影剤アレルギーと検査前リスクの真実</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 1080px;
+    margin: 0 auto;
+    background: #F4F6F9;
+    font-family: 'Noto Sans JP', sans-serif;
+    color: #1A202C;
+    line-height: 1.6;
+  }
+  .ig {
+    width: 1080px;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+  }
+  /* Header */
+  header {
+    background: linear-gradient(135deg, #011842 0%, #012360 100%);
+    color: #ffffff;
+    padding: 48px 48px 40px;
+    border-bottom: 6px solid #F27E03;
+  }
+  .header-badge {
+    display: inline-block;
+    background: #F27E03;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 800;
+    padding: 6px 16px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+  }
+  .header-title {
+    font-size: 42px;
+    font-weight: 900;
+    line-height: 1.25;
+    margin-bottom: 12px;
+  }
+  .header-title span {
+    color: #F27E03;
+  }
+  .header-sub {
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  /* Content */
+  .main-content {
+    padding: 40px 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+  }
+
+  /* Section Card */
+  .sec-card {
+    background: #ffffff;
+    border: 2px solid #E2E8F0;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(1, 35, 96, 0.05);
+  }
+  .sec-head {
+    background: #EEF3FA;
+    border-bottom: 2px solid #E2E8F0;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .sec-num {
+    background: #012360;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 900;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .sec-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #012360;
+  }
+  .sec-body {
+    padding: 24px;
+  }
+
+  /* Grid layouts */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+
+  /* Stat Box */
+  .stat-box {
+    background: #F8FAFC;
+    border: 1.5px solid #CBD5E1;
+    border-radius: 10px;
+    padding: 18px;
+    text-align: center;
+  }
+  .stat-box.highlight {
+    background: #FFF7ED;
+    border-color: #FDBA74;
+  }
+  .stat-box.danger {
+    background: #FEF2F2;
+    border-color: #FCA5A5;
+  }
+  .stat-label {
+    font-size: 16px;
+    font-weight: 700;
+    color: #475569;
+    margin-bottom: 8px;
+  }
+  .stat-num {
+    font-size: 38px;
+    font-weight: 900;
+    color: #012360;
+    line-height: 1.1;
+  }
+  .stat-num.orange { color: #F27E03; }
+  .stat-num.red { color: #DC2626; }
+  .stat-desc {
+    font-size: 14px;
+    color: #64748B;
+    margin-top: 6px;
+    font-weight: 600;
+  }
+
+  /* Callout */
+  .callout {
+    background: #EFF6FF;
+    border-left: 5px solid #012360;
+    padding: 14px 18px;
+    border-radius: 4px 8px 8px 4px;
+    margin-top: 16px;
+    font-size: 15px;
+    color: #1E3A8A;
+  }
+  .callout strong {
+    color: #012360;
+  }
+
+  /* Compare Card */
+  .cmp-card {
+    border: 1.5px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 16px;
+    background: #F8FAFC;
+  }
+  .cmp-card.good {
+    border-color: #86EFAC;
+    background: #F0FDF4;
+  }
+  .cmp-card.bad {
+    border-color: #FCA5A5;
+    background: #FEF2F2;
+  }
+  .cmp-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+  .cmp-badge.good { background: #16A34A; color: #fff; }
+  .cmp-badge.bad { background: #DC2626; color: #fff; }
+
+  /* Footer */
+  footer {
+    background: #011842;
+    color: #ffffff;
+    padding: 32px 48px;
+    border-top: 4px solid #F27E03;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+  }
+  .footer-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .footer-brand {
+    font-size: 20px;
+    font-weight: 900;
+    color: #F27E03;
+  }
+</style>
+</head>
+<body>
+<div class="ig">
+
+  <!-- Header -->
+  <header>
+    <div class="header-badge">医学エビデンス徹底解説</div>
+    <h1 class="header-title">CT造影剤<span>アレルギー</span>と<br>検査前<span>3大リスク</span>の真実</h1>
+    <div class="header-sub">副作用頻度・「ヨード誤解」・製剤変更で再発12%・腎症・メトホルミン</div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="main-content">
+
+    <!-- Section 1: 頻度 -->
+    <section class="sec-card sec">
+      <div class="sec-head">
+        <div class="sec-num">1</div>
+        <div class="sec-title">副作用の実際の頻度と「熱感」の真実</div>
+      </div>
+      <div class="sec-body">
+        <div class="grid-3">
+          <div class="stat-box">
+            <div class="stat-label">急性副作用 全体頻度</div>
+            <div class="stat-num">0.70<span style="font-size:22px;">%</span></div>
+            <div class="stat-desc">33万人調査（非イオン性）<br>大部分は軽度で自然軽快</div>
+          </div>
+          <div class="stat-box danger">
+            <div class="stat-label">重症アナフィラキシー</div>
+            <div class="stat-num red">0.04<span style="font-size:22px;">%</span></div>
+            <div class="stat-desc">約2,500人に1人の割合<br>救急カート常備で即時対応</div>
+          </div>
+          <div class="stat-box highlight">
+            <div class="stat-label">注射直後の「熱感」</div>
+            <div class="stat-num orange">正常</div>
+            <div class="stat-desc">血管拡張の生理的反応<br>（アレルギーではない）</div>
+          </div>
+        </div>
+        <div class="callout">
+          <strong>【ポイント】</strong> 現在標準の非イオン性造影剤（LOCM）は極めて安全。注射直後に体がカッと熱くなるのは血管拡張による正常な反応であり、数十秒で自然におさまります。
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: 誤解 -->
+    <section class="sec-card sec">
+      <div class="sec-head">
+        <div class="sec-num">2</div>
+        <div class="sec-title">「ヨード・海産物アレルギー」の医学的誤解</div>
+      </div>
+      <div class="sec-body">
+        <div class="grid-2">
+          <div class="cmp-card bad">
+            <div class="cmp-badge bad">医学的誤解（神話）</div>
+            <div style="font-weight:800; font-size:17px; margin-bottom:6px; color:#991B1B;">「ヨードやエビでアレルギーがあるから造影CT禁止？」</div>
+            <div style="font-size:14px; color:#475569;">
+              ・ヨード元素単体へのアレルギーは体内に存在しない（必須元素）<br>
+              ・海産物（甲殻類）アレルギーの原因は筋肉タンパク質（トロポミオシン）
+            </div>
+          </div>
+          <div class="cmp-card good">
+            <div class="cmp-badge good">科学的事実</div>
+            <div style="font-weight:800; font-size:17px; margin-bottom:6px; color:#166534;">海産物アレルギーでも造影CTは可能</div>
+            <div style="font-size:14px; color:#475569;">
+              ・海産物アレルギーは直接の禁忌ではない（アレルギー素因として注意）<br>
+              ・MRIのガドリニウム造影剤との間にも交差反応は一切なし
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: 再検査戦略 -->
+    <section class="sec-card sec">
+      <div class="sec-head">
+        <div class="sec-num">3</div>
+        <div class="sec-title">過去にアレルギーが出たときの再検査戦略</div>
+      </div>
+      <div class="sec-body">
+        <div class="grid-2">
+          <div class="stat-box danger">
+            <div class="stat-label">同一造影剤を再投与した場合</div>
+            <div class="stat-num red">31.0<span style="font-size:22px;">%</span></div>
+            <div class="stat-desc">約3人に1人が再発（漫然再投与は危険）</div>
+          </div>
+          <div class="stat-box highlight">
+            <div class="stat-label">★ 別の造影剤へ「製剤変更」</div>
+            <div class="stat-num orange">12.0<span style="font-size:22px;">%</span></div>
+            <div class="stat-desc">再発率が激減（ESUR 2025 第一推奨）</div>
+          </div>
+        </div>
+        <div class="callout">
+          <strong>【前投薬の位置づけ】</strong> ステロイド等の前投薬は軽度の反応を減らしますが重症アナフィラキシーを完全には防げません。<strong>「製剤変更（Switching）」を最優先</strong>とし、必要に応じて前投薬を併用します。
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: 検査前3大リスク -->
+    <section class="sec-card sec">
+      <div class="sec-head">
+        <div class="sec-num">4</div>
+        <div class="sec-title">アレルギー以外の検査前3大リスク管理</div>
+      </div>
+      <div class="sec-body">
+        <div class="grid-3">
+          <div class="cmp-card good">
+            <div style="font-weight:800; color:#012360; font-size:17px; margin-bottom:6px;">① 腎機能（PC-AKI）</div>
+            <div style="font-size:14px; color:#334155;">
+              <strong>eGFR ≧ 30</strong>：真のリスクは実質ゼロ（輸液不要）。<br>
+              <strong>eGFR &lt; 30</strong>：生理食塩水による予防的輸液を推奨。
+            </div>
+          </div>
+          <div class="cmp-card good">
+            <div style="font-weight:800; color:#012360; font-size:17px; margin-bottom:6px;">② メトホルミン休薬</div>
+            <div style="font-size:14px; color:#334155;">
+              造影剤との直接反応ではなく、万一のAKI時の<strong>乳酸アシドーシス（MALA）蓄積予防</strong>。指示に従い休薬。
+            </div>
+          </div>
+          <div class="cmp-card good">
+            <div style="font-weight:800; color:#012360; font-size:17px; margin-bottom:6px;">③ 甲状腺疾患</div>
+            <div style="font-size:14px; color:#334155;">
+              機能亢進症悪化に注意。<strong>放射性ヨウ素（RI）治療前は1〜2ヶ月の造影回避</strong>が必要（ヨード飽和防止）。
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-left">
+      <div class="footer-brand">医知創造ラボ</div>
+      <div>監修：今村久司（脳神経内科専門医・指導医／総合内科専門医・指導医）</div>
+      <div style="font-size:13px; color:rgba(255,255,255,0.7);">主要出典：Katayama H 1990 / Park HJ 2017 / ESUR 2025 / ACR-NKF Consensus 2020</div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-weight:800;">CT造影検査の安心安全ナビ</div>
+      <div style="font-size:13px; color:rgba(255,255,255,0.7);">https://tools.ichisouzo-lab.com</div>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
