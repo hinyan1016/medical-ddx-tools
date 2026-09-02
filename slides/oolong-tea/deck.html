@@ -1,0 +1,784 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>烏龍茶は本当に体に良い？ 科学的エビデンス徹底検証</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1B3A5C;
+  --navy-ink:#0F243A;
+  --accent:#FF7A59;
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, #ffffff);
+  --accent-line: color-mix(in srgb, var(--accent) 60%, #ffffff);
+  --accent-ink: color-mix(in srgb, var(--accent) 80%, #4a1504);
+  --danger:#DC3323;
+  --danger-soft: color-mix(in srgb, var(--danger) 9%, #ffffff);
+  --bg:#FDFDFD;
+
+  --blue:#2E86C1;
+  --blue-soft:#EBF5FB;
+  --blue-tint:#F4F9FD;
+  --red: var(--danger);
+  --red-soft: var(--danger-soft);
+  --orange: var(--accent);
+  --orange-soft: var(--accent-soft);
+  --green:#27AE60;
+  --green-soft:#EAFAF1;
+  --line:#D8DDE6;
+  --line-soft:#C9D2DF;
+  --bg-muted:#F8F8F8;
+  --bg-alt:#F6F8FA;
+  --navy-line: color-mix(in srgb, var(--navy) 22%, #ffffff);
+
+  --type-mult: 1.38;
+  --type-display: calc(96px * var(--type-mult));
+  --type-title:   calc(80px * var(--type-mult));
+  --type-heading: calc(50px * var(--type-mult));
+  --type-subtitle:calc(38px * var(--type-mult));
+  --type-body:    calc(32px * var(--type-mult));
+  --type-small:   calc(26px * var(--type-mult));
+  --type-label:   calc(24px * var(--type-mult));
+  --type-chapter: calc(180px * var(--type-mult));
+  --type-stat:    calc(100px * var(--type-mult));
+
+  --pad-x: 100px;
+  --pad-top: 48px;
+  --pad-bottom: 100px;
+  --gap-title: 16px;
+  --gap-item: 18px;
+
+  --font-ja: "Noto Sans JP", "BIZ UDPGothic", "Yu Gothic", "Meiryo", sans-serif;
+  --font-serif: var(--font-ja);
+  --grad-navy: linear-gradient(160deg, #1B3A5C 0%, #0F243A 100%);
+}
+.serif{ font-family: var(--font-serif); font-weight:800; letter-spacing:.02em; }
+
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#081426; }
+
+.slide{
+  box-sizing:border-box;
+  display:flex; flex-direction:column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-ja);
+  overflow:hidden;
+  position:relative;
+}
+.slide::after{
+  content:""; position:absolute; left:0; right:0; bottom:0; height:10px;
+  background: var(--navy); pointer-events:none;
+}
+.slide--navy{ background: var(--grad-navy); color: var(--white); }
+.slide--navy::after{ background: var(--accent); }
+.slide--soft{ background: var(--bg-alt); }
+
+.eyebrow{
+  display:flex; align-items:center; gap:16px;
+  font-size: var(--type-label); font-weight:700; color: var(--navy);
+  letter-spacing:.04em;
+}
+.eyebrow::before{
+  content:""; width:10px; height:34px; border-radius:3px;
+  background: linear-gradient(180deg, var(--navy) 0 68%, var(--accent) 68% 100%);
+  flex:none;
+}
+.slide--navy .eyebrow{ color: rgba(255,255,255,.88); }
+.slide--navy .eyebrow::before{ background: linear-gradient(180deg, #fff 0 68%, var(--accent) 68% 100%); }
+
+.s-title{
+  font-size: var(--type-heading); line-height:1.24; color: var(--navy);
+  margin: var(--gap-title) 0 0; font-weight:800; letter-spacing:.01em;
+}
+.slide--navy .s-title{ color:#fff; }
+
+.s-lead{
+  font-size: var(--type-subtitle); line-height:1.45; color: var(--muted);
+  margin: 10px 0 0; font-weight:500;
+}
+.slide--navy .s-lead{ color: rgba(255,255,255,.8); }
+
+.body-area{
+  flex:1; display:flex; flex-direction:column; justify-content:center;
+  margin-top: 24px; min-height:0;
+}
+
+.cols-2{ display:grid; grid-template-columns:1fr 1fr; gap:28px; }
+.cols-3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:22px; }
+
+.card{
+  background:#fff; border:2px solid var(--line); border-radius:14px;
+  padding:24px 28px; box-sizing:border-box; display:flex; flex-direction:column;
+}
+.card--navy{ background: var(--navy); color:#fff; border-color: var(--navy); }
+.card--soft{ background: var(--blue-soft); border-color: var(--blue-tint); }
+.card--orange{ background: var(--accent-soft); border-color: var(--accent-line); }
+.card--green{ background: var(--green-soft); border-color: color-mix(in srgb, var(--green) 40%, #fff); }
+.card--danger{ background: var(--danger-soft); border-color: color-mix(in srgb, var(--danger) 40%, #fff); }
+
+.card-title{
+  font-size: var(--type-subtitle); font-weight:800; color: var(--navy);
+  margin-bottom:12px; display:flex; align-items:center; gap:10px;
+}
+.card--navy .card-title{ color:#fff; }
+
+.card-text{
+  font-size: var(--type-body); line-height:1.55; color:#333; margin:0;
+}
+.card--navy .card-text{ color: rgba(255,255,255,.9); }
+
+.stat-box{
+  text-align:center; padding:20px; background:#fff; border-radius:12px;
+  border:2px solid var(--line);
+}
+.stat-num{
+  font-size: var(--type-stat); font-weight:800; color: var(--navy); line-height:1;
+  font-family: var(--font-en);
+}
+.stat-num--orange{ color: var(--accent); }
+.stat-unit{ font-size: var(--type-subtitle); font-weight:700; margin-left:4px; }
+.stat-label{ font-size: var(--type-body); color:#555; margin-top:10px; font-weight:700; }
+
+.table-simple{ width:100%; border-collapse:collapse; font-size: var(--type-body); }
+.table-simple th{ background: var(--navy); color:#fff; padding:12px 16px; text-align:left; font-weight:700; border:1px solid var(--navy); }
+.table-simple td{ padding:12px 16px; border:1px solid var(--line); background:#fff; color:#333; }
+.table-simple tr:nth-child(even) td{ background: var(--bg-alt); }
+
+.badge{ display:inline-block; padding:4px 12px; border-radius:6px; font-size: var(--type-small); font-weight:700; }
+.badge--green{ background: var(--green); color:#fff; }
+.badge--orange{ background: var(--accent); color:#fff; }
+.badge--red{ background: var(--danger); color:#fff; }
+
+.ref-note{ font-size: var(--type-small); color:#777; margin-top:12px; }
+
+/* 登場アニメーション */
+/* 静止画書き出し（動画用）では登場前の非表示状態が残るため、初期状態から表示する */
+.anim-fade{ opacity:1; transform:none; }
+/* 紺背景カード上の strong は共通CSSの紺色だと見えないので白にする（スライド19対策） */
+.card--navy strong, .slide--navy strong{ color:#fff; }
+[data-cue-active] .anim-fade, .anim-fade.is-active{ opacity:1; transform:translateY(0); }
+</style>
+</head>
+<body>
+
+<deck-stage width="1920" height="1080">
+
+<!-- ==============================================================
+     SLIDE 01: 表紙
+     ============================================================== -->
+<section class="slide slide--navy" data-screen-label="表紙">
+  <div class="eyebrow"><span class="en">MEDICAL EVIDENCE REVIEW</span></div>
+  <div class="body-area" style="justify-content:center;">
+    <div style="font-size:var(--type-label); color:var(--accent); font-weight:800; letter-spacing:.1em; margin-bottom:16px;">
+      【2026年最新メタ解析・RCTで徹底検証】
+    </div>
+    <h1 class="serif" style="font-size:var(--type-title); line-height:1.2; margin:0 0 24px 0; color:#fff;">
+      烏龍茶は本当に体に良い？<br>
+      <span style="color:var(--accent);">脂肪燃焼・血糖・認知症</span>の真実
+    </h1>
+    <p class="s-lead" style="font-size:var(--type-subtitle); max-width:1400px;">
+      「飲むだけで痩せる？」「糖尿病が治る？」― 196万人コホートや代謝試験のエビデンスから、健康効果の真実と3つの注意点を医師が解説
+    </p>
+    <div style="margin-top:36px; font-size:var(--type-body); color:rgba(255,255,255,.8); font-weight:700;">
+      脳神経内科専門医・指導医　今村 久司
+    </div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     SLIDE 02: 結論サマリー
+     ============================================================== -->
+<section class="slide" data-screen-label="結論サマリー">
+  <div class="eyebrow"><span class="num">01</span><span>OVERVIEW</span></div>
+  <h2 class="s-title">烏龍茶の健康効果：3つの医学的結論</h2>
+  <div class="body-area">
+    <div class="cols-3">
+      <div class="card card--soft">
+        <div class="card-title">① 脂肪燃焼の真実</div>
+        <p class="card-text">
+          脂肪酸化（脂肪の利用比率）は微増するが、<strong>総エネルギー消費の増加は小さい</strong>。「飲むだけで激痩せ」は幻想。
+        </p>
+      </div>
+      <div class="card card--green">
+        <div class="card-title">② 心血管・全死亡の低下</div>
+        <p class="card-text">
+          196万人メタ解析でお茶を飲む習慣は<strong>全死亡10%低・心血管死14%低</strong>と良好に関連（1日1.5〜2杯以上）。
+        </p>
+      </div>
+      <div class="card card--orange">
+        <div class="card-title">③ 最大の健康価値</div>
+        <p class="card-text">
+          砂糖入り飲料を<strong>「無糖烏龍茶」へ置き換えること（1日-200kcal）</strong>こそが、最も確実な健康増進効果。
+        </p>
+      </div>
+    </div>
+    <div class="ref-note">※ 烏龍茶は薬ではなく「健康的で継続しやすい無糖飲料」として捉えるのが科学的です。</div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     SLIDE 03: そもそも烏龍茶とは
+     ============================================================== -->
+<section class="slide" data-screen-label="烏龍茶の基礎知識">
+  <div class="eyebrow"><span class="num">02</span><span>TEA BASICS</span></div>
+  <h2 class="s-title">緑茶・烏龍茶・紅茶はすべて「同じ茶葉」から作られる</h2>
+  <div class="body-area" style="margin-top:16px;">
+    <table class="table-simple" style="margin-bottom:12px; font-size:calc(var(--type-body)*0.92);">
+      <thead>
+        <tr>
+          <th style="padding:8px 12px;">お茶の種類</th>
+          <th style="padding:8px 12px;">茶葉の酸化度</th>
+          <th style="padding:8px 12px;">特徴と主要成分</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:8px 12px;"><strong>緑茶</strong>（不発酵茶）</td>
+          <td style="padding:8px 12px;">0%（ほぼ無酸化）</td>
+          <td style="padding:8px 12px;">カテキン（EGCG）がそのまま豊富に残る</td>
+        </tr>
+        <tr style="background:#fff3ef;">
+          <td style="padding:8px 12px;"><strong>烏龍茶</strong>（半発酵茶）</td>
+          <td style="padding:8px 12px;"><strong>20〜70%（部分酸化）</strong></td>
+          <td style="padding:8px 12px;"><strong>カテキンが結合した「重合ポリフェノール」が生成</strong></td>
+        </tr>
+        <tr>
+          <td style="padding:8px 12px;"><strong>紅茶</strong>（完全発酵茶）</td>
+          <td style="padding:8px 12px;">100%（完全酸化）</td>
+          <td style="padding:8px 12px;">テアフラビンなど赤色色素が増加</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="card card--soft" style="padding:14px 20px;">
+      <p class="card-text" style="font-size:calc(var(--type-body)*0.92);">
+        <strong>💡 微生物による発酵ではなく「酵素による酸化反応」:</strong> 茶葉自体の酸化酵素でポリフェノールが重合。酸化の浅い「台湾高山茶」から深焙煎の「武夷岩茶」まで成分組成は多様です。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     SLIDE 04: 烏龍茶の主要成分
+     ============================================================== -->
+<section class="slide" data-screen-label="烏龍茶の主要成分">
+  <div class="eyebrow"><span class="num">03</span><span>BIOACTIVE COMPOUNDS</span></div>
+  <h2 class="s-title">烏龍茶に含まれる4大生理活性物質</h2>
+  <div class="body-area">
+    <div class="cols-2">
+      <div class="card">
+        <div class="card-title">① 烏龍茶重合ポリフェノール</div>
+        <p class="card-text">
+          カテキンが部分酸化で結合した高分子ポリフェノール。消化管でのリパーゼ活性阻害や抗酸化作用が研究されている。
+        </p>
+      </div>
+      <div class="card">
+        <div class="card-title">② 茶カテキン類（EGCG等）</div>
+        <p class="card-text">
+          抗酸化・抗炎症作用を持つ代表的ポリフェノール。緑茶より一部重合しているが、依然として豊富に含有。
+        </p>
+      </div>
+      <div class="card">
+        <div class="card-title">③ カフェイン</div>
+        <p class="card-text">
+          中枢神経刺激・覚醒作用に加え、交感神経を刺激して褐色脂肪組織での熱産生・脂肪代謝を亢進。
+        </p>
+      </div>
+      <div class="card">
+        <div class="card-title">④ テアニン（アミノ酸）</div>
+        <p class="card-text">
+          リラックス作用をもたらすアミノ酸。カフェインによる急激な興奮や覚醒を穏やかに和らげる相乗効果。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     SLIDE 05: 脂肪燃焼試験①
+     ============================================================== -->
+<section class="slide" data-screen-label="脂肪燃焼試験1">
+  <div class="eyebrow"><span class="num">04</span><span>CLINICAL EVIDENCE: METABOLISM 1</span></div>
+  <h2 class="s-title">臨床試験①：エネルギー消費2.9%増・脂肪酸化12%増</h2>
+  <div class="body-area">
+    <div class="cols-2">
+      <div class="stat-box">
+        <div class="stat-num stat-num--orange">+2.9<span class="stat-unit">%</span></div>
+        <div class="stat-label">24時間エネルギー消費量</div>
+        <p style="font-size:var(--type-small); color:#666; margin-top:8px;">水摂取群と比較して有意に増加</p>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num stat-num--orange">+12<span class="stat-unit">%</span></div>
+        <div class="stat-label">24時間脂肪酸化量</div>
+        <p style="font-size:var(--type-small); color:#666; margin-top:8px;">脂肪がエネルギーとして使われる割合が増加</p>
+      </div>
+    </div>
+    <div class="card card--soft" style="margin-top:20px;">
+      <p class="card-text">
+        <strong>米国農務省（Rumpler et al. J Nutr 2001）:</strong> 健康成人男性12名を代謝チャンバー（密閉測定室）に入れ、烏龍茶・カフェイン水・水を比較。烏龍茶はカフェイン単独よりも高い脂肪酸化を示した。
+      </p>
+    </div>
+    <div class="ref-note">出典: Rumpler W, et al. J Nutr. 2001;131(11):2848-52. (PMID: 11694607)</div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     SLIDE 06: 脂肪燃焼試験②
+     ============================================================== -->
+<section class="slide" data-screen-label="脂肪燃焼試験2">
+  <div class="eyebrow"><span class="num">05</span><span>CLINICAL EVIDENCE: METABOLISM 2</span></div>
+  <h2 class="s-title">臨床試験②：2週間摂取で脂肪酸化20%増（筑波大）</h2>
+  <div class="body-area">
+    <div class="cols-2">
+      <div class="card card--green">
+        <div class="card-title">✅ 確認された効果</div>
+        <ul style="font-size:var(--type-body); line-height:1.7; margin:0; padding-left:24px;">
+          <li>2週間の烏龍茶摂取で<strong>脂肪酸化が約20%増加</strong></li>
+          <li>特に<strong>睡眠時の脂肪酸化が有意に亢進</strong></li>
+          <li>睡眠ポリグラフ（PSG）で<strong>睡眠の質は悪化せず</strong></li>
+        </ul>
+      </div>
+      <div class="card card--orange">
+        <div class="card-title">⚠️ 注意すべき限界</div>
+        <ul style="font-size:var(--type-body); line-height:1.7; margin:0; padding-left:24px;">
+          <li><strong>24時間の総エネルギー消費量は不変</strong></li>
+          <li>消費カロリー自体が増えるわけではない</li>
+          <li>「脂肪を使う比率」が上がったに過ぎない</li>
+        </ul>
+      </div>
+    </div>
+    <div class="ref-note" style="margin-top:20px;">
+      出典: Zhang S, Subhash K, et al. Nutrients. 2020;12(12):3671. (PMID: 33260552)
+    </div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     SLIDE 07: 脂肪燃焼の結論
+     ============================================================== -->
+<section class="slide" data-screen-label="脂肪燃焼の結論">
+  <div class="eyebrow"><span class="num">06</span><span>FAT BURNING VERDICT</span></div>
+  <h2 class="s-title">脂肪燃焼の医学的結論：「飲むだけで痩せる」は誤解</h2>
+  <div class="body-area">
+    <div class="cols-2">
+      <div class="card card--danger">
+        <div class="card-title">❌ よくある誤解</div>
+        <p class="card-text">
+          「油っこい食事の後に烏龍茶を飲めば、カロリーが帳消しになる」「烏龍茶をガブ飲みすれば何もしなくても痩せる」
+        </p>
+      </div>
+      <div class="card card--green">
+        <div class="card-title">⭕ 医学的真実</div>
+        <p class="card-text">
+          脂肪の利用比率が少し増えるのは事実だが、<strong>効果量は小さく運動や食事管理の代わりにはならない</strong>。
+        </p>
+      </div>
+    </div>
+    <div class="card card--soft" style="margin-top:20px;">
+      <p class="card-text" style="text-align:center; font-weight:700;">
+        「脂肪燃焼茶」という表現は完全な間違いではないが、<strong>ダイエット薬のような効果を期待するのは禁物</strong>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     SLIDE 08: 血糖値への効果
+     ============================================================== -->
+<section class="slide" data-screen-label="血糖値への効果">
+  <div class="eyebrow"><span class="num">07</span><span>GLUCOSE & DIABETES</span></div>
+  <h2 class="s-title">糖尿病・血糖値への効果：健常者では改善認めず</h2>
+  <div class="body-area">
+    <div class="cols-2">
+      <div class="card">
+        <div class="card-title">糖尿病患者20人（Hosoda 2003）</div>
+        <p class="card-text">
+          1日1.5Lを30日間飲用し、空腹時血糖やフルクトサミンが有意に低下したと報告。
+        </p>
+        <div class="badge badge--orange" style="margin-top:12px; width:fit-content;">小規模・初期研究</div>
+      </div>
+      <div class="card">
+        <div class="card-title">健康成人（Baer 2011）</div>
+        <p class="card-text">
+          厳密な試験で、空腹時血糖・インスリン感受性・ブドウ糖負荷試験に<strong>改善なし</strong>。
+        </p>
+        <div class="badge badge--red" style="margin-top:12px; width:fit-content;">効果否定</div>
+      </div>
+    </div>
+    <div class="card card--orange" style="margin-top:20px;">
+      <p class="card-text">
+        <strong>⚠️ 臨床的教訓:</strong> 烏龍茶に糖尿病治療として確立した効果はありません。糖尿病患者が処方薬を中断して烏龍茶に頼るのは極めて危険です。
+      </p>
+    </div>
+    <div class="ref-note">出典: Hosoda K 2003 (PMID: 12766099) / Baer DJ 2011 (PMID: 20959857)</div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     SLIDE 09: 脂質代謝への効果
+     ============================================================== -->
+<section class="slide" data-screen-label="脂質代謝への効果">
+  <div class="eyebrow"><span class="num">08</span><span>LIPID METABOLISM</span></div>
+  <h2 class="s-title">脂質異常症・コレステロールへの作用</h2>
+  <div class="body-area">
+    <div class="cols-2">
+      <div class="card">
+        <div class="card-title">肥満者での報告（He 2009）</div>
+        <p class="card-text">
+          肥満者102名に6週間の烏龍茶摂取を行い、中性脂肪・体重・皮下脂肪面積の有意な減少を報告。
+        </p>
+      </div>
+      <div class="card">
+        <div class="card-title">健常者高脂肪食試験（Perkin 2023）</div>
+        <p class="card-text">
+          健康成人50名に烏龍茶重合ポリフェノールを単回投与した二重盲検試験では、食後中性脂肪に明確な改善なし。
+        </p>
+      </div>
+    </div>
+    <div class="card card--soft" style="margin-top:20px;">
+      <p class="card-text">
+        <strong>📌 評価:</strong> 脂質代謝に一定の関与はあるものの、LDLコレステロールや中性脂肪を治療域まで確実に下げる治療法とは言えません。
+      </p>
+    </div>
+    <div class="ref-note">出典: He RR 2009 (PMID: 19271168) / Perkin OJ 2023 (PMID: 37080462)</div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     SLIDE 10: 心血管疾患・全死亡リスク
+     ============================================================== -->
+<section class="slide" data-screen-label="心血管死亡リスク">
+  <div class="eyebrow"><span class="num">09</span><span>CARDIOVASCULAR MORTALITY</span></div>
+  <h2 class="s-title">196万人メタ解析：心血管死14%減・全死亡10%減</h2>
+  <div class="body-area">
+    <div class="cols-2">
+      <div class="stat-box">
+        <div class="stat-num stat-num--orange">-10<span class="stat-unit">%</span></div>
+        <div class="stat-label">全死亡リスク低下</div>
+        <p style="font-size:var(--type-small); color:#666; margin-top:8px;">RR 0.90 (95% CI 0.86-0.94)</p>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num stat-num--orange">-14<span class="stat-unit">%</span></div>
+        <div class="stat-label">心血管疾患死亡リスク低下</div>
+        <p style="font-size:var(--type-small); color:#666; margin-top:8px;">RR 0.86 (95% CI 0.80-0.92)</p>
+      </div>
+    </div>
+    <div class="card card--green" style="margin-top:20px;">
+      <p class="card-text">
+        <strong>38コホート（196万人）の用量反応メタ解析（Kim et al. 2024）:</strong> 1日1.5〜2杯程度のお茶を飲む習慣から良好なリスク低下が認められる（緑茶・烏龍茶・紅茶を含む茶全般のデータ）。
+      </p>
+    </div>
+    <div class="ref-note">出典: Kim Y, Je Y. Epidemiol Health. 2024;46:e2024056. (PMID: 38938012)</div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     SLIDE 11: 認知症・認知機能
+     ============================================================== -->
+<section class="slide" data-screen-label="認知症予防">
+  <div class="eyebrow"><span class="num">10</span><span>COGNITIVE HEALTH</span></div>
+  <h2 class="s-title">認知機能・認知症予防：習慣的飲用とリスク低下</h2>
+  <div class="body-area">
+    <div class="cols-2">
+      <div class="card card--green">
+        <div class="card-title">最新メタ解析（Zhu 2024 / Quan 2024）</div>
+        <p class="card-text">
+          適量のお茶摂取（1日2〜3杯）は<strong>軽度認知障害（MCI）や認知症のリスク低減</strong>と有意に関連。
+        </p>
+        <div class="badge badge--green" style="margin-top:12px; width:fit-content;">良好な相関（エビデンス質：低〜中）</div>
+      </div>
+      <div class="card">
+        <div class="card-title">考えられる3大メカニズム</div>
+        <ul style="font-size:var(--type-body); line-height:1.6; margin:0; padding-left:20px;">
+          <li>抗酸化作用による脳血管内皮の保護</li>
+          <li>テアニン＋カフェインの注意力・記憶維持</li>
+          <li>アミロイドβ凝集抑制（基礎研究）</li>
+        </ul>
+      </div>
+    </div>
+    <div class="ref-note" style="margin-top:20px;">
+      出典: Zhu Y 2024 (PMID: 37523229) / Quan W 2024 (PMID: 36579429)
+    </div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     SLIDE 12: がん予防効果の真実
+     ============================================================== -->
+<section class="slide" data-screen-label="がん予防の真実">
+  <div class="eyebrow"><span class="num">11</span><span>CANCER PREVENTION</span></div>
+  <h2 class="s-title">がん予防効果の真実：人体メタ解析では差なし</h2>
+  <div class="body-area">
+    <div class="cols-2">
+      <div class="card">
+        <div class="card-title">🧫 試験管・動物実験</div>
+        <p class="card-text">
+          カテキンや重合ポリフェノールが活性酸素を除去し、がん細胞増殖を抑制する結果が多数報告。
+        </p>
+      </div>
+      <div class="card card--danger">
+        <div class="card-title">👥 人体を対象としたメタ解析</div>
+        <p class="card-text">
+          196万人メタ解析において、<strong>がん死亡リスクについて摂取群と非摂取群で有意差なし</strong>（RR 0.98）。
+        </p>
+      </div>
+    </div>
+    <div class="card card--soft" style="margin-top:20px;">
+      <p class="card-text">
+        <strong>📌 結論:</strong> 「抗酸化物質だからがんを防げる」と単純には言えません。烏龍茶にがん予防の明確な根拠は現時点ではありません。
+      </p>
+    </div>
+    <div class="ref-note">出典: Kim Y, Je Y. Epidemiol Health. 2024 (PMID: 38938012)</div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     SLIDE 13: 注意点① 鉄の吸収阻害
+     ============================================================== -->
+<section class="slide" data-screen-label="注意点1：鉄吸収阻害">
+  <div class="eyebrow"><span class="num">12</span><span>CAUTION 1: IRON ABSORPTION</span></div>
+  <h2 class="s-title">注意点①：ポリフェノールが「非ヘム鉄」の吸収を阻害</h2>
+  <div class="body-area">
+    <div class="cols-2">
+      <div class="card card--danger">
+        <div class="card-title">⚠️ 鉄吸収阻害の仕組み</div>
+        <p class="card-text">
+          茶ポリフェノール（タンニン）が食事中の植物性「非ヘム鉄」と結合し、不溶性の複合体を作って吸収をブロック。
+        </p>
+      </div>
+      <div class="card card--orange">
+        <div class="card-title">特に注意が必要な人</div>
+        <ul style="font-size:var(--type-body); line-height:1.7; margin:0; padding-left:24px;">
+          <li>鉄欠乏性貧血と診断されている方</li>
+          <li>月経量の多い女性・妊娠中の方</li>
+          <li>鉄剤（経口鉄薬）を内服中の方</li>
+          <li>植物性食品中心（ベジタリアン）の方</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     SLIDE 14: 鉄吸収の対策
+     ============================================================== -->
+<section class="slide" data-screen-label="鉄吸収の対策">
+  <div class="eyebrow"><span class="num">13</span><span>IRON STRATEGY</span></div>
+  <h2 class="s-title">鉄吸収対策：食事から「1時間あける」だけで解決</h2>
+  <div class="body-area">
+    <div class="cols-2">
+      <div class="stat-box" style="border-color:var(--danger);">
+        <div class="card-title" style="color:var(--danger); justify-content:center;">食事と同時摂取</div>
+        <div class="stat-num" style="color:var(--danger);">-60<span class="stat-unit">%</span></div>
+        <div class="stat-label">鉄吸収が大幅に阻害</div>
+      </div>
+      <div class="stat-box" style="border-color:var(--green);">
+        <div class="card-title" style="color:var(--green); justify-content:center;">1時間あけて摂取</div>
+        <div class="stat-num" style="color:var(--green);">阻害大幅減</div>
+        <div class="stat-label">鉄吸収への悪影響が約1/3に激減</div>
+      </div>
+    </div>
+    <div class="card card--green" style="margin-top:20px;">
+      <p class="card-text">
+        <strong>💡 実践ルール:</strong> 食事中や食直後は「水や麦茶」を選び、烏龍茶は<strong>食後1時間以上あけてから飲む</strong>のが理想的です。
+      </p>
+    </div>
+    <div class="ref-note">出典: Ahmad Fuzi SF, et al. Am J Clin Nutr. 2017;106(6):1413-21. (PMID: 29046302)</div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     SLIDE 15: 注意点② カフェイン
+     ============================================================== -->
+<section class="slide" data-screen-label="注意点2：カフェイン">
+  <div class="eyebrow"><span class="num">14</span><span>CAUTION 2: CAFFEINE</span></div>
+  <h2 class="s-title">注意点②：抽出温度・時間によるカフェインの変動</h2>
+  <div class="body-area">
+    <div class="cols-2">
+      <div class="card">
+        <div class="card-title">カフェイン量が増える条件</div>
+        <ul style="font-size:var(--type-body); line-height:1.7; margin:0; padding-left:24px;">
+          <li>熱湯（高温）で抽出する</li>
+          <li>抽出（浸出）時間が長い</li>
+          <li>茶葉の量が多い</li>
+        </ul>
+      </div>
+      <div class="card card--orange">
+        <div class="card-title">飲み過ぎに注意すべき人</div>
+        <ul style="font-size:var(--type-body); line-height:1.7; margin:0; padding-left:24px;">
+          <li>不眠気味・寝付きが悪い方（夕方以降×）</li>
+          <li>動悸・カフェイン過敏症の方</li>
+          <li>妊娠中・授乳中の方</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card card--soft" style="margin-top:20px;">
+      <p class="card-text">
+        夜間の水分補給にはノンカフェインの麦茶や水を選び、烏龍茶は日中の楽しみにするのが賢明です。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     SLIDE 16: 注意点③ 飲用温度の罠
+     ============================================================== -->
+<section class="slide" data-screen-label="注意点3：飲用温度">
+  <div class="eyebrow"><span class="num">15</span><span>CAUTION 3: TEMPERATURE</span></div>
+  <h2 class="s-title">注意点③：65℃以上の「熱すぎるお茶」は食道がんリスク</h2>
+  <div class="body-area">
+    <div class="card card--danger">
+      <div class="card-title">WHO/IARC 評価：Group 2A（おそらく発がん性あり）</div>
+      <p class="card-text" style="font-size:calc(var(--type-body) * 1.05);">
+        65℃を超える非常に熱い飲み物を常習的に飲むことは、食道がん（扁平上皮がん）のリスク上昇と関連。
+      </p>
+    </div>
+    <div class="cols-2" style="margin-top:20px;">
+      <div class="card">
+        <div class="card-title">問題の本質</div>
+        <p class="card-text">烏龍茶の成分ではなく<strong>「物理的な熱損傷」</strong>。食道粘膜の火傷と慢性炎症が発がんを促進。</p>
+      </div>
+      <div class="card card--green">
+        <div class="card-title">対策</div>
+        <p class="card-text">淹れたての熱湯を急いで飲まない。<strong>少し冷まして「適温（ぬるめ）」で楽しむ</strong>。</p>
+      </div>
+    </div>
+    <div class="ref-note">出典: Loomis D, et al. Lancet Oncol. 2016;17(7):877-8. (PMID: 27318851)</div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     SLIDE 17: エビデンス総括早見表
+     ============================================================== -->
+<section class="slide" data-screen-label="エビデンス総括">
+  <div class="eyebrow"><span class="num">16</span><span>EVIDENCE SUMMARY</span></div>
+  <h2 class="s-title">烏龍茶の健康効果：科学的エビデンス総括</h2>
+  <div class="body-area" style="margin-top:14px;">
+    <table class="table-simple" style="font-size:calc(var(--type-body)*0.84);">
+      <thead>
+        <tr>
+          <th style="padding:6px 12px;">健康効果・項目</th>
+          <th style="padding:6px 12px; text-align:center;">判定</th>
+          <th style="padding:6px 12px;">科学的根拠の現状</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:5px 12px;"><strong>脂肪酸化の促進</strong></td>
+          <td style="padding:5px 12px; text-align:center;"><span class="badge badge--green" style="padding:2px 8px; font-size:calc(var(--type-small)*0.85);">〇 あり</span></td>
+          <td style="padding:5px 12px;">脂肪利用比率は微増（ただし総消費エネルギーはほぼ不変）</td>
+        </tr>
+        <tr>
+          <td style="padding:5px 12px;"><strong>体重減少（ダイエット）</strong></td>
+          <td style="padding:5px 12px; text-align:center;"><span class="badge badge--orange" style="padding:2px 8px; font-size:calc(var(--type-small)*0.85);">△ 小さい</span></td>
+          <td style="padding:5px 12px;">飲むだけで激痩せはしない。食事・運動が主軸</td>
+        </tr>
+        <tr>
+          <td style="padding:5px 12px;"><strong>血糖値・糖尿病改善</strong></td>
+          <td style="padding:5px 12px; text-align:center;"><span class="badge badge--orange" style="padding:2px 8px; font-size:calc(var(--type-small)*0.85);">△ 不確実</span></td>
+          <td style="padding:5px 12px;">患者で低下報告あるが健常者で不変。薬の代用不可</td>
+        </tr>
+        <tr>
+          <td style="padding:5px 12px;"><strong>心血管死・全死亡低下</strong></td>
+          <td style="padding:5px 12px; text-align:center;"><span class="badge badge--green" style="padding:2px 8px; font-size:calc(var(--type-small)*0.85);">〇 良好</span></td>
+          <td style="padding:5px 12px;">196万人メタ解析で全死亡10%減・心血管死14%減</td>
+        </tr>
+        <tr>
+          <td style="padding:5px 12px;"><strong>認知症・認知機能維持</strong></td>
+          <td style="padding:5px 12px; text-align:center;"><span class="badge badge--green" style="padding:2px 8px; font-size:calc(var(--type-small)*0.85);">〇 関連</span></td>
+          <td style="padding:5px 12px;">観察研究でお茶飲用群は認知障害リスク低下傾向</td>
+        </tr>
+        <tr>
+          <td style="padding:5px 12px;"><strong>がん予防</strong></td>
+          <td style="padding:5px 12px; text-align:center;"><span class="badge badge--red" style="padding:2px 8px; font-size:calc(var(--type-small)*0.85);">× 根拠なし</span></td>
+          <td style="padding:5px 12px;">人体メタ解析ではがん死亡の有意な低下は認められず</td>
+        </tr>
+        <tr>
+          <td style="padding:5px 12px;"><strong>鉄吸収阻害</strong></td>
+          <td style="padding:5px 12px; text-align:center;"><span class="badge badge--orange" style="padding:2px 8px; font-size:calc(var(--type-small)*0.85);">▲ 注意</span></td>
+          <td style="padding:5px 12px;">非ヘム鉄吸収を阻害。食事から1時間あければ大幅軽減</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ==============================================================
+     SLIDE 18: 最大の健康価値
+     ============================================================== -->
+<section class="slide" data-screen-label="最大の健康価値">
+  <div class="eyebrow"><span class="num">17</span><span>CORE VALUE</span></div>
+  <h2 class="s-title">最大の健康効果は「何を飲まなくなるか」にある</h2>
+  <div class="body-area">
+    <div class="cols-2">
+      <div class="stat-box" style="border-color:var(--accent);">
+        <div class="card-title" style="color:var(--accent); justify-content:center;">砂糖入り飲料 → 無糖烏龍茶</div>
+        <div class="stat-num stat-num--orange">-200<span class="stat-unit">kcal / 日</span></div>
+        <div class="stat-label">1日500mLの置き換え効果</div>
+      </div>
+      <div class="card card--green">
+        <div class="card-title">年間で体脂肪 約7〜10kg相当！</div>
+        <p class="card-text">
+          「烏龍茶の成分が脂肪を溶かす」のではなく、<strong>「日常の糖分摂取をカットできること」</strong>こそが最も確実で絶大な健康効果です。
+        </p>
+      </div>
+    </div>
+    <div class="card card--soft" style="margin-top:20px;">
+      <p class="card-text" style="text-align:center; font-weight:700;">
+        日常の水分補給を「無糖のお茶や水」にする習慣が、何よりの生活習慣病予防になります。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     SLIDE 19: まとめ
+     ============================================================== -->
+<section class="slide slide--navy" data-screen-label="まとめ">
+  <div class="eyebrow"><span class="en">TAKE HOME MESSAGE</span></div>
+  <div class="body-area" style="justify-content:center;">
+    <h2 class="serif" style="font-size:var(--type-heading); color:#fff; margin-bottom:28px;">
+      まとめ：美味しく適温で楽しむ「無糖の健康習慣」
+    </h2>
+    <div class="card card--navy" style="border:2px solid rgba(255,255,255,.3); padding:28px;">
+      <ul style="font-size:var(--type-body); line-height:1.8; margin:0; padding-left:24px;">
+        <li>烏龍茶は脂肪酸化を助け、心血管死低下と良好に関連する<strong>健康的な無糖飲料</strong></li>
+        <li>ただし「飲むだけで痩せる」「病気が治る」特効薬ではない</li>
+        <li><strong>貧血の方は食後1時間あけ、65℃以上の熱湯を避けて適温で飲む</strong></li>
+        <li>緑茶や紅茶も含め、<strong>自分が美味しいと思えるお茶を無糖で楽しむ</strong>のが最良の付き合い方</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ==============================================================
+     SLIDE 20: 参考文献・エンドカード
+     ============================================================== -->
+<section class="slide slide--soft" data-screen-label="参考文献">
+  <div class="eyebrow"><span class="num">19</span><span>REFERENCES</span></div>
+  <h2 class="s-title" style="font-size:calc(var(--type-heading) * 0.9); margin-bottom:12px;">主要参考文献（PubMed検証済み）</h2>
+  <div class="body-area" style="font-size:calc(var(--type-small) * 0.88); line-height:1.6; color:#444; margin-top:8px;">
+    <ul style="margin:0; padding-left:24px;">
+      <li>Rumpler W, et al. <em>J Nutr</em>. 2001 (脂肪酸化・代謝)</li>
+      <li>Zhang S, et al. <em>Nutrients</em>. 2020 (筑波大・2週間試験)</li>
+      <li>Kim Y, et al. <em>Epidemiol Health</em>. 2024 (196万人メタ解析)</li>
+      <li>Ahmad Fuzi SF, et al. <em>Am J Clin Nutr</em>. 2017 (鉄吸収間隔)</li>
+      <li>Loomis D, et al. <em>Lancet Oncol</em>. 2016 (IARC 飲用温度)</li>
+    </ul>
+    <p style="font-size:calc(var(--type-small)*0.82); color:#666; margin-top:10px;">※ 全11編の完全な書誌情報・DOIリンクは概要欄に掲載しています。</p>
+    <div style="margin-top:20px; text-align:center; font-weight:700; color:var(--navy); font-size:var(--type-body);">
+      チャンネル登録・高評価よろしくお願いします！
+    </div>
+  </div>
+</section>
+
+</deck-stage>
+
+<script src="deck-stage.js"></script>
+</body>
+</html>

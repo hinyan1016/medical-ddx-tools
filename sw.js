@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v152';
+const CACHE_NAME = 'ddx-tools-v153';
 const ASSETS = [
   './slides/imaging-radiation-exposure/index.html',
   './slides/imaging-radiation-exposure/deck.html',
@@ -161,6 +161,9 @@ const ASSETS = [
   './infographics/mri-contrast-allergy/index.html',
   './infographics/mri-contrast-allergy/infographic.png',
   './infographics/mri-contrast-allergy/thumb.png',
+  './infographics/oolong-tea/index.html',
+  './infographics/oolong-tea/infographic.png',
+  './infographics/oolong-tea/thumb.png',
   './infographics/mus-management/index.html',
   './infographics/neuro-breakthroughs-2025-2026/index.html',
   './infographics/ninchisho-koza-toketsu/index.html',
