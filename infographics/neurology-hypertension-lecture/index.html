@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>インフォグラフィック：神経内科医が見ている血圧の真実</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+
+  :root {
+    --navy: #1B3A5C;
+    --navy-dark: #10243A;
+    --blue: #2C5AA0;
+    --blue-light: #EBF2FA;
+    --accent: #E65100;
+    --accent-light: #FFF3E0;
+    --teal: #00796B;
+    --teal-light: #E0F2F1;
+    --text: #222222;
+    --text-muted: #555555;
+    --bg: #F0F4F8;
+    --card-bg: #FFFFFF;
+    --border: #D0DCE5;
+    --radius: 14px;
+    --shadow: 0 4px 16px rgba(27,58,92,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans JP', 'BIZ UDPGothic', 'Hiragino Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 24px 12px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .infographic-container {
+    max-width: 1080px;
+    width: 100%;
+    background: var(--card-bg);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(27,58,92,0.15);
+    border: 1px solid var(--border);
+  }
+
+  /* ヘッダー */
+  header {
+    background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 60%, var(--blue) 100%);
+    color: #FFFFFF;
+    padding: 44px 36px 36px;
+    text-align: center;
+    position: relative;
+  }
+  .header-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.35);
+    padding: 6px 18px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    margin-bottom: 14px;
+    color: #EBF2FA;
+  }
+  header h1 {
+    font-size: 32px;
+    font-weight: 900;
+    line-height: 1.35;
+    margin-bottom: 14px;
+    letter-spacing: 0.02em;
+  }
+  header p {
+    font-size: 16px;
+    font-weight: 500;
+    opacity: 0.92;
+    max-width: 860px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .content-body {
+    padding: 36px 32px;
+  }
+
+  /* 共通セクション */
+  section {
+    margin-bottom: 34px;
+    background: #FFFFFF;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 26px 24px;
+    box-shadow: var(--shadow);
+  }
+
+  .sec-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--blue-light);
+  }
+  .sec-num {
+    background: var(--navy);
+    color: #FFFFFF;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 900;
+    flex-shrink: 0;
+  }
+  .sec-title {
+    font-size: 21px;
+    font-weight: 800;
+    color: var(--navy);
+  }
+
+  /* グリッドレイアウト */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .sub-card {
+    background: var(--blue-light);
+    border: 1px solid #D2E3F8;
+    border-radius: 10px;
+    padding: 18px 16px;
+  }
+  .sub-card.accent {
+    background: var(--accent-light);
+    border-color: #FFE0B2;
+  }
+  .sub-card.teal {
+    background: var(--teal-light);
+    border-color: #B2DFDB;
+  }
+
+  .card-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--blue);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .sub-card.accent .card-label { color: var(--accent); }
+  .sub-card.teal .card-label { color: var(--teal); }
+
+  .card-main-stat {
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--navy);
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .sub-card.accent .card-main-stat { color: #D84315; }
+  .sub-card.teal .card-main-stat { color: #004D40; }
+
+  .card-desc {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  /* 対比ボックス */
+  .vs-box {
+    display: flex;
+    gap: 16px;
+    margin-top: 14px;
+  }
+  .vs-col {
+    flex: 1;
+    border-radius: 10px;
+    padding: 18px;
+    border: 2px solid;
+  }
+  .vs-col.acute {
+    background: #FFF5F5;
+    border-color: #FFCDD2;
+  }
+  .vs-col.chronic {
+    background: #F0F9FF;
+    border-color: #BAE6FD;
+  }
+  .vs-title {
+    font-size: 17px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .vs-col.acute .vs-title { color: #C62828; }
+  .vs-col.chronic .vs-title { color: #0284C7; }
+
+  /* パラドックス解説 */
+  .paradox-box {
+    background: linear-gradient(135deg, #FAF5FF 0%, #F3E8FF 100%);
+    border: 1px solid #E9D5FF;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 12px;
+  }
+  .paradox-flow {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 12px;
+    margin-top: 12px;
+    text-align: center;
+  }
+  .paradox-step {
+    flex: 1;
+    background: #FFFFFF;
+    border-radius: 8px;
+    padding: 14px 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+  .paradox-step strong {
+    display: block;
+    font-size: 16px;
+    color: #6B21A8;
+    margin-bottom: 4px;
+  }
+  .paradox-arrow {
+    font-size: 20px;
+    color: #9333EA;
+    font-weight: 900;
+  }
+
+  /* テイクホーム */
+  .takehome-box {
+    background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%);
+    color: #FFFFFF;
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 12px;
+  }
+  .takehome-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .takehome-item:last-child { margin-bottom: 0; }
+  .takehome-num {
+    background: #F59E0B;
+    color: #000000;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 13px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .takehome-text {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  .takehome-text strong {
+    color: #FCD34D;
+  }
+
+  /* フッター */
+  footer {
+    background: #F8FAFC;
+    border-top: 1px solid var(--border);
+    padding: 22px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  footer .credit-author {
+    font-weight: 700;
+    color: var(--navy);
+  }
+  footer .credit-links {
+    font-size: 12px;
+  }
+
+  @media (max-width: 768px) {
+    header h1 { font-size: 24px; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .vs-box { flex-direction: column; }
+    .paradox-flow { flex-direction: column; }
+    .paradox-arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+
+<div class="infographic-container">
+  <header>
+    <div class="header-badge">JSH2025・エビデンス徹底図解</div>
+    <h1>神経内科医が見ている血圧の真実</h1>
+    <p>脳を守るために下げる血圧と、脳や神経の病気によって乱される血圧。<br>
+    知っておくべき2つの視点をわかりやすく整理しました。</p>
+  </header>
+
+  <div class="content-body">
+    <!-- セクション 1: なぜ神経内科で血圧なのか -->
+    <section>
+      <div class="sec-header">
+        <div class="sec-num">1</div>
+        <div class="sec-title">なぜ神経の医師が「血圧」にこだわるのか？</div>
+      </div>
+      <div class="grid-2">
+        <div class="sub-card">
+          <div class="card-label">脳心血管病の死亡原因</div>
+          <div class="card-main-stat">第 1 位</div>
+          <div class="card-desc">数ある生活習慣病の中で、日本人が脳卒中や心筋梗塞で命を落とす最大の寄与因子が高血圧（特に脳内出血で絶大）。</div>
+        </div>
+        <div class="sub-card teal">
+          <div class="card-label">認知症の予防可能性</div>
+          <div class="card-main-stat">14 因子中 1つ</div>
+          <div class="card-desc">中年期の高血圧は晩年の認知症リスクを増加。中年期から適正に管理することで脳の血管性変化を抑制。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- セクション 2: 測り方で基準が違う -->
+    <section>
+      <div class="sec-header">
+        <div class="sec-num">2</div>
+        <div class="sec-title">測り方でこんなに違う！血圧の正しい基準値</div>
+      </div>
+      <div class="grid-3">
+        <div class="sub-card">
+          <div class="card-label">診察室血圧</div>
+          <div class="card-main-stat">140 / 90</div>
+          <div class="card-desc">病院では緊張して高めに出やすいため、基準はやや高めの140/90 mmHg以上。</div>
+        </div>
+        <div class="sub-card">
+          <div class="card-label">家庭血圧（リラックス時）</div>
+          <div class="card-main-stat">135 / 85</div>
+          <div class="card-desc">普段の生活での血圧。診察室より5mmHg低く判定。ガイドラインでは家庭血圧を優先。</div>
+        </div>
+        <div class="sub-card accent">
+          <div class="card-label">夜間血圧（睡眠中）</div>
+          <div class="card-main-stat">120 / 70</div>
+          <div class="card-desc">寝ている間は下がるのが正常。120/70以上は夜間高血圧として脳心血管リスクが倍増。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- セクション 3: 急性期 vs 慢性期 -->
+    <section>
+      <div class="sec-header">
+        <div class="sec-num">3</div>
+        <div class="sec-title">脳卒中の血圧管理：急性期と慢性期でルールが激変！</div>
+      </div>
+      <div class="vs-box">
+        <div class="vs-col acute">
+          <div class="vs-title">⚠️ 急性期（発症直後）</div>
+          <p class="card-desc"><strong>むやみに下げてはいけない！</strong><br>
+          脳の血管が詰まりかけた時、高血圧は脳血流を保つ生体防御反応。急激に下げると梗塞巣が拡大する恐れがあります。</p>
+        </div>
+        <div class="vs-col chronic">
+          <div class="vs-title">🛡️ 慢性期（再発予防）</div>
+          <p class="card-desc"><strong>しっかり 130/80 未満を目指す！</strong><br>
+          再発を防ぐためには厳格な管理が不可欠。ただし、ふらつきや脱水、立ちくらみが出ないよう慎重にコントロールします。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- セクション 4: 起立性低血圧と臥位高血圧 -->
+    <section>
+      <div class="sec-header">
+        <div class="sec-num">4</div>
+        <div class="sec-title">立つと下がり、寝ると上がる？「血圧のパラドックス」</div>
+      </div>
+      <div class="paradox-box">
+        <p class="card-desc">パーキンソン病や多系統萎縮症などの神経疾患では、自律神経の乱れにより「起き上がると急激に下がり、横になると異常に上がる」現象が同じ人に起こります。</p>
+        <div class="paradox-flow">
+          <div class="paradox-step">
+            <strong>朝・起き上がった時</strong>
+            <span>起立性低血圧<br>（めまい・立ちくらみ・失神リスク）</span>
+          </div>
+          <div class="paradox-arrow">⇄</div>
+          <div class="paradox-step">
+            <strong>夜・ベッドで寝た時</strong>
+            <span>臥位高血圧・夜間高血圧<br>（心臓や脳への過度な負担）</span>
+          </div>
+        </div>
+        <p class="card-desc" style="margin-top:12px; font-size:13px; color:#555;">※医師は「下げる薬」をただ増やすのではなく、飲む時間や姿勢（頭を少し高くして寝る等）を工夫して治療します。</p>
+      </div>
+    </section>
+
+    <!-- セクション 5: 3つのテイクホームメッセージ -->
+    <section style="background:#FAFBFD;">
+      <div class="sec-header">
+        <div class="sec-num">5</div>
+        <div class="sec-title">まとめ：今日から持ち帰る3つの約束</div>
+      </div>
+      <div class="takehome-box">
+        <div class="takehome-item">
+          <div class="takehome-num">1</div>
+          <div class="takehome-text">高血圧は<strong>脳心血管死の最大原因</strong>であり、<strong>認知症の予防可能因子</strong>。神経内科の外来は「血圧を下げる場」でもある。</div>
+        </div>
+        <div class="takehome-item">
+          <div class="takehome-num">2</div>
+          <div class="takehome-text">脳は場面によって求める血圧が変わる。<strong>急性期は下げすぎず、慢性期は130/80未満</strong>。夜間や起立時の変動も大切。</div>
+        </div>
+        <div class="takehome-item">
+          <div class="takehome-num">3</div>
+          <div class="takehome-text">神経疾患そのものが血圧を乱す。下げる薬だけでなく<strong>「いつ・どの姿勢の血圧か」</strong>を見極める。</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <div class="credit-author">監修：今村 久司（いまむら ひさじ / 脳神経内科専門医・指導医 / 総合内科専門医・指導医）</div>
+    <div class="credit-links">医知創造ラボ（https://blog.ichisouzo-lab.com）</div>
+  </footer>
+</div>
+
+</body>
+</html>
