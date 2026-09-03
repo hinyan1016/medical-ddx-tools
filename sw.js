@@ -1,5 +1,10 @@
-const CACHE_NAME = 'ddx-tools-v154';
+const CACHE_NAME = 'ddx-tools-v155';
 const ASSETS = [
+  './slides/neurology-hypertension-lecture/index.html',
+  './slides/neurology-hypertension-lecture/slides.pdf',
+  './slides/neurology-hypertension-lecture/slide-01.png',
+  './infographics/neurology-hypertension-lecture/index.html',
+  './infographics/neurology-hypertension-lecture/infographic.png',
   './slides/imaging-radiation-exposure/index.html',
   './slides/imaging-radiation-exposure/deck.html',
   './slides/imaging-radiation-exposure/slides.pdf',
