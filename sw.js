@@ -1,5 +1,11 @@
-const CACHE_NAME = 'ddx-tools-v155';
+const CACHE_NAME = 'ddx-tools-v156';
 const ASSETS = [
+  './slides/hyperreflexia-in-recovery/index.html',
+  './slides/hyperreflexia-in-recovery/slides.pdf',
+  './slides/hyperreflexia-in-recovery/slide-01.png',
+  './infographics/hyperreflexia-in-recovery/index.html',
+  './infographics/hyperreflexia-in-recovery/infographic.png',
+  './infographics/hyperreflexia-in-recovery/thumb.png',
   './slides/neurology-hypertension-lecture/index.html',
   './slides/neurology-hypertension-lecture/slides.pdf',
   './slides/neurology-hypertension-lecture/slide-01.png',

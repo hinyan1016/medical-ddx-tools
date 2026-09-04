@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>インフォグラフィック - 反射が消えたあとに亢進したら何を疑うか</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 1080px;
+    margin: 0 auto;
+    background: #F4F6F9;
+    font-family: 'Noto Sans JP', sans-serif;
+    color: #1A202C;
+    line-height: 1.7;
+    word-break: auto-phrase;
+  }
+  .ig {
+    width: 1080px;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: linear-gradient(135deg, #011842 0%, #012360 100%);
+    color: #ffffff;
+    padding: 48px 48px 40px;
+    border-bottom: 6px solid #F27E03;
+  }
+  .header-badge {
+    display: inline-block;
+    background: #F27E03;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 800;
+    padding: 6px 16px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+  }
+  .header-title {
+    font-size: 36px;
+    font-weight: 900;
+    line-height: 1.4;
+    margin-bottom: 14px;
+  }
+  .header-title span { color: #F27E03; }
+  .header-sub {
+    font-size: 19px;
+    color: rgba(255, 255, 255, 0.92);
+    line-height: 1.7;
+  }
+
+  .main-content {
+    padding: 40px 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .sec-card {
+    background: #ffffff;
+    border: 2px solid #E2E8F0;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(1, 35, 96, 0.05);
+  }
+  .sec-head {
+    background: #EEF3FA;
+    border-bottom: 2px solid #E2E8F0;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .sec-num {
+    background: #012360;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 900;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .sec-title { font-size: 22px; font-weight: 800; color: #012360; }
+  .sec-body { padding: 24px; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  .stat-box {
+    background: #F8FAFC;
+    border: 1.5px solid #CBD5E1;
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+  }
+  .stat-box.highlight { background: #FFF7ED; border-color: #FDBA74; }
+  .stat-label { font-size: 15px; font-weight: 700; color: #475569; margin-bottom: 8px; }
+  .stat-num { font-size: 30px; font-weight: 900; color: #012360; line-height: 1.15; }
+  .stat-num.orange { color: #F27E03; }
+  .stat-desc { font-size: 13px; color: #64748B; margin-top: 6px; font-weight: 600; line-height: 1.6; }
+
+  .callout {
+    background: #EFF6FF;
+    border-left: 5px solid #012360;
+    padding: 14px 18px;
+    border-radius: 4px 8px 8px 4px;
+    margin-top: 16px;
+    font-size: 15px;
+    color: #1E3A8A;
+    line-height: 1.75;
+  }
+  .callout strong { color: #012360; }
+  .callout.warn { background: #FFF7ED; border-left-color: #F27E03; color: #9A3412; }
+  .callout.warn strong { color: #C2410C; }
+
+  table.cmp-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  table.cmp-table th, table.cmp-table td {
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid #E2E8F0;
+    vertical-align: top;
+    line-height: 1.65;
+  }
+  table.cmp-table th {
+    background: #012360;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 15px;
+  }
+  table.cmp-table th.orange-th { background: #F27E03; }
+  table.cmp-table tr:nth-child(even) td { background: #F8FAFC; }
+  table.cmp-table td.label { font-weight: 800; color: #012360; white-space: nowrap; }
+
+  .list-5 { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .list-5 li {
+    background: #F8FAFC;
+    border: 1.5px solid #CBD5E1;
+    border-left: 5px solid #012360;
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1A202C;
+  }
+
+  .tip-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .tip-box {
+    background: #FEF2F2;
+    border: 1.5px solid #FCA5A5;
+    border-radius: 10px;
+    padding: 16px;
+    font-size: 14.5px;
+    color: #7F1D1D;
+    line-height: 1.7;
+  }
+  .tip-box strong { color: #991B1B; }
+
+  .ref-list {
+    font-size: 12.5px;
+    color: #475569;
+    line-height: 1.9;
+    padding-left: 1.2em;
+  }
+
+  footer {
+    background: #011842;
+    color: #ffffff;
+    padding: 32px 48px;
+    border-top: 4px solid #F27E03;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+  }
+  .footer-left { display: flex; flex-direction: column; gap: 4px; }
+  .footer-brand { font-size: 20px; font-weight: 900; color: #F27E03; }
+</style>
+</head>
+<body>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+<div class="ig">
+
+  <header>
+    <div class="header-badge">医学エビデンス徹底解説</div>
+    <h1 class="header-title">腱反射が<span>消えたあと</span>に<span>亢進</span>したら<br>何を疑うか</h1>
+    <div class="header-sub">ギラン・バレー症候群と脊髄ショックで意味が正反対な理由——判別軸は「痙性の有無」</div>
+  </header>
+
+  <div class="main-content">
+
+    <!-- Section 1: 核心メッセージ -->
+    <section class="sec-card">
+      <div class="sec-head">
+        <div class="sec-num">1</div>
+        <div class="sec-title">核心メッセージ</div>
+      </div>
+      <div class="sec-body">
+        <div class="callout">
+          反射低下病態の回復期に反射が亢進することは<strong>実際にある</strong>。ただし臨床像は2型に分かれ、ベッドサイドでは<strong>「痙性があるかどうか」</strong>で区別される。GBS・AMANの反射亢進を理由に<strong>治療を遅らせてはならない</strong>。
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: 対比表 -->
+    <section class="sec-card">
+      <div class="sec-head">
+        <div class="sec-num">2</div>
+        <div class="sec-title">脊髄ショック解除後 vs GBS・AMAN</div>
+      </div>
+      <div class="sec-body">
+        <table class="cmp-table">
+          <tr>
+            <th>所見</th>
+            <th>脊髄ショック解除後</th>
+            <th class="orange-th">GBS・AMAN</th>
+          </tr>
+          <tr>
+            <td class="label">痙性・クローヌス<br>・Babinski</td>
+            <td>伴う（損傷レベル以下に対称性）</td>
+            <td>痙性は生じない<br>（クローヌス・Babinskiは6.7%とまれ）</td>
+          </tr>
+          <tr>
+            <td class="label">反射亢進の分布</td>
+            <td>脊髄損傷レベル以下に対称性</td>
+            <td>全般性が多い（90.7%）</td>
+          </tr>
+          <tr>
+            <td class="label">示唆される機序</td>
+            <td>上位運動ニューロン徴候の表面化とされる（教科書的記述）</td>
+            <td>脊髄運動ニューロンの過興奮を示唆<br>（H反射/CMAP比高値）。中枢伝導時間延長は皮質脊髄路の関与を示唆。MRIで構造的損傷は未証明</td>
+          </tr>
+        </table>
+        <div class="unit-note" style="background:#F1F5F9;border:1.5px dashed #94A3B8;border-radius:8px;padding:10px 16px;font-size:12.5px;color:#475569;margin-top:12px;">
+          出典: Uncini A, et al. J Neurol Neurosurg Psychiatry. 2020;91(3):278-284.
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: GBSの数字3つ -->
+    <section class="sec-card">
+      <div class="sec-head">
+        <div class="sec-num">3</div>
+        <div class="sec-title">GBSの反射亢進——数字で見る</div>
+      </div>
+      <div class="sec-body">
+        <div class="grid-3">
+          <div class="stat-box highlight">
+            <div class="stat-label">電気診断:<br>AMAN vs AIDP</div>
+            <div class="stat-num orange">56<span style="font-size:16px;">%</span> <span style="font-size:16px;color:#64748B;">vs</span> 4.4<span style="font-size:16px;">%</span></div>
+            <div class="stat-desc">Uncini 2020</div>
+          </div>
+          <div class="stat-box highlight">
+            <div class="stat-label">抗ガングリオシド<br>抗体陽性</div>
+            <div class="stat-num orange">89.7<span style="font-size:16px;">%</span></div>
+            <div class="stat-desc">Uncini 2020</div>
+          </div>
+          <div class="stat-box highlight">
+            <div class="stat-label">早期の進行期から<br>反射亢進</div>
+            <div class="stat-num orange">86.7<span style="font-size:16px;">%</span></div>
+            <div class="stat-desc">Uncini 2020（回復期限定ではない）</div>
+          </div>
+        </div>
+        <div class="callout">
+          日本人連続54例では<strong>7例（13%）</strong>が回復早期に反射亢進を示し、<strong>6例がAMAN・7例全例が抗GM1抗体陽性</strong>だった（Kuwabara 1999）。亢進を見たら<strong>軸索型GBS・抗ガングリオシド抗体</strong>を疑う次の一手につながる。
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: 「回復期だから」で済ませない5所見 -->
+    <section class="sec-card">
+      <div class="sec-head">
+        <div class="sec-num">4</div>
+        <div class="sec-title">「回復期だから」で済ませない5所見</div>
+      </div>
+      <div class="sec-body">
+        <ul class="list-5">
+          <li>① 反射の拡大</li>
+          <li>② 左右差</li>
+          <li>③ クローヌス</li>
+          <li>④ Babinski徴候</li>
+          <li>⑤ 痙性</li>
+        </ul>
+        <div class="callout warn">
+          これらが揃うときは、頸髄症・胸髄病変・脳病変の合併、あるいは中枢＋末梢の<strong>混合病態</strong>を疑い直す余地がある。代表例はBickerstaff脳幹脳炎（BBE）: 62例中<strong>弛緩性四肢麻痺の合併60%・Babinski徴候40%・抗GQ1b IgG陽性66%</strong>（Odaka 2003）。BBEは中枢病態でありながら弛緩性麻痺と反射亢進が同居しうる実例であり、「純粋な末梢病態でも亢進する」根拠にはしない。
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: 診察手技の注意 -->
+    <section class="sec-card">
+      <div class="sec-head">
+        <div class="sec-num">5</div>
+        <div class="sec-title">診察手技の落とし穴</div>
+      </div>
+      <div class="sec-body">
+        <div class="tip-row">
+          <div class="tip-box">
+            <strong>検者依存</strong><br>
+            腱反射のグレーディングは主観的で、検者間信頼性が限られる（Marshall 2002）。
+          </div>
+          <div class="tip-box">
+            <strong>増強法（Jendrassik）</strong><br>
+            増強法で出た反射を亢進と読まない。増強の機序は不明のまま（Gregory 2001）。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 出典 -->
+    <section class="sec-card">
+      <div class="sec-head">
+        <div class="sec-num">6</div>
+        <div class="sec-title">出典</div>
+      </div>
+      <div class="sec-body">
+        <ol class="ref-list">
+          <li>Uncini A, et al. Hyper-reflexia in Guillain-Barré syndrome: systematic review. J Neurol Neurosurg Psychiatry. 2020;91(3):278-284. doi:10.1136/jnnp-2019-321890</li>
+          <li>Kuwabara S, et al. Hyperreflexia in Guillain-Barré syndrome: relation with acute motor axonal neuropathy and anti-GM1 antibody. J Neurol Neurosurg Psychiatry. 1999;67(2):180-4. doi:10.1136/jnnp.67.2.180</li>
+          <li>Odaka M, et al. Bickerstaff's brainstem encephalitis: clinical features of 62 cases and a subgroup associated with Guillain-Barré syndrome. Brain. 2003;126(Pt 10):2279-90. doi:10.1093/brain/awg233</li>
+        </ol>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    <div class="footer-left">
+      <div class="footer-brand">医知創造ラボ</div>
+      <div>脳神経内科医が解説｜数値の一次資料はブログ本文参照文献を参照</div>
+    </div>
+    <div>腱反射亢進 × GBS・脊髄ショック</div>
+  </footer>
+</div>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px auto 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+</body>
+</html>
