@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>帯状疱疹ワクチンで認知症も減る？</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#012360;
+  --navy-ink:#001B4D;
+  --accent:#F27E03;
+  --accent-soft: color-mix(in srgb, var(--accent) 11%, #ffffff);
+  --accent-line: color-mix(in srgb, var(--accent) 62%, #ffffff);
+  --accent-ink: color-mix(in srgb, var(--accent) 74%, #4a2604);
+  --danger:#DC3323;
+  --danger-soft: color-mix(in srgb, var(--danger) 9%, #ffffff);
+  --bg:#FDFDFD;
+
+  --blue:#1D4189;
+  --blue-soft:#E9EEF8;
+  --blue-tint:#EEF2FA;
+  --red: var(--danger);
+  --red-soft: var(--danger-soft);
+  --orange: var(--accent);
+  --orange-soft: var(--accent-soft);
+  --line:#D8DDE6;
+  --line-soft:#C9D2DF;
+  --bg-muted:#F8F8F8;
+  --bg-alt:#F6F6F6;
+  --navy-line: color-mix(in srgb, var(--navy) 22%, #ffffff);
+
+  --type-mult: 1.38;
+  --type-display: calc(96px * var(--type-mult));
+  --type-title:   calc(82px * var(--type-mult));
+  --type-heading: calc(52px * var(--type-mult));
+  --type-subtitle:calc(40px * var(--type-mult));
+  --type-body:    calc(34px * var(--type-mult));
+  --type-small:   calc(27px * var(--type-mult));
+  --type-label:   calc(25px * var(--type-mult));
+  --type-chapter: calc(200px * var(--type-mult));
+  --type-stat:    calc(110px * var(--type-mult));
+
+  --pad-x: 112px;
+  --pad-top: 54px;
+  --pad-bottom: 116px;
+  --gap-title: 18px;
+  --gap-item: 20px;
+
+  --font-ja: "Noto Sans JP", "BIZ UDPGothic", "Yu Gothic", "Meiryo", sans-serif;
+  --font-serif: var(--font-ja);
+  --grad-navy: linear-gradient(160deg, #012360 0%, #001B4D 100%);
+}
+.serif{ font-family: var(--font-serif); font-weight:800; letter-spacing:.02em; }
+
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#0a1430; }
+
+.slide{
+  box-sizing:border-box;
+  display:flex; flex-direction:column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-ja);
+  overflow:hidden;
+  position:relative;
+}
+.slide::after{
+  content:""; position:absolute; left:0; right:0; bottom:0; height:10px;
+  background: var(--navy); pointer-events:none;
+}
+.slide--navy{ background: var(--grad-navy); color: var(--white); }
+.slide--navy::after{ background: var(--accent); }
+.slide--soft{ background: var(--bg-alt); }
+
+.eyebrow{
+  display:flex; align-items:center; gap:18px;
+  font-size: var(--type-label); font-weight:700; color: var(--navy);
+  letter-spacing:.04em;
+}
+.eyebrow::before{
+  content:""; width:12px; height:38px; border-radius:3px;
+  background: linear-gradient(180deg, var(--navy) 0 68%, var(--accent) 68% 100%);
+  flex:none;
+}
+.eyebrow .num{ font-family: var(--font-en); color: var(--accent-ink); }
+.eyebrow .en{ font-family: var(--font-en); color: var(--accent-ink); letter-spacing:.15em; text-transform:uppercase; }
+.slide--navy .eyebrow{ color: rgba(255,255,255,.88); }
+.slide--navy .eyebrow .en{ color:#fff; }
+.slide--navy .eyebrow::before{ background: linear-gradient(180deg, #fff 0 68%, var(--accent) 68% 100%); }
+
+.s-title{
+  font-size: var(--type-heading); line-height:1.22; color: var(--navy);
+  margin: var(--gap-title) 0 0; font-weight:800; letter-spacing:.01em;
+  text-wrap: pretty;
+}
+.slide--navy .s-title{ color:#fff; }
+
+.lead{
+  font-size: var(--type-body); line-height:1.65; color: var(--ink-2);
+  margin:0; text-wrap: pretty;
+}
+.muted{ color: var(--gray); }
+
+.hairline{
+  height:4px; border:0; margin:16px 0 0;
+  background: linear-gradient(90deg, var(--accent) 0 150px, var(--navy) 150px);
+  opacity:1;
+}
+.slide--navy .hairline{ background: linear-gradient(90deg, var(--accent) 0 150px, rgba(255,255,255,.85) 150px); }
+
+.chapter-ghost{
+  position:absolute; top: 30px; right: var(--pad-x);
+  font-family: var(--font-en); font-weight:700; line-height:.8;
+  font-size: calc(150px * var(--type-mult)); color: var(--navy);
+  opacity:.05; pointer-events:none; user-select:none;
+}
+.slide--navy .chapter-ghost{ color:#fff; opacity:.10; }
+
+.card{
+  background: var(--white);
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  padding: 28px 26px;
+  display:flex; flex-direction:column;
+  justify-content:flex-start;
+}
+.card--navy{ background: var(--navy); color:#fff; border-color: var(--navy); }
+.card--soft{ background: var(--blue-soft); border-color: var(--blue-tint); }
+.card--accent{ background: var(--accent-soft); border-color: var(--accent-line); }
+.card--warn{ background: var(--danger-soft); border-color: var(--red-soft); }
+
+.grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:32px; }
+.grid-3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:24px; }
+.flex-col{ display:flex; flex-direction:column; gap:16px; }
+.flex-row-item{ display:flex; flex-direction:row; align-items:center; gap:24px; padding:18px 26px; }
+
+.badge{
+  display:inline-block; font-size:calc(18px * var(--type-mult));
+  font-weight:700; padding:4px 14px; border-radius:6px; width:fit-content;
+}
+.badge--navy{ background: var(--navy); color:#fff; }
+.badge--accent{ background: var(--accent); color:#fff; }
+.badge--warn{ background: var(--danger); color:#fff; }
+
+.stat-num{
+  font-size: calc(64px * var(--type-mult)); font-weight:800; line-height:1;
+  color: var(--accent); font-family: var(--font-en);
+}
+.stat-num--navy{ color: var(--navy); }
+.stat-num--warn{ color: var(--danger); }
+.stat-unit{ font-size: calc(28px * var(--type-mult)); font-weight:700; margin-left:4px; }
+
+.reflex-table{ width:100%; border-collapse:collapse; }
+.reflex-table th, .reflex-table td{
+  border-bottom: 2px solid var(--line);
+  padding: 14px 16px;
+  text-align:left;
+  font-size: var(--type-small);
+  line-height:1.35;
+}
+.reflex-table thead th{
+  background: var(--navy); color:#fff; font-weight:700;
+  border-bottom: 2px solid var(--navy);
+}
+.reflex-table tbody tr:nth-child(even){ background: var(--bg-alt); }
+.reflex-table td.num{ font-family: var(--font-en); font-weight:700; color: var(--navy); }
+.reflex-table td.eq{ color: var(--ink-2); }
+
+.slide__foot{
+  position:absolute; left: var(--pad-x); right: var(--pad-x); bottom: 36px;
+  display:flex; justify-content:space-between; align-items:center;
+  font-size: calc(19px * var(--type-mult)); color: var(--gray);
+  border-top: 1px solid var(--line-soft); padding-top: 12px;
+}
+.slide--navy .slide__foot{
+  color: rgba(255,255,255,.55);
+  border-top-color: rgba(255,255,255,.18);
+}
+.slide__foot .ch-title{ font-weight:700; color: var(--ink-2); }
+.slide--navy .slide__foot .ch-title{ color: rgba(255,255,255,.85); }
+.slide__foot .page-num{ font-family: var(--font-en); font-weight:700; }
+</style>
+</head>
+<body>
+
+<deck-stage width="1920" height="1080">
+
+<!-- SLIDE 1: 表紙 -->
+<section class="slide slide--navy" data-label="title" data-screen-label="表紙" style="justify-content:center; align-items:flex-start;">
+  <div class="chapter-ghost">ZOSTER</div>
+  <div class="eyebrow" style="margin-bottom:24px;"><span class="en">EVIDENCE CHECK</span><span>研究の読み方</span></div>
+  <h1 class="serif" style="font-size:calc(52px * var(--type-mult)); line-height:1.3; margin:0 0 24px; color:#fff;">
+    帯状疱疹ワクチンで<span style="color:var(--accent);">認知症</span>も減る？
+  </h1>
+  <p style="font-size:calc(27px * var(--type-mult)); color:rgba(255,255,255,.9); line-height:1.6; margin:0 0 36px;">
+    最新研究で分かったこと・まだ言えないこと
+  </p>
+  <div class="badge badge--accent" style="font-size:calc(22px * var(--type-mult)); padding:8px 20px;">
+    脳神経内科専門医 監修
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">帯状疱疹ワクチンで認知症も減る？</div>
+    <div class="page-num">1 / 18</div>
+  </div>
+</section>
+
+<!-- SLIDE 2: フック -->
+<section class="slide slide--soft" data-label="hook" data-screen-label="導入">
+  <div class="eyebrow"><span class="num">01</span><span class="en">INTRODUCTION</span><span>ニュースの正体</span></div>
+  <h2 class="s-title">「ワクチンを打った人は認知症が約2割少ない」<br>この数字、信じていいのか</h2>
+  <div class="hairline"></div>
+  <div class="grid-2" style="margin-top:36px; flex:1;">
+    <div class="card card--accent anim anim-1" data-cue="帯状疱疹ワクチンを接種し">
+      <div class="badge badge--accent" style="margin-bottom:14px;">ニュースで見た話</div>
+      <p style="font-size:var(--type-body); font-weight:700; color:var(--navy); line-height:1.5; margin:0 0 14px;">
+        接種した人は<br>認知症の診断が少なかった
+      </p>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:0;">
+        英国・オーストラリア・カナダで同じ方向の結果。医学の一流誌に相次いで掲載。
+      </p>
+    </div>
+    <div class="card card--warn anim anim-2" data-cue="この動画を見れば、どこま">
+      <div class="badge badge--warn" style="margin-bottom:14px;">この動画で分かること</div>
+      <p style="font-size:var(--type-body); font-weight:700; color:var(--danger); line-height:1.5; margin:0 0 14px;">
+        「関連」と「予防」は別の話
+      </p>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:0;">
+        どこまで言えるのか、<br>どこからが未確定なのか。<br>数字の本当の大きさまで整理します。
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">帯状疱疹ワクチンで認知症も減る？</div>
+    <div class="page-num">2 / 18</div>
+  </div>
+</section>
+
+<!-- SLIDE 3: 結論先出し -->
+<section class="slide" data-label="conclusion" data-screen-label="結論">
+  <div class="eyebrow"><span class="num">02</span><span class="en">ANSWER FIRST</span><span>先に結論</span></div>
+  <h2 class="s-title">3段階に分けて読む</h2>
+  <div class="hairline"></div>
+  <div class="grid-3" style="margin-top:36px; flex:1;">
+    <div class="card card--soft anim anim-1" data-cue="確立していることは、帯状">
+      <div class="badge badge--navy" style="margin-bottom:16px;">確立していること</div>
+      <p style="font-size:var(--type-body); font-weight:700; color:var(--navy); line-height:1.5; margin:0 0 12px;">帯状疱疹と<br>神経痛を防ぐ</p>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:0;">国が定期接種にした理由。<br>認知症は目的に<br>含まれていない。</p>
+    </div>
+    <div class="card card--accent anim anim-2" data-cue="分かってきたことは、接種">
+      <div class="badge badge--accent" style="margin-bottom:16px;">分かってきたこと</div>
+      <p style="font-size:var(--type-body); font-weight:700; color:var(--navy); line-height:1.5; margin:0 0 12px;">接種者に認知症の<br>「診断」が少ない</p>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:0;">3か国で同じ方向。<br>ただし全て生ワクチン。</p>
+    </div>
+    <div class="card anim anim-3" data-cue="まだ言えないことは、認知">
+      <div class="badge badge--warn" style="margin-bottom:16px;">まだ言えないこと</div>
+      <p style="font-size:var(--type-body); font-weight:700; color:var(--danger); line-height:1.5; margin:0 0 12px;">認知症を「防ぐ」<br>かどうか</p>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:0;">効果の大きさ、組換えでも、<br>日本人でも同じか。</p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">帯状疱疹ワクチンで認知症も減る？</div>
+    <div class="page-num">3 / 18</div>
+  </div>
+</section>
+
+<!-- SLIDE 4: 目次 -->
+<section class="slide slide--soft" data-label="agenda" data-screen-label="目次">
+  <div class="eyebrow"><span class="num">03</span><span class="en">AGENDA</span><span>この動画の流れ</span></div>
+  <h2 class="s-title">この動画の流れ</h2>
+  <div class="hairline"></div>
+  <div class="flex-col" style="margin-top:32px; flex:1; justify-content:center; gap:18px;">
+    <div class="card flex-row-item anim anim-1" data-cue="まず、帯状疱疹の予防効果">
+      <div style="font-size:calc(30px * var(--type-mult)); font-weight:800; color:var(--navy);">01</div>
+      <div style="font-size:var(--type-small); color:var(--ink); line-height:1.4;">帯状疱疹の予防効果は確立している</div>
+    </div>
+    <div class="card flex-row-item anim anim-2" data-cue="次に、認知症との関連を調">
+      <div style="font-size:calc(30px * var(--type-mult)); font-weight:800; color:var(--accent);">02</div>
+      <div style="font-size:var(--type-small); color:var(--ink); line-height:1.4;">認知症との関連を調べた研究と、2026年に加わったこと</div>
+    </div>
+    <div class="card flex-row-item anim anim-3" data-cue="3つ目に、本当にワクチン">
+      <div style="font-size:calc(30px * var(--type-mult)); font-weight:800; color:var(--navy);">03</div>
+      <div style="font-size:var(--type-small); color:var(--ink); line-height:1.4;">本当にワクチンのおかげ？　3つの別の説明</div>
+    </div>
+    <div class="card flex-row-item anim anim-4" data-cue="最後に、数字の本当の大き">
+      <div style="font-size:calc(30px * var(--type-mult)); font-weight:800; color:var(--accent);">04</div>
+      <div style="font-size:var(--type-small); color:var(--ink); line-height:1.4;">数字の本当の大きさと、今どう考えるか</div>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">帯状疱疹ワクチンで認知症も減る？</div>
+    <div class="page-num">4 / 18</div>
+  </div>
+</section>
+
+<!-- SLIDE 5: 帯状疱疹予防は確立 -->
+<section class="slide" data-label="zoster-prevention" data-screen-label="帯状疱疹予防">
+  <div class="eyebrow"><span class="num">04</span><span class="en">ESTABLISHED</span><span>確立していること</span></div>
+  <h2 class="s-title">帯状疱疹の予防効果は確立している</h2>
+  <div class="hairline"></div>
+  <div class="grid-2" style="margin-top:36px; flex:1;">
+    <div class="card card--soft anim anim-1" data-cue="厚生労働省の案内では、生">
+      <div class="badge badge--navy" style="margin-bottom:16px;">生ワクチン</div>
+      <div><span class="stat-num stat-num--navy">約6割</span></div>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:14px 0 0;">帯状疱疹の発症を防ぐ効果（厚生労働省）。<br>接種は1回。</p>
+    </div>
+    <div class="card card--accent anim anim-2" data-cue="組換えワクチンは接種後1">
+      <div class="badge badge--accent" style="margin-bottom:16px;">組換えワクチン</div>
+      <div><span class="stat-num">9割以上</span></div>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:14px 0 0;">接種後1年時点。5年後も9割程度を保つ。<br>接種は2回（厚生労働省）。</p>
+    </div>
+  </div>
+  <div class="card anim anim-3" style="margin-top:24px;" data-cue="2025年度から2029">
+    <p style="font-size:var(--type-small); color:var(--ink); line-height:1.6; margin:0;">
+      65歳の方は定期接種の対象。2025〜2029年度は70〜100歳の5歳刻みも経過措置で対象。<br>費用は自治体によって異なります。
+    </p>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">出典：厚生労働省「帯状疱疹ワクチン」案内ページ</div>
+    <div class="page-num">5 / 18</div>
+  </div>
+</section>
+
+<!-- SLIDE 6: 章扉 -->
+<section class="slide slide--navy" data-label="chapter-studies" data-screen-label="章扉：研究" style="justify-content:center; align-items:flex-start;">
+  <div class="chapter-ghost">02</div>
+  <div class="eyebrow" style="margin-bottom:24px;"><span class="en">CHAPTER 2</span><span>研究を読む</span></div>
+  <h1 class="serif" style="font-size:calc(52px * var(--type-mult)); line-height:1.3; margin:0 0 24px; color:#fff;">
+    認知症との関連を調べた<span style="color:var(--accent);">主な研究</span>
+  </h1>
+  <p style="font-size:calc(27px * var(--type-mult)); color:rgba(255,255,255,.9); line-height:1.6; margin:0;">
+    生ワクチンの自然実験と、組換えワクチンの観察研究は分けて読む
+  </p>
+  <div class="slide__foot">
+    <div class="ch-title">帯状疱疹ワクチンで認知症も減る？</div>
+    <div class="page-num">6 / 18</div>
+  </div>
+</section>
+
+<!-- SLIDE 7: 自然実験とは -->
+<section class="slide slide--soft" data-label="natural-experiment" data-screen-label="自然実験とは">
+  <div class="eyebrow"><span class="num">05</span><span class="en">NATURAL EXPERIMENT</span><span>自然実験とは</span></div>
+  <h2 class="s-title">「誕生日の前後」で接種資格が分かれた偶然を使う</h2>
+  <div class="hairline"></div>
+  <div class="grid-2" style="margin-top:36px; flex:1;">
+    <div class="card card--warn anim anim-1" data-cue="ふつうの比較には弱点があ">
+      <div class="badge badge--warn" style="margin-bottom:14px;">ふつうの比較の弱点</div>
+      <p style="font-size:var(--type-body); font-weight:700; color:var(--danger); line-height:1.5; margin:0 0 14px;">
+        「打った人」と「打たない人」は<br>元から違う
+      </p>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:0;">
+        健康に気を配る人ほど接種する。<br>認知症が少ないのはワクチンのせいか、<br>生活習慣のせいか、区別できない。
+      </p>
+    </div>
+    <div class="card card--accent anim anim-2" data-cue="英国ウェールズでは、生年">
+      <div class="badge badge--accent" style="margin-bottom:14px;">自然実験の仕組み</div>
+      <p style="font-size:var(--type-body); font-weight:700; color:var(--navy); line-height:1.5; margin:0 0 14px;">
+        誕生日が1週間違うだけで<br>資格の有無が決まった
+      </p>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:0;">
+        英国ウェールズでは<br>生年月日で接種資格を線引き。<br>前後に生まれた人は<br>生活習慣がほぼ同じで、<br>くじ引きに近い比較ができる。
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">出典：Eyting M, et al. Nature 2025</div>
+    <div class="page-num">7 / 18</div>
+  </div>
+</section>
+
+<!-- SLIDE 8: 自然実験3件 -->
+<section class="slide" data-label="three-countries" data-screen-label="3か国の自然実験">
+  <div class="eyebrow"><span class="num">06</span><span class="en">THREE COUNTRIES</span><span>3か国で再現</span></div>
+  <h2 class="s-title">3か国の自然実験は同じ方向（全て生ワクチン）</h2>
+  <div class="hairline"></div>
+  <div class="grid-3" style="margin-top:36px; flex:1;">
+    <div class="card card--soft anim anim-1" data-cue="英国ウェールズでは、7年">
+      <div class="badge badge--navy" style="margin-bottom:16px;">英国ウェールズ</div>
+      <div><span class="stat-num stat-num--navy">約3.5人</span><span class="stat-unit">少ない</span></div>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:14px 0 0;">100人あたり・7年間。<br>相対では約20%減。</p>
+    </div>
+    <div class="card card--soft anim anim-2" data-cue="オーストラリアでは、約7">
+      <div class="badge badge--navy" style="margin-bottom:16px;">オーストラリア</div>
+      <div><span class="stat-num stat-num--navy">約1.8人</span><span class="stat-unit">少ない</span></div>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:14px 0 0;">100人あたり・約7年間。<br>かかりつけ医の記録で確認。</p>
+    </div>
+    <div class="card card--soft anim anim-3" data-cue="カナダでは、約5年半で1">
+      <div class="badge badge--navy" style="margin-bottom:16px;">カナダ</div>
+      <div><span class="stat-num stat-num--navy">約2.0人</span><span class="stat-unit">少ない</span></div>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:14px 0 0;">100人あたり・約5年半。<br>州の制度差でも同じ方向。</p>
+    </div>
+  </div>
+  <div class="card card--accent anim anim-4" style="margin-top:24px;" data-cue="ただし、数えているのは診">
+    <p style="font-size:var(--type-small); color:var(--ink); line-height:1.6; margin:0;">
+      数えているのは「認知症と診断された記録」。<br>接種資格のある人と無い人の比較で、接種した本人だけの効果ではない。
+    </p>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">出典：Eyting Nature 2025／Pomirchy JAMA 2025／Pomirchy Lancet Neurol 2026</div>
+    <div class="page-num">8 / 18</div>
+  </div>
+</section>
+
+<!-- SLIDE 9: 組換えの観察研究 -->
+<section class="slide slide--soft" data-label="recombinant-studies" data-screen-label="組換えの観察研究">
+  <div class="eyebrow"><span class="num">07</span><span class="en">RECOMBINANT VACCINE</span><span>組換えワクチンの研究</span></div>
+  <h2 class="s-title">組換えワクチンは「観察研究」しかない</h2>
+  <div class="hairline"></div>
+  <div class="grid-3" style="margin-top:36px; flex:1;">
+    <div class="card anim anim-1" data-cue="1つ目は、生から組換えへ">
+      <div class="badge badge--accent" style="margin-bottom:14px;">製剤の切り替えを利用</div>
+      <p style="font-size:var(--type-body); font-weight:700; color:var(--navy); line-height:1.5; margin:0 0 12px;">生から組換えへの<br>移行前後を比較</p>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:0;">組換えの方が診断までの<br>期間が約164日長い。<br>「打たない人」との<br>比較ではない。</p>
+    </div>
+    <div class="card anim anim-2" data-cue="2つ目は、米国の大規模比">
+      <div class="badge badge--accent" style="margin-bottom:14px;">米国の大規模比較</div>
+      <p style="font-size:var(--type-body); font-weight:700; color:var(--navy); line-height:1.5; margin:0 0 12px;">接種者は未接種者より<br>診断が約3割少ない</p>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:0;">GSK資金の研究。<br>生活習慣の差は<br>完全には調整できない。</p>
+    </div>
+    <div class="card anim anim-3" data-cue="4年間で診断が約4分の1">
+      <div class="badge badge--accent" style="margin-bottom:14px;">2026年・施設入所者</div>
+      <p style="font-size:var(--type-body); font-weight:700; color:var(--navy); line-height:1.5; margin:0 0 12px;">4年間で診断が<br>約4分の1少ない</p>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:0;">試験に似せた解析だが<br>観察研究。GSK資金。<br>著者も<br>「偏りが残る」と明記。</p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">出典：Taquet Nat Med 2024／dos Reis Alzheimers Dement 2026／Hayes Ann Intern Med 2026</div>
+    <div class="page-num">9 / 18</div>
+  </div>
+</section>
+
+<!-- SLIDE 10: 研究比較表 -->
+<section class="slide" data-label="comparison-table" data-screen-label="研究比較表">
+  <div class="eyebrow"><span class="num">08</span><span class="en">COMPARISON</span><span>主な研究の比較</span></div>
+  <h2 class="s-title">主な研究を並べて読む</h2>
+  <div class="hairline"></div>
+  <div style="margin-top:28px; flex:1;">
+    <table class="reflex-table anim anim-1">
+      <thead>
+        <tr><th>研究</th><th>ワクチン</th><th>デザイン</th><th>結果の読み方</th><th>資金</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>ウェールズ 2025</td><td class="num">生</td><td>自然実験</td><td class="eq">100人中約3.5人少ない／7年</td><td>公的</td></tr>
+        <tr><td>オーストラリア 2025</td><td class="num">生</td><td>自然実験</td><td class="eq">100人中約1.8人少ない／約7年</td><td>公的</td></tr>
+        <tr><td>カナダ 2026</td><td class="num">生</td><td>自然実験</td><td class="eq">100人中約2人少ない／約5年半</td><td>公的</td></tr>
+        <tr style="background:var(--accent-soft);"><td>米国 2024</td><td class="num">組換え/生</td><td>製剤移行の比較</td><td class="eq">診断まで約164日長い</td><td>不明</td></tr>
+        <tr style="background:var(--accent-soft);"><td>米国 2026</td><td class="num">組換え</td><td>観察（マッチ比較）</td><td class="eq">診断が約3割少ない</td><td>GSK</td></tr>
+        <tr style="background:var(--accent-soft);"><td>米国 2026・施設</td><td class="num">組換え</td><td>観察（試験模倣）</td><td class="eq">診断が約4分の1少ない／4年</td><td>GSK</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">白＝生ワクチン／橙＝組換えワクチン。数値は各論文の主要結果を丸めた表記</div>
+    <div class="page-num">10 / 18</div>
+  </div>
+</section>
+
+<!-- SLIDE 11: 2026年に加わったこと -->
+<section class="slide slide--soft" data-label="update-2026" data-screen-label="2026年の追加">
+  <div class="eyebrow"><span class="num">09</span><span class="en">2026 UPDATE</span><span>2026年に加わったこと</span></div>
+  <h2 class="s-title">2026年、研究は増えたが「因果」には届いていない</h2>
+  <div class="hairline"></div>
+  <div class="flex-col" style="margin-top:32px; flex:1; justify-content:center; gap:18px;">
+    <div class="card flex-row-item anim anim-1" data-cue="追加の1つ目は、組換えワ">
+      <div class="badge badge--accent" style="flex:none;">追加①</div>
+      <div style="font-size:var(--type-small); color:var(--ink); line-height:1.5;">組換えワクチンの大規模観察研究が発表。ただし無作為化ではなく、対象は施設入所者。</div>
+    </div>
+    <div class="card flex-row-item anim anim-2" data-cue="2つ目は、13の研究をま">
+      <div class="badge badge--accent" style="flex:none;">追加②</div>
+      <div style="font-size:var(--type-small); color:var(--ink); line-height:1.5;">13研究をまとめた解析でも「約3割少ない」方向。ただし研究間のばらつきが大きい。</div>
+    </div>
+    <div class="card flex-row-item anim anim-3" data-cue="3つ目に、カナダの論文に">
+      <div class="badge badge--warn" style="flex:none;">追加③</div>
+      <div style="font-size:var(--type-small); color:var(--ink); line-height:1.5;">カナダの論文には専門家から方法への疑義の手紙が2通掲載。内容は本動画では未確認。</div>
+    </div>
+    <div class="card card--accent flex-row-item anim anim-4" data-cue="一方、組換えワクチンの無">
+      <div class="badge badge--navy" style="flex:none;">進行中</div>
+      <div style="font-size:var(--type-small); color:var(--ink); line-height:1.5;">組換えワクチンの無作為化試験が2026年に2件開始。主な結果は2029〜2030年以降。</div>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">出典：Hayes Ann Intern Med 2026／Zhang Vaccines 2026／Lancet Neurol 2026;25(8)／ClinicalTrials.gov</div>
+    <div class="page-num">11 / 18</div>
+  </div>
+</section>
+
+<!-- SLIDE 12: 別の説明3つ -->
+<section class="slide" data-label="alternative-explanations" data-screen-label="別の説明">
+  <div class="eyebrow"><span class="num">10</span><span class="en">ALTERNATIVES</span><span>本当にワクチンのおかげ？</span></div>
+  <h2 class="s-title">「認知症が少ない」に成り立つ、3つの別の説明</h2>
+  <div class="hairline"></div>
+  <div class="grid-3" style="margin-top:36px; flex:1;">
+    <div class="card card--warn anim anim-1" data-cue="1つ目は、健康な人ほど打">
+      <div class="badge badge--warn" style="margin-bottom:14px;">説明①</div>
+      <p style="font-size:var(--type-body); font-weight:700; color:var(--danger); line-height:1.5; margin:0 0 12px;">健康な人ほど打つ</p>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:0;">接種者は他の病気や<br>死亡も少ない。<br>自然実験はこの偏りを<br>小さくできる。</p>
+    </div>
+    <div class="card card--warn anim anim-2" data-cue="数えているのは診断の記録">
+      <div class="badge badge--warn" style="margin-bottom:14px;">説明②</div>
+      <p style="font-size:var(--type-body); font-weight:700; color:var(--danger); line-height:1.5; margin:0 0 12px;">診断が遅れただけ</p>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:0;">数えているのは診断の記録。<br>予防か診断の先送りか、<br>自然実験でも<br>区別できない。</p>
+    </div>
+    <div class="card card--warn anim anim-3" data-cue="3つ目は、先に亡くなった">
+      <div class="badge badge--warn" style="margin-bottom:14px;">説明③</div>
+      <p style="font-size:var(--type-body); font-weight:700; color:var(--danger); line-height:1.5; margin:0 0 12px;">先に亡くなった人</p>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:0;">認知症と診断される前に<br>亡くなる人の割合が<br>違えば、診断の数に<br>影響する。</p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">出典：Schnier Alzheimers Dement (N Y) 2022／Rouphael Clin Infect Dis 2026</div>
+    <div class="page-num">12 / 18</div>
+  </div>
+</section>
+
+<!-- SLIDE 13: 生→組換えに当てはめてよいか -->
+<section class="slide slide--soft" data-label="live-vs-recombinant" data-screen-label="生と組換え">
+  <div class="eyebrow"><span class="num">11</span><span class="en">LIVE VS RECOMBINANT</span><span>日本で使うワクチンは</span></div>
+  <h2 class="s-title">生ワクチンの結果を組換えに当てはめてよいか</h2>
+  <div class="hairline"></div>
+  <div class="grid-2" style="margin-top:36px; flex:1;">
+    <div class="card card--soft anim anim-1" data-cue="自然実験の根拠は、全て生">
+      <div class="badge badge--navy" style="margin-bottom:14px;">生ワクチン</div>
+      <p style="font-size:var(--type-body); font-weight:700; color:var(--navy); line-height:1.5; margin:0 0 14px;">自然実験の根拠は全てこちら</p>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:0;">弱毒化したウイルスそのもの。<br>帯状疱疹の予防効果は約6割。</p>
+    </div>
+    <div class="card card--accent anim anim-2" data-cue="一方、日本で主に使われる">
+      <div class="badge badge--accent" style="margin-bottom:14px;">組換えワクチン</div>
+      <p style="font-size:var(--type-body); font-weight:700; color:var(--navy); line-height:1.5; margin:0 0 14px;">日本で主に使われるが、<br>根拠は観察研究のみ</p>
+      <p style="font-size:var(--type-small); color:var(--ink-2); line-height:1.6; margin:0;">ウイルスの部品と免疫増強剤の組み合わせ。<br>仕組みが違うので、<br>同じ結果になる保証はない。</p>
+    </div>
+  </div>
+  <div class="card card--warn anim anim-3" style="margin-top:24px;" data-cue="「組換えの方が認知症を防">
+    <p style="font-size:var(--type-small); color:var(--ink); line-height:1.6; margin:0;">
+      「組換えの方が認知症を防ぐ」と断定する記事がありますが、根拠は弱い側にあります。日本人を対象にした研究もまだありません。
+    </p>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">出典：Taquet Nat Med 2024／Rouphael Clin Infect Dis 2026</div>
+    <div class="page-num">13 / 18</div>
+  </div>
+</section>
+
+<!-- SLIDE 14: 数字の読み方 -->
+<section class="slide" data-label="absolute-risk" data-screen-label="数字の読み方">
+  <div class="eyebrow"><span class="num">12</span><span class="en">READING NUMBERS</span><span>「2割減」の実際の大きさ</span></div>
+  <h2 class="s-title">「約2割減」は、100人中およそ3.5人</h2>
+  <div class="hairline"></div>
+  <div class="grid-2" style="margin-top:36px; flex:1;">
+    <div class="card card--navy anim anim-1" style="justify-content:center; align-items:center; text-align:center;" data-cue="ウェールズの7年間で、接">
+      <div class="badge badge--accent" style="margin-bottom:20px;">英国ウェールズ・7年間</div>
+      <div><span class="stat-num" style="font-size:calc(80px * var(--type-mult)); white-space:nowrap;">100人中<br>約3.5人</span></div>
+      <p style="font-size:var(--type-small); color:rgba(255,255,255,.9); line-height:1.6; margin:16px 0 0;">接種対象になった人の方が、新たに認知症と診断された人が少なかった</p>
+    </div>
+    <div class="flex-col" style="gap:16px; justify-content:center;">
+      <div class="card card--soft anim anim-2" data-cue="相対の数字は、印象が大き">
+        <div class="badge badge--navy" style="margin-bottom:8px;">相対</div>
+        <p style="font-size:var(--type-small); color:var(--ink); line-height:1.5; margin:0;">「約20%減」「約3割減」。印象は大きい。</p>
+      </div>
+      <div class="card card--accent anim anim-3" data-cue="絶対の数字では、100人">
+        <div class="badge badge--accent" style="margin-bottom:8px;">絶対</div>
+        <p style="font-size:var(--type-small); color:var(--ink); line-height:1.5; margin:0;">100人あたり約1.8〜3.5人／5〜7年。<br>実際の人数。</p>
+      </div>
+      <div class="card anim anim-4" data-cue="「診断まで約164日長い">
+        <div class="badge badge--warn" style="margin-bottom:8px;">期間</div>
+        <p style="font-size:var(--type-small); color:var(--ink); line-height:1.5; margin:0;">「診断まで約164日長い」は<br>組換え対生の比較。減った人数ではない。</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">出典：Eyting Nature 2025（同じ集団・同じ追跡期間の数字）</div>
+    <div class="page-num">14 / 18</div>
+  </div>
+</section>
+
+<!-- SLIDE 15: 今どう考えるか -->
+<section class="slide slide--soft" data-label="how-to-think" data-screen-label="今どう考えるか">
+  <div class="eyebrow"><span class="num">13</span><span class="en">TAKE HOME</span><span>今どう考えるか</span></div>
+  <h2 class="s-title">接種の理由は「帯状疱疹を防ぐ」で十分</h2>
+  <div class="hairline"></div>
+  <div class="flex-col" style="margin-top:32px; flex:1; justify-content:center; gap:18px;">
+    <div class="card card--accent flex-row-item anim anim-1" data-cue="1つ目に、帯状疱疹と神経">
+      <div style="font-size:calc(30px * var(--type-mult)); font-weight:800; color:var(--accent);">1</div>
+      <div style="font-size:var(--type-small); color:var(--ink); line-height:1.5;">帯状疱疹と神経痛の予防効果は確立している。これだけで接種を検討する理由になる。</div>
+    </div>
+    <div class="card flex-row-item anim anim-2" data-cue="2つ目に、認知症予防は保">
+      <div style="font-size:calc(30px * var(--type-mult)); font-weight:800; color:var(--navy);">2</div>
+      <div style="font-size:var(--type-small); color:var(--ink); line-height:1.5;">認知症予防は保証されていない「おまけ」。期待して打つのはよいが、確約ではない。</div>
+    </div>
+    <div class="card flex-row-item anim anim-3" data-cue="3つ目に、答えが出るのは">
+      <div style="font-size:calc(30px * var(--type-mult)); font-weight:800; color:var(--navy);">3</div>
+      <div style="font-size:var(--type-small); color:var(--ink); line-height:1.5;">答えが出るのは無作為化試験の結果が揃う2030年ごろ。<br>それまでは「関連はある・因果は未確定」。</div>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">帯状疱疹ワクチンで認知症も減る？</div>
+    <div class="page-num">15 / 18</div>
+  </div>
+</section>
+
+<!-- SLIDE 16: まとめ -->
+<section class="slide" data-label="summary" data-screen-label="まとめ">
+  <div class="eyebrow"><span class="num">14</span><span class="en">SUMMARY</span><span>まとめ</span></div>
+  <h2 class="s-title">まとめ：3段階で覚える</h2>
+  <div class="hairline"></div>
+  <div class="grid-3" style="margin-top:36px; flex:1;">
+    <div class="card card--soft anim anim-1" data-cue="確立しているのは、帯状疱">
+      <div class="badge badge--navy" style="margin-bottom:16px;">確立</div>
+      <p style="font-size:var(--type-body); font-weight:700; color:var(--navy); line-height:1.5; margin:0;">帯状疱疹と<br>神経痛を防ぐ。<br>65歳は定期接種。</p>
+    </div>
+    <div class="card card--accent anim anim-2" data-cue="関連として分かっているの">
+      <div class="badge badge--accent" style="margin-bottom:16px;">関連</div>
+      <p style="font-size:var(--type-body); font-weight:700; color:var(--navy); line-height:1.5; margin:0;">接種者に認知症の<br>診断が少ない。<br>3か国の自然実験で<br>再現。</p>
+    </div>
+    <div class="card anim anim-3" data-cue="未確定なのは、防ぐのか、">
+      <div class="badge badge--warn" style="margin-bottom:16px;">未確定</div>
+      <p style="font-size:var(--type-body); font-weight:700; color:var(--danger); line-height:1.5; margin:0;">防ぐのか、<br>どれだけか、<br>組換えや日本人でも<br>同じか。</p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">帯状疱疹ワクチンで認知症も減る？</div>
+    <div class="page-num">16 / 18</div>
+  </div>
+</section>
+
+<!-- SLIDE 17: 免責 -->
+<section class="slide slide--soft" data-label="disclaimer" data-screen-label="免責">
+  <div class="eyebrow"><span class="num">15</span><span class="en">NOTICE</span><span>ご注意</span></div>
+  <h2 class="s-title">ご視聴にあたって</h2>
+  <div class="hairline"></div>
+  <div class="flex-col" style="margin-top:32px; flex:1; justify-content:center; gap:18px;">
+    <div class="card flex-row-item anim anim-1" data-cue="この動画は2026年9月">
+      <div class="badge badge--navy" style="flex:none;">情報</div>
+      <div style="font-size:var(--type-small); color:var(--ink); line-height:1.5;">この動画は2026年9月時点の公開研究と<br>厚生労働省の案内をもとにした一般向けの解説です。</div>
+    </div>
+    <div class="card flex-row-item anim anim-2" data-cue="接種の可否や時期は、持病">
+      <div class="badge badge--navy" style="flex:none;">判断</div>
+      <div style="font-size:var(--type-small); color:var(--ink); line-height:1.5;">接種の可否や時期は、持病や体調によって異なります。<br>かかりつけの医師と自治体の窓口にご相談ください。</div>
+    </div>
+    <div class="card flex-row-item anim anim-3" data-cue="参考文献の一覧と詳しい解">
+      <div class="badge badge--navy" style="flex:none;">出典</div>
+      <div style="font-size:var(--type-small); color:var(--ink); line-height:1.5;">参考文献の一覧と詳しい解説は、概要欄のブログ記事に掲載しています。</div>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <div class="ch-title">帯状疱疹ワクチンで認知症も減る？</div>
+    <div class="page-num">17 / 18</div>
+  </div>
+</section>
+
+<!-- SLIDE 18: エンディング -->
+<section class="slide slide--navy" data-label="ending" data-screen-label="エンディング" style="justify-content:center; align-items:flex-start;">
+  <div class="chapter-ghost">END</div>
+  <div class="badge badge--accent" style="font-size:calc(22px * var(--type-mult)); padding:8px 20px; margin-bottom:28px;">ご視聴ありがとうございました</div>
+  <h2 class="s-title" style="margin:0 0 24px;">チャンネル登録・高評価を<br>よろしくお願いいたします</h2>
+  <p style="font-size:calc(27px * var(--type-mult)); color:rgba(255,255,255,.9); line-height:1.6; margin:0;">
+    詳しい解説や参考文献は概要欄・ブログ記事をご覧ください
+  </p>
+  <div class="slide__foot">
+    <div class="ch-title">帯状疱疹ワクチンで認知症も減る？</div>
+    <div class="page-num">18 / 18</div>
+  </div>
+</section>
+
+</deck-stage>
+<script src="deck-stage.js"></script>
+</body>
+</html>
