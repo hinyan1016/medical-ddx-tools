@@ -20,7 +20,7 @@ DECK = {
         "「まだ言えないこと」の3段階で18枚にまとめた。一般向け。"
     ),
     "youtube_id": "ihG-WRWm0jE",
-    "blog_url": "",
+    "blog_url": "https://blog.ichisouzo-lab.com/entry/2026/09/07/071412",
     "source_dir": "帯状疱疹ワクチンと認知症/generated",
     "slide_prefix": "slide_",
     "pdf_filename": "slides.pdf",

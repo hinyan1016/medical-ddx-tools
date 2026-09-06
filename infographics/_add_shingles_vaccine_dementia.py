@@ -18,7 +18,7 @@ ITEM = {
         "組換えワクチンの無作為化試験（2026年開始・主な結果は2029〜2030年以降）まで1枚にまとめた。"
     ),
     "audience": "一般",
-    "blog_url": "",
+    "blog_url": "https://blog.ichisouzo-lab.com/entry/2026/09/07/071412",
     "date": "2026-09-07",
     "youtube_id": "ihG-WRWm0jE",
 }
