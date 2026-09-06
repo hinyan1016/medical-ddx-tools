@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v157';
+const CACHE_NAME = 'ddx-tools-v158';
 const ASSETS = [
   './handouts/essential-tremor-treatment-2026/index.html',
   './infographics/essential-tremor-treatment-2026/index.html',

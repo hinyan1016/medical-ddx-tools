@@ -865,5 +865,20 @@
 <footer>
   ⚠️ 本資料は一般的な医療情報であり、個別の診断・治療に代わるものではありません。気になる症状があれば主治医にご相談ください。
 </footer>
+<script>
+function filterCards(){
+  var query=document.getElementById('searchQ').value.trim().toLocaleLowerCase('ja');
+  var count=0;
+  document.querySelectorAll('a.ho-card').forEach(function(card){
+    var text=(card.textContent+' '+(card.dataset.search||'')).toLocaleLowerCase('ja');
+    var match=!query||text.includes(query);
+    card.classList.toggle('is-hidden',!match);
+    if(match)count++;
+  });
+  document.getElementById('resultCount').textContent=count+' 件のハンドアウト';
+  document.getElementById('emptyState').style.display=count?'none':'block';
+}
+filterCards();
+</script>
 </body>
 </html>
