@@ -1,0 +1,630 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>いつもの薬が高くなった？ 先発薬の追加負担と対象外になるケース【2026年版】</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#012360;
+  --navy-ink:#001B4D;
+  --accent:#F27E03;
+  --accent-soft: color-mix(in srgb, var(--accent) 11%, #ffffff);
+  --accent-line: color-mix(in srgb, var(--accent) 62%, #ffffff);
+  --accent-ink: color-mix(in srgb, var(--accent) 74%, #4a2604);
+  --danger:#DC3323;
+  --danger-soft: color-mix(in srgb, var(--danger) 9%, #ffffff);
+  --bg:#FDFDFD;
+
+  --blue:#1D4189;
+  --blue-soft:#E9EEF8;
+  --blue-tint:#EEF2FA;
+  --red: var(--danger);
+  --red-soft: var(--danger-soft);
+  --orange: var(--accent);
+  --orange-soft: var(--accent-soft);
+  --line:#D8DDE6;
+  --line-soft:#C9D2DF;
+  --bg-muted:#F8F8F8;
+  --bg-alt:#F6F6F6;
+  --navy-line: color-mix(in srgb, var(--navy) 22%, #ffffff);
+
+  --type-mult: 1.38;
+  --type-display: calc(96px * var(--type-mult));
+  --type-title:   calc(70px * var(--type-mult));
+  --type-heading: calc(52px * var(--type-mult));
+  --type-subtitle:calc(36px * var(--type-mult));
+  --type-body:    calc(26px * var(--type-mult));
+  --type-small:   calc(22px * var(--type-mult));
+  --type-label:   calc(20px * var(--type-mult));
+
+  --pad-x: 100px;
+  --pad-top: 48px;
+  --pad-bottom: 100px;
+
+  --font-ja: "Noto Sans JP", sans-serif;
+  --grad-navy: linear-gradient(160deg, #012360 0%, #001B4D 100%);
+}
+
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#0a1430; }
+
+.slide{
+  box-sizing:border-box;
+  display:flex; flex-direction:column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  background: var(--bg);
+  color: #1a2530;
+  font-family: var(--font-ja);
+  overflow:hidden;
+  position:relative;
+  width:1920px;
+  height:1080px;
+}
+.slide::after{
+  content:""; position:absolute; left:0; right:0; bottom:0; height:10px;
+  background: var(--navy); pointer-events:none;
+}
+.slide--navy{ background: var(--grad-navy); color: #ffffff; }
+.slide--navy::after{ background: var(--accent); }
+.slide--soft{ background: var(--bg-alt); }
+
+.eyebrow{
+  display:flex; align-items:center; gap:16px;
+  font-size: var(--type-label); font-weight:700; color: var(--navy);
+  letter-spacing:.04em;
+}
+.eyebrow::before{
+  content:""; width:10px; height:36px; border-radius:3px;
+  background: linear-gradient(180deg, var(--navy) 0 68%, var(--accent) 68% 100%);
+  flex:none;
+}
+.eyebrow .en{ color: var(--accent-ink); letter-spacing:.15em; text-transform:uppercase; margin-left:auto; }
+.slide--navy .eyebrow{ color: rgba(255,255,255,.88); }
+.slide--navy .eyebrow .en{ color:#fff; }
+.slide--navy .eyebrow::before{ background: linear-gradient(180deg, #fff 0 68%, var(--accent) 68% 100%); }
+
+.s-title{
+  font-size: var(--type-heading); line-height:1.2; color: var(--navy);
+  margin: 14px 0 0; font-weight:800; letter-spacing:.01em;
+}
+.slide--navy .s-title{ color:#ffffff; }
+
+.lead{
+  font-size: var(--type-subtitle); line-height:1.5; color: #475569;
+  margin: 8px 0 0; font-weight:600;
+}
+.slide--navy .lead{ color: #d0ddec; }
+
+.slide__foot{
+  position:absolute; left:var(--pad-x); right:var(--pad-x); bottom:28px;
+  display:flex; justify-content:space-between; align-items:center;
+  font-size: calc(20px * var(--type-mult)); color: #64748b; font-weight:700;
+}
+.slide--navy .slide__foot{ color: rgba(255,255,255,.7); }
+.slide__foot .ch{ display:flex; align-items:center; gap:10px; }
+.slide__foot .cross{ color: var(--accent); font-weight:800; }
+
+.hairline{
+  border:none; border-top:2px solid var(--line);
+  margin: 12px 0 16px;
+}
+.slide--navy .hairline{ border-top-color: rgba(255,255,255,.2); }
+
+.grid-2col{ display:grid; grid-template-columns: 1fr 1fr; gap:28px; margin-top:14px; }
+.grid-3col{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:22px; margin-top:14px; }
+
+.deck-card{
+  background:#ffffff; border-radius:12px; border:2px solid var(--line);
+  padding:20px 22px; display:flex; flex-direction:column; justify-content:flex-start;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+.deck-card--accent{ border-color: var(--accent); background: #fffdfa; }
+.deck-card--navy{ background: var(--blue-tint); border-color: var(--blue); }
+
+.card-tag{
+  display:inline-block; align-self:flex-start; font-size: var(--type-label);
+  font-weight:800; padding:4px 12px; border-radius:6px; margin-bottom:10px;
+  background: var(--navy); color:#ffffff;
+}
+.deck-card--accent .card-tag{ background: var(--accent); }
+
+.card-title{ font-size: var(--type-subtitle); font-weight:800; color: var(--navy); margin-bottom:8px; }
+.card-text{ font-size: var(--type-body); line-height:1.55; color: #334155; margin:0; }
+
+.table-deck{
+  width:100%; border-collapse:collapse; margin-top:16px; font-size: var(--type-body);
+}
+.table-deck td{
+  padding:12px 18px; border:2px solid var(--line);
+}
+.table-deck tr.head td{
+  background: var(--navy); color:#ffffff; font-weight:800;
+}
+.table-deck tr.hl td{
+  background: #fff5eb; border-color: var(--accent); font-weight:800; color: var(--accent-ink);
+}
+
+.flow-box{
+  background:#ffffff; border-radius:10px; border:2px solid var(--line);
+  padding:14px 18px; margin-bottom:10px; display:flex; align-items:center; gap:16px;
+}
+.flow-num{
+  background: var(--navy); color:#ffffff; border-radius:50%; width:48px; height:48px;
+  display:flex; align-items:center; justify-content:center; font-size: 24px;
+  font-weight:800; flex:none;
+}
+.flow-content h4{ margin:0 0 4px; font-size: var(--type-subtitle); color: var(--navy); font-weight:800; }
+.flow-content p{ margin:0; font-size: var(--type-body); color:#334155; line-height:1.45; }
+
+/* --- 仕組みとしてのバランス・改行制御 --- */
+.s-title, .lead, .card-title, .card-text {
+  text-wrap: pretty;
+  word-break: auto-phrase;
+}
+
+.slide--center {
+  justify-content: center;
+}
+
+.preview-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.preview-card-dark {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  padding: 24px 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.preview-card-dark--accent {
+  background: rgba(242, 126, 3, 0.12);
+  border-color: var(--accent);
+}
+
+.preview-card-dark .card-tag {
+  background: var(--accent);
+  color: #ffffff;
+  margin-bottom: 12px;
+  font-weight: 800;
+}
+
+.preview-card-dark .card-title {
+  color: #ffffff;
+  font-size: var(--type-subtitle);
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.preview-card-dark .card-text {
+  color: #e2e8f0;
+  font-size: var(--type-body);
+  line-height: 1.55;
+  margin: 0;
+}
+</style>
+</head>
+<body>
+
+<deck-stage width="1920" height="1080">
+
+  <!-- ===== 01. 表紙 ===== -->
+  <section data-label="表紙" data-screen-label="01 表紙" class="slide slide--navy">
+    <div class="eyebrow">医療制度解説【2026年6月改定対応】<span class="en">MEDICAL SYSTEM EXPLAINED</span></div>
+    <h1 class="s-title" style="font-size:calc(54px * var(--type-mult));margin-top:24px;line-height:1.26;">
+      いつもの薬が高くなった？<br>
+      <span style="color:var(--accent);">先発薬の追加負担</span>と対象外になるケース
+    </h1>
+    <hr class="hairline" style="margin-top:16px;margin-bottom:16px;">
+    <p class="lead" style="font-size:calc(26px * var(--type-mult));color:#e2e8f0;margin:0;">
+      同じ薬なのに支払いが増える理由・計算の仕組み・支払いが不要になる3つの条件
+    </p>
+    <div class="preview-grid-3">
+      <div class="preview-card-dark">
+        <span class="card-tag">改定ポイント</span>
+        <div class="card-title">差額の2分の1へ</div>
+        <p class="card-text">
+          2026年6月1日より特別料金が引き上げ。先発薬を選んだ場合の自己負担が増加します。
+        </p>
+      </div>
+      <div class="preview-card-dark">
+        <span class="card-tag">算定ルール</span>
+        <div class="card-title">2階建て計算構造</div>
+        <p class="card-text">
+          保険給付の減額控除と全額自費（税込）が組み合わさる正確な仕組みを具体例で解説。
+        </p>
+      </div>
+      <div class="preview-card-dark preview-card-dark--accent">
+        <span class="card-tag" style="background:var(--accent);">重要な例外</span>
+        <div class="card-title" style="color:var(--accent);">追加負担ゼロの条件</div>
+        <p class="card-text">
+          医療上の必要性・薬局の供給不足・制度区分など、追加料金が不要になる3ケース。
+        </p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>01</span></div>
+  </section>
+
+  <!-- ===== 02. 結論先出し ===== -->
+  <section data-label="結論先出し" data-screen-label="02 結論先出し" class="slide">
+    <div class="eyebrow">制度改定の結論<span class="en">SUMMARY</span></div>
+    <h2 class="s-title">2026年6月からの大改定</h2>
+    <p class="lead">「特別の料金」が差額の4分の1から「2分の1」へ引き上げられました</p>
+    <hr class="hairline">
+    <div class="grid-2col" style="margin-top:28px;">
+      <div class="deck-card" style="padding:28px 26px;">
+        <span class="card-tag" style="background:#64748b;">2026年5月まで</span>
+        <div class="card-title">差額の 4分の1 相当</div>
+        <p class="card-text" style="font-size:calc(24px * var(--type-mult));line-height:1.65;margin-top:8px;">
+          先発薬と後発薬の価格差の25%（＋消費税）を自己負担。<br>
+          負担増は比較的緩やかでした。
+        </p>
+      </div>
+      <div class="deck-card deck-card--accent" style="padding:28px 26px;">
+        <span class="card-tag">2026年6月以降（現在）</span>
+        <div class="card-title" style="color:var(--accent);">差額の 2分の1 相当</div>
+        <p class="card-text" style="font-size:calc(24px * var(--type-mult));line-height:1.65;margin-top:8px;">
+          価格差の<strong>50%（＋消費税）</strong>へと引き上げ。<br>
+          長期処方では数百円〜千円以上の負担増となる場合があります。
+        </p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>02</span></div>
+  </section>
+
+  <!-- ===== 03. 用語整理 ===== -->
+  <section data-label="用語整理" data-screen-label="03 用語整理" class="slide slide--soft">
+    <div class="eyebrow">基本概念の確認<span class="en">DEFINITIONS</span></div>
+    <h2 class="s-title">3つのお薬の違いを整理</h2>
+    <p class="lead">なぜ先発薬に追加料金がかかるようになったのか</p>
+    <hr class="hairline">
+    <div class="grid-3col">
+      <div class="deck-card">
+        <span class="card-tag">① 先発医薬品</span>
+        <div class="card-title">新薬（開発薬）</div>
+        <p class="card-text">
+          莫大な研究開発費をかけて最初に開発・承認された薬。<br>
+          特許期間中は一社が独占して製造販売します。
+        </p>
+      </div>
+      <div class="deck-card">
+        <span class="card-tag" style="background:#2e7d32;">② 後発医薬品</span>
+        <div class="card-title">ジェネリック</div>
+        <p class="card-text">
+          特許終了後に同じ有効成分で作られる薬。<br>
+          開発費が抑えられているため、薬価が安く設定されます。
+        </p>
+      </div>
+      <div class="deck-card deck-card--accent">
+        <span class="card-tag">③ 長期収載品</span>
+        <div class="card-title">本制度の対象</div>
+        <p class="card-text">
+          後発薬が発売されてから長く経った先発薬。<br>
+          患者希望で選び続ける場合、特別料金の対象となります。
+        </p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>03</span></div>
+  </section>
+
+  <!-- ===== 04. 誤解の解消 ===== -->
+  <section data-label="誤解の解消" data-screen-label="04 誤解の解消" class="slide">
+    <div class="eyebrow">対象基準の明確化<span class="en">CRITERIA</span></div>
+    <h2 class="s-title">すべての先発薬が対象ではありません</h2>
+    <p class="lead">国が定めた「長期収載品」の基準を満たす薬のみが対象です</p>
+    <hr class="hairline">
+    <div class="grid-2col">
+      <div class="deck-card deck-card--navy">
+        <span class="card-tag">対象となる先発薬の条件</span>
+        <div class="card-title" style="margin-top:4px;">以下のいずれかに該当</div>
+        <ul style="font-size:var(--type-body);line-height:1.7;padding-left:24px;color:#1e293b;margin:8px 0;">
+          <li>後発医薬品が発売されてから<strong>5年以上経過</strong></li>
+          <li>後発医薬品への置き換え割合が<strong>50%以上</strong></li>
+        </ul>
+        <p class="card-text" style="font-size:calc(20px * var(--type-mult));color:#64748b;">
+          ※厚生労働省の「対象医薬品リスト」掲載品目に限られます。
+        </p>
+      </div>
+      <div class="deck-card">
+        <span class="card-tag" style="background:#64748b;">対象外となるお薬</span>
+        <div class="card-title" style="margin-top:4px;">追加料金はかかりません</div>
+        <ul style="font-size:var(--type-body);line-height:1.7;padding-left:24px;color:#1e293b;margin:8px 0;">
+          <li>まだ後発医薬品が存在しない<strong>新薬</strong></li>
+          <li>特許が切れて間もない先発医薬品</li>
+          <li>医師が「医療上の必要性」を認めた処方</li>
+        </ul>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>04</span></div>
+  </section>
+
+  <!-- ===== 05. 計算の仕組み ===== -->
+  <section data-label="計算の仕組み" data-screen-label="05 計算の仕組み" class="slide slide--soft">
+    <div class="eyebrow">公式算定ルール<span class="en">CALCULATION</span></div>
+    <h2 class="s-title">追加負担の計算ルール</h2>
+    <p class="lead">単なる上乗せではなく、保険対象部分が控除される2階建て構造</p>
+    <hr class="hairline">
+    <div class="flow-box">
+      <div class="flow-num">1</div>
+      <div class="flow-content">
+        <h4>特別の料金（全額自費 ＋ 消費税10%）</h4>
+        <p>（先発薬の価格 − 最も高い後発薬の価格）の<strong>2分の1相当額</strong>に消費税10%を加算</p>
+      </div>
+    </div>
+    <div class="flow-box">
+      <div class="flow-num">2</div>
+      <div class="flow-content">
+        <h4>保険診療部分（通常の1〜3割負担）</h4>
+        <p>先発薬の価格から<strong>「特別の料金（税抜）」を差し引いた額</strong>を基準に保険給付を計算</p>
+      </div>
+    </div>
+    <div class="flow-box" style="border-color:var(--accent);background:#fffdfa;">
+      <div class="flow-num" style="background:var(--accent);">計</div>
+      <div class="flow-content">
+        <h4 style="color:var(--accent);">患者窓口支払総額</h4>
+        <p><strong>保険分自己負担 ＋ 特別の料金（自費分・税込）</strong>＝ 窓口での支払い</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>05</span></div>
+  </section>
+
+  <!-- ===== 06. 計算シミュレーション ===== -->
+  <section data-label="負担比較" data-screen-label="06 負担比較" class="slide">
+    <div class="eyebrow">具体例シミュレーション<span class="en">COMPARISON</span></div>
+    <h2 class="s-title">30日分処方での負担比較（例）</h2>
+    <p class="lead">先発100円/錠・後発60円/錠（差額40円）3割負担の仮定モデル</p>
+    <hr class="hairline">
+    <table class="table-deck">
+      <tr class="head">
+        <td>処方の選択肢</td>
+        <td style="text-align:right;">保険分自己負担</td>
+        <td style="text-align:right;">特別の料金（自費）</td>
+        <td style="text-align:right;">窓口支払総額</td>
+      </tr>
+      <tr>
+        <td><strong>後発医薬品（ジェネリック）</strong></td>
+        <td style="text-align:right;">540円</td>
+        <td style="text-align:right;">0円</td>
+        <td style="text-align:right;font-weight:800;">540円</td>
+      </tr>
+      <tr>
+        <td>先発薬（2026年5月まで・差額1/4）</td>
+        <td style="text-align:right;">810円</td>
+        <td style="text-align:right;">330円</td>
+        <td style="text-align:right;">1,140円</td>
+      </tr>
+      <tr class="hl">
+        <td><strong>先発薬（2026年6月以降・差額1/2）</strong></td>
+        <td style="text-align:right;">720円</td>
+        <td style="text-align:right;">660円</td>
+        <td style="text-align:right;font-size:calc(32px * var(--type-mult));">1,380円</td>
+      </tr>
+    </table>
+    <p style="font-size:calc(20px * var(--type-mult));color:#64748b;margin-top:14px;">
+      ※後発品との支払額の差は <strong>＋840円</strong>（30日分）。改定前と比べても240円負担が増えています。
+    </p>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>06</span></div>
+  </section>
+
+  <!-- ===== 07. 中盤再フック ===== -->
+  <section data-label="中盤フック" data-screen-label="07 中盤フック" class="slide slide--navy">
+    <div class="eyebrow">制度の重要な例外<span class="en">OPEN LOOP</span></div>
+    <h2 class="s-title" style="font-size:calc(50px * var(--type-mult));margin-top:20px;">
+      先発薬でも追加負担ゼロ？
+    </h2>
+    <hr class="hairline" style="margin-top:16px;margin-bottom:16px;">
+    <p class="lead" style="font-size:calc(26px * var(--type-mult));color:#ffffff;line-height:1.6;margin:0;">
+      「先発薬を選んだら、絶対に全員が払わなければいけない」わけではありません。<br>
+      国が定めた公式ルールにより、<span style="color:var(--accent);font-weight:800;">追加負担が発生しない3つの例外ケース</span>が存在します。
+    </p>
+    <div class="preview-grid-3">
+      <div class="preview-card-dark">
+        <span class="card-tag">例外ケース ①</span>
+        <div class="card-title">医療上の必要性</div>
+        <p class="card-text">
+          適応症の違い・副作用やアレルギー歴・粉砕や嚥下など、医師が医学的に必要と認めた場合。
+        </p>
+      </div>
+      <div class="preview-card-dark">
+        <span class="card-tag">例外ケース ②</span>
+        <div class="card-title">薬局の在庫・流通事情</div>
+        <p class="card-text">
+          後発品を希望したものの、製薬会社の出荷停止や流通混乱で薬局に在庫がなく提供困難な場合。
+        </p>
+      </div>
+      <div class="preview-card-dark preview-card-dark--accent">
+        <span class="card-tag" style="background:var(--accent);">例外ケース ③</span>
+        <div class="card-title" style="color:var(--accent);">制度上の区分</div>
+        <p class="card-text">
+          入院中や退院時の処方（選定療養の対象外）や、生活保護受給者など制度上の取り決めによる場合。
+        </p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>07</span></div>
+  </section>
+
+  <!-- ===== 08. 対象外① ===== -->
+  <section data-label="対象外①" data-screen-label="08 対象外①" class="slide">
+    <div class="eyebrow">対象外ケース①<span class="en">CASE 1 : MEDICAL NEED</span></div>
+    <h2 class="s-title">ケース①：医療上の必要性</h2>
+    <p class="lead">医師が医学的判断により「先発薬が必要」と認めた場合</p>
+    <hr class="hairline">
+    <div class="grid-2col">
+      <div class="deck-card deck-card--navy">
+        <div class="card-title">① 適応症の違い・効能差</div>
+        <p class="card-text">先発薬にしか承認されていない特定の病名や効能があり、その治療に必要な場合。</p>
+        <div class="card-title" style="margin-top:16px;">② 副作用・アレルギー歴</div>
+        <p class="card-text">過去に後発薬でアレルギーや副作用が出た経験があり、安全上先発薬が必要な場合。</p>
+      </div>
+      <div class="deck-card deck-card--navy">
+        <div class="card-title">③ 剤形上の必要性</div>
+        <p class="card-text">粉砕して一包化する必要がある、嚥下困難で特定の形状が必要など治療上不可欠な場合。</p>
+        <div class="card-title" style="margin-top:16px;">④ ガイドラインの推奨</div>
+        <p class="card-text">学会ガイドライン等で切り替えを行わないことが推奨されている特殊な場合。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>08</span></div>
+  </section>
+
+  <!-- ===== 09. 対象外② ===== -->
+  <section data-label="対象外②" data-screen-label="09 対象外②" class="slide slide--soft">
+    <div class="eyebrow">対象外ケース②<span class="en">CASE 2 : SUPPLY SHORTAGE</span></div>
+    <h2 class="s-title">ケース②：薬局の在庫・流通事情</h2>
+    <p class="lead">薬局にジェネリックの在庫がなく提供が困難な場合</p>
+    <hr class="hairline">
+    <div class="deck-card" style="padding:24px 28px;">
+      <span class="card-tag" style="background:#2e7d32;">患者さんの責任ではない供給不足</span>
+      <div class="card-title" style="font-size:calc(36px * var(--type-mult));margin-top:8px;">
+        先発薬が出ても「追加料金なし（保険適用）」
+      </div>
+      <p class="card-text" style="font-size:var(--type-subtitle);line-height:1.6;margin-top:10px;">
+        患者さんがジェネリックを希望したにもかかわらず、製薬会社の出荷停止や流通の混乱で薬局に在庫がない場合、先発薬が調剤されても選定療養費は発生しません。
+      </p>
+      <div style="background:#edf2f7;border-radius:6px;padding:12px 16px;margin-top:16px;font-size:var(--type-body);color:#475569;">
+        ※一般的な出荷調整情報だけでなく、「その薬局で現に提供できないか」で現場判断されます。
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>09</span></div>
+  </section>
+
+  <!-- ===== 10. 対象外③ ===== -->
+  <section data-label="対象外③" data-screen-label="10 対象外③" class="slide">
+    <div class="eyebrow">対象外ケース③<span class="en">CASE 3 : SPECIAL RULES</span></div>
+    <h2 class="s-title">ケース③：制度上の区分</h2>
+    <p class="lead">入院や公費負担医療における取り扱いルール</p>
+    <hr class="hairline">
+    <div class="grid-3col">
+      <div class="deck-card">
+        <span class="card-tag">入院・退院時処方</span>
+        <div class="card-title">選定療養の対象外</div>
+        <p class="card-text">
+          入院治療中の投薬および退院時の処方は、選定療養の対象外となり保険給付されます。
+        </p>
+      </div>
+      <div class="deck-card">
+        <span class="card-tag">生活保護</span>
+        <div class="card-title">原則後発品調剤</div>
+        <p class="card-text">
+          医療上の必要性がない限り原則後発品のため、特別料金の自己負担は発生しません。
+        </p>
+      </div>
+      <div class="deck-card deck-card--accent">
+        <span class="card-tag">難病・自立支援等</span>
+        <div class="card-title">患者希望時は自費</div>
+        <p class="card-text">
+          患者希望で先発薬を選んだ場合、特別料金分のみ公費助成の対象外となり、自己負担が発生します。
+        </p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>10</span></div>
+  </section>
+
+  <!-- ===== 11. 不安なときの相談法 ===== -->
+  <section data-label="相談の進め方" data-screen-label="11 相談の進め方" class="slide slide--soft">
+    <div class="eyebrow">実践アクション<span class="en">ACTION STEPS</span></div>
+    <h2 class="s-title">不安なときの相談3ステップ</h2>
+    <p class="lead">無理に替えず、医師や薬剤師に相談して納得の選択を</p>
+    <hr class="hairline">
+    <div class="flow-box">
+      <div class="flow-num">1</div>
+      <div class="flow-content">
+        <h4>お薬手帳を持参し、薬剤師に差額と違いを聞く</h4>
+        <p>「ジェネリックにするといくら安くなるか」「形や大きさに違いはあるか」を確認します。</p>
+      </div>
+    </div>
+    <div class="flow-box">
+      <div class="flow-num">2</div>
+      <div class="flow-content">
+        <h4>過去の体調変化や不安な点を具体的に伝える</h4>
+        <p>「以前胃がもたれた」「粒が大きいと飲めない」など、具体的な理由を伝えます。</p>
+      </div>
+    </div>
+    <div class="flow-box">
+      <div class="flow-num">3</div>
+      <div class="flow-content">
+        <h4>「まず1種類だけ」「短期間だけ」試してみる</h4>
+        <p>すべて一度に変える必要はありません。1剤だけ試して体調を確認しながら進められます。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>11</span></div>
+  </section>
+
+  <!-- ===== 12. 明細書の確認 ===== -->
+  <section data-label="明細確認" data-screen-label="12 明細確認" class="slide">
+    <div class="eyebrow">領収書の見方<span class="en">RECEIPT CHECK</span></div>
+    <h2 class="s-title">調剤明細書・領収書のチェック</h2>
+    <p class="lead">いくら特別料金を払ったのかを確認する方法</p>
+    <hr class="hairline">
+    <div class="grid-2col">
+      <div class="deck-card deck-card--navy">
+        <span class="card-tag">領収書の記載欄</span>
+        <div class="card-title">「選定療養」欄を確認</div>
+        <p class="card-text" style="font-size:var(--type-subtitle);line-height:1.6;">
+          通常の保険分自己負担額とは別に、<br>「特別の料金（消費税込）」が独立した行として印字されます。
+        </p>
+      </div>
+      <div class="deck-card deck-card--accent">
+        <span class="card-tag">税制上の優遇</span>
+        <div class="card-title" style="color:var(--accent);">医療費控除の対象</div>
+        <p class="card-text" style="font-size:var(--type-subtitle);line-height:1.6;">
+          選定療養として支払った特別料金は、医師の処方に基づく薬代の一部であるため、確定申告の<strong>医療費控除の対象</strong>に含まれます。
+        </p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>12</span></div>
+  </section>
+
+  <!-- ===== 13. まとめ ===== -->
+  <section data-label="まとめ" data-screen-label="13 まとめ" class="slide slide--navy">
+    <div class="eyebrow">まとめ<span class="en">CONCLUSION</span></div>
+    <h2 class="s-title" style="font-size:calc(50px * var(--type-mult));margin-top:20px;">
+      納得して安心の治療を続けるために
+    </h2>
+    <hr class="hairline" style="margin-top:16px;margin-bottom:16px;">
+    <p class="lead" style="font-size:calc(26px * var(--type-mult));color:#e2e8f0;line-height:1.6;margin:0;">
+      2026年6月の改定で負担は増えましたが、無理に我慢する必要はありません。<br>
+      不安や疑問があるときは、お薬手帳を持って主治医やかかりつけ薬剤師にご相談ください。
+    </p>
+    <div class="grid-2col" style="margin-top:24px;">
+      <div class="preview-card-dark" style="padding:20px 24px;">
+        <span class="card-tag">ポイント ①</span>
+        <div class="card-title">制度の仕組みを把握する</div>
+        <p class="card-text">
+          改定で差額の2分の1負担へ。すべての先発薬ではなく、医療上の必要性など3つの例外があります。
+        </p>
+      </div>
+      <div class="preview-card-dark preview-card-dark--accent" style="padding:20px 24px;">
+        <span class="card-tag" style="background:var(--accent);">ポイント ②</span>
+        <div class="card-title" style="color:var(--accent);">納得して治療を継続する</div>
+        <p class="card-text">
+          薬局で差額や剤形を確認し、1剤ずつ段階的に試すことも可能。領収書は医療費控除に使えます。
+        </p>
+      </div>
+    </div>
+    <div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.22);border-radius:10px;padding:16px 24px;margin-top:20px;">
+      <p style="font-size:var(--type-body);color:#ffffff;line-height:1.5;margin:0;">
+        最後までご視聴いただきありがとうございました。役に立ったと感じていただけたらチャンネル登録と高評価で応援いただければ励みになります。次回の動画もお楽しみに。
+      </p>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>13</span></div>
+  </section>
+
+</deck-stage>
+
+<script src="deck-stage.js"></script>
+<script src="image-slot.js"></script>
+
+</body>
+</html>
