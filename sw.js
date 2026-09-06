@@ -1,5 +1,12 @@
-const CACHE_NAME = 'ddx-tools-v156';
+const CACHE_NAME = 'ddx-tools-v159';
 const ASSETS = [
+  './infographics/shingles-vaccine-dementia/index.html',
+  './infographics/shingles-vaccine-dementia/infographic.png',
+  './infographics/shingles-vaccine-dementia/thumb.png',
+  './handouts/essential-tremor-treatment-2026/index.html',
+  './infographics/essential-tremor-treatment-2026/index.html',
+  './infographics/essential-tremor-treatment-2026/research.html',
+  './infographics/essential-tremor-treatment-2026/treatment.html',
   './slides/hyperreflexia-in-recovery/index.html',
   './slides/hyperreflexia-in-recovery/slides.pdf',
   './slides/hyperreflexia-in-recovery/slide-01.png',
