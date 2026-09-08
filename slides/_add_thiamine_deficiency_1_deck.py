@@ -21,7 +21,7 @@ DECK = {
         "全4回の第1回／全18スライド。"
     ),
     "youtube_id": "Ju2mLRn4aCk",
-    "blog_url": "",
+    "blog_url": "https://blog.ichisouzo-lab.com/entry/2026/09/08/190255",
     "source_dir": "thiamine-deficiency-1-who-is-at-risk/generated",
     "slide_prefix": "slide_",
     "pdf_filename": "slides.pdf",
