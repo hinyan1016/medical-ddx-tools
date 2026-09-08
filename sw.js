@@ -1,5 +1,8 @@
-const CACHE_NAME = 'ddx-tools-v160';
+const CACHE_NAME = 'ddx-tools-v161';
 const ASSETS = [
+  './infographics/thiamine-deficiency-1-who-is-at-risk/index.html',
+  './infographics/thiamine-deficiency-1-who-is-at-risk/infographic.png',
+  './infographics/thiamine-deficiency-1-who-is-at-risk/thumb.png',
   './slides/thiamine-deficiency-1-who-is-at-risk/index.html',
   './slides/thiamine-deficiency-1-who-is-at-risk/deck.html',
   './slides/thiamine-deficiency-1-who-is-at-risk/slides.pdf',
