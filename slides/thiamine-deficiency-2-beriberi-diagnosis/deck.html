@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>原因不明の乳酸アシドーシスを見たら｜衝心脚気・消化器型脚気の見つけ方と、血中チアミン検査の限界</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   テーマ「セミナー紺」— 参照: docs/specs/2026-07-05-slide-theme-seminar-navy-design.md
+   濃紺 #012360 × オレンジ #F27E03 × 警告レッド #DC3323 / 全文Noto Sans JPで統一
+   ===================================================================== */
+:root{
+  /* palette */
+  --navy:#012360;
+  --navy-ink:#001B4D;
+  --accent:#F27E03;
+  --accent-soft: color-mix(in srgb, var(--accent) 11%, #ffffff);
+  --accent-line: color-mix(in srgb, var(--accent) 62%, #ffffff);
+  --accent-ink: color-mix(in srgb, var(--accent) 74%, #4a2604);
+  --danger:#DC3323;
+  --danger-soft: color-mix(in srgb, var(--danger) 9%, #ffffff);
+  --bg:#FDFDFD;
+
+  /* 継承トークンの上書き */
+  --blue:#1D4189;
+  --blue-soft:#E9EEF8;
+  --blue-tint:#EEF2FA;
+  --red: var(--danger);
+  --red-soft: var(--danger-soft);
+  --orange: var(--accent);
+  --orange-soft: var(--accent-soft);
+  --line:#D8DDE6;
+  --line-soft:#C9D2DF;
+  --bg-muted:#F8F8F8;
+  --bg-alt:#F6F6F6;
+  --navy-line: color-mix(in srgb, var(--navy) 22%, #ffffff);
+
+  /* type scale — multiply all via --type-mult */
+  --type-mult: 1.38;
+  --type-display: calc(96px * var(--type-mult));
+  --type-title:   calc(82px * var(--type-mult));
+  --type-heading: calc(60px * var(--type-mult));
+  --type-subtitle:calc(44px * var(--type-mult));
+  --type-body:    calc(38px * var(--type-mult));
+  --type-small:   calc(30px * var(--type-mult));
+  --type-label:   calc(27px * var(--type-mult));
+  --type-chapter: calc(210px * var(--type-mult));
+  --type-stat:    calc(150px * var(--type-mult));
+
+  --pad-x: 112px;
+  --pad-top: 58px;
+  --pad-bottom: 116px;
+  --gap-title: 24px;
+  --gap-item: 22px;
+
+  --font-ja: "Noto Sans JP", "BIZ UDPGothic", "Yu Gothic", "Meiryo", sans-serif;
+  --font-serif: var(--font-ja);
+  --grad-navy: linear-gradient(160deg, #012360 0%, #001B4D 100%);
+}
+.serif{ font-family: var(--font-serif); font-weight:800; letter-spacing:.02em; }
+
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#0a1430; }
+
+/* ---------- base slide ---------- */
+.slide{
+  box-sizing:border-box;
+  display:flex; flex-direction:column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-ja);
+  overflow:hidden;
+  position:relative;
+}
+.slide::after{
+  content:""; position:absolute; left:0; right:0; bottom:0; height:10px;
+  background: var(--navy); pointer-events:none;
+}
+.slide--navy{ background: var(--grad-navy); color: var(--white); }
+.slide--navy::after{ background: var(--accent); }
+.slide--soft{ background: var(--bg-alt); }
+
+/* eyebrow */
+.eyebrow{
+  display:flex; align-items:center; gap:18px;
+  font-size: var(--type-label); font-weight:700; color: var(--navy);
+  letter-spacing:.04em;
+}
+.eyebrow::before{
+  content:""; width:12px; height:44px; border-radius:3px;
+  background: linear-gradient(180deg, var(--navy) 0 68%, var(--accent) 68% 100%);
+  flex:none;
+}
+.eyebrow .num{ font-family: var(--font-en); color: var(--accent-ink); }
+.eyebrow .en{ font-family: var(--font-en); color: var(--accent-ink); letter-spacing:.15em; text-transform:uppercase; }
+.slide--navy .eyebrow{ color: rgba(255,255,255,.88); }
+.slide--navy .eyebrow .en{ color:#fff; }
+.slide--navy .eyebrow::before{ background: linear-gradient(180deg, #fff 0 68%, var(--accent) 68% 100%); }
+
+.s-title{
+  font-size: var(--type-heading); line-height:1.22; color: var(--navy);
+  margin: var(--gap-title) 0 0; font-weight:800; letter-spacing:.01em;
+  text-wrap: pretty;
+}
+.slide--navy .s-title{ color:#fff; }
+
+.lead{
+  font-size: var(--type-body); line-height:1.7; color: var(--ink-2);
+  margin:0; text-wrap: pretty;
+}
+.muted{ color: var(--gray); }
+
+.hairline{
+  height:4px; border:0; margin:20px 0 0;
+  background: linear-gradient(90deg, var(--accent) 0 150px, var(--navy) 150px);
+  opacity:1;
+}
+.slide--navy .hairline{ background: linear-gradient(90deg, var(--accent) 0 150px, rgba(255,255,255,.85) 150px); }
+
+.chapter-ghost{
+  position:absolute; top: 30px; right: var(--pad-x);
+  font-family: var(--font-en); font-weight:700; line-height:.8;
+  font-size: calc(150px * var(--type-mult)); color: var(--navy);
+  opacity:.05; pointer-events:none; user-select:none;
+}
+.slide--navy .chapter-ghost{ color:#fff; opacity:.10; }
+
+.hl-underline{ border-bottom: 6px solid var(--accent-line); }
+
+.badge-danger{
+  display:inline-block; background: var(--danger); color:#fff;
+  font-weight:800; padding: 4px 26px; border-radius:10px;
+  line-height:1.35;
+}
+
+.slide__foot{
+  position:absolute; left: var(--pad-x); right: var(--pad-x); bottom: 36px;
+  display:flex; align-items:center; justify-content:space-between;
+  font-size: calc(24px * var(--type-mult)); color: var(--gray);
+  font-family: var(--font-ja);
+}
+.slide__foot .ch{ display:flex; align-items:center; gap:10px; font-weight:700; color: var(--navy); }
+.slide__foot .cross{ color: var(--accent); font-weight:700; }
+.slide--navy .slide__foot{ color: rgba(255,255,255,.65); }
+.slide--navy .slide__foot .ch{ color:#fff; }
+.slide--navy .slide__foot .cross{ color: var(--accent); }
+
+/* ============ 1. COVER ============ */
+.cover{ justify-content:center; }
+.cover__geo{
+  position:absolute; right: 70px; top: 48px; width: 380px; height: 380px;
+  pointer-events:none;
+}
+.cover__badge{
+  display:inline-flex; align-items:center; gap:14px; align-self:flex-start;
+  background:#fff; border:2px solid var(--navy-line);
+  color: var(--navy); padding:12px 26px; border-radius:999px;
+  font-size: var(--type-label); font-weight:700;
+}
+.cover__badge .cross{ color: var(--accent); font-size:1.2em; }
+.cover__title{
+  font-family: var(--font-serif);
+  font-size: calc(76px * var(--type-mult)); line-height:1.3; color: var(--navy); font-weight:800;
+  margin:42px 0 0; letter-spacing:.02em; max-width:1400px;
+}
+.cover__title .hl{ color: var(--accent); }
+.cover__rule{ width: 1500px; max-width:100%; height:3px; background: var(--navy); margin-top:36px; }
+.cover__sub{
+  font-size: var(--type-subtitle); color: var(--ink-2);
+  margin:34px 0 0; font-weight:700;
+}
+.cover__meta{
+  display:flex; gap:30px; align-items:center; margin-top:64px;
+  font-size: var(--type-small); color: var(--gray);
+}
+.cover__avatar{
+  flex:none; width:84px; height:84px; border-radius:50%;
+  background: var(--accent-soft); border:3px solid var(--accent);
+  display:flex; align-items:center; justify-content:center;
+}
+.cover__avatar svg{ width:56%; height:56%; }
+.cover__meta .name{ font-weight:800; color: var(--navy); font-size: var(--type-small); }
+.cover__meta .vline{ width:2px; height:52px; background: var(--line); }
+
+/* ============ 2. THEME / CONCLUSION FIRST ============ */
+.theme__body{ display:flex; flex-direction:column; gap: var(--gap-title); margin-top: 28px; flex:1; justify-content:center; }
+.theme__q{ font-family: var(--font-serif); font-size: var(--type-title); line-height:1.28; color: var(--navy); font-weight:800; max-width:26ch; text-wrap:balance; }
+.theme__q .hl{ color: var(--accent-ink); border-bottom: 8px solid var(--accent-line); }
+.concl{
+  display:flex; align-items:flex-start; gap:28px;
+  background:#fff; border:3px solid var(--accent);
+  border-radius: 12px; padding: 32px 44px;
+  position:relative;
+}
+.concl::before{
+  content:"“"; position:absolute; top:-58px; left:26px;
+  font-family: var(--font-en); font-size: calc(110px * var(--type-mult));
+  color: var(--accent); font-weight:900; line-height:1;
+}
+.concl__tag{
+  flex:none; background: var(--navy); color:#fff; font-weight:700;
+  font-size: var(--type-small); padding:10px 24px; border-radius:8px;
+}
+.concl__text{ font-size: var(--type-subtitle); line-height:1.5; color: var(--navy); font-weight:700; margin:0; }
+
+/* ============ 3. AGENDA ============ */
+.agenda__list{ display:grid; grid-template-columns:1fr 1fr; gap:20px 40px; margin-top:28px; }
+.agenda__item:last-child:nth-child(odd){ grid-column:span 2; }
+.agenda__item{ display:flex; align-items:center; gap:28px; }
+.agenda__num{
+  flex:none; width:68px; height:68px; border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+  background: var(--navy); color:#fff;
+  font-family: var(--font-en); font-size: calc(38px * var(--type-mult)); font-weight:800;
+}
+.agenda__txt{
+  font-size: var(--type-body); color: var(--navy); font-weight:700;
+  border-left: 5px solid var(--accent); padding-left: 24px;
+}
+.agenda__txt small{ display:block; font-size: var(--type-small); color: var(--gray); font-weight:400; margin-top:4px; }
+
+/* ============ 4. CHAPTER DIVIDER ============ */
+.chapter{ justify-content:center; align-items:center; text-align:center; }
+.chapter__kicker{
+  font-family: var(--font-en); font-size: var(--type-label); color: rgba(255,255,255,.55);
+  font-weight:700; letter-spacing:.4em; text-transform:uppercase;
+}
+.chapter__num{
+  font-family: var(--font-serif); font-size: calc(150px * var(--type-mult)); line-height:1.05;
+  font-weight:800; color:#fff; margin:10px 0 0; letter-spacing:.04em;
+}
+.chapter__rule{ width:560px; height:6px; background: var(--accent); border-radius:3px; margin-top:44px; }
+.chapter__title{ font-size: var(--type-subtitle); color:#fff; font-weight:700; margin:44px 0 0; max-width:26ch; text-wrap:balance; letter-spacing:.06em; }
+
+/* ============ 5. BODY 1 COLUMN ============ */
+.body1__main{ margin-top: 18px; max-width: 1640px; }
+.body1__main .lead{ margin-bottom: 14px; font-size: calc(34px * var(--type-mult)); line-height:1.6; }
+.important-box.lg{
+  background:#fff; border:2px solid var(--navy-line); border-left: 12px solid var(--accent);
+  border-radius: 12px; padding: 20px 36px; margin:0;
+  box-shadow: var(--shadow-sm);
+}
+.important-box.lg .ttl{ display:flex; align-items:center; gap:14px; font-size: var(--type-small); font-weight:700; color: var(--accent-ink); margin-bottom:6px; }
+.important-box.lg p{ font-size: calc(35px * var(--type-mult)); line-height:1.55; color: var(--ink-2); margin:0; }
+
+/* ============ 9. GRID CARDS ============ */
+.cards3{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-top:24px; flex:1; align-items:stretch; }
+.cards2{ display:grid; grid-template-columns:repeat(2,1fr); gap:26px; margin-top:24px; flex:1; align-items:stretch; }
+.card{
+  background:#fff; border:2px solid var(--navy-line); border-radius:14px;
+  padding:30px 28px; display:flex; flex-direction:column; gap:14px;
+  box-shadow: var(--shadow-sm); justify-content:flex-start;
+}
+.card--accent{ border-top:10px solid var(--accent); }
+.card--navy{ border-top:10px solid var(--navy); }
+.card--danger{ border-top:10px solid var(--danger); }
+.card__tag{
+  align-self:flex-start; font-size: var(--type-label); font-weight:800;
+  padding:6px 18px; border-radius:6px; background: var(--bg-alt); color: var(--navy);
+}
+.card__title{ font-size: var(--type-subtitle); color: var(--navy); font-weight:800; margin:0; line-height:1.3; }
+.card__text{ font-size: var(--type-small); color: var(--ink-2); line-height:1.6; margin:0; }
+
+/* ============ COMPARISON TABLE ============ */
+.tablewrap{ margin-top:16px; flex:1; }
+table.cmp{ width:100%; border-collapse:collapse; font-size: calc(24px * var(--type-mult)); }
+table.cmp th, table.cmp td{ text-align:left; padding:11px 22px; vertical-align:middle; line-height:1.4; }
+table.cmp thead th{ background: var(--navy); color:#fff; font-weight:700; font-size: var(--type-small); }
+table.cmp tbody td{ border-bottom:1px solid var(--line); color: var(--ink-2); }
+table.cmp tbody tr:nth-child(even){ background: var(--bg-muted); }
+table.cmp tbody td:first-child{ font-weight:700; color: var(--navy); font-size: var(--type-small); white-space:nowrap; }
+
+/* ============ ANIMATIONS ============ */
+@media (prefers-reduced-motion:no-preference){
+  [data-deck-active] .anim { animation: fade-up .5s .05s both; }
+  [data-deck-active] .anim2{ animation: fade-up .5s .15s both; }
+  [data-deck-active] .anim3{ animation: fade-up .5s .25s both; }
+  [data-deck-active] .anim4{ animation: fade-up .5s .35s both; }
+  [data-deck-active] .a-zoom { animation-name: a-zoom; }
+  [data-deck-active] .a-pop  { animation-name: a-pop; animation-timing-function: cubic-bezier(.34,1.56,.64,1); }
+  [data-deck-active] .a-blur { animation-name: a-blur; }
+  [data-deck-active] .grow-x { transform-origin:left center; animation: grow-x .55s .25s cubic-bezier(.2,.7,.2,1) both; }
+}
+@keyframes fade-up{ from{ opacity:0; transform: translateY(16px);} to{ opacity:1; transform:none;} }
+@keyframes a-zoom { from{ opacity:0; transform: scale(.94); } to{ opacity:1; transform:none; } }
+@keyframes a-pop  { from{ opacity:0; transform: scale(.8); } to{ opacity:1; transform:none; } }
+@keyframes a-blur { from{ opacity:0; filter: blur(12px); transform: translateY(10px);} to{ opacity:1; filter: blur(0); transform:none; } }
+@keyframes grow-x { from{ transform: scaleX(0);} to{ transform: scaleX(1);} }
+
+#tweaks-root{ position:fixed; inset:0; pointer-events:none; z-index:9999; }
+#tweaks-root > *{ pointer-events:auto; }
+</style>
+</head>
+<body style="font-size: 8px">
+
+<deck-stage width="1920" height="1080">
+
+  <!-- ===== 01. 表紙 ===== -->
+  <section data-label="表紙" data-screen-label="01 表紙" class="slide cover">
+    <svg class="cover__geo anim2 a-zoom" viewBox="0 0 200 200" aria-hidden="true">
+      <path d="M60 0 A140 140 0 0 1 200 140" fill="none" stroke="var(--navy-line)" stroke-width="4"/>
+      <path d="M95 0 A105 105 0 0 1 200 105" fill="none" stroke="var(--accent)" stroke-width="5"/>
+      <path d="M128 0 A72 72 0 0 1 200 72" fill="none" stroke="var(--navy)" stroke-width="4"/>
+      <g fill="var(--navy-line)">
+        <circle cx="26" cy="120" r="3.4"/><circle cx="52" cy="120" r="3.4"/><circle cx="78" cy="120" r="3.4"/>
+        <circle cx="26" cy="146" r="3.4"/><circle cx="52" cy="146" r="3.4"/><circle cx="78" cy="146" r="3.4"/>
+        <circle cx="26" cy="172" r="3.4"/><circle cx="52" cy="172" r="3.4"/><circle cx="78" cy="172" r="3.4"/>
+      </g>
+      <circle cx="78" cy="146" r="3.8" fill="var(--accent)"/>
+    </svg>
+    <div class="cover__badge anim"><span class="cross">✚</span><span>医知創造ラボ</span></div>
+    <h1 class="cover__title anim2 a-blur">原因不明の<br><span class="hl">乳酸アシドーシス</span>を見たら</h1>
+    <div class="cover__rule grow-x"></div>
+    <p class="cover__sub anim3">衝心脚気・消化器型脚気と、血中チアミン検査の限界</p>
+    <div class="cover__meta anim3">
+      <span class="cover__avatar"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4.6" fill="var(--accent)"/><path d="M2.5 22.5 C2.5 16.5 7 14.2 12 14.2 C17 14.2 21.5 16.5 21.5 22.5 Z" fill="var(--accent)"/></svg></span>
+      <span class="name">医知創造ラボ</span>
+      <span class="vline"></span>
+      <span>監修：脳神経内科専門医</span>
+      <span class="vline"></span>
+      <span>チアミン欠乏症シリーズ 第2回</span>
+    </div>
+  </section>
+
+  <!-- ===== 02. テーマ・結論 ===== -->
+  <section data-label="テーマ・結論" data-screen-label="02 テーマ・結論" class="slide">
+    <div class="eyebrow anim">今日のテーマ<span class="en">TODAY'S POINT</span></div>
+    <div class="theme__body">
+      <h2 class="theme__q anim">「教科書の典型像」を待つと<br>診断と治療が<span class="hl-underline">遅れる</span></h2>
+      <div class="concl anim2">
+        <span class="concl__tag">結論</span>
+        <p class="concl__text">湿性脚気の典型像はしばしば欠ける。結果を待たず診断的治療へ踏み切る。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>02</span></div>
+  </section>
+
+  <!-- ===== 03. 目次 ===== -->
+  <section data-label="目次" data-screen-label="03 目次" class="slide">
+    <div class="eyebrow anim">この動画でわかること<span class="en">AGENDA</span></div>
+    <h2 class="s-title serif anim">本日のアジェンダ</h2>
+    <hr class="hairline">
+    <div class="agenda__list">
+      <div class="agenda__item anim"><div class="agenda__num">1</div><div class="agenda__txt">病型の地図と代謝機序<small>乾性・湿性・衝心・消化器型・乳児と、数週間での枯渇</small></div></div>
+      <div class="agenda__item anim2"><div class="agenda__num">2</div><div class="agenda__txt">乾性脚気の鑑別<small>GBS・ビタミンB12欠乏との臨床所見・NCSの違い</small></div></div>
+      <div class="agenda__item anim3"><div class="agenda__num">3</div><div class="agenda__txt">湿性脚気と衝心脚気<small>EFは低下しない高拍出性心不全と、難治性ショック</small></div></div>
+      <div class="agenda__item anim4"><div class="agenda__num">4</div><div class="agenda__txt">消化器型・乳児脚気<small>急性腹症の模倣と、古典的浮腫を欠く小児重症病態</small></div></div>
+      <div class="agenda__item anim4"><div class="agenda__num">5</div><div class="agenda__txt">検査の限界と診断的治療<small>血中チアミンは待てない。急速静注トライアルの根拠</small></div></div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>03</span></div>
+  </section>
+
+  <!-- ===== 04. 章扉：第1章 ===== -->
+  <section data-label="章扉" data-screen-label="04 章扉" class="slide slide--navy chapter">
+    <p class="chapter__kicker anim">CHAPTER 1</p>
+    <h2 class="chapter__num serif anim a-pop">第1章</h2>
+    <div class="chapter__rule grow-x"></div>
+    <h3 class="chapter__title anim3">脚気の病型地図と<br>代謝機序</h3>
+  </section>
+
+  <!-- ===== 05. 病型の地図 ===== -->
+  <section data-label="病型の地図" data-screen-label="05 病型の地図" class="slide">
+    <div class="chapter-ghost">05</div>
+    <div class="eyebrow anim">病型地図<span class="en">SECTION 05 — SUBTYPES</span></div>
+    <h2 class="s-title anim">脚気は<span class="hl-underline">多彩な臨床像</span>をとる</h2>
+    <hr class="hairline">
+    <div class="cards3">
+      <div class="card card--navy anim2">
+        <span class="card__tag">神経系</span>
+        <h3 class="card__title">乾性脚気</h3>
+        <p class="card__text">感覚運動優位の軸索性多発神経炎。左右対称性でsural-sparingを欠く。</p>
+      </div>
+      <div class="card card--accent anim3">
+        <span class="card__tag">循環器系</span>
+        <h3 class="card__title">湿性・衝心脚気</h3>
+        <p class="card__text">高拍出性心不全と下肢浮腫。劇症型の衝心脚気は難治性ショックと乳酸アシドーシスを来す。</p>
+      </div>
+      <div class="card card--danger anim4">
+        <span class="card__tag">非典型・小児</span>
+        <h3 class="card__title">消化器型・<br>乳児脚気</h3>
+        <p class="card__text">腹痛・嘔吐・傾眠から試験開腹に至る例や、浮腫を欠く乳児肺高血圧クリーゼが存在する。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>05</span></div>
+  </section>
+
+  <!-- ===== 06. 代謝機序と備蓄 ===== -->
+  <section data-label="代謝機序" data-screen-label="06 代謝機序" class="slide">
+    <div class="chapter-ghost">06</div>
+    <div class="eyebrow anim">代謝機序<span class="en">SECTION 06 — MECHANISM</span></div>
+    <h2 class="s-title anim">PDH機能障害と<br><span class="hl-underline">およそ数週間</span>での備蓄枯渇</h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <p class="lead anim2">チアミン欠乏ではピルビン酸脱水素酵素（PDH）の活性低下により乳酸アシドーシスが生じる。脚気は「浮腫と乳酸アシドーシスを伴う心筋症」と記述される。</p>
+      <div class="important-box lg anim3">
+        <div class="ttl">📋 体内備蓄の厳密な制約</div>
+        <p>半減期は<strong>1〜12時間</strong>と短く、体内総量は約<strong>30〜50 mg</strong>（筋肉に約40%）。補給が途絶えると備蓄は<strong>およそ数週間</strong>で枯渇する。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>06</span></div>
+  </section>
+
+  <!-- ===== 07. 章扉：第2章 ===== -->
+  <section data-label="章扉" data-screen-label="07 章扉" class="slide slide--navy chapter">
+    <p class="chapter__kicker anim">CHAPTER 2</p>
+    <h2 class="chapter__num serif anim a-pop">第2章</h2>
+    <div class="chapter__rule grow-x"></div>
+    <h3 class="chapter__title anim3">乾性脚気と<br>GBS・B12欠乏の鑑別</h3>
+  </section>
+
+  <!-- ===== 08. 乾性脚気とGBSの鑑別 ===== -->
+  <section data-label="乾性脚気鑑別" data-screen-label="08 乾性脚気鑑別" class="slide">
+    <div class="chapter-ghost">08</div>
+    <div class="eyebrow anim">神経障害<span class="en">SECTION 08 — GBS DIFFERENTIAL</span></div>
+    <h2 class="s-title anim">脚気をGBSより<span class="hl-underline">示唆する所見</span></h2>
+    <hr class="hairline">
+    <div class="tablewrap anim2">
+      <table class="cmp">
+        <thead>
+          <tr>
+            <th>鑑別項目</th>
+            <th>脚気ニューロパチー（乾性脚気）</th>
+            <th>Guillain-Barré症候群（GBS）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>経過</td>
+            <td><strong>3週間以上の緩徐な経過</strong>をとることが多い</td>
+            <td>数日から4週以内に急速にピークへ達する</td>
+          </tr>
+          <tr>
+            <td>神経伝導検査</td>
+            <td>軸索性多発神経炎、<strong>sural-sparingを欠く</strong></td>
+            <td>脱髄性が主体、sural-sparingは高頻度</td>
+          </tr>
+          <tr>
+            <td>脳脊髄液検査</td>
+            <td><strong>髄液蛋白は正常</strong>（蛋白細胞解離なし）</td>
+            <td>蛋白細胞解離（蛋白上昇・細胞数正常）あり</td>
+          </tr>
+          <tr>
+            <td>随伴所見</td>
+            <td><strong>乳酸高値・体液過剰・眼振・錯乱</strong>を伴う</td>
+            <td>先行感染や自律神経障害を伴う</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>08</span></div>
+  </section>
+
+  <!-- ===== 09. ビタミンB12欠乏との対比 ===== -->
+  <section data-label="B12欠乏対比" data-screen-label="09 B12欠乏対比" class="slide">
+    <div class="chapter-ghost">09</div>
+    <div class="eyebrow anim">鑑別<span class="en">SECTION 09 — VITAMIN B12</span></div>
+    <h2 class="s-title anim">ビタミンB12欠乏も<br><span class="hl-underline">軸索性障害</span>を来しうる</h2>
+    <hr class="hairline">
+    <div class="cards2">
+      <div class="card card--navy anim2">
+        <span class="card__tag">症例報告からの知見</span>
+        <h3 class="card__title">典型的病像からの乖離</h3>
+        <p class="card__text">悪性貧血によるB12欠乏症が下肢脱力・しびれで発症し、軸索性末梢神経障害と診断された1例が報告されている。</p>
+      </div>
+      <div class="card card--accent anim3">
+        <span class="card__tag">臨床への示唆</span>
+        <h3 class="card__title">同時評価の重要性</h3>
+        <p class="card__text">急性の栄養障害を背景とする多発神経炎では、チアミン欠乏と同時にビタミンB12欠乏も検討する。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>09</span></div>
+  </section>
+
+  <!-- ===== 10. 章扉：第3章 ===== -->
+  <section data-label="章扉" data-screen-label="10 章扉" class="slide slide--navy chapter">
+    <p class="chapter__kicker anim">CHAPTER 3</p>
+    <h2 class="chapter__num serif anim a-pop">第3章</h2>
+    <div class="chapter__rule grow-x"></div>
+    <h3 class="chapter__title anim3">湿性脚気と衝心脚気——<br>循環虚脱のサイン</h3>
+  </section>
+
+  <!-- ===== 11. 湿性脚気：EFは下がらない ===== -->
+  <section data-label="湿性脚気" data-screen-label="11 湿性脚気" class="slide">
+    <div class="chapter-ghost">11</div>
+    <div class="eyebrow anim">湿性脚気<span class="en">SECTION 11 — HIGH-OUTPUT HF</span></div>
+    <h2 class="s-title anim">心不全なのに、<br>左室EFは<span class="hl-underline">低下しない</span></h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <p class="lead anim2">高拍出性心不全は安静時CO&gt;8.0 L/minまたはCI&gt;4.0 L/min/m²と定義される。湿性脚気では教科書像と異なりEFが低下せず、むしろ過収縮を示す。</p>
+      <div class="important-box lg anim3">
+        <div class="ttl">📋 報告されている臨床データ</div>
+        <p>心エコーで<strong>EF 85%</strong>や<strong>LVEF 70%</strong>の過収縮が報告されている。心嚢液貯留と拘束性血行動態（CI 5.35）がチアミン100 mg/日静注後、<strong>約7時間で速やかに改善</strong>した症例もある。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>11</span></div>
+  </section>
+
+  <!-- ===== 12. 衝心脚気：難治性ショック ===== -->
+  <section data-label="衝心脚気" data-screen-label="12 衝心脚気" class="slide">
+    <div class="chapter-ghost">12</div>
+    <div class="eyebrow anim">劇症型<span class="en">SECTION 12 — SHOSHIN BERIBERI</span></div>
+    <h2 class="s-title anim">非敗血症・非飲酒でも<br><span class="hl-underline">難治性循環虚脱</span>に陥る</h2>
+    <hr class="hairline">
+    <div class="cards2">
+      <div class="card card--danger anim2">
+        <span class="card__tag">4例の症例集積</span>
+        <h3 class="card__title">重度乳酸アシドーシス</h3>
+        <p class="card__text">敗血症でもアルコール依存でもない重症例で、乳酸値が<strong>23 mmol/L</strong>に達する深い循環虚脱を呈した。</p>
+      </div>
+      <div class="card card--navy anim3">
+        <span class="card__tag">静注への劇的反応</span>
+        <h3 class="card__title">数分〜数時間での改善</h3>
+        <p class="card__text">チアミン100 mg単回静注で<strong>数分以内に平均動脈圧が改善</strong>し、6〜48時間で代謝異常が是正された。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>12</span></div>
+  </section>
+
+  <!-- ===== 13. 肺動脈カテーテルの活用 ===== -->
+  <section data-label="血行動態確認" data-screen-label="13 血行動態確認" class="slide">
+    <div class="chapter-ghost">13</div>
+    <div class="eyebrow anim">血行動態<span class="en">SECTION 13 — HEMODYNAMICS</span></div>
+    <h2 class="s-title anim">高拍出状態を捉え、<br><span class="hl-underline">早期に昇圧薬を離脱</span></h2>
+    <hr class="hairline">
+    <div class="body1__main">
+      <p class="lead anim2">血管拡張性ショックにおいて、肺動脈カテーテルは高拍出状態（CI高値・低末梢血管抵抗）を迅速に確認する手段となる。</p>
+      <div class="important-box lg anim3">
+        <div class="ttl">📋 症例報告における経過</div>
+        <p>乳酸<strong>16.9 mmol/L</strong>、LVEF 70%の過収縮を示した衝心脚気例では、チアミン初回投与から<strong>2日以内に昇圧薬を離脱</strong>できた。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>13</span></div>
+  </section>
+
+  <!-- ===== 14. 章扉：第4章 ===== -->
+  <section data-label="章扉" data-screen-label="14 章扉" class="slide slide--navy chapter">
+    <p class="chapter__kicker anim">CHAPTER 4</p>
+    <h2 class="chapter__num serif anim a-pop">第4章</h2>
+    <div class="chapter__rule grow-x"></div>
+    <h3 class="chapter__title anim3">見逃されやすい<br>消化器型脚気と乳児脚気</h3>
+  </section>
+
+  <!-- ===== 15. 消化器型脚気 ===== -->
+  <section data-label="消化器型脚気" data-screen-label="15 消化器型脚気" class="slide">
+    <div class="chapter-ghost">15</div>
+    <div class="eyebrow anim">消化器型<span class="en">SECTION 15 — GI BERIBERI</span></div>
+    <h2 class="s-title anim">栄養良好な高齢者が<br><span class="hl-underline">試験開腹</span>に至った症例</h2>
+    <hr class="hairline">
+    <div class="cards2">
+      <div class="card card--navy anim2">
+        <span class="card__tag">症例の背景と初発</span>
+        <h3 class="card__title">非飲酒・栄養良好</h3>
+        <p class="card__text">81歳男性。腹痛・傾眠・低血圧で来院し、腸間膜虚血疑いで開腹されるも病変なし。乳酸は最高<strong>14.4 mmol/L</strong>。</p>
+      </div>
+      <div class="card card--accent anim3">
+        <span class="card__tag">チアミンへの反応</span>
+        <h3 class="card__title">初回2時間で昇圧薬離脱</h3>
+        <p class="card__text">チアミン200 mg/日静注を開始したところ、初回投与から<strong>わずか2時間</strong>でアドレナリンを離脱できた。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>15</span></div>
+  </section>
+
+  <!-- ===== 16. 乳児脚気 ===== -->
+  <section data-label="乳児脚気" data-screen-label="16 乳児脚気" class="slide">
+    <div class="chapter-ghost">16</div>
+    <div class="eyebrow anim">小児領域<span class="en">SECTION 16 — INFANTILE</span></div>
+    <h2 class="s-title anim">古典的浮腫を欠くため<br><span class="hl-underline">見逃されやすい</span></h2>
+    <hr class="hairline">
+    <div class="cards2">
+      <div class="card card--navy anim2">
+        <span class="card__tag">母乳栄養児の心臓型脚気</span>
+        <h3 class="card__title">浮腫を伴わない初発</h3>
+        <p class="card__text">下腿浮腫や全身浮腫を欠き、多呼吸・陥没呼吸・頻脈で来院。心エコーで右心拡張と肺高血圧を認める。</p>
+      </div>
+      <div class="card card--danger anim3">
+        <span class="card__tag">重症クリーゼ例</span>
+        <h3 class="card__title">肺高血圧・ショック・脳症</h3>
+        <p class="card__text">肺高血圧クリーゼと急性脳症を呈した乳児例が集積されており、チアミン静注で劇的に改善した。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>16</span></div>
+  </section>
+
+  <!-- ===== 17. 章扉：第5章 ===== -->
+  <section data-label="章扉" data-screen-label="17 章扉" class="slide slide--navy chapter">
+    <p class="chapter__kicker anim">CHAPTER 5</p>
+    <h2 class="chapter__num serif anim a-pop">第5章</h2>
+    <div class="chapter__rule grow-x"></div>
+    <h3 class="chapter__title anim3">検査の限界と<br>「結果を待たない」診断的治療</h3>
+  </section>
+
+  <!-- ===== 18. 検査の限界 ===== -->
+  <section data-label="検査の限界" data-screen-label="18 検査の限界" class="slide">
+    <div class="chapter-ghost">18</div>
+    <div class="eyebrow anim">検査のピットフォール<span class="en">SECTION 18 — LIMITATIONS</span></div>
+    <h2 class="s-title anim">血中チアミンは<br><span class="hl-underline">信頼できる指標ではない</span></h2>
+    <hr class="hairline">
+    <div class="cards3">
+      <div class="card card--navy anim2">
+        <span class="card__tag">血漿の限界</span>
+        <h3 class="card__title">体内状態と乖離</h3>
+        <p class="card__text">血漿チアミンは体内のごく一部で、細胞内状態を反映しない。</p>
+      </div>
+      <div class="card card--accent anim3">
+        <span class="card__tag">全血TDPの分散</span>
+        <h3 class="card__title">人種差の寄与<br>10倍</h3>
+        <p class="card__text">TDPのばらつきは診断名より人種差の方が大きい。カットオフの合意もない。</p>
+      </div>
+      <div class="card card--danger anim4">
+        <span class="card__tag">時間的猶予</span>
+        <h3 class="card__title">結果が<br>遅れて届く</h3>
+        <p class="card__text">外注検査で結果は遅れて届き、特異度も欠く。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>18</span></div>
+  </section>
+
+  <!-- ===== 19. 診断的治療と安全性 ===== -->
+  <section data-label="診断的治療" data-screen-label="19 診断的治療" class="slide">
+    <div class="chapter-ghost">19</div>
+    <div class="eyebrow anim">診断的治療<span class="en">SECTION 19 — THERAPEUTIC TRIAL</span></div>
+    <h2 class="s-title anim">唯一の確定的治療は<br><span class="hl-underline">チアミン急速静注</span>のトライアル</h2>
+    <hr class="hairline">
+    <div class="cards2">
+      <div class="card card--navy anim2">
+        <span class="card__tag">高い安全性</span>
+        <h3 class="card__title">ほぼ無害に投与可能</h3>
+        <p class="card__text">Leiらが引用した989例の静注研究では、重大な反応は掻痒1例のみ。ビタミンB1は安全に投与できる。</p>
+      </div>
+      <div class="card card--accent anim3">
+        <span class="card__tag">制度上の位置づけ</span>
+        <h3 class="card__title">電子添文の正式適応</h3>
+        <p class="card__text">日本のアリナミンF注電子添文において、「ウェルニッケ脳症」「脚気衝心」は正式な適応症であり静注が承認されている。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>19</span></div>
+  </section>
+
+  <!-- ===== 20. まとめ ===== -->
+  <section data-label="まとめ" data-screen-label="20 まとめ" class="slide">
+    <div class="chapter-ghost">20</div>
+    <div class="eyebrow anim">本日のまとめ<span class="en">SECTION 20 — TAKE HOME</span></div>
+    <h2 class="s-title serif anim">Take Home Messages</h2>
+    <hr class="hairline">
+    <div class="cards3">
+      <div class="card card--navy anim2">
+        <span class="card__tag">Point 1</span>
+        <h3 class="card__title">湿性脚気は<br>EF正常</h3>
+        <p class="card__text">高拍出性心不全を呈し、左室駆出率は低下せずむしろ過収縮を示す。</p>
+      </div>
+      <div class="card card--accent anim3">
+        <span class="card__tag">Point 2</span>
+        <h3 class="card__title">乳酸高値で<br>早期想起</h3>
+        <p class="card__text">非敗血症・非飲酒の難治性ショックや急性腹症様病態でもチアミン欠乏を疑う。</p>
+      </div>
+      <div class="card card--danger anim4">
+        <span class="card__tag">Point 3</span>
+        <h3 class="card__title">待たずに静注</h3>
+        <p class="card__text">血中検査は特異度を欠き時間もかかる。唯一の確定的治療は急速静注トライアルである。</p>
+      </div>
+    </div>
+    <div class="slide__foot"><span class="ch"><span class="cross">✚</span>医知創造ラボ</span><span>20</span></div>
+  </section>
+
+</deck-stage>
+<script src="deck-stage.js"></script>
+<script src="image-slot.js"></script>
+</body>
+</html>
