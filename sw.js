@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v163';
+const CACHE_NAME = 'ddx-tools-v165';
 const ASSETS = [
   './infographics/nuts-health-benefits/index.html',
   './infographics/nuts-health-benefits/infographic.png',
@@ -95,6 +95,9 @@ const ASSETS = [
   './news2_calculator.html',
   './bfcrs_calculator.html',
   './glim_nutrition.html',
+  './refeeding_risk.html',
+  './infographics/refeeding-syndrome/index.html',
+  './infographics/refeeding-syndrome/infographic.png',
   './antiepileptic_load_calculator.html',
   './periop_antithrombotic_consult.html',
   './infographics/abi-epilepsy/index.html',
