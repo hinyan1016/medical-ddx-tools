@@ -27,6 +27,8 @@ from pathlib import Path
 THIS = Path(__file__).resolve()
 SLIDES_ROOT = THIS.parent.parent                    # medical-ddx-tools/slides/
 DDX_ROOT = SLIDES_ROOT.parent                       # medical-ddx-tools/
+sys.path.insert(0, str(DDX_ROOT))
+from png8 import quantize_png                        # noqa: E402
 WORKSPACE = DDX_ROOT.parent                          # Claude_task_new/
 SOURCE_ROOT = WORKSPACE / "medical-content" / "youtube-slides"
 TEMPLATE_DIR = SLIDES_ROOT / "_template"
@@ -246,6 +248,7 @@ def build_deck(deck: dict, dry_run: bool = False) -> bool:
         png_src = src / f"{prefix}{i:02d}.png"
         if i == 1:
             shutil.copy2(png_src, dst / "slide-01.png")
+            quantize_png(dst / "slide-01.png")   # 保存直前に256色化（URL・拡張子は不変）
             continue
         with Image.open(png_src) as im:
             if im.mode not in ("RGB", "RGBA"):
@@ -270,6 +273,7 @@ def build_deck(deck: dict, dry_run: bool = False) -> bool:
         info_src = src.parent / "infographic.png"
         if info_src.exists():
             shutil.copy2(info_src, dst / "infographic.png")
+            quantize_png(dst / "infographic.png")   # 保存直前に256色化
             has_infographic = True
         else:
             print(f"  [WARN] infographic=true だが infographic.png が無い: {slug}",
