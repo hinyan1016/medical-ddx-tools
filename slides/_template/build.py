@@ -20,6 +20,7 @@ CRLF回避: open(..., newline='') で書き込む。
 import argparse
 import json
 import shutil
+from PIL import Image
 import sys
 from pathlib import Path
 
@@ -112,7 +113,7 @@ def render_viewer(deck: dict, slide_count: int, has_deck: bool = False,
         cards_html.append(
             f'    <div class="slide-card" data-idx="{i-1}">\n'
             f'      <span class="slide-num">{i} / {slide_count}</span>\n'
-            f'      <img src="slide-{num}.png" alt="スライド{i}" loading="lazy">\n'
+            f'      <img src="slide-{num}.{'png' if i == 1 else 'webp'}" alt="スライド{i}" loading="lazy">\n'
             f'    </div>'
         )
 
@@ -239,11 +240,17 @@ def build_deck(deck: dict, dry_run: bool = False) -> bool:
 
     dst.mkdir(parents=True, exist_ok=True)
 
-    # Copy PNGs (normalize to slide-NN.png)
+    # 表紙 slide-01 のみ PNG（og:image・sw.js・公開済ブログの JSON-LD が参照）。
+    # 本文は WebP q80 に変換して配置する（2026-09-10・容量削減）。
     for i in range(1, slide_count + 1):
         png_src = src / f"{prefix}{i:02d}.png"
-        png_dst = dst / f"slide-{i:02d}.png"
-        shutil.copy2(png_src, png_dst)
+        if i == 1:
+            shutil.copy2(png_src, dst / "slide-01.png")
+            continue
+        with Image.open(png_src) as im:
+            if im.mode not in ("RGB", "RGBA"):
+                im = im.convert("RGBA" if im.mode == "P" else "RGB")
+            im.save(dst / f"slide-{i:02d}.webp", "WEBP", quality=80, method=6)
 
     # Copy PDF (rename to slides.pdf for stable URL)
     shutil.copy2(pdf_src, dst / "slides.pdf")
