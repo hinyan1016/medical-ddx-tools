@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v162';
+const CACHE_NAME = 'ddx-tools-v163';
 const ASSETS = [
   './infographics/nuts-health-benefits/index.html',
   './infographics/nuts-health-benefits/infographic.png',
