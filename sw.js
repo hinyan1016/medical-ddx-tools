@@ -1,5 +1,9 @@
-const CACHE_NAME = 'ddx-tools-v165';
+const CACHE_NAME = 'ddx-tools-v166';
 const ASSETS = [
+  './slides/inpatient-belongings-management/index.html',
+  './slides/inpatient-belongings-management/deck.html',
+  './slides/inpatient-belongings-management/slides.pdf',
+  './slides/inpatient-belongings-management/slide-01.png',
   './infographics/nuts-health-benefits/index.html',
   './infographics/nuts-health-benefits/infographic.png',
   './infographics/thiamine-deficiency-2-beriberi-diagnosis/index.html',

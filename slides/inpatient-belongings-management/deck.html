@@ -1,0 +1,675 @@
+<!doctype html><html lang="ja"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>入院患者の預かり品・私物管理｜病棟ルールと法的責任</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;700;800&display=swap" rel="stylesheet">
+<script src="deck-stage.js" defer></script>
+<script src="image-slot.js" defer></script>
+<style>
+:root{
+  --navy:#012360;
+  --navy-ink:#001B4D;
+  --accent:#F27E03;
+  --accent-soft: color-mix(in srgb, var(--accent) 11%, #ffffff);
+  --accent-line: color-mix(in srgb, var(--accent) 62%, #ffffff);
+  --accent-ink: color-mix(in srgb, var(--accent) 74%, #4a2604);
+  --danger:#DC3323;
+  --danger-soft: color-mix(in srgb, var(--danger) 9%, #ffffff);
+  --bg:#FDFDFD;
+
+  --blue:#1D4189;
+  --blue-soft:#E9EEF8;
+  --blue-tint:#EEF2FA;
+  --red: var(--danger);
+  --red-soft: var(--danger-soft);
+  --orange: var(--accent);
+  --orange-soft: var(--accent-soft);
+  --line:#D8DDE6;
+  --line-soft:#C9D2DF;
+  --bg-muted:#F8F8F8;
+  --bg-alt:#F6F6F6;
+  --navy-line: color-mix(in srgb, var(--navy) 22%, #ffffff);
+
+  --type-mult: 1.38;
+  --type-display: calc(96px * var(--type-mult));
+  --type-title:   calc(82px * var(--type-mult));
+  --type-heading: calc(60px * var(--type-mult));
+  --type-subtitle:calc(44px * var(--type-mult));
+  --type-body:    calc(38px * var(--type-mult));
+  --type-small:   calc(30px * var(--type-mult));
+  --type-label:   calc(27px * var(--type-mult));
+  --type-chapter: calc(210px * var(--type-mult));
+  --type-stat:    calc(150px * var(--type-mult));
+
+  --pad-x: 112px;
+  --pad-top: 58px;
+  --pad-bottom: 116px;
+  --gap-title: 24px;
+  --gap-item: 22px;
+
+  --font-ja: "Noto Sans JP", "BIZ UDPGothic", "Yu Gothic", "Meiryo", sans-serif;
+  --font-serif: var(--font-ja);
+  --grad-navy: linear-gradient(160deg, #012360 0%, #001B4D 100%);
+}
+.serif{ font-family: var(--font-serif); font-weight:800; letter-spacing:.02em; }
+
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#0a1430; }
+
+.slide{
+  box-sizing:border-box;
+  display:flex; flex-direction:column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-ja);
+  overflow:hidden;
+  position:relative;
+}
+.slide::after{
+  content:""; position:absolute; left:0; right:0; bottom:0; height:10px;
+  background: var(--navy); pointer-events:none;
+}
+.slide--navy{ background: var(--grad-navy); color: var(--white); }
+.slide--navy::after{ background: var(--accent); }
+.slide--soft{ background: var(--bg-alt); }
+
+.eyebrow{
+  display:flex; align-items:center; gap:18px;
+  font-size: var(--type-label); font-weight:700; color: var(--navy);
+  letter-spacing:.04em;
+}
+.eyebrow::before{
+  content:""; width:12px; height:44px; border-radius:3px;
+  background: linear-gradient(180deg, var(--navy) 0 68%, var(--accent) 68% 100%);
+  flex:none;
+}
+.eyebrow .num{ font-family: var(--font-en); color: var(--accent-ink); }
+.eyebrow .en{ font-family: var(--font-en); color: var(--accent-ink); letter-spacing:.15em; text-transform:uppercase; }
+.slide--navy .eyebrow{ color: rgba(255,255,255,.88); }
+.slide--navy .eyebrow .en{ color:#fff; }
+.slide--navy .eyebrow::before{ background: linear-gradient(180deg, #fff 0 68%, var(--accent) 68% 100%); }
+
+.s-title{
+  font-size: var(--type-heading); line-height:1.22; color: var(--navy);
+  margin: var(--gap-title) 0 0; font-weight:800; letter-spacing:.01em;
+  text-wrap: pretty;
+}
+.slide--navy .s-title{ color:#fff; }
+
+.lead{
+  font-size: var(--type-body); line-height:1.7; color: var(--ink-2);
+  margin:0; text-wrap: pretty;
+}
+.muted{ color: var(--gray); }
+
+.hairline{
+  height:4px; border:0; margin:20px 0 0;
+  background: linear-gradient(90deg, var(--accent) 0 150px, var(--navy) 150px);
+  opacity:1;
+}
+.slide--navy .hairline{ background: linear-gradient(90deg, var(--accent) 0 150px, rgba(255,255,255,.85) 150px); }
+
+.chapter-ghost{
+  position:absolute; top: 30px; right: var(--pad-x);
+  font-family: var(--font-en); font-weight:700; line-height:.8;
+  font-size: calc(150px * var(--type-mult)); color: var(--navy);
+  opacity:.05; pointer-events:none; user-select:none;
+}
+.slide--navy .chapter-ghost{ color:#fff; opacity:.10; }
+
+.hl-underline{ border-bottom: 6px solid var(--accent-line); }
+
+.card{
+  box-sizing:border-box;
+  background:#fff; border:1px solid var(--line);
+  border-radius:12px; padding:32px 34px;
+  display:flex; flex-direction:column; justify-content:flex-start;
+  box-shadow:0 4px 14px rgba(1,35,96,.06);
+}
+.card--navy{
+  background: var(--navy); color:#fff; border-color: var(--navy-ink);
+}
+.card--tint{
+  background: var(--blue-tint); border-color: var(--navy-line);
+}
+.card--accent{
+  background: var(--accent-soft); border-color: var(--accent-line);
+}
+.card--danger{
+  background: var(--danger-soft); border-color: var(--danger);
+}
+
+.footer-cite{
+  position:absolute; bottom:36px; left:var(--pad-x); right:var(--pad-x);
+  font-size:calc(20px * var(--type-mult)); color:var(--gray);
+  display:flex; justify-content:space-between; align-items:center;
+  line-height:1.4; border-top:1px solid var(--line-soft); padding-top:10px;
+}
+.slide--navy .footer-cite{
+  color:rgba(255,255,255,.7); border-top-color:rgba(255,255,255,.2);
+}
+
+.grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:28px; }
+.grid-3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:24px; }
+</style>
+</head><body>
+<deck-stage width="1920" height="1080">
+
+<!-- Slide 1: 表紙 -->
+<section class="slide slide--navy" style="justify-content:center;align-items:flex-start;">
+  <div class="chapter-ghost">01</div>
+  <div class="eyebrow"><span class="en">MEDICAL SAFETY & PATIENT PROPERTY</span></div>
+  <h1 class="s-title" style="font-size:calc(66px * var(--type-mult));line-height:1.24;margin-top:28px;">
+    入院患者の預かり品・私物管理<br>
+    <span style="color:var(--accent);font-size:calc(48px * var(--type-mult));">義歯・補聴器の紛失を防ぐ病棟ルールと法的責任</span>
+  </h1>
+  <hr class="hairline" style="width:100%;margin:32px 0 28px;">
+  <p class="lead" style="color:rgba(255,255,255,.9);font-size:calc(30px * var(--type-mult));">
+    脳神経内科専門医・指導医 ／ 総合内科専門医・指導医
+  </p>
+  <div class="footer-cite">
+    <span>医知創造ラボ｜医療安全・病棟管理シリーズ</span>
+    <span>スライド 1 / 16</span>
+  </div>
+</section>
+
+<!-- Slide 2: 臨床の現場で起きていること -->
+<section class="slide">
+  <div class="chapter-ghost">02</div>
+  <div class="eyebrow"><span class="num">01</span><span class="en">CLINICAL PROBLEM</span></div>
+  <h2 class="s-title">「義歯がなくなった」はなぜ頻発し、揉めるのか？</h2>
+  <hr class="hairline">
+  <div class="grid-2" style="margin-top:36px;">
+    <div class="card card--tint">
+      <h3 style="color:var(--navy);font-size:calc(32px * var(--type-mult));margin:0 0 16px;">病棟で多発する物品紛失の筆頭</h3>
+      <p class="lead" style="font-size:calc(26px * var(--type-mult));">
+        ・義歯、補聴器、眼鏡は院内紛失事故のトップ<br>
+        ・食事、就寝、入浴、検査・手術で着脱を頻繁に繰り返す<br>
+        ・管理能力の異なる患者層が<br>　混在する病棟環境
+      </p>
+    </div>
+    <div class="card card--accent">
+      <h3 style="color:var(--accent-ink);font-size:calc(32px * var(--type-mult));margin:0 0 16px;">現場が混乱する2大原因</h3>
+      <p class="lead" style="font-size:calc(26px * var(--type-mult));">
+        ・<strong>管理責任の曖昧さ：</strong>「患者自己管理」か「病院預かり」かが不明確<br>
+        ・<strong>感情的・法的対立：</strong>「病院が無くした」「弁償しろ」と家族とトラブルに発展
+      </p>
+    </div>
+  </div>
+  <div class="footer-cite">
+    <span>出典：Mann et al. Br Dent J 2017 / Doshi et al. Br Dent J 2022</span>
+    <span>スライド 2 / 16</span>
+  </div>
+</section>
+
+<!-- Slide 3: 紛失がもたらす重篤な害 -->
+<section class="slide">
+  <div class="chapter-ghost">03</div>
+  <div class="eyebrow"><span class="num">02</span><span class="en">PATIENT HARM</span></div>
+  <h2 class="s-title">単なる私物紛失ではない「トリプルリスク」</h2>
+  <hr class="hairline">
+  <div class="grid-3" style="margin-top:36px;">
+    <div class="card card--danger">
+      <h3 style="color:var(--danger);font-size:calc(28px * var(--type-mult));margin:0 0 14px;">① 栄養障害・脱水</h3>
+      <p class="lead" style="font-size:calc(24px * var(--type-mult));">
+        ・咀嚼不能による摂食量激減<br>
+        ・食形態低下による低栄養進行<br>
+        ・サルコペニア・長期入院化
+      </p>
+    </div>
+    <div class="card card--danger">
+      <h3 style="color:var(--danger);font-size:calc(28px * var(--type-mult));margin:0 0 14px;">② せん妄・転倒リスク</h3>
+      <p class="lead" style="font-size:calc(24px * var(--type-mult));">
+        ・視覚・聴覚遮断がせん妄を誘発<br>
+        ・難聴のある入院患者は<br>
+        　<strong>転倒リスク約1.4〜1.5倍</strong><br>
+        ・意思疎通困難による治療遅延
+      </p>
+    </div>
+    <div class="card card--danger" style="border:3px solid var(--danger);">
+      <h3 style="color:var(--danger);font-size:calc(28px * var(--type-mult));margin:0 0 14px;">③ 誤嚥・窒息の直結</h3>
+      <p class="lead" style="font-size:calc(24px * var(--type-mult));">
+        ・「紛失」と思われた義歯が<br>
+        　<strong>気道・食道に迷入</strong>していた事故<br>
+        ・窒息死や縦隔洞炎の危険
+      </p>
+    </div>
+  </div>
+  <div class="footer-cite">
+    <span>PMID: 35379926 (Br Dent J 2022) / PMID: 32444002 (Am J Prev Med 2020)</span>
+    <span>スライド 3 / 16</span>
+  </div>
+</section>
+
+<!-- Slide 4: 紛失の3大発生現場 -->
+<section class="slide">
+  <div class="chapter-ghost">04</div>
+  <div class="eyebrow"><span class="num">03</span><span class="en">INCIDENT PATTERNS</span></div>
+  <h2 class="s-title">エビデンスが示す「紛失の3大発生現場」</h2>
+  <hr class="hairline">
+  <div class="grid-3" style="margin-top:36px;">
+    <div class="card">
+      <div style="background:var(--navy);color:#fff;font-weight:700;padding:6px 14px;border-radius:4px;display:inline-block;margin-bottom:14px;font-size:calc(22px * var(--type-mult));">発生現場 1</div>
+      <h3 style="color:var(--navy);font-size:calc(28px * var(--type-mult));margin:0 0 12px;">食事トレー・下膳時</h3>
+      <p class="lead" style="font-size:calc(24px * var(--type-mult));">
+        ・ティッシュや紙コップに仮置き<br>
+        ・下膳時に生ゴミ残飯と一緒に誤廃棄<br>
+        ・<strong>最も頻度が高い典型パターン</strong>
+      </p>
+    </div>
+    <div class="card">
+      <div style="background:var(--navy);color:#fff;font-weight:700;padding:6px 14px;border-radius:4px;display:inline-block;margin-bottom:14px;font-size:calc(22px * var(--type-mult));">発生現場 2</div>
+      <h3 style="color:var(--navy);font-size:calc(28px * var(--type-mult));margin:0 0 12px;">シーツ・寝具交換時</h3>
+      <p class="lead" style="font-size:calc(24px * var(--type-mult));">
+        ・就寝中や覚醒不良時に口から脱落<br>
+        ・枕カバーやシーツに巻き込まれる<br>
+        ・回収袋に入りリネン工場へ搬送される
+      </p>
+    </div>
+    <div class="card">
+      <div style="background:var(--navy);color:#fff;font-weight:700;padding:6px 14px;border-radius:4px;display:inline-block;margin-bottom:14px;font-size:calc(22px * var(--type-mult));">発生現場 3</div>
+      <h3 style="color:var(--navy);font-size:calc(28px * var(--type-mult));margin:0 0 12px;">病棟移動・検査・手術</h3>
+      <p class="lead" style="font-size:calc(24px * var(--type-mult));">
+        ・ER→病棟、ICUへの転棟時<br>
+        ・ストレッチャー移乗時の脱落<br>
+        ・申し送り時の確認漏れ
+      </p>
+    </div>
+  </div>
+  <div class="footer-cite">
+    <span>Doshi et al. Br Dent J 2022 (PMID: 35379926)</span>
+    <span>スライド 4 / 16</span>
+  </div>
+</section>
+
+<!-- Slide 5: 自己管理と病院預かりの境界 -->
+<section class="slide">
+  <div class="chapter-ghost">05</div>
+  <div class="eyebrow"><span class="num">04</span><span class="en">LEGAL BOUNDARY</span></div>
+  <h2 class="s-title">「床頭台に置いたから患者管理」という誤解</h2>
+  <hr class="hairline">
+  <div class="grid-2" style="margin-top:36px;">
+    <div class="card card--tint">
+      <h3 style="color:var(--navy);font-size:calc(30px * var(--type-mult));margin:0 0 14px;">患者自己管理の原則</h3>
+      <p class="lead" style="font-size:calc(25px * var(--type-mult));">
+        ・自己管理可能な患者本人が保管<br>
+        ・原則として本人の自己責任<br>
+        ・施錠ロッカー等の提供設備義務
+      </p>
+    </div>
+    <div class="card card--danger">
+      <h3 style="color:var(--danger);font-size:calc(30px * var(--type-mult));margin:0 0 14px;">自己管理困難な患者の法理</h3>
+      <p class="lead" style="font-size:calc(25px * var(--type-mult));">
+        ・認知症、せん妄、意識障害、麻痺等<br>
+        ・<strong>診療契約上の安全配慮義務（付随義務）</strong><br>
+        ・危険を予見できたのに放置すれば病院の過失
+      </p>
+    </div>
+  </div>
+  <div class="footer-cite">
+    <span>民法第415条（安全配慮義務・付随義務）</span>
+    <span>スライド 5 / 16</span>
+  </div>
+</section>
+
+<!-- Slide 6: 病院が負う法的責任 -->
+<section class="slide">
+  <div class="chapter-ghost">06</div>
+  <div class="eyebrow"><span class="num">05</span><span class="en">DUTY OF CARE</span></div>
+  <h2 class="s-title">「預かり品」に課される善管注意義務</h2>
+  <hr class="hairline">
+  <div class="grid-2" style="margin-top:36px;align-items:stretch;">
+    <div class="card card--tint" style="display:flex;flex-direction:column;justify-content:flex-start;">
+      <h3 style="color:var(--navy);font-size:calc(28px * var(--type-mult));margin:0 0 14px;">
+        寄託契約の成立（民法第656条以下）
+      </h3>
+      <p class="lead" style="font-size:calc(23px * var(--type-mult));line-height:1.75;">
+        ・スタッフが「預かります」と受領した時点で寄託契約が成立<br>
+        ・病院は<strong>「善管注意義務（民法400条）」</strong>を負う<br>
+        ・漫然と紛失させた場合、債務不履行として損害賠償責任が発生<br>
+        ・自己管理困難な患者では病院の見守り責任が厳しく問われる
+      </p>
+    </div>
+    <div style="border-radius:14px;overflow:hidden;box-shadow:var(--shadow-md);border:2px solid var(--navy-line);display:flex;">
+      <img src="illustration_duty_of_care.jpg" alt="患者への寄り添いと見守り" style="width:100%;height:100%;object-fit:cover;">
+    </div>
+  </div>
+  <div class="footer-cite">
+    <span>民法第656条（準寄託）、民法第400条（善管注意義務）</span>
+    <span>スライド 6 / 16</span>
+  </div>
+</section>
+
+<!-- Slide 7: 紛失時の弁償額と実務 -->
+<section class="slide">
+  <div class="chapter-ghost">07</div>
+  <div class="eyebrow"><span class="num">06</span><span class="en">COMPENSATION</span></div>
+  <h2 class="s-title">紛失時の弁償額と実務判断</h2>
+  <hr class="hairline">
+  <div class="grid-2" style="margin-top:36px;">
+    <div class="card">
+      <h3 style="color:var(--navy);font-size:calc(30px * var(--type-mult));margin:0 0 16px;">法的賠償基準は「時価」</h3>
+      <p class="lead" style="font-size:calc(26px * var(--type-mult));">
+        ・新品の再購入額全額ではない<br>
+        ・使用年数に応じた減価償却を考慮<br>
+        ・ただし自費義歯や補聴器は数十万円に達することも
+      </p>
+    </div>
+    <div class="card card--accent">
+      <h3 style="color:var(--accent-ink);font-size:calc(30px * var(--type-mult));margin:0 0 16px;">実務上の解決と過失割合</h3>
+      <p class="lead" style="font-size:calc(26px * var(--type-mult));">
+        ・英国調査：1件最大£2,200（約44万円）の弁償<br>
+        ・患者側の指示違反があれば過失相殺の余地<br>
+        ・早期再作製の実費支援など柔軟な示談が多い
+      </p>
+    </div>
+  </div>
+  <div class="footer-cite">
+    <span>Mann et al. Br Dent J 2017 (PMID: 28839235)</span>
+    <span>スライド 7 / 16</span>
+  </div>
+</section>
+
+<!-- Slide 8: 英国NHS公式指針に学ぶ標準化 -->
+<section class="slide">
+  <div class="chapter-ghost">08</div>
+  <div class="eyebrow"><span class="num">07</span><span class="en">NHS GUIDELINES</span></div>
+  <h2 class="s-title">英国NHS公式指針「Mouth Care Matters」</h2>
+  <hr class="hairline">
+  <div class="grid-3" style="margin-top:36px;">
+    <div class="card card--tint">
+      <h3 style="color:var(--navy);font-size:calc(28px * var(--type-mult));margin:0 0 14px;">① 入院時アセスメント</h3>
+      <p class="lead" style="font-size:calc(24px * var(--type-mult));">
+        ・入院24時間以内に口腔評価<br>
+        ・義歯の有無（個数・特徴）をカルテに記録
+      </p>
+    </div>
+    <div class="card card--tint">
+      <h3 style="color:var(--navy);font-size:calc(28px * var(--type-mult));margin:0 0 14px;">② 記名専用ケース</h3>
+      <p class="lead" style="font-size:calc(24px * var(--type-mult));">
+        ・全患者に専用ポットを支給<br>
+        ・本体とフタの両方に氏名・ID<br>
+        ・ティッシュ包装の全面禁止
+      </p>
+    </div>
+    <div class="card card--tint">
+      <h3 style="color:var(--navy);font-size:calc(28px * var(--type-mult));margin:0 0 14px;">③ 移動時トランジション</h3>
+      <p class="lead" style="font-size:calc(24px * var(--type-mult));">
+        ・転棟・検査・手術時に<br>
+        　送り側と受け側でダブルチェック<br>
+        ・リストを用いて申し送り
+      </p>
+    </div>
+  </div>
+  <div class="footer-cite">
+    <span>NHS England Guidelines: Preventing and managing denture loss in hospitals</span>
+    <span>スライド 8 / 16</span>
+  </div>
+</section>
+
+<!-- Slide 9: 病棟ルールの4大原則 -->
+<section class="slide slide--navy">
+  <div class="chapter-ghost">09</div>
+  <div class="eyebrow"><span class="num">08</span><span class="en">4 CORE RULES</span></div>
+  <h2 class="s-title">病棟で徹底すべき「4大原則」</h2>
+  <hr class="hairline">
+  <div class="grid-2" style="margin-top:36px;">
+    <div class="card card--navy" style="border:2px solid var(--accent);">
+      <h3 style="color:var(--accent);font-size:calc(30px * var(--type-mult));margin:0 0 12px;">原則 1: 外したら即記名ケース</h3>
+      <p class="lead" style="color:#fff;font-size:calc(25px * var(--type-mult));">
+        ティッシュ、紙コップ、お盆、膿盆は厳禁。本体とフタに氏名＋ID。
+      </p>
+    </div>
+    <div class="card card--navy" style="border:2px solid var(--accent);">
+      <h3 style="color:var(--accent);font-size:calc(30px * var(--type-mult));margin:0 0 12px;">原則 2: 保管場所の固定</h3>
+      <p class="lead" style="color:#fff;font-size:calc(25px * var(--type-mult));">
+        床頭台の上に放置せず、第1引き出し内ボックスまたは施錠棚へ。
+      </p>
+    </div>
+    <div class="card card--navy" style="border:2px solid var(--accent);">
+      <h3 style="color:var(--accent);font-size:calc(30px * var(--type-mult));margin:0 0 12px;">原則 3: 移動・転棟時チェック</h3>
+      <p class="lead" style="color:#fff;font-size:calc(25px * var(--type-mult));">
+        病棟間移動、検査、手術、シーツ交換時にチェック項目を設ける。
+      </p>
+    </div>
+    <div class="card card--navy" style="border:2px solid var(--accent);">
+      <h3 style="color:var(--accent);font-size:calc(30px * var(--type-mult));margin:0 0 12px;">原則 4: 退院時の突合返却</h3>
+      <p class="lead" style="color:#fff;font-size:calc(25px * var(--type-mult));">
+        持参品リストと現物を患者・家族と突き合わせ、受領確認を得る。
+      </p>
+    </div>
+  </div>
+  <div class="footer-cite">
+    <span>病棟標準化プロトコル</span>
+    <span>スライド 9 / 16</span>
+  </div>
+</section>
+
+<!-- Slide 10: 保管ケース管理の鉄則 -->
+<section class="slide">
+  <div class="chapter-ghost">10</div>
+  <div class="eyebrow"><span class="num">09</span><span class="en">STORAGE CASE</span></div>
+  <h2 class="s-title">保管ケース管理の鉄則：専用容器の徹底</h2>
+  <hr class="hairline">
+  <div class="grid-2" style="margin-top:36px;align-items:stretch;">
+    <div style="display:flex;flex-direction:column;gap:18px;justify-content:flex-start;">
+      <div class="card card--danger" style="padding:22px 28px;">
+        <h3 style="color:var(--danger);font-size:calc(25px * var(--type-mult));margin:0 0 8px;">× やってはいけない仮置き</h3>
+        <p class="lead" style="font-size:calc(21px * var(--type-mult));line-height:1.6;margin:0;">
+          ・<strong>ティッシュ包み：</strong>丸めるとゴミと誤認され誤廃棄<br>
+          ・<strong>紙コップ：</strong>飲み残しとして清掃スタッフが回収<br>
+          ・<strong>食事トレー：</strong>下膳ラインで残飯と一緒に廃棄
+        </p>
+      </div>
+      <div class="card card--tint" style="padding:22px 28px;">
+        <h3 style="color:var(--navy);font-size:calc(25px * var(--type-mult));margin:0 0 8px;">○ 正しい専用ケース運用</h3>
+        <p class="lead" style="font-size:calc(21px * var(--type-mult));line-height:1.6;margin:0;">
+          ・密閉できるふた付き専用ケースを使用<br>
+          ・<strong>「本体」と「フタ」の両方に記名</strong>（入れ替わり防止）<br>
+          ・自己管理困難例は不要な装飾品・予備具を持ち帰り依頼
+        </p>
+      </div>
+    </div>
+    <div style="border-radius:14px;overflow:hidden;box-shadow:var(--shadow-md);border:2px solid var(--navy-line);display:flex;">
+      <img src="illustration_storage_case.jpg" alt="専用保管ケース管理" style="width:100%;height:100%;object-fit:cover;">
+    </div>
+  </div>
+  <div class="footer-cite">
+    <span>NHS England Guidelines / 医療事故防止マニュアル指針</span>
+    <span>スライド 10 / 16</span>
+  </div>
+</section>
+
+<!-- Slide 11: 補聴器と眼鏡の留意点 -->
+<section class="slide">
+  <div class="chapter-ghost">11</div>
+  <div class="eyebrow"><span class="num">10</span><span class="en">HEARING AIDS & GLASSES</span></div>
+  <h2 class="s-title">補聴器と眼鏡：安全管理と臨床機能の両立</h2>
+  <hr class="hairline">
+  <div class="grid-2" style="margin-top:36px;">
+    <div class="card">
+      <h3 style="color:var(--navy);font-size:calc(30px * var(--type-mult));margin:0 0 14px;">外しっぱなしのリスク</h3>
+      <p class="lead" style="font-size:calc(25px * var(--type-mult));">
+        ・紛失を恐れて外したままにすると感覚遮断<br>
+        ・指示が通らずせん妄悪化、不穏行動<br>
+        ・バランス感覚低下による転倒リスク増加
+      </p>
+    </div>
+    <div class="card card--tint">
+      <h3 style="color:var(--navy);font-size:calc(30px * var(--type-mult));margin:0 0 14px;">メリハリのある管理</h3>
+      <p class="lead" style="font-size:calc(25px * var(--type-mult));">
+        ・<strong>日中は積極的に装着</strong>して覚醒・リハビリ促進<br>
+        ・就寝前・入浴前・検査前のみ定位置ケースへ収納<br>
+        ・高額補聴器は病棟預かり証の発行を検討
+      </p>
+    </div>
+  </div>
+  <div class="footer-cite">
+    <span>Tiase et al. Am J Prev Med 2020 (PMID: 32444002)</span>
+    <span>スライド 11 / 16</span>
+  </div>
+</section>
+
+<!-- Slide 12: 紛失発覚時の初動プロトコル -->
+<section class="slide">
+  <div class="chapter-ghost">12</div>
+  <div class="eyebrow"><span class="num">11</span><span class="en">INITIAL PROTOCOL</span></div>
+  <h2 class="s-title">紛失発覚時の初動プロトコル</h2>
+  <hr class="hairline">
+  <div class="grid-3" style="margin-top:36px;">
+    <div class="card">
+      <h3 style="color:var(--navy);font-size:calc(28px * var(--type-mult));margin:0 0 14px;">① 即座に捜索・確保</h3>
+      <p class="lead" style="font-size:calc(23px * var(--type-mult));">
+        ・病室ゴミ箱の回収停止<br>
+        ・配膳カート・下膳ゴミ袋の捜索<br>
+        ・リネン回収袋の確保
+      </p>
+    </div>
+    <div class="card">
+      <h3 style="color:var(--navy);font-size:calc(28px * var(--type-mult));margin:0 0 14px;">② 移動ルートの追跡</h3>
+      <p class="lead" style="font-size:calc(23px * var(--type-mult));">
+        ・直近24〜48時間の移動確認<br>
+        ・CT、内視鏡、処置室、ストレッチャーの確認
+      </p>
+    </div>
+    <div class="card card--tint">
+      <h3 style="color:var(--navy);font-size:calc(28px * var(--type-mult));margin:0 0 14px;">③ 報告と家族対応</h3>
+      <p class="lead" style="font-size:calc(23px * var(--type-mult));">
+        ・医療安全管理部門へインシデント報告<br>
+        ・家族へ経緯と捜索状況を速やかに説明
+      </p>
+    </div>
+  </div>
+  <div class="footer-cite">
+    <span>病棟医療安全初動手順</span>
+    <span>スライド 12 / 16</span>
+  </div>
+</section>
+
+<!-- Slide 13: 最重要：紛失時に疑うべき誤嚥と誤飲 -->
+<section class="slide slide--soft" style="border:4px solid var(--danger);">
+  <div class="chapter-ghost">13</div>
+  <div class="eyebrow"><span class="num">12</span><span class="en" style="color:var(--danger);">CRITICAL ALERT</span></div>
+  <h2 class="s-title" style="color:var(--danger);">【最重要】紛失時に真っ先に疑うべき「誤嚥・誤飲」</h2>
+  <hr class="hairline" style="background:var(--danger);">
+  <div class="grid-2" style="margin-top:36px;align-items:stretch;">
+    <div style="display:flex;flex-direction:column;gap:18px;justify-content:flex-start;">
+      <div class="card card--danger" style="padding:22px 28px;">
+        <h3 style="color:var(--danger);font-size:calc(25px * var(--type-mult));margin:0 0 8px;">日本医療機能評価機構の警告</h3>
+        <p class="lead" style="font-size:calc(21px * var(--type-mult));line-height:1.6;margin:0;">
+          ・「紛失」とされた義歯が気管支に迷入していた重大事故<br>
+          ・数日後に呼吸不全・窒息死に至った事例が報告<br>
+          ・認知症・高齢者では<strong>むせない（不顕性誤嚥）</strong>
+        </p>
+      </div>
+      <div class="card card--tint" style="padding:22px 28px;">
+        <h3 style="color:var(--navy);font-size:calc(25px * var(--type-mult));margin:0 0 8px;">必須のスクリーニング手順</h3>
+        <p class="lead" style="font-size:calc(21px * var(--type-mult));line-height:1.6;margin:0;">
+          1. バイタル、SpO2、喘鳴、嚥下痛の確認<br>
+          2. 口腔内・咽頭の直視確認<br>
+          3. <strong>頸部・胸部X線（必要に応じCT）撮影</strong>で迷入を除外
+        </p>
+      </div>
+    </div>
+    <div style="border-radius:14px;overflow:hidden;box-shadow:var(--shadow-md);border:2px solid var(--navy-line);display:flex;">
+      <img src="illustration_airway_screening.jpg" alt="胸部X線スクリーニング" style="width:100%;height:100%;object-fit:cover;">
+    </div>
+  </div>
+  <div class="footer-cite">
+    <span>公益財団法人日本医療機能評価機構 医療安全情報</span>
+    <span>スライド 13 / 16</span>
+  </div>
+</section>
+
+<!-- Slide 14: ケーススタディ -->
+<section class="slide">
+  <div class="chapter-ghost">14</div>
+  <div class="eyebrow"><span class="num">13</span><span class="en">CASE STUDY</span></div>
+  <h2 class="s-title">ケーススタディ：責任判断と初動対応</h2>
+  <hr class="hairline">
+  <div class="card card--tint" style="margin-top:36px;padding:32px 36px;">
+    <h3 style="color:var(--navy);font-size:calc(30px * var(--type-mult));margin:0 0 14px;">
+      事例：せん妄患者がティッシュに包んだ義歯を床頭台に置き、翌朝消失
+    </h3>
+    <p class="lead" style="font-size:calc(26px * var(--type-mult));line-height:1.75;">
+      <strong>法的見立て：</strong>患者がせん妄状態にあり自己管理能力が欠けていることを病棟が把握していた場合、「床頭台に置いたから患者責任」は通らない。安全配慮義務違反として病院に賠償責任が認められる可能性が高い。<br>
+      <strong>初動のアクション：</strong>ゴミ箱捜索と同時に、<strong>まず呼吸状態を確認し頸胸部X線で気道内迷入を除外する</strong>。
+    </p>
+  </div>
+  <div class="footer-cite">
+    <span>臨床判断と安全管理の統合</span>
+    <span>スライド 14 / 16</span>
+  </div>
+</section>
+
+<!-- Slide 15: 明日から使える病棟チェックリスト -->
+<section class="slide">
+  <div class="chapter-ghost">15</div>
+  <div class="eyebrow"><span class="num">14</span><span class="en">CHECKLIST</span></div>
+  <h2 class="s-title">明日から使える病棟アクションチェック</h2>
+  <hr class="hairline">
+  <div class="grid-2" style="margin-top:36px;">
+    <div class="card">
+      <h3 style="color:var(--navy);font-size:calc(28px * var(--type-mult));margin:0 0 12px;">入院時・日常管理</h3>
+      <p class="lead" style="font-size:calc(24px * var(--type-mult));">
+        □ 入院時持参品リストに義歯・補聴器の個数を明記<br>
+        □ 専用ケース（本体＋フタ記名）を配備<br>
+        □ 保管場所を床頭台の第1引き出しに統一<br>
+        □ 不要な装飾品・予備具は家族へ持ち帰り依頼
+      </p>
+    </div>
+    <div class="card card--accent">
+      <h3 style="color:var(--accent-ink);font-size:calc(28px * var(--type-mult));margin:0 0 12px;">場面転換時・トラブル時</h3>
+      <p class="lead" style="font-size:calc(24px * var(--type-mult));">
+        □ 下膳時・シーツ交換時に巻き込み注意<br>
+        □ 転棟・検査申し送りに装着有無を組み込む<br>
+        □ 紛失発覚時はまず<strong>頸胸部X線で迷入除外</strong><br>
+        □ 退院時はリストと現物を突き合わせて返却
+      </p>
+    </div>
+  </div>
+  <div class="footer-cite">
+    <span>病棟安全管理チェックリスト</span>
+    <span>スライド 15 / 16</span>
+  </div>
+</section>
+
+<!-- Slide 16: まとめ・参考文献 -->
+<section class="slide slide--navy">
+  <div class="chapter-ghost">16</div>
+  <div class="eyebrow"><span class="num">15</span><span class="en">SUMMARY & REFERENCES</span></div>
+  <h2 class="s-title">まとめ・主要参考文献</h2>
+  <hr class="hairline">
+  <div class="grid-2" style="margin-top:32px;">
+    <div class="card card--navy" style="border:1px solid rgba(255,255,255,.3);">
+      <h3 style="color:var(--accent);font-size:calc(26px * var(--type-mult));margin:0 0 10px;">まとめ</h3>
+      <p class="lead" style="color:#fff;font-size:calc(22px * var(--type-mult));line-height:1.65;">
+        ・私物管理は患者の尊厳と生命を守る医療安全<br>
+        ・自己管理困難例では病院の安全配慮義務が成立<br>
+        ・外したら即記名ケース、場所固定、移動時チェック<br>
+        ・紛失時は直ちに誤嚥・気道迷入をスクリーニング
+      </p>
+    </div>
+    <div class="card card--navy" style="border:1px solid rgba(255,255,255,.3);">
+      <h3 style="color:var(--accent);font-size:calc(26px * var(--type-mult));margin:0 0 10px;">参考文献</h3>
+      <p class="lead" style="color:rgba(255,255,255,.85);font-size:calc(19px * var(--type-mult));line-height:1.55;">
+        1. Doshi M, et al. Br Dent J. 2022. PMID: 35379926.<br>
+        2. Mann J, et al. Br Dent J. 2017. PMID: 28839235.<br>
+        3. Tiase VL, et al. Am J Prev Med. 2020. PMID: 32444002.<br>
+        4. 日本医療機能評価機構 医療安全情報.<br>
+        5. NHS England: Preventing Denture Loss in Hospitals.
+      </p>
+    </div>
+  </div>
+  <div class="footer-cite">
+    <span>監修：脳神経内科専門医・指導医／総合内科専門医・指導医</span>
+    <span>スライド 16 / 16</span>
+  </div>
+</section>
+
+</deck-stage>
+</body></html>
