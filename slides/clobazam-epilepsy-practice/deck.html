@@ -1,0 +1,985 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>抗てんかん発作薬クロバザムの臨床薬理と実践活用</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+deck-stage:not(:defined){ visibility:hidden; }
+:root {
+  --navy: #012360;
+  --navy-ink: #001B4D;
+  --accent: #F27E03;
+  --accent-soft: #FFF4E8;
+  --accent-line: #F9B266;
+  --accent-ink: #7A3F02;
+  --danger: #DC3323;
+  --danger-soft: #FDEBE9;
+  --bg: #FDFDFD;
+  --blue-soft: #E9EEF8;
+  --blue-tint: #EEF2FA;
+  --line: #D8DDE6;
+  --gray: #64748b;
+  --ink-2: #1e293b;
+  --font-ja: 'Noto Sans JP', 'BIZ UDPGothic', sans-serif;
+  --type-mult: 1.0;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  padding: 0;
+  background: #222;
+  font-family: var(--font-ja);
+}
+.slide {
+  width: 1920px;
+  height: 1080px;
+  position: relative;
+  background: #fff;
+  overflow: hidden;
+  margin: 0 auto 40px;
+  padding: 55px 90px 85px;
+  display: flex;
+  flex-direction: column;
+}
+.slide--navy {
+  background: var(--navy);
+  color: #fff;
+}
+.slide__head {
+  margin-bottom: 24px;
+}
+.eyebrow {
+  display: inline-block;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.slide--navy .eyebrow {
+  color: #F9B266;
+}
+.title {
+  font-size: 50px;
+  font-weight: 800;
+  color: var(--navy);
+  margin: 0;
+  line-height: 1.25;
+}
+.slide--navy .title {
+  color: #fff;
+}
+.slide__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  position: relative;
+}
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+}
+.card-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 26px;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+}
+.card {
+  background: #fff;
+  border: 2px solid var(--line);
+  border-radius: 20px;
+  padding: 36px 38px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.03);
+}
+.card--navy {
+  border-color: var(--navy);
+  background: #F8FAFC;
+}
+.card--accent {
+  border-color: var(--accent);
+  background: #FFFDF9;
+}
+.card__title {
+  font-size: 34px;
+  font-weight: 800;
+  color: var(--navy);
+  margin-top: 0;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  line-height: 1.3;
+}
+.card__text {
+  font-size: 28px;
+  line-height: 1.55;
+  color: var(--ink-2);
+  margin: 0;
+}
+.slide__foot {
+  position: absolute;
+  left: 90px;
+  right: 90px;
+  bottom: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 19px;
+  color: var(--gray);
+}
+.slide--navy .slide__foot {
+  color: rgba(255,255,255,0.7);
+}
+.badge {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 22px;
+  font-weight: 700;
+}
+.badge--navy { background: var(--navy); color: #fff; }
+.badge--accent { background: var(--accent); color: #fff; }
+.badge--danger { background: var(--danger); color: #fff; }
+.table-custom {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 26px;
+  margin-top: 6px;
+}
+.table-custom th {
+  background: var(--navy);
+  color: #fff;
+  padding: 18px 22px;
+  text-align: left;
+  border: 1px solid var(--navy);
+  font-weight: 800;
+  font-size: 26px;
+}
+.table-custom td {
+  padding: 20px 22px;
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+  line-height: 1.45;
+  font-size: 26px;
+}
+</style>
+</head>
+<body style="font-size: 8px">
+<deck-stage width="1920" height="1080">
+
+<!-- Slide 1: COVER -->
+<section class="slide cover" id="slide-1" style="justify-content: center; padding: 55px 90px 85px;">
+  <div style="display: flex; align-items: center; justify-content: space-between; gap: 50px; width: 100%;">
+    <div style="flex: 1.15;">
+      <div class="eyebrow">NEUROLOGY LECTURE SERIES</div>
+      <h1 class="title" style="font-size: 60px; margin-bottom: 24px; color: var(--navy); line-height: 1.25;">
+        抗てんかん発作薬<br><span style="color: var(--accent);">クロバザム</span>の<br>臨床薬理と実践活用
+      </h1>
+      <p style="font-size: 30px; font-weight: 700; color: var(--ink-2); margin: 0 0 38px; line-height: 1.45;">
+        1,4-BZDとの構造的差異・活性代謝物の動態・TDM血中濃度基準
+      </p>
+      <div style="display: flex; align-items: center; gap: 20px;">
+        <span class="badge badge--navy" style="font-size: 24px; padding: 12px 24px;">脳神経内科医向け解説</span>
+        <span style="font-size: 24px; color: var(--gray); font-weight: 700;">エビデンス・薬物動態・TDM完全整理</span>
+      </div>
+    </div>
+    <div style="flex: 0.85;">
+      <div class="card card--navy" style="border: 3px solid var(--accent); padding: 36px 36px; box-shadow: 0 10px 30px rgba(1,35,96,0.08);">
+        <div style="font-size: 24px; font-weight: 800; color: var(--accent); letter-spacing: 0.08em; margin-bottom: 18px;">講義の3大エッセンス</div>
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div style="background: #fff; padding: 18px 22px; border-radius: 14px; border: 1px solid var(--line);">
+            <div style="font-size: 20px; font-weight: 800; color: var(--accent); margin-bottom: 4px;">01 構造と受容体選択性</div>
+            <div style="font-size: 24px; font-weight: 700; color: var(--navy);">クロナゼパム・ジアゼパムとの違い</div>
+          </div>
+          <div style="background: #fff; padding: 18px 22px; border-radius: 14px; border: 1px solid var(--line);">
+            <div style="font-size: 20px; font-weight: 800; color: var(--accent); margin-bottom: 4px;">02 活性代謝物の動態</div>
+            <div style="font-size: 24px; font-weight: 700; color: var(--navy);">なぜ効果判定に2〜3週間かかるのか</div>
+          </div>
+          <div style="background: #fff; padding: 18px 22px; border-radius: 14px; border: 1px solid var(--line);">
+            <div style="font-size: 20px; font-weight: 800; color: var(--accent); margin-bottom: 4px;">03 臨床エビデンスとTDM</div>
+            <div style="font-size: 24px; font-weight: 700; color: var(--navy);">血中濃度基準域と臨床エビデンス</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span>医知創造ラボ</span>
+    <span>Slide 1 / 18</span>
+  </div>
+</section>
+
+<!-- Slide 2: INTRODUCTION -->
+<section class="slide" id="slide-2">
+  <div class="slide__head">
+    <div class="eyebrow">INTRODUCTION</div>
+    <h2 class="title">なぜクロバザムを再考するのか？</h2>
+  </div>
+  <div class="slide__body">
+    <div class="card card--navy" style="margin-bottom: 24px; padding: 32px 40px;">
+      <div style="font-size: 24px; font-weight: 700; color: var(--accent); margin-bottom: 8px;">日常臨床での素朴な疑問</div>
+      <div style="font-size: 36px; font-weight: 800; color: var(--navy); line-height: 1.35;">
+        「BZD＝頓用・急性期」の常識に反し、<br>なぜ難治性てんかんの日常維持療法に定着しているのか？
+      </div>
+    </div>
+    <div class="card-grid">
+      <div class="card" style="padding: 38px 40px;">
+        <h3 class="card__title" style="color: var(--navy); font-size: 34px;">① 作用の完全分離（1,5-BZD）</h3>
+        <p class="card__text" style="font-size: 28px; line-height: 1.55;">
+          古典的1,4-BZDと異なり、<strong>抗けいれん作用</strong>を保持したまま<strong>過鎮静・筋弛緩を大幅低減</strong>。
+        </p>
+        <div style="background: var(--blue-tint); padding: 22px 26px; border-radius: 12px; margin-top: auto;">
+          <strong style="color: var(--navy); font-size: 25px;">本質的な違い：</strong>
+          <p style="font-size: 24px; color: var(--navy-ink); margin: 6px 0 0; line-height: 1.45;">古典的BZDと異なり、<br>難治性てんかんの併用療法に定着。</p>
+        </div>
+      </div>
+      <div class="card" style="padding: 38px 40px;">
+        <h3 class="card__title" style="color: var(--navy); font-size: 34px;">② 代謝物の動態と個人差</h3>
+        <p class="card__text" style="font-size: 28px; line-height: 1.55;">
+          真の主役は<strong>長半減期代謝物N-CLB</strong>。<br><strong>日本人CYP2C19</strong>の遺伝子多型への配慮が不可欠です。
+        </p>
+        <div style="background: var(--accent-soft); padding: 22px 26px; border-radius: 12px; margin-top: auto;">
+          <strong style="color: var(--accent-ink); font-size: 25px;">臨床上の重要課題：</strong>
+          <p style="font-size: 24px; color: var(--accent-ink); margin: 6px 0 0; line-height: 1.45;">主役である代謝物の動態と、日本人に多い遺伝子多型への配慮を徹底解説。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span>はじめに：臨床での位置づけ</span>
+    <span>Slide 2 / 18</span>
+  </div>
+</section>
+
+<!-- Slide 3: AGENDA -->
+<section class="slide" id="slide-3">
+  <div class="slide__head">
+    <div class="eyebrow">AGENDA</div>
+    <h2 class="title">本日のアジェンダ</h2>
+  </div>
+  <div class="slide__body">
+    <div style="display: flex; flex-direction: column; gap: 24px; flex: 1; justify-content: space-between; margin-top: 8px;">
+      <div class="card card--navy" style="display: flex; flex-direction: row; align-items: center; gap: 36px; padding: 34px 44px;">
+        <span style="font-size: 64px; font-weight: 800; color: var(--accent); min-width: 80px;">01</span>
+        <div>
+          <h3 style="font-size: 34px; font-weight: 800; color: var(--navy); margin: 0 0 8px;">1,5-BZDの独自性とクロナゼパム・ジアゼパムとの違い</h3>
+          <p style="font-size: 26px; color: var(--gray); margin: 0; font-weight: 700; line-height: 1.45;">化学構造の差異／GABA_A受容体 α1 vs α2選択性／3薬剤の臨床比較</p>
+        </div>
+      </div>
+      <div class="card card--navy" style="display: flex; flex-direction: row; align-items: center; gap: 36px; padding: 34px 44px;">
+        <span style="font-size: 64px; font-weight: 800; color: var(--accent); min-width: 80px;">02</span>
+        <div>
+          <h3 style="font-size: 34px; font-weight: 800; color: var(--navy); margin: 0 0 8px;">真の主役N-デスメチルクロバザムと日本人CYP2C19・薬物相互作用</h3>
+          <p style="font-size: 26px; color: var(--gray); margin: 0; font-weight: 700; line-height: 1.45;">活性代謝物の薬物動態／日本人PM 15〜20%の蓄積／CBD・スチリペントール</p>
+        </div>
+      </div>
+      <div class="card card--navy" style="display: flex; flex-direction: row; align-items: center; gap: 36px; padding: 34px 44px;">
+        <span style="font-size: 64px; font-weight: 800; color: var(--accent); min-width: 80px;">03</span>
+        <div>
+          <h3 style="font-size: 34px; font-weight: 800; color: var(--navy); margin: 0 0 8px;">TDM血中濃度測定と臨床エビデンス・実践的処方設計</h3>
+          <p style="font-size: 26px; color: var(--gray); margin: 0; font-weight: 700; line-height: 1.45;">TDM基準域／CONTAIN試験エビデンス／月経間欠投与・高齢者漸増</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span>全体のロードマップ</span>
+    <span>Slide 3 / 18</span>
+  </div>
+</section>
+
+<!-- Slide 4: CHAPTER 1 -->
+<section class="slide slide--navy" id="slide-4" style="justify-content: center; align-items: center; text-align: center;">
+  <div class="eyebrow" style="color: #F9B266;">CHAPTER 01</div>
+  <h2 class="title" style="font-size: 62px; max-width: 1400px; margin-top: 16px; margin-bottom: 24px;">
+    1,5-BZDの独自性と<br>クロナゼパム・ジアゼパムとの違い
+  </h2>
+  <div style="width: 120px; height: 4px; background: var(--accent); margin: 0 auto 24px;"></div>
+  <p style="font-size: 30px; color: rgba(255,255,255,0.85); margin: 0; font-weight: 700;">
+    窒素原子の位置が生み出す受容体選択性と臨床効果の分離
+  </p>
+  <div class="slide__foot">
+    <span>第1章</span>
+    <span>Slide 4 / 18</span>
+  </div>
+</section>
+
+<!-- Slide 5: STRUCTURE DIFFERENCE -->
+<section class="slide" id="slide-5">
+  <div class="slide__head">
+    <div class="eyebrow">CHEMICAL STRUCTURE</div>
+    <h2 class="title">1,4-BZD vs 1,5-BZD：化学構造の決定的差異</h2>
+  </div>
+  <div class="slide__body">
+    <div class="card card--navy" style="margin-bottom: 22px; padding: 22px 36px;">
+      <div style="font-size: 24px; font-weight: 700; color: var(--accent); margin-bottom: 6px;">ベンゾジアゼピン骨格の化学構造比較</div>
+      <div style="font-size: 34px; font-weight: 800; color: var(--navy); line-height: 1.35;">
+        ジアゼパムやクロナゼパムの1,4位骨格に対し、クロバザムは1,5位に窒素を配置
+      </div>
+    </div>
+    <div class="card-grid">
+      <div class="card card--navy" style="padding: 34px 38px;">
+        <span class="badge badge--navy" style="margin-bottom: 10px; align-self: flex-start;">古典的BZD（ジアゼパム・クロナゼパム）</span>
+        <h3 class="card__title" style="font-size: 34px;">1,4-ベンゾジアゼピン</h3>
+        <div style="font-size: 40px; font-weight: 800; color: var(--navy); margin-bottom: 14px;">1位 &amp; 4位 に窒素原子</div>
+        <div style="background: var(--blue-tint); padding: 18px 22px; border-radius: 12px; margin-bottom: 14px;">
+          <strong style="font-size: 24px; color: var(--navy);">薬理プロファイル：</strong>
+          <p class="card__text" style="font-size: 26px; line-height: 1.45; color: var(--navy-ink); margin: 4px 0 0;">
+            強力な抗けいれん作用の反面、<strong>過鎮静・催眠・筋弛緩・耐性形成</strong>が不可避に出現。
+          </p>
+        </div>
+        <div style="background: #FFF5F5; border: 1.5px solid #FED7D7; padding: 18px 22px; border-radius: 12px; margin-top: auto;">
+          <strong style="font-size: 24px; color: var(--danger);">臨床上の限界：</strong>
+          <p style="font-size: 24px; color: var(--danger); margin: 4px 0 0; line-height: 1.4;">耐性形成が早く、長期の日常維持投与には適さない。</p>
+        </div>
+      </div>
+      <div class="card card--accent" style="padding: 34px 38px;">
+        <span class="badge badge--accent" style="margin-bottom: 10px; align-self: flex-start;">革新的骨格（クロバザム / マイスタン）</span>
+        <h3 class="card__title" style="font-size: 34px; color: var(--accent-ink);">1,5-ベンゾジアゼピン</h3>
+        <div style="font-size: 40px; font-weight: 800; color: var(--accent); margin-bottom: 14px;">1位 &amp; 5位 に窒素原子</div>
+        <div style="background: var(--accent-soft); padding: 18px 22px; border-radius: 12px; margin-bottom: 14px;">
+          <strong style="font-size: 24px; color: var(--accent-ink);">薬理プロファイル：</strong>
+          <p class="card__text" style="font-size: 26px; line-height: 1.45; color: var(--accent-ink); margin: 4px 0 0;">
+            抗けいれん作用を維持しつつ、<strong>過鎮静や筋弛緩作用を大幅に軽減（作用の分離）</strong>。
+          </p>
+        </div>
+        <div style="background: #FFF8EE; border: 1.5px solid var(--accent-line); padding: 18px 22px; border-radius: 12px; margin-top: auto;">
+          <strong style="font-size: 24px; color: var(--accent-ink);">臨床上の強み：</strong>
+          <p style="font-size: 24px; color: var(--accent-ink); margin: 4px 0 0; line-height: 1.4;">耐性形成が緩やかで、難治性てんかんの日常併用療法に最適。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span>構造の違いが生む薬理活性</span>
+    <span>Slide 5 / 18</span>
+  </div>
+</section>
+
+<!-- Slide 6: RECEPTOR SELECTIVITY -->
+<section class="slide" id="slide-6">
+  <div class="slide__head">
+    <div class="eyebrow">PHARMACOLOGY</div>
+    <h2 class="title">GABA_A受容体サブタイプ選択性（α1 vs α2）</h2>
+  </div>
+  <div class="slide__body">
+    <div class="card card--navy" style="margin-bottom: 20px; padding: 20px 32px;">
+      <span style="font-size: 26px; font-weight: 800; color: var(--navy);">受容体結合サブユニットの違いが臨床プロファイルを決定</span>
+      <span style="font-size: 22px; color: var(--gray); font-weight: 700; margin-left: 16px;">（Jensen et al., PLoS One 2014）</span>
+    </div>
+    <div class="card-grid">
+      <div class="card" style="padding: 32px 36px;">
+        <span class="badge badge--danger" style="margin-bottom: 10px; align-self: flex-start;">鎮静・催眠サブユニット</span>
+        <h3 class="card__title" style="font-size: 34px; color: var(--danger);">α1 サブユニット</h3>
+        <div style="font-size: 26px; font-weight: 700; color: var(--ink-2); margin-bottom: 12px;">
+          媒介作用：鎮静・催眠・健忘・身体依存
+        </div>
+        <div style="background: var(--danger-soft); padding: 18px 22px; border-radius: 12px; margin-bottom: 12px;">
+          <strong style="font-size: 24px; color: var(--danger);">受容体結合親和性：</strong>
+          <p class="card__text" style="font-size: 26px; color: var(--danger); font-weight: 700; line-height: 1.4; margin: 4px 0 0;">
+            クロバザムは結合親和性が極めて低い！<br>
+            <span style="font-size: 22px; font-weight: 400; color: var(--ink-2);">（クロナゼパム等の強い眠気の主因を回避）</span>
+          </p>
+        </div>
+        <div style="background: var(--blue-tint); padding: 18px 22px; border-radius: 12px; margin-top: auto;">
+          <strong style="font-size: 24px; color: var(--navy);">臨床的意義：</strong>
+          <p style="font-size: 24px; color: var(--navy-ink); margin: 4px 0 0; line-height: 1.4;">日中の傾眠や認知機能低下、筋弛緩によるふらつき転倒を防止。</p>
+        </div>
+      </div>
+      <div class="card card--accent" style="padding: 32px 36px;">
+        <span class="badge badge--accent" style="margin-bottom: 10px; align-self: flex-start;">抗けいれんサブユニット</span>
+        <h3 class="card__title" style="font-size: 34px; color: var(--accent-ink);">α2 サブユニット</h3>
+        <div style="font-size: 26px; font-weight: 700; color: var(--accent-ink); margin-bottom: 12px;">
+          媒介作用：抗けいれん作用・抗不安作用
+        </div>
+        <div style="background: var(--accent-soft); padding: 18px 22px; border-radius: 12px; margin-bottom: 12px;">
+          <strong style="font-size: 24px; color: var(--accent-ink);">受容体結合親和性：</strong>
+          <p class="card__text" style="font-size: 26px; color: var(--accent-ink); font-weight: 700; line-height: 1.4; margin: 4px 0 0;">
+            クロバザム &amp; N-CLBが選択的結合！<br>
+            <span style="font-size: 22px; font-weight: 400; color: var(--ink-2);">（過鎮静を伴わずに発作を強力抑制する基盤）</span>
+          </p>
+        </div>
+        <div style="background: #FFF8EE; border: 1.5px solid var(--accent-line); padding: 18px 22px; border-radius: 12px; margin-top: auto;">
+          <strong style="font-size: 24px; color: var(--accent-ink);">臨床的意義：</strong>
+          <p style="font-size: 24px; color: var(--accent-ink); margin: 4px 0 0; line-height: 1.4;">大脳皮質・辺縁系の過剰興奮を鎮め、高い抗てんかん作用を発揮。</p>
+        </div>
+      </div>
+    </div>
+    <div class="card card--navy" style="margin-top: 20px; padding: 20px 32px;">
+      <div style="font-size: 26px; font-weight: 800; color: var(--navy); line-height: 1.4;">
+        【結論】α1を避けてα2に選択結合することで、日中の眠気や筋弛緩を起こさず抗けいれん作用を発揮。
+      </div>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span>Jensen HS, et al. PLoS One. 2014; 9(2):e88456</span>
+    <span>Slide 6 / 18</span>
+  </div>
+</section>
+
+<!-- Slide 7: COMPARISON TABLE -->
+<section class="slide" id="slide-7">
+  <div class="slide__head">
+    <div class="eyebrow">CLINICAL COMPARISON</div>
+    <h2 class="title">ジアゼパム・クロナゼパム・クロバザムの比較</h2>
+  </div>
+  <div class="slide__body">
+    <table class="table-custom" style="margin-bottom: 24px;">
+      <thead>
+        <tr>
+          <th style="width: 20%; padding: 22px 24px;">薬剤名</th>
+          <th style="width: 14%; padding: 22px 24px;">骨格</th>
+          <th style="width: 26%; padding: 22px 24px;">主な臨床適応</th>
+          <th style="width: 20%; padding: 22px 24px;">耐性形成</th>
+          <th style="width: 20%; padding: 22px 24px;">臨床上の注意点</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-weight: 800; color: var(--navy); padding: 24px;">クロバザム<br><span style="font-size: 21px; color: var(--gray); font-weight: 400;">マイスタン</span></td>
+          <td style="padding: 24px;"><strong>1,5-BZD</strong></td>
+          <td style="padding: 24px;">難治性てんかん維持併用<br>Lennox-Gastaut症候群</td>
+          <td style="padding: 24px;"><strong>比較的緩徐</strong><br>長期維持が可能</td>
+          <td style="padding: 24px;">CYP2C19 PMで蓄積<br>過鎮静・筋弛緩は軽度</td>
+        </tr>
+        <tr style="background: #F8FAFC;">
+          <td style="font-weight: 800; padding: 24px;">クロナゼパム<br><span style="font-size: 21px; color: var(--gray); font-weight: 400;">リボトリール等</span></td>
+          <td style="padding: 24px;">1,4-BZD</td>
+          <td style="padding: 24px;">ミオクローヌス発作<br>睡眠時随伴症（RBD）</td>
+          <td style="padding: 24px;"><strong>形成されやすい</strong><br>効果減弱が多い</td>
+          <td style="padding: 24px;"><strong>唾液・気道分泌過多</strong><br>筋弛緩・ふらつき転倒</td>
+        </tr>
+        <tr>
+          <td style="font-weight: 800; padding: 24px;">ジアゼパム<br><span style="font-size: 21px; color: var(--gray); font-weight: 400;">セルシン等</span></td>
+          <td style="padding: 24px;">1,4-BZD</td>
+          <td style="padding: 24px;"><strong>てんかん重積の急性期</strong><br>発作群発時の頓用</td>
+          <td style="padding: 24px;"><strong>極めて急速</strong><br>日常維持投与は不可</td>
+          <td style="padding: 24px;">急性呼吸抑制リスク<br>反復常用で効果減弱</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="card card--navy" style="padding: 24px 34px; margin-top: auto;">
+      <div style="font-size: 24px; font-weight: 800; color: var(--accent); margin-bottom: 6px;">処方選択の判断指針</div>
+      <div style="font-size: 26px; font-weight: 700; color: var(--navy); line-height: 1.5;">
+        急性期重積には<strong>ジアゼパム</strong>、ミオクローヌス発作等には<strong>クロナゼパム</strong>、耐性を避けて長期維持を図る難治性てんかんには<strong>クロバザム</strong>を選択。
+      </div>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span>3薬剤の使い分け</span>
+    <span>Slide 7 / 18</span>
+  </div>
+</section>
+
+<!-- Slide 8: CHAPTER 2 -->
+<section class="slide slide--navy" id="slide-8" style="justify-content: center; align-items: center; text-align: center;">
+  <div class="eyebrow" style="color: #F9B266;">CHAPTER 02</div>
+  <h2 class="title" style="font-size: 62px; max-width: 1400px; margin-top: 16px; margin-bottom: 24px;">
+    真の主役N-デスメチルクロバザムと<br>日本人CYP2C19・薬物相互作用
+  </h2>
+  <div style="width: 120px; height: 4px; background: var(--accent); margin: 0 auto 24px;"></div>
+  <p style="font-size: 30px; color: rgba(255,255,255,0.85); margin: 0; font-weight: 700;">
+    半減期70〜80時間超の活性代謝物と遺伝子多型の落とし穴
+  </p>
+  <div class="slide__foot">
+    <span>第2章</span>
+    <span>Slide 8 / 18</span>
+  </div>
+</section>
+
+<!-- Slide 9: METABOLISM & HALF-LIFE -->
+<section class="slide" id="slide-9">
+  <div class="slide__head">
+    <div class="eyebrow">METABOLIC PATHWAY</div>
+    <h2 class="title">クロバザムの肝代謝マップと消失半減期</h2>
+  </div>
+  <div class="slide__body">
+    <div class="card card--navy" style="margin-bottom: 20px; padding: 20px 34px;">
+      <div style="font-size: 24px; font-weight: 700; color: var(--accent); margin-bottom: 4px;">肝代謝カスケードと排泄経路の全体像</div>
+      <div style="font-size: 34px; font-weight: 800; color: var(--navy); line-height: 1.35;">
+        未変化体（CYP3A4）から超長半減期の主活性代謝物（CYP2C19）への逐次代謝
+      </div>
+    </div>
+    <div class="card-grid">
+      <div class="card card--navy" style="padding: 32px 36px;">
+        <span class="badge badge--navy" style="align-self: flex-start; margin-bottom: 10px;">未変化体</span>
+        <h3 class="card__title" style="font-size: 34px;">クロバザム（CLB）</h3>
+        <div style="font-size: 64px; font-weight: 800; color: var(--navy); margin: 10px 0;">
+          約36<span style="font-size: 28px; font-weight: 700;">時間</span>
+        </div>
+        <p class="card__text" style="font-size: 26px; line-height: 1.5;">
+          代謝酵素：主に<strong>CYP3A4</strong>（一部CYP2C19）<br>
+          速やかに主活性代謝物へN-脱メチル化。
+        </p>
+        <div style="background: var(--blue-tint); padding: 18px 22px; border-radius: 12px; margin-top: auto;">
+          <strong style="font-size: 24px; color: var(--navy);">動態の特徴：</strong>
+          <p style="font-size: 24px; color: var(--navy-ink); margin: 4px 0 0; line-height: 1.4;">未変化体自体も抗けいれん活性を持つが、体内滞留時間は代謝物の半分以下。</p>
+        </div>
+      </div>
+      <div class="card card--accent" style="padding: 32px 36px;">
+        <span class="badge badge--accent" style="align-self: flex-start; margin-bottom: 10px;">主活性代謝物</span>
+        <h3 class="card__title" style="font-size: 34px; color: var(--accent-ink);">N-デスメチルクロバザム</h3>
+        <div style="font-size: 64px; font-weight: 800; color: var(--accent); margin: 10px 0;">
+          70〜80<span style="font-size: 28px; font-weight: 700;">時間以上</span>
+        </div>
+        <p class="card__text" style="font-size: 26px; line-height: 1.5; color: var(--accent-ink);">
+          代謝酵素：主に<strong>CYP2C19</strong>で不活化<br>
+          <strong>未変化体の2倍以上の超長半減期</strong>で蓄積。
+        </p>
+        <div style="background: var(--accent-soft); padding: 18px 22px; border-radius: 12px; margin-top: auto;">
+          <strong style="font-size: 24px; color: var(--accent-ink);">動態の特徴：</strong>
+          <p style="font-size: 24px; color: var(--accent-ink); margin: 4px 0 0; line-height: 1.4;">消失が極めて遅いため、連用によって体内に大量に蓄積して定常状態を形成。</p>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top: 20px; padding: 20px 32px; background: #FFF8EE; border: 1.5px solid var(--accent-line);">
+      <p class="card__text" style="font-size: 26px; line-height: 1.45; color: var(--accent-ink); margin: 0;">
+        <strong style="color: var(--accent-ink);">代謝の要点：</strong> 排泄のボトルネックはCYP2C19。代謝物の消失が極めて遅いため、効果判定には時間がかかります。
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span>Tolbert D, et al. J Clin Pharmacol. 2019; 59(1):7-19</span>
+    <span>Slide 9 / 18</span>
+  </div>
+</section>
+
+<!-- Slide 10: ACTIVE METABOLITE -->
+<section class="slide" id="slide-10">
+  <div class="slide__head">
+    <div class="eyebrow">PHARMACOKINETICS</div>
+    <h2 class="title">なぜN-デスメチルクロバザムが「主役」なのか？</h2>
+  </div>
+  <div class="slide__body">
+    <div class="card card--navy" style="margin-bottom: 20px; padding: 22px 36px;">
+      <div style="font-size: 24px; font-weight: 700; color: var(--accent); margin-bottom: 4px;">力価と濃度の関係式</div>
+      <div style="font-size: 34px; font-weight: 800; color: var(--navy); line-height: 1.35;">
+        「受容体結合力は1/5だが、定常血中濃度は5倍（3〜8倍）蓄積する」
+      </div>
+    </div>
+    <div class="card-grid">
+      <div class="card" style="padding: 32px 36px;">
+        <h3 class="card__title" style="font-size: 34px; color: var(--navy);">① 発作抑制と副作用の主座</h3>
+        <p class="card__text" style="font-size: 26px; line-height: 1.5;">
+          力価 × 濃度から、定常状態での<strong>抗てんかん作用および副作用の大部分（約7〜8割）</strong>は代謝物N-CLBが担う。
+        </p>
+        <div style="background: var(--blue-tint); padding: 18px 22px; border-radius: 12px; margin-top: auto;">
+          <strong style="font-size: 24px; color: var(--navy);">臨床での意味：</strong>
+          <p style="font-size: 24px; color: var(--navy-ink); margin: 4px 0 0; line-height: 1.4;">有効性も過鎮静などの有害事象も、代謝物N-CLBの血中濃度に直結して出現。</p>
+        </div>
+      </div>
+      <div class="card" style="padding: 32px 36px;">
+        <h3 class="card__title" style="font-size: 34px; color: var(--accent-ink);">② 効果判定に2〜3週間</h3>
+        <p class="card__text" style="font-size: 26px; line-height: 1.5;">
+          半減期70〜80時間のため、定常状態到達には<strong>投与開始・増量から2〜3週間の観察</strong>が不可欠。
+        </p>
+        <div style="background: var(--accent-soft); padding: 18px 22px; border-radius: 12px; margin-top: auto;">
+          <strong style="font-size: 24px; color: var(--accent-ink);">処方設計の鉄則：</strong>
+          <p style="font-size: 24px; color: var(--accent-ink); margin: 4px 0 0; line-height: 1.4;">定常状態に達する前に焦って増量すると、時間差で強い過鎮静が顕在化。</p>
+        </div>
+      </div>
+    </div>
+    <div class="card card--navy" style="margin-top: 20px; padding: 20px 32px;">
+      <p class="card__text" style="font-size: 26px; line-height: 1.45; color: var(--navy); margin: 0; font-weight: 700;">
+        【結論】消失が遅く血中濃度が未変化体の5倍蓄積するため、定常状態での発作抑制と副作用の大部分を担う。
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span>定常状態での実質的薬効</span>
+    <span>Slide 10 / 18</span>
+  </div>
+</section>
+
+<!-- Slide 11: CYP2C19 PM -->
+<section class="slide" id="slide-11">
+  <div class="slide__head">
+    <div class="eyebrow">PHARMACOGENETICS</div>
+    <h2 class="title">日本人に多い CYP2C19 Poor Metabolizer</h2>
+  </div>
+  <div class="slide__body">
+    <div class="card card--navy" style="margin-bottom: 20px; padding: 20px 34px;">
+      <div style="font-size: 24px; font-weight: 700; color: var(--danger); margin-bottom: 4px;">日本人における薬理遺伝学的特徴</div>
+      <div style="font-size: 34px; font-weight: 800; color: var(--navy); line-height: 1.35;">
+        主代謝酵素CYP2C19の遺伝子多型により、N-CLBの蓄積量に極めて大きな個人差が生じる
+      </div>
+    </div>
+    <div class="card-grid">
+      <div class="card card--navy" style="padding: 32px 36px;">
+        <span class="badge badge--navy" style="align-self: flex-start; margin-bottom: 8px;">遺伝子多型の頻度</span>
+        <h3 class="card__title" style="font-size: 32px;">人種間でのPM頻度の違い</h3>
+        <div style="display: flex; gap: 32px; margin: 10px 0 14px;">
+          <div>
+            <div style="font-size: 22px; color: var(--gray); font-weight: 700;">欧米白人 PM</div>
+            <div style="font-size: 56px; font-weight: 800; color: var(--navy);">2〜5<span style="font-size: 26px;">%</span></div>
+          </div>
+          <div>
+            <div style="font-size: 22px; color: var(--danger); font-weight: 700;">日本人 PM</div>
+            <div style="font-size: 56px; font-weight: 800; color: var(--danger);">15〜20<span style="font-size: 26px;">%</span></div>
+          </div>
+        </div>
+        <p class="card__text" style="font-size: 26px; line-height: 1.5;">
+          中間代謝群（IM）も含めると、<strong>日本人の過半数に代謝低下</strong>が存在します。
+        </p>
+        <div style="background: var(--blue-tint); padding: 18px 22px; border-radius: 12px; margin-top: auto;">
+          <strong style="font-size: 24px; color: var(--navy);">臨床での重要性：</strong>
+          <p style="font-size: 24px; color: var(--navy-ink); margin: 4px 0 0; line-height: 1.4;">日本人では「5人に1人がPM、過半数が代謝低下群」という日常的頻度。</p>
+        </div>
+      </div>
+      <div class="card card--accent" style="padding: 32px 36px;">
+        <span class="badge badge--danger" style="align-self: flex-start; margin-bottom: 8px;">安全管理上のリスク</span>
+        <h3 class="card__title" style="font-size: 32px; color: var(--danger);">PMで起こる蓄積リスク</h3>
+        <div style="font-size: 28px; font-weight: 800; color: var(--danger); margin: 8px 0 10px;">
+          クリアランス激減 → N-CLBが通常の約5倍蓄積
+        </div>
+        <div style="background: var(--danger-soft); padding: 16px 20px; border-radius: 12px; margin-bottom: 12px;">
+          <p class="card__text" style="font-size: 25px; color: var(--danger); font-weight: 700; line-height: 1.45;">
+            常用量でも著明な過鎮静・ふらつき・運動失調・構音障害・急性せん妄のリスクが急増。
+          </p>
+        </div>
+        <div style="background: #FFF8EE; border: 1.5px solid var(--accent-line); padding: 16px 20px; border-radius: 12px; margin-top: auto;">
+          <strong style="font-size: 24px; color: var(--accent-ink);">安全管理の対策：</strong>
+          <p style="font-size: 24px; color: var(--accent-ink); margin: 4px 0 0; line-height: 1.4;">低用量（2.5〜5mg）から開始し、<br>2〜3週間の間隔を空けて慎重に漸増。</p>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top: 20px; padding: 20px 32px; background: var(--danger-soft); border: 1.5px solid var(--danger);">
+      <p class="card__text" style="font-size: 26px; line-height: 1.45; color: var(--danger); margin: 0; font-weight: 700;">
+        【安全管理の要点】「標準投与量だから安全」とは限らない。日本人では予想外の血中濃度上昇を常に想定する。
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span>遺伝子多型と個人差</span>
+    <span>Slide 11 / 18</span>
+  </div>
+</section>
+
+<!-- Slide 12: DRUG INTERACTIONS -->
+<section class="slide" id="slide-12">
+  <div class="slide__head">
+    <div class="eyebrow">DRUG INTERACTIONS</div>
+    <h2 class="title">見逃せない重要な薬物相互作用</h2>
+  </div>
+  <div class="slide__body">
+    <div class="card-grid-3">
+      <div class="card" style="padding: 36px 32px;">
+        <span class="badge badge--danger" style="align-self: flex-start; margin-bottom: 12px;">CYP2C19強力阻害</span>
+        <h3 class="card__title" style="font-size: 30px;">カンナビジオール</h3>
+        <div style="font-size: 40px; font-weight: 800; color: var(--danger); margin: 10px 0;">N-CLB 3〜5倍上昇</div>
+        <p class="card__text" style="font-size: 25px; line-height: 1.5;">
+          難治性併用時、事前にクロバザムを<strong>大幅減量して過鎮静を防止</strong>。
+        </p>
+        <div style="background: var(--danger-soft); padding: 18px 20px; border-radius: 10px; margin-top: auto;">
+          <strong style="font-size: 23px; color: var(--danger);">併用処方の鉄則：</strong>
+          <div style="font-size: 22px; color: var(--danger); margin-top: 4px; line-height: 1.4;">クロバザムを事前に25〜50%減量</div>
+        </div>
+      </div>
+      <div class="card" style="padding: 36px 32px;">
+        <span class="badge badge--danger" style="align-self: flex-start; margin-bottom: 12px;">2C19 / 3A4阻害</span>
+        <h3 class="card__title" style="font-size: 30px;">スチリペントール</h3>
+        <div style="font-size: 40px; font-weight: 800; color: var(--danger); margin: 10px 0;">血中濃度著増</div>
+        <p class="card__text" style="font-size: 25px; line-height: 1.5;">
+          Dravet症候群では<strong>通常量の半量以下から開始</strong>が鉄則。
+        </p>
+        <div style="background: var(--danger-soft); padding: 18px 20px; border-radius: 10px; margin-top: auto;">
+          <strong style="font-size: 23px; color: var(--danger);">併用処方の鉄則：</strong>
+          <div style="font-size: 22px; color: var(--danger); margin-top: 4px; line-height: 1.4;">クロバザムを通常量の半量以下から開始</div>
+        </div>
+      </div>
+      <div class="card" style="padding: 36px 32px;">
+        <span class="badge badge--navy" style="align-self: flex-start; margin-bottom: 12px;">日常併用薬の罠</span>
+        <h3 class="card__title" style="font-size: 30px;">オメプラゾール等</h3>
+        <div style="font-size: 40px; font-weight: 800; color: var(--navy); margin: 10px 0;">胃薬追加で過鎮静</div>
+        <p class="card__text" style="font-size: 25px; line-height: 1.5;">
+          PPIやアゾール系抗真菌薬でも上昇。<br><strong>胃薬処方時も相互作用を意識</strong>。
+        </p>
+        <div style="background: var(--blue-tint); padding: 18px 20px; border-radius: 10px; margin-top: auto;">
+          <strong style="font-size: 23px; color: var(--navy);">日常診療の落とし穴：</strong>
+          <div style="font-size: 22px; color: var(--navy-ink); margin-top: 4px; line-height: 1.4;">PPI追加後のふらつき・傾眠に警戒</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span>Geffrey AL, et al. Epilepsia. 2015 / Jullien V, et al. Clin Pharmacokinet. 2015</span>
+    <span>Slide 12 / 18</span>
+  </div>
+</section>
+
+<!-- Slide 13: CHAPTER 3 -->
+<section class="slide slide--navy" id="slide-13" style="justify-content: center; align-items: center; text-align: center;">
+  <div class="eyebrow" style="color: #F9B266;">CHAPTER 03</div>
+  <h2 class="title" style="font-size: 62px; max-width: 1400px; margin-top: 16px; margin-bottom: 24px;">
+    TDM血中濃度測定と<br>臨床エビデンス・実践的処方設計
+  </h2>
+  <div style="width: 120px; height: 4px; background: var(--accent); margin: 0 auto 24px;"></div>
+  <p style="font-size: 30px; color: rgba(255,255,255,0.85); margin: 0; font-weight: 700;">
+    治療基準域の指標とエビデンスに基づく安全な臨床適用
+  </p>
+  <div class="slide__foot">
+    <span>第3章</span>
+    <span>Slide 13 / 18</span>
+  </div>
+</section>
+
+<!-- Slide 14: TDM REFERENCE RANGES -->
+<section class="slide" id="slide-14">
+  <div class="slide__head">
+    <div class="eyebrow">THERAPEUTIC DRUG MONITORING</div>
+    <h2 class="title">クロバザムTDMの治療基準域（Target Range）</h2>
+  </div>
+  <div class="slide__body">
+    <div class="card-grid">
+      <div class="card card--navy" style="padding: 38px 40px;">
+        <span class="badge badge--navy" style="align-self: flex-start; margin-bottom: 10px;">未変化体（CLB）基準域</span>
+        <div style="font-size: 68px; font-weight: 800; color: var(--navy); margin: 14px 0;">
+          30 〜 300 <span style="font-size: 30px; font-weight: 700;">ng/mL</span>
+        </div>
+        <p class="card__text" style="font-size: 27px; color: var(--gray); line-height: 1.5;">
+          （0.03 〜 0.30 &mu;g/mL）<br>単独測定では定常状態を正しく評価できない
+        </p>
+        <div style="background: var(--blue-tint); padding: 20px 24px; border-radius: 12px; margin-top: auto;">
+          <strong style="font-size: 25px; color: var(--navy);">測定上の注意：</strong>
+          <p style="font-size: 24px; color: var(--navy-ink); margin: 6px 0 0; line-height: 1.4;">未変化体濃度のみでは実際の薬効・中毒リスクを反映しません。</p>
+        </div>
+      </div>
+      <div class="card card--accent" style="padding: 38px 40px;">
+        <span class="badge badge--accent" style="align-self: flex-start; margin-bottom: 10px;">主代謝物（N-CLB）基準域</span>
+        <div style="font-size: 68px; font-weight: 800; color: var(--accent); margin: 14px 0;">
+          300 〜 3,000 <span style="font-size: 30px; font-weight: 700;">ng/mL</span>
+        </div>
+        <p class="card__text" style="font-size: 27px; color: var(--accent-ink); font-weight: 700; line-height: 1.5;">
+          （0.30 〜 3.00 &mu;g/mL）<br><strong>必ず未変化体・主代謝物の両方を分離測定！</strong>
+        </p>
+        <div style="background: var(--accent-soft); padding: 20px 24px; border-radius: 12px; margin-top: auto;">
+          <strong style="font-size: 25px; color: var(--accent-ink);">オーダーの鉄則：</strong>
+          <p style="font-size: 24px; color: var(--accent-ink); margin: 6px 0 0; line-height: 1.4;">外注検査で「CLBとN-CLBの個別定量」を明確に指定。</p>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top: 24px; padding: 24px 34px;">
+      <p class="card__text" style="font-size: 28px; line-height: 1.45;">
+        <strong style="color: var(--navy);">採血タイミングの鉄則：</strong> 定常状態到達後（開始・増量2〜3週間後）の次回服用直前（トラフ値）に測定。
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span>Patsalos PN, et al. Epilepsia. 2008; 49(7):1239-76</span>
+    <span>Slide 14 / 18</span>
+  </div>
+</section>
+
+<!-- Slide 15: TOXICITY & SYMPTOMS -->
+<section class="slide" id="slide-15">
+  <div class="slide__head">
+    <div class="eyebrow">TOXICITY & SAFETY</div>
+    <h2 class="title">中毒域の指標と過鎮静症状の鑑別</h2>
+  </div>
+  <div class="slide__body">
+    <div class="card card--navy" style="margin-bottom: 24px; padding: 24px 36px;">
+      <div style="font-size: 24px; font-weight: 700; color: var(--danger); margin-bottom: 6px;">中毒域の目安血中濃度（ILAE基準）</div>
+      <div style="font-size: 38px; font-weight: 800; color: var(--danger);">
+        CLB &gt; 500 ng/mL または N-CLB &gt; 3,000〜5,000 ng/mL
+      </div>
+    </div>
+    <div class="card-grid">
+      <div class="card" style="padding: 38px 40px;">
+        <h3 class="card__title" style="font-size: 34px;">注意すべき中毒症状</h3>
+        <ul style="font-size: 28px; line-height: 1.65; color: var(--ink-2); margin: 0; padding-left: 28px;">
+          <li>著明な日中傾眠・過鎮静</li>
+          <li>歩行時のふらつき・運動失調・転倒</li>
+          <li>構音障害（ろれつ不良）</li>
+          <li>脱抑制・急性せん妄</li>
+        </ul>
+        <div style="background: var(--blue-tint); padding: 20px 24px; border-radius: 12px; margin-top: auto;">
+          <strong style="font-size: 25px; color: var(--navy);">身体診察のポイント：</strong>
+          <p style="font-size: 24px; color: var(--navy-ink); margin: 4px 0 0; line-height: 1.4;">「何となく元気がない・ふらつく」時は血中濃度蓄積を疑う。</p>
+        </div>
+      </div>
+      <div class="card" style="padding: 38px 40px;">
+        <h3 class="card__title" style="font-size: 34px;">N-CLB / CLB 比の解釈</h3>
+        <div style="font-size: 28px; line-height: 1.6;">
+          <div>通常（EM）：<strong>3〜8倍</strong></div>
+          <div style="margin-top: 14px; color: var(--danger); font-weight: 700;">
+            15〜20倍以上に跳ね上がる場合：<br>
+            CYP2C19 PM や 相互作用を強く疑う
+          </div>
+        </div>
+        <div style="background: var(--danger-soft); padding: 20px 24px; border-radius: 12px; margin-top: auto; border: 1px solid var(--danger);">
+          <strong style="font-size: 25px; color: var(--danger);">臨床判断のアクション：</strong>
+          <p style="font-size: 24px; color: var(--danger); margin: 4px 0 0; line-height: 1.4;">比率が異常高値ならPMや併用薬を点検し、速やかに減量を検討します。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span>安全管理と中毒症状の評価</span>
+    <span>Slide 15 / 18</span>
+  </div>
+</section>
+
+<!-- Slide 16: CLINICAL EVIDENCE (CONTAIN) -->
+<section class="slide" id="slide-16">
+  <div class="slide__head">
+    <div class="eyebrow">CLINICAL EVIDENCE</div>
+    <h2 class="title">CONTAIN試験：LGSに対する確固たるエビデンス</h2>
+  </div>
+  <div class="slide__body">
+    <div class="card card--navy" style="margin-bottom: 24px; padding: 26px 36px;">
+      <div style="font-size: 36px; font-weight: 800; color: var(--navy);">Lennox-Gastaut症候群 238例の第III相RCT</div>
+      <div style="font-size: 24px; color: var(--gray); margin-top: 6px; font-weight: 700;">二重盲検無作為化プラセボ対照比較試験（Ng et al., Neurology 2011）</div>
+    </div>
+    <div class="card-grid">
+      <div class="card card--accent" style="padding: 38px 40px;">
+        <h3 class="card__title" style="font-size: 32px; color: var(--accent-ink);">週間ドロップ発作の減少率</h3>
+        <div style="font-size: 68px; font-weight: 800; color: var(--accent); margin: 12px 0;">
+          68.3<span style="font-size: 32px;">% 減少</span>
+        </div>
+        <p class="card__text" style="font-size: 27px; line-height: 1.55;">
+          高用量群（1.0 mg/kg）でプラセボ群（12.1%）に対し有意に減少（p&lt;0.0001）。
+        </p>
+        <div style="background: var(--accent-soft); padding: 20px 24px; border-radius: 12px; margin-top: auto;">
+          <strong style="font-size: 25px; color: var(--accent-ink);">臨床的意義：</strong>
+          <p style="font-size: 24px; color: var(--accent-ink); margin: 6px 0 0; line-height: 1.4;">転倒・頭部外傷に直結する危険な脱力発作を劇的に抑制。</p>
+        </div>
+      </div>
+      <div class="card" style="padding: 38px 40px;">
+        <h3 class="card__title" style="font-size: 32px; color: var(--navy);">50%以上レスポンダー率</h3>
+        <div style="font-size: 68px; font-weight: 800; color: var(--navy); margin: 12px 0;">
+          77.6<span style="font-size: 32px;">%</span>
+        </div>
+        <p class="card__text" style="font-size: 27px; line-height: 1.55;">
+          プラセボ群（31.6%）の2倍以上。転倒リスクに直結するドロップ発作を劇的抑制。
+        </p>
+        <div style="background: var(--blue-tint); padding: 20px 24px; border-radius: 12px; margin-top: auto;">
+          <strong style="font-size: 25px; color: var(--navy);">臨床的意義：</strong>
+          <p style="font-size: 24px; color: var(--navy-ink); margin: 6px 0 0; line-height: 1.4;">極めて難治性の高い症例群において、約8割で発作半減以上の効果を実証。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span>Ng YT, et al. Neurology. 2011; 77(15):1473-81</span>
+    <span>Slide 16 / 18</span>
+  </div>
+</section>
+
+<!-- Slide 17: PRACTICAL PRESCRIBING -->
+<section class="slide" id="slide-17">
+  <div class="slide__head">
+    <div class="eyebrow">PRACTICAL PRESCRIBING</div>
+    <h2 class="title">実践的処方設計：月経てんかんと高齢者</h2>
+  </div>
+  <div class="slide__body">
+    <div class="card card--navy" style="margin-bottom: 20px; padding: 20px 34px;">
+      <div style="font-size: 24px; font-weight: 700; color: var(--accent); margin-bottom: 4px;">エビデンスに基づく実践的処方戦略</div>
+      <div style="font-size: 34px; font-weight: 800; color: var(--navy); line-height: 1.35;">
+        耐性形成を防ぐ間欠投与プロトコルと、高齢者での安全な微量漸増法
+      </div>
+    </div>
+    <div class="card-grid">
+      <div class="card card--navy" style="padding: 32px 36px;">
+        <span class="badge badge--navy" style="align-self: flex-start; margin-bottom: 8px;">耐性回避プロトコル</span>
+        <h3 class="card__title" style="font-size: 32px;">月経てんかんの間欠投与</h3>
+        <div style="font-size: 28px; font-weight: 700; color: var(--navy); margin-bottom: 12px;">
+          月経前後の約1週間に限定して 5〜10mg 追加
+        </div>
+        <div style="background: var(--blue-tint); padding: 18px 22px; border-radius: 12px; margin-bottom: 12px;">
+          <strong style="font-size: 24px; color: var(--navy);">耐性防止の機序：</strong>
+          <p class="card__text" style="font-size: 25px; color: var(--navy); font-weight: 700; line-height: 1.45; margin: 4px 0 0;">
+            常用を避けることで、BZD特有の耐性形成（Honeymoon effect）を確実に防止。
+          </p>
+        </div>
+        <div style="background: #FFF8EE; border: 1.5px solid var(--accent-line); padding: 18px 22px; border-radius: 12px; margin-top: auto;">
+          <strong style="font-size: 24px; color: var(--accent-ink);">実践のポイント：</strong>
+          <p style="font-size: 24px; color: var(--accent-ink); margin: 4px 0 0; line-height: 1.4;">発作頻発時期の約2日前から開始し、月経終了後に速やかに中止。</p>
+        </div>
+      </div>
+      <div class="card card--accent" style="padding: 32px 36px;">
+        <span class="badge badge--accent" style="align-self: flex-start; margin-bottom: 8px;">高齢者安全プロトコル</span>
+        <h3 class="card__title" style="font-size: 32px; color: var(--accent-ink);">高齢者への処方設計</h3>
+        <div style="font-size: 28px; font-weight: 700; color: var(--accent-ink); margin-bottom: 12px;">
+          細粒を用い 2.5〜5mg/日（就寝前）から開始
+        </div>
+        <div style="background: var(--accent-soft); padding: 18px 22px; border-radius: 12px; margin-bottom: 12px;">
+          <strong style="font-size: 24px; color: var(--accent-ink);">漸増と離脱警戒：</strong>
+          <p class="card__text" style="font-size: 25px; color: var(--accent-ink); font-weight: 700; line-height: 1.45; margin: 4px 0 0;">
+            2〜3週間あけて慎重に漸増。<br>急激な中断による離脱発作に厳重警戒。
+          </p>
+        </div>
+        <div style="background: var(--blue-tint); padding: 18px 22px; border-radius: 12px; margin-top: auto;">
+          <strong style="font-size: 24px; color: var(--navy);">実践のポイント：</strong>
+          <p style="font-size: 24px; color: var(--navy-ink); margin: 4px 0 0; line-height: 1.4;">クリアランス低下や併用薬多剤のため、細粒や半割錠で微調整。</p>
+        </div>
+      </div>
+    </div>
+    <div class="card card--navy" style="margin-top: 20px; padding: 20px 32px;">
+      <p class="card__text" style="font-size: 26px; line-height: 1.45; color: var(--navy); margin: 0; font-weight: 700;">
+        【処方設計の原則】病態に応じたメリハリのある投与設計により、長期の有効性と安全性を高水準で両立。
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span>臨床での実践処方</span>
+    <span>Slide 17 / 18</span>
+  </div>
+</section>
+
+<!-- Slide 18: TAKE HOME MESSAGES -->
+<section class="slide slide--navy" id="slide-18">
+  <div class="slide__head">
+    <div class="eyebrow" style="color: #F9B266;">SUMMARY</div>
+    <h2 class="title">まとめ：明日からの臨床に活かす5大ポイント</h2>
+  </div>
+  <div class="slide__body">
+    <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 4px;">
+      <div class="card" style="padding: 18px 30px; color: var(--navy);">
+        <strong style="font-size: 30px;">1. 1,5-BZDのα2選択性：</strong>
+        <span style="font-size: 28px; color: var(--ink-2);">過鎮静・筋弛緩を抑え、抗けいれん作用を抽出</span>
+      </div>
+      <div class="card" style="padding: 18px 30px; color: var(--navy);">
+        <strong style="font-size: 30px;">2. 真の主役はN-CLB：</strong>
+        <span style="font-size: 28px; color: var(--ink-2);">半減期70〜80時間、効果判定は定常状態到達後（2〜3週間後）</span>
+      </div>
+      <div class="card" style="padding: 18px 30px; color: var(--navy);">
+        <strong style="font-size: 30px;">3. 日本人CYP2C19 PM：</strong>
+        <span style="font-size: 28px; color: var(--ink-2);">15〜20%が高蓄積リスク。CBD・スチリペントール併用は大幅減量</span>
+      </div>
+      <div class="card" style="padding: 18px 30px; color: var(--navy);">
+        <strong style="font-size: 30px;">4. TDM基準域：</strong>
+        <span style="font-size: 28px; color: var(--ink-2);">CLB 30〜300 / N-CLB 300〜3,000 ng/mLの両者分離測定が必須</span>
+      </div>
+      <div class="card" style="padding: 18px 30px; color: var(--navy);">
+        <strong style="font-size: 30px;">5. 実践処方：</strong>
+        <span style="font-size: 28px; color: var(--ink-2);">月経てんかんの間欠投与と、高齢者2.5〜5mgからの慎重漸増</span>
+      </div>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span>医知創造ラボ</span>
+    <span>Slide 18 / 18</span>
+  </div>
+</section>
+
+</deck-stage>
+<script src="deck-stage.js"></script>
+</body>
+</html>
