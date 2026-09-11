@@ -1,0 +1,589 @@
+﻿<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1080">
+<meta name="description" content="抗てんかん発作薬（ASM）クロバザム（マイスタン）の臨床薬理とエビデンスを1枚に凝縮した要点整理インフォグラフィック。1,5-BZDの受容体選択性（α2選択性）、主代謝物N-デスメチルクロバザム（N-CLB）の体内動態、日本人CYP2C19 Poor Metabolizerでの過鎮静対策、TDM基準域、処方設計まで解説。">
+<title>抗てんかん発作薬クロバザムの臨床薬理と実践活用 要点早見インフォグラフィック｜医知創造ラボ</title>
+<style>
+:root {
+  --navy: #1B3A5C;
+  --navy-dark: #0F253E;
+  --blue: #2A5C91;
+  --accent: #E67E22;
+  --accent-light: #FDF2E9;
+  --red: #C0392B;
+  --red-light: #FDEDEC;
+  --green: #27AE60;
+  --green-light: #EAFAF1;
+  --bg: #F4F6F9;
+  --card-bg: #FFFFFF;
+  --text-main: #1A252C;
+  --text-sub: #576574;
+  --border: #DCE2EC;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: "Noto Sans JP", "Yu Gothic UI", "Hiragino Sans", "Meiryo", sans-serif;
+  background: #E9EEF4;
+  color: var(--text-main);
+  display: flex;
+  justify-content: center;
+  line-height: 1.6;
+}
+
+.infographic {
+  width: 1080px;
+  max-width: 1080px;
+  background: #FFFFFF;
+  padding: 0 0 40px 0;
+  box-shadow: 0 8px 30px rgba(15, 37, 62, 0.15);
+}
+
+/* Header */
+header.hd {
+  background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 60%, var(--blue) 100%);
+  color: #FFFFFF;
+  padding: 48px 56px 40px;
+  position: relative;
+  border-bottom: 6px solid var(--accent);
+}
+.hd__badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #FFFFFF;
+  font-size: 19px;
+  font-weight: 700;
+  padding: 6px 18px;
+  border-radius: 999px;
+  margin-bottom: 16px;
+  letter-spacing: 0.05em;
+}
+.hd__title {
+  font-size: 42px;
+  font-weight: 900;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  margin-bottom: 12px;
+}
+.hd__title span { color: #FAD7A0; }
+.hd__sub {
+  font-size: 22px;
+  color: #D6E4F0;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* Container */
+.container {
+  padding: 36px 56px;
+}
+
+/* Lead summary */
+.lead-box {
+  background: #F0F4F8;
+  border-left: 6px solid var(--navy);
+  border-radius: 0 12px 12px 0;
+  padding: 22px 28px;
+  font-size: 22px;
+  line-height: 1.65;
+  color: var(--navy-dark);
+  font-weight: 600;
+  margin-bottom: 36px;
+}
+
+/* Sections */
+section.sec {
+  margin-bottom: 40px;
+}
+.sec__head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.sec__num {
+  width: 44px;
+  height: 44px;
+  background: var(--navy);
+  color: #FFFFFF;
+  border-radius: 10px;
+  font-size: 24px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sec__title {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--navy);
+}
+
+/* Grid & Cards */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 18px;
+}
+
+.card {
+  background: var(--card-bg);
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.03);
+}
+.card--highlight {
+  border-color: var(--navy);
+  background: #F7FAFC;
+}
+.card--alert {
+  border-color: #E74C3C;
+  background: #FDEDEC;
+}
+.card--accent {
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+.card__title {
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.card__title.navy { color: var(--navy); }
+.card__title.red { color: var(--red); }
+.card__title.accent { color: #B95C00; }
+
+.card__body {
+  font-size: 19px;
+  line-height: 1.6;
+  color: #2C3E50;
+}
+.card__body p { margin-bottom: 8px; }
+.card__body p:last-child { margin-bottom: 0; }
+
+/* Comparison Table */
+.tbl-compare {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid var(--border);
+}
+.tbl-compare th {
+  background: var(--navy);
+  color: #FFFFFF;
+  padding: 14px 18px;
+  font-size: 20px;
+  font-weight: 800;
+  text-align: center;
+}
+.tbl-compare td {
+  padding: 16px 18px;
+  font-size: 19px;
+  border-top: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+.tbl-compare td:last-child { border-right: none; }
+.tbl-compare tr:nth-child(even) td { background: #F8FAFC; }
+.tbl-compare .highlight-row td {
+  background: #EFF6FF !important;
+  font-weight: 600;
+}
+
+/* Stat banner */
+.stat-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: linear-gradient(135deg, #1B3A5C 0%, #2A5C91 100%);
+  color: #FFFFFF;
+  border-radius: 14px;
+  padding: 24px 32px;
+  margin-top: 18px;
+  text-align: center;
+}
+.stat-item__num {
+  font-size: 40px;
+  font-weight: 900;
+  color: #FAD7A0;
+  line-height: 1.1;
+}
+.stat-item__label {
+  font-size: 18px;
+  color: #D6E4F0;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+/* Pills */
+.pill {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 800;
+}
+.pill--blue { background: #E0EEFD; color: #1B4D7E; }
+.pill--green { background: #E8F8F0; color: #1E8449; }
+.pill--red { background: #FADBD8; color: #922B21; }
+.pill--orange { background: #FDEBD0; color: #A04000; }
+
+/* Callout */
+.callout {
+  border-left: 5px solid var(--accent);
+  background: var(--accent-light);
+  padding: 16px 20px;
+  border-radius: 0 10px 10px 0;
+  font-size: 19px;
+  color: #783E00;
+  font-weight: 600;
+  margin-top: 16px;
+}
+.callout--alert {
+  border-left-color: var(--red);
+  background: var(--red-light);
+  color: #781E15;
+}
+
+/* Key rules list */
+.rule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.rule-item {
+  display: flex;
+  gap: 16px;
+  background: #F8FAFC;
+  border: 1px solid var(--border);
+  border-left: 6px solid var(--navy);
+  border-radius: 0 12px 12px 0;
+  padding: 18px 22px;
+}
+.rule-item__badge {
+  flex-shrink: 0;
+  background: var(--navy);
+  color: #FFFFFF;
+  font-size: 17px;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 6px;
+  height: fit-content;
+}
+.rule-item__content {
+  font-size: 19px;
+  color: var(--text-main);
+  line-height: 1.55;
+}
+.rule-item__content strong { color: var(--navy); }
+
+/* Footer */
+footer.foot {
+  margin-top: 20px;
+  padding: 32px 56px 0;
+  border-top: 2px solid var(--border);
+}
+.foot__refs {
+  font-size: 15px;
+  color: var(--text-sub);
+  line-height: 1.65;
+  margin-bottom: 20px;
+}
+.foot__disclaimer {
+  font-size: 14px;
+  color: #7F8C8D;
+  background: #F8F9FA;
+  padding: 14px 18px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+.foot__brand {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.foot__brand-title {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--navy);
+}
+.foot__brand-meta {
+  font-size: 15px;
+  color: var(--text-sub);
+}
+
+/* Nav bar for gallery */
+nav.gallery-nav {
+  width: 100%;
+  max-width: 1080px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 16px auto 0;
+}
+nav.gallery-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 10px 18px;
+  border-radius: 8px;
+}
+.btn-gallery { background: var(--navy); color: #FFFFFF; }
+.btn-yt { background: #C0392B; color: #FFFFFF; }
+.btn-blog { background: #FFFFFF; color: var(--navy); border: 1px solid var(--border); }
+.btn-png { background: #FFFFFF; color: #2C3E50; border: 1px solid var(--border); }
+</style>
+</head>
+<body>
+
+<div class="infographic">
+
+  <!-- Header -->
+  <header class="hd">
+    <div class="hd__badge">脳神経内科医のための抗てんかん発作薬解説</div>
+    <h1 class="hd__title">抗てんかん発作薬 <span>クロバザム</span> の臨床薬理と実践活用</h1>
+    <div class="hd__sub">1,5-BZDの独自性・主代謝物N-CLB・日本人CYP2C19遺伝子多型・TDM基準域と処方設計</div>
+  </header>
+
+  <div class="container">
+
+    <!-- Lead box -->
+    <div class="lead-box">
+      難治性てんかんやLennox-Gastaut症候群の併用療法として繁用されるクロバザム（マイスタン）。<br>
+      古典的1,4-BZDとの構造差、真の主役である活性代謝物N-CLBの蓄積動態、日本人に多いCYP2C19 Poor Metabolizerでの過鎮静回避法を1枚に凝縮。
+    </div>
+
+    <!-- Section 1: 構造と受容体選択性 -->
+    <section class="sec">
+      <div class="sec__head">
+        <div class="sec__num">1</div>
+        <h2 class="sec__title">なぜ眠くなりにくいのか？ 1,4-BZD vs 1,5-BZD（受容体選択性）</h2>
+      </div>
+
+      <table class="tbl-compare">
+        <thead>
+          <tr>
+            <th style="width: 22%;">薬剤名</th>
+            <th style="width: 18%;">基本骨格</th>
+            <th style="width: 30%;">GABA<sub>A</sub>受容体選択性</th>
+            <th style="width: 30%;">主な臨床用途・特徴</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="highlight-row">
+            <td><strong>クロバザム</strong><br><span style="font-size:16px;color:#555;">（マイスタン）</span></td>
+            <td><span class="pill pill--orange">1,5-BZD</span></td>
+            <td><strong>α<sub>2</sub>選択的結合</strong><br><small style="color:#555;">α<sub>1</sub>（鎮静）結合が弱い</small></td>
+            <td><strong>維持併用療法の主力</strong><br>耐性形成が緩やか、筋弛緩・過鎮静が少ない</td>
+          </tr>
+          <tr>
+            <td><strong>クロナゼパム</strong><br><span style="font-size:16px;color:#555;">（リボトリール等）</span></td>
+            <td><span class="pill pill--blue">1,4-BZD</span></td>
+            <td>α<sub>1</sub>・α<sub>2</sub> 非選択的高親和性</td>
+            <td>ミオクローヌス等に強力だが耐性が生じやすい。過鎮静・唾液分泌過多に注意</td>
+          </tr>
+          <tr>
+            <td><strong>ジアゼパム</strong><br><span style="font-size:16px;color:#555;">（ダイアップ・セルシン等）</span></td>
+            <td><span class="pill pill--blue">1,4-BZD</span></td>
+            <td>α<sub>1</sub>・α<sub>2</sub> 非選択的高親和性</td>
+            <td><strong>重積発作の急性期・頓用</strong><br>急速に耐性形成。筋弛緩・催眠作用が強力</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        💡 <strong>「作用の分離」の機序</strong>: α<sub>1</sub>サブユニットは鎮静・催眠・依存を媒介し、α<sub>2</sub>は抗けいれん・抗不安を媒介。クロバザムはα<sub>2</sub>に選択的に作用するため、覚醒度を保ちながら発作を抑えられる（Jensen 2014）。
+      </div>
+    </section>
+
+    <!-- Section 2: 代謝物N-CLBの動態 -->
+    <section class="sec">
+      <div class="sec__head">
+        <div class="sec__num">2</div>
+        <h2 class="sec__title">効果と副作用の真の主役：N-デスメチルクロバザム（N-CLB）</h2>
+      </div>
+
+      <div class="grid-2">
+        <div class="card card--highlight">
+          <div class="card__title navy">🧬 代謝経路と半減期のギャップ</div>
+          <div class="card__body">
+            <p>• <strong>未変化体 CLB</strong>: 消失半減期 <strong>約36時間</strong><br>
+            肝臓のCYP3A4等で脱メチル化されN-CLBへ</p>
+            <p>• <strong>活性代謝物 N-CLB</strong>: 消失半減期 <strong>70〜80時間以上</strong><br>
+            主に <strong>CYP2C19</strong> で水酸化され体外排泄</p>
+            <p>• 消失が極めて遅いため、<strong>定常状態到達には2〜3週間</strong>を要する。</p>
+          </div>
+        </div>
+
+        <div class="card card--highlight">
+          <div class="card__title navy">⚖️ 「力価は1/5、でも濃度は5倍」</div>
+          <div class="card__body">
+            <p>• N-CLBのGABA<sub>A</sub>受容体結合力価は未変化体の <strong>約1/5</strong></p>
+            <p>• しかし定常状態の血中濃度は未変化体の <strong>3〜8倍（平均5倍）</strong></p>
+            <p>• <strong>結論</strong>: 日常診療での<strong>発作抑制効果と副作用の大部分はN-CLBが担っている</strong>。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-banner">
+        <div class="stat-item">
+          <div class="stat-item__num">36時間</div>
+          <div class="stat-item__label">未変化体CLB 半減期</div>
+        </div>
+        <div style="font-size:32px;color:#9AB5D5;">➔</div>
+        <div class="stat-item">
+          <div class="stat-item__num">70〜80時間+</div>
+          <div class="stat-item__label">主代謝物N-CLB 半減期</div>
+        </div>
+        <div style="font-size:32px;color:#9AB5D5;">➔</div>
+        <div class="stat-item">
+          <div class="stat-item__num">2〜3週間</div>
+          <div class="stat-item__label">定常状態到達・効果判定期間</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: CYP2C19と相互作用 -->
+    <section class="sec">
+      <div class="sec__head">
+        <div class="sec__num">3</div>
+        <h2 class="sec__title">日本人とCYP2C19遺伝子多型 ＆ 薬物相互作用の落とし穴</h2>
+      </div>
+
+      <div class="grid-2">
+        <div class="card card--alert">
+          <div class="card__title red">⚠️ 日本人の15〜20%が CYP2C19 PM</div>
+          <div class="card__body">
+            <p>• 白人（2〜5%）に比べ、<strong>日本人は欠損型（PM: Poor Metabolizer）が約5倍高頻度</strong>。</p>
+            <p>• PM患者ではN-CLBのクリアランスが激減し、血中濃度が<strong>通常の約5倍異常蓄積</strong>する。</p>
+            <p>• 症状: 通常量投与でも <strong>過鎮静・昼間傾眠・運動失調・歩行障害・せん妄</strong> が頻発。</p>
+          </div>
+        </div>
+
+        <div class="card card--alert">
+          <div class="card__title red">💊 CYP2C19阻害薬との併用相互作用</div>
+          <div class="card__body">
+            <p>• <strong>カンナビジオール（CBD）</strong> <small>※日本国内未発売</small>:<br>
+            CYP2C19を阻害しN-CLB血中濃度を <strong>3〜5倍に上昇</strong>。</p>
+            <p>• <strong>スチリペントール</strong>（Dravet症候群）:<br>
+            CYP2C19/3A4を阻害しN-CLB濃度が急上昇。</p>
+            <p>• <strong>対策</strong>: 併用時はクロバザムをあらかじめ <strong>1/2〜1/3へ減量</strong> して開始する。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: TDM基準域 -->
+    <section class="sec">
+      <div class="sec__head">
+        <div class="sec__num">4</div>
+        <h2 class="sec__title">TDM（治療的薬物モニタリング）の基準域と解釈（ILAEガイドライン）</h2>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card__title navy"><span class="pill pill--blue">未変化体 CLB</span></div>
+          <div class="card__body">
+            <p style="font-size:32px;font-weight:900;color:var(--navy);margin:6px 0;">30〜300</p>
+            <p style="font-size:16px;color:var(--text-sub);margin-bottom:8px;">ng/mL (0.03〜0.30 μg/mL)</p>
+            <p>短期的な服薬確認の指標。早期に定常状態に達する。</p>
+          </div>
+        </div>
+
+        <div class="card card--highlight">
+          <div class="card__title navy"><span class="pill pill--green">主代謝物 N-CLB</span></div>
+          <div class="card__body">
+            <p style="font-size:32px;font-weight:900;color:var(--green);margin:6px 0;">300〜3,000</p>
+            <p style="font-size:16px;color:var(--text-sub);margin-bottom:8px;">ng/mL (0.30〜3.00 μg/mL)</p>
+            <p>効果と副作用を反映する真の指標。CLBの約10倍高値で推移。</p>
+          </div>
+        </div>
+
+        <div class="card card--alert">
+          <div class="card__title red"><span class="pill pill--red">中毒域の指標</span></div>
+          <div class="card__body">
+            <p style="font-size:32px;font-weight:900;color:var(--red);margin:6px 0;">&gt;3,000〜5,000</p>
+            <p style="font-size:16px;color:var(--text-sub);margin-bottom:8px;">ng/mL (N-CLB)</p>
+            <p>過鎮静・失調が急増。比率N-CLB/CLB &gt;15〜20倍ならPMや相互作用を疑う。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: 処方設計の実践3大原則 -->
+    <section class="sec">
+      <div class="sec__head">
+        <div class="sec__num">5</div>
+        <h2 class="sec__title">明日から使える処方設計の実践 3大原則</h2>
+      </div>
+
+      <div class="rule-list">
+        <div class="rule-item">
+          <div class="rule-item__badge">原則 1</div>
+          <div class="rule-item__content">
+            <strong>月経随伴性てんかんには「間欠投与」</strong><br>
+            発作頻度が増加する月経前後の約1週間に限定して5〜10mgを追加投与。休薬期間を設けることで<strong>耐性形成を劇的に予防</strong>できる。
+          </div>
+        </div>
+
+        <div class="rule-item">
+          <div class="rule-item__badge">原則 2</div>
+          <div class="rule-item__content">
+            <strong>高齢者てんかんには「細粒極低用量・ゆっくり増量」</strong><br>
+            細粒1%を用い、<strong>2.5〜5mg/日の極低用量</strong>から開始。定常状態到達を待つため<strong>2〜3週間あけて慎重に漸増</strong>する。
+          </div>
+        </div>
+
+        <div class="rule-item">
+          <div class="rule-item__badge">原則 3</div>
+          <div class="rule-item__content">
+            <strong>急激な中止は絶対禁止「段階的漸減」</strong><br>
+            突然の断薬は<strong>離脱症状・反跳性発作・てんかん重積状態</strong>を誘発する。中止時は数週間〜数か月かけて段階的に減量する。
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /container -->
+
+  <!-- Footer -->
+  <footer class="foot">
+    <div class="foot__refs">
+      <strong>参考文献</strong>:
+      1. Jensen HS, et al. PLoS One. 2014;9(2):e88456 (PMID: 24533090) ／
+      2. Tolbert D, Larsen F. J Clin Pharmacol. 2019;59(1):7-19 (PMID: 30285275) ／
+      3. Ng YT, et al. Neurology. 2011;77(15):1473-81 (PMID: 21956725) ／
+      4. Patsalos PN, et al. Epilepsia. 2008;49(7):1239-76 (PMID: 18397299) ／
+      5. Geffrey AL, et al. Epilepsia. 2015;56(8):1246-51 (PMID: 26114620)
+    </div>
+    <div class="foot__disclaimer">
+      ※本資料は医療従事者向けの学習・情報提供用教材です。個別の診断・治療判断は最新の添付文書、ガイドライン、患者個々の病態に基づき総合的に判断してください。
+    </div>
+    <div class="foot__brand">
+      <span class="foot__brand-title">✚ 医知創造ラボ</span>
+      <span class="foot__brand-meta">脳神経内科専門医 監修 ／ 2026年9月発行</span>
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>
