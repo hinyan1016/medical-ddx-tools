@@ -1,0 +1,753 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>その猫背、本当にただの姿勢の悪さ？〜見逃してはいけない骨粗鬆症・脊柱変形と受診の目安〜</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Sans+JP:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   テーマ「セミナー紺」
+   濃紺 #012360 × オレンジ #F27E03 × 警告レッド #DC3323 / 全文Noto Sans JP
+   ===================================================================== */
+:root{
+  --navy:#012360;
+  --navy-ink:#001B4D;
+  --accent:#F27E03;
+  --accent-soft: color-mix(in srgb, var(--accent) 11%, #ffffff);
+  --accent-line: color-mix(in srgb, var(--accent) 62%, #ffffff);
+  --accent-ink: color-mix(in srgb, var(--accent) 74%, #4a2604);
+  --danger:#DC3323;
+  --danger-soft: color-mix(in srgb, var(--danger) 9%, #ffffff);
+  --bg:#FDFDFD;
+
+  --blue:#1D4189;
+  --blue-soft:#E9EEF8;
+  --blue-tint:#EEF2FA;
+  --red: var(--danger);
+  --red-soft: var(--danger-soft);
+  --orange: var(--accent);
+  --orange-soft: var(--accent-soft);
+  --line:#D8DDE6;
+  --line-soft:#C9D2DF;
+  --bg-muted:#F8F8F8;
+  --bg-alt:#F6F6F6;
+  --navy-line: color-mix(in srgb, var(--navy) 22%, #ffffff);
+
+  --type-mult: 1.06;
+  --type-display: calc(88px * var(--type-mult));
+  --type-title:   calc(72px * var(--type-mult));
+  --type-heading: calc(52px * var(--type-mult));
+  --type-subtitle:calc(36px * var(--type-mult));
+  --type-body:    calc(29px * var(--type-mult));
+  --type-small:   calc(25px * var(--type-mult));
+  --type-label:   calc(23px * var(--type-mult));
+  --type-chapter: calc(160px * var(--type-mult));
+  --type-stat:    calc(120px * var(--type-mult));
+
+  --pad-x: 104px;
+  --pad-top: 46px;
+  --pad-bottom: 110px;
+  --gap-title: 16px;
+
+  --font-ja: "Noto Sans JP", "BIZ UDPGothic", "Yu Gothic", "Meiryo", sans-serif;
+  --font-serif: var(--font-ja);
+  --grad-navy: linear-gradient(160deg, #012360 0%, #001B4D 100%);
+}
+.serif{ font-family: var(--font-serif); font-weight:800; letter-spacing:.02em; }
+
+deck-stage:not(:defined){ visibility:hidden; }
+html,body{ margin:0; background:#0a1430; }
+
+.slide{
+  box-sizing:border-box;
+  display:flex; flex-direction:column;
+  padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-ja);
+  overflow:hidden;
+  position:relative;
+  height: 1080px;
+}
+.slide::after{
+  content:""; position:absolute; left:0; right:0; bottom:0; height:10px;
+  background: var(--navy); pointer-events:none;
+}
+.slide--navy{ background: var(--grad-navy); color: var(--white); }
+.slide--navy::after{ background: var(--accent); }
+.slide--soft{ background: var(--bg-alt); }
+
+.eyebrow{
+  display:flex; align-items:center; gap:16px;
+  font-size: var(--type-label); font-weight:700; color: var(--navy);
+  letter-spacing:.04em; line-height:1;
+}
+.eyebrow::before{
+  content:""; width:10px; height:34px; border-radius:3px;
+  background: linear-gradient(180deg, var(--navy) 0 68%, var(--accent) 68% 100%);
+  flex:none;
+}
+.eyebrow .num{ font-family: var(--font-en); color: var(--accent-ink); }
+.eyebrow .en{ font-family: var(--font-en); color: var(--accent-ink); letter-spacing:.12em; text-transform:uppercase; }
+.slide--navy .eyebrow{ color: rgba(255,255,255,.88); }
+.slide--navy .eyebrow .en{ color:#fff; }
+.slide--navy .eyebrow::before{ background: linear-gradient(180deg, #fff 0 68%, var(--accent) 68% 100%); }
+
+.s-title{
+  font-size: var(--type-heading); line-height:1.22; color: var(--navy);
+  margin: var(--gap-title) 0 0; font-weight:800; letter-spacing:.01em;
+  white-space: nowrap;
+}
+.slide--navy .s-title{ color:#fff; }
+
+.lead{
+  font-size: var(--type-body); line-height:1.55; color: var(--ink-2);
+  margin:0; text-wrap: pretty;
+}
+
+.hairline{
+  height:4px; border:0; margin:14px 0 0;
+  background: linear-gradient(90deg, var(--accent) 0 150px, var(--navy) 150px);
+  opacity:1; flex:none;
+}
+.slide--navy .hairline{ background: linear-gradient(90deg, var(--accent) 0 150px, rgba(255,255,255,.85) 150px); }
+
+.badge-danger{
+  display:inline-block; background: var(--danger); color:#fff;
+  font-weight:800; padding: 3px 16px; border-radius:6px;
+  line-height:1.35; font-size: var(--type-label); white-space:nowrap;
+}
+
+.badge-navy{
+  display:inline-block; background: var(--navy); color:#fff;
+  font-weight:700; padding: 3px 14px; border-radius:6px;
+  font-size: var(--type-label); white-space:nowrap;
+}
+
+.slide__foot{
+  position:absolute; left: var(--pad-x); right: var(--pad-x); bottom: 32px;
+  display:flex; align-items:center; justify-content:space-between;
+  font-size: var(--type-label); color: var(--gray);
+  font-family: var(--font-ja); line-height:1.2;
+}
+.slide__foot .ch{ display:flex; align-items:center; gap:10px; font-weight:700; color: var(--navy); }
+.slide__foot .cross{ color: var(--accent); font-weight:700; }
+.slide--navy .slide__foot{ color: rgba(255,255,255,.65); }
+.slide--navy .slide__foot .ch{ color:#fff; }
+.slide--navy .slide__foot .cross{ color: var(--accent); }
+
+/* COVER */
+.cover{ justify-content:center; }
+.cover__badge{
+  display:inline-flex; align-items:center; gap:12px; align-self:flex-start;
+  background:#fff; border:2px solid var(--navy-line);
+  color: var(--navy); padding:8px 20px; border-radius:999px;
+  font-size: var(--type-label); font-weight:700;
+}
+.cover__badge .cross{ color: var(--accent); font-size:1.2em; }
+.cover__title{
+  font-family: var(--font-serif);
+  font-size: calc(68px * var(--type-mult)); line-height:1.26; color: var(--navy); font-weight:800;
+  margin:28px 0 0; letter-spacing:.01em; max-width:1500px;
+}
+.cover__title .hl{ color: var(--accent); }
+.cover__rule{ width: 1500px; max-width:100%; height:3px; background: var(--navy); margin-top:24px; }
+.cover__sub{
+  font-size: var(--type-subtitle); color: var(--ink-2);
+  margin:22px 0 0; font-weight:700; line-height:1.4;
+}
+.cover__meta{
+  display:flex; gap:20px; align-items:center; margin-top:42px;
+  font-size: var(--type-small); color: var(--gray);
+}
+.cover__meta .name{ font-weight:800; color: var(--navy); }
+.cover__meta .vline{ width:2px; height:36px; background: var(--line); }
+
+/* THEME */
+.theme__body{ display:flex; flex-direction:column; gap:20px; margin-top:20px; }
+.theme__q{ font-family: var(--font-serif); font-size: var(--type-title); line-height:1.26; color: var(--navy); font-weight:800; }
+.theme__q .hl{ color: var(--accent-ink); border-bottom: 5px solid var(--accent-line); }
+.concl{
+  display:flex; align-items:flex-start; gap:20px;
+  background:#fff; border:3px solid var(--accent);
+  border-radius: 12px; padding: 22px 30px;
+}
+.concl__tag{
+  flex:none; background: var(--navy); color:#fff; font-weight:700;
+  font-size: var(--type-small); padding:6px 16px; border-radius:6px;
+}
+.concl__text{ font-size: var(--type-subtitle); line-height:1.45; color: var(--navy); font-weight:700; margin:0; }
+
+/* AGENDA */
+.agenda__list{ display:flex; flex-direction:column; gap:16px; margin-top:22px; }
+.agenda__item{ display:flex; align-items:center; gap:22px; }
+.agenda__num{
+  flex:none; width:56px; height:56px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  background: var(--navy); color:#fff;
+  font-family: var(--font-en); font-size: calc(34px * var(--type-mult)); font-weight:800;
+}
+.agenda__txt{
+  font-size: var(--type-subtitle); color: var(--navy); font-weight:700;
+  border-left: 5px solid var(--accent); padding-left: 20px; line-height:1.3;
+}
+.agenda__txt small{ display:block; font-size: var(--type-small); color: var(--gray); font-weight:400; margin-top:3px; }
+
+/* CARDS GRID */
+.grid-2col{ display:grid; grid-template-columns: 1fr 1fr; gap:24px; margin-top:20px; }
+.grid-3col{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:20px; margin-top:20px; }
+.grid-4cards{ display:grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap:16px; margin-top:16px; }
+
+.card{
+  background:#fff; border:1.5px solid var(--line); border-radius:10px;
+  padding:18px 22px; display:flex; flex-direction:column; justify-content:flex-start;
+  box-shadow: 0 4px 10px rgba(1,35,96,0.03);
+}
+.card--navy{ background: var(--blue-tint); border-color: var(--blue); }
+.card--alert{ background: #FFF5F5; border-color: var(--danger); }
+.card--accent{ background: #FFF9F0; border-color: var(--accent); }
+
+.card__head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.card__title{ font-size: var(--type-subtitle); font-weight:800; color: var(--navy); margin:0; line-height:1.25; }
+.card--alert .card__title{ color: var(--danger); }
+.card__desc{ font-size: var(--type-body); line-height:1.5; color: var(--ink-2); margin:6px 0 0; }
+.card__desc strong{ color: var(--navy); }
+.card--alert .card__desc strong{ color: var(--danger); }
+
+/* LIST / STEPS */
+.step-row{ display:flex; flex-direction:column; gap:14px; margin-top:18px; }
+.step-item{
+  display:flex; align-items:flex-start; gap:20px;
+  background:#fff; border:1.5px solid var(--line); border-radius:10px; padding:14px 20px;
+}
+.step-badge{
+  flex:none; background: var(--navy); color:#fff; font-weight:800;
+  font-size: var(--type-label); padding:5px 14px; border-radius:6px; margin-top:2px; white-space:nowrap;
+}
+.step-badge--accent{ background: var(--accent); }
+.step-badge--danger{ background: var(--danger); }
+.step-content{ flex:1; }
+.step-title{ font-size: var(--type-subtitle); font-weight:800; color: var(--navy); margin:0; line-height:1.25; }
+.step-text{ font-size: var(--type-body); color: var(--ink-2); margin:4px 0 0; line-height:1.45; }
+
+/* TABLE COMPACT */
+.compact-table{ width:100%; border-collapse:collapse; margin-top:18px; font-size: var(--type-small); }
+.compact-table th{ background: var(--navy); color:#fff; padding:10px 14px; text-align:left; font-weight:700; border:1px solid var(--navy); }
+.compact-table td{ padding:9px 14px; border:1px solid var(--line); background:#fff; line-height:1.4; }
+.compact-table tr:nth-child(even) td{ background: var(--bg-alt); }
+
+/* CALLOUT BOX */
+.callout-box{
+  background: var(--blue-tint); border-left:6px solid var(--navy);
+  padding:14px 22px; border-radius:0 8px 8px 0; margin-top:16px;
+}
+.callout-box--alert{ background:#FFF5F5; border-left-color: var(--danger); }
+.callout-title{ font-size: var(--type-subtitle); font-weight:800; color: var(--navy); margin:0 0 6px; }
+.callout-box--alert .callout-title{ color: var(--danger); }
+.callout-text{ font-size: var(--type-body); color: var(--ink-2); line-height:1.45; margin:0; }
+
+.nobr{ white-space: nowrap; }
+
+</style>
+<script type="module" src="deck-stage.js"></script>
+</head>
+<body>
+
+<deck-stage width="1920" height="1080">
+
+<!-- ===================================================================
+     SLIDE 1: COVER
+     =================================================================== -->
+<section class="slide cover" data-title="表紙">
+  <div class="cover__badge"><span class="cross">✦</span><span>猫背改善シリーズ 第1回</span></div>
+  <h1 class="cover__title">その猫背、本当に<br><span class="hl">「ただの姿勢の悪さ」</span>ですか？</h1>
+  <div class="cover__rule"></div>
+  <p class="cover__sub">見逃してはいけない骨粗鬆症・脊柱変形と受診の目安</p>
+  <div class="cover__meta">
+    <span class="name">監修：今村久司</span>
+    <span class="vline"></span>
+    <span>脳神経内科専門医・指導医 ／ 総合内科専門医</span>
+  </div>
+  <div class="slide__foot">
+    <span class="ch"><span class="cross">✦</span>猫背改善シリーズ</span>
+    <span>第1回：鑑別・危険なサイン編</span>
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE 2: THEME / CONCLUSION
+     =================================================================== -->
+<section class="slide" data-title="核心メッセージ">
+  <div class="eyebrow"><span class="en">Core Message</span></div>
+  <h2 class="s-title"><span class="nobr">「背筋を伸ばせば治る」という誤解</span></h2>
+  <div class="hairline"></div>
+  <div class="theme__body">
+    <div class="theme__q">猫背は単なる生活習慣の癖ではなく、<br><span class="hl">骨折や神経の病気</span>が隠れていることがあります。</div>
+    <div class="concl">
+      <div class="concl__tag">結論</div>
+      <p class="concl__text">無理に背中を反らせる前に、まず危険サインと背骨の柔軟性を確認しましょう。<br>骨が固まっている場合、無理に伸ばすと逆効果になります。</p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span class="ch"><span class="cross">✦</span>はじめに</span>
+    <span>1 / 15</span>
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE 3: AGENDA
+     =================================================================== -->
+<section class="slide" data-title="目次">
+  <div class="eyebrow"><span class="en">Agenda</span></div>
+  <h2 class="s-title">本日の解説メニュー</h2>
+  <div class="hairline"></div>
+  <div class="agenda__list">
+    <div class="agenda__item">
+      <div class="agenda__num">1</div>
+      <div class="agenda__txt">「猫背」の医学的正体と研究知見<small>胸椎過後弯（Hyperkyphosis）とSHEAF試験の教訓</small></div>
+    </div>
+    <div class="agenda__item">
+      <div class="agenda__num">2</div>
+      <div class="agenda__txt">あなたの猫背はどのタイプ？ 7つの医学的病態<small>姿勢性・加齢性・骨折・変形・神経筋疾患の見分け方</small></div>
+    </div>
+    <div class="agenda__item">
+      <div class="agenda__num">3</div>
+      <div class="agenda__txt">見逃してはいけない4大危険サイン（レッドフラグ）<small>転倒後の痛み・急な身長低下・しびれ・夜間痛</small></div>
+    </div>
+    <div class="agenda__item">
+      <div class="agenda__num">4</div>
+      <div class="agenda__txt">自宅でできる3つのセルフチェック＆受診の目安<small>壁テスト・あおむけテスト・何科を受診すべきか</small></div>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span class="ch"><span class="cross">✦</span>全体の構成</span>
+    <span>2 / 15</span>
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE 4: CHAPTER 1 - CONCEPT & SHEAF
+     =================================================================== -->
+<section class="slide" data-title="医学的正体とSHEAF試験">
+  <div class="eyebrow"><span class="num">01</span><span class="en">Concept & Evidence</span></div>
+  <h2 class="s-title">「猫背」は医学的な病名ではない</h2>
+  <div class="hairline"></div>
+  <div class="grid-2col">
+    <div class="card card--navy">
+      <div class="card__head"><span class="badge-navy">背骨の構造</span></div>
+      <h3 class="card__title">生理的後弯 vs 胸椎過後弯</h3>
+      <p class="card__desc">背骨の胸（胸椎）はもともと緩やかに前屈みカーブ（<strong>生理的後弯</strong>）を描いています。医学的に問題となるのは、角度が過剰になった「<strong>胸椎過後弯</strong>（Cobb角40〜50度以上）」です。</p>
+    </div>
+    <div class="card card--accent">
+      <div class="card__head"><span class="badge-navy">SHEAF試験の知見</span></div>
+      <h3 class="card__title">角度の改善 ＝ 痛みの消失ではない</h3>
+      <p class="card__desc">半年間の理学療法で後弯角は平均3.0度改善しましたが、歩行速度等の日常機能に有意差は出ませんでした。「見た目の角度だけを真っ直ぐにする」ことだけが治療目的ではありません。</p>
+    </div>
+  </div>
+  <div class="callout-box">
+    <p class="callout-text">見た目の形だけを無理に直そうとせず、<strong>「なぜ曲がっているのか」</strong>の原因を突き止めることが先決です。</p>
+  </div>
+  <div class="slide__foot">
+    <span class="ch"><span class="cross">✦</span>第1章：医学的正体</span>
+    <span>3 / 15</span>
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE 5: CHAPTER 2 - 7 TYPES OVERVIEW
+     =================================================================== -->
+<section class="slide" data-title="猫背の7つの分類">
+  <div class="eyebrow"><span class="num">02</span><span class="en">Classification</span></div>
+  <h2 class="s-title">あなたの猫背はどれ？ 医学的7分類</h2>
+  <div class="hairline"></div>
+  <table class="compact-table">
+    <thead>
+      <tr>
+        <th style="width:23%;">病型</th>
+        <th style="width:39%;">主な原因・特徴</th>
+        <th style="width:14%;">柔軟性</th>
+        <th style="width:24%;">対策の基本</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>① 姿勢性・機能性</strong></td>
+        <td>デスクワーク・スマホ。意識や仰臥位で改善</td>
+        <td><span style="color:#0e7490;font-weight:bold;">良好（高い）</span></td>
+        <td class="nobr">運動療法・生活指導</td>
+      </tr>
+      <tr>
+        <td><strong>② 加齢性過後弯</strong></td>
+        <td>椎間板変性・背筋力低下・靭帯硬化</td>
+        <td>中等度</td>
+        <td class="nobr">背筋強化・可動域維持</td>
+      </tr>
+      <tr>
+        <td><strong>③ 骨粗鬆症性後弯</strong></td>
+        <td>椎体骨折（圧迫骨折）。身長低下・背部痛</td>
+        <td><span style="color:#b91c1c;font-weight:bold;">低い〜中</span></td>
+        <td class="nobr">骨粗鬆症治療を最優先</td>
+      </tr>
+      <tr>
+        <td><strong>④ 構築性変形</strong></td>
+        <td>Scheuermann病・成人脊柱変形。骨が変形固定</td>
+        <td><span style="color:#b91c1c;font-weight:bold;">極めて低い</span></td>
+        <td class="nobr">専門医装具・手術検討</td>
+      </tr>
+      <tr>
+        <td><strong>⑤ 神経筋性前屈</strong></td>
+        <td>パーキンソン病（camptocormia）など。寝ると改善</td>
+        <td>特異的</td>
+        <td class="nobr">脳神経内科で治療</td>
+      </tr>
+      <tr>
+        <td><strong>⑥ 筋緊張・疼痛回避</strong></td>
+        <td>胸筋の短縮、内臓痛や恐怖心による前屈み</td>
+        <td>比較的高い</td>
+        <td class="nobr">原因除去・ストレッチ</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="slide__foot">
+    <span class="ch"><span class="cross">✦</span>第2章：原因の分類</span>
+    <span>4 / 15</span>
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE 6: OSTEOPOROSIS VERTEBRAL FRACTURE
+     =================================================================== -->
+<section class="slide" data-title="骨粗鬆症性椎体骨折">
+  <div class="eyebrow"><span class="num">02</span><span class="en">Deep Dive: Bone Health</span></div>
+  <h2 class="s-title">「痛くないから骨折ではない」は大間違い</h2>
+  <div class="hairline"></div>
+  <div class="grid-2col">
+    <div class="card card--alert">
+      <div class="card__head"><span class="badge-danger">2/3は無症候性</span></div>
+      <h3 class="card__title">「いつの間にか骨折」の真実</h3>
+      <p class="card__desc">骨粗鬆症による背骨の骨折の<strong>約3分の2は激痛を伴いません</strong>。尻もちをついた自覚がなくても、日常生活のわずかな負荷で椎体が徐々に潰れて前屈みになります。</p>
+    </div>
+    <div class="card card--navy">
+      <div class="card__head"><span class="badge-navy">見逃さない指標</span></div>
+      <h3 class="card__title">身長が2cm縮んだら要注意</h3>
+      <p class="card__desc">直近で<strong>2cm以上</strong>、または若い頃から<strong>4cm以上</strong>縮んでいる場合は椎体骨折が強く疑われます。1箇所折れると次々に連鎖する「骨折連鎖」の予防が最重要です。</p>
+    </div>
+  </div>
+  <div class="callout-box callout-box--alert">
+    <p class="callout-text">骨粗鬆症で骨が脆くなっている方が無理に背筋を反らすと、<strong>椎体に無理な圧力がかかり骨折を誘発</strong>する恐れがあります。</p>
+  </div>
+  <div class="slide__foot">
+    <span class="ch"><span class="cross">✦</span>第2章：骨粗鬆症と骨折</span>
+    <span>5 / 15</span>
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE 7: STRUCTURAL & NEUROLOGICAL
+     =================================================================== -->
+<section class="slide" data-title="構築性変形と神経疾患">
+  <div class="eyebrow"><span class="num">02</span><span class="en">Deep Dive: Spine & Nerve</span></div>
+  <h2 class="s-title">骨が固まる病気・神経が起こす姿勢異常</h2>
+  <div class="hairline"></div>
+  <div class="grid-2col">
+    <div class="card">
+      <div class="card__head"><span class="badge-navy">構築性変形</span></div>
+      <h3 class="card__title">Scheuermann病・成人脊柱変形</h3>
+      <p class="card__desc">骨自体が楔状に変形して骨癒合し、自力で伸ばそうとしても伸びません。成人脊柱変形では腰の前弯が消え、体全体が前傾して杖や歩行器なしでは歩けなくなります。</p>
+    </div>
+    <div class="card">
+      <div class="card__head"><span class="badge-navy">神経筋性前屈</span></div>
+      <h3 class="card__title"><span class="nobr">Camptocormia（体幹前屈症）</span></h3>
+      <p class="card__desc">パーキンソン病などに伴い、立っていると体が大きく前へ折れ曲がります。<strong>「あおむけに寝ると劇的にまっすぐ伸びる」</strong>のが最大の特徴で、神経内科での治療が必要です。</p>
+    </div>
+  </div>
+  <div class="callout-box">
+    <p class="callout-text">「自力で反らせるか」「寝たら伸びるか」を見るだけで、病気のタイプを絞り込むことができます。</p>
+  </div>
+  <div class="slide__foot">
+    <span class="ch"><span class="cross">✦</span>第2章：変形と神経疾患</span>
+    <span>6 / 15</span>
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE 8: RED FLAGS
+     =================================================================== -->
+<section class="slide" data-title="見逃してはいけない4大危険サイン">
+  <div class="eyebrow"><span class="num">03</span><span class="en">Red Flags</span></div>
+  <h2 class="s-title">見逃してはいけない4大危険サイン</h2>
+  <div class="hairline"></div>
+  <div class="grid-4cards">
+    <div class="card card--alert">
+      <div class="card__head"><span class="badge-danger">警告 1</span></div>
+      <h3 class="card__title">急激な発症・安静時痛</h3>
+      <p class="card__desc">尻もちや重い物を持った後の強い痛み。寝ていてもズキズキ痛む夜間痛（骨折や感染の疑い）。</p>
+    </div>
+    <div class="card card--alert">
+      <div class="card__head"><span class="badge-danger">警告 2</span></div>
+      <h3 class="card__title">神経症状（しびれ・麻痺）</h3>
+      <p class="card__desc">足や手のしびれ、力が入らない（下垂足・階段昇降困難）、排尿・排便の異常（脊髄圧迫の危険）。</p>
+    </div>
+    <div class="card card--alert">
+      <div class="card__head"><span class="badge-danger">警告 3</span></div>
+      <h3 class="card__title">全身症状・悪性腫瘍の既往</h3>
+      <p class="card__desc">がん治療歴がある方の急な背部痛、発熱、原因不明の体重減少（転移性骨腫瘍・感染性脊椎炎）。</p>
+    </div>
+    <div class="card card--alert">
+      <div class="card__head"><span class="badge-danger">警告 4</span></div>
+      <h3 class="card__title">急な身長低下・前傾</h3>
+      <p class="card__desc">短期間で2cm以上の身長低下。急に背中が丸くなり、前を向いて歩けなくなった状態。</p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span class="ch"><span class="cross">✦</span>第3章：4大危険サイン</span>
+    <span>7 / 15</span>
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE 9: SELF CHECK OVERVIEW
+     =================================================================== -->
+<section class="slide" data-title="自宅でできる3つのセルフチェック">
+  <div class="eyebrow"><span class="num">04</span><span class="en">Self Check</span></div>
+  <h2 class="s-title">自宅でできる3つの簡単セルフチェック</h2>
+  <div class="hairline"></div>
+  <div class="step-row">
+    <div class="step-item">
+      <div class="step-badge">TEST 1</div>
+      <div class="step-content">
+        <h3 class="step-title">壁テスト（後頭部-壁間距離：OWD）</h3>
+        <p class="step-text">壁にかかと・お尻・背中をつけて直立。後頭部が壁につくか、隙間が何cmあるかを測定。</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-badge">TEST 2</div>
+      <div class="step-content">
+        <h3 class="step-title">あおむけテスト（仰臥位での伸展確認）</h3>
+        <p class="step-text">硬い床にあおむけに寝る。首や背中が床について平らになるか、高い枕がないと寝られないか。</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-badge">TEST 3</div>
+      <div class="step-content">
+        <h3 class="step-title">能動矯正テスト（自力伸展の可否）</h3>
+        <p class="step-text">胸を張って背筋を伸ばそうと意識したとき、自分で背骨のカーブを改善できるかどうか。</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span class="ch"><span class="cross">✦</span>第4章：セルフチェック</span>
+    <span>8 / 15</span>
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE 10: TEST DETAILS
+     =================================================================== -->
+<section class="slide" data-title="壁テストとあおむけテストの判定">
+  <div class="eyebrow"><span class="num">04</span><span class="en">Test Judgment</span></div>
+  <h2 class="s-title">テスト結果から何がわかるのか？</h2>
+  <div class="hairline"></div>
+  <div class="grid-2col">
+    <div class="card">
+      <div class="card__head"><span class="badge-navy">壁テストの判定</span></div>
+      <h3 class="card__title">後頭部が壁につくか？</h3>
+      <p class="card__desc">
+        ・<strong>自然につく</strong>：後弯は軽微、柔軟性良好。<br>
+        ・<strong>無理すればつく</strong>：姿勢性猫背の可能性大。<br>
+        ・<strong>全くつかない（5cm以上隙間）</strong>：過後弯や骨折の疑いあり。受診を推奨。
+      </p>
+    </div>
+    <div class="card">
+      <div class="card__head"><span class="badge-navy">あおむけテストの判定</span></div>
+      <h3 class="card__title">寝ると背中が伸びるか？</h3>
+      <p class="card__desc">
+        ・<strong>平らになる</strong>：骨の変形ではなく筋肉性、または神経筋性（camptocormia）。<br>
+        ・<strong>浮いて背中が痛い・枕が必要</strong>：骨が変形して固まっている（構築性・骨折）。
+      </p>
+    </div>
+  </div>
+  <div class="callout-box">
+    <p class="callout-text"><strong>判定の要点：</strong>寝ても自力でも伸びない「固定性」の場合は、自己流のエクササイズは控えて整形外科へ相談しましょう。</p>
+  </div>
+  <div class="slide__foot">
+    <span class="ch"><span class="cross">✦</span>第4章：判定の基準</span>
+    <span>9 / 15</span>
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE 11: DANGER OF FORCED EXTENSION
+     =================================================================== -->
+<section class="slide" data-title="無理な矯正の落とし穴">
+  <div class="eyebrow"><span class="num">04</span><span class="en">Warning</span></div>
+  <h2 class="s-title"><span class="nobr">「固まった背骨」を無理に反らせてはいけない理由</span></h2>
+  <div class="hairline"></div>
+  <div class="grid-3col">
+    <div class="card card--alert">
+      <div class="card__head"><span class="badge-danger">リスク 1</span></div>
+      <h3 class="card__title"><span class="nobr">椎体骨折の誘発</span></h3>
+      <p class="card__desc">骨粗鬆症がある状態で無理に反らすと、骨の前方に強い圧力がかかり新たな骨折を招きます。</p>
+    </div>
+    <div class="card card--alert">
+      <div class="card__head"><span class="badge-danger">リスク 2</span></div>
+      <h3 class="card__title"><span class="nobr">腰椎・頸椎への過負荷</span></h3>
+      <p class="card__desc">硬い胸椎が動かないまま反ろうとすると、首や腰が過剰に反って神経痛や腰痛を悪化させます。</p>
+    </div>
+    <div class="card card--alert">
+      <div class="card__head"><span class="badge-danger">リスク 3</span></div>
+      <h3 class="card__title"><span class="nobr">強引な施術事故</span></h3>
+      <p class="card__desc">整体やカイロでの強い衝撃（ボキボキ矯正）は、高齢者や骨脆弱者では重篤な骨折の原因に。</p>
+    </div>
+  </div>
+  <div class="callout-box callout-box--alert">
+    <p class="callout-text">「背筋を伸ばす＝良いこと」とは限りません。<strong>「伸ばしてよい背骨か」を確認すること</strong>が医学の鉄則です。</p>
+  </div>
+  <div class="slide__foot">
+    <span class="ch"><span class="cross">✦</span>第4章：無理な矯正の危険</span>
+    <span>10 / 15</span>
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE 12: CLINICAL SPECIALTIES
+     =================================================================== -->
+<section class="slide" data-title="何科を受診すべきか">
+  <div class="eyebrow"><span class="num">05</span><span class="en">Medical Guide</span></div>
+  <h2 class="s-title">病院を受診するなら何科に行くべき？</h2>
+  <div class="hairline"></div>
+  <div class="grid-2col">
+    <div class="card card--navy">
+      <div class="card__head"><span class="badge-navy">整形外科・脊椎外科</span></div>
+      <h3 class="card__title">骨・関節・神経圧迫が疑われるとき</h3>
+      <p class="card__desc">
+        ・転倒や尻もちの後の背部痛がある<br>
+        ・身長が2cm以上縮んできた<br>
+        ・手足のしびれや力が入らない症状がある<br>
+        ・寝ても背中が伸びず、骨が固まっている
+      </p>
+    </div>
+    <div class="card card--navy">
+      <div class="card__head"><span class="badge-navy">脳神経内科</span></div>
+      <h3 class="card__title">神経難病や特異な姿勢異常のとき</h3>
+      <p class="card__desc">
+        ・歩行時に手足の震えや小刻み歩行がある<br>
+        ・立位で強く前屈するが、<strong>あおむけで完全に伸びる</strong><br>
+        ・頭を自力で持ち上げられない（首下がり）<br>
+        ・動作が全体的に遅くなってきた
+      </p>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span class="ch"><span class="cross">✦</span>第5章：受診科の選択</span>
+    <span>11 / 15</span>
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE 13: HOSPITAL EXAMINATIONS
+     =================================================================== -->
+<section class="slide" data-title="病院で行われる主な検査">
+  <div class="eyebrow"><span class="num">05</span><span class="en">Examinations</span></div>
+  <h2 class="s-title">病院で行われる3つの重要検査</h2>
+  <div class="hairline"></div>
+  <div class="step-row">
+    <div class="step-item">
+      <div class="step-badge">検査 1</div>
+      <div class="step-content">
+        <h3 class="step-title">単純X線写真（レントゲン立位・臥位）</h3>
+        <p class="step-text">背骨の曲がり角度（Cobb角）の計測、椎体の圧迫骨折の有無、立位と寝た状態での変形の差を評価。</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-badge">検査 2</div>
+      <div class="step-content">
+        <h3 class="step-title">骨密度検査（DEXA法：腰椎・大腿骨）</h3>
+        <p class="step-text">骨粗鬆症の診断基準（若年成人平均の70%未満）を満たすかを判定。骨折リスクを正確に評価。</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-badge">検査 3</div>
+      <div class="step-content">
+        <h3 class="step-title">脊椎MRI検査（必要に応じて）</h3>
+        <p class="step-text">潰れた骨が「最近折れた新鮮骨折」か「古い骨折」かを判別し、神経や脊髄の圧迫状態を精密確認。</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span class="ch"><span class="cross">✦</span>第5章：病院での検査</span>
+    <span>12 / 15</span>
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE 14: SUMMARY 3 RULES
+     =================================================================== -->
+<section class="slide" data-title="まとめ：3つの鉄則">
+  <div class="eyebrow"><span class="en">Summary</span></div>
+  <h2 class="s-title">猫背と向き合うための3つの鉄則</h2>
+  <div class="hairline"></div>
+  <div class="step-row">
+    <div class="step-item">
+      <div class="step-badge step-badge--danger">鉄則 1</div>
+      <div class="step-content">
+        <h3 class="step-title">危険サイン（レッドフラグ）がないか確認</h3>
+        <p class="step-text">激痛、夜間痛、手足のしびれ、急な身長低下があれば、運動の前にまず医療機関へ。</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-badge step-badge--accent">鉄則 2</div>
+      <div class="step-content">
+        <h3 class="step-title">壁＆あおむけテストで「柔軟性」をチェック</h3>
+        <p class="step-text">自力やあおむけで伸びる姿勢性なら運動が有効。固まっているなら無理な伸展は避ける。</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-badge">鉄則 3</div>
+      <div class="step-content">
+        <h3 class="step-title">見た目の角度だけに囚われず原因にアプローチ</h3>
+        <p class="step-text">骨粗鬆症や神経疾患など、根本にある病態を見極めて適切な治療を受けることが重要。</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide__foot">
+    <span class="ch"><span class="cross">✦</span>まとめ</span>
+    <span>13 / 15</span>
+  </div>
+</section>
+
+<!-- ===================================================================
+     SLIDE 15: FAQ & NEXT PREVIEW
+     =================================================================== -->
+<section class="slide" data-title="よくある質問と次回予告">
+  <div class="eyebrow"><span class="en">Q&A & Next</span></div>
+  <h2 class="s-title">よくある質問と次回予告</h2>
+  <div class="hairline"></div>
+  <div class="grid-2col">
+    <div class="card card--accent">
+      <div class="card__head"><span class="badge-navy">よくある質問</span></div>
+      <h3 class="card__title"><span class="nobr">姿勢矯正ベルトの効果は？</span></h3>
+      <p class="card__desc">安易な常用は<strong>自分の背筋を衰えさせる</strong>恐れがあります。一時的な意識づけには使えても、根本改善には運動と原因評価が不可欠です。</p>
+    </div>
+    <div class="card card--navy">
+      <div class="card__head"><span class="badge-navy">次回予告【第2回】</span></div>
+      <h3 class="card__title"><span class="nobr">グッズや整体は本当に効くのか？</span></h3>
+      <p class="card__desc">次回は「姿勢矯正ベルト・整体・グッズの医学的真実」を徹底検証。エビデンスに基づく正しい選び方を解説します。</p>
+    </div>
+  </div>
+  <div class="callout-box">
+    <p class="callout-text">チャンネル登録・高評価をいただけると励みになります！ 疑問や体験談はぜひコメント欄へお寄せください。</p>
+  </div>
+  <div class="slide__foot">
+    <span class="ch"><span class="cross">✦</span>次回予告</span>
+    <span>14 / 15</span>
+  </div>
+</section>
+
+</deck-stage>
+</body>
+</html>
