@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ビタミンB1欠乏の治療 インフォグラフィック</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Noto Sans JP', 'BIZ UDPGothic', 'Hiragino Sans', sans-serif;
+    background: #012360;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.infographic {
+    width: 1200px;
+    background: #ffffff;
+    padding: 48px 56px;
+    color: #1a1a1a;
+}
+
+.header {
+    text-align: center;
+    border-bottom: 4px solid #012360;
+    padding-bottom: 24px;
+    margin-bottom: 32px;
+}
+
+.header .badge {
+    display: inline-block;
+    background: #012360;
+    color: #fff;
+    padding: 6px 20px;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+}
+
+.header h1 {
+    font-size: 36px;
+    color: #012360;
+    font-weight: 900;
+    line-height: 1.3;
+    margin-bottom: 10px;
+}
+
+.header p {
+    font-size: 18px;
+    color: #444;
+    font-weight: 500;
+}
+
+.section-title {
+    font-size: 22px;
+    font-weight: 900;
+    color: #012360;
+    border-left: 6px solid #087e83;
+    padding-left: 14px;
+    margin: 28px 0 16px 0;
+}
+
+.hero-box {
+    background: #FFF4E5;
+    border: 2px solid #FFB366;
+    border-left: 10px solid #F27E03;
+    border-radius: 12px;
+    padding: 24px 32px;
+    margin-bottom: 28px;
+}
+
+.hero-box h2 {
+    font-size: 24px;
+    color: #001B4D;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
+.hero-box p {
+    font-size: 18px;
+    line-height: 1.6;
+    color: #333;
+}
+
+.timeline {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 12px;
+    position: relative;
+}
+
+.timeline__step {
+    background: #F0FAFA;
+    border: 2px solid #087e83;
+    border-radius: 12px;
+    padding: 18px 16px;
+    text-align: center;
+    position: relative;
+}
+
+.timeline__step--taper {
+    background: #FAFAFA;
+    border-color: #B9C4CE;
+}
+
+.timeline__step__tag {
+    font-size: 12px;
+    font-weight: 700;
+    color: #087e83;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.timeline__step__dose {
+    font-size: 26px;
+    font-weight: 900;
+    color: #012360;
+    margin-bottom: 6px;
+}
+
+.timeline__step__desc {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #444;
+}
+
+.timeline__arrow {
+    text-align: center;
+    color: #087e83;
+    font-size: 22px;
+    font-weight: 900;
+    margin: -4px 0 8px;
+}
+
+.note-line {
+    font-size: 14px;
+    color: #52647a;
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+table.dose-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 12px;
+    font-size: 15px;
+}
+
+table.dose-table th {
+    background: #012360;
+    color: #fff;
+    padding: 12px 14px;
+    text-align: left;
+    font-weight: 700;
+}
+
+table.dose-table td {
+    border: 1px solid #D8DDE6;
+    padding: 12px 14px;
+}
+
+table.dose-table tr:nth-child(even) td {
+    background: #FAFAFA;
+}
+
+table.dose-table td.dose-num {
+    font-weight: 900;
+    color: #087e83;
+    font-size: 17px;
+    white-space: nowrap;
+}
+
+.caution-box {
+    background: #FDEDEC;
+    border: 2px solid #F5B7B1;
+    border-left: 10px solid #DC3323;
+    border-radius: 12px;
+    padding: 16px 24px;
+    margin-bottom: 28px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #333;
+}
+
+.grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.mini-box {
+    background: #fff;
+    border: 2px solid #D8DDE6;
+    border-radius: 10px;
+    padding: 18px 16px;
+    text-align: center;
+}
+
+.mini-box__title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #012360;
+    margin-bottom: 8px;
+}
+
+.mini-box__result {
+    display: inline-block;
+    background: #EEF2F7;
+    color: #52647a;
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.mini-box__desc {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #555;
+}
+
+.footer-note {
+    background: #012360;
+    color: #fff;
+    border-radius: 10px;
+    padding: 20px 28px;
+    margin-top: 12px;
+    font-size: 13px;
+    line-height: 1.8;
+}
+</style>
+</head>
+<body>
+
+<div class="infographic">
+    <div class="header">
+        <div class="badge">医知創造ラボ｜チアミン欠乏症 第4回・最終回｜医療者向け</div>
+        <h1>チアミン治療<br>量・経路・順番の確認カード</h1>
+        <p>英国DHSC指針と国内製剤をつなぐ、迷わないための実務まとめ</p>
+    </div>
+
+    <div class="hero-box">
+        <h2>最優先：低血糖の治療を待たせない</h2>
+        <p>ウェルニッケ脳症を疑っても、<strong>ブドウ糖の投与をチアミン待ちで遅らせない</strong>。チアミンも同時に速やかに投与する。順番を誤らないことが、量の正確さより優先される。</p>
+    </div>
+
+    <div class="section-title">1. 英国指針：疑い例・確定例の初期治療</div>
+    <div class="timeline">
+        <div class="timeline__step">
+            <div class="timeline__step__tag">STEP 1・開始</div>
+            <div class="timeline__step__dose">300〜500mg</div>
+            <div class="timeline__step__desc">1日3回、静注<br>3〜5日で毎日再評価</div>
+        </div>
+        <div class="timeline__step timeline__step--taper">
+            <div class="timeline__step__tag">STEP 2・5日後も症状あり</div>
+            <div class="timeline__step__dose">300〜500mg</div>
+            <div class="timeline__step__desc">1日1回に減量<br>改善が続く間は継続</div>
+        </div>
+        <div class="timeline__step timeline__step--taper">
+            <div class="timeline__step__tag">予防のみの場合</div>
+            <div class="timeline__step__dose">200〜300mg</div>
+            <div class="timeline__step__desc">1日1回</div>
+        </div>
+        <div class="timeline__step" style="border-color:#DC3323;background:#FDEDEC;">
+            <div class="timeline__step__tag" style="color:#DC3323;">共通の大前提</div>
+            <div class="timeline__step__dose" style="font-size:18px;color:#DC3323;">低血糖対応が先</div>
+            <div class="timeline__step__desc">チアミン待ちで<br>ブドウ糖を遅らせない</div>
+        </div>
+    </div>
+    <p class="note-line">出典：英国 DHSC Clinical guidelines for alcohol treatment（2026年4月更新）</p>
+
+    <div class="section-title">2. 国内製剤は成分と用量を読み直す</div>
+    <table class="dose-table">
+        <tr><th>製剤（アリナミンF注）</th><th>成分</th><th>通常成人1日量</th></tr>
+        <tr><td>F25</td><td rowspan="3" style="vertical-align:middle;">フルスルチアミン</td><td class="dose-num">25〜100 mg</td></tr>
+        <tr><td>F50</td><td class="dose-num">50〜100 mg</td></tr>
+        <tr><td>F100</td><td class="dose-num">100 mg</td></tr>
+    </table>
+    <div class="caution-box">
+        <strong>海外のチアミン量から機械的に換算しない。</strong>英国指針の「チアミン◯mg」は成分量であり、国内製剤（フルスルチアミン）は添付文書の用量表記をそのまま用いる。
+    </div>
+
+    <div class="section-title">3. 欠乏以外への効果は、まだ確立していない</div>
+    <div class="grid-3">
+        <div class="mini-box">
+            <div class="mini-box__title">敗血症</div>
+            <div class="mini-box__result">優越性示されず</div>
+            <div class="mini-box__desc">主要評価項目で有意差なし</div>
+        </div>
+        <div class="mini-box">
+            <div class="mini-box__title">心不全</div>
+            <div class="mini-box__result">優越性示されず</div>
+            <div class="mini-box__desc">主要評価項目で有意差なし</div>
+        </div>
+        <div class="mini-box">
+            <div class="mini-box__title">糖尿病性神経障害</div>
+            <div class="mini-box__result">優越性示されず</div>
+            <div class="mini-box__desc">主要評価項目で有意差なし</div>
+        </div>
+        <div class="mini-box">
+            <div class="mini-box__title">認知症</div>
+            <div class="mini-box__result">優越性示されず</div>
+            <div class="mini-box__desc">主要評価項目で有意差なし</div>
+        </div>
+    </div>
+    <p class="note-line">遺伝性疾患（TPK1・SLC19A3等）は、欠乏症とは別の治療体系。</p>
+
+    <div class="footer-note">
+        出典：英国 DHSC Clinical guidelines for alcohol treatment（2026年4月更新）／PMDA添付文書／Dingwall 2022（PMID 35428992）／Donnino 2016（26771781）／Moskowitz 2023（37364280）／Keith 2019（31504093）／Stracke 2008（18473286）／Gibson 2020（PMC7880246）。文献詳細は同梱ブログ参照。2026-09-13確認。一般的教育情報であり個別の治療指示ではありません。
+    </div>
+</div>
+
+</body>
+</html>
