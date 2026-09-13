@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>猫背改善シリーズ第2回｜スライドビューアー</title>
+  <style>
+    :root { color-scheme: light; font-family: "Noto Sans JP", "Yu Gothic UI", sans-serif; --navy:#062a5b; --orange:#ee8700; --ink:#172b4d; --paper:#f5f8fc; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; background:var(--paper); color:var(--ink); }
+    .viewer { min-height:100vh; display:grid; grid-template-rows:auto 1fr; }
+    header { display:flex; align-items:center; gap:clamp(10px,2vw,22px); padding:clamp(10px,1.6vw,20px) clamp(14px,3vw,42px); background:#fff; border-bottom:1px solid #dce4f0; }
+    .brand { min-width:0; flex:1; }
+    .eyebrow { margin:0 0 3px; color:var(--orange); font-size:clamp(.65rem,1vw,.82rem); font-weight:800; letter-spacing:.08em; }
+    h1 { margin:0; font-size:clamp(.9rem,1.7vw,1.35rem); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .counter { font-variant-numeric:tabular-nums; font-weight:800; color:var(--navy); white-space:nowrap; }
+    main { min-height:0; display:grid; place-items:center; padding:clamp(8px,1.5vw,24px); }
+    .stage { width:min(100%, 1600px); aspect-ratio:16 / 9; position:relative; background:#fff; box-shadow:0 18px 46px rgba(6,42,91,.18); }
+    iframe { width:100%; height:100%; border:0; display:block; background:#fff; }
+    .controls { position:absolute; inset:auto 0 clamp(10px,2vw,24px); display:flex; justify-content:center; gap:10px; pointer-events:none; }
+    button { pointer-events:auto; min-width:46px; min-height:42px; border:1px solid rgba(255,255,255,.7); border-radius:999px; background:rgba(6,42,91,.92); color:#fff; cursor:pointer; font:inherit; font-weight:700; padding:0 16px; box-shadow:0 4px 14px rgba(6,42,91,.24); }
+    button:hover, button:focus-visible { background:var(--orange); outline:3px solid rgba(238,135,0,.28); outline-offset:2px; }
+    .hint { position:absolute; right:14px; top:12px; padding:5px 9px; color:#fff; background:rgba(6,42,91,.75); border-radius:6px; font-size:clamp(.62rem,1vw,.78rem); }
+    @media (max-width:600px) { header { align-items:flex-start; } .hint { display:none; } .controls { bottom:8px; gap:6px; } button { min-width:40px; min-height:36px; padding:0 12px; } }
+    @media (prefers-reduced-motion:reduce) { * { scroll-behavior:auto !important; transition:none !important; animation:none !important; } }
+  </style>
+</head>
+<body>
+  <div class="viewer">
+    <header>
+      <div class="brand"><p class="eyebrow">医知創造ラボ｜猫背改善シリーズ 第2回</p><h1>姿勢矯正ベルト・整体をどう位置づけるか</h1></div>
+      <div id="counter" class="counter" aria-live="polite">1 / 11</div>
+    </header>
+    <main>
+      <section class="stage" aria-label="スライド表示">
+        <iframe id="deck" title="猫背改善シリーズ第2回のスライド" src="deck-motion-v2.html#1"></iframe>
+        <span class="hint">← → キーで移動</span>
+        <nav class="controls" aria-label="スライド操作">
+          <button id="prev" type="button" aria-label="前のスライド">← 前へ</button>
+          <button id="next" type="button" aria-label="次のスライド">次へ →</button>
+          <button id="fullscreen" type="button" aria-label="全画面表示">全画面</button>
+        </nav>
+      </section>
+    </main>
+  </div>
+  <script>
+    const count = 11;
+    const deck = document.getElementById('deck');
+    const counter = document.getElementById('counter');
+    const initial = Number(location.hash.slice(1));
+    let page = Number.isInteger(initial) && initial >= 1 && initial <= count ? initial : 1;
+    function show(next) {
+      page = Math.max(1, Math.min(count, next));
+      deck.src = `deck-motion-v2.html#${page}`;
+      counter.textContent = `${page} / ${count}`;
+      history.replaceState(null, '', `#${page}`);
+      document.getElementById('prev').disabled = page === 1;
+      document.getElementById('next').disabled = page === count;
+    }
+    document.getElementById('prev').addEventListener('click', () => show(page - 1));
+    document.getElementById('next').addEventListener('click', () => show(page + 1));
+    document.getElementById('fullscreen').addEventListener('click', () => document.querySelector('.stage').requestFullscreen?.());
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft') { event.preventDefault(); show(page - 1); }
+      if (event.key === 'ArrowRight' || event.key === ' ') { event.preventDefault(); show(page + 1); }
+      if (event.key === 'Home') { event.preventDefault(); show(1); }
+      if (event.key === 'End') { event.preventDefault(); show(count); }
+    });
+    show(page);
+  </script>
+</body>
+</html>

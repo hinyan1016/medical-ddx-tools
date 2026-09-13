@@ -1,0 +1,70 @@
+/* ==========================================================================
+   entrance-v2.css — RC4 motion-v2 追加分。motion-v2/entrance.css（元キット
+   の .anim…anim6 / .anim-i / .a-* / .grow-y / .grow-x / .draw-line / .sweep /
+   .a-settle と各 @keyframes）を先に読み込むこと。
+   動くものは全て reduced-motion メディアクエリの中で [data-deck-active] に限定。
+   メディアクエリ外の規則は transform-origin と transform-box だけ（静止時は
+   transform:none なので描画は変わらない）。
+   ========================================================================== */
+
+/* ---- 3.1 SVG 内の変形起点（ゲート外: 動く/動かないで終端が同じになるよう固定） ---- */
+svg .grow-y,
+svg .grow-x,
+svg .grow-x-c,
+svg .a-pop,
+svg .a-zoom,
+svg .a-settle { transform-box: fill-box; }
+svg .grow-y   { transform-origin: 50% 100%; }   /* 棒は自分の基線から伸びる */
+svg .grow-x   { transform-origin: 0 50%; }      /* 横棒は自分の左端から伸びる */
+svg .a-pop,
+svg .a-zoom,
+svg .a-settle { transform-origin: 50% 50%; }    /* 点・文字は自分の中心から */
+.grow-x-c     { transform-origin: 50% 50%; }    /* 中央揃えの罫（表紙 .accent, .end-line） */
+
+/* ---- 3.2 新しい動きクラス（キットと同じゲート） ---- */
+@media (prefers-reduced-motion: no-preference) {
+  /* 中央から伸びる横罫: grow-x と同じ keyframes/時間、起点だけ中央 */
+  [data-deck-active] .grow-x-c {
+    transform-origin: 50% 50%;
+    animation: grow-x .55s .25s cubic-bezier(.2,.7,.2,1) both;
+  }
+  /* 短い引き出し線・連結線: draw-line と同じ仕組み（pathLength="1" 必須）で 450 ms */
+  [data-deck-active] .draw-quick {
+    stroke-dasharray: 1;
+    animation: v2-draw .45s .2s cubic-bezier(.2,.7,.2,1) both;
+  }
+  /* ドーナツの弧: dash 長を 0 から要素自身の stroke-dasharray 属性値まで伸ばす。
+     from だけの keyframe なので終端＝属性値（静止版）になる。transform は触らないので
+     属性の rotate(-90 …) はそのまま。 */
+  [data-deck-active] .arc-sweep {
+    animation: v2-arc .6s .3s cubic-bezier(.2,.7,.2,1) both;
+  }
+  /* 疑似要素の罫（手順の連結線 .timeline::before、年表の背骨 .timeline-grid::before）。
+     html-only: DOM ノードが無いので動画変換では静止の線になる。 */
+  [data-deck-active] .rule-grow::before {
+    transform-origin: 0 50%;
+    animation: grow-x .55s .3s cubic-bezier(.2,.7,.2,1) both;
+  }
+}
+
+/* 2 つ目の値 9999 は r=190 の円周 1193.8px を超えていればよい。
+   両リストとも 2 値なので数値補間される。 */
+@keyframes v2-arc { from { stroke-dasharray: 0 9999; } }
+
+/* ---- 3.3 印刷: v2 が付けうる全クラスを静止終端へ強制
+        （v1 が末尾に足した print 規則は .anim…anim6/.anim-i しか覆っていない） ---- */
+@media print {
+  .anim, .anim2, .anim3, .anim4, .anim5, .anim6, .anim-i,
+  .a-fade, .a-up, .a-down, .a-right, .a-left, .a-zoom, .a-pop, .a-blur, .a-wipe, .a-settle,
+  .grow-y, .grow-x, .grow-x-c, .nudge-x, .draw-line, .draw-quick, .arc-sweep, .sweep,
+  .rule-grow::before {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+  .anim, .anim2, .anim3, .anim4, .anim5, .anim6, .anim-i,
+  .grow-y, .grow-x, .grow-x-c, .nudge-x, .rule-grow::before { transform: none !important; }
+  .a-blur { filter: none !important; }
+  .a-wipe { clip-path: none !important; }
+  .draw-line, .draw-quick { stroke-dasharray: none !important; stroke-dashoffset: 0 !important; }
+  /* .arc-sweep: 属性値そのものが終端なので上書き不要 */
+}
