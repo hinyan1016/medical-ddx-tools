@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v167';
+const CACHE_NAME = 'ddx-tools-v168';
 const ASSETS = [
   './infographics/inpatient-belongings-management/index.html',
   './infographics/inpatient-belongings-management/infographic.png',

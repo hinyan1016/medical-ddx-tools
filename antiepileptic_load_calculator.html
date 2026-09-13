@@ -906,6 +906,7 @@ function copySummary() {
   text += '　上記の等価換算量は薬剤負荷を比較するための数学的参考値であって、そのまま投与する用量ではありません。\n';
   text += '　薬剤切替はTransitional Polytherapy（漸増・漸減）とTDMにより、発作型・患者状態に応じて個別に判断してください。';
 
+  text = text.replace(/[～〜]/g, '-');
   navigator.clipboard.writeText(text).then(function() {
     var st = document.getElementById('copyStatus');
     st.style.display = 'block';

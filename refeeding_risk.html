@@ -636,7 +636,7 @@
   }
 
   $('copyBtn').addEventListener('click', function(){
-    var t = $('summaryBox').textContent;
+    var t = $('summaryBox').textContent.replace(/[～〜]/g, '-');
     var btn = this;
     function done(){
       btn.textContent = '✓ コピーしました';

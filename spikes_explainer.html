@@ -586,6 +586,7 @@ function buildAIPrompt(inp){
 }
 
 function copyText(text, btn){
+  text = text.replace(/[～〜]/g, '-');
   function done(){ var o=btn.innerHTML; btn.innerHTML="✅ コピーしました"; setTimeout(function(){btn.innerHTML=o;},1500); }
   if (navigator.clipboard && navigator.clipboard.writeText){
     navigator.clipboard.writeText(text).then(done, function(){ fallbackCopy(text); done(); });

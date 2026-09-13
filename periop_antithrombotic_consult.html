@@ -1737,7 +1737,8 @@
   /* ---- コピー（3段フォールバック） ---- */
   function copyLetter() {
     var ta = $('letter'), msg = $('copyMsg');
-    var text = ta.value;
+    var text = ta.value.replace(/[～〜]/g, '-');
+    ta.value = text;
     function fallback() {
       ta.removeAttribute('readonly');
       ta.focus(); ta.select(); ta.setSelectionRange(0, text.length);

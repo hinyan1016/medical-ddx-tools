@@ -848,7 +848,7 @@
       '学会表外補足: '+(lastCalculation.supplementOn?formatNumber(lastCalculation.supplement)+' mg/日':'含めない'),
       '注意: 処方切替量ではなく比較の目安。患者ごとに調整。'
     ];
-    var textValue=lines.join('\n');
+    var textValue=lines.join('\n').replace(/[～〜]/g, '-');
     var status=document.getElementById('copyStatus');
     if(navigator.clipboard && navigator.clipboard.writeText){
       navigator.clipboard.writeText(textValue).then(function(){ status.textContent='コピーしました'; },function(){ status.textContent='コピーできませんでした'; });

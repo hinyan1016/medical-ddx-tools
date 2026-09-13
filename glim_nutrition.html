@@ -528,6 +528,7 @@
   document.getElementById('copyBtn').addEventListener('click', function(){
     var btn = this;
     var text = document.getElementById('summaryBox').dataset.plain || document.getElementById('summaryBox').textContent;
+    text = text.replace(/[～〜]/g, '-');
     function done(){
       btn.textContent = '✓ コピー完了'; btn.classList.add('copied');
       setTimeout(function(){ btn.textContent = '📋 クリップボードにコピー'; btn.classList.remove('copied'); }, 1800);

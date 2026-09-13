@@ -522,7 +522,7 @@
   }
 
   copyBtn.addEventListener('click', function(){
-    var text = orderEl.dataset.plain || orderEl.textContent;
+    var text = (orderEl.dataset.plain || orderEl.textContent).replace(/[～〜]/g, '-');
     if (navigator.clipboard && navigator.clipboard.writeText){
       navigator.clipboard.writeText(text).then(function(){
         copyBtn.textContent = '✓ コピー完了';
