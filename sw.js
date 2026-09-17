@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v168';
+const CACHE_NAME = 'ddx-tools-v169';
 const ASSETS = [
   './infographics/inpatient-belongings-management/index.html',
   './infographics/inpatient-belongings-management/infographic.png',
@@ -9,6 +9,11 @@ const ASSETS = [
   './slides/inpatient-belongings-management/slide-01.png',
   './infographics/nuts-health-benefits/index.html',
   './infographics/nuts-health-benefits/infographic.png',
+  './infographics/lecanemab-sc-mri-schedule/index.html',
+  './infographics/lecanemab-sc-mri-schedule/infographic.png',
+  './infographics/clobazam-epilepsy-practice/index.html',
+  './infographics/clobazam-epilepsy-practice/infographic.png',
+  './infographics/clobazam-epilepsy-practice/thumb.png',
   './infographics/thiamine-deficiency-2-beriberi-diagnosis/index.html',
   './infographics/thiamine-deficiency-2-beriberi-diagnosis/infographic.png',
   './infographics/thiamine-deficiency-1-who-is-at-risk/index.html',
