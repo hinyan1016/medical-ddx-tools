@@ -19,7 +19,7 @@ DECK = {
         "自己注射になってもMRIモニタリング・禁忌の確認などの安全管理は簡略化されないこと（ApoE遺伝子検査は投与開始前に実施を考慮）、"
         "日本の実臨床ARIAデータは現時点で点滴版のものであることを、全20枚のスライドで確認します。"
     ),
-    "youtube_id": "6a3LgZu8EPw",
+    "youtube_id": "FnJqV92G-L0",
     "blog_url": "https://blog.ichisouzo-lab.com/entry/2026/09/17/080546",
     "source_dir": "レケンビ皮下注/generated-slides/bundle/generated",
     "slide_prefix": "slide_",
