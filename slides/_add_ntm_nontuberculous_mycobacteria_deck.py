@@ -9,7 +9,7 @@ MANIFEST = Path(__file__).parent / "manifest.json"
 
 DECK = {
     "slug": "ntm-nontuberculous-mycobacteria",
-    "title": "MACはNTMの新しい呼び名？｜非結核性抗酸菌症を名称・診断・治療・2026年の新知見で整理",
+    "title": "以前はMAC、今はNTM？｜非結核性抗酸菌症を名称・診断・治療・2026年の新知見で整理",
     "subtitle": "日本の診断指針2024・化学療法見解2023と一次資料に基づく医療者向け解説",
     "description": (
         "MACとNTMは新旧の呼び名ではなく、NTM（非結核性抗酸菌）は結核菌群やらい菌などを除く抗酸菌の総称で、"
