@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v171';
+const CACHE_NAME = 'ddx-tools-v172';
 const ASSETS = [
   './infographics/ntm-nontuberculous-mycobacteria/index.html',
   './infographics/influenza-2026-season/index.html',
@@ -86,6 +86,8 @@ const ASSETS = [
   './nerve_localization.html',
   './neurodiagnosis.html',
   './headache.html',
+  './hit6_calculator.html',
+  './mibs4_calculator.html',
   './vertigo.html',
   './consciousness.html',
   './cceeg.html',
