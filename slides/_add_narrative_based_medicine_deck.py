@@ -18,7 +18,7 @@ DECK = {
         "全17枚のスライドで整理します。"
     ),
     "youtube_id": "xtTPRg9YlJA",
-    "blog_url": "",
+    "blog_url": "https://blog.ichisouzo-lab.com/entry/2026/09/26/152310",
     "source_dir": "narrative_based_medicine/work/viewer/generated",
     "slide_prefix": "slide_",
     "pdf_filename": "slides.pdf",
