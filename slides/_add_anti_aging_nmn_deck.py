@@ -17,7 +17,7 @@ DECK = {
         "血液中のNAD+が増えることと、病気が減る・長生きできることは別の話であることを、全15枚のスライドで説明します。"
     ),
     "youtube_id": "RQ3NsoeIp0A",
-    "blog_url": "",
+    "blog_url": "https://blog.ichisouzo-lab.com/entry/2026/09/28/072530",
     "source_dir": "anti-aging-nmn/work/rc6-20260928l/viewer/generated",
     "slide_prefix": "slide_",
     "pdf_filename": "slides.pdf",
