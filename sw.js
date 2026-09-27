@@ -1,5 +1,6 @@
-const CACHE_NAME = 'ddx-tools-v174';
+const CACHE_NAME = 'ddx-tools-v175';
 const ASSETS = [
+  './infographics/anti-aging-nmn/index.html',
   './infographics/narrative-based-medicine/index.html',
   './infographics/ntm-nontuberculous-mycobacteria/index.html',
   './infographics/influenza-2026-season/index.html',
