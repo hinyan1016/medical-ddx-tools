@@ -17,7 +17,7 @@ DECK = {
         "目安は週2〜3日・合計30〜60分で、多くやるほど良いわけではないことを、全14枚のスライドで説明します。"
     ),
     "youtube_id": "L563GJ-bhrA",
-    "blog_url": "",
+    "blog_url": "https://blog.ichisouzo-lab.com/entry/2026/09/28/160811",
     "source_dir": "anti-aging-strength-training/work/rc6-20260928c/viewer/generated",
     "slide_prefix": "slide_",
     "pdf_filename": "slides.pdf",
