@@ -1,6 +1,8 @@
-const CACHE_NAME = 'ddx-tools-v176';
+const CACHE_NAME = 'ddx-tools-v177';
 const ASSETS = [
+  './handouts/anti-aging-strength-training/index.html',
   './handouts/anti-aging-nmn/index.html',
+  './infographics/anti-aging-strength-training/index.html',
   './infographics/anti-aging-nmn/index.html',
   './infographics/narrative-based-medicine/index.html',
   './infographics/ntm-nontuberculous-mycobacteria/index.html',
