@@ -1,5 +1,7 @@
-const CACHE_NAME = 'ddx-tools-v178';
+const CACHE_NAME = 'ddx-tools-v179';
 const ASSETS = [
+  './infographics/lcca/index.html',
+  './slides/lcca/index.html',
   './infographics/sciatica-clinical-guide/index.html',
   './slides/sciatica-clinical-guide/index.html',
   './handouts/anti-aging-strength-training/index.html',
