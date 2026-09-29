@@ -16,7 +16,7 @@ DECK = {
         "指定難病（告示18）申請と集中リハビリテーションを解説。国内SCDの約67%を占める孤発例への体系的アプローチを全13枚のスライドで解説します。"
     ),
     "youtube_id": "YYqFdbfiswU",
-    "blog_url": "https://blog.ichisouzo-lab.com/entry/lcca-guidance",
+    "blog_url": "https://blog.ichisouzo-lab.com/entry/2026/09/29/111318",
     "source_dir": "lcca/current/viewer/generated",
     "slide_prefix": "slide_",
     "pdf_filename": "slides.pdf",
