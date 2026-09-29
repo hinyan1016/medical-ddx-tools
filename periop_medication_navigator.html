@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update().catch(function(){})})}).catch(function(){});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#163C46">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="医療従事者向け。複数薬の周術期の休薬・継続・再開について、患者条件と根拠から確認事項と申し送り文を整理します。">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>周術期の薬剤管理ナビ | 医知創造ラボ</title>
+<style>
+:root{--ink:#18333d;--muted:#56666b;--teal:#146359;--navy:#163c46;--line:#d9e1df;--paper:#fff;--bg:#f4f5f0;--amber:#895016;--red:#a13030}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 -apple-system,BlinkMacSystemFont,"Yu Gothic",Meiryo,sans-serif}a{color:#176452;text-underline-offset:3px}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:default;opacity:.55}button,input,select,textarea{border-radius:8px}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid #cd872c;outline-offset:3px}input,select,textarea{width:100%;min-width:0;border:1px solid #aebfbc;background:#fff;color:var(--ink);padding:10px 11px;min-height:46px}input[type=checkbox]{width:20px;min-height:20px;flex:none}input[type=datetime-local]{max-width:100%}button{min-height:44px;border:1px solid #bdcfca;background:#fff;color:var(--teal);padding:8px 14px;font-weight:700}button:hover{background:#edf5f2}.primary{background:var(--teal);border-color:var(--teal);color:#fff}.primary:hover{background:#0d4f47}.quiet{border:none;background:transparent}.wrap{max-width:1180px;margin:auto;padding:0 28px}header{background:var(--navy);color:#fff;padding:25px 0 34px}header a{color:#dceae6}header .top{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:13px}.eyebrow{font-size:12px;font-weight:700;letter-spacing:.1em}.hero{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-top:28px}h1{font-size:clamp(25px,3.5vw,38px);line-height:1.35;letter-spacing:.02em;margin:7px 0 12px}header p{margin:0;color:#d3e2e0;max-width:680px;font-size:15px}.hero-note{border-left:1px solid #69868b;padding-left:20px;flex:none;font-size:13px;color:#e0e9e5}.notice{border-left:4px solid #b7863e;background:#fff8eb;padding:13px 17px;margin:24px 0 18px;font-size:13px}.notice p{margin:0}.notice a{font-weight:700}.steps{display:flex;gap:22px;color:var(--muted);font-size:13px;margin:20px 0}.steps span b{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#e1ebe5;color:var(--teal);margin-right:6px}.layout{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:22px;align-items:start}main{padding-bottom:40px}.panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:23px;margin-bottom:20px}.panel h2{font-size:19px;margin:0 0 4px;line-height:1.5}.sub{font-size:13px;color:var(--muted);margin:4px 0 18px}.num{color:#2a7b68;margin-right:8px;font-size:14px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field{min-width:0}.field label{display:block;font-size:13px;font-weight:700;margin-bottom:5px}.field small{display:block;color:var(--muted);font-size:12px;margin-top:4px}.field.full{grid-column:1/-1}.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:16px 0}.tabs button{font-size:14px;padding:8px 12px}.tabs button[aria-pressed=true]{background:var(--navy);color:#fff;border-color:var(--navy)}.searchrow{display:flex;gap:8px}.searchrow input{flex:1}.search-results{max-height:310px;overflow:auto;border:1px solid var(--line);border-radius:10px;margin-top:10px}.search-results:empty{display:none}.drug-choice{display:flex;width:100%;text-align:left;align-items:center;justify-content:space-between;gap:14px;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:12px 15px;font-size:14px}.drug-choice:last-child{border-bottom:0}.drug-choice small{display:block;color:var(--muted);font-weight:400;font-size:12px}.selected-card{background:#f8faf8;border:1px solid var(--line);border-radius:10px;padding:15px;margin-top:12px}.row{display:flex;justify-content:space-between;align-items:start;gap:12px}.row h3{font-size:16px;line-height:1.5;margin:0}.selected-card .grid{margin-top:10px;gap:12px}.tag{display:inline-block;background:#e6efea;color:#245e50;border-radius:4px;font-size:11px;padding:2px 7px;margin:3px 4px 3px 0}.small{font-size:12px;color:var(--muted)}.side{position:sticky;top:16px}.side h2{font-size:16px}.side ul{font-size:13px;padding-left:19px}.side p{font-size:13px}.side .stat{font-size:32px;font-weight:700;color:var(--teal);line-height:1.2}.side .stat small{font-size:13px;font-weight:400;color:var(--muted)}.divider{border-top:1px solid var(--line);margin:18px 0}.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.actions .primary{padding:12px 25px}#results{scroll-margin-top:15px}#results:empty{display:none}.result-head{display:flex;justify-content:space-between;gap:18px;align-items:center;margin-bottom:16px}.result-head h2{margin:0;font-size:24px}.result-card{border:1px solid var(--line);border-left:5px solid #779b8b;border-radius:10px;background:#fff;padding:20px;margin:15px 0;break-inside:avoid}.result-card.review{border-left-color:#b88631}.result-card.alert{border-left-color:#a43b3b}.badge{display:inline-block;background:#e7f1eb;color:#245a45;border-radius:20px;padding:4px 11px;font-size:12px;font-weight:700;white-space:normal}.review .badge{background:#fff0d4;color:#7d4b16}.alert .badge{background:#f9e6e4;color:#972d29}.result-card h3{font-size:18px;margin:8px 0 3px}.result-card h4{font-size:14px;margin:16px 0 6px}.result-card p,.result-card li{font-size:14px;margin:5px 0}.result-card ul{padding-left:20px;margin:5px 0}.schedule{padding:11px 13px;background:#edf5f1;border-radius:8px;margin:12px 0;font-size:14px}.missing{padding:10px 13px;background:#fff7e9;border-radius:8px}.alert-box{background:#fae9e7;border:1px solid #e5b4ac;border-radius:9px;padding:13px;font-size:14px;margin:12px 0}.source-list{padding-left:20px}.source-list li{font-size:12px;margin:10px 0}.source-list small{display:block}.summary-table{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;background:#fff}.summary-table th{background:#163c46;color:#fff;text-align:left;padding:10px}.summary-table td{padding:10px;border:1px solid var(--line);vertical-align:top;overflow-wrap:anywhere}.table-scroll{overflow-x:auto}details{margin:12px 0}summary{cursor:pointer;font-weight:700;font-size:13px}#handoff{min-height:220px;font-size:13px;line-height:1.7}#status{min-height:24px;font-size:13px;color:var(--teal)}footer{border-top:1px solid var(--line);padding:22px 0;font-size:12px;color:var(--muted)}.empty{border:1px dashed #c4d2ca;border-radius:10px;padding:20px;text-align:center;color:var(--muted);font-size:13px}.checkline{display:flex;gap:10px;align-items:start;font-size:13px;margin:10px 0}.hidden,[hidden]{display:none!important}.print-only{display:none}.error{color:var(--red);font-weight:700}.source-list a{overflow-wrap:anywhere}.drug-choice span,.row>*{min-width:0;overflow-wrap:anywhere}@media(max-width:850px){.layout{grid-template-columns:1fr}.side{position:static}.hero-note{display:none}.side .panel{margin-top:0}.wrap{padding:0 18px}}@media(max-width:520px){.wrap{padding:0 14px}.panel{padding:18px 15px}.grid{grid-template-columns:1fr}.hero{margin-top:20px}header{padding-bottom:25px}.steps{gap:10px;font-size:11px}.steps span b{width:20px;height:20px;margin-right:3px}.searchrow{flex-direction:column}.result-head{align-items:start;flex-direction:column}.result-card{padding:16px 13px}.summary-table{font-size:12px}.summary-table th,.summary-table td{padding:7px}.row{flex-wrap:wrap}.tabs button{flex:1;font-size:12px;padding:8px 5px}}@media print{@page{size:A4;margin:15mm}body{background:#fff;font-size:11px}.wrap{max-width:none;padding:0}header{background:#fff;color:#000;padding:0 0 12px;border-bottom:2px solid #333}header .top,header p,.hero-note,.steps,.notice,.layout,.actions,footer,.no-print,#sourceIndex{display:none!important}header h1{font-size:22px}header .hero{margin:0}header .eyebrow{color:#000}#results{display:block!important}#results:empty::before{content:'結果を作成してから印刷してください。'}h2{font-size:18px}.result-card{border-color:#999;padding:12px;margin:10px 0;break-inside:avoid}.result-card p,.result-card li{font-size:11px}.source-list li{font-size:10px}.result-card details{display:block}.result-card details>summary{display:none}.result-card details>*{display:block}.result-card details ul{padding-left:16px}.summary-table{font-size:10px}.summary-table th{background:#ddd;color:#000}.print-only{display:block}.badge{border:1px solid #888}#handoffPanel{display:none}.table-scroll{overflow:visible}}
+@media print{.result-card{break-inside:auto;border:0;border-top:1px solid #999;border-radius:0;padding:12px 0}.result-card h3,.result-card h4{break-after:avoid}.result-card li{break-inside:avoid}.result-card .row{display:block}details.panel{break-inside:auto}.badge{break-after:avoid}}
+@media print{.result-title{break-inside:avoid;break-after:avoid}.result-title .badge{display:block;width:fit-content;max-width:100%;break-after:avoid}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="top"><a href="index.html">医知創造ラボ / 臨床ツール</a><span>医療従事者向け</span></div><div class="hero"><div><div class="eyebrow">PERIOPERATIVE MEDICATION REVIEW</div><h1>周術期の薬剤管理ナビ</h1><p>休薬も、継続も、再開も。患者条件と根拠を確かめ、薬剤ごとの確認事項をひとつに。</p></div><div class="hero-note">成人・非心臓手術<br>複数薬の確認 / 申し送り / 印刷</div></div></div></header>
+<main class="wrap">
+<div class="notice"><p>医療者の判断を支援する参考情報です。手術の実施・延期や処方指示を自動決定しません。患者・ご家族は自己判断で薬を変更しないでください。<strong>施設の指示・国内の最新電子添文と照合して使用してください。</strong></p></div>
+<div id="freshness"></div>
+<div class="steps"><span><b>1</b>手術・患者条件</span><span><b>2</b>薬剤を追加</span><span><b>3</b>条件を確認</span><span><b>4</b>一覧・申し送り</span></div>
+<div class="layout"><div>
+<section class="panel"><h2><span class="num">01</span>どの場面で確認しますか</h2><div class="tabs" role="group" aria-label="確認する場面"><button type="button" data-mode="pre" aria-pressed="true">術前の準備</button><button type="button" data-mode="missed" aria-pressed="false">休薬忘れ・誤休薬</button><button type="button" data-mode="post" aria-pressed="false">術後の再開</button></div>
+<div class="grid">
+<div class="field"><label for="scope">対象</label><select id="scope"><option value="adult">成人・非心臓手術</option><option value="other">小児・妊娠・心臓手術・その他の特殊処置</option><option value="">不明</option></select></div>
+<div class="field"><label for="urgency">手術の緊急性</label><select id="urgency"><option value="">選択してください</option><option value="elective">待機手術</option><option value="emergency">緊急・準緊急手術</option></select></div>
+<div class="field"><label for="surgery">手術日時（予定／実施）</label><input id="surgery" type="datetime-local"><small>日本時間。術後は実施日時を入力します。</small></div>
+<div class="field"><label for="assessed">評価日時</label><input id="assessed" type="datetime-local"><small>投与済み日時の矛盾を確認します。</small></div>
+<div class="field"><label for="procedure">手術の規模</label><select id="procedure"><option value="">不明・未確認</option><option value="minor">小手術</option><option value="major">大手術・侵襲の大きい手術</option></select></div>
+<div class="field"><label for="anesthesia">麻酔・鎮静</label><select id="anesthesia"><option value="">不明・未確認</option><option value="general">全身麻酔／深い鎮静</option><option value="regional">区域麻酔（深い鎮静なし）</option><option value="local">局所麻酔（深い鎮静なし）</option></select></div>
+<div class="field"><label for="fasting">飲食制限・絶食</label><select id="fasting"><option value="">不明・未確認</option><option value="yes">あり</option><option value="no">なし</option></select></div>
+<div class="field"><label for="fastingStart">絶食開始日時（わかる場合）</label><input id="fastingStart" type="datetime-local"></div>
+</div></section>
+<section class="panel"><h2><span class="num">02</span>薬剤をまとめて追加</h2><p class="sub">一般名・商品名・薬効分類で検索。配合剤は成分別に確認します。収載外の薬も「未収載」として一覧に残せます。</p>
+<div class="searchrow"><input id="search" type="search" placeholder="例：フォシーガ、エクメット、β遮断薬" aria-label="薬剤名を検索" autocomplete="off"><button id="showAll" type="button">収載一覧</button></div><div id="searchCount" class="small" aria-live="polite"></div><div id="searchResults" class="search-results"></div><div id="selected"></div></section>
+<section class="panel" id="conditionPanel"><h2><span class="num">03</span>薬剤に必要な条件を確認</h2><p class="sub">必要な項目だけ表示します。「不明」は安全確認済みと扱いません。</p><div id="conditions" class="grid"></div></section>
+<div class="actions"><button class="primary" id="evaluate" type="button">確認結果を作成</button><button id="reset" type="button">入力をリセット</button></div><p id="status" role="status" aria-live="polite"></p>
+</div><aside class="side"><section class="panel"><h2>今回の確認</h2><p class="stat"><span id="selectedCount">0</span> <small>薬剤・分類</small></p><p id="modeDescription">術前の休薬・継続について、根拠と必要な条件を整理します。</p><div class="divider"></div><ul><li>休薬日数は根拠のある条件で表示</li><li>不明・未収載の薬も見落とさない</li><li>再開は日付と全身状態を確認</li></ul><div class="divider"></div><p>入力はこの画面内のみで処理します。氏名・患者番号は入力しないでください。再読み込みで入力は消えます。</p><a href="periop_antithrombotic_consult.html" target="_blank" rel="noopener">抗血栓薬の専用ツールを開く ↗</a><p class="small">専用ツールの対象・条件を確認してください。入力は引き継ぎません。</p></section><details class="panel"><summary>根拠と対象範囲</summary><p id="versionNote"></p><p>国内学会・規制当局資料と海外の専門資料を区別しています。海外の休薬日数は国内標準として自動確定しません。未収載薬は薬剤別確認が必要です。</p><a href="#sourceIndex">参考資料一覧へ</a></details></aside></div>
+<section id="results" aria-label="確認結果"></section>
+<details class="panel" id="sourceIndex"><summary>参考資料・確認範囲</summary><div id="allSources"></div></details>
+</main><footer><div class="wrap">医知創造ラボ　｜　<a href="https://blog.ichisouzo-lab.com/entry/2026/09/29/151939" target="_blank" rel="noopener">関連する解説記事</a><br>記事の一律の休薬日数は転記せず、各資料の条件を整理しています。判断根拠の最終確認：2026年9月29日。</div></footer>
+<noscript><p class="wrap">このツールにはJavaScriptが必要です。無効の場合、薬剤管理の結果は表示されません。</p></noscript>
+<script id="periop-data">var PERIOP_DATA = {"version": "1.0.0", "checked": "2026-09-29", "review_due": "2027-03-29", "sources": {"jds_sglt2": {"title": "日本糖尿病学会：SGLT2阻害薬の適正使用", "url": "https://www.jds.or.jp/uploads/files/recommendation/SGLT2.pdf", "source_locator": "p.1 Recommendation 5・6、p.3–4 ケトアシドーシス", "kind": "国内学会提言", "version": "2022-07-26", "checked": "2026-09-29", "source_level": "primary_document", "note": ""}, "jds_met": {"title": "日本糖尿病学会：メトホルミンの適正使用", "url": "https://www.jds.or.jp/uploads/files/recommendation/metformin.pdf", "source_locator": "p.2 腎機能・造影剤、p.3 外科手術前後", "kind": "国内学会提言", "version": "2020-03-18", "checked": "2026-09-29", "source_level": "primary_document", "note": "学会の現行掲載版。造影検査と手術の条件を混同しない。"}, "asa": {"title": "ASA：GLP-1薬と手術・麻酔", "url": "https://madeforthismoment.asahq.org/preparing-for-surgery/risks/drugs-diabetes-weight-loss/", "source_locator": "Do I need to stop / What conditions raise my risk / Emergency surgery", "kind": "海外専門学会・専門職団体", "version": "2025-10-22 review（2024多学会指針に基づく）", "checked": "2026-09-29", "source_level": "primary_document", "note": "米国の指針。国内の電子添文・施設の絶飲食手順と照合する。"}, "aha": {"title": "AHA/ACC 非心臓手術ガイドライン公式スライド", "url": "https://www.heart.org/-/media/PHD-Files-2/Science-News/2/2024/2024-Guideline-for-Perioperative-Cardiovascular-Management-slide-set.pdf", "source_locator": "PDF p.70 RAAS阻害薬、p.87 β遮断薬、p.88 SGLT2阻害薬", "kind": "海外専門学会・専門職団体", "version": "2024", "checked": "2026-09-29", "source_level": "primary_document", "note": "基となる文献はPMID 39316661、DOI 10.1161/CIR.0000000000001285をスクリプトで確認。"}, "ralox": {"title": "PMDA：ラロキシフェンの安全性調査資料", "url": "https://www.pmda.go.jp/files/000270995.pdf", "source_locator": "ラロキシフェンの添付文書引用：長期不動状態に入る3日前・完全歩行まで再開しない", "kind": "国内規制当局資料", "version": "2024公開資料", "checked": "2026-09-29", "source_level": "primary_document", "note": "電子添文の記載を引用した資料。休薬基準の起点は長期不動の開始日。"}, "yaz": {"title": "PMDA：ヤーズ配合錠 添付文書収載資料", "url": "https://www.pmda.go.jp/drugs/2024/P20240927004/670109000_30600AMX00250_B100_1.pdf", "source_locator": "ヤーズ配合錠 2.11 禁忌、8.5 手術時の血栓症予防", "kind": "国内添付文書収載資料", "version": "2024公開資料", "checked": "2026-09-29", "source_level": "primary_document", "note": "資料収載版。製品の最新電子添文を処方時に再照合する。他のホルモン剤には外挿しない。"}, "lithium": {"title": "UKCPA：炭酸リチウム", "url": "https://periop-handbook.ukclinicalpharmacy.org/drug/lithium/", "source_locator": "Advice in the perioperative period / Post-operative advice", "kind": "海外専門学会・専門職団体", "version": "ウェブ版（確認日現在）", "checked": "2026-09-29", "source_level": "primary_document", "note": "英国の専門職団体資料。国内製品・施設方針と照合する。"}, "rasagiline": {"title": "UKCPA：ラサギリン", "url": "https://periop-handbook.ukclinicalpharmacy.org/drug/rasagiline/", "source_locator": "Advice in the perioperative period / Post-operative advice", "kind": "海外専門学会・専門職団体", "version": "ウェブ版（確認日現在）", "checked": "2026-09-29", "source_level": "primary_document", "note": "英国の専門職団体資料。国内製品・施設方針と照合する。"}, "levetiracetam": {"title": "UKCPA：レベチラセタム", "url": "https://periop-handbook.ukclinicalpharmacy.org/drug/levetiracetam/", "source_locator": "Advice in the perioperative period / Post-operative advice", "kind": "海外専門学会・専門職団体", "version": "ウェブ版（確認日現在）", "checked": "2026-09-29", "source_level": "primary_document", "note": "英国の専門職団体資料。国内製品・施設方針と照合する。"}, "co-careldopa": {"title": "UKCPA：レボドパ・カルビドパ", "url": "https://periop-handbook.ukclinicalpharmacy.org/drug/co-careldopa/", "source_locator": "Advice in the perioperative period / Post-operative advice", "kind": "海外専門学会・専門職団体", "version": "ウェブ版（確認日現在）", "checked": "2026-09-29", "source_level": "primary_document", "note": "英国の専門職団体資料。国内製品・施設方針と照合する。"}, "prednisolone": {"title": "UKCPA：プレドニゾロン", "url": "https://periop-handbook.ukclinicalpharmacy.org/drug/prednisolone/", "source_locator": "Advice in the perioperative period / Post-operative advice", "kind": "海外専門学会・専門職団体", "version": "ウェブ版（確認日現在）", "checked": "2026-09-29", "source_level": "primary_document", "note": "英国の専門職団体資料。国内製品・施設方針と照合する。本文はUnder Review表示あり。補充量の算出には使用しない。"}, "amlodipine": {"title": "UKCPA：アムロジピン", "url": "https://periop-handbook.ukclinicalpharmacy.org/drug/amlodipine/", "source_locator": "Advice in the perioperative period / Post-operative advice", "kind": "海外専門学会・専門職団体", "version": "ウェブ版（確認日現在）", "checked": "2026-09-29", "source_level": "primary_document", "note": "英国の専門職団体資料。国内製品・施設方針と照合する。"}, "furosemide": {"title": "UKCPA：フロセミド", "url": "https://periop-handbook.ukclinicalpharmacy.org/drug/furosemide/", "source_locator": "Advice in the perioperative period / Post-operative advice", "kind": "海外専門学会・専門職団体", "version": "ウェブ版（確認日現在）", "checked": "2026-09-29", "source_level": "primary_document", "note": "英国の専門職団体資料。国内製品・施設方針と照合する。"}, "estradiol": {"title": "UKCPA：エストラジオール", "url": "https://periop-handbook.ukclinicalpharmacy.org/drug/estradiol/", "source_locator": "Advice in the perioperative period / Post-operative advice", "kind": "海外専門学会・専門職団体", "version": "ウェブ版（確認日現在）", "checked": "2026-09-29", "source_level": "primary_document", "note": "英国の専門職団体資料。国内製品・施設方針と照合する。"}, "insulin-glargine": {"title": "UKCPA：インスリン グラルギン", "url": "https://periop-handbook.ukclinicalpharmacy.org/drug/insulin-glargine/", "source_locator": "Advice in the perioperative period / Post-operative advice", "kind": "海外専門学会・専門職団体", "version": "ウェブ版（確認日現在）", "checked": "2026-09-29", "source_level": "primary_document", "note": "英国の専門職団体資料。国内製品・施設方針と照合する。"}, "glimepiride": {"title": "UKCPA：グリメピリド", "url": "https://periop-handbook.ukclinicalpharmacy.org/drug/glimepiride/", "source_locator": "Advice in the perioperative period / Post-operative advice", "kind": "海外専門学会・専門職団体", "version": "ウェブ版（確認日現在）", "checked": "2026-09-29", "source_level": "primary_document", "note": "英国の専門職団体資料。国内製品・施設方針と照合する。"}, "sitagliptin": {"title": "UKCPA：シタグリプチン", "url": "https://periop-handbook.ukclinicalpharmacy.org/drug/sitagliptin/", "source_locator": "Advice in the perioperative period / Post-operative advice", "kind": "海外専門学会・専門職団体", "version": "ウェブ版（確認日現在）", "checked": "2026-09-29", "source_level": "primary_document", "note": "英国の専門職団体資料。国内製品・施設方針と照合する。"}, "jsa": {"title": "日本麻酔科学会：術前合併症・血糖降下薬", "url": "https://anesth.or.jp/users/common/preoperative_complications/25", "source_locator": "血糖降下薬：薬剤・患者状態による中止・減量・継続", "kind": "国内学会患者向け解説", "version": "ウェブ版（確認日現在）", "checked": "2026-09-29", "source_level": "primary_document", "note": ""}, "sujanu": {"title": "MSD：スージャヌの製品基本資料", "url": "https://www.msdconnect.jp/products/sujanu/download/", "source_locator": "有効成分：シタグリプチン・イプラグリフロジン", "kind": "製造販売元資料", "version": "ウェブ版（確認日現在）", "checked": "2026-09-29", "source_level": "primary_document", "note": ""}, "tradiance": {"title": "厚生労働省：トラディアンス再審査結果", "url": "https://www.mhlw.go.jp/web/t_doc?dataId=00tc9017&dataType=1&pageNo=1", "source_locator": "表9・10：エンパグリフロジン／リナグリプチン", "kind": "国内規制当局資料", "version": "2025-03-19", "checked": "2026-09-29", "source_level": "primary_document", "note": ""}, "equmet": {"title": "PMDA：エクメット配合錠", "url": "https://www.pmda.go.jp/PmdaSearch/rdDetail/iyaku/3969104F1029_1?user=1", "source_locator": "一般名／成分名：ビルダグリプチン・メトホルミン", "kind": "国内規制当局資料", "version": "ウェブ版（確認日現在）", "checked": "2026-09-29", "source_level": "primary_document", "note": ""}, "bisoprolol_jp": {"title": "田辺ファーマ：メインテートの手術前後の休薬", "url": "https://medical.tanabe-pharma.com/di/qa/mnt/11069/", "source_locator": "Q&A 管理番号11069、電子添文8.3引用", "kind": "国内製造販売元・電子添文引用", "version": "2025-09更新", "checked": "2026-09-29", "source_level": "primary_document", "note": "手術前48時間は投与しないことが望ましいとの国内記載。海外GLの既存β遮断薬継続方針と相違するため個別判断。"}, "met_label": {"title": "PMDA：メトグルコ電子添文", "url": "https://www.pmda.go.jp/PmdaSearch/iyakuDetail/ResultDataSetPDF/400093_3962002F2027_1_22", "source_locator": "2.1・2.3 禁忌、9.2 腎機能、10.2 ヨード造影剤", "kind": "国内電子添文", "version": "2023-11 第5版（PMDA現行掲載版を確認）", "checked": "2026-09-29", "source_level": "primary_document", "note": "手術前後は禁忌。学会Recommendationの飲食制限のない小手術に関する記述と区別して、処方医が適用を確認。"}}, "rules": {"sglt2": {"name": "SGLT2阻害薬", "pre": "待機手術は術前3日前から休薬する国内学会提言を表示。糖尿病以外の心不全・CKD目的でも周術期の評価が必要。", "missed": "最終服用を麻酔科・処方医へ共有。血糖が高くなくても、悪心・腹痛・倦怠感などがあればケトン体・酸塩基平衡を評価。延期や管理方法は手術の緊急性と全身状態で協議する。", "restart": "食事が十分摂れ、脱水・全身状態を評価し、ケトアシドーシスが否定されてから処方医と再開を検討。点滴終了だけを判定条件にしない。", "conditions": ["eating", "hydration", "kidney", "ketoneSafe"], "sources": ["jds_sglt2", "aha"], "kind": "国内学会：術前3日前", "critical": false}, "metformin": {"name": "メトホルミン", "pre": "国内メトグルコ電子添文は手術前後を禁忌とする。学会Recommendationは飲食制限のない小手術を除くと説明しており、この場合も処方医が適用を確認する。全例に48時間前休薬を当てはめない。", "missed": "最終服用・腎機能・脱水・低酸素・循環状態・造影予定を共有。状態に応じて乳酸・酸塩基平衡を評価し、周術期の血糖管理を相談する。", "restart": "経口摂取、腎機能と用量適合、脱水・低酸素・循環状態を確認。造影後の制限と通常の術後再開を区別する。", "conditions": ["eating", "kidney", "hydration", "bp", "oxygen"], "sources": ["met_label", "jds_met"], "kind": "国内電子添文の禁忌・学会提言", "critical": false}, "su": {"name": "SU薬", "pre": "絶食に伴う低血糖に注意。グリメピリドの英国資料では手術当日投与を省略。国内製品の禁忌と血糖管理計画を確認。", "missed": "服用済みの場合は血糖を測定・監視し、低血糖時の処置を準備。食事を取れないまま通常量を追加しない。", "restart": "通常の食事摂取と血糖・腎機能を確認。摂取量が少ない場合や腎機能低下時は減量・再開時期を相談。", "conditions": ["eating", "kidney", "glucose"], "sources": ["glimepiride", "jsa"], "kind": "海外資料：当日投与省略", "critical": false}, "glinide": {"name": "グリニド薬", "pre": "食事と連動する薬。絶食中の投与は低血糖リスクを確認し、処方医と当日の指示を決める。", "missed": "食事を取らずに服用した場合は、血糖確認と低血糖対応を優先する。", "restart": "食事内容・血糖を確認して食直前の投与計画を処方医に確認。", "conditions": ["eating", "glucose"], "sources": ["jsa"], "kind": "国内学会：個別調整", "critical": false}, "dpp4": {"name": "DPP-4阻害薬", "pre": "シタグリプチンは英国資料では継続する扱い。国内の重症感染・手術時の製品記載と施設方針を確認し、一律の休薬日を計算しない。", "missed": "服用済みの情報と配合成分を確認。インスリン・SU薬の併用、血糖管理計画を処方医へ共有。", "restart": "食事、血糖管理計画と腎機能に応じた製品・用量を確認。", "conditions": ["eating", "kidney", "glucose"], "sources": ["sitagliptin", "jsa"], "kind": "国内外の運用差を確認", "critical": false}, "otherdm": {"name": "その他の糖尿病薬", "pre": "α-GI・チアゾリジンなどをまとめて休薬・継続と判定しない。薬剤名と食事・循環状態から担当医が指示する。", "missed": "薬剤・用量・最終服用と血糖値を確認し、糖尿病担当医に相談。", "restart": "食事と全身状態、薬剤固有の禁忌・用量を確認。", "conditions": ["eating", "glucose"], "sources": ["jsa"], "kind": "薬剤別の追加確認", "critical": false}, "glp": {"name": "GLP-1／GIP・GLP-1関連薬", "pre": "米国指針では多くの患者で継続可能。増量中・消化器症状・胃排出遅延などを評価し、絶飲食や麻酔方法を協議。週1回製剤を一律に7日前休薬としない。", "missed": "全身麻酔・深い鎮静では誤嚥リスクを共有。液体食、胃内容評価、麻酔方法の変更や延期の要否は麻酔科と判断。緊急手術は満胃を想定した管理の検討が必要。", "restart": "食事・消化器症状を確認し、処方医に製品別の再投与手順を確認。長い中断後は元の量へ機械的に戻さない。", "conditions": ["eating", "giClear"], "sources": ["asa"], "kind": "米国多学会方針：リスク評価", "critical": false}, "insulin": {"name": "インスリン", "pre": "製品・投与時刻・糖尿病型と絶食時間から調整する。基礎インスリンを絶食だけで全中止しない。単位数は本ツールで計算しない。", "missed": "投与忘れ・誤投与は血糖と必要に応じケトン体を確認し、直ちに糖尿病担当医へ。通常量の追加で補わない。", "restart": "食事再開を待たず、基礎・食事・補正または静注の管理計画を確認。血糖測定と担当医の投与指示が必要。", "conditions": ["glucose"], "sources": ["insulin-glargine", "jsa"], "kind": "投与計画を個別作成", "critical": true}, "raas": {"name": "ACE阻害薬・ARB", "pre": "高血圧目的で血圧が管理され、心血管リスクが高い非心臓手術では24時間前の省略を検討。HFrEFでは継続が合理的とする米国推奨がある。", "missed": "麻酔科へ最終服用を共有し、低血圧への対応・循環状態を評価。服用だけで手術延期を確定しない。", "restart": "血圧、体液量、腎機能・電解質を確認して再開計画を立てる。", "conditions": ["bp", "kidney", "hydration", "electrolytes"], "sources": ["aha"], "kind": "適応・手術リスクで分岐", "critical": false}, "arni": {"name": "ARNI", "pre": "心不全の病態・血圧・腎機能に応じ循環器と麻酔科で協議。ACE阻害薬・ARBの休薬日を自動適用しない。", "missed": "最終服用と心不全・循環状態を共有し、麻酔科・循環器へ相談。", "restart": "循環動態・腎機能・電解質を確認し、心不全治療としての再開時期を相談。", "conditions": ["bp", "kidney", "electrolytes"], "sources": ["aha"], "kind": "個別協議（自動日付なし）", "critical": false}, "diuretic": {"name": "利尿薬", "pre": "うっ血治療の必要性と脱水・電解質異常を評価。英国のフロセミド資料は継続を示すが、一律の当日休薬／継続にしない。", "missed": "血圧、脱水・うっ血、尿量、腎機能と電解質を確認し、麻酔科・処方医へ共有。", "restart": "水分出納、うっ血・脱水、血圧、腎機能・電解質から処方医が調整する。", "conditions": ["bp", "kidney", "hydration", "electrolytes"], "sources": ["furosemide"], "kind": "体液量・適応で個別協議", "critical": false}, "beta": {"name": "β遮断薬", "pre": "海外GLは安定用量のβ遮断薬の継続を推奨。一方、国内メインテート電子添文には手術前48時間の投与回避が望ましい記載がある。適応・循環状態を踏まえ、処方医と麻酔科が継続／休薬の指示を決める。急な自己中断や手術当日の新規導入とは区別する。", "missed": "誤休薬の場合は最終服用・血圧・脈拍・症状を共有し、投与経路と再投与を相談。", "restart": "血圧・脈拍と投与経路を確認し、担当医の指示で継続・調整。", "conditions": ["bp", "pulse", "betaPlan"], "sources": ["aha", "bisoprolol_jp"], "kind": "国内添文と海外GLの相違あり", "critical": true}, "ccb": {"name": "Ca拮抗薬（アムロジピン）", "pre": "アムロジピンは原則継続の海外資料。血圧を監視し、他のCa拮抗薬へ一律に外挿しない。", "missed": "最終服用と血圧を確認し、通常量を追加する前に担当医へ。", "restart": "血圧と投与経路を確認し、継続・再開を相談。", "conditions": ["bp"], "sources": ["amlodipine"], "kind": "海外資料：原則継続", "critical": false}, "steroid": {"name": "全身性ステロイド", "pre": "通常の治療を急に止めない。用量・投与期間・副腎不全リスク・手術侵襲から、補充と投与経路を検討する。", "missed": "誤休薬を把握したら担当医・麻酔科に速やかに共有。低血圧など副腎不全を疑う場合は緊急評価。", "restart": "絶食時にも必要なステロイドを確保できる投与経路を相談。全例に同じ補充量を指定しない。", "conditions": ["bp"], "sources": ["prednisolone"], "kind": "継続・補充を個別設計", "critical": true}, "aed": {"name": "抗てんかん薬", "pre": "レベチラセタムの専門資料を参考に、定時投与の中断を避ける。薬剤ごとの経口・静注・経管の可否を確認する。", "missed": "誤休薬・投与遅延は、発作の有無・最終投与・製剤を確認し、神経内科・麻酔科へ共有。", "restart": "通常の投与間隔を保つ計画を優先し、内服不能なら代替経路を相談。自己判断で倍量にしない。", "conditions": ["route"], "sources": ["levetiracetam"], "kind": "中断回避・経路の確認", "critical": true}, "levodopa": {"name": "レボドパ製剤", "pre": "定時投与の中断を避ける。製剤・時刻を確認し、長時間の絶食には代替経路を神経内科と準備する。", "missed": "誤休薬・遅延による無動、筋強剛、発熱などを確認し、神経内科・麻酔科へ速やかに相談。", "restart": "経口・経管投与や吸収が可能か確認し、定時投与を確保する。通常食開始まで一律に待たせない。", "conditions": ["route"], "sources": ["co-careldopa"], "kind": "中断回避・経路の確認", "critical": true}, "maob": {"name": "MAO-B阻害薬", "pre": "英国資料では継続の方針もある。国内製品の併用禁忌、鎮痛薬・昇圧薬・制吐薬との相互作用を麻酔科と確認する。", "missed": "ペチジン・トラマドール等の予定、既に投与した薬を照合。休薬していても相互作用が残り得るため、薬剤別の間隔を確認。", "restart": "術後鎮痛薬などとの相互作用を確認して神経内科・麻酔科で決定。全薬剤に同じ休薬間隔を設定しない。", "conditions": ["interaction"], "sources": ["rasagiline"], "kind": "併用薬確認が必要", "critical": false}, "lithium": {"name": "炭酸リチウム", "pre": "英国資料では小手術は継続、大手術は24時間前中止。腎機能・電解質・脱水を確認し、精神科・麻酔科と計画する。", "missed": "血中濃度測定の必要性、脱水・腎機能・電解質、筋弛緩薬への影響を麻酔科と確認。", "restart": "腎機能・体液量・電解質が安定していることを確認し、血中濃度と併用薬を含め処方医が判断。", "conditions": ["kidney", "hydration", "electrolytes"], "sources": ["lithium"], "kind": "海外資料：小手術／大手術で分岐", "critical": false}, "oc": {"name": "ヤーズ配合錠", "pre": "収載添付文書では手術前4週以内・術後2週以内・長期安静状態は禁忌。婦人科と休薬・代替の計画を立てる。", "missed": "待機手術の予定と血栓リスクを外科・麻酔科・婦人科で協議。緊急時は血栓症予防も含め判断する。", "restart": "術後2週以内と長期安静状態の禁忌を確認し、血栓リスク・離床状況・避妊等の計画を婦人科と検討。", "conditions": ["mobility"], "sources": ["yaz"], "kind": "添付文書収載資料：禁忌", "critical": false}, "hormone": {"name": "その他の経口避妊薬・HRT", "pre": "製品と投与経路を確認。経口剤・経皮HRTを同一の休薬期間にしない。国内電子添文を処方医・婦人科と照合する。", "missed": "服用・貼付状況、長期不動、血栓症既往を共有。製品別の対応を相談。", "restart": "離床・血栓リスクと国内電子添文の製品別条件を確認する。", "conditions": ["mobility"], "sources": ["estradiol"], "kind": "製品別確認（自動日付なし）", "critical": false}, "ralox": {"name": "ラロキシフェン", "pre": "長期不動状態に入る3日前から中止し、完全に歩行可能になるまで再開しない記載。手術日と不動開始日を区別する。", "missed": "最終服用と不動の開始予定、血栓リスクを共有し、手術・予防策を担当科と協議。", "restart": "完全に歩行可能となったことを確認し、処方医と再開を検討。", "conditions": ["mobility"], "sources": ["ralox"], "kind": "添付文書引用：長期不動の3日前", "critical": false}, "consult": {"name": "未収載・専門科管理薬", "pre": "薬剤別の一次資料を追加確認する。抗がん薬・免疫抑制薬・他のSERM・漢方・サプリメント等を一律の日数で処理しない。", "missed": "成分・製剤・最終使用日時・適応を確認し、処方医と麻酔科へ共有。", "restart": "原疾患、創傷治癒・感染など必要な条件を薬剤ごとに確認し、処方医が決定。", "conditions": [], "sources": [], "kind": "根拠未収載・自動判断なし", "critical": false}}, "drugs": [{"id": "dapa", "name": "ダパグリフロジン", "aliases": ["フォシーガ"], "components": ["sglt2"], "form": "内服", "category": "糖尿病・代謝", "identity_sources": []}, {"id": "empa", "name": "エンパグリフロジン", "aliases": ["ジャディアンス"], "components": ["sglt2"], "form": "内服", "category": "糖尿病・代謝", "identity_sources": []}, {"id": "ipra", "name": "イプラグリフロジン", "aliases": ["スーグラ"], "components": ["sglt2"], "form": "内服", "category": "糖尿病・代謝", "identity_sources": []}, {"id": "cana", "name": "カナグリフロジン", "aliases": ["カナグル"], "components": ["sglt2"], "form": "内服", "category": "糖尿病・代謝", "identity_sources": []}, {"id": "luseo", "name": "ルセオグリフロジン", "aliases": ["ルセフィ"], "components": ["sglt2"], "form": "内服", "category": "糖尿病・代謝", "identity_sources": []}, {"id": "tofo", "name": "トホグリフロジン", "aliases": ["デベルザ", "アプルウェイ"], "components": ["sglt2"], "form": "内服", "category": "糖尿病・代謝", "identity_sources": []}, {"id": "met", "name": "メトホルミン", "aliases": ["メトグルコ"], "components": ["metformin"], "form": "内服", "category": "糖尿病・代謝", "identity_sources": []}, {"id": "sujanu", "name": "スージャヌ配合錠", "aliases": ["シタグリプチン イプラグリフロジン"], "components": ["sglt2", "dpp4"], "form": "内服", "category": "糖尿病・代謝", "identity_sources": ["sujanu"]}, {"id": "tradiance", "name": "トラディアンス配合錠", "aliases": ["エンパグリフロジン リナグリプチン"], "components": ["sglt2", "dpp4"], "form": "内服", "category": "糖尿病・代謝", "identity_sources": ["tradiance"]}, {"id": "equmet", "name": "エクメット配合錠", "aliases": ["ビルダグリプチン メトホルミン"], "components": ["metformin", "dpp4"], "form": "内服", "category": "糖尿病・代謝", "identity_sources": ["equmet"]}, {"id": "glime", "name": "グリメピリド", "aliases": ["アマリール"], "components": ["su"], "form": "内服", "category": "糖尿病・代謝", "identity_sources": []}, {"id": "glinide", "name": "グリニド薬", "aliases": ["レパグリニド", "シュアポスト", "ミチグリニド", "グルファスト", "ナテグリニド", "スターシス", "ファスティック"], "components": ["glinide"], "form": "内服", "category": "糖尿病・代謝", "identity_sources": []}, {"id": "sita", "name": "シタグリプチン", "aliases": ["ジャヌビア", "グラクティブ"], "components": ["dpp4"], "form": "内服", "category": "糖尿病・代謝", "identity_sources": []}, {"id": "otherdm", "name": "その他の糖尿病薬", "aliases": ["ボグリボース", "ベイスン", "ピオグリタゾン", "アクトス"], "components": ["otherdm"], "form": "内服", "category": "糖尿病・代謝", "identity_sources": []}, {"id": "sema_w", "name": "セマグルチド（週1回注射）", "aliases": ["オゼンピック", "ウゴービ"], "components": ["glp"], "form": "週1回注射", "category": "糖尿病・代謝", "identity_sources": []}, {"id": "sema_o", "name": "セマグルチド（内服）", "aliases": ["リベルサス"], "components": ["glp"], "form": "内服", "category": "糖尿病・代謝", "identity_sources": []}, {"id": "tirz", "name": "チルゼパチド", "aliases": ["マンジャロ", "ゼップバウンド"], "components": ["glp"], "form": "週1回注射", "category": "糖尿病・代謝", "identity_sources": []}, {"id": "dula", "name": "デュラグルチド", "aliases": ["トルリシティ"], "components": ["glp"], "form": "週1回注射", "category": "糖尿病・代謝", "identity_sources": []}, {"id": "lira", "name": "リラグルチド", "aliases": ["ビクトーザ"], "components": ["glp"], "form": "毎日注射", "category": "糖尿病・代謝", "identity_sources": []}, {"id": "insulin", "name": "インスリン（製品名・濃度・単位数を別途確認）", "aliases": ["グラルギン", "ランタス", "トレシーバ", "デグルデク", "ノボラピッド", "ヒューマログ", "アスパルト", "リスプロ"], "components": ["insulin"], "form": "注射", "category": "糖尿病・代謝", "identity_sources": []}, {"id": "arb", "name": "ARB", "aliases": ["テルミサルタン", "ミカルディス", "カンデサルタン", "ブロプレス", "アジルサルタン", "アジルバ", "バルサルタン", "ディオバン", "オルメサルタン", "オルメテック", "ロサルタン", "ニューロタン"], "components": ["raas"], "form": "内服", "category": "循環器", "identity_sources": []}, {"id": "ace", "name": "ACE阻害薬", "aliases": ["エナラプリル", "レニベース", "イミダプリル", "タナトリル", "リシノプリル", "ロンゲス"], "components": ["raas"], "form": "内服", "category": "循環器", "identity_sources": []}, {"id": "arni", "name": "サクビトリル・バルサルタン", "aliases": ["エンレスト"], "components": ["arni"], "form": "内服", "category": "循環器", "identity_sources": []}, {"id": "loop", "name": "フロセミド", "aliases": ["ラシックス"], "components": ["diuretic"], "form": "内服", "category": "循環器", "identity_sources": []}, {"id": "diuretic", "name": "その他の利尿薬", "aliases": ["スピロノラクトン", "アルダクトン", "エプレレノン", "セララ", "トラセミド", "ルプラック", "トリクロルメチアジド", "フルイトラン"], "components": ["diuretic"], "form": "内服", "category": "循環器", "identity_sources": []}, {"id": "beta", "name": "β遮断薬", "aliases": ["ビソプロロール", "メインテート", "カルベジロール", "アーチスト"], "components": ["beta"], "form": "内服", "category": "循環器", "identity_sources": []}, {"id": "amlo", "name": "アムロジピン", "aliases": ["アムロジン", "ノルバスク"], "components": ["ccb"], "form": "内服", "category": "循環器", "identity_sources": []}, {"id": "steroid", "name": "全身性ステロイド", "aliases": ["プレドニゾロン", "プレドニン", "ヒドロコルチゾン", "コートリル", "デキサメタゾン", "デカドロン"], "components": ["steroid"], "form": "内服", "category": "神経・内分泌", "identity_sources": []}, {"id": "aed", "name": "抗てんかん薬", "aliases": ["レベチラセタム", "イーケプラ", "ラコサミド", "ビムパット", "バルプロ酸", "デパケン", "ラモトリギン", "ラミクタール", "カルバマゼピン", "テグレトール"], "components": ["aed"], "form": "内服", "category": "神経・内分泌", "identity_sources": []}, {"id": "ldopa", "name": "レボドパ配合剤", "aliases": ["メネシット", "ネオドパストン", "マドパー", "イーシー・ドパール", "ドパコール", "レボドパ カルビドパ ベンセラジド"], "components": ["levodopa"], "form": "内服", "category": "神経・内分泌", "identity_sources": []}, {"id": "maob", "name": "MAO-B阻害薬", "aliases": ["ラサギリン", "アジレクト", "セレギリン", "エフピー", "サフィナミド", "エクフィナ"], "components": ["maob"], "form": "内服", "category": "神経・内分泌", "identity_sources": []}, {"id": "lithium", "name": "炭酸リチウム", "aliases": ["リーマス"], "components": ["lithium"], "form": "内服", "category": "神経・内分泌", "identity_sources": []}, {"id": "yaz", "name": "ヤーズ配合錠", "aliases": ["ドロスピレノン エチニルエストラジオール"], "components": ["oc"], "form": "内服", "category": "ホルモン・骨", "identity_sources": []}, {"id": "oc_other", "name": "その他の経口避妊薬・ホルモン配合剤", "aliases": ["ヤーズフレックス", "ジェミーナ", "ルナベル", "フリウェル", "トリキュラー", "マーベロン"], "components": ["hormone"], "form": "内服", "category": "ホルモン・骨", "identity_sources": []}, {"id": "hrt_patch", "name": "経皮エストラジオール（HRT）", "aliases": ["エストラーナ", "ディビゲル", "ル・エストロジェル"], "components": ["hormone"], "form": "貼付・ゲル", "category": "ホルモン・骨", "identity_sources": []}, {"id": "hrt_oral", "name": "経口HRT", "aliases": ["ジュリナ", "プレマリン"], "components": ["hormone"], "form": "内服", "category": "ホルモン・骨", "identity_sources": []}, {"id": "ralox", "name": "ラロキシフェン", "aliases": ["エビスタ"], "components": ["ralox"], "form": "内服", "category": "ホルモン・骨", "identity_sources": []}, {"id": "special", "name": "専門科で薬剤別確認が必要な薬", "aliases": ["バゼドキシフェン", "ビビアント", "ベバシズマブ", "アバスチン", "ラムシルマブ", "サイラムザ", "インフリキシマブ", "レミケード", "トシリズマブ", "アクテムラ", "メトトレキサート", "リウマトレックス", "デノスマブ", "プラリア", "アレンドロン酸", "ボナロン", "サプリメント", "EPA", "DHA", "イチョウ葉", "セントジョーンズワート", "葛根湯", "麻黄湯"], "components": ["consult"], "form": "内服", "category": "専門科確認", "identity_sources": []}], "scope": "成人の非心臓手術。心臓手術・小児・妊娠・特殊処置は個別協議。", "evidence_limitations": ["対象を絞った公式資料の確認であり、系統的レビューではない。", "一般名・商品名の検索は収載範囲に限る。分類単位の項目は薬剤固有の電子添文を追加確認する。", "ADA 2026はPMID 41358892を確認したが、全文取得がexit 2のため判断根拠に採用しない。", "推奨のある資料でも、薬剤の適応・国内添付文書・施設手順が異なる場合は結論を固定しない。"]};</script>
+<script id="periop-app">/* 判定は純粋関数として実装し、画面と症例テストで同じ関数を使う。 */
+(function (root) {
+  'use strict';
+  var DATA = PERIOP_DATA;
+  var FIELDS = {
+    eating: ['通常の食事・水分を十分摂取できる', 'yesno'],
+    hydration: ['脱水がなく体液量が評価・管理されている', 'yesno'],
+    kidney: ['腎機能が評価され、安定している', 'yesno'],
+    ketoneSafe: ['ケトアシドーシスが否定されている', 'yesno'],
+    bp: ['血圧・循環動態が安定している', 'yesno'],
+    oxygen: ['低酸素・低灌流がない', 'yesno'],
+    glucose: ['血糖を確認し、管理計画がある', 'yesno'],
+    electrolytes: ['電解質が評価・管理されている', 'yesno'],
+    giClear: ['悪心・嘔吐・腹痛・著明な便秘などがない', 'yesno'],
+    escalation: ['GLP-1関連薬の開始・増量中', 'yesno'],
+    gastric: ['胃排出遅延を伴う病態がある', 'yesno'],
+    highDose: ['GLP-1関連薬は高用量（処方医の評価）', 'yesno'],
+    pulse: ['脈拍が評価され、徐脈等の問題がない', 'yesno'],
+    betaPlan: ['β遮断薬の国内添文と臨床状態を踏まえた管理指示がある', 'yesno'],
+    route: ['定時投与を確保する経路・吸収を確認した', 'yesno'],
+    interaction: ['麻酔・鎮痛・制吐薬等との相互作用を確認した', 'yesno'],
+    mobility: ['完全に歩行可能で長期安静状態ではない', 'yesno'],
+    immobilization: ['長期不動・長期安静の予定がある', 'yesno'],
+    immobileStart: ['長期不動・長期安静の開始日時', 'datetime-local'],
+    contrast: ['ヨード造影剤の使用予定／使用がある', 'yesno'],
+    contrastTime: ['ヨード造影剤の使用日時（術後評価時）', 'datetime-local'],
+    egfr: ['直近のeGFR（mL/min/1.73m²）', 'number'],
+    cvRisk: ['非心臓手術の心血管リスク評価', 'risk'],
+    diabetesType: ['糖尿病の型', 'diabetes'],
+    dosingPlan: ['担当医による投与量・投与経路の計画がある', 'yesno']
+  };
+  function unique(xs) { return xs.filter(function (v, i, a) { return a.indexOf(v) === i; }); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function stamp(s) {
+    if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(s || '')) return null;
+    var n = Date.parse(s + ':00+09:00');
+    if (!isFinite(n) || iso(n) !== s) return null;
+    return n;
+  }
+  function iso(n) { return new Date(n + 9 * 3600000).toISOString().slice(0,16); }
+  function fmt(n) { return iso(n).replace('T', ' '); }
+  function midnight(s) { return stamp(s.slice(0,10) + 'T00:00'); }
+  function byId(id) { return DATA.drugs.filter(function (d) { return d.id === id; })[0]; }
+  function norm(s) {
+    s = String(s || '');
+    if (s.normalize) s = s.normalize('NFKC');
+    return s.toLowerCase().replace(/[\s・\-‐]/g, '').replace(/[ぁ-ゖ]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) + 96); });
+  }
+  function search(q) {
+    var raw = String(q || '');
+    if (raw.normalize) raw = raw.normalize('NFKC');
+    var cleaned = raw.replace(/\d+(?:\.\d+)?\s*(?:mg|mcg|μg|µg|ml|単位)/gi,'').replace(/配合錠|OD錠|錠|カプセル|配合/gi,'').trim();
+    if (raw.trim() && !cleaned) return [];
+    var parts = cleaned.split(/\s+/).map(norm);
+    return DATA.drugs.filter(function (d) {
+      var text = norm([d.name, d.category].concat(d.aliases).join(' '));
+      return parts.every(function (p) { return text.indexOf(p) >= 0; });
+    });
+  }
+  function fieldsFor(drugs, mode) {
+    var ids = [];
+    drugs.forEach(function (d) {
+      var base = byId(d.id);
+      (base ? base.components : ['consult']).forEach(function (k) {
+        if (mode === 'post') ids = ids.concat(DATA.rules[k].conditions);
+        if (k === 'sglt2') ids = ids.concat(['eating','hydration','kidney','ketoneSafe']);
+        if (k === 'metformin') ids = ids.concat(['kidney','egfr','hydration','bp','oxygen','contrast','contrastTime']);
+        if (k === 'glp') ids = ids.concat(['giClear','escalation','gastric','highDose']);
+        if (k === 'raas') ids = ids.concat(['cvRisk','bp','kidney','electrolytes']);
+        if (k === 'arni' || k === 'diuretic' || k === 'lithium') ids = ids.concat(['bp','hydration','kidney','electrolytes']);
+        if (k === 'insulin' || k === 'steroid') ids.push('dosingPlan');
+        if (k === 'insulin') ids.push('diabetesType');
+        if (k === 'beta') ids = ids.concat(['bp','pulse','betaPlan']);
+        if (k === 'ccb') ids.push('bp');
+        if (k === 'maob') ids.push('interaction');
+        if (k === 'aed' || k === 'levodopa') ids.push('route');
+        if (k === 'ralox') ids = ids.concat(['immobilization','immobileStart']);
+        if (k === 'hormone' || k === 'oc') ids.push('immobilization');
+      });
+    });
+    return unique(ids);
+  }
+  function evaluate(input, now) {
+    var g = input.global || {}, f = input.facts || {}, mode = input.mode || 'pre';
+    var op = stamp(g.surgery), at = stamp(g.assessed), errors = [], notices = [];
+    var stale = iso(now == null ? Date.now() : now).slice(0,10) > DATA.review_due;
+    if (['pre','missed','post'].indexOf(mode) < 0) errors.push('確認する場面が不正です。');
+    if (g.scope !== 'adult') errors.push('対象範囲外または対象不明です。成人・非心臓手術に限って参考情報を整理しています。');
+    if (!g.urgency) errors.push('手術の緊急性が未確認です。');
+    if (at === null) errors.push('評価日時を正しく入力してください。');
+    if (op === null && g.urgency !== 'emergency') errors.push('手術日時を正しく入力してください。');
+    if (at !== null && op !== null && ((mode === 'post' && op > at) || (mode !== 'post' && op < at))) errors.push('手術日時と確認する場面が一致しません。術後は「術後の再開」を選択してください。');
+    if (g.fastingStart && stamp(g.fastingStart) === null) errors.push('絶食開始日時が不正です。');
+    if (g.fastingStart && op !== null && stamp(g.fastingStart) > op) errors.push('絶食開始日時が手術日時より後です。');
+    if (stale) errors.push('根拠の再確認期限を過ぎています。休薬予定の自動計算を停止しました。最新資料で確認してください。');
+    if (op !== null && g.surgery.slice(0,10)>DATA.review_due) notices.push('手術予定日が根拠の再確認期限より後です。実施前に最新資料で管理計画を見直してください。');
+    if (g.urgency === 'emergency') notices.push('緊急・準緊急手術：待機手術の休薬期間を満たすために自動延期せず、麻酔科・術者・処方医で即時協議してください。');
+    if (mode === 'missed') notices.push('誤休薬・休薬忘れは薬剤ごとに対応が異なります。症状・バイタルに問題があれば薬剤確認と並行して診療を優先してください。');
+    var seen = {}, items = [];
+    (input.drugs || []).forEach(function (d) {
+      var base = byId(d.id) || {name:d.name || '未収載薬',components:['consult'],form:'未確認',identity_sources:[]};
+      base.components.forEach(function (key) {
+        var r = DATA.rules[key], last = stamp(d.last), missing = [], issues = [], schedule = null;
+        var status = '個別協議', level = 'review', pre = r.pre, restart = r.restart, required = [];
+        if (!g.procedure) missing.push('手術の規模');
+        if (!g.anesthesia) missing.push('麻酔・鎮静');
+        if (!g.fasting) missing.push('飲食制限・絶食');
+        if (mode === 'missed' && !d.state) missing.push('実際の服用・中止状況');
+        if (mode === 'missed' && last === null) missing.push('最終投与日時');
+        if (d.last && last === null) issues.push('最終投与日時が不正です。');
+        if (last !== null && at !== null && last > at) issues.push('「実際の最終投与」が評価日時より未来です。予定日時はここに入力しないでください。');
+        function need(keys) { required = required.concat(keys.split(' ')); }
+        function calendar(days, anchor, basis) {
+          if (anchor !== null) schedule = {cutoff:anchor - days * 86400000,basis:basis,unit:'calendar',text:'この日から服用しない計画を処方医と確認'};
+        }
+        function hours(n, basis) { if (op !== null) schedule = {cutoff:op - n * 3600000,basis:basis,unit:'hours',text:'この時刻以降の投与を省略する計画を協議'}; }
+        if (key === 'sglt2') {
+          need('hydration kidney ketoneSafe');
+          status = '休薬計画を確認'; calendar(3, op === null ? null : midnight(g.surgery), '国内学会：手術の3暦日前から休薬');
+          if (f.ketoneSafe === 'no') { issues.push('ケトアシドーシスが否定されていません。血糖だけで除外せず担当医へ速やかに相談。'); level='alert'; }
+        }
+        if (key === 'metformin') {
+          need('kidney egfr hydration bp oxygen contrast');
+          if (f.egfr !== '' && f.egfr != null && (!isFinite(Number(f.egfr)) || Number(f.egfr) <= 0 || Number(f.egfr) > 200)) issues.push('eGFRの入力範囲を確認してください。');
+          if (f.egfr !== '' && f.egfr != null && Number(f.egfr) < 30) {issues.push('eGFR 30未満：国内の禁忌に該当します。周術期に限らず処方医へ確認。');level='alert';}
+          if (g.procedure === 'minor' && g.fasting === 'no') status='小手術の条件を個別確認';
+          else status='休薬・血糖管理を相談';
+          if (f.contrast === 'yes') {
+            restart += ' ヨード造影剤使用時は、少なくとも使用後48時間の再開制限と腎機能の再評価を製品添文で確認する。';
+            if (mode === 'post') {
+              need('contrastTime');
+              var ct=stamp(f.contrastTime);
+              if (ct === null && f.contrastTime) issues.push('造影剤の使用日時が不正です。');
+              if (ct !== null && at !== null && ct > at) issues.push('造影剤の使用日時が評価日時より未来です。');
+              else if (ct !== null && at !== null && at-ct < 48*3600000) issues.push('造影剤使用後48時間に達していません。再開を処方医へ確認。');
+            }
+          }
+        }
+        if (key === 'su') {
+          status='当日投与の省略を相談'; calendar(0,op === null ? null : midnight(g.surgery),'英国資料：グリメピリドの手術当日投与を省略');
+          var fast=stamp(g.fastingStart);
+          if (schedule && fast !== null && fast < schedule.cutoff) {schedule=null;issues.push('手術前日以前からの絶食：通常の当日省略だけでは対応できないため、絶食開始時からの指示を確認。');}
+        }
+        if (key === 'glp') {
+          need('giClear escalation gastric highDose');
+          if (f.giClear === 'no' || f.escalation === 'yes' || f.gastric === 'yes' || f.highDose === 'yes') {status='誤嚥リスクを麻酔科と評価';level='alert';issues.push('消化器症状・開始増量期・胃排出遅延・高用量のいずれかに該当。休薬日数だけで安全確認としない。');}
+          else if (f.giClear === 'yes' && f.escalation === 'no' && f.gastric === 'no' && f.highDose === 'no') status='継続を含め麻酔科と相談';
+          if (g.anesthesia === 'local' || g.anesthesia === 'regional') pre += ' 深い鎮静の追加・全身麻酔への変更の可能性も共有する。';
+        }
+        if (key === 'raas') {
+          if (!d.indication) missing.push('ACE阻害薬・ARBの使用目的');
+          need('bp kidney electrolytes');
+          if (d.indication === 'hfrEF') {status='HFrEF：継続を検討';pre='HFrEFに対する継続治療は周術期も継続が合理的とする米国推奨。低血圧・腎機能悪化等があれば循環器・麻酔科で調整する。';}
+          else if (d.indication === 'htn') {
+            need('cvRisk');
+            if (f.cvRisk === 'elevated' && f.bp === 'yes') {status='24時間前省略を検討';hours(24,'米国GL：血圧管理良好・高血圧目的・心血管リスクの高い非心臓手術');}
+          }
+        }
+        if (['arni','diuretic','lithium'].indexOf(key)>=0) need('bp kidney hydration electrolytes');
+        if (key === 'lithium') {
+          if (g.procedure==='minor') status='小手術：継続を相談';
+          if (g.procedure==='major') {status='大手術：休薬を相談';hours(24,'英国資料：大手術では24時間前中止（国内施設の方針を確認）');}
+        }
+        if (key === 'beta') {need('bp pulse betaPlan');status='国内添文・海外推奨を照合';}
+        if (key === 'ccb') {need('bp');status='継続を確認';}
+        if (key === 'steroid' || key === 'insulin') {need('dosingPlan');status='投与量・経路の計画を確認';}
+        if (key === 'insulin') {need('diabetesType'); if (f.diabetesType==='type1') issues.push('1型糖尿病：基礎インスリンが途切れない計画を糖尿病担当医に確認。');}
+        if (key === 'maob') need('interaction');
+        if (key === 'aed' || key === 'levodopa') {need('route');status='定時投与・代替経路を確認';}
+        if (key === 'oc') {
+          status='添付文書の禁忌期間を確認'; calendar(28,op===null?null:midnight(g.surgery),'ヤーズ収載添付文書：手術前4週以内の禁忌');
+          if (schedule) schedule.text='手術の28暦日前から服用しない計画を、禁忌期間に入る前に処方医と確認';
+          if (mode==='post' && op!==null && at!==null && at-op<=14*86400000) issues.push('術後2週以内の禁忌期間です。日数と離床状況を婦人科へ確認。');
+        }
+        if (key === 'ralox') {
+          need('immobilization');
+          if (f.immobilization==='yes') {
+            need('immobileStart'); var im=stamp(f.immobileStart);
+            if (f.immobileStart && im===null) issues.push('長期不動の開始日時が不正です。');
+            calendar(3,im===null?null:midnight(f.immobileStart),'長期不動に入る3暦日前から休薬');status='長期不動前の休薬を確認';
+          }
+        }
+        if (mode === 'post') {
+          schedule=null; required=required.concat(r.conditions);
+          if (key!=='consult') status='再開条件を確認';
+        }
+        unique(required).forEach(function (k) {
+          if (f[k] === '' || f[k] == null) missing.push(FIELDS[k][0]);
+          else if (['egfr','contrast','contrastTime','escalation','gastric','highDose','immobilization','immobileStart','cvRisk','diabetesType'].indexOf(k)<0 && f[k]==='no') issues.push('条件未充足：'+FIELDS[k][0]);
+        });
+        if (r.critical && ((mode==='missed' && (d.state==='held' || d.state==='missed')) || f.route==='no' || ((key==='steroid'||key==='insulin') && f.dosingPlan==='no'))) {
+          status='投与中断・代替経路を優先相談';level='alert';issues.push('通常食の再開を待たず、必要な治療を確保する方法を担当医に確認してください。');
+        }
+        if (key==='consult') {status='未収載：薬剤別確認';missing.push('薬剤固有の一次資料・管理指示');}
+        if (missing.length) {if (level!=='alert') status='情報不足：追加確認';schedule=null;}
+        if (issues.length) {level='alert';schedule=null;if (!r.critical) status='問題・未充足条件を確認';}
+        if (errors.length) {status='入力・対象の確認が必要';level='alert';schedule=null;}
+        if (g.urgency==='emergency') {status='緊急：担当科と即時協議';level='alert';schedule=null;pre='待機手術の休薬日数をそのまま当てはめず、最終投与と患者状態を共有して、麻酔科・術者・処方医で対応を決定する。';}
+        if (schedule && last!==null && last>=schedule.cutoff) {
+          issues.push('実際の最終投与が休薬開始の目安以降です。休薬忘れ／期間不足の可能性を担当科へ共有。');status='休薬期間の不足を確認';level='alert';
+        }
+        if (schedule && at!==null && schedule.cutoff<at && last===null) {
+          missing.push('休薬開始の目安を過ぎているため、実際の最終投与日時');status='最終投与の確認が必要';
+        }
+        if (mode==='post' && !missing.length && !issues.length && !errors.length && key!=='consult' && g.urgency!=='emergency') status='入力条件を満たす：担当医が再開を判断';
+        if (r.critical && mode==='post' && status==='入力条件を満たす：担当医が再開を判断') status='担当医と継続・投与経路を確認';
+        if (!missing.length && !issues.length && !errors.length && /継続を確認|定時投与/.test(status)) level='normal';
+        var componentKey = key;
+        if (seen[componentKey] && seen[componentKey]!==d.id) notices.push(r.name+'を含む項目が複数あります。重複処方・同一薬の二重登録と配合成分を照合してください。');
+        seen[componentKey]=d.id;
+        items.push({drugId:d.id,name:base.name,entered:d.entered || d.name || '',form:base.form,dose:d.dose||'',last:d.last||'',state:d.state||'',indication:d.indication||'',rule:key,ruleName:r.name,status:status,level:level,pre:pre,missed:r.missed,restart:restart,kind:r.kind,schedule:schedule,missing:unique(missing),issues:unique(issues),conditions:r.conditions,sources:unique(r.sources.concat(base.identity_sources||[]))});
+      });
+    });
+    return {mode:mode,global:g,facts:f,errors:unique(errors),notices:unique(notices),items:items,version:DATA.version,checked:DATA.checked};
+  }
+  function handoff(result) {
+    var g=result.global, lines=['【周術期薬剤確認・医療者確認用／処方指示ではありません】','場面：'+({pre:'術前',missed:'休薬忘れ・誤休薬',post:'術後再開'}[result.mode]),'手術日時：'+(g.surgery||'不明')+'（日本時間）／評価日時：'+(g.assessed||'不明'),'対象：'+(g.scope==='adult'?'成人・非心臓手術':'対象外／不明')+'／緊急性：'+(g.urgency==='elective'?'待機':g.urgency==='emergency'?'緊急・準緊急':'不明'),'根拠確認：'+DATA.checked+'／ツール版：'+DATA.version];
+    lines=lines.concat(result.errors.map(function (x){return '要確認：'+x;}),result.notices);
+    result.items.forEach(function (r) {
+      lines.push('\n■ '+r.name+'［'+r.ruleName+'］：'+r.status);
+      lines.push('製剤：'+r.form+'／入力した薬名：'+(r.entered||'なし')+'／用量・間隔：'+(r.dose||'未入力')+'／最終投与：'+(r.last||'不明'));
+      if(r.indication) lines.push('使用目的：'+valueLabel(r.indication));
+      if(r.state) lines.push('実際の状況：'+valueLabel(r.state));
+      if(r.schedule) lines.push('休薬開始目安：'+fmt(r.schedule.cutoff)+'（日本時間）。'+r.schedule.basis+'。'+r.schedule.text);
+      lines.push(result.mode==='post'?r.restart:result.mode==='missed'?r.missed:r.pre);
+      if(result.mode!=='post') lines.push('術後：'+r.restart);
+      if(r.missing.length) lines.push('不足：'+r.missing.join('／'));
+      r.issues.forEach(function(x){lines.push('要確認：'+x);});
+      lines.push('根拠区分：'+r.kind);
+      r.sources.forEach(function(k){var s=DATA.sources[k];lines.push('出典：'+s.title+' '+s.url+' ['+s.source_locator+']');});
+    });
+    lines.push('\n【入力条件】');
+    ['procedure','anesthesia','fasting','fastingStart'].forEach(function(k){lines.push(({procedure:'手術規模',anesthesia:'麻酔',fasting:'飲食制限',fastingStart:'絶食開始'})[k]+': '+valueLabel(g[k]));});
+    fieldsFor((result.items.map(function(x){return {id:x.drugId};})),result.mode).forEach(function(k){lines.push(FIELDS[k][0]+': '+valueLabel(result.facts[k]));});
+    lines.push('\n最終的な休薬・代替投与・再開の指示と確認者は診療記録に記載してください。');
+    return lines.join('\n');
+  }
+  function valueLabel(v){return {'yes':'はい','no':'いいえ','minor':'小手術','major':'大手術','general':'全身麻酔／深い鎮静','regional':'区域麻酔（深い鎮静なし）','local':'局所麻酔（深い鎮静なし）','elevated':'心血管リスクが高い','low':'心血管リスクが低い','type1':'1型糖尿病','type2':'2型糖尿病','other':'その他','htn':'高血圧','hfrEF':'HFrEF','taken':'服用・投与した','held':'休薬した','missed':'投与し忘れた'}[v] || v || '不明';}
+  root.PeriopEngine = {evaluate:evaluate,handoff:handoff,search:search,stamp:stamp,iso:iso,fieldsFor:fieldsFor,data:DATA};
+  if (typeof document==='undefined') return;
+  var state={mode:'pre',drugs:[],facts:{},result:null};
+  function el(id){return document.getElementById(id);}
+  function options(kind,value){
+    var opts=[['','不明・未確認']];
+    if(kind==='yesno')opts=opts.concat([['yes','はい'],['no','いいえ']]);
+    if(kind==='risk')opts=opts.concat([['elevated','心血管リスクが高い'],['low','心血管リスクが低い']]);
+    if(kind==='diabetes')opts=opts.concat([['type1','1型糖尿病'],['type2','2型糖尿病'],['other','その他']]);
+    return opts.map(function(o){return '<option value="'+o[0]+'"'+(value===o[0]?' selected':'')+'>'+o[1]+'</option>';}).join('');
+  }
+  function invalidate(){state.result=null;el('results').innerHTML='';el('status').textContent='入力を変更しました。確認結果を作成してください。';}
+  function renderSearch(all){
+    var q=el('search').value.trim(), found=search(q);
+    if(!q&&!all){el('searchResults').innerHTML='';el('searchCount').textContent='';return;}
+    el('searchCount').textContent=found.length+'件の収載項目（分類の項目も含みます）';
+    var html=found.map(function(d){var selected=state.drugs.some(function(x){return x.id===d.id;});return '<button type="button" class="drug-choice" data-add="'+d.id+'"'+(selected?' disabled':'')+'><span>'+esc(d.name)+'<small>'+esc(d.aliases.join(' / '))+'</small></span><span>'+ (selected?'追加済み':'＋')+'</span></button>';}).join('');
+    if(q) html+='<button type="button" class="drug-choice" data-unknown="1"><span>「'+esc(q)+'」を未収載薬として追加<small>一致する製品・分類がない場合。薬剤別確認として残します。</small></span><span>＋</span></button>';
+    el('searchResults').innerHTML=html;
+  }
+  function renderSelected(){
+    el('selectedCount').textContent=state.drugs.length;
+    el('selected').innerHTML=state.drugs.length?state.drugs.map(function(d,i){
+      var b=byId(d.id)||{name:d.name,components:['consult'],form:'未確認'};
+      var h='<article class="selected-card"><div class="row"><div><h3>'+esc(b.name)+'</h3><span class="small">'+esc(b.form)+(d.entered?' / 検索時の入力：'+esc(d.entered):'')+'</span></div><button type="button" data-remove="'+i+'" aria-label="'+esc(b.name)+'を削除">削除</button></div>';
+      h+=b.components.map(function(k){return '<span class="tag">'+esc(DATA.rules[k].name)+'</span>';}).join('');
+      if(b.components.length>1)h+='<p class="small">配合剤全体の指示が必要です。成分だけを休薬する場合は、別製剤への変更を処方医と相談してください。</p>';
+      h+='<div class="grid"><div class="field"><label for="dose-'+i+'">製品・用量・投与間隔（記録用）</label><input id="dose-'+i+'" data-i="'+i+'" data-prop="dose" maxlength="160" value="'+esc(d.dose)+'" placeholder="例：5 mg、1日1回 朝"><small>自動用量計算には使いません。分類項目は実際の製品名も記載。</small></div>';
+      h+='<div class="field"><label for="last-'+i+'">実際の最終服用・注射日時</label><input type="datetime-local" id="last-'+i+'" data-i="'+i+'" data-prop="last" value="'+esc(d.last)+'"><small>予定ではなく投与済みの日時。空欄＝不明。</small></div>';
+      if(state.mode==='missed')h+='<div class="field"><label for="state-'+i+'">実際の状況</label><select id="state-'+i+'" data-i="'+i+'" data-prop="state"><option value="">不明・未確認</option><option value="taken"'+(d.state==='taken'?' selected':'')+'>服用・投与した</option><option value="held"'+(d.state==='held'?' selected':'')+'>休薬した</option><option value="missed"'+(d.state==='missed'?' selected':'')+'>投与し忘れた・遅れた</option></select></div>';
+      if(b.components.indexOf('raas')>=0)h+='<div class="field full"><label for="indication-'+i+'">ACE阻害薬・ARBの使用目的</label><select id="indication-'+i+'" data-i="'+i+'" data-prop="indication">'+[['','不明・未確認'],['htn','高血圧（HFrEFを伴わない）'],['hfrEF','駆出率の低下した心不全（HFrEF）'],['other','その他・複数の適応で判断が必要']].map(function(o){return '<option value="'+o[0]+'"'+(d.indication===o[0]?' selected':'')+'>'+o[1]+'</option>';}).join('')+'</select></div>';
+      return h+'</div></article>';
+    }).join(''):'<p class="empty">確認する薬剤を検索して追加してください。</p>';
+  }
+  function renderConditions(){
+    var keys=fieldsFor(state.drugs,state.mode);
+    el('conditions').innerHTML=keys.length?keys.map(function(k){
+      var f=FIELDS[k],v=state.facts[k]||'',h='<div class="field"><label for="fact-'+k+'">'+esc(f[0])+'</label>';
+      if(f[1]==='number'||f[1]==='datetime-local')h+='<input id="fact-'+k+'" data-fact="'+k+'" type="'+f[1]+'" value="'+esc(v)+'"'+(f[1]==='number'?' min="1" max="200" step="0.1"':'')+'>';
+      else h+='<select id="fact-'+k+'" data-fact="'+k+'">'+options(f[1],v)+'</select>';
+      if(k==='contrastTime')h+='<small>造影あり・術後評価時のみ必要。</small>';
+      if(k==='immobileStart')h+='<small>長期不動ありの場合のみ必要。手術日時と異なる場合は実際の開始予定を入力。</small>';
+      return h+'</div>';
+    }).join(''):'<p class="small">薬剤を追加すると、必要な確認項目が表示されます。</p>';
+  }
+  function sourceHtml(keys){return '<ul class="source-list">'+keys.map(function(k){var s=DATA.sources[k];return '<li><a href="'+esc(s.url)+'" target="_blank" rel="noopener">'+esc(s.title)+' ↗</a><small>'+esc(s.kind)+'／'+esc(s.version)+'／確認 '+s.checked+'</small><small>該当箇所：'+esc(s.source_locator)+'</small>'+(s.note?'<small>'+esc(s.note)+'</small>':'')+'</li>';}).join('')+'</ul>';}
+  function collect(){var g={};['scope','urgency','surgery','assessed','procedure','anesthesia','fasting','fastingStart'].forEach(function(k){g[k]=el(k).value;});return {mode:state.mode,drugs:state.drugs,global:g,facts:state.facts};}
+  function list(xs,css){return xs.length?'<ul'+(css?' class="'+css+'"':'')+'>'+xs.map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul>':'';}
+  function renderResult(r){
+    var h='<div class="result-head"><div><div class="eyebrow">REVIEW SUMMARY</div><h2>薬剤ごとの確認結果</h2><p class="small">'+esc(r.global.surgery||'手術日時不明')+'／'+({pre:'術前の準備',missed:'休薬忘れ・誤休薬',post:'術後の再開'}[r.mode])+'／日本時間</p></div><div class="actions"><button type="button" id="print">確認表を印刷</button><button type="button" id="copy">申し送りをコピー</button></div></div>';
+    h+='<p class="print-only">医療者確認用。処方指示・手術実施許可ではありません。確認 '+DATA.checked+'／版 '+DATA.version+'</p>';
+    if(r.errors.length) h+='<div class="alert-box"><strong>入力・対象を確認してください</strong>'+list(r.errors)+'</div>';
+    if(r.notices.length)h+='<div class="notice">'+list(r.notices)+'</div>';
+    var contextLines=['対象：'+(r.global.scope==='adult'?'成人・非心臓手術':'対象外／不明'),'緊急性：'+(r.global.urgency==='elective'?'待機':r.global.urgency==='emergency'?'緊急・準緊急':'不明'),'評価日時：'+(r.global.assessed||'不明')+'（日本時間）'];
+    ['procedure','anesthesia','fasting','fastingStart'].forEach(function(k){contextLines.push(({procedure:'手術規模',anesthesia:'麻酔',fasting:'飲食制限',fastingStart:'絶食開始'})[k]+'：'+valueLabel(r.global[k]));});
+    fieldsFor(state.drugs,r.mode).forEach(function(k){contextLines.push(FIELDS[k][0]+'：'+valueLabel(r.facts[k]));});
+    h+='<details class="panel"><summary>評価に使用した入力条件（印刷にも含みます）</summary>'+list(contextLines)+'</details>';
+    h+='<div class="table-scroll"><table class="summary-table"><thead><tr><th>薬剤</th><th>確認結果</th><th>休薬開始の目安</th></tr></thead><tbody>'+r.items.map(function(x){return '<tr><td>'+esc(x.name)+'<br><span class="small">'+esc(x.ruleName)+'</span></td><td>'+esc(x.status)+'</td><td>'+(x.schedule?esc(fmt(x.schedule.cutoff))+'<br>'+esc(x.schedule.basis):'日付を自動決定しない')+'</td></tr>';}).join('')+'</tbody></table></div>';
+    r.items.forEach(function(x){
+      h+='<article class="result-card '+x.level+'"><div class="result-title"><span class="badge">'+esc(x.status)+'</span><h3>'+esc(x.name)+'</h3><p class="small">'+esc(x.ruleName)+'／'+esc(x.kind)+'</p></div><p class="small">製剤：'+esc(x.form)+'／用量・間隔：'+esc(x.dose||'未入力')+'／最終投与：'+esc(x.last||'不明')+'</p>';
+      if(x.entered)h+='<p class="small">入力した薬名：'+esc(x.entered)+'</p>';
+      if(x.indication)h+='<p class="small">使用目的：'+esc(valueLabel(x.indication))+'</p>';
+      if(x.state)h+='<p class="small">実際の状況：'+esc(valueLabel(x.state))+'</p>';
+      if(x.schedule)h+='<div class="schedule"><strong>休薬開始目安：'+esc(fmt(x.schedule.cutoff))+'（日本時間）</strong><br>'+esc(x.schedule.text)+'<br><small>'+esc(x.schedule.basis)+'。最終服用予定は処方時刻・投与間隔を確認して決めます。</small></div>';
+      if(x.missing.length)h+='<div class="missing"><strong>追加で必要な情報</strong>'+list(x.missing)+'</div>';
+      if(x.issues.length)h+='<div class="alert-box">'+list(x.issues)+'</div>';
+      if(r.mode!=='post')h+='<h4>'+ (r.global.urgency==='emergency'?'緊急時の確認':'術前の考え方')+'</h4><p>'+esc(x.pre)+'</p>';
+      if(r.mode==='missed'||r.global.urgency==='emergency')h+='<h4>服用・休薬状況への対応</h4><p>'+esc(x.missed)+'</p>';
+      h+='<h4>術後・再開時に確認すること</h4><p>'+esc(x.restart)+'</p>';
+      if(r.mode==='post' && x.conditions.length)h+=list(x.conditions.map(function(k){return FIELDS[k][0]+'：'+valueLabel(r.facts[k]);}));
+      h+='<details><summary>この結果の根拠・該当箇所</summary>'+(x.sources.length?sourceHtml(x.sources):'<p>薬剤別の根拠は未収載です。製品の電子添文と専門科の指示を確認してください。</p>')+'</details></article>';
+    });
+    h+='<section class="panel" id="handoffPanel"><h2>申し送り文</h2><p class="sub">入力条件・未確定事項・出典を含みます。処方指示に転用する前に担当医が確認してください。</p><label class="small" for="handoff">コピー用テキスト</label><textarea readonly id="handoff">'+esc(handoff(r))+'</textarea></section>';
+    el('results').innerHTML=h;
+    el('print').onclick=function(){document.querySelectorAll('#results details').forEach(function(d){d.open=true;});window.print();};
+    el('copy').onclick=function(){var t=el('handoff');function fallback(){t.focus();t.select();var ok=false;try{ok=document.execCommand('copy');}catch(e){}el('status').textContent=ok?'申し送り文をコピーしました。':'テキストを選択しました。コピー操作で保存してください。';}if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t.value).then(function(){el('status').textContent='申し送り文をコピーしました。';},fallback);else fallback();};
+  }
+  function sync(){renderSelected();renderConditions();renderSearch(false);}
+  el('assessed').value=iso(Date.now());
+  document.querySelectorAll('[data-mode]').forEach(function(b){b.onclick=function(){state.mode=b.getAttribute('data-mode');document.querySelectorAll('[data-mode]').forEach(function(x){x.setAttribute('aria-pressed',String(x===b));});el('modeDescription').textContent={pre:'術前の休薬・継続について、根拠と必要な条件を整理します。',missed:'実際の服用・中止状況を確認し、追加評価と相談事項を整理します。',post:'日付だけで再開を決めず、必要な全身状態と投与経路を確認します。'}[state.mode];invalidate();sync();};});
+  el('search').oninput=function(){renderSearch(false);};
+  el('showAll').onclick=function(){el('search').value='';renderSearch(true);};
+  el('searchResults').onclick=function(e){var b=e.target.closest('button');if(!b)return;var id=b.getAttribute('data-add'),q=el('search').value.trim();if(id && !state.drugs.some(function(x){return x.id===id;}))state.drugs.push({id:id,entered:q,dose:'',last:'',state:'',indication:''});else if(b.hasAttribute('data-unknown')&&q)state.drugs.push({id:'unknown-'+Date.now()+'-'+state.drugs.length,name:q,entered:q,dose:'',last:'',state:''});else return;invalidate();sync();};
+  el('selected').onclick=function(e){var b=e.target.closest('[data-remove]');if(!b)return;state.drugs.splice(Number(b.getAttribute('data-remove')),1);invalidate();sync();};
+  el('selected').addEventListener('input',function(e){var i=e.target.getAttribute('data-i'),p=e.target.getAttribute('data-prop');if(i!==null&&p){state.drugs[Number(i)][p]=e.target.value;invalidate();}});
+  el('conditions').addEventListener('input',function(e){var k=e.target.getAttribute('data-fact');if(k){state.facts[k]=e.target.value;invalidate();}});
+  ['scope','urgency','surgery','assessed','procedure','anesthesia','fasting','fastingStart'].forEach(function(k){el(k).addEventListener('input',invalidate);});
+  el('evaluate').onclick=function(){if(!state.drugs.length){el('status').textContent='薬剤を1件以上追加してください。';el('search').focus();return;}state.result=evaluate(collect());renderResult(state.result);el('status').textContent='確認結果を作成しました。不足情報と根拠を確認してください。';el('results').scrollIntoView({behavior:'smooth',block:'start'});};
+  el('reset').onclick=function(){if(!window.confirm('入力と確認結果をすべて消去しますか？'))return;state.drugs=[];state.facts={};['surgery','procedure','anesthesia','fasting','fastingStart','urgency'].forEach(function(k){el(k).value='';});el('scope').value='adult';el('assessed').value=iso(Date.now());el('search').value='';invalidate();sync();el('status').textContent='入力をリセットしました。';};
+  el('versionNote').textContent='版 '+DATA.version+'／根拠確認 '+DATA.checked+'／再確認期限 '+DATA.review_due;
+  el('allSources').innerHTML='<p>'+esc(DATA.scope)+'</p>'+list(DATA.evidence_limitations)+sourceHtml(Object.keys(DATA.sources));
+  window.addEventListener('beforeprint',function(){document.querySelectorAll('#results details').forEach(function(d){d.open=true;});});
+  if(iso(Date.now()).slice(0,10)>DATA.review_due)el('freshness').innerHTML='<div class="alert-box">根拠の再確認期限を過ぎています。自動の日付計算を停止しています。</div>';
+  sync();
+})(typeof window!=='undefined'?window:globalThis);
+</script>
+</body></html>

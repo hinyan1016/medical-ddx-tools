@@ -1,5 +1,6 @@
-const CACHE_NAME = 'ddx-tools-v182';
+const CACHE_NAME = 'ddx-tools-v183';
 const ASSETS = [
+  './infographics/vitamin-b12-deficiency/index.html',
   './infographics/lcca/index.html',
   './slides/lcca/index.html',
   './handouts/anti-aging-sunscreen/index.html',
@@ -132,6 +133,7 @@ const ASSETS = [
   './infographics/refeeding-syndrome/infographic.png',
   './antiepileptic_load_calculator.html',
   './periop_antithrombotic_consult.html',
+  './periop_medication_navigator.html',
   './infographics/abi-epilepsy/index.html',
   './infographics/acute-ich-bp/index.html',
   './infographics/acute-ischemic-stroke-bp/index.html',
