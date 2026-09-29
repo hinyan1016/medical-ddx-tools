@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """manifest.json に 日焼け止めと肌の老化（医師が採点するアンチエイジング 第3回）deck を追加する（既存なら更新）。
 
-2026-09-29 公開：youtube_id・published_date を記入。blog_url はブログ公開後に記入して再実行する。
+2026-09-29 公開：youtube_id・published_date を記入。blog_url 記入済み。
 """
 from __future__ import annotations
 import json, sys
@@ -20,7 +20,7 @@ DECK = {
         "毎日・たっぷり・塗り直す、という塗り方と、かぶれ・ビタミンDなどの安全性を、全16枚のスライドで説明します。"
     ),
     "youtube_id": "xe88aMqhvNs",
-    "blog_url": "",
+    "blog_url": "https://blog.ichisouzo-lab.com/entry/2026/09/29/121452",
     "source_dir": "anti-aging-sunscreen/work/rc6-20260929c/viewer/generated",
     "slide_prefix": "slide_",
     "pdf_filename": "slides.pdf",
