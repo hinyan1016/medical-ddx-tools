@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v181';
+const CACHE_NAME = 'ddx-tools-v182';
 const ASSETS = [
   './infographics/lcca/index.html',
   './slides/lcca/index.html',
