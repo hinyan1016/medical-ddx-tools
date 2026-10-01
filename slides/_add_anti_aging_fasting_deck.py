@@ -1,0 +1,53 @@
+# -*- coding: utf-8 -*-
+"""manifest.json に 断食・カロリー制限と老化（医師が採点するアンチエイジング 第6回）deck を追加する（既存なら更新）。
+
+2026-10-01：動画は限定公開・ブログは下書き（先生指示）のため blog_url は空。ブログ公開後に実URLを入れて再実行する。
+"""
+from __future__ import annotations
+import json, sys
+from pathlib import Path
+
+sys.stdout.reconfigure(encoding="utf-8")
+MANIFEST = Path(__file__).parent / "manifest.json"
+
+DECK = {
+    "slug": "anti-aging-fasting",
+    "title": "断食・カロリー制限で、老化は遅れる？ 医師が4つの物差しで採点（医師が採点するアンチエイジング 第6回）",
+    "subtitle": "サルの研究・人の2年の試験・16時間断食・筋肉と骨・始める前の注意（一般向け）",
+    "description": (
+        "断食やカロリー制限は老化を遅らせるのかを、根拠の強さ・効果の大きさ・安全性・費用と手間の4つの物差しで採点します。判定は「まだ分からない」。"
+        "人で2年間カロリー制限を試した試験では検査値は良くなりましたが、老化と寿命は人で確かめられていません。"
+        "16時間断食の試験、筋肉と骨が減ること、始める前に相談が要る人を、全18枚のスライドで説明します。"
+    ),
+    "youtube_id": "dstrAd1EazM",
+    "blog_url": "",
+    "source_dir": "anti-aging-fasting/work/rc6-20261001b/viewer/generated",
+    "slide_prefix": "slide_",
+    "pdf_filename": "slides.pdf",
+    "slide_count": 18,
+    "tags": ["断食", "カロリー制限", "アンチエイジング", "医師が採点するアンチエイジング", "一般向け"],
+    "published_date": "2026-10-01",
+    "viewer_notice": "一般向けの医学情報です。個別の診療判断に代わるものではありません。糖尿病の薬を使っている人、65歳以上でやせ気味の人、妊娠中・授乳中の人、摂食障害の経験がある人は、始める前に担当の医師に相談してください。採点はこのチャンネルの物差しによるもので、診療ガイドラインではありません。内容は2026年10月1日時点の研究・公的資料に基づきます。",
+    "html_deck": False,
+    "infographic": True,
+}
+
+
+def main() -> None:
+    if "TBD" in (DECK["youtube_id"], DECK["blog_url"], DECK["published_date"]) or not DECK["youtube_id"]:
+        sys.exit("TBD が残っています。公開後の実値を入れてから実行してください。")
+    m = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    decks = m["decks"]
+    idx = next((i for i, d in enumerate(decks) if d["slug"] == DECK["slug"]), None)
+    if idx is None:
+        decks.insert(0, DECK)
+        print("added deck:", DECK["slug"])
+    else:
+        decks[idx] = DECK
+        print("updated deck:", DECK["slug"])
+    MANIFEST.write_text(json.dumps(m, ensure_ascii=False, indent=2), encoding="utf-8", newline="\n")
+    print("total decks:", len(decks))
+
+
+if __name__ == "__main__":
+    main()
