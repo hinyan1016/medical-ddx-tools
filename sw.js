@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v187';
+const CACHE_NAME = 'ddx-tools-v188';
 const ASSETS = [
   './infographics/vitamin-b12-deficiency/index.html',
   './infographics/lcca/index.html',
