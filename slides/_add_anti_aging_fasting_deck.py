@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """manifest.json に 断食・カロリー制限と老化（医師が採点するアンチエイジング 第6回）deck を追加する（既存なら更新）。
 
-2026-10-01：動画は限定公開・ブログは下書き（先生指示）のため blog_url は空。ブログ公開後に実URLを入れて再実行する。
+2026-10-01：動画は限定公開・ブログは下書き（先生指示）で blog_url を空にして登録。2026-10-03 先生指示でブログ・動画を公開し、実URLを入れて再実行した。
 """
 from __future__ import annotations
 import json, sys
@@ -20,7 +20,7 @@ DECK = {
         "16時間断食の試験、筋肉と骨が減ること、始める前に相談が要る人を、全18枚のスライドで説明します。"
     ),
     "youtube_id": "dstrAd1EazM",
-    "blog_url": "",
+    "blog_url": "https://blog.ichisouzo-lab.com/entry/2026/10/03/025830",
     "source_dir": "anti-aging-fasting/work/rc6-20261001b/viewer/generated",
     "slide_prefix": "slide_",
     "pdf_filename": "slides.pdf",
