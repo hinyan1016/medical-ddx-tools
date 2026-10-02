@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v192';
+const CACHE_NAME = 'ddx-tools-v193';
 const ASSETS = [
   './infographics/epilepsy-network/index.html',
   './infographics/customer-harassment/index.html',
@@ -8,6 +8,7 @@ const ASSETS = [
   './slides/lcca/index.html',
   './handouts/anti-aging-metformin/index.html',
   './handouts/anti-aging-rapamycin/index.html',
+  './infographics/anti-aging-mediterranean-vegan/index.html',
   './infographics/anti-aging-fasting/index.html',
   './infographics/anti-aging-metformin/index.html',
   './infographics/anti-aging-rapamycin/index.html',
