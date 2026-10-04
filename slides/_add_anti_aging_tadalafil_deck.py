@@ -4,7 +4,7 @@
 2026-10-04：第8回（_add_anti_aging_vitamind_omega3_deck.py）と同じ型。スライド・PDF・インフォは
 medical-content/youtube-slides/anti-aging-tadalafil/work/rc6-20261004e/viewer/ に整えてある
 （slide_01〜19.png＝static-render の複製、slides.pdf＝それを1枚1ページで束ねたもの、infographic.png＝publishing の複製）。
-YouTube は限定公開の予定で、アップロード前のため youtube_id を空にして登録した。ブログもまだ公開前で blog_url は空
+YouTube は限定公開（4O16_n4XUek）、ブログは 2026-10-04 に公開（blog_url 反映済み）
 （第7・8回の初回登録と同じ扱い）。公開後に実の ID と URL を入れて再実行し、build.py --slug anti-aging-tadalafil を回す。
 """
 from __future__ import annotations
@@ -19,8 +19,8 @@ DECK = {
     "title": "毎日タダラフィルで、老化は防げる？ 医師が4つの物差しで採点（医師が採点するアンチエイジング 第9回）",
     "subtitle": "国が認めた使い道・観察研究の読み方・認知症の研究・血管の検査値・害と向かない人（一般向け）",
     "description": "毎日少量のタダラフィルは老化を防ぐのかを、根拠の強さ・効果の大きさ・安全性・費用と手間の4つの物差しで採点します。判定は、健康な中高年が老化予防目的で毎日少量のタダラフィルを飲むことは「まだ分からない」。老化や、健康な人の死亡・認知症を結果にして、ヒトで確かめた比較試験は、調べた範囲では見つかっていません。「死亡が少ない」という報告は観察研究の「関連」までです。国が認めた使い道（ED〔勃起不全〕・前立腺肥大症に伴う排尿の症状・肺動脈性肺高血圧症）は、老化予防とは分けて考えます。観察研究の読み方と、害と向かない人を、全19枚のスライドで説明します。",
-    "youtube_id": "",
-    "blog_url": "",
+    "youtube_id": "4O16_n4XUek",
+    "blog_url": "https://blog.ichisouzo-lab.com/entry/2026/10/04/192328",
     "source_dir": "anti-aging-tadalafil/work/rc6-20261004e/viewer/generated",
     "slide_prefix": "slide_",
     "pdf_filename": "slides.pdf",
