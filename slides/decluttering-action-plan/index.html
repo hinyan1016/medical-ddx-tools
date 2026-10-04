@@ -386,7 +386,11 @@
   var cards = document.querySelectorAll('.slide-card');
 
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
-  function srcOf(i) { return 'slide-' + pad(i + 1) + '.png'; }
+  function srcOf(i) {
+    // ビルダーは表紙をPNG、2枚目以降をWebPで配置する。一覧と同じ画像を使う。
+    var images = document.getElementById('slideGrid').querySelectorAll('img');
+    return images[i].getAttribute('src');
+  }
 
   function show(i) {
     if (i < 0) i = 0;
