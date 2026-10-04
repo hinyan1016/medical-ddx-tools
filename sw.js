@@ -1,7 +1,8 @@
-const CACHE_NAME = 'ddx-tools-v200';
+const CACHE_NAME = 'ddx-tools-v201';
 const ASSETS = [
   './infographics/orforglipron/index.html',
   './handouts/orforglipron/index.html',
+  './handouts/anti-aging-tadalafil/index.html',
   './infographics/epilepsy-network/index.html',
   './infographics/customer-harassment/index.html',
   './infographics/customer-harassment/thumb.png',
