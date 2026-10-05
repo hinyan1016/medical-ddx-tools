@@ -4,7 +4,7 @@
 2026-10-06：第9回（_add_anti_aging_tadalafil_deck.py）と同じ型。スライド・PDF・インフォは
 medical-content/youtube-slides/anti-aging-hrt/work/rc6-20261006/viewer/ に整えてある
 （slide_01〜18.png＝static-render の複製、slides.pdf＝それを1枚1ページで束ねたもの、infographic.png＝publishing の複製）。
-YouTube はアップロード前、ブログも公開前のため youtube_id と blog_url は空で登録した（第9回の初回登録と同じ扱い）。
+YouTube は限定公開（woYOwAXPLlI）、ブログは 2026-10-06 に公開（blog_url 反映済み）。
 公開後に実の ID と URL を下の DECK に入れて再実行し、build.py --slug anti-aging-hrt を回す。
 """
 from __future__ import annotations
@@ -19,8 +19,8 @@ DECK = {
     "title": "女性のホルモン補充療法で、老化は防げる？ 医師が4つの物差しで採点（医師が採点するアンチエイジング 第10回）",
     "subtitle": "国が認めた使い道・WHI試験・開始時期と認知症・皮膚の研究・害と向かない人（一般向け）",
     "description": "女性のホルモン補充療法は老化を防ぐのかを、根拠の強さ・効果の大きさ・安全性・費用と手間の4つの物差しで採点します。判定は、閉経後の女性が老化予防目的でホルモン補充療法を使うことは「勧められない」。大規模な比較試験（WHI）は慢性病の予防を支持せず、開始時期で分けた解析や非盲検の試験にある有利な結果も、確実性は高くありません。老化を結果にしたヒトの比較試験は、調べた範囲では見つかっていません。国が認めた使い道（更年期の症状・閉経後骨粗鬆症）は、老化予防とは分けて考えます。大規模試験の読み方と、害と向かない人を、全18枚のスライドで説明します。",
-    "youtube_id": "",
-    "blog_url": "",
+    "youtube_id": "woYOwAXPLlI",
+    "blog_url": "https://blog.ichisouzo-lab.com/entry/2026/10/06/082833",
     "source_dir": "anti-aging-hrt/work/rc6-20261006/viewer/generated",
     "slide_prefix": "slide_",
     "pdf_filename": "slides.pdf",
