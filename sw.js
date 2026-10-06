@@ -1,5 +1,6 @@
-const CACHE_NAME = 'ddx-tools-v204';
+const CACHE_NAME = 'ddx-tools-v205';
 const ASSETS = [
+  './infographics/nobel-physics-neutrino-2026/index.html',
   './infographics/cerebellar-stroke-vomiting/index.html',
   './infographics/orforglipron/index.html',
   './handouts/orforglipron/index.html',
