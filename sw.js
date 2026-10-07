@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v207';
+const CACHE_NAME = 'ddx-tools-v208';
 const ASSETS = [
   './infographics/nobel-physics-neutrino-2026/index.html',
   './infographics/cerebellar-stroke-vomiting/index.html',
@@ -19,6 +19,8 @@ const ASSETS = [
   './handouts/anti-aging-rapamycin/index.html',
   './infographics/evidence-based-diet/index.html',
   './infographics/optogenetics-nobel-2026/index.html',
+  './infographics/anti-aging-stem-cell/index.html',
+  './infographics/af-kidney-failure-warfarin/index.html',
   './infographics/anti-aging-placenta/index.html',
   './infographics/anti-aging-hrt/index.html',
   './infographics/anti-aging-tadalafil/index.html',
