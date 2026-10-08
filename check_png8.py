@@ -36,6 +36,11 @@ PATTERNS = [
     ("slides", "slide-01.png"),
 ]
 LIMIT_MB = 1.0      # これを超えるフルカラーは「大物」として先に出す
+# 写真調のグラデーションが256色化で縞になるため、意図的にフルカラーのまま残すもの（目視で確認した日を添える）。
+PHOTO_EXEMPT = {
+    "infographics/optogenetics-nobel-2026/infographic.png",  # 2026-10-08 神経細胞の発光表現が縞になる
+    "infographics/optogenetics-nobel-2026/thumb.png",
+}
 
 
 def targets():
@@ -78,8 +83,8 @@ def main():
                 or (im.mode == "P" and "transparency" in im.info)
             ) and im.convert("RGBA").getchannel("A").getextrema()[0] < 255
         rel = os.path.relpath(p, HERE).replace("\\", "/")
-        if has_alpha:
-            exempt.append(rel)
+        if has_alpha or rel in PHOTO_EXEMPT:
+            exempt.append((rel, "透明あり" if has_alpha else "写真調で意図的にフルカラー"))
             continue
         if args.fix and quantize_png(p):
             fixed.append(rel)
@@ -87,10 +92,10 @@ def main():
         bad.append((os.path.getsize(p) / 1048576, rel))
 
     print(f"対象 {len(files)} 枚 / 256色 {len(files) - len(bad) - len(exempt) - len(fixed)} 枚"
-          f" / 透明ありで免除 {len(exempt)} 枚"
+          f" / 免除 {len(exempt)} 枚"
           + (f" / 今回修正 {len(fixed)} 枚" if args.fix else ""))
-    for rel in exempt:
-        print(f"  [免除] 透明あり: {rel}")
+    for rel, why in exempt:
+        print(f"  [免除] {why}: {rel}")
     for rel in fixed:
         print(f"  [修正] 256色化: {rel}")
 
