@@ -2499,7 +2499,7 @@ function exportPNG() {
     if (ly > Hc - 70) break;
   }
   ctx.fillStyle = '#64748b'; ctx.font = '13px sans-serif';
-  ctx.fillText('アトラス: Liu CF, et al. Digital 3D Brain MRI Arterial Territories Atlas. Sci Data. 2023;10(1):74.（© 2021 The Johns Hopkins University, CC BY-SA 4.0・本ツールで再サンプリング）', 30, Hc - 36);
+  ctx.fillText('アトラス: Liu CF, et al. Digital 3D Brain MRI Arterial Territories Atlas. Sci Data. 2023;10(1):74.（© 2021 The Johns Hopkins University, CC BY-SA 4.0・本ツールで改変して表示）', 30, Hc - 36);
   ctx.fillText('医知創造ラボ  tools.ichisouzo-lab.com/vascular-territory-atlas.html  教育用。個々の患者の血管支配には個人差がある。', 30, Hc - 16);
   var a = document.createElement('a');
   a.download = 'vascular_atlas_X' + Math.round(mm[0]) + '_Y' + Math.round(mm[1]) + '_Z' + Math.round(mm[2]) + '.png';
@@ -2517,7 +2517,7 @@ function buildCredit() {
     '<a href="https://pubmed.ncbi.nlm.nih.gov/36739282/" target="_blank" rel="noopener">PMID 36739282</a>・' +
     '<a href="https://www.nitrc.org/projects/arterialatlas/" target="_blank" rel="noopener">NITRC</a>。' +
     'アトラスデータ © 2021 The Johns Hopkins University, <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ja" target="_blank" rel="noopener">CC BY-SA 4.0</a>。' +
-    '本ツールではこれを ' + esc(A.vox[0]) + 'mm 格子に再サンプリングし、日本語名・臨床解説を付けて表示しています（改変したアトラスデータも CC BY-SA 4.0 で提供）。' +
+    '本ツールでは、領域のラベルを原データの ' + esc(A.vox[0]) + 'mm 格子のまま使い（Level 2 は Level 1 から作り直し）、日本語名・臨床解説を付けて表示しています（改変したアトラスデータも CC BY-SA 4.0 で提供）。' +
     (A.prob ? '確率マップ・境界領域は原著の ProbArterialAtlas_average・BorderZone_ProbAve を使い、原著が左半球にまとめて作っているため右半球は左右反転して表示しています。' : '') +
     (t1src ? '背景画像: ' + esc(t1src) + '。' : '') +
     '<br>教育用の資料です。血管支配には個人差が大きく、診断・治療は画像と臨床所見を総合して判断してください。' +
