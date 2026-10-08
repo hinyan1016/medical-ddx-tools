@@ -21,8 +21,12 @@
 
 ```bash
 PY="/c/Users/jsber/AppData/Local/Programs/Python/Python313/python.exe"; [ -x "$PY" ] || PY=python
-# 1) データ（原データは NITRC https://www.nitrc.org/projects/arterialatlas/ ・要ログイン。リポジトリには入れない）
-PYTHONIOENCODING=utf-8 "$PY" build_data.py --l1 <ArterialAtlas.nii> --l2 <ArterialAtlas_level2.nii> --t1 <T1.nii> --prob <ProbArterialAtlas_average.nii> --out atlas_data.bin.gz
+# 1) データ（原データは NITRC https://www.nitrc.org/projects/arterialatlas/ ・要ログイン（Google ログイン可）。リポジトリには入れない）
+#    使うのは Atlas_MNI152.zip（2021-11 公開）の Atlas_182_MNI152/。ArterialAtlas.zip（2021-10）の Atlas_182/ は
+#    ボクセル値は同じだが sform の原点が 0 になっている（MNI 座標がずれる）ので使わない。
+D=<展開先>/Atlas_182_MNI152
+PYTHONIOENCODING=utf-8 "$PY" build_data.py --l1 $D/ArterialAtlas.nii --l2 $D/ArterialAtlas_level2.nii   --prob $D/ProbArterialAtlas_average.nii --bz $D/BorderZone_ProbAve.nii \n  --t1 <tpl-MNI152NLin6Asym_res-01_desc-brain_T1w.nii.gz> --out atlas_data.bin.gz
+#    T1 は TemplateFlow から: https://templateflow.s3.amazonaws.com/tpl-MNI152NLin6Asym/tpl-MNI152NLin6Asym_res-01_desc-brain_T1w.nii.gz（約3.3MB）
 # 2) 公開HTMLと単体版ZIP
 PYTHONIOENCODING=utf-8 "$PY" build.py --zip
 # 3) 動作確認（exit 0 = 合格）
@@ -46,3 +50,13 @@ PYTHONIOENCODING=utf-8 "$PY" test_atlas.py
   脳梁の位置、ACTP（前脈絡叢・視床穿通）を内側側頭葉・海馬の位置として、解剖学的知識で定義している。
   延髄は外側も含めて B（脳底動脈）に塗られている。
 - 引用は PubMed 逆引きで実在と内容を確かめたものだけ。`evidence.md` に根拠の抜粋を残す。
+
+## データの約束（2026-10-08 に 1mm 原データへ移行）
+
+- 原データに T1 は同梱されていない。背景 T1 は FSL 同梱の MNI152（MNI152NLin6Asym、Janke AL）を TemplateFlow から取得（2026-10-08 先生選択）。
+  アトラスの FSL 格子と格子点が一致する（向きだけ逆で、`build_data.py` が並べ替える）。明示のライセンス文は見つかっていない（TemplateFlow の LICENSE 欠落）。
+  7bit に落として x 方向の差分で格納し、ビュアーで累積和に戻す。旧版の 2mm 背景とは相関 0.95（同系統）。
+- 確率マップ（平均法）と境界領域（MCA/ACA・MCA/PCA の確率比）は、原著が右半球の病変を左右反転して左半球にまとめて作っているため、
+  左半球にしか値がない。`build_data.py` は右半球を左半球の左右反転で埋める（`--no-mirror` で無効）。画面にも注記している。
+- 確率マップは 2×2×2 で平均して 2mm にし、血管ごとに最大値で 0–255 に量子化する（0 でない値は 1 以上に残す）。境界領域は 1mm のまま比×50 で保存。
+- Level 2 は Level 1 からの写像で作る。原データの ArterialAtlas_level2.nii とは 318 ボクセル（主に脳室の縁）が食い違うが、写像のほうを採る。

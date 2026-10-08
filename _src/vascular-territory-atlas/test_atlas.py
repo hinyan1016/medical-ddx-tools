@@ -110,6 +110,18 @@ def main():
           [1,2,5,6,29,30].forEach(function(id){var m=A.medoid1[id];var mm=a.vox2mm(m[0],m[1],m[2]);out[id]=mm[0];});return out;})()''')
         check(res['1'] < 0 and res['5'] < 0 and res['29'] < 0, '左ラベル（ACAL・LLSL・ICL）の X が負: %s' % res)
         check(res['2'] > 0 and res['6'] > 0 and res['30'] > 0, '右ラベル（ACAR・LLSR・ICR）の X が正')
+        print('[確率マップ・境界領域]')
+        pr = page.evaluate('''(function(){var a=window.__atlas, A=a.A; if(!A.prob) return null;
+          function at(x,y,z){a.setCursorMM(x,y,z); return [a.S.i,a.S.j,a.S.k];}
+          var L=at(-40,-20,40), pl=window.__atlasProb(L[0],L[1],L[2]); var R=at(40,-20,40), pr=window.__atlasProb(R[0],R[1],R[2]);
+          var nbz=0; if(A.bz){for(var q=0;q<A.n;q++) if(A.bz[q]) nbz++;}
+          return {left:pl, right:pr, nbz:nbz, vox:A.vox[0]};})()''')
+        if pr is None:
+            print('  INFO 確率マップを含まないデータ')
+        else:
+            check(pr['vox'] == 1, '1mm 格子（%s mm）' % pr['vox'])
+            check(sum(pr['left']) > 0 and all(abs(x - y) < 0.02 for x, y in zip(pr['left'], pr['right'])), '確率マップが左右対称に表示される %s / %s' % ([round(v, 3) for v in pr['left']], [round(v, 3) for v in pr['right']]))
+            check(pr['nbz'] > 10000, '境界領域のボクセルがある（%d）' % pr['nbz'])
         print('[代表断面]')
         expect = {'延髄': 'BL', '橋': 'BL', '中脳': 'PCTPL', '海馬': 'ACTPL', '基底核・視床': 'LLSL', '放射冠': 'LLSL', '中心前回': 'MCAFL'}
         pres = page.evaluate('''(function(){var a=window.__atlas,out={};a.PRESETS.forEach(function(p){a.setCursorMM(p.x,p.y,p.z);

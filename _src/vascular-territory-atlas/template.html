@@ -338,7 +338,7 @@
         <button type="button" data-ovmode="outline">輪郭</button>
       </div>
       <label>不透明度 <input type="range" id="sl-opacity" min="0" max="100" value="60"> <span id="lb-opacity" class="mono">60%</span></label>
-      <label title="原著の確率マップで2つの領域にまたがる部位（境界領域）を斜線で表示"><input type="checkbox" id="chk-bz"> 境界領域</label>
+      <label title="原著の境界領域（ACA–MCA を黄、MCA–PCA を橙の斜線）を表示"><input type="checkbox" id="chk-bz"> 境界領域<span style="color:#fde68a;">▨</span><span style="color:#fdba74;">▨</span></label>
       <label><input type="checkbox" id="chk-cross" checked> 十字線</label>
       <span class="mono" id="coord-display" style="margin-left:auto;color:var(--accent-green);"></span>
     </div>
@@ -908,16 +908,31 @@ function parseAtlas(bytes) {
   A.l2 = new Uint8Array(A.n);
   for (i = 0; i < A.n; i++) A.l2[i] = L1_TO_L2[A.l1[i]] || 0;
   var t1 = vol('t1');
+  if (t1 && t1.meta.enc === 'delta-x') t1 = { meta: t1.meta, data: undeltaX(t1.data, t1.meta.dims[0]) };
   A.t1 = t1 ? resampleToMain(t1, true) : new Uint8Array(A.n);
   var prob = vol('prob');
   if (prob) {
     A.prob = buildSubGrid(prob);
     A.probN = prob.meta.channels;
-    buildBorderZone();
+    A.probScale = prob.meta.scale || [1, 1, 1, 1];
+    A.probMirrored = !!prob.meta.mirrored;
   }
+  var bzv = vol('bz');
+  if (bzv) loadBorderZone(bzv);
+  else if (prob) buildBorderZone();
   A.header = header;
 }
 
+// x 方向の差分で保存した画像を元に戻す（各行の累積和を 256 で割った余り）
+function undeltaX(d, nx) {
+  var out = new Uint8Array(d.length), p, acc = 0;
+  for (p = 0; p < d.length; p++) {
+    if (p % nx === 0) acc = 0;
+    acc = (acc + d[p]) & 255;
+    out[p] = acc;
+  }
+  return out;
+}
 // 別格子のボリュームを主格子へ。軸が平行な前提で、軸ごとの対応表を作る
 function axisMaps(meta) {
   var M = matMul4(matInv4(meta.affine), A.aff); // 主格子 voxel → 副格子 voxel
@@ -974,8 +989,24 @@ function probAt(i, j, k) {
   var x = P.mi[i], y = P.mj[j], z = P.mk[k];
   if (x < 0 || y < 0 || z < 0 || x >= P.nx || y >= P.ny || z >= P.nz) return [0, 0, 0, 0];
   var b = x + y * P.nx + z * P.nx * P.ny, out = [], c;
-  for (c = 0; c < A.probN; c++) out.push(P.data[b + c * P.nvox] / 255);
+  for (c = 0; c < A.probN; c++) out.push(P.data[b + c * P.nvox] / 255 * (A.probScale[c] || 1));
   return out;
+}
+// 原著の境界領域ファイル（MCA/ACA・MCA/PCA の確率比）。A.bz は 1=ACA–MCA 2=MCA–PCA、比は A.bzR
+function loadBorderZone(v) {
+  var m = v.meta, nv = m.dims[0] * m.dims[1] * m.dims[2], c, q, r0, r1;
+  var same = m.dims[0] === A.nx && m.dims[1] === A.ny && m.dims[2] === A.nz && m.affine.join(',') === A.aff.join(',');
+  var ch = [];
+  for (c = 0; c < 2; c++) {
+    var sub = { meta: { dims: m.dims, affine: m.affine }, data: v.data.subarray(c * nv, (c + 1) * nv) };
+    ch.push(same ? sub.data : resampleToMain(sub, false));
+  }
+  A.bzR = ch; A.bzDiv = m.div || 50; A.bzMirrored = !!m.mirrored;
+  A.bz = new Uint8Array(A.n);
+  for (q = 0; q < A.n; q++) {
+    r0 = ch[0][q]; r1 = ch[1][q];
+    if (r0) A.bz[q] = 1; else if (r1) A.bz[q] = 2;
+  }
 }
 // 境界領域: 原著（Fig.7D）と同じく、2つの大血管（ACA・MCA・PCA）の確率がどちらも0より大きい部位
 var BZ_MIN = 1; // 0-255 の量子化で 1 以上（原データの 1/255 未満は 0 に丸まる）
@@ -1563,21 +1594,32 @@ function refsHTML(keys) {
   }
   return h + '</ol>';
 }
+function bzHTML() {
+  if (!A.bz) return '';
+  var q = idxOf(S.i, S.j, S.k), k = A.bz[q];
+  if (!k) return '';
+  if (A.bzR) {
+    var r = A.bzR[k - 1][q] / A.bzDiv, other = k === 1 ? 'ACA' : 'PCA';
+    var lean = r > 1.05 ? 'MCA梗塞で巻き込まれることのほうが多い' : (r < 0.95 ? other + '梗塞で巻き込まれることのほうが多い' : 'どちらの梗塞でも同じくらい巻き込まれる');
+    return '<div class="meta-line" style="color:#fde68a;"><b>この点は MCA–' + other + ' の境界領域です。</b>確率の比 MCA/' + other + ' = ' + r.toFixed(2) + '（' + lean + '）。</div>';
+  }
+  return '<div class="meta-line" style="color:#fde68a;"><b>この点は ' + ['', 'ACA–MCA', 'MCA–PCA', 'ACA–PCA'][k] + ' の境界領域です。</b></div>';
+}
 function probHTML() {
   var p = probAt(S.i, S.j, S.k);
   if (!p) return '';
   var names = ['ACA', 'MCA', 'PCA', 'VB'], cols = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12'], sum = 0, n, h;
   for (n = 0; n < 4; n++) sum += p[n];
-  h = '<div class="info-card"><div class="section-title">📊 この点の確率マップ（原著）</div>';
-  if (sum <= 0) return h + '<div class="note">この点には、どの大血管の梗塞例の病変も重なっていません。</div></div>';
+  h = '<div class="info-card"><div class="section-title">📊 この点の確率マップ（原著の平均化確率マップ）</div>';
+  if (sum <= 0) return h + '<div class="note">この点には、どの大血管の梗塞例の病変も重なっていません（作成に使った1,298例の範囲で）。</div>' + bzHTML() + '</div>';
   for (n = 0; n < 4; n++) {
     var rel = p[n] / sum;
-    h += '<div class="prob-row"><span class="nm">' + names[n] + '</span><div class="prob-bar"><span style="width:' + (rel * 100).toFixed(1) + '%;background:' + cols[n] + ';"></span></div><span class="val">' + Math.round(rel * 100) + '%</span></div>';
+    h += '<div class="prob-row"><span class="nm">' + names[n] + '</span><div class="prob-bar"><span style="width:' + (rel * 100).toFixed(1) + '%;background:' + cols[n] + ';"></span></div><span class="val">' + Math.round(rel * 100) + '%</span>' +
+      '<span class="val" style="width:74px;color:var(--text-muted);" title="この血管の梗塞例のうち、この点に病変が及んだ割合">（' + (p[n] * 100 < 0.1 && p[n] > 0 ? '<0.1' : (p[n] * 100).toFixed(1)) + '%）</span></div>';
   }
-  var q = idxOf(S.i, S.j, S.k);
-  var bzt = A.bz && A.bz[q] ? ['', 'ACA–MCA の境界領域', 'MCA–PCA の境界領域', 'ACA–PCA の境界領域'][A.bz[q]] : '';
-  h += '<div class="note">各大血管の梗塞例でこの点に病変が及んだ割合を、4血管の合計を100%として比べた値です（原著の平均化確率マップ）。' +
-    (bzt ? '<br><b style="color:#fde68a;">この点は ' + bzt + ' に入ります。</b>' : '') + '</div></div>';
+  h += bzHTML();
+  h += '<div class="note">棒は4血管の合計を100%とした相対比、かっこ内は「その血管の梗塞例のうち、この点に病変が及んだ割合」です。' +
+    (A.probMirrored ? '原著は右半球の病変を左右反転して左半球にまとめて作っているため、右半球の値は左半球の値を左右反転して表示しています。' : '') + '</div></div>';
   return h;
 }
 function updateInfo() {
@@ -2423,6 +2465,7 @@ function buildCredit() {
     '<a href="https://www.nitrc.org/projects/arterialatlas/" target="_blank" rel="noopener">NITRC</a>。' +
     'アトラスデータ © 2021 The Johns Hopkins University, <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ja" target="_blank" rel="noopener">CC BY-SA 4.0</a>。' +
     '本ツールではこれを ' + esc(A.vox[0]) + 'mm 格子に再サンプリングし、日本語名・臨床解説を付けて表示しています（改変したアトラスデータも CC BY-SA 4.0 で提供）。' +
+    (A.prob ? '確率マップ・境界領域は原著の ProbArterialAtlas_average・BorderZone_ProbAve を使い、原著が左半球にまとめて作っているため右半球は左右反転して表示しています。' : '') +
     (t1src ? '背景画像: ' + esc(t1src) + '。' : '') +
     '<br>教育用の資料です。血管支配には個人差が大きく、診断・治療は画像と臨床所見を総合して判断してください。' +
     (BUILD_INFO && BUILD_INFO.date ? '　更新: ' + esc(BUILD_INFO.date) : '');
@@ -2454,6 +2497,7 @@ function init() {
     $('loading-overlay').style.display = 'none';
     window.__atlas = { A: A, S: S, V: V, R3: R3, setCursorMM: setCursorMM, vox2mm: vox2mm, labelInfo: labelInfo, currentLabelId: currentLabelId,
       lesionStats: function () { return LAST_STATS; }, setLevel: setLevel, setTab: setTab, setLayout: setLayout, PRESETS: PRESETS };
+    window.__atlasProb = probAt;
   }).then(null, function (err) { showError(err && err.message ? err.message : String(err)); });
 }
 function showError(msg) {
