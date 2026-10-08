@@ -1356,13 +1356,10 @@ var R3 = {
     this.canvas = $('canvas-3d'); this.ctx = this.canvas.getContext('2d');
     this.build();
   },
-  // 粗い格子でラベル境界と脳表の点を集め、陰影用の法線（26近傍の勾配）を付ける
+  // 粗い格子でラベル境界と脳表の点を集める（陰影は描画時に画面上で付ける）
   build: function () {
     var st = Math.max(1, Math.round(this.step / A.vox[0])), nx = A.nx, ny = A.ny, nz = A.nz, l1 = A.l1;
-    var xs = [], ls = [], es = [], ns = [], i, j, k, q, id, ext, diff, nb, mm, o, w, gx, gy, gz, bx, by, bz, px, py, pz, len;
-    var sx = A.aff[0] < 0 ? -1 : 1, sy = A.aff[5] < 0 ? -1 : 1, sz = A.aff[10] < 0 ? -1 : 1;
-    var offs = [];
-    for (o = 0; o < 27; o++) { var ox = o % 3 - 1, oy = ((o / 3) | 0) % 3 - 1, oz = ((o / 9) | 0) - 1; if (ox || oy || oz) offs.push([ox, oy, oz, 1 / (Math.abs(ox) + Math.abs(oy) + Math.abs(oz))]); }
+    var xs = [], ls = [], es = [], i, j, k, q, id, ext, diff, nb, mm;
     function lab(ii, jj, kk) { if (ii < 0 || jj < 0 || kk < 0 || ii >= nx || jj >= ny || kk >= nz) return 0; return l1[ii + jj * nx + kk * nx * ny]; }
     var cx = 0, cy = 0, cz = 0, cn = 0;
     for (k = 0; k < nz; k += st) for (j = 0; j < ny; j += st) for (i = 0; i < nx; i += st) {
@@ -1378,18 +1375,9 @@ var R3 = {
       mm = vox2mm(i, j, k);
       cx += mm[0]; cy += mm[1]; cz += mm[2]; cn++;
       if (!ext && !diff) continue;
-      gx = gy = gz = bx = by = bz = 0;
-      for (o = 0; o < offs.length; o++) {
-        nb = lab(i + offs[o][0] * st, j + offs[o][1] * st, k + offs[o][2] * st); w = offs[o][3];
-        if (nb === id) { gx += offs[o][0] * w; gy += offs[o][1] * w; gz += offs[o][2] * w; }
-        if (nb) { bx += offs[o][0] * w; by += offs[o][1] * w; bz += offs[o][2] * w; }
-      }
-      // 外向き法線 = -（内側を指す勾配）。脳表の点は脳全体、境界の点はその領域の形から
-      if (ext) { px = -bx * sx; py = -by * sy; pz = -bz * sz; } else { px = -gx * sx; py = -gy * sy; pz = -gz * sz; }
-      len = Math.sqrt(px * px + py * py + pz * pz) || 1;
-      xs.push(mm[0], mm[1], mm[2]); ls.push(id); es.push(ext ? 1 : 0); ns.push(px / len, py / len, pz / len);
+      xs.push(mm[0], mm[1], mm[2]); ls.push(id); es.push(ext ? 1 : 0);
     }
-    this.pts = new Float32Array(xs); this.lab = new Uint8Array(ls); this.ext = new Uint8Array(es); this.nrm = new Float32Array(ns); this.n = ls.length;
+    this.pts = new Float32Array(xs); this.lab = new Uint8Array(ls); this.ext = new Uint8Array(es); this.n = ls.length;
     this.center = [cx / cn, cy / cn, cz / cn];
     var rmax = 0;
     for (i = 0; i < this.n; i++) {
@@ -1427,23 +1415,36 @@ var R3 = {
     var X1 = X * cy - D * sy, D1 = X * sy + D * cy;
     out[0] = X1; out[1] = D1 * sp + Z * cp; out[2] = D1 * cp - Z * sp;
   },
+  // 点を Z バッファに描いたあと、奥行き画像をぼかして画面上で法線を求め陰影をつける。
+  // （点ごとの法線だとボクセルの段々で向きが交互に変わり、縞が出るため）
   draw: function () {
     var c = this.canvas, wrap = $('wrap-3d');
     if (!this.pts || !wrap.clientWidth) return;
     if (this.lesVersion !== S.lesionVersion) this.buildLesion();
     var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-    var w = Math.max(1, Math.round(wrap.clientWidth * dpr)), h = Math.max(1, Math.round(wrap.clientHeight * dpr));
+    var w = Math.max(1, Math.round(wrap.clientWidth * dpr)), h = Math.max(1, Math.round(wrap.clientHeight * dpr)), N = w * h;
     if (c.width !== w || c.height !== h) { c.width = w; c.height = h; this.img = null; }
-    if (!this.img) { this.img = this.ctx.createImageData(w, h); this.zb = new Float32Array(w * h); this.glass = new Float32Array(w * h); this.cbuf = new Uint8Array(w * h * 3); this.sbuf = new Float32Array(w * h); }
-    var img = this.img.data, zb = this.zb, glass = this.glass, cbuf = this.cbuf, sbuf = this.sbuf, n, p;
-    for (p = 0; p < w * h; p++) { zb[p] = 1e9; glass[p] = 0; }
+    if (!this.img) {
+      this.img = this.ctx.createImageData(w, h); this.zb = new Float32Array(N); this.glass = new Float32Array(N); this.cbuf = new Uint8Array(N * 3);
+      this.valid = new Uint8Array(N); this.zs = new Float32Array(N); this.tS = new Float32Array(N); this.tC = new Float32Array(N);
+    }
+    var img = this.img.data, zb = this.zb, glass = this.glass, cbuf = this.cbuf, valid = this.valid, zs = this.zs, n, p;
+    for (p = 0; p < N; p++) { zb[p] = 1e9; glass[p] = 0; }
     var scale = Math.min(w, h) / (this.radius * 2.15) * this.zoom;
-    var cxs = w / 2, cys = h / 2, out = [0, 0, 0], nv = [0, 0, 0];
+    var cxs = w / 2, cys = h / 2, out = [0, 0, 0];
     var level = S.level, labels = LABELS[level], mode = this.mode, selId = currentLabelId();
-    var r = Math.max(2, Math.ceil(scale * this.step * 1.05)), dmin = -this.radius, dmax = this.radius;
-    var pts = this.pts, lab = this.lab, ext = this.ext, nrm = this.nrm, id, info, sx, sy, d, a, b, ix, iy, q, shade, lam;
-    // 光源: 視線方向から少し左上（画面座標 [X, 上, 奥行き]）
-    var LX = -0.3, LY = 0.42, LD = -0.86;
+    var r = Math.max(2, Math.ceil(scale * this.step * 1.5)), dmin = -this.radius, dmax = this.radius;
+    var pts = this.pts, lab = this.lab, ext = this.ext, id, info, sx, sy, d, a, b, ix, iy, q, col;
+    function splat(rr, depth, cr, cg, cb) {
+      for (b = 0; b < rr; b++) {
+        iy = sy + b - (rr >> 1); if (iy < 0 || iy >= h) continue;
+        for (a = 0; a < rr; a++) {
+          ix = sx + a - (rr >> 1); if (ix < 0 || ix >= w) continue;
+          q = iy * w + ix;
+          if (depth < zb[q]) { zb[q] = depth; cbuf[q * 3] = cr; cbuf[q * 3 + 1] = cg; cbuf[q * 3 + 2] = cb; }
+        }
+      }
+    }
     for (n = 0; n < this.n; n++) {
       id = lab[n];
       if (level === 2) id = L1_TO_L2[id];
@@ -1455,51 +1456,103 @@ var R3 = {
       this.project(pts[n * 3], pts[n * 3 + 1], pts[n * 3 + 2], out);
       sx = Math.round(cxs + out[0] * scale); sy = Math.round(cys - out[1] * scale); d = out[2];
       if (!solid) {
-        if (ext[n] && sx >= 0 && sy >= 0 && sx < w && sy < h) glass[sy * w + sx] += 1;
-        continue;
-      }
-      this.rotate(-nrm[n * 3], -nrm[n * 3 + 1], nrm[n * 3 + 2], nv);
-      lam = nv[0] * LX + nv[1] * LY + nv[2] * LD;
-      shade = 0.3 + 0.7 * (lam > 0 ? lam : 0);
-      for (b = 0; b < r; b++) {
-        iy = sy + b - (r >> 1); if (iy < 0 || iy >= h) continue;
-        for (a = 0; a < r; a++) {
-          ix = sx + a - (r >> 1); if (ix < 0 || ix >= w) continue;
-          q = iy * w + ix;
-          if (d < zb[q]) { zb[q] = d; sbuf[q] = shade; cbuf[q * 3] = info.color[0]; cbuf[q * 3 + 1] = info.color[1]; cbuf[q * 3 + 2] = info.color[2]; }
-        }
-      }
-    }
-    if (S.showLesion && this.lesN && (mode === 'lesion' || mode === 'selected' || mode === 'all')) {
-      var lp = this.lesPts, lr = Math.max(1, Math.ceil(scale * 1.5 * 0.8));
-      for (n = 0; n < this.lesN; n++) {
-        this.project(lp[n * 3], lp[n * 3 + 1], lp[n * 3 + 2], out);
-        sx = Math.round(cxs + out[0] * scale); sy = Math.round(cys - out[1] * scale); d = out[2] - (mode === 'lesion' ? 0 : 0.5);
-        for (b = 0; b < lr; b++) {
-          iy = sy + b - (lr >> 1); if (iy < 0 || iy >= h) continue;
-          for (a = 0; a < lr; a++) {
-            ix = sx + a - (lr >> 1); if (ix < 0 || ix >= w) continue;
-            q = iy * w + ix;
-            if (d < zb[q]) { zb[q] = d; sbuf[q] = 0.85; cbuf[q * 3] = 239; cbuf[q * 3 + 1] = 68; cbuf[q * 3 + 2] = 68; }
+        if (ext[n]) {
+          for (b = 0; b < r; b++) {
+            iy = sy + b - (r >> 1); if (iy < 0 || iy >= h) continue;
+            for (a = 0; a < r; a++) { ix = sx + a - (r >> 1); if (ix >= 0 && ix < w) glass[iy * w + ix] += 1; }
           }
         }
+        continue;
+      }
+      col = info.color;
+      splat(r, d, col[0], col[1], col[2]);
+    }
+    if (S.showLesion && this.lesN && (mode === 'lesion' || mode === 'selected' || mode === 'all')) {
+      var lp = this.lesPts, lr = Math.max(2, Math.ceil(scale * 1.5 * 1.1));
+      for (n = 0; n < this.lesN; n++) {
+        this.project(lp[n * 3], lp[n * 3 + 1], lp[n * 3 + 2], out);
+        sx = Math.round(cxs + out[0] * scale); sy = Math.round(cys - out[1] * scale);
+        splat(lr, out[2] - 0.5, 239, 68, 68);
       }
     }
-    var gs = (mode === 'all' && !S.highlight) ? 0 : 1;
-    for (p = 0; p < w * h; p++) {
-      var R = 3, G = 7, B = 18;
-      if (zb[p] < 1e9) {
-        var t = (0.8 + 0.2 * (1 - (zb[p] - dmin) / (dmax - dmin))) * sbuf[p];
-        // 隣との奥行き差で輪郭を少し暗くする
-        if (p % w > 0 && zb[p - 1] - zb[p] > this.step * 3.5) t *= 0.7;
-        else if (p >= w && zb[p - w] - zb[p] > this.step * 3.5) t *= 0.7;
-        R = cbuf[p * 3] * t; G = cbuf[p * 3 + 1] * t; B = cbuf[p * 3 + 2] * t;
+    // 1) 点のすき間を埋める（周囲8画素のうち5つ以上が埋まっている空き画素）
+    for (p = 0; p < N; p++) valid[p] = zb[p] < 1e9 ? 1 : 0;
+    var x, y, k2, cnt, sum, best, bd, nb;
+    for (y = 1; y < h - 1; y++) {
+      for (x = 1; x < w - 1; x++) {
+        p = y * w + x;
+        if (valid[p]) continue;
+        cnt = 0; sum = 0; best = -1; bd = 1e9;
+        for (k2 = 0; k2 < 9; k2++) {
+          if (k2 === 4) continue;
+          nb = p + ((k2 / 3) | 0) * w - w + (k2 % 3) - 1;
+          if (valid[nb] === 1) { cnt++; sum += zb[nb]; if (zb[nb] < bd) { bd = zb[nb]; best = nb; } }
+        }
+        if (cnt >= 5) { zb[p] = sum / cnt; cbuf[p * 3] = cbuf[best * 3]; cbuf[p * 3 + 1] = cbuf[best * 3 + 1]; cbuf[p * 3 + 2] = cbuf[best * 3 + 2]; valid[p] = 2; }
       }
-      if (gs && glass[p]) {
-        var ga = Math.min(0.5, glass[p] * 0.06);
-        R = R * (1 - ga) + 150 * ga; G = G * (1 - ga) + 165 * ga; B = B * (1 - ga) + 190 * ga;
+    }
+    // 1b) 手前の面のすき間から奥の面が透けている画素を、手前の面で埋める
+    //     （左右か上下の両側が自分よりはっきり手前なら、透け穴とみなす）
+    var kk = Math.max(2, r), T = this.step * 3, pl, pr2, pu, pd, za, zc;
+    for (y = kk; y < h - kk; y++) {
+      for (x = kk; x < w - kk; x++) {
+        p = y * w + x;
+        if (!valid[p]) continue;
+        pl = p - kk; pr2 = p + kk; pu = p - kk * w; pd = p + kk * w;
+        za = -1;
+        if (valid[pl] && valid[pr2] && zb[pl] < zb[p] - T && zb[pr2] < zb[p] - T) { za = pl; zc = pr2; }
+        else if (valid[pu] && valid[pd] && zb[pu] < zb[p] - T && zb[pd] < zb[p] - T) { za = pu; zc = pd; }
+        if (za < 0) continue;
+        if (zb[zc] < zb[za]) { var tmp = za; za = zc; zc = tmp; }
+        zb[p] = (zb[za] + zb[zc]) / 2;
+        cbuf[p * 3] = cbuf[za * 3]; cbuf[p * 3 + 1] = cbuf[za * 3 + 1]; cbuf[p * 3 + 2] = cbuf[za * 3 + 2];
       }
-      img[p * 4] = R; img[p * 4 + 1] = G; img[p * 4 + 2] = B; img[p * 4 + 3] = 255;
+    }
+    // 2) 奥行きを、埋まっている画素だけで平均してぼかす（縦横に分けた箱型）
+    var kr = Math.max(2, Math.round(r * 1.2)), tS = this.tS, tC = this.tC, sS, sC, xa, xr, ya, yr;
+    for (y = 0; y < h; y++) {
+      sS = 0; sC = 0;
+      for (x = -kr; x < w; x++) {
+        xa = x + kr; if (xa < w) { q = y * w + xa; if (valid[q]) { sS += zb[q]; sC++; } }
+        xr = x - kr - 1; if (xr >= 0) { q = y * w + xr; if (valid[q]) { sS -= zb[q]; sC--; } }
+        if (x >= 0) { tS[y * w + x] = sS; tC[y * w + x] = sC; }
+      }
+    }
+    for (x = 0; x < w; x++) {
+      sS = 0; sC = 0;
+      for (y = -kr; y < h; y++) {
+        ya = y + kr; if (ya < h) { sS += tS[ya * w + x]; sC += tC[ya * w + x]; }
+        yr = y - kr - 1; if (yr >= 0) { sS -= tS[yr * w + x]; sC -= tC[yr * w + x]; }
+        if (y >= 0) zs[y * w + x] = sC > 0 ? sS / sC : 0;
+      }
+    }
+    // 3) ぼかした奥行きの傾きから法線を出し、左上手前からの光で陰影をつける
+    var LX = -0.32, LY = 0.45, LD = -0.83, edgeMm = Math.max(10, this.step * 5);
+    var gsOn = (mode === 'all' && !S.highlight) ? 0 : 1;
+    for (y = 0; y < h; y++) {
+      for (x = 0; x < w; x++) {
+        p = y * w + x;
+        var R = 3, G = 7, B = 18;
+        if (valid[p]) {
+          var zl = (x > 0 && valid[p - 1]) ? zs[p - 1] : zs[p], zr = (x < w - 1 && valid[p + 1]) ? zs[p + 1] : zs[p];
+          var zu = (y > 0 && valid[p - w]) ? zs[p - w] : zs[p], zd = (y < h - 1 && valid[p + w]) ? zs[p + w] : zs[p];
+          // 画面座標 [右, 上, 奥]。奥行き f(X,Y) の面の手前向き法線は (∂f/∂X, ∂f/∂Y上, -1)
+          var gx = (zr - zl) * 0.5 * scale, gy = (zu - zd) * 0.5 * scale;
+          var inv = 1 / Math.sqrt(gx * gx + gy * gy + 1);
+          var lam = (gx * LX + gy * LY - LD) * inv;
+          var t = (0.3 + 0.7 * (lam > 0 ? lam : 0)) * (0.86 + 0.14 * (1 - (zb[p] - dmin) / (dmax - dmin)));
+          // 本当の段差（奥の面との境）だけ輪郭として少し暗くする
+          if ((x > 0 && valid[p - 1] && zb[p - 1] - zb[p] > edgeMm) || (y > 0 && valid[p - w] && zb[p - w] - zb[p] > edgeMm) ||
+              (x < w - 1 && valid[p + 1] && zb[p + 1] - zb[p] > edgeMm) || (y < h - 1 && valid[p + w] && zb[p + w] - zb[p] > edgeMm)) t *= 0.72;
+          R = cbuf[p * 3] * t; G = cbuf[p * 3 + 1] * t; B = cbuf[p * 3 + 2] * t;
+        }
+        if (gsOn && glass[p]) {
+          // 脳の輪郭（すりガラス）。選んだ領域の上では薄く、背景の上でだけはっきり見せる
+          var ga = valid[p] ? Math.min(0.12, glass[p] * 0.006) : Math.min(0.3, glass[p] * 0.012);
+          R = R * (1 - ga) + 150 * ga; G = G * (1 - ga) + 165 * ga; B = B * (1 - ga) + 190 * ga;
+        }
+        img[p * 4] = R; img[p * 4 + 1] = G; img[p * 4 + 2] = B; img[p * 4 + 3] = 255;
+      }
     }
     this.ctx.putImageData(this.img, 0, 0);
     // 十字線の位置
