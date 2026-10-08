@@ -4,10 +4,13 @@
   (1) 画像版 PNG（infographic.png）を .ig からレンダリングして同フォルダに配置
   (2) 上下に「インフォグラフィック一覧へ」「画像版（PNG）」ナビを挿入
 を行う。冪等（マーカーで二重挿入防止）。nav は .ig の外なので PNG/サムネには写らない。
+  (3) SNSで共有したときのプレビュー（説明文・OGP・Twitterカード）を <head> に入れる。
+      og:image はトップ側の thumbs/og/<slug>.jpg（ichisouzo-lab.com が6時間ごとに作る、上部を切り出したJPEG）
 
-実行: python add_nav_and_image.py [--no-png]
+実行: python add_nav_and_image.py [--no-png] [--only <slug>]
+      python add_nav_and_image.py --meta-only   # 共有用の<head>だけを全件に入れ直す（ナビ・PNGは触らない）
 """
-import argparse, json, re, subprocess, sys
+import argparse, html, json, re, subprocess, sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -50,6 +53,38 @@ def canvas_width(html: str):
     return max(vals) if vals else None
 
 
+META_START, META_END = "<!-- ig-meta -->", "<!-- /ig-meta -->"
+_META_BLOCK = re.compile(r"\n?" + re.escape(META_START) + r".*?" + re.escape(META_END) + r"\n?", re.S)
+
+
+def apply_meta(page: str, item: dict) -> str:
+    """共有用の<head>（説明文・OGP・Twitterカード）を、目印コメントの間に入れ直す。冪等。"""
+    slug = item["slug"]
+    attr = lambda s: html.escape(s or "", quote=True)
+    page = _META_BLOCK.sub("", page)
+    title, desc = item.get("title", ""), item.get("desc", "")
+    lines = [META_START]
+    if not re.search(r'<meta\s+name="description"', page, re.I):
+        lines.append('<meta name="description" content="{}">'.format(attr(desc)))
+    lines += [
+        '<meta property="og:title" content="{}">'.format(attr(title)),
+        '<meta property="og:description" content="{}">'.format(attr(desc)),
+        '<meta property="og:type" content="article">',
+        '<meta property="og:url" content="https://tools.ichisouzo-lab.com/infographics/{}/">'.format(slug),
+        '<meta property="og:image" content="https://ichisouzo-lab.com/thumbs/og/{}.jpg">'.format(slug),
+        '<meta property="og:image:alt" content="{}">'.format(attr(title)),
+        '<meta property="og:site_name" content="医知創造ラボ">',
+        '<meta property="og:locale" content="ja_JP">',
+        '<meta name="twitter:card" content="summary_large_image">',
+        META_END,
+    ]
+    # 前後に改行を1つずつ付けて入れ、外すときも1つずつ外す（1行に詰めた<head>でも元に戻る）。
+    block = "\n" + "\n".join(lines) + "\n"
+    if re.search(r"</head>", page, re.I):
+        return re.sub(r"</head>", lambda m: block + m.group(0), page, count=1, flags=re.I)
+    return re.sub(r"</title>", lambda m: m.group(0) + block, page, count=1, flags=re.I)
+
+
 def process(item: dict, do_png: bool):
     slug = item["slug"]; yid = item.get("youtube_id", "")
     f = HERE / slug / "index.html"
@@ -74,6 +109,7 @@ def process(item: dict, do_png: bool):
     s = re.sub(r"\n?<nav data-ig-nav[^>]*>.*?</nav>", "", s, flags=re.S)
     s = re.sub(r"(<body[^>]*>)", r"\1\n" + build_nav(yid, "0", "12px"), s, count=1)
     s = s.replace("</body>", build_nav(yid, "14px", "0") + "\n</body>", 1)
+    s = apply_meta(s, item)
     f.write_text(s, encoding="utf-8", newline="\n")
     print("  [nav~] ", slug, "(YT)" if yid else "")
 
@@ -82,10 +118,22 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--no-png", action="store_true")
     ap.add_argument("--only", help="単一slugのみ")
+    ap.add_argument("--meta-only", action="store_true", help="共有用の<head>だけを入れ直す（ナビ・PNG・本文は触らない）")
     args = ap.parse_args()
     items = json.loads((HERE / "manifest.json").read_text(encoding="utf-8"))["items"]
     targets = [it for it in items if (not args.only or it["slug"] == args.only)]
     for it in targets:
+        if args.meta_only:
+            f = HERE / it["slug"] / "index.html"
+            if not f.exists():
+                continue
+            raw = f.read_bytes().decode("utf-8")
+            newline = "\r\n" if "\r\n" in raw else "\n"
+            updated = apply_meta(raw.replace("\r\n", "\n"), it).replace("\n", newline)
+            if updated != raw:
+                f.write_bytes(updated.encode("utf-8"))
+                print("  [meta~]", it["slug"])
+            continue
         process(it, do_png=not args.no_png)
 
 
