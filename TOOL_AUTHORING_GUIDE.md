@@ -29,9 +29,23 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>ツール名</title>
+<meta name="description" content="一覧カード（index.html の tool-desc）と同じ説明">
+<meta property="og:title" content="ツール名">
+<meta property="og:description" content="一覧カードと同じ説明">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tools.ichisouzo-lab.com/<tool_name>.html">
+<meta property="og:image" content="https://tools.ichisouzo-lab.com/assets/og-tools.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="医知創造ラボ">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
 ```
 - `<meta charset>` 直後にSW強制更新スクリプト（必須、省略不可）
 - `theme-color` はツールごとのテーマカラーに合わせる
+- 説明文・OGP・Twitterカードは SNS やチャットで共有したときのプレビューになる（2026-10-08 から全ツールに付与）。
+  `<link rel="canonical">` は付けない（院内オフライン版の検証が外部 `<link>` を不合格にするため）。
+- `<body>` 直後の共通ヘッダー `#ics-globalnav` は既存ツールからそのまま写す（幅360pxでも1行に収まる設定）。
 
 ## JSアーキテクチャ
 ```

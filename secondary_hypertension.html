@@ -9,6 +9,17 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>二次性高血圧 鑑別診断ツール</title>
+<meta name="description" content="高血圧の重症度、発症年齢、随伴症状、身体所見、基本検査、リスク因子、精密検査から 原発性アルドステロン症・褐色細胞腫・クッシング症候群・腎血管性・OSAなど12疾患を系統的にスクリーニングします。">
+<meta property="og:title" content="二次性高血圧 鑑別診断ツール">
+<meta property="og:description" content="高血圧の重症度、発症年齢、随伴症状、身体所見、基本検査、リスク因子、精密検査から 原発性アルドステロン症・褐色細胞腫・クッシング症候群・腎血管性・OSAなど12疾患を系統的にスクリーニングします。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tools.ichisouzo-lab.com/secondary_hypertension.html">
+<meta property="og:image" content="https://tools.ichisouzo-lab.com/assets/og-tools.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="医知創造ラボ">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
 <style>
   :root {
     --primary-dark: #8B1A1A;
@@ -180,12 +191,12 @@
 </head>
 <body>
 <nav id="ics-globalnav" style="background:#15324E;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
-<div style="max-width:1040px;margin:0 auto;padding:9px 16px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
-<a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;">医知創造ラボ</a>
-<a href="https://ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">ホーム</a>
-<a href="https://blog.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">ブログ</a>
-<a href="https://tools.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">ツール</a>
-<a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 11px;border-radius:6px;">YouTube</a>
+<div style="max-width:1040px;margin:0 auto;padding:8px 12px;display:flex;align-items:center;gap:2px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;">
+<a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;padding-right:8px;">医知創造ラボ</a>
+<a href="https://ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ホーム</a>
+<a href="https://blog.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ブログ</a>
+<a href="https://tools.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ツール</a>
+<a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">YouTube</a>
 </div>
 </nav>
 
@@ -601,7 +612,7 @@ function render() {
   html += '</div>';
 
   html += '<div class="algo-note">';
-  html += '<strong>\U0001f4a1 診断アルゴリズム:</strong> ';
+  html += '<strong>💡 診断アルゴリズム:</strong> ';
   html += '高血圧の重症度 \u2192 発症年齢 \u2192 随伴症状 \u2192 身体所見 \u2192 基本検査 \u2192 背景・リスク因子 \u2192 精密検査 の7ステップで系統的にスクリーニングします。<br>';
   html += '<strong>高血圧患者の約10%以上に二次性原因</strong>が存在します。原発性アルドステロン症は最も見逃されやすく、<strong>低K血症がなくても否定できません</strong>（約25%は正K血症）。';
   html += '</div>';
@@ -657,7 +668,7 @@ function render() {
     var maxScore = ranked.length > 0 ? ranked[0].score : 1;
 
     html += '<div class="result-panel show">';
-    html += '<div class="result-header">\U0001f4cb 鑑別診断結果</div>';
+    html += '<div class="result-header">📋 鑑別診断結果</div>';
     html += '<div class="result-body">';
 
     if (ranked.length === 0) {
@@ -671,7 +682,7 @@ function render() {
         html += ' <span style="font-size:0.78em; color:var(--gray); font-weight:400;">(' + d.category + ')</span>';
         html += '</div>';
         html += '<div class="dx-detail">' + d.detail + '</div>';
-        html += '<div class="dx-workup">\U0001f50d <strong>推奨検査:</strong> ' + d.workup + '</div>';
+        html += '<div class="dx-workup">🔍 <strong>推奨検査:</strong> ' + d.workup + '</div>';
         html += '</div>';
       });
     }
