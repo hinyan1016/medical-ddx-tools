@@ -1,0 +1,2468 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if(window.location.protocol.indexOf('http')===0&&'serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})}).catch(function(){});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b1120">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="MNI標準脳上で脳の血管支配領域（Liu et al. Sci Data 2023）を3断面と3Dで表示する教育用アトラス。各領域の閉塞症候（出典つき）、症候からの逆引き、病変を描いて領域の内訳を計算する機能、クイズを備える。">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>MNI脳血管支配領域 3Dアトラス | Vascular Territory Atlas</title>
+<style>
+  :root {
+    --bg-main: #070b14;
+    --bg-panel: #0f172a;
+    --bg-card: #1e293b;
+    --bg-deep: #090d16;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent-blue: #38bdf8;
+    --accent-red: #f87171;
+    --accent-green: #4ade80;
+    --accent-amber: #fbbf24;
+    --border-color: #1e293b;
+    --border-light: #334155;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background-color: var(--bg-main); }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic UI", Meiryo, Roboto, sans-serif;
+    color: var(--text-primary);
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+  @media (min-width: 901px) {
+    body { height: 100vh; overflow: hidden; }
+  }
+  button, select, input { font-family: inherit; }
+  a { color: var(--accent-blue); }
+
+  /* グローバルナビ */
+  #ics-globalnav { background: #050811; font-size: 13px; line-height: 1.4; border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
+  .nav-inner { padding: 6px 14px; display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; overflow-x: auto; }
+  .nav-inner a { white-space: nowrap; text-decoration: none; }
+
+  /* ヘッダ */
+  header {
+    background-color: #0b1120; border-bottom: 1px solid var(--border-light);
+    padding: 8px 14px; display: flex; justify-content: space-between; align-items: center;
+    flex-shrink: 0; gap: 8px; flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .brand-icon { font-size: 22px; flex-shrink: 0; }
+  .brand-title { font-size: 1.02rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .brand-subtitle { font-size: 0.72rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .header-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+  .btn {
+    background-color: #2563eb; color: #fff; border: none; padding: 5px 10px; border-radius: 5px;
+    font-size: 0.75rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+    white-space: nowrap; transition: background-color 0.15s ease;
+  }
+  .btn:hover { background-color: #1d4ed8; }
+  .btn-secondary { background-color: #1e293b; border: 1px solid var(--border-light); color: #f1f5f9; }
+  .btn-secondary:hover { background-color: #334155; border-color: var(--accent-blue); }
+  .btn-small { padding: 3px 8px; font-size: 0.72rem; }
+  .btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+  .btn-group { display: inline-flex; border-radius: 5px; overflow: hidden; border: 1px solid var(--border-light); flex-shrink: 0; }
+  .btn-group button {
+    background: #0f172a; color: var(--text-secondary); padding: 4px 8px; font-size: 0.72rem; font-weight: 600;
+    cursor: pointer; border: none; border-right: 1px solid var(--border-light); white-space: nowrap;
+  }
+  .btn-group button:last-child { border-right: none; }
+  .btn-group button.active { background: #2563eb; color: #fff; }
+
+  /* レイアウト */
+  .main-layout { display: flex; flex: 1; min-height: 0; }
+  @media (max-width: 900px) { .main-layout { flex-direction: column; } }
+  .viewport-container {
+    flex: 1; display: flex; flex-direction: column; background-color: #030712;
+    padding: 8px; gap: 6px; min-height: 0; min-width: 0; overflow: hidden;
+  }
+  @media (max-width: 900px) { .viewport-container { overflow: visible; padding: 8px 10px; flex: none; } }
+
+  .toolbar {
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    background: rgba(15, 23, 42, 0.85); padding: 6px 8px; border-radius: 6px; border: 1px solid var(--border-light); flex-shrink: 0;
+  }
+  .toolbar-label { font-size: 0.72rem; font-weight: 700; color: var(--accent-blue); flex-shrink: 0; }
+  .preset-scroll { display: flex; gap: 5px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; flex: 1 1 260px; min-width: 0; }
+  .preset-scroll::-webkit-scrollbar { display: none; }
+  .btn-preset {
+    background: #1e293b; color: #cbd5e1; border: 1px solid #475569; padding: 3px 8px; border-radius: 4px;
+    font-size: 0.72rem; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+  }
+  .btn-preset:hover { background: #334155; color: #fff; border-color: var(--accent-blue); }
+  .coord-form { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+  .coord-form label { font-size: 0.7rem; color: var(--text-secondary); display: flex; align-items: center; gap: 2px; }
+  .coord-form input {
+    width: 50px; background: var(--bg-deep); color: #fff; border: 1px solid var(--border-light); border-radius: 4px;
+    padding: 2px 4px; font-size: 0.74rem; font-family: ui-monospace, Menlo, Consolas, monospace;
+  }
+
+  .displaybar {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    font-size: 0.72rem; color: var(--text-secondary);
+  }
+  .displaybar label { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; cursor: pointer; }
+  .displaybar input[type="range"] { width: 90px; accent-color: var(--accent-blue); }
+  .plane-tabs { display: flex; background: #0f172a; border: 1px solid var(--border-light); border-radius: 6px; overflow: hidden; flex-shrink: 0; }
+  .plane-tabs button {
+    flex: 1; padding: 5px 4px; font-size: 0.74rem; font-weight: 700; color: var(--text-secondary); cursor: pointer;
+    background: #0b1120; border: none; border-right: 1px solid var(--border-light); white-space: nowrap;
+  }
+  .plane-tabs button:last-child { border-right: none; }
+  .plane-tabs button.active { background: #2563eb; color: #fff; }
+
+  .viewports-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 6px; min-height: 0; }
+  .viewports-grid.single { display: flex; flex-direction: column; }
+  .viewports-grid.single .view-panel { display: none; }
+  .viewports-grid.single .view-panel.on { display: flex; flex: 1; }
+  @media (max-width: 900px) {
+    .viewports-grid { display: flex; flex-direction: column; gap: 8px; }
+    .viewports-grid .view-panel { display: none; }
+    .viewports-grid .view-panel.on { display: flex; }
+  }
+  .view-panel {
+    background-color: #0b1120; border: 1px solid var(--border-light); border-radius: 6px;
+    display: flex; flex-direction: column; overflow: hidden; position: relative; min-height: 0; min-width: 0;
+  }
+  .view-panel.active-view { border-color: #2563eb; }
+  .view-header {
+    display: flex; justify-content: space-between; align-items: center; gap: 6px; padding: 4px 8px;
+    background-color: rgba(15, 23, 42, 0.95); border-bottom: 1px solid var(--border-light);
+    font-size: 0.78rem; font-weight: 600;
+  }
+  .view-title { white-space: nowrap; }
+  .view-controls { display: flex; align-items: center; gap: 5px; flex: 1; justify-content: flex-end; max-width: 300px; min-width: 0; }
+  .slice-indicator { color: var(--accent-blue); font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.74rem; white-space: nowrap; min-width: 62px; text-align: right; }
+  .slice-slider { flex: 1; accent-color: var(--accent-blue); cursor: pointer; min-width: 50px; }
+  .btn-step {
+    background: #1e293b; border: 1px solid var(--border-light); color: #fff; width: 24px; height: 24px; border-radius: 4px;
+    font-size: 0.7rem; cursor: pointer; flex-shrink: 0;
+  }
+  .canvas-wrapper { flex: 1; position: relative; overflow: hidden; background-color: #000; touch-action: none; min-height: 0; }
+  @media (max-width: 900px) { .canvas-wrapper { height: 92vw; max-height: 68vh; flex: none; } }
+  .canvas-wrapper canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block; cursor: crosshair; }
+  .canvas-wrapper.tool-brush canvas, .canvas-wrapper.tool-eraser canvas { cursor: none; }
+  .canvas-wrapper.mode-3d canvas { cursor: grab; }
+  .ori-tag { position: absolute; font-size: 0.7rem; font-weight: 700; color: rgba(255,255,255,0.85); pointer-events: none; text-shadow: 0 0 4px #000; z-index: 2; }
+  .ori-left { left: 6px; top: 50%; transform: translateY(-50%); }
+  .ori-right { right: 6px; top: 50%; transform: translateY(-50%); }
+  .ori-top { top: 4px; left: 50%; transform: translateX(-50%); }
+  .ori-bottom { bottom: 4px; left: 50%; transform: translateX(-50%); }
+  .zoom-ctrl { position: absolute; right: 6px; bottom: 6px; display: flex; gap: 3px; z-index: 3; }
+  .zoom-ctrl button {
+    width: 26px; height: 26px; border-radius: 4px; border: 1px solid var(--border-light); background: rgba(15,23,42,0.85);
+    color: #fff; font-size: 0.85rem; cursor: pointer;
+  }
+  .view3d-ctrl { position: absolute; left: 6px; bottom: 6px; display: flex; gap: 3px; flex-wrap: wrap; z-index: 3; max-width: 75%; }
+  .view3d-ctrl button, .view3d-ctrl select {
+    border-radius: 4px; border: 1px solid var(--border-light); background: rgba(15,23,42,0.85); color: #e2e8f0;
+    font-size: 0.68rem; padding: 2px 6px; cursor: pointer;
+  }
+  .tooltip {
+    position: absolute; pointer-events: none; z-index: 4; background: rgba(2,6,23,0.92); border: 1px solid var(--border-light);
+    border-radius: 4px; padding: 3px 6px; font-size: 0.7rem; color: #e2e8f0; white-space: nowrap; display: none;
+  }
+
+  /* サイドバー */
+  .sidebar { width: 450px; background-color: var(--bg-panel); border-left: 1px solid var(--border-light); display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0; }
+  @media (max-width: 1280px) and (min-width: 901px) { .sidebar { width: 390px; } }
+  @media (max-width: 900px) { .sidebar { width: 100%; border-left: none; border-top: 1px solid var(--border-light); } }
+  .sidebar-tabs { display: flex; border-bottom: 1px solid var(--border-light); background-color: #0b1120; flex-shrink: 0; overflow-x: auto; scrollbar-width: none; }
+  .sidebar-tabs::-webkit-scrollbar { display: none; }
+  .sidebar-tabs button {
+    flex: 1; padding: 8px 4px; font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); cursor: pointer;
+    border: none; background: transparent; border-bottom: 2px solid transparent; white-space: nowrap; min-width: 60px;
+  }
+  .sidebar-tabs button.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background-color: var(--bg-panel); }
+  .sidebar-content { flex: 1; overflow-y: auto; padding: 10px 12px; display: none; flex-direction: column; gap: 9px; }
+  .sidebar-content.on { display: flex; }
+  @media (max-width: 900px) { .sidebar-content { overflow-y: visible; } }
+
+  .info-card { background-color: var(--bg-deep); border: 1px solid var(--border-light); border-radius: 6px; padding: 9px 11px; display: flex; flex-direction: column; gap: 6px; }
+  .info-card-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .territory-badge { display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 0.85rem; color: #fff; text-shadow: 0 0 3px rgba(0,0,0,0.6); }
+  .territory-name { font-size: 1.04rem; font-weight: 700; color: #fff; }
+  .territory-en { font-size: 0.74rem; color: var(--text-muted); }
+  .meta-line { font-size: 0.74rem; color: var(--text-secondary); }
+  .mono { font-family: ui-monospace, Menlo, Consolas, monospace; }
+  .section-title { font-size: 0.76rem; font-weight: 700; color: var(--accent-blue); }
+  .section-body {
+    font-size: 0.82rem; color: #e2e8f0; line-height: 1.6; background: rgba(30, 41, 59, 0.4); padding: 7px 10px;
+    border-radius: 5px; border-left: 3px solid var(--accent-blue);
+  }
+  .section-body ul { padding-left: 1.1em; }
+  .section-body li { margin: 1px 0; }
+  .sec-symptom { border-left-color: var(--accent-red); }
+  .sec-clinical { border-left-color: var(--accent-amber); }
+  .sec-caution { border-left-color: #f97316; background: rgba(124, 45, 18, 0.25); }
+  .sub-head { font-size: 0.74rem; font-weight: 700; color: #cbd5e1; margin-top: 4px; }
+  .refs { font-size: 0.72rem; color: var(--text-secondary); padding-left: 1.4em; }
+  .refs li { margin: 2px 0; }
+  .prob-row { display: flex; align-items: center; gap: 6px; font-size: 0.74rem; }
+  .prob-row .nm { width: 34px; font-weight: 700; }
+  .prob-bar { flex: 1; height: 9px; background: #1e293b; border-radius: 3px; overflow: hidden; }
+  .prob-bar span { display: block; height: 100%; }
+  .prob-row .val { width: 44px; text-align: right; font-family: ui-monospace, Menlo, Consolas, monospace; }
+  .note { font-size: 0.72rem; color: var(--text-muted); line-height: 1.5; }
+  .credit { font-size: 0.68rem; color: var(--text-muted); line-height: 1.5; border-top: 1px solid var(--border-light); padding-top: 8px; margin-top: 4px; }
+
+  .search-input {
+    width: 100%; background-color: var(--bg-deep); border: 1px solid var(--border-light); border-radius: 6px;
+    padding: 7px 10px; color: #fff; font-size: 0.82rem; outline: none;
+  }
+  .search-input:focus { border-color: var(--accent-blue); }
+  .legend-list { display: flex; flex-direction: column; gap: 4px; }
+  .legend-item {
+    display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 6px 9px; border-radius: 5px;
+    background-color: var(--bg-deep); border: 1px solid var(--border-light); font-size: 0.78rem; cursor: pointer; text-align: left; color: inherit; width: 100%;
+  }
+  .legend-item:hover, .legend-item.active { background-color: #1e293b; border-color: var(--accent-blue); }
+  .legend-left { display: flex; align-items: center; gap: 6px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; min-width: 0; }
+  .legend-color { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+  .legend-code { font-family: ui-monospace, Menlo, Consolas, monospace; font-weight: 700; color: var(--text-secondary); }
+  .legend-name { color: #f1f5f9; overflow: hidden; text-overflow: ellipsis; }
+  .legend-size { font-size: 0.68rem; color: var(--text-muted); flex-shrink: 0; }
+
+  .tag-group { display: flex; flex-direction: column; gap: 3px; }
+  .tag-group-title { font-size: 0.74rem; font-weight: 700; color: #cbd5e1; }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 4px; }
+  .tag-chip {
+    display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 12px; border: 1px solid #475569;
+    background: #111827; color: #cbd5e1; font-size: 0.74rem; cursor: pointer; user-select: none;
+  }
+  .tag-chip.on { background: #1d4ed8; border-color: #60a5fa; color: #fff; }
+  .result-item { display: flex; flex-direction: column; gap: 3px; padding: 7px 9px; border-radius: 5px; border: 1px solid var(--border-light); background: var(--bg-deep); cursor: pointer; }
+  .result-item:hover { border-color: var(--accent-blue); }
+  .result-head { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 700; }
+  .result-score { margin-left: auto; font-size: 0.72rem; color: var(--accent-green); }
+  .result-tags { font-size: 0.72rem; color: var(--text-secondary); }
+  .radio-row { display: flex; gap: 10px; flex-wrap: wrap; font-size: 0.78rem; }
+  .radio-row label { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
+  .control-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 0.78rem; color: var(--text-secondary); }
+  .control-row input[type="range"] { flex: 1; min-width: 60px; accent-color: var(--accent-blue); }
+  .control-row select {
+    background: var(--bg-deep); color: #fff; border: 1px solid var(--border-light); padding: 3px 6px; border-radius: 4px; flex: 1; font-size: 0.76rem; min-width: 0;
+  }
+  .table { width: 100%; border-collapse: collapse; font-size: 0.74rem; }
+  .table th, .table td { border-bottom: 1px solid #1f2937; padding: 3px 4px; text-align: left; }
+  .table th { color: var(--text-secondary); font-weight: 600; }
+  .table td.num, .table th.num { text-align: right; font-family: ui-monospace, Menlo, Consolas, monospace; }
+  .quiz-choices { display: flex; flex-direction: column; gap: 5px; }
+  .quiz-choice {
+    text-align: left; padding: 8px 10px; border-radius: 5px; border: 1px solid var(--border-light); background: var(--bg-deep);
+    color: #e2e8f0; font-size: 0.82rem; cursor: pointer;
+  }
+  .quiz-choice:hover { border-color: var(--accent-blue); }
+  .quiz-choice.correct { background: rgba(22, 101, 52, 0.55); border-color: #22c55e; }
+  .quiz-choice.wrong { background: rgba(127, 29, 29, 0.55); border-color: #ef4444; }
+  .kbd { font-family: ui-monospace, Menlo, Consolas, monospace; background: #1e293b; border: 1px solid #334155; border-radius: 3px; padding: 0 4px; font-size: 0.7rem; }
+
+  .loading-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(9, 13, 22, 0.96);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 100; text-align: center; padding: 20px;
+  }
+  .spinner { width: 42px; height: 42px; border: 3px solid #1e293b; border-top-color: var(--accent-blue); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #0f172a; border: 1px solid var(--accent-blue);
+    color: #e2e8f0; padding: 8px 14px; border-radius: 6px; font-size: 0.8rem; z-index: 120; display: none;
+  }
+</style>
+</head>
+<body>
+
+<nav id="ics-globalnav">
+  <div class="nav-inner">
+    <a href="index.html" style="color:#38bdf8;font-weight:700;">← ツール一覧</a>
+    <span style="color:#475569;">|</span>
+    <a href="https://ichisouzo-lab.com/" style="color:#fff;font-weight:700;letter-spacing:.04em;margin-right:auto;">医知創造ラボ</a>
+    <a href="https://blog.ichisouzo-lab.com/" style="color:#94a3b8;padding:2px 6px;">ブログ</a>
+    <a href="https://tools.ichisouzo-lab.com/" style="color:#94a3b8;padding:2px 6px;">ツール</a>
+  </div>
+</nav>
+
+<header>
+  <div class="brand">
+    <span class="brand-icon">🧠</span>
+    <div style="min-width:0;">
+      <div class="brand-title">MNI脳血管支配領域 3Dアトラス</div>
+      <div class="brand-subtitle" id="brand-subtitle">Liu CF, et al. Sci Data 2023（急性期脳梗塞1,298例のDWI病変から作成）</div>
+    </div>
+  </div>
+  <div class="header-actions">
+    <div class="btn-group" role="group" aria-label="表示レベル">
+      <button type="button" id="btn-level-1" class="active" data-level="1">Level 1（30領域）</button>
+      <button type="button" id="btn-level-2" data-level="2">Level 2（4大血管）</button>
+    </div>
+    <button type="button" class="btn btn-secondary" id="btn-copylink" title="今見ている位置のリンクをコピー">🔗 リンク</button>
+    <button type="button" class="btn btn-secondary" id="btn-png" title="3断面と所見をPNGで保存">📷 画像保存</button>
+    <button type="button" class="btn btn-secondary" id="btn-standalone" title="ネットにつながらない端末でも動く単一HTMLを保存" style="background:#1e3a8a;border-color:#3b82f6;">💾 単体HTML</button>
+  </div>
+</header>
+
+<div class="main-layout">
+  <div class="viewport-container">
+    <div class="toolbar">
+      <span class="toolbar-label">📌 代表断面</span>
+      <div class="preset-scroll" id="preset-bar"></div>
+      <form class="coord-form" id="coord-form" autocomplete="off">
+        <span class="toolbar-label">MNI</span>
+        <label>X<input type="number" id="in-x" step="1" inputmode="numeric"></label>
+        <label>Y<input type="number" id="in-y" step="1" inputmode="numeric"></label>
+        <label>Z<input type="number" id="in-z" step="1" inputmode="numeric"></label>
+        <button type="submit" class="btn btn-small">移動</button>
+      </form>
+    </div>
+
+    <div class="plane-tabs" id="plane-tabs">
+      <button type="button" data-layout="axial">横断</button>
+      <button type="button" data-layout="coronal">冠状断</button>
+      <button type="button" data-layout="sagittal">矢状断</button>
+      <button type="button" data-layout="3d">3D</button>
+      <button type="button" data-layout="all">4分割</button>
+    </div>
+
+    <div class="displaybar">
+      <div class="btn-group" role="group" aria-label="塗り方">
+        <button type="button" data-ovmode="fill" class="active">塗り</button>
+        <button type="button" data-ovmode="both">塗り＋輪郭</button>
+        <button type="button" data-ovmode="outline">輪郭</button>
+      </div>
+      <label>不透明度 <input type="range" id="sl-opacity" min="0" max="100" value="60"> <span id="lb-opacity" class="mono">60%</span></label>
+      <label title="原著の確率マップで2つの領域にまたがる部位（境界領域）を斜線で表示"><input type="checkbox" id="chk-bz"> 境界領域</label>
+      <label><input type="checkbox" id="chk-cross" checked> 十字線</label>
+      <span class="mono" id="coord-display" style="margin-left:auto;color:var(--accent-green);"></span>
+    </div>
+
+    <div class="viewports-grid" id="viewports-grid">
+      <div class="view-panel on" id="panel-axial" data-plane="axial">
+        <div class="view-header">
+          <span class="view-title">横断像 Axial</span>
+          <div class="view-controls">
+            <button type="button" class="btn-step" data-step="-1" aria-label="下のスライス">◀</button>
+            <input type="range" class="slice-slider" id="slider-axial" aria-label="横断像のスライス">
+            <button type="button" class="btn-step" data-step="1" aria-label="上のスライス">▶</button>
+            <span class="slice-indicator" id="label-axial"></span>
+          </div>
+        </div>
+        <div class="canvas-wrapper" id="wrap-axial">
+          <span class="ori-tag ori-left" data-ori="lr-left">R</span>
+          <span class="ori-tag ori-right" data-ori="lr-right">L</span>
+          <span class="ori-tag ori-top">A</span>
+          <span class="ori-tag ori-bottom">P</span>
+          <canvas id="canvas-axial" aria-label="横断像"></canvas>
+          <div class="zoom-ctrl"><button type="button" data-zoom="in" aria-label="拡大">＋</button><button type="button" data-zoom="out" aria-label="縮小">－</button><button type="button" data-zoom="reset" aria-label="表示を戻す">⟲</button></div>
+          <div class="tooltip"></div>
+        </div>
+      </div>
+      <div class="view-panel on" id="panel-coronal" data-plane="coronal">
+        <div class="view-header">
+          <span class="view-title">冠状断 Coronal</span>
+          <div class="view-controls">
+            <button type="button" class="btn-step" data-step="-1" aria-label="後ろのスライス">◀</button>
+            <input type="range" class="slice-slider" id="slider-coronal" aria-label="冠状断のスライス">
+            <button type="button" class="btn-step" data-step="1" aria-label="前のスライス">▶</button>
+            <span class="slice-indicator" id="label-coronal"></span>
+          </div>
+        </div>
+        <div class="canvas-wrapper" id="wrap-coronal">
+          <span class="ori-tag ori-left" data-ori="lr-left">R</span>
+          <span class="ori-tag ori-right" data-ori="lr-right">L</span>
+          <span class="ori-tag ori-top">S</span>
+          <span class="ori-tag ori-bottom">I</span>
+          <canvas id="canvas-coronal" aria-label="冠状断"></canvas>
+          <div class="zoom-ctrl"><button type="button" data-zoom="in" aria-label="拡大">＋</button><button type="button" data-zoom="out" aria-label="縮小">－</button><button type="button" data-zoom="reset" aria-label="表示を戻す">⟲</button></div>
+          <div class="tooltip"></div>
+        </div>
+      </div>
+      <div class="view-panel on" id="panel-sagittal" data-plane="sagittal">
+        <div class="view-header">
+          <span class="view-title">矢状断 Sagittal</span>
+          <div class="view-controls">
+            <button type="button" class="btn-step" data-step="-1" aria-label="右側のスライス">◀</button>
+            <input type="range" class="slice-slider" id="slider-sagittal" aria-label="矢状断のスライス">
+            <button type="button" class="btn-step" data-step="1" aria-label="左側のスライス">▶</button>
+            <span class="slice-indicator" id="label-sagittal"></span>
+          </div>
+        </div>
+        <div class="canvas-wrapper" id="wrap-sagittal">
+          <span class="ori-tag ori-left">A</span>
+          <span class="ori-tag ori-right">P</span>
+          <span class="ori-tag ori-top">S</span>
+          <span class="ori-tag ori-bottom">I</span>
+          <canvas id="canvas-sagittal" aria-label="矢状断"></canvas>
+          <div class="zoom-ctrl"><button type="button" data-zoom="in" aria-label="拡大">＋</button><button type="button" data-zoom="out" aria-label="縮小">－</button><button type="button" data-zoom="reset" aria-label="表示を戻す">⟲</button></div>
+          <div class="tooltip"></div>
+        </div>
+      </div>
+      <div class="view-panel on" id="panel-3d" data-plane="3d">
+        <div class="view-header">
+          <span class="view-title">3D表示</span>
+          <div class="view-controls">
+            <select id="sel-3dmode" aria-label="3D表示の内容" style="background:#090d16;color:#fff;border:1px solid var(--border-light);border-radius:4px;font-size:0.72rem;padding:2px 4px;">
+              <option value="all">全領域</option>
+              <option value="selected">選択中の領域</option>
+              <option value="lesion">病変</option>
+            </select>
+          </div>
+        </div>
+        <div class="canvas-wrapper mode-3d" id="wrap-3d">
+          <canvas id="canvas-3d" aria-label="3D表示（ドラッグで回転）"></canvas>
+          <div class="view3d-ctrl" id="view3d-ctrl">
+            <button type="button" data-view3d="front">前</button>
+            <button type="button" data-view3d="back">後</button>
+            <button type="button" data-view3d="left">左</button>
+            <button type="button" data-view3d="right">右</button>
+            <button type="button" data-view3d="top">上</button>
+            <button type="button" data-view3d="bottom">下</button>
+          </div>
+          <div class="zoom-ctrl"><button type="button" data-zoom="in" aria-label="拡大">＋</button><button type="button" data-zoom="out" aria-label="縮小">－</button><button type="button" data-zoom="reset" aria-label="表示を戻す">⟲</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-tabs" id="sidebar-tabs" role="tablist">
+      <button type="button" data-tab="info" class="active">🩺 所見</button>
+      <button type="button" data-tab="list">📚 一覧</button>
+      <button type="button" data-tab="lookup">🔎 逆引き</button>
+      <button type="button" data-tab="lesion">✏️ 病変</button>
+      <button type="button" data-tab="quiz">🎓 クイズ</button>
+      <button type="button" data-tab="settings">⚙️ 表示</button>
+    </div>
+
+    <div class="sidebar-content on" id="tab-info"></div>
+
+    <div class="sidebar-content" id="tab-list">
+      <input type="search" class="search-input" id="search-input" placeholder="血管名・症候・解剖で検索（例: 失語、視床、PICA）">
+      <div class="legend-list" id="legend-container"></div>
+    </div>
+
+    <div class="sidebar-content" id="tab-lookup">
+      <div class="note">症候を選ぶと、教科書的にその症候を来しうる領域を一致数の多い順に並べます。局在の目安を学ぶための機能で、診断を決めるものではありません。</div>
+      <div class="radio-row" id="lookup-side">
+        <span style="color:var(--text-secondary);">症状のある側:</span>
+        <label><input type="radio" name="lk-side" value="R"> 右半身</label>
+        <label><input type="radio" name="lk-side" value="L"> 左半身</label>
+        <label><input type="radio" name="lk-side" value="" checked> 指定しない</label>
+      </div>
+      <div id="lookup-tags"></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+        <label style="font-size:0.76rem;display:inline-flex;gap:4px;align-items:center;"><input type="checkbox" id="chk-lookup-hl" checked> 候補を画像で強調</label>
+        <button type="button" class="btn btn-secondary btn-small" id="btn-lookup-clear">選択をクリア</button>
+      </div>
+      <div id="lookup-results" class="legend-list"></div>
+    </div>
+
+    <div class="sidebar-content" id="tab-lesion">
+      <div class="note">画像の上をドラッグして病変を描くと、どの血管領域に何％入っているかを計算します。MNI標準脳に位置合わせ済みの病変マスク（NIfTI）も読み込めます。ファイルはこの端末の中だけで処理し、どこにも送信しません。</div>
+      <div class="control-row">
+        <span>操作</span>
+        <div class="btn-group" role="group" aria-label="操作">
+          <button type="button" data-tool="cursor" class="active">カーソル</button>
+          <button type="button" data-tool="brush">ブラシ</button>
+          <button type="button" data-tool="eraser">消しゴム</button>
+        </div>
+      </div>
+      <div class="control-row">
+        <span>ブラシの形</span>
+        <div class="btn-group" role="group" aria-label="ブラシの形">
+          <button type="button" data-brushshape="sphere" class="active">球（3D）</button>
+          <button type="button" data-brushshape="disk">円（この断面だけ）</button>
+        </div>
+      </div>
+      <div class="control-row">
+        <span>半径</span>
+        <input type="range" id="sl-brush" min="1" max="15" value="4">
+        <span class="mono" id="lb-brush" style="width:40px;text-align:right;">4 mm</span>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button type="button" class="btn btn-secondary btn-small" id="btn-undo">↶ 元に戻す</button>
+        <button type="button" class="btn btn-secondary btn-small" id="btn-lesion-clear">全消去</button>
+        <label class="btn btn-secondary btn-small" style="cursor:pointer;">📂 NIfTIを読み込む<input type="file" id="file-nifti" accept=".nii,.gz,.nii.gz" style="display:none;"></label>
+        <label style="font-size:0.72rem;color:var(--text-secondary);display:inline-flex;align-items:center;gap:3px;">しきい値 <input type="number" id="in-thr" value="0.5" step="0.1" style="width:52px;background:#090d16;color:#fff;border:1px solid var(--border-light);border-radius:4px;padding:1px 4px;"></label>
+      </div>
+      <label style="font-size:0.76rem;display:inline-flex;gap:4px;align-items:center;"><input type="checkbox" id="chk-lesion-show" checked> 病変を表示</label>
+      <div id="lesion-results"></div>
+    </div>
+
+    <div class="sidebar-content" id="tab-quiz">
+      <div class="control-row">
+        <span>出題</span>
+        <select id="sel-quiz">
+          <option value="point">位置 → 血管領域</option>
+          <option value="symptom">症候 → 血管領域</option>
+        </select>
+      </div>
+      <div class="note">位置の問題では、色を消した画像の十字線の位置がどの領域かを答えます。表示レベル（Level 1/2）に合わせて出題します。</div>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <button type="button" class="btn" id="btn-quiz-start">問題を出す</button>
+        <span class="meta-line" id="quiz-score"></span>
+      </div>
+      <div id="quiz-area"></div>
+    </div>
+
+    <div class="sidebar-content" id="tab-settings">
+      <div class="control-row"><span>背景の明るさ</span><input type="range" id="sl-bright" min="-60" max="60" value="0"><span class="mono" id="lb-bright" style="width:34px;text-align:right;">0</span></div>
+      <div class="control-row"><span>背景のコントラスト</span><input type="range" id="sl-contrast" min="50" max="200" value="110"><span class="mono" id="lb-contrast" style="width:34px;text-align:right;">1.1x</span></div>
+      <div class="control-row"><span>背景を滑らかに表示</span><input type="checkbox" id="chk-smooth" checked></div>
+      <div class="control-row"><span>左右の表示規約</span>
+        <select id="sel-convention">
+          <option value="radiological">放射線科式（画面の左＝患者の右）</option>
+          <option value="neurological">神経科式（画面の左＝患者の左）</option>
+        </select>
+      </div>
+      <div class="control-row"><span>表示する領域</span><select id="sel-filter"></select></div>
+      <div class="control-row"><span>3Dの細かさ</span>
+        <select id="sel-3dq">
+          <option value="2">標準（2mm）</option>
+          <option value="3">軽量（3mm）</option>
+        </select>
+      </div>
+      <div class="note">
+        <b>操作</b><br>
+        画像をクリック／タップ: 十字線を移動　ホイール: スライス送り<br>
+        Ctrl＋ホイール／ピンチ: 拡大縮小　右ドラッグ・Shift＋ドラッグ／2本指: 画像を動かす<br>
+        <span class="kbd">↑</span><span class="kbd">↓</span>: 選んでいる断面のスライス送り　<span class="kbd">+</span><span class="kbd">-</span>: 拡大縮小　<span class="kbd">0</span>: 表示を戻す
+      </div>
+      <button type="button" class="btn btn-secondary btn-small" id="btn-reset-all" style="align-self:flex-start;">表示設定を初期値に戻す</button>
+    </div>
+    <div style="padding:0 12px 10px;flex-shrink:0;">
+      <div class="credit" id="credit"></div>
+    </div>
+  </aside>
+</div>
+
+<div class="loading-overlay" id="loading-overlay">
+  <div class="spinner"></div>
+  <div style="font-weight:600;font-size:1.05rem;color:var(--accent-blue);">アトラスを展開しています…</div>
+  <div style="font-size:0.8rem;color:var(--text-secondary);">MNI152 Arterial Territories Atlas</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script id="atlas-data" type="application/octet-stream">@@ATLAS_DATA_B64@@</script>
+<script>
+var CONTENT = /*@@CONTENT@@*/null;
+var BUILD_INFO = /*@@BUILD_INFO@@*/{};
+</script>
+<script>
+(function () {
+'use strict';
+
+// 単体HTML保存用に、書き換え前のHTMLを最初に控える
+var PRISTINE_HTML = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+
+// =================================================================
+// 0. 定数（ラベル定義）
+// =================================================================
+// Level 1（ArterialAtlasLables.txt の Level1_intensity と同じ番号。奇数=左・偶数=右）
+var L1_DEF = [
+  [1, 'ACAL', 'ACA', 'L', [231, 76, 60]], [2, 'ACAR', 'ACA', 'R', [192, 57, 43]],
+  [3, 'MLSL', 'MLS', 'L', [241, 148, 138]], [4, 'MLSR', 'MLS', 'R', [217, 136, 128]],
+  [5, 'LLSL', 'LLS', 'L', [142, 68, 173]], [6, 'LLSR', 'LLS', 'R', [155, 89, 182]],
+  [7, 'MCAFL', 'MCAF', 'L', [41, 128, 185]], [8, 'MCAFR', 'MCAF', 'R', [52, 152, 219]],
+  [9, 'MCAPL', 'MCAP', 'L', [26, 188, 156]], [10, 'MCAPR', 'MCAP', 'R', [72, 201, 176]],
+  [11, 'MCATL', 'MCAT', 'L', [93, 173, 226]], [12, 'MCATR', 'MCAT', 'R', [133, 193, 233]],
+  [13, 'MCAOL', 'MCAO', 'L', [31, 97, 141]], [14, 'MCAOR', 'MCAO', 'R', [46, 134, 193]],
+  [15, 'MCAIL', 'MCAI', 'L', [22, 160, 133]], [16, 'MCAIR', 'MCAI', 'R', [17, 122, 101]],
+  [17, 'PCATL', 'PCAT', 'L', [39, 174, 96]], [18, 'PCATR', 'PCAT', 'R', [46, 204, 113]],
+  [19, 'PCAOL', 'PCAO', 'L', [30, 132, 73]], [20, 'PCAOR', 'PCAO', 'R', [88, 214, 141]],
+  [21, 'PCTPL', 'PCTP', 'L', [175, 122, 197]], [22, 'PCTPR', 'PCTP', 'R', [187, 143, 206]],
+  [23, 'ACTPL', 'ACTP', 'L', [108, 52, 131]], [24, 'ACTPR', 'ACTP', 'R', [81, 46, 95]],
+  [25, 'BL', 'B', 'L', [230, 126, 34]], [26, 'BR', 'B', 'R', [243, 156, 18]],
+  [27, 'SCL', 'SC', 'L', [245, 176, 65]], [28, 'SCR', 'SC', 'R', [248, 196, 113]],
+  [29, 'ICL', 'IC', 'L', [220, 118, 51]], [30, 'ICR', 'IC', 'R', [186, 74, 0]],
+  [31, 'LVL', 'LV', 'L', [127, 140, 141]], [32, 'LVR', 'LV', 'R', [149, 165, 166]]
+];
+var L2_DEF = [
+  [1, 'ACAL', 'ACA', 'L', [231, 76, 60]], [2, 'ACAR', 'ACA', 'R', [192, 57, 43]],
+  [3, 'MCAL', 'MCA', 'L', [41, 128, 185]], [4, 'MCAR', 'MCA', 'R', [52, 152, 219]],
+  [5, 'PCAL', 'PCA', 'L', [39, 174, 96]], [6, 'PCAR', 'PCA', 'R', [46, 204, 113]],
+  [7, 'VBL', 'VB', 'L', [230, 126, 34]], [8, 'VBR', 'VB', 'R', [243, 156, 18]],
+  [9, 'LVL', 'LV', 'L', [127, 140, 141]], [10, 'LVR', 'LV', 'R', [149, 165, 166]]
+];
+var L1_TO_L2 = [0, 1, 2, 1, 2, 3, 4, 3, 4, 3, 4, 3, 4, 3, 4, 3, 4, 5, 6, 5, 6, 5, 6, 5, 6, 7, 8, 7, 8, 7, 8, 9, 10];
+var PARENT_OF_KEY = { ACA: 'ACA', MLS: 'ACA', LLS: 'MCA', MCAF: 'MCA', MCAP: 'MCA', MCAT: 'MCA', MCAO: 'MCA', MCAI: 'MCA',
+  PCAT: 'PCA', PCAO: 'PCA', PCTP: 'PCA', ACTP: 'PCA', B: 'VB', SC: 'VB', IC: 'VB', LV: 'LV' };
+
+// 原著のラベル表どおりの英名（name_en が content.json に無いときの控え）
+var FALLBACK = {
+  ACA: ['前大脳動脈（皮質枝）', 'Anterior cerebral artery'],
+  MLS: ['内側レンズ核線条体動脈', 'Medial lenticulostriate'],
+  LLS: ['外側レンズ核線条体動脈', 'Lateral lenticulostriate'],
+  MCAF: ['中大脳動脈 前頭枝', 'Frontal pars of MCA'],
+  MCAP: ['中大脳動脈 頭頂枝', 'Parietal pars of MCA'],
+  MCAT: ['中大脳動脈 側頭枝', 'Temporal pars of MCA'],
+  MCAO: ['中大脳動脈 後頭枝', 'Occipital pars of MCA'],
+  MCAI: ['中大脳動脈 島枝', 'Insular pars of MCA'],
+  PCAT: ['後大脳動脈 側頭枝', 'Temporal pars of PCA'],
+  PCAO: ['後大脳動脈 後頭枝', 'Occipital pars of PCA'],
+  PCTP: ['後脈絡叢動脈・視床穿通動脈', 'Posterior choroidal and thalamoperforators'],
+  ACTP: ['前脈絡叢動脈・視床穿通動脈', 'Anterior choroidal and thalamoperforators'],
+  B: ['脳底動脈（脳幹）', 'Basilar'],
+  SC: ['上小脳動脈', 'Superior cerebellar'],
+  IC: ['下小脳動脈（PICA・AICA）', 'Inferior cerebellar'],
+  LV: ['側脳室', 'Lateral ventricle'],
+  MCA: ['中大脳動脈', 'Middle cerebral artery'],
+  PCA: ['後大脳動脈', 'Posterior cerebral artery'],
+  VB: ['椎骨脳底動脈系', 'Vertebrobasilar system']
+};
+
+var FILTERS = [
+  { id: 'ALL', label: 'すべて', keys: null, parents: null },
+  { id: 'ACA', label: 'ACA系（ACA・MLS）', keys: ['ACA', 'MLS'], parents: ['ACA'] },
+  { id: 'MCAC', label: 'MCA皮質枝（前頭・頭頂・側頭・後頭・島）', keys: ['MCAF', 'MCAP', 'MCAT', 'MCAO', 'MCAI'], parents: ['MCA'] },
+  { id: 'LLS', label: '外側レンズ核線条体動脈（LLS）', keys: ['LLS'], parents: ['MCA'] },
+  { id: 'PCA', label: 'PCA系（側頭・後頭・PCTP・ACTP）', keys: ['PCAT', 'PCAO', 'PCTP', 'ACTP'], parents: ['PCA'] },
+  { id: 'VB', label: '椎骨脳底動脈系（B・SC・IC）', keys: ['B', 'SC', 'IC'], parents: ['VB'] },
+  { id: 'LV', label: '側脳室', keys: ['LV'], parents: ['LV'] }
+];
+
+// 代表断面（MNI mm）。expect は 2026-10-08 にデータで確認したそのラベル
+var PRESETS = [
+  { label: '延髄', x: -6, y: -40, z: -48 },
+  { label: '橋', x: -6, y: -26, z: -30 },
+  { label: '中脳', x: -8, y: -20, z: -10 },
+  { label: '海馬', x: -28, y: -24, z: -12 },
+  { label: '基底核・視床', x: -24, y: -10, z: 4 },
+  { label: '放射冠', x: -26, y: -10, z: 22 },
+  { label: '半卵円中心', x: -30, y: -16, z: 34 },
+  { label: '中心前回', x: -38, y: -20, z: 56 }
+];
+
+var SIDE_JA = { L: '左', R: '右' };
+
+// =================================================================
+// 1. ユーティリティ
+// =================================================================
+function $(id) { return document.getElementById(id); }
+function clamp(v, lo, hi) { return v < lo ? lo : (v > hi ? hi : v); }
+function esc(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function fmtSigned(v) { var r = Math.round(v); return (r > 0 ? '+' : '') + r; }
+function rgb(c, a) { return a == null ? 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')' : 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; }
+function forEachNode(list, fn) { for (var i = 0; i < list.length; i++) fn(list[i], i); }
+function on(el, ev, fn, opt) { el.addEventListener(ev, fn, opt || false); }
+function toast(msg) {
+  var t = $('toast');
+  t.textContent = msg; t.style.display = 'block';
+  clearTimeout(toast._h);
+  toast._h = setTimeout(function () { t.style.display = 'none'; }, 2200);
+}
+function copyText(text, okMsg) {
+  text = text.replace(/[～〜]/g, '-');
+  function fallback() {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); toast(okMsg); } catch (e) { toast('コピーできませんでした'); }
+    document.body.removeChild(ta);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function () { toast(okMsg); }, fallback);
+  } else { fallback(); }
+}
+function downloadBlob(blob, name) {
+  var a = document.createElement('a');
+  a.download = name; a.href = URL.createObjectURL(blob);
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function () { URL.revokeObjectURL(a.href); }, 1500);
+}
+
+// 4x4 行優先行列
+function matInv4(m) {
+  var inv = new Array(16), det, i;
+  inv[0] = m[5] * m[10] * m[15] - m[5] * m[11] * m[14] - m[9] * m[6] * m[15] + m[9] * m[7] * m[14] + m[13] * m[6] * m[11] - m[13] * m[7] * m[10];
+  inv[4] = -m[4] * m[10] * m[15] + m[4] * m[11] * m[14] + m[8] * m[6] * m[15] - m[8] * m[7] * m[14] - m[12] * m[6] * m[11] + m[12] * m[7] * m[10];
+  inv[8] = m[4] * m[9] * m[15] - m[4] * m[11] * m[13] - m[8] * m[5] * m[15] + m[8] * m[7] * m[13] + m[12] * m[5] * m[11] - m[12] * m[7] * m[9];
+  inv[12] = -m[4] * m[9] * m[14] + m[4] * m[10] * m[13] + m[8] * m[5] * m[14] - m[8] * m[6] * m[13] - m[12] * m[5] * m[10] + m[12] * m[6] * m[9];
+  inv[1] = -m[1] * m[10] * m[15] + m[1] * m[11] * m[14] + m[9] * m[2] * m[15] - m[9] * m[3] * m[14] - m[13] * m[2] * m[11] + m[13] * m[3] * m[10];
+  inv[5] = m[0] * m[10] * m[15] - m[0] * m[11] * m[14] - m[8] * m[2] * m[15] + m[8] * m[3] * m[14] + m[12] * m[2] * m[11] - m[12] * m[3] * m[10];
+  inv[9] = -m[0] * m[9] * m[15] + m[0] * m[11] * m[13] + m[8] * m[1] * m[15] - m[8] * m[3] * m[13] - m[12] * m[1] * m[11] + m[12] * m[3] * m[9];
+  inv[13] = m[0] * m[9] * m[14] - m[0] * m[10] * m[13] - m[8] * m[1] * m[14] + m[8] * m[2] * m[13] + m[12] * m[1] * m[10] - m[12] * m[2] * m[9];
+  inv[2] = m[1] * m[6] * m[15] - m[1] * m[7] * m[14] - m[5] * m[2] * m[15] + m[5] * m[3] * m[14] + m[13] * m[2] * m[7] - m[13] * m[3] * m[6];
+  inv[6] = -m[0] * m[6] * m[15] + m[0] * m[7] * m[14] + m[4] * m[2] * m[15] - m[4] * m[3] * m[14] - m[12] * m[2] * m[7] + m[12] * m[3] * m[6];
+  inv[10] = m[0] * m[5] * m[15] - m[0] * m[7] * m[13] - m[4] * m[1] * m[15] + m[4] * m[3] * m[13] + m[12] * m[1] * m[7] - m[12] * m[3] * m[5];
+  inv[14] = -m[0] * m[5] * m[14] + m[0] * m[6] * m[13] + m[4] * m[1] * m[14] - m[4] * m[2] * m[13] - m[12] * m[1] * m[6] + m[12] * m[2] * m[5];
+  inv[3] = -m[1] * m[6] * m[11] + m[1] * m[7] * m[10] + m[5] * m[2] * m[11] - m[5] * m[3] * m[10] - m[9] * m[2] * m[7] + m[9] * m[3] * m[6];
+  inv[7] = m[0] * m[6] * m[11] - m[0] * m[7] * m[10] - m[4] * m[2] * m[11] + m[4] * m[3] * m[10] + m[8] * m[2] * m[7] - m[8] * m[3] * m[6];
+  inv[11] = -m[0] * m[5] * m[11] + m[0] * m[7] * m[9] + m[4] * m[1] * m[11] - m[4] * m[3] * m[9] - m[8] * m[1] * m[7] + m[8] * m[3] * m[5];
+  inv[15] = m[0] * m[5] * m[10] - m[0] * m[6] * m[9] - m[4] * m[1] * m[10] + m[4] * m[2] * m[9] + m[8] * m[1] * m[6] - m[8] * m[2] * m[5];
+  det = m[0] * inv[0] + m[1] * inv[4] + m[2] * inv[8] + m[3] * inv[12];
+  if (!det) return null;
+  for (i = 0; i < 16; i++) inv[i] = inv[i] / det;
+  return inv;
+}
+function matMul4(a, b) {
+  var r = new Array(16), i, j, k, s;
+  for (i = 0; i < 4; i++) for (j = 0; j < 4; j++) { s = 0; for (k = 0; k < 4; k++) s += a[i * 4 + k] * b[k * 4 + j]; r[i * 4 + j] = s; }
+  return r;
+}
+function apply4(m, x, y, z) {
+  return [m[0] * x + m[1] * y + m[2] * z + m[3], m[4] * x + m[5] * y + m[6] * z + m[7], m[8] * x + m[9] * y + m[10] * z + m[11]];
+}
+
+// =================================================================
+// 2. 解凍（DecompressionStream が無い古いブラウザ向けの inflate を含む）
+//    inflate 部は tiny-inflate（Devon Govett, MIT）/ tinf（Jørgen Ibsen, zlib）の構成に倣って書いた
+// =================================================================
+var Inflate = (function () {
+  function Tree() { this.table = new Uint16Array(16); this.trans = new Uint16Array(288); }
+  var sltree = new Tree(), sdtree = new Tree();
+  var lengthBits = new Uint8Array(30), lengthBase = new Uint16Array(30);
+  var distBits = new Uint8Array(30), distBase = new Uint16Array(30);
+  var clcidx = [16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15];
+  var codeTree = new Tree();
+  var lengths = new Uint8Array(288 + 32);
+  var offs = new Uint16Array(16);
+  function buildBitsBase(bits, base, delta, first) {
+    var i, sum;
+    for (i = 0; i < delta; ++i) bits[i] = 0;
+    for (i = 0; i < 30 - delta; ++i) bits[i + delta] = (i / delta) | 0;
+    for (sum = first, i = 0; i < 30; ++i) { base[i] = sum; sum += 1 << bits[i]; }
+  }
+  function buildFixedTrees(lt, dt) {
+    var i;
+    for (i = 0; i < 7; ++i) lt.table[i] = 0;
+    lt.table[7] = 24; lt.table[8] = 152; lt.table[9] = 112;
+    for (i = 0; i < 24; ++i) lt.trans[i] = 256 + i;
+    for (i = 0; i < 144; ++i) lt.trans[24 + i] = i;
+    for (i = 0; i < 8; ++i) lt.trans[24 + 144 + i] = 280 + i;
+    for (i = 0; i < 112; ++i) lt.trans[24 + 144 + 8 + i] = 144 + i;
+    for (i = 0; i < 5; ++i) dt.table[i] = 0;
+    dt.table[5] = 32;
+    for (i = 0; i < 32; ++i) dt.trans[i] = i;
+  }
+  function buildTree(t, lens, off, num) {
+    var i, sum;
+    for (i = 0; i < 16; ++i) t.table[i] = 0;
+    for (i = 0; i < num; ++i) t.table[lens[off + i]]++;
+    t.table[0] = 0;
+    for (sum = 0, i = 0; i < 16; ++i) { offs[i] = sum; sum += t.table[i]; }
+    for (i = 0; i < num; ++i) { if (lens[off + i]) t.trans[offs[lens[off + i]]++] = i; }
+  }
+  function getbit(d) {
+    if (!d.bitcount--) { d.tag = d.source[d.sourceIndex++]; d.bitcount = 7; }
+    var bit = d.tag & 1;
+    d.tag >>>= 1;
+    return bit;
+  }
+  function readBits(d, num, base) {
+    if (!num) return base;
+    while (d.bitcount < 24) { d.tag |= (d.source[d.sourceIndex++] | 0) << d.bitcount; d.bitcount += 8; }
+    var val = d.tag & (0xffff >>> (16 - num));
+    d.tag >>>= num; d.bitcount -= num;
+    return val + base;
+  }
+  function decodeSymbol(d, t) {
+    while (d.bitcount < 24) { d.tag |= (d.source[d.sourceIndex++] | 0) << d.bitcount; d.bitcount += 8; }
+    var sum = 0, cur = 0, len = 0, tag = d.tag;
+    do { cur = 2 * cur + (tag & 1); tag >>>= 1; ++len; sum += t.table[len]; cur -= t.table[len]; } while (cur >= 0);
+    d.tag = tag; d.bitcount -= len;
+    return t.trans[sum + cur];
+  }
+  function decodeTrees(d, lt, dt) {
+    var hlit = readBits(d, 5, 257), hdist = readBits(d, 5, 1), hclen = readBits(d, 4, 4), i, num, length, sym, prev;
+    for (i = 0; i < 19; ++i) lengths[i] = 0;
+    for (i = 0; i < hclen; ++i) lengths[clcidx[i]] = readBits(d, 3, 0);
+    buildTree(codeTree, lengths, 0, 19);
+    for (num = 0; num < hlit + hdist;) {
+      sym = decodeSymbol(d, codeTree);
+      if (sym === 16) { prev = lengths[num - 1]; for (length = readBits(d, 2, 3); length; --length) lengths[num++] = prev; }
+      else if (sym === 17) { for (length = readBits(d, 3, 3); length; --length) lengths[num++] = 0; }
+      else if (sym === 18) { for (length = readBits(d, 7, 11); length; --length) lengths[num++] = 0; }
+      else { lengths[num++] = sym; }
+    }
+    buildTree(lt, lengths, 0, hlit);
+    buildTree(dt, lengths, hlit, hdist);
+  }
+  function ensure(d, extra) {
+    if (d.destLen + extra <= d.dest.length) return;
+    var n = new Uint8Array(Math.max(d.dest.length * 2, d.destLen + extra));
+    n.set(d.dest.subarray(0, d.destLen)); d.dest = n;
+  }
+  function blockData(d, lt, dt) {
+    var sym, length, dist, start, i;
+    for (;;) {
+      sym = decodeSymbol(d, lt);
+      if (sym === 256) return;
+      if (sym < 256) { ensure(d, 1); d.dest[d.destLen++] = sym; }
+      else {
+        sym -= 257;
+        length = readBits(d, lengthBits[sym], lengthBase[sym]);
+        dist = decodeSymbol(d, dt);
+        start = d.destLen - readBits(d, distBits[dist], distBase[dist]);
+        ensure(d, length);
+        for (i = start; i < start + length; ++i) d.dest[d.destLen++] = d.dest[i];
+      }
+    }
+  }
+  function uncompressedBlock(d) {
+    var length, invlength, i;
+    while (d.bitcount > 8) { d.sourceIndex--; d.bitcount -= 8; }
+    length = 256 * d.source[d.sourceIndex + 1] + d.source[d.sourceIndex];
+    invlength = 256 * d.source[d.sourceIndex + 3] + d.source[d.sourceIndex + 2];
+    if (length !== (~invlength & 0x0000ffff)) throw new Error('inflate: 非圧縮ブロックの長さが不正');
+    d.sourceIndex += 4;
+    ensure(d, length);
+    for (i = length; i; --i) d.dest[d.destLen++] = d.source[d.sourceIndex++];
+    d.bitcount = 0;
+  }
+  buildFixedTrees(sltree, sdtree);
+  buildBitsBase(lengthBits, lengthBase, 4, 3);
+  buildBitsBase(distBits, distBase, 2, 1);
+  lengthBits[28] = 0; lengthBase[28] = 258;
+
+  function inflateRaw(src, start, sizeHint) {
+    var d = { source: src, sourceIndex: start, tag: 0, bitcount: 0, dest: new Uint8Array(sizeHint || src.length * 4), destLen: 0,
+      ltree: new Tree(), dtree: new Tree() };
+    var bfinal, btype;
+    do {
+      bfinal = getbit(d);
+      btype = readBits(d, 2, 0);
+      if (btype === 0) uncompressedBlock(d);
+      else if (btype === 1) blockData(d, sltree, sdtree);
+      else if (btype === 2) { decodeTrees(d, d.ltree, d.dtree); blockData(d, d.ltree, d.dtree); }
+      else throw new Error('inflate: 不正なブロック');
+    } while (!bfinal);
+    return d.destLen === d.dest.length ? d.dest : d.dest.subarray(0, d.destLen);
+  }
+  function gunzip(bytes) {
+    if (bytes[0] !== 0x1f || bytes[1] !== 0x8b) throw new Error('gzip ではありません');
+    var flg = bytes[3], p = 10;
+    if (flg & 4) p += 2 + (bytes[p] | (bytes[p + 1] << 8));
+    if (flg & 8) { while (bytes[p++] !== 0) {} }
+    if (flg & 16) { while (bytes[p++] !== 0) {} }
+    if (flg & 2) p += 2;
+    var n = bytes.length;
+    var isize = (bytes[n - 4] | (bytes[n - 3] << 8) | (bytes[n - 2] << 16) | (bytes[n - 1] << 24)) >>> 0;
+    return inflateRaw(bytes, p, isize || undefined);
+  }
+  return { gunzip: gunzip };
+})();
+
+function gunzipAsync(bytes) {
+  if (typeof DecompressionStream !== 'undefined' && typeof Response !== 'undefined') {
+    try {
+      var ds = new DecompressionStream('gzip');
+      var stream = new Blob([bytes]).stream().pipeThrough(ds);
+      return new Response(stream).arrayBuffer().then(function (buf) { return new Uint8Array(buf); }, function () {
+        return Inflate.gunzip(bytes);
+      });
+    } catch (e) { /* 下の互換経路へ */ }
+  }
+  return new Promise(function (resolve, reject) {
+    setTimeout(function () { try { resolve(Inflate.gunzip(bytes)); } catch (e) { reject(e); } }, 0);
+  });
+}
+
+function b64ToBytes(b64) {
+  var bin = atob(b64.replace(/\s+/g, ''));
+  var n = bin.length, out = new Uint8Array(n), i;
+  for (i = 0; i < n; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+
+// =================================================================
+// 3. アトラスデータ
+// =================================================================
+var A = {
+  nx: 0, ny: 0, nz: 0, n: 0, aff: null, inv: null, vox: [1, 1, 1],
+  l1: null, l2: null, t1: null,
+  prob: null, probN: 0, probIdx: null, // prob: {data, nx, ny, nz, mapI, mapJ, mapK}
+  bz: null,                             // 境界領域（主格子） 0=なし 1=ACA-MCA 2=MCA-PCA 3=その他
+  count1: null, count2: null, medoid1: null, medoid2: null
+};
+
+function parseAtlas(bytes) {
+  if (bytes[0] !== 86 || bytes[1] !== 84 || bytes[2] !== 65 || bytes[3] !== 49) throw new Error('アトラスデータの形式が違います');
+  var hlen = bytes[4] | (bytes[5] << 8) | (bytes[6] << 16) | (bytes[7] << 24);
+  var hs = '', i;
+  for (i = 0; i < hlen; i++) hs += String.fromCharCode(bytes[8 + i]);
+  var header = JSON.parse(hs);
+  var base = 8 + hlen;
+  function vol(name) {
+    var v = header.vols[name];
+    if (!v) return null;
+    var nvox = v.dims[0] * v.dims[1] * v.dims[2] * (v.channels || 1);
+    return { meta: v, data: bytes.subarray(base + v.offset, base + v.offset + nvox) };
+  }
+  var l1 = vol('l1');
+  A.nx = l1.meta.dims[0]; A.ny = l1.meta.dims[1]; A.nz = l1.meta.dims[2];
+  A.n = A.nx * A.ny * A.nz;
+  A.aff = l1.meta.affine;
+  A.inv = matInv4(A.aff);
+  A.vox = [Math.abs(A.aff[0]), Math.abs(A.aff[5]), Math.abs(A.aff[10])];
+  A.l1 = l1.data;
+  A.l2 = new Uint8Array(A.n);
+  for (i = 0; i < A.n; i++) A.l2[i] = L1_TO_L2[A.l1[i]] || 0;
+  var t1 = vol('t1');
+  A.t1 = t1 ? resampleToMain(t1, true) : new Uint8Array(A.n);
+  var prob = vol('prob');
+  if (prob) {
+    A.prob = buildSubGrid(prob);
+    A.probN = prob.meta.channels;
+    buildBorderZone();
+  }
+  A.header = header;
+}
+
+// 別格子のボリュームを主格子へ。軸が平行な前提で、軸ごとの対応表を作る
+function axisMaps(meta) {
+  var M = matMul4(matInv4(meta.affine), A.aff); // 主格子 voxel → 副格子 voxel
+  var maps = [], ax, n, arr, c;
+  for (ax = 0; ax < 3; ax++) {
+    n = ax === 0 ? A.nx : (ax === 1 ? A.ny : A.nz);
+    arr = new Float32Array(n);
+    for (c = 0; c < n; c++) arr[c] = M[ax * 4 + ax] * c + M[ax * 4 + 3];
+    maps.push(arr);
+  }
+  return maps;
+}
+function resampleToMain(v, linear) {
+  var m = v.meta, d = v.data;
+  if (m.dims[0] === A.nx && m.dims[1] === A.ny && m.dims[2] === A.nz && m.affine.join(',') === A.aff.join(',')) return d;
+  var maps = axisMaps(m), sx = m.dims[0], sy = m.dims[1], sz = m.dims[2], sxy = sx * sy;
+  var out = new Uint8Array(A.n), i, j, k, p = 0;
+  for (k = 0; k < A.nz; k++) {
+    var fz = maps[2][k], z0 = Math.floor(fz), tz = fz - z0;
+    for (j = 0; j < A.ny; j++) {
+      var fy = maps[1][j], y0 = Math.floor(fy), ty = fy - y0;
+      for (i = 0; i < A.nx; i++, p++) {
+        var fx = maps[0][i], x0 = Math.floor(fx), tx = fx - x0;
+        if (!linear) {
+          var xi = Math.round(fx), yi = Math.round(fy), zi = Math.round(fz);
+          out[p] = (xi < 0 || yi < 0 || zi < 0 || xi >= sx || yi >= sy || zi >= sz) ? 0 : d[xi + yi * sx + zi * sxy];
+          continue;
+        }
+        if (x0 < 0 || y0 < 0 || z0 < 0 || x0 + 1 >= sx || y0 + 1 >= sy || z0 + 1 >= sz) { out[p] = 0; continue; }
+        var b = x0 + y0 * sx + z0 * sxy;
+        var c00 = d[b] * (1 - tx) + d[b + 1] * tx;
+        var c10 = d[b + sx] * (1 - tx) + d[b + sx + 1] * tx;
+        var c01 = d[b + sxy] * (1 - tx) + d[b + sxy + 1] * tx;
+        var c11 = d[b + sxy + sx] * (1 - tx) + d[b + sxy + sx + 1] * tx;
+        out[p] = ((c00 * (1 - ty) + c10 * ty) * (1 - tz) + (c01 * (1 - ty) + c11 * ty) * tz + 0.5) | 0;
+      }
+    }
+  }
+  return out;
+}
+function buildSubGrid(v) {
+  var maps = axisMaps(v.meta);
+  var r = { data: v.data, nx: v.meta.dims[0], ny: v.meta.dims[1], nz: v.meta.dims[2], mi: [], mj: [], mk: [] };
+  var c;
+  for (c = 0; c < A.nx; c++) r.mi.push(Math.round(maps[0][c]));
+  for (c = 0; c < A.ny; c++) r.mj.push(Math.round(maps[1][c]));
+  for (c = 0; c < A.nz; c++) r.mk.push(Math.round(maps[2][c]));
+  r.nvox = r.nx * r.ny * r.nz;
+  return r;
+}
+function probAt(i, j, k) {
+  var P = A.prob;
+  if (!P) return null;
+  var x = P.mi[i], y = P.mj[j], z = P.mk[k];
+  if (x < 0 || y < 0 || z < 0 || x >= P.nx || y >= P.ny || z >= P.nz) return [0, 0, 0, 0];
+  var b = x + y * P.nx + z * P.nx * P.ny, out = [], c;
+  for (c = 0; c < A.probN; c++) out.push(P.data[b + c * P.nvox] / 255);
+  return out;
+}
+// 境界領域: 原著（Fig.7D）と同じく、2つの大血管（ACA・MCA・PCA）の確率がどちらも0より大きい部位
+var BZ_MIN = 1; // 0-255 の量子化で 1 以上（原データの 1/255 未満は 0 に丸まる）
+function buildBorderZone() {
+  var P = A.prob, bz = new Uint8Array(A.n), i, j, k, p = 0, b, aca, mca, pca, nv = P.nvox;
+  for (k = 0; k < A.nz; k++) {
+    var z = P.mk[k];
+    for (j = 0; j < A.ny; j++) {
+      var y = P.mj[j];
+      for (i = 0; i < A.nx; i++, p++) {
+        if (!A.l1[p]) continue;
+        var x = P.mi[i];
+        if (x < 0 || y < 0 || z < 0 || x >= P.nx || y >= P.ny || z >= P.nz) continue;
+        b = x + y * P.nx + z * P.nx * P.ny;
+        aca = P.data[b] >= BZ_MIN; mca = P.data[b + nv] >= BZ_MIN; pca = P.data[b + 2 * nv] >= BZ_MIN;
+        if (aca && mca) bz[p] = 1; else if (mca && pca) bz[p] = 2; else if (aca && pca) bz[p] = 3;
+      }
+    }
+  }
+  A.bz = bz;
+}
+
+function computeStats() {
+  var c1 = new Float64Array(33 * 4), c2 = new Float64Array(11 * 4), i, j, k, p = 0, l;
+  for (k = 0; k < A.nz; k++) for (j = 0; j < A.ny; j++) for (i = 0; i < A.nx; i++, p++) {
+    l = A.l1[p];
+    if (!l) continue;
+    c1[l * 4] += 1; c1[l * 4 + 1] += i; c1[l * 4 + 2] += j; c1[l * 4 + 3] += k;
+    l = A.l2[p];
+    c2[l * 4] += 1; c2[l * 4 + 1] += i; c2[l * 4 + 2] += j; c2[l * 4 + 3] += k;
+  }
+  A.count1 = []; A.count2 = [];
+  for (l = 0; l < 33; l++) A.count1.push(c1[l * 4]);
+  for (l = 0; l < 11; l++) A.count2.push(c2[l * 4]);
+  // 重心に最も近い、その領域の内側のボクセル（重心が領域の外に落ちる形でも領域内に飛べるように）
+  function medoids(vol, cnt, nl) {
+    var best = [], bd = [], cx = [], cy = [], cz = [], q = 0, d;
+    for (l = 0; l < nl; l++) {
+      best.push(null); bd.push(1e18);
+      cx.push(cnt[l * 4] ? cnt[l * 4 + 1] / cnt[l * 4] : 0);
+      cy.push(cnt[l * 4] ? cnt[l * 4 + 2] / cnt[l * 4] : 0);
+      cz.push(cnt[l * 4] ? cnt[l * 4 + 3] / cnt[l * 4] : 0);
+    }
+    for (k = 0; k < A.nz; k++) for (j = 0; j < A.ny; j++) for (i = 0; i < A.nx; i++, q++) {
+      l = vol[q];
+      if (!l) continue;
+      d = (i - cx[l]) * (i - cx[l]) + (j - cy[l]) * (j - cy[l]) + (k - cz[l]) * (k - cz[l]);
+      if (d < bd[l]) { bd[l] = d; best[l] = [i, j, k]; }
+    }
+    return best;
+  }
+  A.medoid1 = medoids(A.l1, c1, 33);
+  A.medoid2 = medoids(A.l2, c2, 11);
+}
+
+function vox2mm(i, j, k) { return apply4(A.aff, i, j, k); }
+function mm2vox(x, y, z) {
+  var v = apply4(A.inv, x, y, z);
+  return [clamp(Math.round(v[0]), 0, A.nx - 1), clamp(Math.round(v[1]), 0, A.ny - 1), clamp(Math.round(v[2]), 0, A.nz - 1)];
+}
+function idxOf(i, j, k) { return i + j * A.nx + k * A.nx * A.ny; }
+
+// =================================================================
+// 4. ラベル情報（content.json と結合）
+// =================================================================
+var LABELS = { 1: [], 2: [] };
+function labelInfo(level, id) { return LABELS[level][id] || null; }
+
+function buildLabels() {
+  function mk(def, level) {
+    var arr = [], d, key, info, name, en;
+    for (var n = 0; n < def.length; n++) {
+      d = def[n]; key = d[2];
+      info = contentFor(level, key);
+      name = (info && info.name_ja) || (FALLBACK[key] ? FALLBACK[key][0] : key);
+      en = (info && info.name_en) || (FALLBACK[key] ? FALLBACK[key][1] : '');
+      arr[d[0]] = {
+        id: d[0], code: d[1], key: key, side: d[3], color: d[4], level: level,
+        parent: level === 1 ? PARENT_OF_KEY[key] : key,
+        name: SIDE_JA[d[3]] + name, baseName: name, nameEn: (d[3] === 'L' ? 'Left ' : 'Right ') + en,
+        info: info
+      };
+    }
+    return arr;
+  }
+  LABELS[1] = mk(L1_DEF, 1);
+  LABELS[2] = mk(L2_DEF, 2);
+}
+function contentFor(level, key) {
+  if (!CONTENT) return null;
+  if (level === 1) return (CONTENT.territories && CONTENT.territories[key]) || null;
+  return (CONTENT.level2 && CONTENT.level2[key]) || null;
+}
+function sideText(s, side) {
+  var contra = side === 'L' ? '右' : '左', ipsi = side === 'L' ? '左' : '右';
+  return String(s).replace(/\{contra\}/g, contra).replace(/\{ipsi\}/g, ipsi);
+}
+
+// =================================================================
+// 5. 状態
+// =================================================================
+var DEFAULTS = { opacity: 0.6, ovmode: 'fill', contrast: 1.1, bright: 0, smooth: true, convention: 'radiological', filter: 'ALL', cross: true, bz: false };
+var S = {
+  i: 0, j: 0, k: 0, level: 1,
+  opacity: DEFAULTS.opacity, ovmode: DEFAULTS.ovmode, contrast: DEFAULTS.contrast, bright: DEFAULTS.bright,
+  smooth: DEFAULTS.smooth, convention: DEFAULTS.convention, filter: DEFAULTS.filter, cross: DEFAULTS.cross, bz: DEFAULTS.bz,
+  highlight: null,      // {id:true}（逆引き・クイズで強調する領域）
+  hideOverlay: false,   // クイズ中は色を消す
+  layout: 'all', activeView: 'axial', tab: 'info',
+  tool: 'cursor', brushShape: 'sphere', brushMm: 4, showLesion: true,
+  lesion: null, lesionVersion: 0
+};
+var PLANES = ['axial', 'coronal', 'sagittal'];
+var V = {}; // 各ビューの描画状態
+
+// =================================================================
+// 6. 断面の描画
+// =================================================================
+// 断面ごとの (u,v) → (i,j,k) 対応。放射線科式では画面左が患者の右（MNI x が正）
+function planeGeom(plane) {
+  var sxNeg = A.aff[0] < 0, syPos = A.aff[5] > 0, szPos = A.aff[10] > 0;
+  var radio = S.convention === 'radiological';
+  var g = {};
+  // 画面の横で x が減る向き（放射線科式）になる i の並び
+  function lrIndex(u) {
+    // 放射線科式: 画面左=患者右=x 大。x が大きいのは sxNeg なら i 小
+    var leftIsSmallI = radio ? sxNeg : !sxNeg;
+    return leftIsSmallI ? u : A.nx - 1 - u;
+  }
+  if (plane === 'axial') {
+    g.W = A.nx; g.H = A.ny; g.du = A.vox[0]; g.dv = A.vox[1];
+    g.col = function (u) { return lrIndex(u); };
+    g.row = function (v) { return syPos ? A.ny - 1 - v : v; };
+    g.toIJK = function (u, v) { return [g.col(u), g.row(v), S.k]; };
+    g.fromIJK = function (i, j) { var u = lrIndex(i); return [u, syPos ? A.ny - 1 - j : j]; };
+    g.slice = function () { return S.k; }; g.n = A.nz; g.stride = A.nx * A.ny;
+  } else if (plane === 'coronal') {
+    g.W = A.nx; g.H = A.nz; g.du = A.vox[0]; g.dv = A.vox[2];
+    g.col = function (u) { return lrIndex(u); };
+    g.row = function (v) { return szPos ? A.nz - 1 - v : v; };
+    g.toIJK = function (u, v) { return [g.col(u), S.j, g.row(v)]; };
+    g.fromIJK = function (i, j, k) { return [lrIndex(i), szPos ? A.nz - 1 - k : k]; };
+    g.slice = function () { return S.j; }; g.n = A.ny; g.stride = A.nx;
+  } else {
+    g.W = A.ny; g.H = A.nz; g.du = A.vox[1]; g.dv = A.vox[2];
+    // 画面左が前（anterior = y 大）
+    g.col = function (u) { return syPos ? A.ny - 1 - u : u; };
+    g.row = function (v) { return szPos ? A.nz - 1 - v : v; };
+    g.toIJK = function (u, v) { return [S.i, g.col(u), g.row(v)]; };
+    g.fromIJK = function (i, j, k) { return [syPos ? A.ny - 1 - j : j, szPos ? A.nz - 1 - k : k]; };
+    g.slice = function () { return S.i; }; g.n = A.nx; g.stride = 1;
+  }
+  // 画素ごとの元ボクセル番号の表（スライス0の番号。実際の番号は slice*stride を足す）
+  var idx = new Int32Array(g.W * g.H), u, v, p = 0, ijk, off0 = g.slice() * g.stride;
+  for (v = 0; v < g.H; v++) for (u = 0; u < g.W; u++, p++) { ijk = g.toIJK(u, v); idx[p] = idxOf(ijk[0], ijk[1], ijk[2]) - off0; }
+  g.idx0 = idx;
+  return g;
+}
+// 今のスライスでの画素ごとのボクセル番号
+function sliceIndex(g) {
+  var off = g.slice() * g.stride;
+  if (g.cacheOff === off && g.cache) return g.cache;
+  var n = g.idx0.length, out = g.cache || new Int32Array(n), p;
+  for (p = 0; p < n; p++) out[p] = g.idx0[p] + off;
+  g.cache = out; g.cacheOff = off;
+  return out;
+}
+
+function initViews() {
+  for (var n = 0; n < PLANES.length; n++) {
+    var p = PLANES[n], canvas = $('canvas-' + p);
+    V[p] = {
+      plane: p, canvas: canvas, ctx: canvas.getContext('2d'), wrap: $('wrap-' + p),
+      base: document.createElement('canvas'), ov: document.createElement('canvas'),
+      zoom: 1, panX: 0, panY: 0, dataDirty: true, geom: null, lastSlice: -1, hover: null
+    };
+    V[p].bctx = V[p].base.getContext('2d');
+    V[p].octx = V[p].ov.getContext('2d');
+  }
+  rebuildGeoms();
+}
+function rebuildGeoms() {
+  for (var n = 0; n < PLANES.length; n++) {
+    var v = V[PLANES[n]];
+    v.geom = planeGeom(v.plane);
+    v.base.width = v.geom.W; v.base.height = v.geom.H;
+    v.ov.width = v.geom.W; v.ov.height = v.geom.H;
+    v.bimg = v.bctx.createImageData(v.geom.W, v.geom.H);
+    v.oimg = v.octx.createImageData(v.geom.W, v.geom.H);
+    v.dataDirty = true;
+  }
+  updateOriTags();
+}
+
+// 色の表（Level と表示条件で作り直す）
+var LUT = { fill: new Uint8Array(256 * 4), line: new Uint8Array(256 * 4) };
+function isVisibleLabel(info) {
+  if (!info) return false;
+  if (S.filter === 'ALL') return true;
+  var f = null, n;
+  for (n = 0; n < FILTERS.length; n++) if (FILTERS[n].id === S.filter) f = FILTERS[n];
+  if (!f) return true;
+  if (info.level === 1) return f.keys.indexOf(info.key) >= 0;
+  return f.parents.indexOf(info.key) >= 0;
+}
+function rebuildLUT() {
+  var fill = LUT.fill, line = LUT.line, id, info, a, la, hl;
+  for (id = 0; id < 256; id++) { fill[id * 4 + 3] = 0; line[id * 4 + 3] = 0; }
+  var labels = LABELS[S.level];
+  for (id = 1; id < labels.length; id++) {
+    info = labels[id];
+    if (!info || !isVisibleLabel(info) || S.hideOverlay) continue;
+    hl = !S.highlight || S.highlight[id];
+    a = S.ovmode === 'outline' ? 0 : S.opacity * (hl ? 1 : 0.18);
+    la = S.ovmode === 'fill' ? 0 : (hl ? Math.min(1, 0.55 + S.opacity) : 0.25);
+    fill[id * 4] = info.color[0]; fill[id * 4 + 1] = info.color[1]; fill[id * 4 + 2] = info.color[2]; fill[id * 4 + 3] = Math.round(a * 255);
+    line[id * 4] = Math.min(255, info.color[0] + 50); line[id * 4 + 1] = Math.min(255, info.color[1] + 50); line[id * 4 + 2] = Math.min(255, info.color[2] + 50);
+    line[id * 4 + 3] = Math.round(la * 255);
+  }
+  markAllDirty();
+}
+
+var GRAY = new Uint8Array(256);
+function rebuildGray() {
+  for (var g = 0; g < 256; g++) GRAY[g] = clamp(Math.round((g - 128) * S.contrast + 128 + S.bright), 0, 255);
+  markAllDirty();
+}
+
+function buildSliceImages(v) {
+  var g = v.geom, W = g.W, H = g.H, idx = sliceIndex(g);
+  var vol = S.level === 1 ? A.l1 : A.l2, t1 = A.t1, bz = A.bz, les = S.showLesion ? S.lesion : null;
+  var b = v.bimg.data, o = v.oimg.data, p, q, id, gv, u, vv, nb, isEdge, la, showBz = S.bz && bz;
+  for (p = 0; p < W * H; p++) {
+    q = idx[p]; gv = GRAY[t1[q]];
+    b[p * 4] = gv; b[p * 4 + 1] = gv; b[p * 4 + 2] = gv; b[p * 4 + 3] = 255;
+    o[p * 4 + 3] = 0;
+  }
+  for (vv = 0; vv < H; vv++) {
+    for (u = 0; u < W; u++) {
+      p = vv * W + u; q = idx[p]; id = vol[q];
+      var r = 0, gg = 0, bb = 0, a = 0;
+      if (id) {
+        a = LUT.fill[id * 4 + 3];
+        r = LUT.fill[id * 4]; gg = LUT.fill[id * 4 + 1]; bb = LUT.fill[id * 4 + 2];
+        la = LUT.line[id * 4 + 3];
+        if (la) {
+          isEdge = false;
+          if (u > 0) { nb = vol[idx[p - 1]]; if (nb !== id) isEdge = true; }
+          if (!isEdge && u < W - 1) { nb = vol[idx[p + 1]]; if (nb !== id) isEdge = true; }
+          if (!isEdge && vv > 0) { nb = vol[idx[p - W]]; if (nb !== id) isEdge = true; }
+          if (!isEdge && vv < H - 1) { nb = vol[idx[p + W]]; if (nb !== id) isEdge = true; }
+          if (isEdge) { r = LUT.line[id * 4]; gg = LUT.line[id * 4 + 1]; bb = LUT.line[id * 4 + 2]; a = Math.max(a, la); }
+        }
+      }
+      if (showBz && bz[q] && ((u + vv) % 4 === 0)) {
+        r = bz[q] === 1 ? 255 : (bz[q] === 2 ? 255 : 200); gg = bz[q] === 1 ? 235 : (bz[q] === 2 ? 170 : 200); bb = bz[q] === 1 ? 120 : (bz[q] === 2 ? 60 : 255); a = 235;
+      }
+      if (les && les[q]) {
+        var le = (u > 0 && !les[idx[p - 1]]) || (u < W - 1 && !les[idx[p + 1]]) || (vv > 0 && !les[idx[p - W]]) || (vv < H - 1 && !les[idx[p + W]]);
+        if (le) { r = 255; gg = 40; bb = 40; a = 255; }
+        else { r = Math.round(r * 0.35 + 255 * 0.65); gg = Math.round(gg * 0.35 + 30 * 0.65); bb = Math.round(bb * 0.35 + 30 * 0.65); a = Math.max(a, 170); }
+      }
+      if (a) { o[p * 4] = r; o[p * 4 + 1] = gg; o[p * 4 + 2] = bb; o[p * 4 + 3] = a; }
+    }
+  }
+  v.bctx.putImageData(v.bimg, 0, 0);
+  v.octx.putImageData(v.oimg, 0, 0);
+  v.dataDirty = false;
+}
+
+function viewRect(v) {
+  var g = v.geom, cw = v.cw, ch = v.ch;
+  var fit = Math.min(cw / (g.W * g.du), ch / (g.H * g.dv)) * 0.97;
+  var s = fit * v.zoom; // 1mm あたりの CSS px
+  var w = g.W * g.du * s, h = g.H * g.dv * s;
+  return { x: cw / 2 + v.panX - w / 2, y: ch / 2 + v.panY - h / 2, w: w, h: h, s: s, pu: g.du * s, pv: g.dv * s };
+}
+function sizeCanvas(c, wrap) {
+  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var w = wrap.clientWidth, h = wrap.clientHeight;
+  if (!w || !h) return null;
+  if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+  return { w: w, h: h, dpr: dpr };
+}
+function drawView(v) {
+  var sz = sizeCanvas(v.canvas, v.wrap);
+  if (!sz) return;
+  v.cw = sz.w; v.ch = sz.h;
+  if (v.dataDirty || v.lastSlice !== v.geom.slice()) { buildSliceImages(v); v.lastSlice = v.geom.slice(); }
+  var ctx = v.ctx, r = viewRect(v);
+  ctx.setTransform(sz.dpr, 0, 0, sz.dpr, 0, 0);
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, sz.w, sz.h);
+  ctx.imageSmoothingEnabled = S.smooth;
+  ctx.drawImage(v.base, r.x, r.y, r.w, r.h);
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(v.ov, r.x, r.y, r.w, r.h);
+  var c = v.geom.fromIJK(S.i, S.j, S.k);
+  var cx = r.x + (c[0] + 0.5) * r.pu, cy = r.y + (c[1] + 0.5) * r.pv;
+  if (S.quizMarker) {
+    ctx.strokeStyle = '#facc15'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(cx, cy, 9, 0, Math.PI * 2); ctx.stroke();
+  }
+  if (S.cross || S.quizMarker) {
+    var col = v.plane === 'axial' ? 'rgba(56,189,248,0.9)' : (v.plane === 'coronal' ? 'rgba(74,222,128,0.9)' : 'rgba(248,113,113,0.9)');
+    ctx.strokeStyle = col; ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, cy); ctx.lineTo(cx - 6, cy); ctx.moveTo(cx + 6, cy); ctx.lineTo(sz.w, cy);
+    ctx.moveTo(cx, 0); ctx.lineTo(cx, cy - 6); ctx.moveTo(cx, cy + 6); ctx.lineTo(cx, sz.h);
+    ctx.stroke();
+  }
+  if (v.hover && (S.tool === 'brush' || S.tool === 'eraser')) {
+    ctx.strokeStyle = S.tool === 'brush' ? 'rgba(248,113,113,0.95)' : 'rgba(226,232,240,0.95)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(v.hover.x, v.hover.y, S.brushMm * r.s, 0, Math.PI * 2); ctx.stroke();
+  }
+}
+
+var renderPending = false;
+function requestRender() {
+  if (renderPending) return;
+  renderPending = true;
+  (window.requestAnimationFrame || function (f) { return setTimeout(f, 16); })(function () {
+    renderPending = false;
+    for (var n = 0; n < PLANES.length; n++) {
+      var v = V[PLANES[n]];
+      if (v.wrap.offsetParent !== null) drawView(v);
+    }
+    if ($('wrap-3d').offsetParent !== null) R3.draw();
+  });
+}
+function markAllDirty() { for (var n = 0; n < PLANES.length; n++) if (V[PLANES[n]]) V[PLANES[n]].dataDirty = true; }
+
+function updateOriTags() {
+  var radio = S.convention === 'radiological';
+  forEachNode(document.querySelectorAll('[data-ori="lr-left"]'), function (el) { el.textContent = radio ? 'R' : 'L'; });
+  forEachNode(document.querySelectorAll('[data-ori="lr-right"]'), function (el) { el.textContent = radio ? 'L' : 'R'; });
+}
+
+// =================================================================
+// 7. 3D表示（ソフトウェア描画の点群＋Zバッファ）
+// =================================================================
+var R3 = {
+  yaw: -1.0, pitch: 0.3, zoom: 1, mode: 'all', step: 2,
+  pts: null, lab: null, ext: null, n: 0, lesPts: null, lesN: 0, lesVersion: -1,
+  canvas: null, ctx: null, img: null, zb: null, glass: null, center: [0, 0, 0], radius: 90,
+  init: function () {
+    this.canvas = $('canvas-3d'); this.ctx = this.canvas.getContext('2d');
+    this.build();
+  },
+  // 粗い格子でラベル境界と脳表の点を集め、陰影用の法線（26近傍の勾配）を付ける
+  build: function () {
+    var st = Math.max(1, Math.round(this.step / A.vox[0])), nx = A.nx, ny = A.ny, nz = A.nz, l1 = A.l1;
+    var xs = [], ls = [], es = [], ns = [], i, j, k, q, id, ext, diff, nb, mm, o, w, gx, gy, gz, bx, by, bz, px, py, pz, len;
+    var sx = A.aff[0] < 0 ? -1 : 1, sy = A.aff[5] < 0 ? -1 : 1, sz = A.aff[10] < 0 ? -1 : 1;
+    var offs = [];
+    for (o = 0; o < 27; o++) { var ox = o % 3 - 1, oy = ((o / 3) | 0) % 3 - 1, oz = ((o / 9) | 0) - 1; if (ox || oy || oz) offs.push([ox, oy, oz, 1 / (Math.abs(ox) + Math.abs(oy) + Math.abs(oz))]); }
+    function lab(ii, jj, kk) { if (ii < 0 || jj < 0 || kk < 0 || ii >= nx || jj >= ny || kk >= nz) return 0; return l1[ii + jj * nx + kk * nx * ny]; }
+    var cx = 0, cy = 0, cz = 0, cn = 0;
+    for (k = 0; k < nz; k += st) for (j = 0; j < ny; j += st) for (i = 0; i < nx; i += st) {
+      q = i + j * nx + k * nx * ny; id = l1[q];
+      if (!id) continue;
+      ext = false; diff = false;
+      nb = lab(i - st, j, k); if (!nb) ext = true; else if (nb !== id) diff = true;
+      nb = lab(i + st, j, k); if (!nb) ext = true; else if (nb !== id) diff = true;
+      nb = lab(i, j - st, k); if (!nb) ext = true; else if (nb !== id) diff = true;
+      nb = lab(i, j + st, k); if (!nb) ext = true; else if (nb !== id) diff = true;
+      nb = lab(i, j, k - st); if (!nb) ext = true; else if (nb !== id) diff = true;
+      nb = lab(i, j, k + st); if (!nb) ext = true; else if (nb !== id) diff = true;
+      mm = vox2mm(i, j, k);
+      cx += mm[0]; cy += mm[1]; cz += mm[2]; cn++;
+      if (!ext && !diff) continue;
+      gx = gy = gz = bx = by = bz = 0;
+      for (o = 0; o < offs.length; o++) {
+        nb = lab(i + offs[o][0] * st, j + offs[o][1] * st, k + offs[o][2] * st); w = offs[o][3];
+        if (nb === id) { gx += offs[o][0] * w; gy += offs[o][1] * w; gz += offs[o][2] * w; }
+        if (nb) { bx += offs[o][0] * w; by += offs[o][1] * w; bz += offs[o][2] * w; }
+      }
+      // 外向き法線 = -（内側を指す勾配）。脳表の点は脳全体、境界の点はその領域の形から
+      if (ext) { px = -bx * sx; py = -by * sy; pz = -bz * sz; } else { px = -gx * sx; py = -gy * sy; pz = -gz * sz; }
+      len = Math.sqrt(px * px + py * py + pz * pz) || 1;
+      xs.push(mm[0], mm[1], mm[2]); ls.push(id); es.push(ext ? 1 : 0); ns.push(px / len, py / len, pz / len);
+    }
+    this.pts = new Float32Array(xs); this.lab = new Uint8Array(ls); this.ext = new Uint8Array(es); this.nrm = new Float32Array(ns); this.n = ls.length;
+    this.center = [cx / cn, cy / cn, cz / cn];
+    var rmax = 0;
+    for (i = 0; i < this.n; i++) {
+      var dx = this.pts[i * 3] - this.center[0], dy = this.pts[i * 3 + 1] - this.center[1], dz = this.pts[i * 3 + 2] - this.center[2];
+      var r = Math.sqrt(dx * dx + dy * dy + dz * dz); if (r > rmax) rmax = r;
+    }
+    this.radius = rmax || 90;
+    this.lesVersion = -1;
+  },
+  buildLesion: function () {
+    this.lesVersion = S.lesionVersion;
+    var les = S.lesion;
+    if (!les) { this.lesPts = null; this.lesN = 0; return; }
+    var st = Math.max(1, Math.round(1.5 / A.vox[0])), nx = A.nx, ny = A.ny, nz = A.nz, xs = [], i, j, k, q, mm;
+    function g(ii, jj, kk) { if (ii < 0 || jj < 0 || kk < 0 || ii >= nx || jj >= ny || kk >= nz) return 0; return les[ii + jj * nx + kk * nx * ny]; }
+    for (k = 0; k < nz; k += st) for (j = 0; j < ny; j += st) for (i = 0; i < nx; i += st) {
+      q = i + j * nx + k * nx * ny;
+      if (!les[q]) continue;
+      if (g(i - st, j, k) && g(i + st, j, k) && g(i, j - st, k) && g(i, j + st, k) && g(i, j, k - st) && g(i, j, k + st)) continue;
+      mm = vox2mm(i, j, k); xs.push(mm[0], mm[1], mm[2]);
+    }
+    this.lesPts = new Float32Array(xs); this.lesN = xs.length / 3;
+  },
+  // 前=顔の側から / 左=患者の左側から / 上=頭頂から（前が画面の上）/ 下=足側から（前が画面の上）
+  setView: function (name) {
+    var P = Math.PI, e = 0.0001;
+    var m = { front: [0, 0], back: [P, 0], left: [-P / 2, 0], right: [P / 2, 0], top: [P, P / 2 - e], bottom: [0, -P / 2 + e], home: [-1.0, 0.3] };
+    if (m[name]) { this.yaw = m[name][0]; this.pitch = m[name][1]; }
+    requestRender();
+  },
+  // 前から見た状態（画面右=患者の左、上=上方）を基準に、yaw（上下軸まわり）と pitch で回す。out=[画面X, 画面上方, 奥行き（小さいほど手前）]
+  project: function (x, y, z, out) { this.rotate(-(x - this.center[0]), -(y - this.center[1]), z - this.center[2], out); },
+  rotate: function (X, D, Z, out) {
+    var cy = Math.cos(this.yaw), sy = Math.sin(this.yaw), cp = Math.cos(this.pitch), sp = Math.sin(this.pitch);
+    var X1 = X * cy - D * sy, D1 = X * sy + D * cy;
+    out[0] = X1; out[1] = D1 * sp + Z * cp; out[2] = D1 * cp - Z * sp;
+  },
+  draw: function () {
+    var c = this.canvas, wrap = $('wrap-3d');
+    if (!this.pts || !wrap.clientWidth) return;
+    if (this.lesVersion !== S.lesionVersion) this.buildLesion();
+    var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    var w = Math.max(1, Math.round(wrap.clientWidth * dpr)), h = Math.max(1, Math.round(wrap.clientHeight * dpr));
+    if (c.width !== w || c.height !== h) { c.width = w; c.height = h; this.img = null; }
+    if (!this.img) { this.img = this.ctx.createImageData(w, h); this.zb = new Float32Array(w * h); this.glass = new Float32Array(w * h); this.cbuf = new Uint8Array(w * h * 3); this.sbuf = new Float32Array(w * h); }
+    var img = this.img.data, zb = this.zb, glass = this.glass, cbuf = this.cbuf, sbuf = this.sbuf, n, p;
+    for (p = 0; p < w * h; p++) { zb[p] = 1e9; glass[p] = 0; }
+    var scale = Math.min(w, h) / (this.radius * 2.15) * this.zoom;
+    var cxs = w / 2, cys = h / 2, out = [0, 0, 0], nv = [0, 0, 0];
+    var level = S.level, labels = LABELS[level], mode = this.mode, selId = currentLabelId();
+    var r = Math.max(2, Math.ceil(scale * this.step * 1.05)), dmin = -this.radius, dmax = this.radius;
+    var pts = this.pts, lab = this.lab, ext = this.ext, nrm = this.nrm, id, info, sx, sy, d, a, b, ix, iy, q, shade, lam;
+    // 光源: 視線方向から少し左上（画面座標 [X, 上, 奥行き]）
+    var LX = -0.3, LY = 0.42, LD = -0.86;
+    for (n = 0; n < this.n; n++) {
+      id = lab[n];
+      if (level === 2) id = L1_TO_L2[id];
+      info = labels[id];
+      var solid;
+      if (mode === 'all') solid = info && isVisibleLabel(info) && (!S.highlight || S.highlight[id]);
+      else if (mode === 'selected') solid = selId && id === selId;
+      else solid = false;
+      this.project(pts[n * 3], pts[n * 3 + 1], pts[n * 3 + 2], out);
+      sx = Math.round(cxs + out[0] * scale); sy = Math.round(cys - out[1] * scale); d = out[2];
+      if (!solid) {
+        if (ext[n] && sx >= 0 && sy >= 0 && sx < w && sy < h) glass[sy * w + sx] += 1;
+        continue;
+      }
+      this.rotate(-nrm[n * 3], -nrm[n * 3 + 1], nrm[n * 3 + 2], nv);
+      lam = nv[0] * LX + nv[1] * LY + nv[2] * LD;
+      shade = 0.3 + 0.7 * (lam > 0 ? lam : 0);
+      for (b = 0; b < r; b++) {
+        iy = sy + b - (r >> 1); if (iy < 0 || iy >= h) continue;
+        for (a = 0; a < r; a++) {
+          ix = sx + a - (r >> 1); if (ix < 0 || ix >= w) continue;
+          q = iy * w + ix;
+          if (d < zb[q]) { zb[q] = d; sbuf[q] = shade; cbuf[q * 3] = info.color[0]; cbuf[q * 3 + 1] = info.color[1]; cbuf[q * 3 + 2] = info.color[2]; }
+        }
+      }
+    }
+    if (S.showLesion && this.lesN && (mode === 'lesion' || mode === 'selected' || mode === 'all')) {
+      var lp = this.lesPts, lr = Math.max(1, Math.ceil(scale * 1.5 * 0.8));
+      for (n = 0; n < this.lesN; n++) {
+        this.project(lp[n * 3], lp[n * 3 + 1], lp[n * 3 + 2], out);
+        sx = Math.round(cxs + out[0] * scale); sy = Math.round(cys - out[1] * scale); d = out[2] - (mode === 'lesion' ? 0 : 0.5);
+        for (b = 0; b < lr; b++) {
+          iy = sy + b - (lr >> 1); if (iy < 0 || iy >= h) continue;
+          for (a = 0; a < lr; a++) {
+            ix = sx + a - (lr >> 1); if (ix < 0 || ix >= w) continue;
+            q = iy * w + ix;
+            if (d < zb[q]) { zb[q] = d; sbuf[q] = 0.85; cbuf[q * 3] = 239; cbuf[q * 3 + 1] = 68; cbuf[q * 3 + 2] = 68; }
+          }
+        }
+      }
+    }
+    var gs = (mode === 'all' && !S.highlight) ? 0 : 1;
+    for (p = 0; p < w * h; p++) {
+      var R = 3, G = 7, B = 18;
+      if (zb[p] < 1e9) {
+        var t = (0.8 + 0.2 * (1 - (zb[p] - dmin) / (dmax - dmin))) * sbuf[p];
+        // 隣との奥行き差で輪郭を少し暗くする
+        if (p % w > 0 && zb[p - 1] - zb[p] > this.step * 3.5) t *= 0.7;
+        else if (p >= w && zb[p - w] - zb[p] > this.step * 3.5) t *= 0.7;
+        R = cbuf[p * 3] * t; G = cbuf[p * 3 + 1] * t; B = cbuf[p * 3 + 2] * t;
+      }
+      if (gs && glass[p]) {
+        var ga = Math.min(0.5, glass[p] * 0.06);
+        R = R * (1 - ga) + 150 * ga; G = G * (1 - ga) + 165 * ga; B = B * (1 - ga) + 190 * ga;
+      }
+      img[p * 4] = R; img[p * 4 + 1] = G; img[p * 4 + 2] = B; img[p * 4 + 3] = 255;
+    }
+    this.ctx.putImageData(this.img, 0, 0);
+    // 十字線の位置
+    var mmc = vox2mm(S.i, S.j, S.k);
+    this.project(mmc[0], mmc[1], mmc[2], out);
+    sx = cxs + out[0] * scale; sy = cys - out[1] * scale;
+    var ctx = this.ctx;
+    ctx.strokeStyle = '#facc15'; ctx.lineWidth = 2 * dpr;
+    ctx.beginPath(); ctx.arc(sx, sy, 6 * dpr, 0, Math.PI * 2); ctx.stroke();
+    // 方向の目印
+    this.drawAxes(ctx, 34 * dpr, h - 34 * dpr, 20 * dpr, dpr);
+  },
+  drawAxes: function (ctx, ox, oy, len, dpr) {
+    var axes = [['L', -1, 0, 0, '#f87171'], ['A', 0, 1, 0, '#4ade80'], ['S', 0, 0, 1, '#38bdf8']], o = [0, 0, 0], e = [0, 0, 0], n;
+    var save = this.center;
+    this.center = [0, 0, 0];
+    ctx.font = (10 * dpr) + 'px sans-serif'; ctx.lineWidth = 2 * dpr;
+    for (n = 0; n < 3; n++) {
+      this.project(0, 0, 0, o); this.project(axes[n][1], axes[n][2], axes[n][3], e);
+      var ex = ox + (e[0] - o[0]) * len, ey = oy - (e[1] - o[1]) * len;
+      ctx.strokeStyle = axes[n][4]; ctx.fillStyle = axes[n][4];
+      ctx.beginPath(); ctx.moveTo(ox, oy); ctx.lineTo(ex, ey); ctx.stroke();
+      ctx.fillText(axes[n][0], ex + 2 * dpr, ey - 2 * dpr);
+    }
+    this.center = save;
+  }
+};
+
+// =================================================================
+// 8. 十字線・座標・URL
+// =================================================================
+function currentLabelId() {
+  var q = idxOf(S.i, S.j, S.k);
+  return (S.level === 1 ? A.l1 : A.l2)[q] || 0;
+}
+function setCursor(i, j, k, opts) {
+  S.i = clamp(i, 0, A.nx - 1); S.j = clamp(j, 0, A.ny - 1); S.k = clamp(k, 0, A.nz - 1);
+  syncSliders();
+  updateCoordUI();
+  if (!(opts && opts.noInfo)) updateInfo();
+  scheduleHash();
+  requestRender();
+}
+function setCursorMM(x, y, z) { var v = mm2vox(x, y, z); setCursor(v[0], v[1], v[2]); }
+function syncSliders() {
+  $('slider-axial').value = S.k; $('slider-coronal').value = S.j; $('slider-sagittal').value = S.i;
+}
+function updateCoordUI() {
+  var mm = vox2mm(S.i, S.j, S.k);
+  $('label-axial').textContent = 'Z ' + fmtSigned(mm[2]) + 'mm';
+  $('label-coronal').textContent = 'Y ' + fmtSigned(mm[1]) + 'mm';
+  $('label-sagittal').textContent = 'X ' + fmtSigned(mm[0]) + 'mm';
+  $('coord-display').textContent = 'MNI X=' + fmtSigned(mm[0]) + ' Y=' + fmtSigned(mm[1]) + ' Z=' + fmtSigned(mm[2]) + ' mm';
+  var ae = document.activeElement;
+  if (ae !== $('in-x') && ae !== $('in-y') && ae !== $('in-z')) {
+    $('in-x').value = Math.round(mm[0]); $('in-y').value = Math.round(mm[1]); $('in-z').value = Math.round(mm[2]);
+  }
+}
+var hashTimer = null;
+function scheduleHash() {
+  clearTimeout(hashTimer);
+  hashTimer = setTimeout(function () {
+    var mm = vox2mm(S.i, S.j, S.k);
+    var h = '#x=' + Math.round(mm[0]) + '&y=' + Math.round(mm[1]) + '&z=' + Math.round(mm[2]) + '&lv=' + S.level;
+    if (window.history && history.replaceState) { try { history.replaceState(null, '', h); } catch (e) { /* file: など */ } }
+  }, 250);
+}
+function readHash() {
+  var h = (location.hash || '').replace(/^#/, ''), parts = h.split('&'), o = {}, n, kv;
+  for (n = 0; n < parts.length; n++) { kv = parts[n].split('='); if (kv.length === 2) o[kv[0]] = parseFloat(kv[1]); }
+  return o;
+}
+
+// =================================================================
+// 9. 所見パネル
+// =================================================================
+function listHTML(arr, side) {
+  if (!arr || !arr.length) return '';
+  var h = '<ul>', n;
+  for (n = 0; n < arr.length; n++) h += '<li>' + esc(sideText(arr[n], side)) + '</li>';
+  return h + '</ul>';
+}
+function refsHTML(keys) {
+  if (!keys || !keys.length || !CONTENT || !CONTENT.references) return '';
+  var h = '<ol class="refs">', n, r;
+  for (n = 0; n < keys.length; n++) {
+    r = CONTENT.references[keys[n]];
+    if (!r) continue;
+    h += '<li>' + esc(r.citation);
+    if (r.pmid) h += ' <a href="https://pubmed.ncbi.nlm.nih.gov/' + esc(r.pmid) + '/" target="_blank" rel="noopener">PMID ' + esc(r.pmid) + '</a>';
+    h += '</li>';
+  }
+  return h + '</ol>';
+}
+function probHTML() {
+  var p = probAt(S.i, S.j, S.k);
+  if (!p) return '';
+  var names = ['ACA', 'MCA', 'PCA', 'VB'], cols = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12'], sum = 0, n, h;
+  for (n = 0; n < 4; n++) sum += p[n];
+  h = '<div class="info-card"><div class="section-title">📊 この点の確率マップ（原著）</div>';
+  if (sum <= 0) return h + '<div class="note">この点には、どの大血管の梗塞例の病変も重なっていません。</div></div>';
+  for (n = 0; n < 4; n++) {
+    var rel = p[n] / sum;
+    h += '<div class="prob-row"><span class="nm">' + names[n] + '</span><div class="prob-bar"><span style="width:' + (rel * 100).toFixed(1) + '%;background:' + cols[n] + ';"></span></div><span class="val">' + Math.round(rel * 100) + '%</span></div>';
+  }
+  var q = idxOf(S.i, S.j, S.k);
+  var bzt = A.bz && A.bz[q] ? ['', 'ACA–MCA の境界領域', 'MCA–PCA の境界領域', 'ACA–PCA の境界領域'][A.bz[q]] : '';
+  h += '<div class="note">各大血管の梗塞例でこの点に病変が及んだ割合を、4血管の合計を100%として比べた値です（原著の平均化確率マップ）。' +
+    (bzt ? '<br><b style="color:#fde68a;">この点は ' + bzt + ' に入ります。</b>' : '') + '</div></div>';
+  return h;
+}
+function updateInfo() {
+  var el = $('tab-info');
+  if (!A.l1) return;
+  var id = currentLabelId(), info = labelInfo(S.level, id), mm = vox2mm(S.i, S.j, S.k);
+  var id1 = A.l1[idxOf(S.i, S.j, S.k)], id2 = A.l2[idxOf(S.i, S.j, S.k)];
+  var both = (id1 ? labelInfo(1, id1).name : '—') + ' ／ ' + (id2 ? labelInfo(2, id2).name : '—');
+  var h = '';
+  if (S.hideOverlay) {
+    el.innerHTML = '<div class="info-card"><div class="note">クイズ中は所見を隠しています。答えると表示されます。</div></div>';
+    return;
+  }
+  if (!info) {
+    h += '<div class="info-card"><div class="info-card-header"><span class="territory-badge" style="background:#334155;">ラベルなし</span></div>' +
+      '<div class="territory-name">血管支配領域のラベルがない部位</div>' +
+      '<div class="meta-line mono">MNI ' + fmtSigned(mm[0]) + ', ' + fmtSigned(mm[1]) + ', ' + fmtSigned(mm[2]) + ' mm</div>' +
+      '<div class="note">このアトラスは脳実質（深部白質を含む）をすべていずれかの領域に割り当てています。ラベルがないのは、脳溝・脳槽の脳脊髄液や脳の外側などです。十字線を脳実質に動かしてください。</div></div>';
+    h += probHTML();
+    el.innerHTML = h;
+    return;
+  }
+  var c = info.info || {};
+  h += '<div class="info-card"><div class="info-card-header">' +
+    '<span class="territory-badge" style="background:' + rgb(info.color) + ';">' + esc(info.code) + '</span>' +
+    '<span class="meta-line">' + esc(c.system_ja ? (SIDE_JA[info.side] + c.system_ja) : ('Level ' + S.level)) + '</span></div>' +
+    '<div class="territory-name">' + esc(info.name) + '</div>' +
+    '<div class="territory-en">' + esc(info.nameEn) + '</div>' +
+    '<div class="meta-line mono">MNI ' + fmtSigned(mm[0]) + ', ' + fmtSigned(mm[1]) + ', ' + fmtSigned(mm[2]) + ' mm</div>' +
+    '<div class="meta-line">Level 1 ／ 2: ' + esc(both) + '</div>' +
+    '<div><button type="button" class="btn btn-secondary btn-small" data-show3d="1">🧊 この領域を3Dで見る</button></div></div>';
+  h += probHTML();
+  if (!CONTENT) {
+    h += '<div class="info-card"><div class="note">臨床解説データが読み込まれていません。</div></div>';
+    el.innerHTML = h; return;
+  }
+  if (c.caution) h += '<div class="info-card"><div class="section-title" style="color:#fb923c;">⚠️ このアトラスでの注意</div><div class="section-body sec-caution">' + esc(c.caution) + '</div></div>';
+  if (c.atlas_region || c.summary) h += '<div class="info-card"><div class="section-title">🗺️ ' + (S.level === 1 ? 'このアトラスで塗られている範囲' : '概要') + '</div><div class="section-body">' + esc(c.atlas_region || c.summary) + '</div></div>';
+  if (c.classic_supply) h += '<div class="info-card"><div class="section-title">📖 教科書的な灌流域</div><div class="section-body">' + esc(c.classic_supply) + '</div></div>';
+  var sym = listHTML(c.symptoms_common, info.side);
+  var hemi = info.side === 'L' ? c.symptoms_left : c.symptoms_right;
+  var hemiHtml = listHTML(hemi, info.side);
+  if (sym || hemiHtml) {
+    h += '<div class="info-card"><div class="section-title" style="color:var(--accent-red);">⚠️ 閉塞したときの主な症候</div><div class="section-body sec-symptom">' + sym;
+    if (hemiHtml) h += '<div class="sub-head">' + (info.side === 'L' ? '左半球（通常は優位半球）で特に' : '右半球（通常は劣位半球）で特に') + '</div>' + hemiHtml;
+    h += '</div></div>';
+  }
+  if (c.clinical_points && c.clinical_points.length) h += '<div class="info-card"><div class="section-title" style="color:var(--accent-amber);">💡 臨床のポイント</div><div class="section-body sec-clinical">' + listHTML(c.clinical_points, info.side) + '</div></div>';
+  if (c.refs && c.refs.length) h += '<div class="info-card"><div class="section-title">📚 参考文献</div>' + refsHTML(c.refs) + '</div>';
+  el.innerHTML = h;
+}
+
+// =================================================================
+// 10. 一覧
+// =================================================================
+function volumeMl(count) { return count * A.vox[0] * A.vox[1] * A.vox[2] / 1000; }
+function buildLegend() {
+  var q = ($('search-input').value || '').toLowerCase().replace(/^\s+|\s+$/g, '');
+  var labels = LABELS[S.level], h = '', id, info, c, hay, counts = S.level === 1 ? A.count1 : A.count2;
+  for (id = 1; id < labels.length; id++) {
+    info = labels[id]; if (!info) continue;
+    c = info.info || {};
+    if (q) {
+      hay = [info.code, info.name, info.nameEn, c.atlas_region, c.classic_supply, c.summary,
+        (c.symptoms_common || []).join(' '), (c.symptoms_left || []).join(' '), (c.symptoms_right || []).join(' '), (c.clinical_points || []).join(' ')].join(' ').toLowerCase();
+      if (hay.indexOf(q) < 0) continue;
+    }
+    h += '<button type="button" class="legend-item' + (id === currentLabelId() ? ' active' : '') + '" data-jump="' + id + '">' +
+      '<span class="legend-left"><span class="legend-color" style="background:' + rgb(info.color) + ';"></span>' +
+      '<span class="legend-code">' + esc(info.code) + '</span><span class="legend-name">' + esc(info.name) + '</span></span>' +
+      '<span class="legend-size">' + volumeMl(counts[id]).toFixed(1) + ' mL</span></button>';
+  }
+  $('legend-container').innerHTML = h || '<div class="note">該当する領域がありません。</div>';
+}
+function jumpToLabel(level, id) {
+  var m = (level === 1 ? A.medoid1 : A.medoid2)[id];
+  if (m) setCursor(m[0], m[1], m[2]);
+}
+
+// =================================================================
+// 11. 症候からの逆引き
+// =================================================================
+var LK = { selected: {} };
+function buildLookupUI() {
+  var el = $('lookup-tags');
+  if (!CONTENT || !CONTENT.tags) { el.innerHTML = '<div class="note">症候データが読み込まれていません。</div>'; return; }
+  var groups = {}, order = [], t, g, h = '', n, m;
+  for (t in CONTENT.tags) {
+    if (!CONTENT.tags.hasOwnProperty(t)) continue;
+    g = CONTENT.tags[t].group || 'その他';
+    if (!groups[g]) { groups[g] = []; order.push(g); }
+    groups[g].push(t);
+  }
+  for (n = 0; n < order.length; n++) {
+    h += '<div class="tag-group"><div class="tag-group-title">' + esc(order[n]) + '</div><div class="tag-list">';
+    for (m = 0; m < groups[order[n]].length; m++) {
+      t = groups[order[n]][m];
+      h += '<span class="tag-chip" role="checkbox" aria-checked="false" tabindex="0" data-tag="' + esc(t) + '">' + esc(CONTENT.tags[t].label_ja) + '</span>';
+    }
+    h += '</div></div>';
+  }
+  el.innerHTML = h;
+}
+function sideMatches(tagSide, bodySide, terrSide) {
+  // bodySide: 'R' / 'L' / ''（症状のある体の側）。terrSide: 'L'/'R'（領域の側）
+  if (tagSide === 'left_hemi') return terrSide === 'L';
+  if (tagSide === 'right_hemi') return terrSide === 'R';
+  if (!bodySide || tagSide === 'any') return true;
+  if (tagSide === 'contra') return bodySide !== terrSide;
+  if (tagSide === 'ipsi') return bodySide === terrSide;
+  return true;
+}
+function runLookup() {
+  var sel = [], t;
+  for (t in LK.selected) if (LK.selected[t]) sel.push(t);
+  var res = $('lookup-results');
+  if (!sel.length) { res.innerHTML = ''; S.highlight = null; rebuildLUT(); requestRender(); return; }
+  var bodySide = '', radios = document.getElementsByName('lk-side'), n, m, key, terr, info, id, scored = [];
+  for (n = 0; n < radios.length; n++) if (radios[n].checked) bodySide = radios[n].value;
+  for (id = 1; id <= 30; id++) {
+    info = LABELS[1][id]; terr = CONTENT.territories[info.key];
+    if (!terr || !terr.tags) continue;
+    var hit = [];
+    for (n = 0; n < sel.length; n++) {
+      for (m = 0; m < terr.tags.length; m++) {
+        if (terr.tags[m].tag === sel[n] && sideMatches(terr.tags[m].side, bodySide, info.side)) { hit.push(sel[n]); break; }
+      }
+    }
+    if (hit.length) scored.push({ id: id, hit: hit });
+  }
+  scored.sort(function (a, b) { return b.hit.length - a.hit.length || a.id - b.id; });
+  var h = '', best = scored.length ? scored[0].hit.length : 0, hl = {};
+  for (n = 0; n < scored.length; n++) {
+    info = LABELS[1][scored[n].id];
+    if (scored[n].hit.length === best) hl[scored[n].id] = true;
+    var names = [];
+    for (m = 0; m < scored[n].hit.length; m++) names.push(CONTENT.tags[scored[n].hit[m]].label_ja);
+    h += '<div class="result-item" data-jump1="' + info.id + '"><div class="result-head"><span class="legend-color" style="background:' + rgb(info.color) + ';"></span>' +
+      esc(info.code) + ' ' + esc(info.name) + '<span class="result-score">' + scored[n].hit.length + ' / ' + sel.length + '</span></div>' +
+      '<div class="result-tags">一致: ' + esc(names.join('、')) + '</div></div>';
+  }
+  if (!scored.length) h = '<div class="note">選んだ症候に一致する領域はありません。</div>';
+  else h = '<div class="note">一致数が最も多い領域を画像で強調しています（Level 1 の領域で表示）。候補をクリックするとその領域へ移動します。失語は左半球、半側空間無視は右半球の症候として扱っています（右利きの典型）。</div>' + h;
+  res.innerHTML = h;
+  if ($('chk-lookup-hl').checked && scored.length) {
+    if (S.level !== 1) setLevel(1);
+    S.highlight = hl;
+  } else S.highlight = null;
+  rebuildLUT(); requestRender(); R3.draw();
+}
+
+// =================================================================
+// 12. 病変（描画・NIfTI読込・集計）
+// =================================================================
+var undoStack = [], strokeLog = null;
+function ensureLesion() { if (!S.lesion) S.lesion = new Uint8Array(A.n); }
+function paintAt(v, sx, sy) {
+  var r = viewRect(v), g = v.geom;
+  var u = (sx - r.x) / r.pu, vv = (sy - r.y) / r.pv;
+  if (u < 0 || vv < 0 || u >= g.W || vv >= g.H) return;
+  var ijk = g.toIJK(Math.floor(u), Math.floor(vv));
+  ensureLesion();
+  var val = S.tool === 'brush' ? 1 : 0, rad = S.brushMm;
+  var ri = Math.ceil(rad / A.vox[0]), rj = Math.ceil(rad / A.vox[1]), rk = Math.ceil(rad / A.vox[2]);
+  var i0 = ijk[0], j0 = ijk[1], k0 = ijk[2], i, j, k, q, d;
+  var disk = S.brushShape === 'disk';
+  for (k = k0 - rk; k <= k0 + rk; k++) {
+    if (k < 0 || k >= A.nz) continue;
+    if (disk && v.plane === 'axial' && k !== k0) continue;
+    for (j = j0 - rj; j <= j0 + rj; j++) {
+      if (j < 0 || j >= A.ny) continue;
+      if (disk && v.plane === 'coronal' && j !== j0) continue;
+      for (i = i0 - ri; i <= i0 + ri; i++) {
+        if (i < 0 || i >= A.nx) continue;
+        if (disk && v.plane === 'sagittal' && i !== i0) continue;
+        d = Math.pow((i - i0) * A.vox[0], 2) + Math.pow((j - j0) * A.vox[1], 2) + Math.pow((k - k0) * A.vox[2], 2);
+        if (d > rad * rad) continue;
+        q = idxOf(i, j, k);
+        if (S.lesion[q] !== val) { if (strokeLog) strokeLog.push(q, S.lesion[q]); S.lesion[q] = val; }
+      }
+    }
+  }
+  S.lesionVersion++;
+  markAllDirty(); requestRender();
+}
+function endStroke() {
+  if (strokeLog && strokeLog.length) { undoStack.push(strokeLog); if (undoStack.length > 30) undoStack.shift(); }
+  strokeLog = null;
+  scheduleLesionStats();
+}
+function undoLesion() {
+  var log = undoStack.pop();
+  if (!log || !S.lesion) return;
+  for (var n = log.length - 2; n >= 0; n -= 2) S.lesion[log[n]] = log[n + 1];
+  S.lesionVersion++; markAllDirty(); requestRender(); scheduleLesionStats();
+}
+function clearLesion() {
+  if (S.lesion) {
+    var log = [], q;
+    for (q = 0; q < A.n; q++) if (S.lesion[q]) { log.push(q, 1); S.lesion[q] = 0; }
+    if (log.length) undoStack.push(log);
+  }
+  S.lesionVersion++; markAllDirty(); requestRender(); scheduleLesionStats();
+}
+var statsTimer = null;
+function scheduleLesionStats() { clearTimeout(statsTimer); statsTimer = setTimeout(lesionStats, 120); }
+var LAST_STATS = null;
+function lesionStats() {
+  var el = $('lesion-results'), les = S.lesion;
+  var c1 = new Float64Array(33), c2 = new Float64Array(11), total = 0, q, bzc = [0, 0, 0, 0], pr = [0, 0, 0, 0], prN = 0;
+  var ci = 0, cj = 0, ck = 0, i, j, k;
+  if (les) {
+    q = 0;
+    for (k = 0; k < A.nz; k++) for (j = 0; j < A.ny; j++) for (i = 0; i < A.nx; i++, q++) {
+      if (!les[q]) continue;
+      total++; c1[A.l1[q]]++; c2[A.l2[q]]++;
+      ci += i; cj += j; ck += k;
+      if (A.bz) bzc[A.bz[q]]++;
+      if (A.prob) {
+        var p = probAt(i, j, k), s = p[0] + p[1] + p[2] + p[3];
+        if (s > 0) { pr[0] += p[0] / s; pr[1] += p[1] / s; pr[2] += p[2] / s; pr[3] += p[3] / s; prN++; }
+      }
+    }
+  }
+  if (!total) { el.innerHTML = '<div class="note">まだ病変がありません。「ブラシ」を選んで画像の上をドラッグするか、NIfTI を読み込んでください。</div>'; LAST_STATS = null; return; }
+  var vml = volumeMl(total), cen = vox2mm(ci / total, cj / total, ck / total);
+  var h = '<div class="info-card"><div class="section-title">病変の大きさ</div><div class="meta-line">体積 <b>' + vml.toFixed(2) + ' mL</b>（' + total + ' ボクセル・格子 ' + A.vox[0] + 'mm）　重心 MNI ' +
+    fmtSigned(cen[0]) + ', ' + fmtSigned(cen[1]) + ', ' + fmtSigned(cen[2]) + '</div>' +
+    '<div style="display:flex;gap:6px;flex-wrap:wrap;"><button type="button" class="btn btn-secondary btn-small" id="btn-les-center">重心へ移動</button>' +
+    '<button type="button" class="btn btn-secondary btn-small" id="btn-les-copy">結果をコピー</button>' +
+    '<button type="button" class="btn btn-secondary btn-small" id="btn-les-csv">CSV保存</button></div></div>';
+  function table(level, counts, terrCounts) {
+    var rows = [], id, labels = LABELS[level];
+    for (id = 1; id < labels.length; id++) if (counts[id]) rows.push(id);
+    rows.sort(function (a, b) { return counts[b] - counts[a]; });
+    var t = '<table class="table"><thead><tr><th>領域</th><th class="num">病変に占める%</th><th class="num">領域の何%</th></tr></thead><tbody>', n;
+    for (n = 0; n < rows.length; n++) {
+      id = rows[n];
+      t += '<tr><td><span class="legend-color" style="display:inline-block;vertical-align:middle;background:' + rgb(labels[id].color) + ';"></span> ' + esc(labels[id].code) + ' ' + esc(labels[id].name) + '</td>' +
+        '<td class="num">' + (counts[id] / total * 100).toFixed(1) + '</td><td class="num">' + (counts[id] / terrCounts[id] * 100).toFixed(2) + '</td></tr>';
+    }
+    if (counts[0]) t += '<tr><td>ラベルなし（脳脊髄液など）</td><td class="num">' + (counts[0] / total * 100).toFixed(1) + '</td><td class="num">—</td></tr>';
+    return t + '</tbody></table>';
+  }
+  h += '<div class="info-card"><div class="section-title">Level 1（30領域）</div>' + table(1, c1, A.count1) + '</div>';
+  h += '<div class="info-card"><div class="section-title">Level 2（4大血管）</div>' + table(2, c2, A.count2) + '</div>';
+  if (A.prob) {
+    h += '<div class="info-card"><div class="section-title">確率マップでの平均（病変内）</div>';
+    var names = ['ACA', 'MCA', 'PCA', 'VB'], cols = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12'], n;
+    for (n = 0; n < 4; n++) {
+      var v = prN ? pr[n] / prN : 0;
+      h += '<div class="prob-row"><span class="nm">' + names[n] + '</span><div class="prob-bar"><span style="width:' + (v * 100).toFixed(1) + '%;background:' + cols[n] + ';"></span></div><span class="val">' + Math.round(v * 100) + '%</span></div>';
+    }
+    h += '<div class="meta-line">境界領域に入る割合: ACA–MCA ' + (bzc[1] / total * 100).toFixed(1) + '%、MCA–PCA ' + (bzc[2] / total * 100).toFixed(1) + '%</div></div>';
+  }
+  h += '<div class="note">アトラスは心原性塞栓・境界領域梗塞・多発梗塞を除いた症例から作られています。境界領域や複数領域にまたがる病変の解釈には注意してください。</div>';
+  el.innerHTML = h;
+  LAST_STATS = { total: total, vml: vml, cen: cen, c1: c1, c2: c2, bzc: bzc };
+  $('btn-les-center').onclick = function () { setCursorMM(cen[0], cen[1], cen[2]); };
+  $('btn-les-copy').onclick = function () { copyText(statsText(), '結果をコピーしました'); };
+  $('btn-les-csv').onclick = function () {
+    downloadBlob(new Blob(['﻿' + statsCSV()], { type: 'text/csv;charset=utf-8' }), 'lesion_territories.csv');
+  };
+}
+function statsRows(level, counts) {
+  var rows = [], labels = LABELS[level], id;
+  for (id = 1; id < labels.length; id++) if (counts[id]) rows.push(id);
+  rows.sort(function (a, b) { return counts[b] - counts[a]; });
+  return rows;
+}
+function statsText() {
+  var s = LAST_STATS; if (!s) return '';
+  var t = '病変体積 ' + s.vml.toFixed(2) + ' mL（重心 MNI ' + Math.round(s.cen[0]) + ', ' + Math.round(s.cen[1]) + ', ' + Math.round(s.cen[2]) + '）\n';
+  var lv, rows, n, id, counts, terr;
+  for (lv = 1; lv <= 2; lv++) {
+    counts = lv === 1 ? s.c1 : s.c2; terr = lv === 1 ? A.count1 : A.count2;
+    t += '[Level ' + lv + ']\n';
+    rows = statsRows(lv, counts);
+    for (n = 0; n < rows.length; n++) {
+      id = rows[n];
+      t += LABELS[lv][id].code + ' ' + LABELS[lv][id].name + ': 病変の ' + (counts[id] / s.total * 100).toFixed(1) + '%（領域の ' + (counts[id] / terr[id] * 100).toFixed(2) + '%）\n';
+    }
+  }
+  t += 'アトラス: Liu CF, et al. Sci Data. 2023;10(1):74.';
+  return t;
+}
+function statsCSV() {
+  var s = LAST_STATS; if (!s) return '';
+  var t = 'level,code,name,lesion_voxels,percent_of_lesion,percent_of_territory\n', lv, rows, n, id, counts, terr;
+  for (lv = 1; lv <= 2; lv++) {
+    counts = lv === 1 ? s.c1 : s.c2; terr = lv === 1 ? A.count1 : A.count2;
+    rows = statsRows(lv, counts);
+    for (n = 0; n < rows.length; n++) {
+      id = rows[n];
+      t += lv + ',' + LABELS[lv][id].code + ',"' + LABELS[lv][id].name + '",' + counts[id] + ',' + (counts[id] / s.total * 100).toFixed(2) + ',' + (counts[id] / terr[id] * 100).toFixed(3) + '\n';
+    }
+  }
+  return t;
+}
+
+// NIfTI-1 読み込み（.nii / .nii.gz）
+function readNifti(bytes) {
+  var dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength), le = true;
+  if (dv.getInt32(0, true) !== 348) { if (dv.getInt32(0, false) === 348) le = false; else throw new Error('NIfTI-1 形式ではありません（NIfTI-2 には未対応）'); }
+  function i16(o) { return dv.getInt16(o, le); }
+  function f32(o) { return dv.getFloat32(o, le); }
+  var dim = [], pix = [], n;
+  for (n = 0; n < 8; n++) { dim.push(i16(40 + n * 2)); pix.push(f32(76 + n * 4)); }
+  var dtype = i16(70), voxOffset = Math.round(f32(108)), slope = f32(112), inter = f32(116);
+  var qcode = i16(252), scode = i16(254), aff;
+  if (scode > 0) {
+    aff = [];
+    for (n = 0; n < 12; n++) aff.push(f32(280 + n * 4));
+    aff.push(0, 0, 0, 1);
+  } else if (qcode > 0) {
+    var b = f32(256), c = f32(260), d = f32(264), a = Math.sqrt(Math.max(0, 1 - (b * b + c * c + d * d)));
+    var qfac = pix[0] < 0 ? -1 : 1, dx = pix[1], dy = pix[2], dz = pix[3] * qfac;
+    aff = [
+      (a * a + b * b - c * c - d * d) * dx, 2 * (b * c - a * d) * dy, 2 * (b * d + a * c) * dz, f32(268),
+      2 * (b * c + a * d) * dx, (a * a + c * c - b * b - d * d) * dy, 2 * (c * d - a * b) * dz, f32(272),
+      2 * (b * d - a * c) * dx, 2 * (c * d + a * b) * dy, (a * a + d * d - c * c - b * b) * dz, f32(276),
+      0, 0, 0, 1];
+  } else {
+    throw new Error('座標情報（sform/qform）がありません。MNI空間に位置合わせした画像を使ってください');
+  }
+  var nx = dim[1], ny = dim[2], nz = Math.max(1, dim[3]), nvox = nx * ny * nz;
+  var sizes = { 2: 1, 4: 2, 8: 4, 16: 4, 64: 8, 256: 1, 512: 2, 768: 4 };
+  var bs = sizes[dtype];
+  if (!bs) throw new Error('未対応のデータ型です（datatype=' + dtype + '）');
+  if (voxOffset + nvox * bs > bytes.byteLength) throw new Error('ファイルが途中で切れています');
+  var get;
+  if (dtype === 2) get = function (o) { return dv.getUint8(o); };
+  else if (dtype === 256) get = function (o) { return dv.getInt8(o); };
+  else if (dtype === 4) get = function (o) { return dv.getInt16(o, le); };
+  else if (dtype === 512) get = function (o) { return dv.getUint16(o, le); };
+  else if (dtype === 8) get = function (o) { return dv.getInt32(o, le); };
+  else if (dtype === 768) get = function (o) { return dv.getUint32(o, le); };
+  else if (dtype === 16) get = function (o) { return dv.getFloat32(o, le); };
+  else get = function (o) { return dv.getFloat64(o, le); };
+  var sl = slope && slope !== 0 ? slope : 1, it = inter || 0;
+  return { nx: nx, ny: ny, nz: nz, aff: aff, get: function (i, j, k) { return get(voxOffset + (i + j * nx + k * nx * ny) * bs) * sl + it; } };
+}
+function loadNiftiFile(file) {
+  var thr = parseFloat($('in-thr').value);
+  if (isNaN(thr)) thr = 0.5;
+  var fr = new FileReader();
+  fr.onload = function () {
+    var bytes = new Uint8Array(fr.result);
+    var p = bytes[0] === 0x1f && bytes[1] === 0x8b ? gunzipAsync(bytes) : Promise.resolve(bytes);
+    p.then(function (raw) {
+      var nii = readNifti(raw);
+      var M = matMul4(matInv4(nii.aff), A.aff); // 主格子 voxel → 病変画像 voxel
+      ensureLesion();
+      var log = [], i, j, k, q = 0, x, y, z, val, hit = 0;
+      for (k = 0; k < A.nz; k++) for (j = 0; j < A.ny; j++) for (i = 0; i < A.nx; i++, q++) {
+        x = Math.round(M[0] * i + M[1] * j + M[2] * k + M[3]);
+        y = Math.round(M[4] * i + M[5] * j + M[6] * k + M[7]);
+        z = Math.round(M[8] * i + M[9] * j + M[10] * k + M[11]);
+        val = (x >= 0 && y >= 0 && z >= 0 && x < nii.nx && y < nii.ny && z < nii.nz && nii.get(x, y, z) > thr) ? 1 : 0;
+        if (S.lesion[q] !== val) { log.push(q, S.lesion[q]); S.lesion[q] = val; }
+        if (val) hit++;
+      }
+      if (log.length) undoStack.push(log);
+      S.lesionVersion++; markAllDirty(); requestRender(); lesionStats();
+      if (!hit) toast('しきい値を超えるボクセルがありませんでした（MNI空間か・しきい値を確認）');
+      else { toast(file.name + ' を読み込みました'); if (LAST_STATS) setCursorMM(LAST_STATS.cen[0], LAST_STATS.cen[1], LAST_STATS.cen[2]); }
+    }).then(null, function (e) { toast('読み込めませんでした: ' + e.message); });
+  };
+  fr.onerror = function () { toast('ファイルを読めませんでした'); };
+  fr.readAsArrayBuffer(file);
+}
+
+// =================================================================
+// 13. クイズ
+// =================================================================
+var Q = { cur: null, right: 0, total: 0 };
+function quizStart() {
+  var mode = $('sel-quiz').value, level = S.level, labels = LABELS[level], ids = [], id;
+  for (id = 1; id < labels.length; id++) if (labels[id] && labels[id].key !== 'LV' && (level === 2 || id <= 30)) ids.push(id);
+  var target = ids[Math.floor(Math.random() * ids.length)];
+  var choices = [target];
+  while (choices.length < Math.min(4, ids.length)) {
+    var c = ids[Math.floor(Math.random() * ids.length)];
+    if (choices.indexOf(c) < 0) choices.push(c);
+  }
+  choices.sort(function () { return Math.random() - 0.5; });
+  Q.cur = { mode: mode, level: level, target: target, choices: choices, answered: false };
+  var h = '';
+  if (mode === 'point') {
+    var vox = randomInteriorVoxel(level, target);
+    if (!vox) { quizStart(); return; }
+    S.hideOverlay = true; S.quizMarker = true; S.highlight = null;
+    rebuildLUT();
+    setCursor(vox[0], vox[1], vox[2]);
+    h += '<div class="info-card"><div class="section-title">問題</div><div class="section-body">黄色い円（十字線の交点）は、どの血管の支配領域でしょうか？</div></div>';
+  } else {
+    var info = labels[target], c2 = info.info || {}, items = [];
+    var arr = (c2.symptoms_common || []).concat((info.side === 'L' ? c2.symptoms_left : c2.symptoms_right) || []);
+    for (var n = 0; n < arr.length; n++) items.push(sideText(arr[n], info.side));
+    if (!items.length) { quizStart(); return; }
+    h += '<div class="info-card"><div class="section-title">問題</div><div class="section-body">次の症候を来しうる領域はどれでしょうか？<ul>';
+    for (n = 0; n < Math.min(4, items.length); n++) h += '<li>' + esc(items[n]) + '</li>';
+    h += '</ul></div></div>';
+  }
+  h += '<div class="quiz-choices">';
+  for (var m = 0; m < choices.length; m++) h += '<button type="button" class="quiz-choice" data-choice="' + choices[m] + '">' + esc(labels[choices[m]].code + '  ' + labels[choices[m]].name) + '</button>';
+  h += '</div><div id="quiz-feedback"></div>';
+  $('quiz-area').innerHTML = h;
+  updateInfo();
+}
+function randomInteriorVoxel(level, id) {
+  var vol = level === 1 ? A.l1 : A.l2, tries, i, j, k, q, nx = A.nx, nxy = A.nx * A.ny;
+  var m = (level === 1 ? A.medoid1 : A.medoid2)[id];
+  for (tries = 0; tries < 20000; tries++) {
+    i = 2 + Math.floor(Math.random() * (A.nx - 4)); j = 2 + Math.floor(Math.random() * (A.ny - 4)); k = 2 + Math.floor(Math.random() * (A.nz - 4));
+    q = i + j * nx + k * nxy;
+    if (vol[q] !== id) continue;
+    if (vol[q - 1] !== id || vol[q + 1] !== id || vol[q - nx] !== id || vol[q + nx] !== id || vol[q - nxy] !== id || vol[q + nxy] !== id) continue;
+    return [i, j, k];
+  }
+  return m;
+}
+function quizAnswer(choice) {
+  var cur = Q.cur;
+  if (!cur || cur.answered) return;
+  cur.answered = true; Q.total++;
+  var ok = choice === cur.target;
+  if (ok) Q.right++;
+  forEachNode(document.querySelectorAll('.quiz-choice'), function (b) {
+    var c = parseInt(b.getAttribute('data-choice'), 10);
+    if (c === cur.target) b.className = 'quiz-choice correct';
+    else if (c === choice) b.className = 'quiz-choice wrong';
+  });
+  var info = LABELS[cur.level][cur.target];
+  $('quiz-feedback').innerHTML = '<div class="info-card" style="margin-top:6px;"><div class="section-title" style="color:' + (ok ? 'var(--accent-green)' : 'var(--accent-red)') + ';">' +
+    (ok ? '正解' : '不正解') + '：' + esc(info.code + ' ' + info.name) + '</div>' +
+    '<div class="note">' + esc((info.info && (info.info.atlas_region || info.info.summary)) || '') + '</div>' +
+    '<button type="button" class="btn btn-small" id="btn-quiz-next" style="margin-top:6px;">次の問題</button></div>';
+  $('quiz-score').textContent = Q.right + ' / ' + Q.total + ' 問正解';
+  S.hideOverlay = false; S.quizMarker = cur.mode === 'point';
+  if (cur.mode === 'symptom') { S.highlight = {}; S.highlight[cur.target] = true; jumpToLabel(cur.level, cur.target); }
+  rebuildLUT(); updateInfo(); requestRender();
+  $('btn-quiz-next').onclick = quizStart;
+}
+function quizStop() {
+  if (!S.hideOverlay && !S.quizMarker && !(Q.cur && Q.cur.mode === 'symptom')) return;
+  S.hideOverlay = false; S.quizMarker = false;
+  if (Q.cur && Q.cur.mode === 'symptom') S.highlight = null;
+  Q.cur = null; $('quiz-area').innerHTML = '';
+  rebuildLUT(); updateInfo(); requestRender();
+}
+
+// =================================================================
+// 14. 入力操作
+// =================================================================
+function attachViewEvents(v) {
+  var c = v.canvas, wrap = v.wrap, drag = null, touches = null;
+  function local(e) { var r = c.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+  function toVoxel(pt) {
+    var r = viewRect(v), g = v.geom;
+    var u = Math.floor((pt.x - r.x) / r.pu), vv = Math.floor((pt.y - r.y) / r.pv);
+    if (u < 0 || vv < 0 || u >= g.W || vv >= g.H) return null;
+    return g.toIJK(u, vv);
+  }
+  function primary(pt) {
+    setActiveView(v.plane);
+    if (S.tool === 'brush' || S.tool === 'eraser') { if (!strokeLog) strokeLog = []; paintAt(v, pt.x, pt.y); return; }
+    var ijk = toVoxel(pt);
+    if (ijk) { if (S.quizMarker && Q.cur && !Q.cur.answered && Q.cur.mode === 'point') return; setCursor(ijk[0], ijk[1], ijk[2]); }
+  }
+  function zoomAt(pt, factor) {
+    var nz = clamp(v.zoom * factor, 1, 12), cx = v.cw / 2, cy = v.ch / 2;
+    var qx = (pt.x - cx - v.panX) / v.zoom, qy = (pt.y - cy - v.panY) / v.zoom;
+    v.zoom = nz; v.panX = pt.x - cx - qx * nz; v.panY = pt.y - cy - qy * nz;
+    clampPan(v); requestRender();
+  }
+  v.zoomAt = zoomAt;
+  on(c, 'contextmenu', function (e) { e.preventDefault(); });
+  on(c, 'mousedown', function (e) {
+    var pt = local(e);
+    if (e.button === 2 || e.button === 1 || e.shiftKey) { drag = { pan: true, x: e.clientX, y: e.clientY, px: v.panX, py: v.panY }; e.preventDefault(); return; }
+    if (e.button !== 0) return;
+    drag = { pan: false };
+    primary(pt);
+  });
+  on(window, 'mousemove', function (e) {
+    if (!drag) return;
+    if (drag.pan) { v.panX = drag.px + (e.clientX - drag.x); v.panY = drag.py + (e.clientY - drag.y); clampPan(v); requestRender(); return; }
+    primary(local(e));
+  });
+  on(window, 'mouseup', function () { if (drag && !drag.pan && strokeLog) endStroke(); drag = null; });
+  on(c, 'mousemove', function (e) {
+    var pt = local(e), tip = wrap.querySelector('.tooltip');
+    v.hover = pt;
+    if (S.tool !== 'cursor') requestRender();
+    var ijk = toVoxel(pt);
+    if (!ijk || drag || S.hideOverlay) { tip.style.display = 'none'; return; }
+    var id = (S.level === 1 ? A.l1 : A.l2)[idxOf(ijk[0], ijk[1], ijk[2])], info = labelInfo(S.level, id), mm = vox2mm(ijk[0], ijk[1], ijk[2]);
+    tip.textContent = (info ? info.code + ' ' + info.name : 'ラベルなし') + '  (' + fmtSigned(mm[0]) + ', ' + fmtSigned(mm[1]) + ', ' + fmtSigned(mm[2]) + ')';
+    tip.style.display = 'block';
+    var tx = pt.x + 14, ty = pt.y + 12;
+    if (tx + tip.offsetWidth > wrap.clientWidth) tx = pt.x - tip.offsetWidth - 10;
+    if (ty + tip.offsetHeight > wrap.clientHeight) ty = pt.y - tip.offsetHeight - 8;
+    tip.style.left = tx + 'px'; tip.style.top = ty + 'px';
+  });
+  on(c, 'mouseleave', function () { v.hover = null; wrap.querySelector('.tooltip').style.display = 'none'; requestRender(); });
+  on(c, 'wheel', function (e) {
+    e.preventDefault();
+    if (e.ctrlKey || e.metaKey) { zoomAt(local(e), e.deltaY < 0 ? 1.15 : 1 / 1.15); return; }
+    var d = e.deltaY > 0 ? -1 : (e.deltaY < 0 ? 1 : 0);
+    if (d) stepSlice(v.plane, d);
+  }, { passive: false });
+  // タッチ: 1本指=操作 / 2本指=拡大縮小と移動
+  on(c, 'touchstart', function (e) {
+    e.preventDefault();
+    var r = c.getBoundingClientRect();
+    if (e.touches.length === 1) {
+      touches = null;
+      primary({ x: e.touches[0].clientX - r.left, y: e.touches[0].clientY - r.top });
+    } else if (e.touches.length === 2) {
+      if (strokeLog) endStroke();
+      var a = e.touches[0], b = e.touches[1];
+      touches = { d: Math.sqrt(Math.pow(a.clientX - b.clientX, 2) + Math.pow(a.clientY - b.clientY, 2)),
+        mx: (a.clientX + b.clientX) / 2 - r.left, my: (a.clientY + b.clientY) / 2 - r.top, zoom: v.zoom, px: v.panX, py: v.panY };
+    }
+  }, { passive: false });
+  on(c, 'touchmove', function (e) {
+    e.preventDefault();
+    var r = c.getBoundingClientRect();
+    if (e.touches.length === 1 && !touches) {
+      primary({ x: e.touches[0].clientX - r.left, y: e.touches[0].clientY - r.top });
+    } else if (e.touches.length === 2 && touches) {
+      var a = e.touches[0], b = e.touches[1];
+      var d = Math.sqrt(Math.pow(a.clientX - b.clientX, 2) + Math.pow(a.clientY - b.clientY, 2));
+      var mx = (a.clientX + b.clientX) / 2 - r.left, my = (a.clientY + b.clientY) / 2 - r.top;
+      var nz = clamp(touches.zoom * d / Math.max(1, touches.d), 1, 12), cx = v.cw / 2, cy = v.ch / 2;
+      var qx = (touches.mx - cx - touches.px) / touches.zoom, qy = (touches.my - cy - touches.py) / touches.zoom;
+      v.zoom = nz; v.panX = mx - cx - qx * nz; v.panY = my - cy - qy * nz;
+      clampPan(v); requestRender();
+    }
+  }, { passive: false });
+  on(c, 'touchend', function (e) {
+    if (e.touches.length === 0) { if (strokeLog) endStroke(); touches = null; }
+  });
+}
+function clampPan(v) {
+  var r = viewRect(v), lim;
+  lim = Math.max(0, r.w / 2); v.panX = clamp(v.panX, -lim, lim);
+  lim = Math.max(0, r.h / 2); v.panY = clamp(v.panY, -lim, lim);
+}
+function resetView(v) { v.zoom = 1; v.panX = 0; v.panY = 0; requestRender(); }
+function attach3DEvents() {
+  var c = $('canvas-3d'), drag = null, pinch = null;
+  on(c, 'mousedown', function (e) { setActiveView('3d'); drag = { x: e.clientX, y: e.clientY, yaw: R3.yaw, pitch: R3.pitch }; e.preventDefault(); });
+  on(window, 'mousemove', function (e) {
+    if (!drag) return;
+    R3.yaw = drag.yaw + (e.clientX - drag.x) * 0.01;
+    R3.pitch = clamp(drag.pitch + (e.clientY - drag.y) * 0.01, -Math.PI / 2 + 0.001, Math.PI / 2 - 0.001);
+    requestRender();
+  });
+  on(window, 'mouseup', function () { drag = null; });
+  on(c, 'wheel', function (e) { e.preventDefault(); R3.zoom = clamp(R3.zoom * (e.deltaY < 0 ? 1.12 : 1 / 1.12), 0.5, 6); requestRender(); }, { passive: false });
+  on(c, 'touchstart', function (e) {
+    e.preventDefault();
+    if (e.touches.length === 1) drag = { x: e.touches[0].clientX, y: e.touches[0].clientY, yaw: R3.yaw, pitch: R3.pitch };
+    else if (e.touches.length === 2) {
+      drag = null;
+      var a = e.touches[0], b = e.touches[1];
+      pinch = { d: Math.sqrt(Math.pow(a.clientX - b.clientX, 2) + Math.pow(a.clientY - b.clientY, 2)), z: R3.zoom };
+    }
+  }, { passive: false });
+  on(c, 'touchmove', function (e) {
+    e.preventDefault();
+    if (e.touches.length === 1 && drag) {
+      R3.yaw = drag.yaw + (e.touches[0].clientX - drag.x) * 0.01;
+      R3.pitch = clamp(drag.pitch + (e.touches[0].clientY - drag.y) * 0.01, -Math.PI / 2 + 0.001, Math.PI / 2 - 0.001);
+      requestRender();
+    } else if (e.touches.length === 2 && pinch) {
+      var a = e.touches[0], b = e.touches[1];
+      var d = Math.sqrt(Math.pow(a.clientX - b.clientX, 2) + Math.pow(a.clientY - b.clientY, 2));
+      R3.zoom = clamp(pinch.z * d / Math.max(1, pinch.d), 0.5, 6); requestRender();
+    }
+  }, { passive: false });
+  on(c, 'touchend', function (e) { if (!e.touches.length) { drag = null; pinch = null; } });
+}
+function stepSlice(plane, d) {
+  if (plane === 'axial') setCursor(S.i, S.j, S.k + (A.aff[10] > 0 ? d : -d));
+  else if (plane === 'coronal') setCursor(S.i, S.j + (A.aff[5] > 0 ? d : -d), S.k);
+  else if (plane === 'sagittal') setCursor(S.i + (A.aff[0] < 0 ? d : -d), S.j, S.k); // ▶ で患者の左へ
+}
+function setActiveView(p) {
+  S.activeView = p;
+  forEachNode(document.querySelectorAll('.view-panel'), function (el) { el.classList.toggle('active-view', el.getAttribute('data-plane') === p); });
+}
+function onKey(e) {
+  var tag = (e.target && e.target.tagName) || '';
+  if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
+  var p = S.activeView === '3d' ? 'axial' : S.activeView;
+  if (e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); stepSlice(p, 1); }
+  else if (e.key === 'ArrowDown' || e.key === 'PageDown') { e.preventDefault(); stepSlice(p, -1); }
+  else if (e.key === '+' || e.key === '=') { if (S.activeView === '3d') { R3.zoom = clamp(R3.zoom * 1.12, 0.5, 6); requestRender(); } else { var v = V[p]; v.zoomAt({ x: v.cw / 2, y: v.ch / 2 }, 1.2); } }
+  else if (e.key === '-') { if (S.activeView === '3d') { R3.zoom = clamp(R3.zoom / 1.12, 0.5, 6); requestRender(); } else { var w = V[p]; w.zoomAt({ x: w.cw / 2, y: w.ch / 2 }, 1 / 1.2); } }
+  else if (e.key === '0') { if (S.activeView === '3d') { R3.zoom = 1; requestRender(); } else resetView(V[p]); }
+}
+
+// =================================================================
+// 15. 画面の切替・設定
+// =================================================================
+function setLevel(lv) {
+  S.level = lv;
+  $('btn-level-1').classList.toggle('active', lv === 1);
+  $('btn-level-2').classList.toggle('active', lv === 2);
+  if (S.highlight && lv !== 1) S.highlight = null;
+  rebuildLUT(); buildLegend(); updateInfo(); scheduleHash(); requestRender();
+}
+function setLayout(mode) {
+  S.layout = mode;
+  forEachNode(document.querySelectorAll('#plane-tabs button'), function (b) { b.classList.toggle('active', b.getAttribute('data-layout') === mode); });
+  var grid = $('viewports-grid');
+  grid.classList.toggle('single', mode !== 'all');
+  forEachNode(grid.querySelectorAll('.view-panel'), function (p) {
+    var pl = p.getAttribute('data-plane');
+    p.classList.toggle('on', mode === 'all' || pl === mode);
+  });
+  if (mode !== 'all') setActiveView(mode);
+  markAllDirty(); requestRender();
+}
+function setTab(tab) {
+  S.tab = tab;
+  forEachNode(document.querySelectorAll('#sidebar-tabs button'), function (b) { b.classList.toggle('active', b.getAttribute('data-tab') === tab); });
+  forEachNode(document.querySelectorAll('.sidebar-content'), function (el) { el.classList.toggle('on', el.id === 'tab-' + tab); });
+  if (tab !== 'quiz') quizStop();
+  if (tab === 'list') buildLegend();
+  if (tab === 'lesion') lesionStats();
+}
+function setTool(t) {
+  S.tool = t;
+  forEachNode(document.querySelectorAll('[data-tool]'), function (b) { b.classList.toggle('active', b.getAttribute('data-tool') === t); });
+  for (var n = 0; n < PLANES.length; n++) {
+    V[PLANES[n]].wrap.classList.toggle('tool-brush', t === 'brush');
+    V[PLANES[n]].wrap.classList.toggle('tool-eraser', t === 'eraser');
+  }
+  requestRender();
+}
+function setOvMode(m) {
+  S.ovmode = m;
+  forEachNode(document.querySelectorAll('[data-ovmode]'), function (b) { b.classList.toggle('active', b.getAttribute('data-ovmode') === m); });
+  rebuildLUT(); requestRender();
+}
+function resetSettings() {
+  S.opacity = DEFAULTS.opacity; S.contrast = DEFAULTS.contrast; S.bright = DEFAULTS.bright; S.smooth = DEFAULTS.smooth;
+  S.convention = DEFAULTS.convention; S.filter = DEFAULTS.filter; S.cross = DEFAULTS.cross; S.bz = DEFAULTS.bz;
+  $('sl-opacity').value = S.opacity * 100; $('lb-opacity').textContent = Math.round(S.opacity * 100) + '%';
+  $('sl-contrast').value = S.contrast * 100; $('lb-contrast').textContent = S.contrast.toFixed(1) + 'x';
+  $('sl-bright').value = S.bright; $('lb-bright').textContent = '0';
+  $('chk-smooth').checked = S.smooth; $('sel-convention').value = S.convention; $('sel-filter').value = S.filter;
+  $('chk-cross').checked = S.cross; $('chk-bz').checked = S.bz;
+  setOvMode(DEFAULTS.ovmode);
+  for (var n = 0; n < PLANES.length; n++) { V[PLANES[n]].zoom = 1; V[PLANES[n]].panX = 0; V[PLANES[n]].panY = 0; }
+  rebuildGeoms(); rebuildGray(); rebuildLUT(); requestRender();
+}
+
+function bindUI() {
+  forEachNode(document.querySelectorAll('[data-level]'), function (b) { on(b, 'click', function () { setLevel(parseInt(b.getAttribute('data-level'), 10)); }); });
+  forEachNode(document.querySelectorAll('#plane-tabs button'), function (b) { on(b, 'click', function () { setLayout(b.getAttribute('data-layout')); }); });
+  forEachNode(document.querySelectorAll('#sidebar-tabs button'), function (b) { on(b, 'click', function () { setTab(b.getAttribute('data-tab')); }); });
+  forEachNode(document.querySelectorAll('[data-ovmode]'), function (b) { on(b, 'click', function () { setOvMode(b.getAttribute('data-ovmode')); }); });
+  forEachNode(document.querySelectorAll('[data-tool]'), function (b) { on(b, 'click', function () { setTool(b.getAttribute('data-tool')); }); });
+  forEachNode(document.querySelectorAll('[data-brushshape]'), function (b) {
+    on(b, 'click', function () {
+      S.brushShape = b.getAttribute('data-brushshape');
+      forEachNode(document.querySelectorAll('[data-brushshape]'), function (x) { x.classList.toggle('active', x === b); });
+    });
+  });
+  forEachNode(document.querySelectorAll('.view-panel'), function (panel) {
+    var plane = panel.getAttribute('data-plane');
+    forEachNode(panel.querySelectorAll('[data-step]'), function (b) { on(b, 'click', function () { stepSlice(plane, parseInt(b.getAttribute('data-step'), 10)); }); });
+    forEachNode(panel.querySelectorAll('[data-zoom]'), function (b) {
+      on(b, 'click', function () {
+        var z = b.getAttribute('data-zoom');
+        if (plane === '3d') { R3.zoom = z === 'reset' ? 1 : clamp(R3.zoom * (z === 'in' ? 1.25 : 0.8), 0.5, 6); if (z === 'reset') R3.setView('home'); requestRender(); return; }
+        var v = V[plane];
+        if (z === 'reset') resetView(v); else v.zoomAt({ x: v.cw / 2, y: v.ch / 2 }, z === 'in' ? 1.25 : 0.8);
+      });
+    });
+  });
+  on($('slider-axial'), 'input', function () { setCursor(S.i, S.j, parseInt(this.value, 10)); });
+  on($('slider-coronal'), 'input', function () { setCursor(S.i, parseInt(this.value, 10), S.k); });
+  on($('slider-sagittal'), 'input', function () { setCursor(parseInt(this.value, 10), S.j, S.k); });
+  on($('sl-opacity'), 'input', function () { S.opacity = this.value / 100; $('lb-opacity').textContent = this.value + '%'; rebuildLUT(); requestRender(); });
+  on($('sl-contrast'), 'input', function () { S.contrast = this.value / 100; $('lb-contrast').textContent = S.contrast.toFixed(1) + 'x'; rebuildGray(); requestRender(); });
+  on($('sl-bright'), 'input', function () { S.bright = parseInt(this.value, 10); $('lb-bright').textContent = this.value; rebuildGray(); requestRender(); });
+  on($('chk-smooth'), 'change', function () { S.smooth = this.checked; requestRender(); });
+  on($('chk-cross'), 'change', function () { S.cross = this.checked; requestRender(); });
+  on($('chk-bz'), 'change', function () { S.bz = this.checked; markAllDirty(); requestRender(); });
+  on($('sel-convention'), 'change', function () { S.convention = this.value; rebuildGeoms(); requestRender(); });
+  on($('sel-filter'), 'change', function () { S.filter = this.value; rebuildLUT(); requestRender(); });
+  on($('sel-3dmode'), 'change', function () { R3.mode = this.value; requestRender(); });
+  on($('sel-3dq'), 'change', function () { R3.step = parseInt(this.value, 10); R3.build(); requestRender(); });
+  forEachNode(document.querySelectorAll('[data-view3d]'), function (b) { on(b, 'click', function () { R3.setView(b.getAttribute('data-view3d')); }); });
+  on($('coord-form'), 'submit', function (e) {
+    e.preventDefault();
+    var x = parseFloat($('in-x').value), y = parseFloat($('in-y').value), z = parseFloat($('in-z').value);
+    if (isNaN(x) || isNaN(y) || isNaN(z)) { toast('X・Y・Z を数値で入れてください'); return; }
+    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+    setCursorMM(x, y, z);
+  });
+  on($('search-input'), 'input', buildLegend);
+  on($('legend-container'), 'click', function (e) {
+    var t = e.target; while (t && t !== this && !t.getAttribute('data-jump')) t = t.parentNode;
+    if (t && t !== this) { jumpToLabel(S.level, parseInt(t.getAttribute('data-jump'), 10)); setTab('info'); }
+  });
+  on($('lookup-tags'), 'click', function (e) {
+    var t = e.target; if (!t.getAttribute || !t.getAttribute('data-tag')) return;
+    var tg = t.getAttribute('data-tag');
+    LK.selected[tg] = !LK.selected[tg];
+    t.classList.toggle('on', LK.selected[tg]); t.setAttribute('aria-checked', LK.selected[tg] ? 'true' : 'false');
+    runLookup();
+  });
+  on($('lookup-tags'), 'keydown', function (e) { if ((e.key === 'Enter' || e.key === ' ') && e.target.getAttribute('data-tag')) { e.preventDefault(); e.target.click(); } });
+  forEachNode(document.getElementsByName('lk-side'), function (r) { on(r, 'change', runLookup); });
+  on($('chk-lookup-hl'), 'change', runLookup);
+  on($('btn-lookup-clear'), 'click', function () {
+    LK.selected = {};
+    forEachNode(document.querySelectorAll('.tag-chip'), function (c) { c.classList.remove('on'); c.setAttribute('aria-checked', 'false'); });
+    runLookup();
+  });
+  on($('lookup-results'), 'click', function (e) {
+    var t = e.target; while (t && t !== this && !t.getAttribute('data-jump1')) t = t.parentNode;
+    if (t && t !== this) { jumpToLabel(1, parseInt(t.getAttribute('data-jump1'), 10)); }
+  });
+  on($('sl-brush'), 'input', function () { S.brushMm = parseInt(this.value, 10); $('lb-brush').textContent = this.value + ' mm'; });
+  on($('btn-undo'), 'click', undoLesion);
+  on($('btn-lesion-clear'), 'click', clearLesion);
+  on($('chk-lesion-show'), 'change', function () { S.showLesion = this.checked; markAllDirty(); requestRender(); });
+  on($('file-nifti'), 'change', function () { if (this.files && this.files[0]) loadNiftiFile(this.files[0]); this.value = ''; });
+  on($('tab-info'), 'click', function (e) {
+    var t = e.target;
+    if (!t.getAttribute || !t.getAttribute('data-show3d')) return;
+    R3.mode = 'selected'; $('sel-3dmode').value = 'selected';
+    if (S.layout !== 'all' && S.layout !== '3d') setLayout('3d');
+    requestRender();
+  });
+  on($('btn-quiz-start'), 'click', quizStart);
+  on($('quiz-area'), 'click', function (e) { var t = e.target; if (t.getAttribute && t.getAttribute('data-choice')) quizAnswer(parseInt(t.getAttribute('data-choice'), 10)); });
+  on($('btn-reset-all'), 'click', resetSettings);
+  on($('btn-copylink'), 'click', function () {
+    var mm = vox2mm(S.i, S.j, S.k);
+    var base = location.protocol.indexOf('http') === 0 ? location.href.split('#')[0] : 'https://tools.ichisouzo-lab.com/vascular-territory-atlas.html';
+    copyText(base + '#x=' + Math.round(mm[0]) + '&y=' + Math.round(mm[1]) + '&z=' + Math.round(mm[2]) + '&lv=' + S.level, 'この位置のリンクをコピーしました');
+  });
+  on($('btn-png'), 'click', exportPNG);
+  on($('btn-standalone'), 'click', function () {
+    downloadBlob(new Blob([PRISTINE_HTML], { type: 'text/html;charset=utf-8' }), 'MNI_脳血管支配領域_3Dアトラス_オフライン版.html');
+  });
+  on(window, 'keydown', onKey);
+  on(window, 'resize', function () { requestRender(); });
+  on(window, 'hashchange', function () {
+    var h = readHash();
+    if (!isNaN(h.x) && !isNaN(h.y) && !isNaN(h.z)) { var v = mm2vox(h.x, h.y, h.z); if (v[0] !== S.i || v[1] !== S.j || v[2] !== S.k) setCursor(v[0], v[1], v[2]); }
+  });
+  var fsel = $('sel-filter'), h = '', n;
+  for (n = 0; n < FILTERS.length; n++) h += '<option value="' + FILTERS[n].id + '">' + esc(FILTERS[n].label) + '</option>';
+  fsel.innerHTML = h;
+  var pb = $('preset-bar'); h = '';
+  for (n = 0; n < PRESETS.length; n++) h += '<button type="button" class="btn-preset" data-preset="' + n + '" title="MNI ' + PRESETS[n].x + ', ' + PRESETS[n].y + ', ' + PRESETS[n].z + ' mm">' + esc(PRESETS[n].label) + '</button>';
+  pb.innerHTML = h;
+  on(pb, 'click', function (e) {
+    var t = e.target; if (!t.getAttribute || t.getAttribute('data-preset') == null) return;
+    var p = PRESETS[parseInt(t.getAttribute('data-preset'), 10)];
+    setCursorMM(p.x, p.y, p.z);
+  });
+}
+
+// =================================================================
+// 16. PNG 書き出し
+// =================================================================
+function exportPNG() {
+  var Wc = 1500, Hc = 1060, cv = document.createElement('canvas');
+  cv.width = Wc; cv.height = Hc;
+  var ctx = cv.getContext('2d'), mm = vox2mm(S.i, S.j, S.k), id = currentLabelId(), info = labelInfo(S.level, id);
+  ctx.fillStyle = '#0b1120'; ctx.fillRect(0, 0, Wc, Hc);
+  ctx.fillStyle = '#f8fafc'; ctx.font = 'bold 26px sans-serif';
+  ctx.fillText('MNI脳血管支配領域アトラス', 30, 46);
+  ctx.fillStyle = '#38bdf8'; ctx.font = '18px monospace';
+  ctx.fillText('MNI X=' + fmtSigned(mm[0]) + '  Y=' + fmtSigned(mm[1]) + '  Z=' + fmtSigned(mm[2]) + ' mm   Level ' + S.level + '   ' + (S.convention === 'radiological' ? '放射線科式（画面左=患者右）' : '神経科式（画面左=患者左）'), 30, 78);
+  ctx.fillStyle = '#e2e8f0'; ctx.font = 'bold 20px sans-serif';
+  ctx.fillText(info ? (info.code + '  ' + info.name) : 'ラベルなし', 30, 110);
+  var boxes = [['axial', 30, 130], ['coronal', 520, 130], ['sagittal', 1010, 130]], n;
+  for (n = 0; n < boxes.length; n++) {
+    var v = V[boxes[n][0]], g = v.geom, bw = 460, bh = 520;
+    if (v.dataDirty || v.lastSlice !== g.slice()) { buildSliceImages(v); v.lastSlice = g.slice(); }
+    var s = Math.min(bw / (g.W * g.du), bh / (g.H * g.dv)), w = g.W * g.du * s, h = g.H * g.dv * s;
+    var x0 = boxes[n][1] + (bw - w) / 2, y0 = boxes[n][2] + (bh - h) / 2;
+    ctx.fillStyle = '#000'; ctx.fillRect(boxes[n][1], boxes[n][2], bw, bh);
+    ctx.imageSmoothingEnabled = S.smooth; ctx.drawImage(v.base, x0, y0, w, h);
+    ctx.imageSmoothingEnabled = false; ctx.drawImage(v.ov, x0, y0, w, h);
+    var c = g.fromIJK(S.i, S.j, S.k), cx = x0 + (c[0] + 0.5) * g.du * s, cy = y0 + (c[1] + 0.5) * g.dv * s;
+    ctx.strokeStyle = 'rgba(250,204,21,0.9)'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(boxes[n][1], cy); ctx.lineTo(boxes[n][1] + bw, cy); ctx.moveTo(cx, boxes[n][2]); ctx.lineTo(cx, boxes[n][2] + bh); ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 17px sans-serif';
+    var ttl = boxes[n][0] === 'axial' ? '横断 Z=' + fmtSigned(mm[2]) : (boxes[n][0] === 'coronal' ? '冠状断 Y=' + fmtSigned(mm[1]) : '矢状断 X=' + fmtSigned(mm[0]));
+    ctx.fillText(ttl + ' mm', boxes[n][1] + 8, boxes[n][2] + 22);
+    ctx.font = 'bold 15px sans-serif';
+    var lr = S.convention === 'radiological' ? ['R', 'L'] : ['L', 'R'];
+    if (boxes[n][0] === 'sagittal') lr = ['A', 'P'];
+    ctx.fillText(lr[0], boxes[n][1] + 6, boxes[n][2] + bh / 2); ctx.fillText(lr[1], boxes[n][1] + bw - 18, boxes[n][2] + bh / 2);
+  }
+  // 凡例（表示中の断面に出ている領域）
+  ctx.fillStyle = '#94a3b8'; ctx.font = '15px sans-serif';
+  var seen = {}, list = [], vol = S.level === 1 ? A.l1 : A.l2, pn, q, p;
+  for (pn = 0; pn < PLANES.length; pn++) {
+    var idx = sliceIndex(V[PLANES[pn]].geom);
+    for (p = 0; p < idx.length; p++) { q = vol[idx[p]]; if (q && !seen[q]) { seen[q] = true; list.push(q); } }
+  }
+  list.sort(function (a, b) { return a - b; });
+  var lx = 30, ly = 690;
+  for (n = 0; n < list.length; n++) {
+    var li = labelInfo(S.level, list[n]);
+    if (!li || !isVisibleLabel(li)) continue;
+    ctx.fillStyle = rgb(li.color); ctx.fillRect(lx, ly - 12, 14, 14);
+    ctx.fillStyle = '#e2e8f0'; ctx.fillText(li.code + ' ' + li.name, lx + 20, ly);
+    lx += 360; if (lx > Wc - 360) { lx = 30; ly += 26; }
+    if (ly > Hc - 70) break;
+  }
+  ctx.fillStyle = '#64748b'; ctx.font = '13px sans-serif';
+  ctx.fillText('アトラス: Liu CF, et al. Digital 3D Brain MRI Arterial Territories Atlas. Sci Data. 2023;10(1):74.（© 2021 The Johns Hopkins University, CC BY-SA 4.0・本ツールで再サンプリング）', 30, Hc - 36);
+  ctx.fillText('医知創造ラボ  tools.ichisouzo-lab.com/vascular-territory-atlas.html  教育用。個々の患者の血管支配には個人差がある。', 30, Hc - 16);
+  var a = document.createElement('a');
+  a.download = 'vascular_atlas_X' + Math.round(mm[0]) + '_Y' + Math.round(mm[1]) + '_Z' + Math.round(mm[2]) + '.png';
+  a.href = cv.toDataURL('image/png');
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+// =================================================================
+// 17. 起動
+// =================================================================
+function buildCredit() {
+  var t1src = (BUILD_INFO && BUILD_INFO.t1_credit) || '';
+  $('credit').innerHTML =
+    '<b>出典</b>: Liu CF, et al. Digital 3D Brain MRI Arterial Territories Atlas. <i>Sci Data</i>. 2023;10(1):74. ' +
+    '<a href="https://pubmed.ncbi.nlm.nih.gov/36739282/" target="_blank" rel="noopener">PMID 36739282</a>・' +
+    '<a href="https://www.nitrc.org/projects/arterialatlas/" target="_blank" rel="noopener">NITRC</a>。' +
+    'アトラスデータ © 2021 The Johns Hopkins University, <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ja" target="_blank" rel="noopener">CC BY-SA 4.0</a>。' +
+    '本ツールではこれを ' + esc(A.vox[0]) + 'mm 格子に再サンプリングし、日本語名・臨床解説を付けて表示しています（改変したアトラスデータも CC BY-SA 4.0 で提供）。' +
+    (t1src ? '背景画像: ' + esc(t1src) + '。' : '') +
+    '<br>教育用の資料です。血管支配には個人差が大きく、診断・治療は画像と臨床所見を総合して判断してください。' +
+    (BUILD_INFO && BUILD_INFO.date ? '　更新: ' + esc(BUILD_INFO.date) : '');
+}
+function init() {
+  var el = $('atlas-data'), b64 = el ? el.textContent : '';
+  if (!b64 || b64.indexOf('@@') >= 0) { showError('アトラスデータが埋め込まれていません'); return; }
+  gunzipAsync(b64ToBytes(b64)).then(function (raw) {
+    parseAtlas(raw);
+    el.textContent = ''; // 文字列を手放してメモリを空ける（単体HTML用には PRISTINE_HTML を保持）
+    buildLabels();
+    computeStats();
+    $('slider-axial').max = A.nz - 1; $('slider-coronal').max = A.ny - 1; $('slider-sagittal').max = A.nx - 1;
+    $('slider-axial').min = 0; $('slider-coronal').min = 0; $('slider-sagittal').min = 0;
+    initViews();
+    for (var n = 0; n < PLANES.length; n++) attachViewEvents(V[PLANES[n]]);
+    R3.init(); attach3DEvents();
+    bindUI();
+    buildLookupUI();
+    buildCredit();
+    if (!A.prob) { $('chk-bz').disabled = true; $('chk-bz').parentNode.title = 'このデータには確率マップが含まれていません'; $('chk-bz').parentNode.style.opacity = '0.45'; }
+    rebuildGray(); rebuildLUT();
+    var h = readHash();
+    if (h.lv === 2) setLevel(2);
+    if (!isNaN(h.x) && !isNaN(h.y) && !isNaN(h.z)) setCursorMM(h.x, h.y, h.z);
+    else setCursorMM(PRESETS[4].x, PRESETS[4].y, PRESETS[4].z);
+    setLayout(window.innerWidth > 900 ? 'all' : 'axial');
+    setActiveView('axial');
+    $('loading-overlay').style.display = 'none';
+    window.__atlas = { A: A, S: S, V: V, R3: R3, setCursorMM: setCursorMM, vox2mm: vox2mm, labelInfo: labelInfo, currentLabelId: currentLabelId,
+      lesionStats: function () { return LAST_STATS; }, setLevel: setLevel, setTab: setTab, setLayout: setLayout, PRESETS: PRESETS };
+  }).then(null, function (err) { showError(err && err.message ? err.message : String(err)); });
+}
+function showError(msg) {
+  $('loading-overlay').innerHTML = '<div style="color:#ef4444;font-weight:700;">データを読み込めませんでした</div><div style="font-size:0.85rem;color:#94a3b8;">' + esc(msg) + '</div>' +
+    '<div style="font-size:0.8rem;color:#94a3b8;">ブラウザを最新版にするか、別のブラウザでお試しください。</div>';
+  if (window.console) console.error(msg);
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
+</script>
+</body>
+</html>
