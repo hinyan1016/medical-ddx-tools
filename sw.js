@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v214';
+const CACHE_NAME = 'ddx-tools-v215';
 const ASSETS = [
   './infographics/nobel-physics-neutrino-2026/index.html',
   './infographics/cerebellar-stroke-vomiting/index.html',
@@ -155,6 +155,7 @@ const ASSETS = [
   './news2_calculator.html',
   './bfcrs_calculator.html',
   './glim_nutrition.html',
+  './hoken_byomei_checker.html',
   './refeeding_risk.html',
   './infographics/refeeding-syndrome/index.html',
   './infographics/refeeding-syndrome/infographic.png',
