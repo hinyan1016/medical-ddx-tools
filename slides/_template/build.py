@@ -9,6 +9,7 @@ manifest.json を読み、各 deck のフォルダにビューア index.html / P
   python build.py                # 全 deck をビルド
   python build.py --slug dementia-feeding-refusal   # 単一 deck
   python build.py --dry-run      # コピー先・上書き予定をプレビュー
+  python build.py --index-only   # デッキは作り直さず、一覧ページと一覧用 card.webp だけ更新
 
 前提:
   - medical-content/youtube-slides/<source_dir>/ にPNGとPDFがある
@@ -29,6 +30,7 @@ SLIDES_ROOT = THIS.parent.parent                    # medical-ddx-tools/slides/
 DDX_ROOT = SLIDES_ROOT.parent                       # medical-ddx-tools/
 sys.path.insert(0, str(DDX_ROOT))
 from png8 import quantize_png                        # noqa: E402
+from card_webp import write_card                     # noqa: E402
 WORKSPACE = DDX_ROOT.parent                          # Claude_task_new/
 SOURCE_ROOT = WORKSPACE / "medical-content" / "youtube-slides"
 TEMPLATE_DIR = SLIDES_ROOT / "_template"
@@ -166,6 +168,7 @@ def render_viewer(deck: dict, slide_count: int, has_deck: bool = False,
         "{{HTML_DECK_BUTTON}}": html_deck_button,
         "{{INFOGRAPHIC_BUTTON}}": infographic_button,
         "{{JC_DECK_BUTTON}}": jc_deck_button,
+        "{{SLUG}}": deck["slug"],
         "{{TITLE}}": deck["title"],
         "{{SUBTITLE}}": deck.get("subtitle", ""),
         "{{DESCRIPTION}}": deck.get("description", deck["title"]),
@@ -180,6 +183,25 @@ def render_viewer(deck: dict, slide_count: int, has_deck: bool = False,
     for k, v in replacements.items():
         html = html.replace(k, v)
     return html
+
+
+FIRST_SLIDE_NAMES = ("slide-01.png", "slide_01.png", "slide-01.webp", "slide-01.jpg")
+
+
+def card_name(slug: str) -> str:
+    """一覧カードの画像。軽い card.webp があればそれ、無ければ表紙 slide-01.png。"""
+    return "card.webp" if (SLIDES_ROOT / slug / "card.webp").exists() else "slide-01.png"
+
+
+def ensure_cards(decks: list) -> int:
+    """公開済みの表紙から、一覧用 card.webp が無いデッキの分だけ作る（手作りビューアの slide_01.png も拾う）。"""
+    made = 0
+    for d in decks:
+        folder = SLIDES_ROOT / d["slug"]
+        first = next((folder / n for n in FIRST_SLIDE_NAMES if (folder / n).exists()), None)
+        if first and not (folder / "card.webp").exists():
+            made += write_card(first, folder / "card.webp")
+    return made
 
 
 def render_index(decks: list) -> str:
@@ -198,7 +220,7 @@ def render_index(decks: list) -> str:
         )
         cards_html.append(
             f'    <a class="deck-card" href="{d["slug"]}/" data-search="{search_text}">\n'
-            f'      <div class="thumb"><img src="{d["slug"]}/slide-01.png" alt="" loading="lazy"></div>\n'
+            f'      <div class="thumb"><img src="{d["slug"]}/{card_name(d["slug"])}" alt="" loading="lazy"></div>\n'
             f'      <div class="body">\n'
             f'        <div class="deck-title">{d["title"]}</div>\n'
             f'        <div class="deck-desc">{d.get("subtitle", "")}</div>\n'
@@ -249,6 +271,7 @@ def build_deck(deck: dict, dry_run: bool = False) -> bool:
         if i == 1:
             shutil.copy2(png_src, dst / "slide-01.png")
             quantize_png(dst / "slide-01.png")   # 保存直前に256色化（URL・拡張子は不変）
+            write_card(png_src, dst / "card.webp")   # 一覧カード用（16:9・幅800px以下のWebP）
             continue
         with Image.open(png_src) as im:
             if im.mode not in ("RGB", "RGBA"):
@@ -308,10 +331,17 @@ def main():
     parser.add_argument("--slug", help="特定の slug のみビルド")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--skip-index", action="store_true", help="一覧ページの再生成をスキップ")
+    parser.add_argument("--index-only", action="store_true", help="デッキは作り直さず、一覧ページと一覧用 card.webp だけ更新")
     args = parser.parse_args()
 
     manifest = load_manifest()
     decks = manifest["decks"]
+
+    if args.index_only:
+        print(f"  card.webp 作成: {ensure_cards(decks)} 件")
+        (SLIDES_ROOT / "index.html").write_text(render_index(decks), encoding="utf-8", newline="\n")
+        print(f"  [OK] index.html ({len(decks)} decks)")
+        return
 
     if args.slug:
         decks_to_build = [d for d in decks if d["slug"] == args.slug]

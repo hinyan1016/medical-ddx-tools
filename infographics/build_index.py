@@ -8,11 +8,16 @@
 実行:
   python build_index.py            # サムネ生成 + index.html 生成
   python build_index.py --no-thumb # index.html のみ再生成（サムネ据え置き）
+
+一覧カードの画像は <slug>/card.webp（16:9・幅800px以下）。infographic.png の上部から作り、
+元画像の大きさを cards.json に記録して、図が差し替えられたときだけ作り直す（--no-thumb でも行う）。
 """
 import argparse, html, json, subprocess, sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE.parent))
+from card_webp import write_card  # noqa: E402
 RENDER = HERE.parent.parent / "medical-content" / "youtube-slides" / "_shared_scripts" / "render_html_to_png.py"
 
 
@@ -28,8 +33,27 @@ def render_thumbs():
         print("  thumb:", it["slug"], "OK" if out.exists() else "FAIL", (r.stderr or "").strip()[:120])
 
 
+def update_cards(items):
+    """infographic.png の上部から一覧用の card.webp を作る。元の大きさが変わったものだけ作り直す。"""
+    record_path = HERE / "cards.json"
+    record = json.loads(record_path.read_text(encoding="utf-8")) if record_path.exists() else {}
+    made = 0
+    for it in items:
+        src, card = HERE / it["slug"] / "infographic.png", HERE / it["slug"] / "card.webp"
+        if not src.exists():
+            continue
+        size = src.stat().st_size
+        if not card.exists() or record.get(it["slug"]) != size:
+            made += write_card(src, card)
+            record[it["slug"]] = size
+    record = {it["slug"]: record[it["slug"]] for it in items if it["slug"] in record}
+    record_path.write_text(json.dumps(record, ensure_ascii=False, indent=1, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
+    print("card.webp 更新: {} 件".format(made))
+
+
 def build_index():
     items = json.loads((HERE / "manifest.json").read_text(encoding="utf-8"))["items"]
+    update_cards(items)
     cards = []
     for it in items:
         s = it["slug"]; t = html.escape(it["title"]); d = html.escape(it.get("desc", ""))
@@ -37,7 +61,11 @@ def build_index():
         blog = it.get("blog_url", "")
         search = html.escape("{} {} {}".format(it["title"], it.get("desc", ""), it.get("audience", "")))
         aud_cls = "aud-pro" if "医療" in it.get("audience", "") else "aud-gen"
-        thumb = "{}/thumb.png".format(s) if (HERE / s / "thumb.png").exists() else ""
+        # 一覧は軽いカード画像を使う。無ければ従来の thumb.png。
+        thumb = ("{}/card.webp".format(s) if (HERE / s / "card.webp").exists()
+                 else "{}/thumb.png".format(s) if (HERE / s / "thumb.png").exists() else "")
+        image_link = ('<a class="lnk" href="{s}/infographic.png" target="_blank" rel="noopener">🖼️ 画像</a>'.format(s=s)
+                      if (HERE / s / "infographic.png").exists() else "")
         thumb_html = ('<a class="thumb" href="{s}/" aria-label="{t}"><img src="{th}" alt="{t} サムネイル" loading="lazy"></a>'.format(s=s, t=t, th=thumb)
                       if thumb else '<a class="thumb thumb--noimg" href="{s}/">✚</a>'.format(s=s))
         blog_link = '<a class="lnk" href="{b}" target="_blank" rel="noopener">解説記事</a>'.format(b=html.escape(blog)) if blog else ""
@@ -50,9 +78,9 @@ def build_index():
             '      <h2 class="title"><a href="{s}/">{t}</a></h2>\n'
             '      <p class="desc">{d}</p>\n'
             '      <div class="meta"><span class="tag {ac}">{aud}</span><span class="date">{date}</span></div>\n'
-            '      <div class="links"><a class="lnk lnk--main" href="{s}/">📊 図を開く</a><a class="lnk" href="{s}/infographic.png" target="_blank" rel="noopener">🖼️ 画像</a>{yt}{bl}</div>\n'
+            '      <div class="links"><a class="lnk lnk--main" href="{s}/">📊 図を開く</a>{im}{yt}{bl}</div>\n'
             '    </div>\n'
-            '  </article>'.format(sr=search, th=thumb_html, s=s, t=t, d=d, ac=aud_cls, aud=aud, date=date, bl=blog_link, yt=yt_link))
+            '  </article>'.format(sr=search, th=thumb_html, s=s, t=t, d=d, ac=aud_cls, aud=aud, date=date, bl=blog_link, yt=yt_link, im=image_link))
     grid = "\n".join(cards)
     tpl = TEMPLATE.replace("<!--CARDS-->", grid).replace("<!--COUNT-->", str(len(items)))
     (HERE / "index.html").write_text(tpl, encoding="utf-8", newline="\n")
