@@ -1,9 +1,10 @@
-const CACHE_NAME = 'ddx-tools-v219';
+const CACHE_NAME = 'ddx-tools-v220';
 const ASSETS = [
   './infographics/nobel-physics-neutrino-2026/index.html',
   './infographics/cerebellar-stroke-vomiting/index.html',
   './infographics/orforglipron/index.html',
   './handouts/orforglipron/index.html',
+  './handouts/anti-aging-retinoid/index.html',
   './handouts/anti-aging-collagen/index.html',
   './handouts/anti-aging-stem-cell/index.html',
   './handouts/anti-aging-placenta/index.html',
@@ -21,6 +22,8 @@ const ASSETS = [
   './handouts/anti-aging-rapamycin/index.html',
   './infographics/evidence-based-diet/index.html',
   './infographics/optogenetics-nobel-2026/index.html',
+  './infographics/brivaracetam-clinical-guide/index.html',
+  './infographics/anti-aging-retinoid/index.html',
   './infographics/anti-aging-collagen/index.html',
   './infographics/anti-aging-stem-cell/index.html',
   './infographics/af-kidney-failure-warfarin/index.html',
