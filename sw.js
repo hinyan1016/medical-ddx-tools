@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v221';
+const CACHE_NAME = 'ddx-tools-v222';
 const ASSETS = [
   './infographics/urine-cancer-screening/index.html',
   './infographics/urine-cancer-screening/infographic.png',
