@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v222';
+const CACHE_NAME = 'ddx-tools-v223';
 const ASSETS = [
   './infographics/urine-cancer-screening/index.html',
   './infographics/urine-cancer-screening/infographic.png',
@@ -29,6 +29,7 @@ const ASSETS = [
   './infographics/optogenetics-nobel-2026/index.html',
   './infographics/brivaracetam-clinical-guide/index.html',
   './infographics/anti-aging-retinoid/index.html',
+  './infographics/parkinson-genetics/index.html',
   './infographics/anti-aging-collagen/index.html',
   './infographics/anti-aging-stem-cell/index.html',
   './infographics/af-kidney-failure-warfarin/index.html',
