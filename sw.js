@@ -1,5 +1,6 @@
-const CACHE_NAME = 'ddx-tools-v223';
+const CACHE_NAME = 'ddx-tools-v224';
 const ASSETS = [
+  './infographics/asm-drug-interactions/index.html',
   './infographics/urine-cancer-screening/index.html',
   './infographics/urine-cancer-screening/infographic.png',
   './handouts/urine-cancer-screening/index.html',
@@ -171,6 +172,7 @@ const ASSETS = [
   './infographics/refeeding-syndrome/index.html',
   './infographics/refeeding-syndrome/infographic.png',
   './antiepileptic_load_calculator.html',
+  './asm_interaction_checker.html',
   './periop_antithrombotic_consult.html',
   './periop_medication_navigator.html',
   './infographics/abi-epilepsy/index.html',

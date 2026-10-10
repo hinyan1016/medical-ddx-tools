@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>抗てんかん発作薬（ASM）の薬物相互作用マップ｜インフォグラフィック</title>
+<meta name="viewport" content="width=1920">
+<!-- 抗てんかん発作薬（ASM）の薬物相互作用マップ（2026年10月版）。医知創造ラボ。出典は図の下部に記載。 -->
+<style>
+  :root{
+    --navy:#1A5276; --navy-d:#16314d; --ink:#1f2933; --muted:#5b6770; --line:#d9e1e8; --panel:#f5f7fa;
+    --coral:#FF7A59;
+    --up:#C0392B; --up-bg:#fdecea; --up-line:#f0b5ae;
+    --down:#1F5FAF; --down-bg:#e9f1fc; --down-line:#9fbde6;
+    --strong:#173F7A; --weak:#3F7FC2; --inh:#B5332A; --neu:#2C6E49; --neu-bg:#eaf4ee; --both:#7a3b8f;
+    --ban:#8B1A1A;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  body{ background:#e9edf1; display:flex;flex-direction:column;align-items:center; padding:20px 0; }
+  .ig{ width:1920px; }
+  .fig{
+    position:relative; width:1920px; background:#fff; color:var(--ink);
+    font-family:"BIZ UDPGothic","Yu Gothic","Meiryo",sans-serif;
+    padding:28px 40px 20px; word-break:auto-phrase; line-height:1.35;
+  }
+  b{ font-weight:700; }
+
+  /* ---------- header ---------- */
+  .hdr{ display:flex; justify-content:space-between; align-items:flex-end; gap:30px;
+        padding-bottom:16px; border-bottom:4px solid var(--navy); }
+  .kicker{ display:inline-block; background:var(--navy); color:#fff; font-size:17px; font-weight:700;
+           padding:4px 14px; border-radius:999px; letter-spacing:.06em; }
+  .hdr h1{ font-size:46px; font-weight:700; color:var(--navy-d); margin-top:8px; letter-spacing:.01em; }
+  .hdr h1 .ac{ color:var(--coral); }
+  .hdr .sub{ font-size:21px; color:var(--muted); margin-top:4px; }
+  .legend{ display:grid; grid-template-columns:auto auto; gap:8px 24px; font-size:17px; align-items:center;
+           background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:11px 16px; }
+  .lg{ display:flex; align-items:center; gap:9px; white-space:nowrap; }
+  .lg svg{ flex:none; }
+  .ban{ display:inline-flex; align-items:center; background:var(--ban); color:#fff; font-weight:700;
+        font-size:.8em; padding:1px 7px 2px; border-radius:6px; white-space:nowrap; letter-spacing:.02em; }
+  .tdm{ display:inline-block; border:2px solid var(--navy); color:var(--navy); font-weight:700; font-size:.82em;
+        padding:0 6px; border-radius:6px; line-height:1.3; }
+  .k{ display:inline-block; font-size:12px; font-weight:700; color:#fff; border-radius:4px; padding:1px 5px; line-height:1.35; }
+  .k.give{ background:#4d5965; }
+  .k.take{ background:#9a7a20; }
+  .new{ display:inline-block; background:var(--coral); color:#fff; font-size:11.5px; font-weight:700; border-radius:4px;
+        padding:1px 6px; letter-spacing:.03em; white-space:nowrap; }
+
+  /* ---------- 3 カラム ---------- */
+  .main{ display:grid; grid-template-columns:318px 1036px 1fr; gap:32px; margin-top:16px; align-items:start; }
+  .colt{ font-size:19px; font-weight:700; color:var(--navy-d); display:flex; align-items:center; gap:9px; height:30px; }
+  .colt .bar{ width:8px; height:22px; border-radius:3px; background:var(--coral); }
+
+  /* 左：ASMの濃度を動かす併用薬 */
+  .perps{ position:relative; }
+  .pbox{ position:absolute; left:0; width:318px; border-radius:10px; padding:8px 11px 9px; font-size:14.5px; border:2px solid; background:#fff; }
+  .pbox .h{ display:flex; align-items:center; gap:7px; font-size:17.5px; font-weight:700; margin-bottom:2px; flex-wrap:wrap; }
+  .pbox .to{ font-weight:700; }
+  .pbox.up{ border-color:var(--up); background:var(--up-bg); } .pbox.up .h, .pbox.up .to{ color:var(--up); }
+  .pbox.down{ border-color:var(--down); background:var(--down-bg); } .pbox.down .h, .pbox.down .to{ color:var(--down); }
+  .pbox .eg{ color:#36424d; }
+  .pbox .st{ margin-top:3px; font-weight:700; color:#2b3742; }
+
+  /* 中央：ASM 4段 */
+  .tiers{ display:flex; flex-direction:column; gap:12px; padding-top:16px; }
+  .tier{ position:relative; border-radius:12px; padding:24px 12px 12px; border:1px solid; }
+  /* 見出しは枠の上辺に載せる「タブ」：段の間を通る縦矢印と重ならない */
+  .tier .tt{ position:absolute; top:-16px; left:12px; right:12px; display:flex; align-items:center; gap:10px; pointer-events:none; }
+  .pill{ color:#fff; font-weight:700; font-size:20px; border-radius:8px; padding:3px 14px 4px; white-space:nowrap; box-shadow:0 0 0 3px #fff; }
+  .tier .td{ font-size:15px; color:#2c3843; background:#fff; border:1px solid #d5dde6; border-radius:7px; padding:3px 10px; }
+  .tier .td.r{ margin-left:auto; }
+  .tier--strong{ background:#e9eff8; border-color:#c3d2e8; } .tier--strong .pill{ background:var(--strong); }
+  .tier--weak{ background:#f0f6fd; border-color:#cfe0f3; } .tier--weak .pill{ background:var(--weak); }
+  .tier--inh{ background:#fcf2f1; border-color:#efd0cc; } .tier--inh .pill{ background:var(--inh); }
+  .tier--neu{ background:var(--neu-bg); border-color:#c7e0cf; } .tier--neu .pill{ background:var(--neu); }
+  .row{ display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; }
+  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .safe{ margin-top:10px; background:#fff; border:2px solid var(--neu); border-radius:10px; padding:7px 9px 9px; }
+  .safe .sl{ font-size:14.5px; font-weight:700; color:var(--neu); margin-bottom:6px; display:flex; align-items:center; gap:8px; }
+  .safe .star{ background:var(--neu); color:#fff; border-radius:5px; padding:1px 8px; font-size:13.5px; }
+
+  .chip{ background:#fff; border:1px solid #cfd8e1; border-left:7px solid; border-radius:10px; padding:6px 10px 8px;
+         box-shadow:0 1px 2px rgba(20,40,60,.06); }
+  .chip .top{ display:flex; align-items:baseline; gap:7px; flex-wrap:wrap; }
+  .chip .ab{ font-size:23px; font-weight:700; letter-spacing:.02em; }
+  .chip .nm{ font-size:16.5px; font-weight:700; }
+  .chip .br{ font-size:12.5px; color:var(--muted); }
+  .chip .ln{ display:flex; gap:6px; align-items:flex-start; font-size:13.5px; margin-top:4px; }
+  .chip .ln > .k{ flex:none; margin-top:1px; }
+  .chip .note{ font-size:13px; color:#34404a; margin-top:4px; }
+  .chip.wide .ab{ font-size:26px; }
+  .chip.wide .nm{ font-size:18px; }
+  .chip.wide .ln{ font-size:14.5px; }
+  .chip.wide .note{ font-size:14px; }
+  .chip.mini{ padding:5px 10px 6px; }
+  .chip.mini .ab{ font-size:21px; }
+  .chip.mini .nm{ font-size:15.5px; }
+  .chip--strong{ border-left-color:var(--strong); } .chip--strong .ab{ color:var(--strong); }
+  .chip--weak{ border-left-color:var(--weak); } .chip--weak .ab{ color:var(--weak); }
+  .chip--inh{ border-left-color:var(--inh); } .chip--inh .ab{ color:var(--inh); }
+  .chip--neu{ border-left-color:var(--neu); } .chip--neu .ab{ color:var(--neu); }
+  .chip--both{ border-left-color:var(--both); background:linear-gradient(90deg,#fff 0,#fff 60%,#f6f0fa 100%); }
+  .chip--both .ab{ color:var(--both); }
+  .chip .twin{ display:inline-block; font-size:12px; font-weight:700; color:#fff; border-radius:4px; padding:1px 6px;
+               background:linear-gradient(90deg, var(--inh) 0 50%, var(--weak) 50% 100%); }
+  .notecard{ border:1px dashed #9fb3cc; background:#fff; border-radius:10px; padding:7px 11px; font-size:13.5px; color:#2b3742; }
+  .notecard .nt{ font-weight:700; color:var(--strong); font-size:14.5px; margin-bottom:2px; }
+  .notecard.gray{ border-color:#b9c2cb; background:#fbfbfc; color:#4a5560; }
+  .notecard.gray .nt{ color:#4a5560; }
+  .notecard.red{ border:1px solid #efc4be; background:#fffafa; }
+  .notecard.red .nt{ color:var(--up); }
+  .notecard.red b{ color:var(--up); }
+  .nw1{ white-space:nowrap; }
+
+  .tags{ display:inline-flex; flex-wrap:wrap; gap:3px 4px; }
+  .tg{ display:inline-flex; align-items:center; border-radius:5px; padding:0 5px 1px; font-weight:700; white-space:nowrap; font-size:13px; }
+  .chip.wide .tg{ font-size:13.5px; }
+  .tg.up{ background:var(--up-bg); color:var(--up); border:1px solid var(--up-line); }
+  .tg.down{ background:var(--down-bg); color:var(--down); border:1px dashed var(--down-line); }
+  .tg.mix{ background:#f3eefb; color:#5b3f99; border:1px solid #d5c8ef; }
+  .tg.ban{ background:var(--ban); color:#fff; border:1px solid var(--ban); }
+
+  .band{ border:2px dashed var(--down); border-radius:10px; background:var(--down-bg); padding:6px 14px; font-size:15.5px;
+         display:flex; align-items:center; gap:10px; margin:2px 0 4px; }
+  .band b{ color:var(--down); white-space:nowrap; }
+  .band .chev{ color:var(--down); font-size:18px; }
+
+  /* 右：ASMが濃度を動かす併用薬 */
+  .victims{ display:flex; flex-direction:column; }
+  .vhead{ background:var(--strong); color:#fff; border-radius:12px 12px 0 0; padding:9px 14px 10px; }
+  .vhead .t{ font-size:20px; font-weight:700; }
+  .vhead .d{ font-size:14px; opacity:.95; margin-top:2px; }
+  .vbody{ border:1px solid var(--line); border-top:none; border-radius:0 0 12px 12px; background:#f4f7fb;
+          padding:9px; display:flex; flex-direction:column; gap:7px; }
+  .vc{ display:grid; grid-template-columns:36px 1fr; gap:9px; background:#fff; border:1px solid #d3dce6; border-radius:10px; padding:7px 9px; align-items:start; }
+  .vc .ic{ width:36px; height:36px; border-radius:9px; background:var(--down-bg); display:flex; align-items:center; justify-content:center; }
+  .vc .t{ font-size:16.5px; font-weight:700; color:var(--navy-d); display:flex; gap:7px; align-items:center; flex-wrap:wrap; }
+  .vc .eg{ font-size:13.5px; color:#3b4650; margin-top:1px; }
+  .vc .act{ font-size:13.5px; margin-top:2px; color:#22303c; }
+  .vc .act b{ color:var(--down); }
+  .vc.upc{ border-color:#efc4be; background:#fffafa; }
+  .vc.upc .ic{ background:var(--up-bg); }
+  .vc.upc .t{ color:var(--up); }
+  .vc.upc .act b{ color:var(--up); }
+
+  /* DOAC 早見（EHRA 2021 表7の色分けを簡略化） */
+  .doac{ margin-top:6px; border-collapse:separate; border-spacing:3px; font-size:12.5px; }
+  .doac th{ font-weight:700; color:#33414d; padding:0 2px; text-align:center; white-space:nowrap; }
+  .doac th.rl{ text-align:left; padding-right:4px; }
+  .doac td{ width:38px; height:21px; border-radius:4px; text-align:center; font-weight:700; font-size:11.5px; }
+  .c-x{ background:#173F7A; color:#fff; }
+  .c-c{ background:#bcd4f0; color:#173F7A; }
+  .c-h{ background:repeating-linear-gradient(135deg,#bcd4f0 0 4px,#e3edf9 4px 8px); color:#173F7A; }
+  .c-0{ background:#fff; border:1px solid #d3dce6; color:#7b8792; }
+  .dlg{ display:flex; gap:10px; flex-wrap:wrap; font-size:12px; color:#4a5560; margin-top:2px; align-items:center; }
+  .dlg i{ display:inline-block; width:14px; height:11px; border-radius:2px; vertical-align:-1px; margin-right:3px; }
+
+  /* ---------- 下段 ---------- */
+  .bottom{ display:grid; grid-template-columns:1.22fr 1.05fr 1fr; gap:20px; margin-top:20px; }
+  .bx{ border:1px solid var(--line); border-radius:12px; overflow:hidden; background:#fff; }
+  .bx .bh{ padding:8px 14px; font-size:19px; font-weight:700; color:#fff; display:flex; align-items:center; gap:10px; }
+  .bx .bb{ padding:10px 14px 12px; display:flex; flex-direction:column; gap:7px; }
+  .bx--tips .bh{ background:var(--navy); }
+  .bx--pd .bh{ background:#5b4a8a; }
+  .bx--new .bh{ background:var(--coral); }
+  .it{ display:grid; grid-template-columns:28px 1fr; gap:9px; font-size:15px; align-items:start; }
+  .it .n{ width:26px; height:26px; border-radius:50%; background:var(--navy); color:#fff; font-weight:700; font-size:15px;
+          display:flex; align-items:center; justify-content:center; margin-top:-1px; }
+  .it b{ color:var(--navy-d); }
+  .pd{ display:grid; grid-template-columns:150px 1fr; gap:8px; font-size:14.5px; align-items:baseline; border-bottom:1px dotted #d6d9e0; padding-bottom:4px; }
+  .pd:last-child{ border-bottom:none; padding-bottom:0; }
+  .pd .k2{ font-weight:700; color:#4a3a7a; }
+  .nw{ font-size:14.5px; display:grid; grid-template-columns:62px 1fr; gap:8px; align-items:baseline; }
+  .nw .new{ text-align:center; }
+  .nw .new.gray{ background:#6b7782; }
+
+  .foot{ margin-top:12px; display:flex; justify-content:space-between; gap:24px; font-size:11.5px; color:#66727c; line-height:1.5; }
+  .foot .src{ max-width:1600px; }
+  .foot .brand{ text-align:right; white-space:nowrap; color:var(--navy); font-weight:700; font-size:15px; align-self:flex-end; }
+
+  .ov{ position:absolute; left:0; top:0; pointer-events:none; overflow:visible; }
+</style>
+
+<!-- ig-meta -->
+<meta name="description" content="ASMを強い誘導・弱い誘導・阻害・中立の4タイプに整理し、ASMの濃度を動かす併用薬と、ASMが濃度を動かす併用薬（DOAC・避妊薬・免疫抑制薬・抗がん薬・抗ウイルス薬など）、国内電子添文の併用禁忌、2024〜2026年の新しい知見を1枚にまとめた早見図（医療従事者向け）">
+<meta property="og:title" content="抗てんかん発作薬（ASM）の薬物相互作用マップ">
+<meta property="og:description" content="ASMを強い誘導・弱い誘導・阻害・中立の4タイプに整理し、ASMの濃度を動かす併用薬と、ASMが濃度を動かす併用薬（DOAC・避妊薬・免疫抑制薬・抗がん薬・抗ウイルス薬など）、国内電子添文の併用禁忌、2024〜2026年の新しい知見を1枚にまとめた早見図（医療従事者向け）">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://tools.ichisouzo-lab.com/infographics/asm-drug-interactions/">
+<meta property="og:image" content="https://ichisouzo-lab.com/thumbs/og/asm-drug-interactions.jpg">
+<meta property="og:image:alt" content="抗てんかん発作薬（ASM）の薬物相互作用マップ">
+<meta property="og:site_name" content="医知創造ラボ">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<!-- /ig-meta -->
+</head>
+<body>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 auto 12px;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+<div class="fig ig" id="fig">
+
+  <header class="hdr hd">
+    <div>
+      <span class="kicker">医療者向け ｜ 2026年10月版</span>
+      <h1>抗てんかん発作薬（ASM）の<span class="ac">薬物相互作用マップ</span></h1>
+      <p class="sub">どの薬が・どの薬の・血中濃度を・どちらへ動かすか ― ASMを〈強い誘導〉〈弱い誘導〉〈阻害〉〈中立〉の4段で整理</p>
+    </div>
+    <div class="legend">
+      <div class="lg"><svg width="54" height="16"><line x1="2" y1="8" x2="40" y2="8" stroke="#C0392B" stroke-width="5"/><polygon points="52,8 38,1 38,15" fill="#C0392B"/></svg>濃度↑（中毒・副作用に注意）</div>
+      <div class="lg"><span class="k give">与</span>他剤への影響　<span class="k take">受</span>他剤からの影響</div>
+      <div class="lg"><svg width="54" height="16"><line x1="2" y1="8" x2="40" y2="8" stroke="#1F5FAF" stroke-width="5" stroke-dasharray="9 5"/><polygon points="52,8 38,1 38,15" fill="#1F5FAF"/></svg>濃度↓（効果減弱に注意）</div>
+      <div class="lg"><span class="ban">併用禁忌</span>国内電子添文　<span class="tdm">TDM</span>血中濃度で確認</div>
+    </div>
+  </header>
+
+  <section class="main" id="main">
+
+    <!-- ===== 左：ASMの濃度を動かす併用薬（JS で行き先の高さにそろえて配置） ===== -->
+    <div>
+      <div class="colt"><span class="bar"></span>ASMの濃度を動かす併用薬</div>
+      <div class="perps" id="perps">
+        <div class="pbox up" id="p-2c9" data-target="c-pht">
+          <div class="h">CYP2C9/2C19阻害薬 <span class="to">→ PHT↑</span></div>
+          <div class="eg">アミオダロン・フルコナゾール・ST合剤・イソニアジド・フルボキサミン など</div>
+          <div class="st">例：フルコナゾールで AUC +75%</div>
+        </div>
+        <div class="pbox up" id="p-3a4" data-target="c-cbz">
+          <div class="h">CYP3A4阻害薬 <span class="to">→ CBZ↑</span></div>
+          <div class="eg">クラリスロマイシン・エリスロマイシン・アゾール系・ベラパミル・ジルチアゼム・グレープフルーツ</div>
+          <div class="st">アジスロマイシンは影響が小さい</div>
+        </div>
+        <div class="pbox down" id="p-rif" data-target="t-weak">
+          <div class="h">リファンピシン <span class="to">→ 多くのASM↓</span></div>
+          <div class="eg"><span class="nw1">LTG（半減期 24→14時間）</span>・<span class="nw1">BRV（AUC −45%）</span>・<span class="nw1">FFA（AUC −58%）</span>など</div>
+        </div>
+        <div class="pbox down" id="p-carba" data-target="c-vpa">
+          <div class="h">カルバペネム系 <span class="ban">併用禁忌</span> <span class="to">→ VPA↓↓</span></div>
+          <div class="eg">メロペネムで24時間以内に平均66%低下。増量しても戻らず、中止後も回復に1〜2週</div>
+        </div>
+        <div class="pbox down" id="p-estro" data-target="c-ltg">
+          <div class="h">エストロゲン含有避妊薬 <span class="to">→ LTG↓</span></div>
+          <div class="eg">LTGが約半分に（AUCは単独時の48%）。休薬週には約2倍に戻る</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 中央：ASM 4段 ===== -->
+    <div>
+      <div class="colt"><span class="bar" style="background:var(--navy)"></span>抗てんかん発作薬（ASM）の4タイプ</div>
+      <div class="tiers" id="tiers">
+
+        <!-- 強い誘導 -->
+        <div class="tier tier--strong" id="t-strong">
+          <div class="tt"><span class="pill">強い誘導</span><span class="td">CYP1A2・2C9・2C19・3A4 と UGT を広く誘導 → <b>多くの併用薬の濃度を下げる</b></span></div>
+          <div class="row2">
+            <div class="chip chip--strong wide" id="c-pht">
+              <div class="top"><span class="ab">PHT</span><span class="nm">フェニトイン</span><span class="br">アレビアチン・ホストイン</span></div>
+              <div class="ln"><span class="k take">受</span><span class="tags"><span class="tg up">CYP2C9/19阻害薬↑</span><span class="tg up">CNB↑ 約1.8倍</span><span class="tg mix">VPA：総濃度↓・遊離型↑</span></span></div>
+              <div class="note">非線形動態：わずかな変化で中毒域へ <span class="tdm">TDM</span></div>
+            </div>
+            <div class="chip chip--strong wide" id="c-pb">
+              <div class="top"><span class="ab">PB</span><span class="nm">フェノバルビタール</span><span class="br">フェノバール ／ PRM プリミドン</span></div>
+              <div class="ln"><span class="k take">受</span><span class="tags"><span class="tg up">VPA↑</span><span class="tg up">STP↑</span><span class="tg up">CNB↑ 約1.4倍</span></span></div>
+              <div class="note">誘導は中止後も2〜8週残る</div>
+            </div>
+            <div class="chip chip--strong wide" id="c-cbz">
+              <div class="top"><span class="ab">CBZ</span><span class="nm">カルバマゼピン</span><span class="br">テグレトール</span></div>
+              <div class="ln"><span class="k take">受</span><span class="tags"><span class="tg up">CYP3A4阻害薬↑</span><span class="tg up">VPA→エポキシド 約2倍</span><span class="tg up">BRV→エポキシド↑</span></span></div>
+              <div class="note">自己誘導：開始1〜2週で自らの濃度も下がる</div>
+            </div>
+            <div class="notecard" id="n-time">
+              <div class="nt">誘導には“時間差”がある</div>
+              強まるまで数日〜数週。中止後も CBZ で約2週、PB で2〜8週は残る。<br>→ 中止・切替の後は<b>併用薬が上がる</b>（例：PHT中止で LTG 約2倍、ワルファリンは出血に注意）
+            </div>
+          </div>
+        </div>
+
+        <div class="band" id="band"><span class="chev">▼</span><b>強い誘導薬は下の段のASMも下げる</b><span><span class="nw1">PER（CBZで約1/3）</span>・<span class="nw1">LTG・TPM（約1/2）</span>・VPA・ZNS・RUF・CLB<br><span class="nw1">「最も相互作用が少ない」LCM・BRV・LEV</span>でも<span class="nw1">2〜5割</span>下がる</span><span class="chev">▼</span></div>
+
+        <!-- 弱い誘導 -->
+        <div class="tier tier--weak" id="t-weak">
+          <div class="tt"><span class="pill">弱い誘導</span><span class="td">高用量で主にCYP3Aを誘導 → <b>ホルモン避妊薬の効果を弱める</b>（他剤への影響は強い誘導薬より小さい）</span></div>
+          <div class="row">
+            <div class="chip chip--weak" id="c-tpm">
+              <div class="top"><span class="ab">TPM</span><span class="nm">トピラマート</span><span class="br">トピナ</span></div>
+              <div class="ln"><span class="k give">与</span><span><span class="nw1">200 mg/日以上</span>で避妊薬↓（EE −18〜30%）</span></div>
+              <div class="ln"><span class="k take">受</span><span class="tags"><span class="tg down">誘導薬↓ 約1/2</span></span></div>
+            </div>
+            <div class="chip chip--weak" id="c-per">
+              <div class="top"><span class="ab">PER</span><span class="nm">ペランパネル</span><span class="br">フィコンパ</span></div>
+              <div class="ln"><span class="k give">与</span><span><span class="nw1">12 mg/日</span>で避妊薬↓<span class="nw1">（LNG −41%）</span>。他のASMへの影響は小さい</span></div>
+              <div class="ln"><span class="k take">受</span><span class="tags"><span class="tg down">CBZ↓↓ AUC −67%</span><span class="tg down">PHT↓ 約1/2</span></span></div>
+              <div class="note">CBZ・PHT併用時の維持量 <span class="nw1">8〜12 mg</span>（非併用 <span class="nw1">4〜8 mg</span>）</div>
+            </div>
+            <div class="chip chip--weak" id="c-ruf">
+              <div class="top"><span class="ab">RUF</span><span class="nm">ルフィナミド</span><span class="br">イノベロン</span></div>
+              <div class="ln"><span class="k give">与</span><span>避妊薬↓（EE −22%）・CYP3A4基質↓</span></div>
+              <div class="ln"><span class="k take">受</span><span class="tags"><span class="tg up">VPA↑ 最大85%</span><span class="tg down">誘導薬↓ 22〜50%</span></span></div>
+            </div>
+            <div class="notecard gray">
+              <div class="nt">参考：国内で使えない弱い誘導薬</div>
+              オクスカルバゼピン（2020年承認整理）、エスリカルバゼピン（未承認）
+            </div>
+          </div>
+        </div>
+
+        <!-- 阻害 -->
+        <div class="tier tier--inh" id="t-inh">
+          <div class="tt"><span class="pill">阻害</span><span class="td">代謝酵素を阻害 → <b>併用薬の濃度を上げる</b></span></div>
+          <div class="row">
+            <div class="chip chip--inh" id="c-vpa">
+              <div class="top"><span class="ab">VPA</span><span class="nm">バルプロ酸</span><span class="br">デパケン・セレニカ</span></div>
+              <div class="ln"><span class="k give">与</span><span>UGT・CYP2C9・エポキシド水解酵素を阻害<br><span class="tags"><span class="tg up">LTG↑↑</span><span class="tg up">PB↑</span><span class="tg up">RUF↑</span><span class="tg up">CBZ-E↑</span></span></span></div>
+              <div class="ln"><span class="k take">受</span><span class="tags"><span class="tg ban">カルバペネム↓↓</span><span class="tg down">誘導薬↓</span><span class="tg down">リトナビル製剤↓</span></span></div>
+            </div>
+            <div class="chip chip--inh" id="c-stp">
+              <div class="top"><span class="ab">STP</span><span class="nm">スチリペントール</span><span class="br">ディアコミット</span></div>
+              <div class="ln"><span class="k give">与</span><span>CYP1A2・2C19・3A4<span class="nw1">などを阻害</span><br><span class="tags"><span class="tg up">N-CLB 5〜8倍</span><span class="tg up">FFA↑</span><span class="tg up">PB↑</span></span></span></div>
+              <div class="ln"><span class="k take">受</span><span class="tags"><span class="tg down">誘導薬↓</span></span></div>
+            </div>
+            <div class="chip chip--both" id="c-cnb">
+              <div class="top"><span class="ab">CNB</span><span class="nm">セノバメート</span><span class="br">エキスコプリ</span><span class="new">2026.9承認</span></div>
+              <div class="ln"><span class="k give">与</span><span><span class="twin">両方向</span> 2C19阻害＋3A誘導<br><span class="tags"><span class="tg up">PHT 約1.8倍</span><span class="tg up">PB 約1.4倍</span><span class="tg up">N-CLB↑</span><span class="tg down">CBZ↓</span><span class="tg down">LTG↓</span><span class="tg down">避妊薬↓</span></span></span></div>
+            </div>
+            <div class="notecard red" id="n-up">
+              <div class="nt">阻害薬が上げる併用薬</div>
+              VPA：ワルファリン・ジアゼパム（遊離型↑）・三環系<br>STP：ワルファリン・カフェイン・BZ<br>CNB：オメプラゾール <b>2.07倍</b>など CYP2C19 の基質
+            </div>
+          </div>
+        </div>
+
+        <!-- 中立 -->
+        <div class="tier tier--neu" id="t-neu">
+          <div class="tt"><span class="pill">中立</span><span class="td r">他剤への影響は小さい</span></div>
+          <div class="row">
+            <div class="chip chip--neu" id="c-ltg">
+              <div class="top"><span class="ab">LTG</span><span class="nm">ラモトリギン</span><span class="br">ラミクタール</span></div>
+              <div class="ln"><span class="k take">受</span><span class="tags"><span class="tg up">VPA↑↑ 半減期 約2倍</span><span class="tg down">誘導薬↓ 約1/2</span><span class="tg down">エストロゲン↓</span><span class="tg down">CNB↓</span></span></div>
+              <div class="note">併用薬で用法が3通り（添文）</div>
+            </div>
+            <div class="chip chip--neu" id="c-clb">
+              <div class="top"><span class="ab">CLB</span><span class="nm">クロバザム</span><span class="br">マイスタン</span></div>
+              <div class="ln"><span class="k take">受</span><span class="tags"><span class="tg up">STP・CNB・CYP2C19阻害薬→N-CLB↑</span><span class="tg down">誘導薬：本体↓</span></span></div>
+              <div class="note">活性代謝物 N-CLB は CYP2C19 で代謝</div>
+            </div>
+            <div class="chip chip--neu" id="c-ffa">
+              <div class="top"><span class="ab">FFA</span><span class="nm">フェンフルラミン</span><span class="br">フィンテプラ</span></div>
+              <div class="ln"><span class="k take">受</span><span class="tags"><span class="tg up">STP↑ AUC 約2.2倍</span><span class="tg down">リファンピシン↓</span></span></div>
+              <div class="note">STP併用時の上限 <span class="nw1">0.4 mg/kg/日・17 mg/日</span><br><span class="ban">MAO-B阻害薬と併用禁忌</span></div>
+            </div>
+            <div class="chip chip--neu" id="c-zns">
+              <div class="top"><span class="ab">ZNS</span><span class="nm">ゾニサミド</span><span class="br">エクセグラン</span></div>
+              <div class="ln"><span class="k take">受</span><span class="tags"><span class="tg down">誘導薬↓ 半減期 −25〜35%</span></span></div>
+            </div>
+          </div>
+          <div class="safe" id="safe">
+            <div class="sl"><span class="star">最も相互作用が少ない</span>他剤の濃度をほとんど動かさない → 多剤併用で選びやすい</div>
+            <div class="row">
+              <div class="chip chip--neu mini" id="c-lev"><div class="top"><span class="ab">LEV</span><span class="nm">レベチラセタム</span></div><div class="note">主に腎排泄。PHT・CBZで<span class="nw1">2〜3割↓程度</span></div></div>
+              <div class="chip chip--neu mini" id="c-lcm"><div class="top"><span class="ab">LCM</span><span class="nm">ラコサミド</span></div><div class="note">誘導薬で2.5〜4割↓。PR延長→心電図</div></div>
+              <div class="chip chip--neu mini" id="c-brv"><div class="top"><span class="ab">BRV</span><span class="nm">ブリーバラセタム</span><span class="new">2024承認</span></div><div class="note">リファンピシンで45%↓。CBZエポキシド↑</div></div>
+              <div class="chip chip--neu mini" id="c-gbp"><div class="top"><span class="ab">GBP</span><span class="nm">ガバペンチン</span></div><div class="note">主に腎排泄</div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===== 右：ASMが濃度を動かす併用薬 ===== -->
+    <aside>
+      <div class="colt"><span class="bar" style="background:var(--strong)"></span>ASMが濃度を動かす併用薬</div>
+      <div class="victims" id="victims">
+        <div class="vhead">
+          <div class="t">強い誘導薬（PHT・CBZ・PB）で下がる薬</div>
+          <div class="d">弱い誘導薬や CNB も CYP3A の基質（避妊薬など）を下げる</div>
+        </div>
+        <div class="vbody" id="vbody">
+          <div class="vc" id="v-ac"><div class="ic" data-ic="drop"></div><div>
+            <div class="t">抗凝固薬（DOAC・ワルファリン）</div>
+            <div class="eg">誘導薬の併用で DOAC が期待濃度を下回る：<b>37.5%</b>（非併用 9.3%）</div>
+            <table class="doac">
+              <tr><th class="rl">EHRA 2021</th><th>CBZ</th><th>PHT</th><th>PB</th><th>VPA</th><th>LEV</th><th>TPM</th><th>他*</th></tr>
+              <tr><th class="rl">ダビガトラン</th><td class="c-x">禁</td><td class="c-x">禁</td><td class="c-h">注</td><td class="c-x">禁</td><td class="c-h">注</td><td class="c-0">－</td><td class="c-0">－</td></tr>
+              <tr><th class="rl">アピキサバン</th><td class="c-c">注</td><td class="c-c">注</td><td class="c-c">注</td><td class="c-x">禁</td><td class="c-h">注</td><td class="c-h">注</td><td class="c-0">－</td></tr>
+              <tr><th class="rl">エドキサバン</th><td class="c-c">注</td><td class="c-c">注</td><td class="c-c">注</td><td class="c-x">禁</td><td class="c-h">注</td><td class="c-0">－</td><td class="c-0">－</td></tr>
+              <tr><th class="rl">リバーロキサバン</th><td class="c-x">禁</td><td class="c-x">禁</td><td class="c-x">禁</td><td class="c-x">禁</td><td class="c-h">注</td><td class="c-h">注</td><td class="c-0">－</td></tr>
+            </table>
+            <div class="dlg"><span><i class="c-x"></i>禁忌扱い</span><span><i class="c-c"></i>注意</span><span><i class="c-h"></i>注意（データなし）</span><span>*BRV・LCM・LTG・GBP・ZNS は影響なし（データなし）</span></div>
+            <div class="act">国内添文：CBZ・PHT・PB はリバーロキサバン・アピキサバンと<b>併用注意</b>（ダビガトランは CBZ のみ）</div>
+            <div class="act">ワルファリン：誘導薬で<b>効果減弱</b>（PHTは増強も）、VPAで増強 → <span class="nw1">INRを頻回に</span></div>
+          </div></div>
+          <div class="vc" id="v-oc"><div class="ic" data-ic="pill"></div><div>
+            <div class="t">ホルモン避妊薬</div>
+            <div class="eg">CBZ 600 mg/日でEEのクリアランス +127%。緊急避妊薬（LNG）も効果減弱のおそれ</div>
+            <div class="act"><b>避妊失敗</b> → IUD（銅付加・LNG-IUS）は影響を受けない。経口中絶薬メフィーゴは CBZ・PHT・PB・PRM と<span class="ban">併用禁忌</span></div>
+          </div></div>
+          <div class="vc" id="v-im"><div class="ic" data-ic="shield"></div><div>
+            <div class="t">免疫抑制薬・ステロイド</div>
+            <div class="eg">タクロリムス・シクロスポリン・エベロリムス・デキサメタゾン</div>
+            <div class="act">PHTでデキサメタゾンのクリアランス<b>約3倍</b>。免疫抑制薬は濃度を測定</div>
+          </div></div>
+          <div class="vc" id="v-ca"><div class="ic" data-ic="target"></div><div>
+            <div class="t">抗がん薬</div>
+            <div class="eg">タキサン・イリノテカン・キナーゼ阻害薬 など</div>
+            <div class="act">クリアランス<b>2〜3倍</b>（キナーゼ阻害薬は最大4倍）→ <span class="nw1">非誘導性ASMを検討</span></div>
+          </div></div>
+          <div class="vc" id="v-av"><div class="ic" data-ic="virus"></div><div>
+            <div class="t">抗ウイルス薬・抗真菌薬 <span class="ban">併用禁忌多数</span></div>
+            <div class="eg">COVID-19：パキロビッド（CBZ・PHT・PB）・ゾコーバ（CBZ・PHT）／HIV：リルピビリン・ビクテグラビル等／HCV：エプクルーサ等</div>
+            <div class="eg">ボリコナゾール：CBZ・PB と禁忌<span class="nw1">（PHT でも AUC −69%）</span></div>
+            <div class="act"><b>治療失敗・耐性</b>のおそれ</div>
+          </div></div>
+          <div class="vc" id="v-ps"><div class="ic" data-ic="psi"></div><div>
+            <div class="t">向精神薬</div>
+            <div class="eg">クロザピン・クエチアピン・アリピプラゾール・三環系</div>
+            <div class="act"><b>効果減弱</b>（誘導薬の中止後は上昇）。<span class="nw1">PHT×ルラシドンは<span class="ban">併用禁忌</span></span></div>
+          </div></div>
+          <div class="vc" id="v-cv"><div class="ic" data-ic="ecg"></div><div>
+            <div class="t">循環器薬 <span class="ban">一部 併用禁忌</span></div>
+            <div class="eg">スタチン（CBZでシンバスタチン AUC −75%）・Ca拮抗薬</div>
+            <div class="act">チカグレロル・マシテンタン・タダラフィル（肺高血圧症）は<b>併用禁忌</b></div>
+          </div></div>
+          <div class="vc" id="v-ot"><div class="ic" data-ic="dots"></div><div>
+            <div class="t">その他</div>
+            <div class="act">メサドン（PHTで約50%↓）・甲状腺ホルモン（補充中はT4↓）・アセトアミノフェン（肝毒性代謝物↑）</div>
+          </div></div>
+        </div>
+      </div>
+    </aside>
+  </section>
+
+  <section class="bottom">
+    <div class="bx bx--tips">
+      <div class="bh">臨床のツボ 5か条</div>
+      <div class="bb">
+        <div class="it"><span class="n">1</span><span><b>PHT・CBZ・PB を見たら</b>併用薬の効果減弱を疑う。中止・切替の後も誘導は数週残る<span class="nw1">（CBZ 約2週・PB 2〜8週）</span>。</span></div>
+        <div class="it"><span class="n">2</span><span><b>VPA＋LTG</b>：LTGの半減期は約2倍。添文のVPA併用スケジュールで少量からゆっくり（重症薬疹）。</span></div>
+        <div class="it"><span class="n">3</span><span><b>VPA＋カルバペネム</b>：併用禁忌。1〜3日以内に急低下し、増量しても戻らない。</span></div>
+        <div class="it"><span class="n">4</span><span><b>抗がん・抗ウイルス・移植後</b>は誘導作用のないASMを優先（<b>DOAC内服中</b>は<span class="nw1">LCM・BRV・LTG</span>）。エストロゲン含有避妊薬ではLTGが約半分に。</span></div>
+        <div class="it"><span class="n">5</span><span><b>“上げる薬”も忘れない</b>：CBZ×マクロライド・アゾール・ベラパミル、PHT×アミオダロン・フルコナゾール・ST合剤。迷ったら <span class="tdm">TDM</span>。</span></div>
+      </div>
+    </div>
+    <div class="bx bx--pd">
+      <div class="bh">濃度は変わらなくても効果が重なる</div>
+      <div class="bb">
+        <div class="pd"><span class="k2">低ナトリウム血症</span><span>CBZ ＋ 利尿薬（低Naは40歳超に多い）</span></div>
+        <div class="pd"><span class="k2">PR延長</span><span>LCM ＋ PRを延ばす薬 → 房室ブロック（心電図を）</span></div>
+        <div class="pd"><span class="k2">呼吸抑制</span><span>ベンゾジアゼピン・GBP ＋ オピオイド</span></div>
+        <div class="pd"><span class="k2">結石・アシドーシス</span><span>TPM ＋ アセタゾラミド（ZNSも同系統）</span></div>
+        <div class="pd"><span class="k2">高アンモニア血症</span><span>VPA ＋ TPM・PHT・PB</span></div>
+        <div class="pd"><span class="k2">神経毒性</span><span>LTG ＋ CBZ（複視・めまい。濃度は不変）</span></div>
+        <div class="pd"><span class="k2">セロトニン症候群</span><span>FFA ＋ SSRI・SNRI・トリプタンなど</span></div>
+      </div>
+    </div>
+    <div class="bx bx--new">
+      <div class="bh">最新アップデート（2024〜2026）</div>
+      <div class="bb">
+        <div class="nw"><span class="new">NEW</span><span><b>セノバメート</b>（2026年9月承認・未発売）：2C19阻害＋3A誘導の“両方向型”。200 mg/日の3A誘導は CBZ 600 mg/日と有意差なし</span></div>
+        <div class="nw"><span class="new">NEW</span><span><b>ブリーバラセタム</b>（2024年承認）：相互作用は少なく、EHRA では DOAC と“影響なし”（データなし）</span></div>
+        <div class="nw"><span class="new gray">COVID</span><span><b>パキロビッド・ゾコーバ</b>は CBZ・PHT と併用禁忌</span></div>
+        <div class="nw"><span class="new gray">DOAC</span><span><b>誘導薬との併用</b>：DOAC濃度の低下は一貫。<br>塞栓症が増えるかは研究で一致しない</span></div>
+        <div class="nw"><span class="new gray">未承認</span><span><b>カンナビジオール</b>（国内は第III相）：CYP2C19阻害で<span class="nw1">N-CLB 3.4倍</span>、VPA併用で肝酵素上昇が多い</span></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div class="src">
+      主な出典：Zaccara G, Perucca E. Epileptic Disord 2014;16:409（PMID 25515681）／Johannessen SI, Landmark CJ. Curr Neuropharmacol 2010;8:254（21358975）／Steffel J, et al. Europace 2021;23:1612（EHRA, 33895845）／Perlman A, et al. CNS Drugs 2021;35:305（33595834）／Gidal BE, et al. Neurology 2015;84:1972（25878177）／Greene SA, et al. Clin Transl Sci 2022;15:899（34877801）／Cohen H, et al. Epilepsia 2024;65:445（38010146）／Chai PY, et al. Expert Opin Drug Saf 2021;20:215（33322967）／Punyawudho B, et al. Clin Pharmacokinet 2009;48:313（19566114）／Nguyen AT, et al. MMWR Recomm Rep 2024;73(4):1（US MEC, 39106314）／国内電子添文（2026年10月確認）ほか。<br>
+      略語：N-CLB＝N-デスメチルクロバザム（活性代謝物）、CBZ-E＝CBZ-10,11-エポキシド、EE＝エチニルエストラジオール、LNG＝レボノルゲストレル、BZ＝ベンゾジアゼピン、TDM＝血中濃度モニタリング。<br>
+      数値の多くは海外の試験データで、用量・対象により異なる。処方時は最新の電子添文を確認すること。「禁」「注」は EHRA 2021 表7の色分けを簡略化したもの（国内添文の区分とは異なる）。
+    </div>
+    <div class="brand">医知創造ラボ</div>
+  </footer>
+
+  <svg class="ov" id="ov"></svg>
+</div>
+
+<script>
+(function(){
+  var fig = document.getElementById('fig');
+  var ov = document.getElementById('ov');
+  var NS = 'http://www.w3.org/2000/svg';
+  var COL = { up:'#C0392B', down:'#1F5FAF' };
+
+  function rect(id){
+    var e = (typeof id === 'string') ? document.getElementById(id) : id;
+    var r = e.getBoundingClientRect(), f = fig.getBoundingClientRect();
+    return { l:r.left-f.left, t:r.top-f.top, r:r.right-f.left, b:r.bottom-f.top,
+             cx:(r.left+r.right)/2-f.left, cy:(r.top+r.bottom)/2-f.top, w:r.width, h:r.height };
+  }
+  function mk(tag, attrs){ var e=document.createElementNS(NS, tag); for(var k in attrs){ e.setAttribute(k, attrs[k]); } return e; }
+  function marker(id, color){
+    var m = mk('marker', {id:id, viewBox:'0 0 10 10', refX:'6', refY:'5', markerWidth:'4', markerHeight:'4', orient:'auto', markerUnits:'strokeWidth'});
+    m.appendChild(mk('path', {d:'M0,0 L10,5 L0,10 z', fill:color}));
+    return m;
+  }
+  function arrow(a, b, kind, w, c1, c2){
+    var color = COL[kind];
+    var d = 'M'+a[0]+','+a[1]+' C'+(a[0]+c1[0])+','+(a[1]+c1[1])+' '+(b[0]+c2[0])+','+(b[1]+c2[1])+' '+b[0]+','+b[1];
+    ov.appendChild(mk('path', {d:d, fill:'none', stroke:'#ffffff', 'stroke-width':w+6, 'stroke-linecap':'round', opacity:'0.95'}));
+    var p = mk('path', {d:d, fill:'none', stroke:color, 'stroke-width':w, 'stroke-linecap':'butt', 'marker-end':'url(#'+(kind==='up'?'mUp':'mDown')+')'});
+    if(kind==='down'){ p.setAttribute('stroke-dasharray', (w*2.3)+' '+(w*1.3)); }
+    ov.appendChild(p);
+  }
+
+  // 右パネルのアイコン（臓器の形は描かない＝記号のみ）
+  var ICONS = {
+    drop:'<path d="M14 3.5C14 3.5 6.5 12.5 6.5 17.5a7.5 7.5 0 0 0 15 0C21.5 12.5 14 3.5 14 3.5z"/>',
+    pill:'<g transform="rotate(-45 14 14)"><rect x="3.5" y="9.5" width="21" height="9" rx="4.5"/><line x1="14" y1="9.5" x2="14" y2="18.5"/></g>',
+    shield:'<path d="M14 3.5l8.5 3v7c0 5.3-3.7 9.2-8.5 11-4.8-1.8-8.5-5.7-8.5-11v-7z"/><path d="M10 14l3 3 5-6"/>',
+    target:'<circle cx="14" cy="14" r="9.5"/><circle cx="14" cy="14" r="5.5"/><circle cx="14" cy="14" r="1.8" fill="#1F5FAF"/>',
+    virus:'<circle cx="14" cy="14" r="6"/><g stroke-linecap="round"><line x1="14" y1="8" x2="14" y2="4"/><line x1="14" y1="20" x2="14" y2="24"/><line x1="8" y1="14" x2="4" y2="14"/><line x1="20" y1="14" x2="24" y2="14"/><line x1="9.8" y1="9.8" x2="7" y2="7"/><line x1="18.2" y1="18.2" x2="21" y2="21"/><line x1="18.2" y1="9.8" x2="21" y2="7"/><line x1="9.8" y1="18.2" x2="7" y2="21"/></g>',
+    psi:'<text x="14" y="21" text-anchor="middle" font-size="20" font-weight="700" fill="#1F5FAF" stroke="none" font-family="Times New Roman, serif">Ψ</text>',
+    ecg:'<polyline points="3,15 8,15 10.5,10 13,20 15.5,6 18,17.5 20,15 25,15" stroke-linejoin="round"/>',
+    fungus:'<path d="M5 14.5a9 7.5 0 0 1 18 0z" stroke-linejoin="round"/><path d="M11 14.5v6.5a3 3 0 0 0 6 0v-6.5"/>',
+    dots:'<circle cx="7.5" cy="14" r="2.2" fill="#1F5FAF" stroke="none"/><circle cx="14" cy="14" r="2.2" fill="#1F5FAF" stroke="none"/><circle cx="20.5" cy="14" r="2.2" fill="#1F5FAF" stroke="none"/>',
+    up:'<path d="M14 23V6M7.5 12.5L14 6l6.5 6.5" stroke-linecap="round" stroke-linejoin="round"/>'
+  };
+  function icons(){
+    var list = document.querySelectorAll('.ic[data-ic]');
+    for(var i=0;i<list.length;i++){
+      var k = list[i].getAttribute('data-ic'), upc = list[i].closest('.upc');
+      var svg = ICONS[k] || '';
+      if(upc){ svg = svg.replace(/#1F5FAF/g, '#C0392B'); }
+      list[i].innerHTML = '<svg width="26" height="26" viewBox="0 0 28 28" fill="none" stroke="'+(upc?'#C0392B':'#1F5FAF')+'" stroke-width="2.2">'+svg+'</svg>';
+    }
+  }
+
+  // 左の併用薬ボックスを、矢印の行き先の高さにそろえて配置する
+  function placePerps(){
+    var host = document.getElementById('perps'), h0 = rect(host).t, used = 0;
+    var boxes = host.querySelectorAll('.pbox');
+    for(var i=0;i<boxes.length;i++){
+      var b = boxes[i], tgt = rect(b.getAttribute('data-target'));
+      var want = (b.getAttribute('data-target').indexOf('t-')===0 ? tgt.t + 50 : tgt.cy) - h0 - b.offsetHeight/2;
+      var top = Math.max(want, used);
+      b.style.top = top + 'px';
+      used = top + b.offsetHeight + 10;
+    }
+    host.style.height = used + 'px';
+  }
+
+  function draw(){
+    icons();
+    placePerps();
+    ov.setAttribute('width', fig.offsetWidth); ov.setAttribute('height', fig.offsetHeight);
+    ov.setAttribute('viewBox', '0 0 '+fig.offsetWidth+' '+fig.offsetHeight);
+    var defs = mk('defs', {}); defs.appendChild(marker('mUp', COL.up)); defs.appendChild(marker('mDown', COL.down)); ov.appendChild(defs);
+
+    // 左 → ASM
+    var boxes = document.querySelectorAll('#perps .pbox');
+    for(var i=0;i<boxes.length;i++){
+      var b = boxes[i], pr = rect(b), tid = b.getAttribute('data-target'), tr = rect(tid);
+      var kind = b.classList.contains('up') ? 'up' : 'down';
+      var a = [pr.r+2, pr.cy];
+      var y = tid.indexOf('t-')===0 ? tr.t + 50 : tr.cy;
+      var e = [tr.l-5, y];
+      var w = (b.id==='p-carba') ? 7 : 5;
+      arrow(a, e, kind, w, [ (e[0]-a[0])*0.5, 0 ], [ -(e[0]-a[0])*0.5, 0 ]);
+    }
+    // ASM → ASM（阻害の段 → 中立の段）
+    var v = rect('c-vpa'), l = rect('c-ltg');
+    arrow([v.cx, v.b+3], [l.cx+4, l.t-5], 'up', 6, [0, 22], [0, -22]);
+    var s = rect('c-stp'), c = rect('c-clb'), f = rect('c-ffa');
+    arrow([s.cx-30, s.b+3], [c.cx+10, c.t-5], 'up', 4, [0, 22], [0, -22]);
+    arrow([s.cx+40, s.b+3], [f.cx-30, f.t-5], 'up', 4, [0, 25], [0, -25]);
+
+    // 強い誘導 → 右パネル
+    var ts = rect('t-strong'), vb = rect('victims');
+    arrow([ts.r+3, ts.cy], [vb.l-6, ts.cy], 'down', 8, [12,0], [-12,0]);
+    // 弱い誘導 → 避妊薬
+    var tw = rect('t-weak'), oc = rect('v-oc');
+    arrow([tw.r+3, tw.cy], [oc.l-6, oc.cy], 'down', 4, [(oc.l-tw.r)*0.6, 0], [-(oc.l-tw.r)*0.6, 0]);
+  }
+  function go(){ try{ draw(); }catch(e){ document.body.setAttribute('data-err', String(e)); console.error(e); } }
+  if(document.fonts && document.fonts.ready){ document.fonts.ready.then(function(){ setTimeout(go, 60); }); } else { window.onload = go; }
+})();
+</script>
+<nav data-ig-nav-v2 style="width:100%;max-width:1080px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px auto 0;font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Segoe UI',sans-serif;"><a href="../" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#1A5276;color:#fff;">🖼️ インフォグラフィック一覧</a><a href="infographic.png" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-weight:700;font-size:14px;padding:9px 15px;border-radius:8px;background:#fff;color:#1A5276;border:1px solid #cfdae6;">📥 画像版（PNG）</a></nav>
+</body>
+</html>

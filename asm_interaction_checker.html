@@ -1,0 +1,1713 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A5276">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>抗てんかん発作薬 相互作用チェッカー</title>
+<meta name="description" content="服用中の抗てんかん発作薬と併用薬を選ぶと、濃度が動く組み合わせと対応を、出典つきで表示する医療者向けツール。国内電子添文とPubMedで実在を確認した文献に基づきます。">
+<meta property="og:title" content="抗てんかん発作薬 相互作用チェッカー">
+<meta property="og:description" content="服用中の抗てんかん発作薬と併用薬を選ぶと、濃度が動く組み合わせと対応を、出典つきで表示する医療者向けツール。国内電子添文とPubMedで実在を確認した文献に基づきます。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tools.ichisouzo-lab.com/asm_interaction_checker.html">
+<meta property="og:image" content="https://tools.ichisouzo-lab.com/assets/og-tools.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="医知創造ラボ">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+/* ============ 基本 ============ */
+:root {
+  --navy: #1A5276;
+  --navy-d: #15324E;
+  --blue: #2E86C1;
+  --bg: #f3f5f7;
+  --card: #ffffff;
+  --text: #1c2833;
+  --muted: #586774;
+  --line: #d6dde3;
+  --mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, "Roboto Mono", Menlo, monospace;
+  --chip-min: 148px;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-size: 15px; line-height: 1.7;
+  font-family: "BIZ UDPGothic", "BIZ UDPゴシック", "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Meiryo", "Yu Gothic", sans-serif;
+  word-break: normal; overflow-wrap: break-word; word-break: auto-phrase;
+  -webkit-tap-highlight-color: rgba(26, 82, 118, .15);
+}
+a { color: var(--navy); }
+button { font: inherit; color: inherit; }
+h1, h2, h3, h4, p, ul { margin-top: 0; }
+:focus-visible { outline: 3px solid #0b6bcb; outline-offset: 2px; }
+.nb { white-space: nowrap; }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden;
+           clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+/* ============ ヘッダー ============ */
+.hero { background: var(--navy); color: #fff; position: relative; padding: 12px 0 24px; }
+.hero::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 5px;
+  background: linear-gradient(90deg, #8B1A1A 0%, #8B1A1A 20%, #C0392B 20%, #C0392B 40%, #D68910 40%, #D68910 60%, #7F8C8D 60%, #7F8C8D 80%, #2C6E49 80%, #2C6E49 100%); }
+.hero-in { max-width: 1240px; margin: 0 auto; padding: 0 16px; }
+.hero .back { font-size: 13px; }
+.hero .back a { color: #cfe0ee; text-decoration: none; }
+.hero h1 { font-size: 24px; line-height: 1.35; margin: 8px 0 6px; letter-spacing: .01em; text-wrap: balance; }
+.hero .sub { font-size: 13.5px; margin: 0; color: #e3eef7; max-width: 46em; text-wrap: pretty; }
+.hero .upd { font-size: 12px; margin: 8px 0 0; color: #b4d1e6; }
+
+main { max-width: 1240px; margin: 0 auto; padding: 14px 14px 48px; }
+
+/* ============ 注意書き ============ */
+.notice { display: flex; gap: 10px; align-items: flex-start; background: #fff8e6; border: 1px solid #ecd9a0;
+          border-left: 5px solid #d4a017; border-radius: 6px; padding: 10px 14px; margin-bottom: 14px; }
+.notice svg { flex: none; margin-top: 4px; }
+.notice p { margin: 0; font-size: 13.5px; line-height: 1.75; color: #3d3217; text-wrap: pretty; }
+.notice-b { margin: 16px 0 0; }
+.noscript { background: #fdecea; border: 1px solid #f1b0a8; padding: 10px 14px; border-radius: 6px; }
+
+/* ============ レイアウト ============ */
+.layout { display: block; }
+@media (min-width: 960px) {
+  .layout { display: grid; grid-template-columns: minmax(400px, 480px) minmax(0, 1fr); gap: 18px; align-items: start; }
+  .picker { position: sticky; top: 10px; max-height: calc(100vh - 20px); overflow-y: auto; padding-right: 2px; }
+  .jump { display: none !important; }
+  :root { --chip-min: 128px; }
+  .achip .an { font-size: 12.5px; }
+}
+
+.panel { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 12px; }
+.panel h2, .res-head h2 { display: flex; align-items: center; gap: 8px; font-size: 16px; line-height: 1.4; margin: 0 0 6px; color: var(--navy); }
+.step { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px;
+        border-radius: 50%; background: var(--navy); color: #fff; font-size: 13px; font-weight: 700; font-family: var(--mono); }
+.cnt { font-size: 12px; font-weight: 700; color: #fff; background: var(--blue); border-radius: 10px; padding: 0 8px;
+       line-height: 20px; min-width: 20px; text-align: center; }
+.cnt:empty { display: none; }
+.jump { margin: -10px 0 -10px auto; display: inline-flex; align-items: center; min-height: 44px; padding: 0 6px; font-size: 12.5px; font-weight: 400; white-space: nowrap; }
+.hint { font-size: 12px; color: var(--muted); margin: 0 0 4px; }
+
+/* ============ ASM の選択 ============ */
+.tier { background: var(--tbg); border-left: 4px solid var(--tc); border-radius: 6px; padding: 8px 10px 10px; margin-top: 10px; }
+.tier-label { font-weight: 700; font-size: 14px; color: var(--tcd); line-height: 1.4; }
+.tier-desc { font-size: 12px; color: #44515c; margin: 2px 0 8px; line-height: 1.55; text-wrap: pretty; }
+.chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--chip-min), 1fr)); gap: 8px; }
+.achip { position: relative; display: flex; flex-direction: column; align-items: flex-start; text-align: left; gap: 1px;
+         min-height: 68px; padding: 8px 10px 8px 14px; background: #fff; border: 1.5px solid #bcc8d2; border-radius: 8px;
+         box-shadow: inset 5px 0 0 var(--tc); cursor: pointer; min-width: 0; }
+.achip .ab { display: block; font-family: var(--mono); font-weight: 700; font-size: 18px; line-height: 1.25; letter-spacing: .02em; padding-right: 22px; }
+.achip .an { display: block; font-size: 13px; line-height: 1.35; font-weight: 700; overflow-wrap: anywhere; }
+.achip .abr { display: block; font-size: 10.5px; color: var(--muted); line-height: 1.4; margin-top: 1px; }
+.achip, .mrow, .pill, .btn, .cat-h { transition: background-color .12s ease, border-color .12s ease, box-shadow .12s ease, transform .08s ease; }
+.achip:active, .mrow:active, .btn:active, .pill:active { transform: scale(.985); }
+.achip .tick { position: absolute; right: 7px; top: 7px; width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid #7f93a3; background: #fff; }
+.achip[aria-pressed="true"] { background: var(--navy); border-color: var(--navy); color: #fff; box-shadow: inset 5px 0 0 var(--tbg); }
+.achip[aria-pressed="true"] .abr { color: #cfe0ee; }
+.achip[aria-pressed="true"] .tick { border-color: #fff; }
+.achip[aria-pressed="true"] .tick::after { content: ""; position: absolute; left: 6px; top: 2px; width: 5px; height: 10px;
+         border: solid var(--navy); border-width: 0 2.5px 2.5px 0; transform: rotate(45deg); }
+
+/* ============ 併用薬の選択 ============ */
+#q { width: 100%; min-height: 46px; padding: 10px 12px; font-size: 16px; font-family: inherit; color: var(--text);
+     border: 2px solid var(--blue); border-radius: 8px; background: #fff; -webkit-appearance: none; appearance: none; }
+.msel { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 10px; }
+.msel:empty { display: none; }
+.msel-l { font-size: 12px; color: var(--muted); font-weight: 700; margin-right: 2px; }
+.pill { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 3px 8px 3px 12px; border: 1.5px solid var(--navy);
+        background: #e8f1f8; color: var(--navy); border-radius: 19px; font-size: 13px; font-weight: 700; cursor: pointer; text-align: left; line-height: 1.35; }
+.pill .x { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%;
+           background: var(--navy); color: #fff; font-size: 14px; line-height: 1; }
+.cat { border: 1px solid var(--line); border-radius: 8px; margin-top: 8px; background: #fff; overflow: hidden; }
+.cat-h { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 48px; padding: 8px 12px; background: #f6f9fb;
+         border: 0; font-weight: 700; color: var(--navy); text-align: left; cursor: pointer; line-height: 1.4; }
+.cat-h.static { cursor: default; }
+.cat-h .n { font-weight: 400; color: var(--muted); font-size: 12px; }
+.cat-h .cat-r { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.cat-h .sel { background: var(--navy); color: #fff; border-radius: 10px; padding: 0 9px; font-size: 12px; line-height: 20px; white-space: nowrap; }
+.cat-h .chev { flex: none; width: 9px; height: 9px; border: solid var(--navy); border-width: 0 2px 2px 0; transform: rotate(45deg); margin: -4px 3px 0 0; }
+.cat-h[aria-expanded="true"] .chev { transform: rotate(-135deg); margin-top: 4px; }
+.cat-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; padding: 8px; border-top: 1px solid var(--line); }
+.mrow { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; background: #fff; border: 1px solid var(--line);
+        border-radius: 8px; padding: 8px 10px; min-height: 48px; cursor: pointer; min-width: 0; }
+.mrow .box { flex: none; width: 22px; height: 22px; border: 2px solid #7b8fa0; border-radius: 5px; background: #fff; position: relative; }
+.mrow .mtx { min-width: 0; }
+.mrow .mn { display: block; font-size: 14px; font-weight: 700; line-height: 1.4; }
+.mrow .ms { display: block; font-size: 11.5px; color: var(--muted); line-height: 1.4; }
+.mrow[aria-pressed="true"] { background: #e8f1f8; border-color: var(--navy); }
+.mrow[aria-pressed="true"] .box { background: var(--navy); border-color: var(--navy); }
+.mrow[aria-pressed="true"] .box::after { content: ""; position: absolute; left: 6px; top: 1px; width: 6px; height: 12px;
+        border: solid #fff; border-width: 0 2.5px 2.5px 0; transform: rotate(45deg); }
+.empty { color: var(--muted); font-size: 13px; padding: 12px 2px; margin: 0; }
+
+/* ============ 結果 ============ */
+.results { min-width: 0; scroll-margin-top: 8px; }
+.res-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; margin: 2px 0 6px; }
+.res-head h2 { margin: 0; }
+.res-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn { min-height: 44px; padding: 8px 16px; border-radius: 8px; border: 1.5px solid var(--navy); font-size: 14px; font-weight: 700;
+       cursor: pointer; background: #fff; color: var(--navy); }
+.btn-main { background: var(--navy); color: #fff; }
+.btn[disabled] { opacity: .4; cursor: not-allowed; }
+.copymsg { min-height: 1.5em; margin: 6px 0 0; font-size: 13px; color: #2C6E49; font-weight: 700; }
+.empty-state { background: #fff; border: 1.5px dashed #b4c1cc; border-radius: 10px; padding: 26px 18px; text-align: center; color: var(--muted); font-size: 14px; }
+.selline { font-size: 13px; color: #34424e; margin: 4px 0 8px; line-height: 1.7; }
+.selline b { color: var(--navy); }
+.hintline { background: #eef5fa; border-left: 4px solid var(--blue); padding: 8px 12px; border-radius: 0 6px 6px 0; font-size: 13.5px; margin: 0 0 10px; }
+.sumrow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 8px 0 4px; }
+.sum-total { font-size: 14px; font-weight: 700; margin-right: 4px; }
+.sc { display: inline-flex; align-items: center; gap: 6px; min-height: 38px; padding: 2px 11px 2px 4px; border-radius: 17px;
+      border: 1.5px solid var(--lc); background: #fff; color: var(--text); font-size: 13px; text-decoration: none; font-weight: 700; }
+.sc .sw { min-width: 24px; height: 24px; padding: 0 5px; border-radius: 12px; background: var(--lc); color: var(--li);
+          display: inline-flex; align-items: center; justify-content: center; font-size: 12.5px; font-family: var(--mono); }
+.sc.zero { border-color: #c9d1d8; color: #66727d; font-weight: 400; }
+.sc.zero .sw { background: #e6eaee; color: #55626d; }
+.sc.un { --lc: #5b6770; --li: #fff; }
+
+.card { background: #fff; border: 1.5px solid var(--lc); border-radius: 10px; margin-top: 12px; overflow: hidden; scroll-margin-top: 12px; }
+.band { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 14px; background: var(--lc); color: var(--li); }
+.band .bl { font-weight: 700; font-size: 14.5px; letter-spacing: .02em; }
+.band .bk { font-size: 12px; opacity: .95; white-space: nowrap; }
+.cbody { padding: 12px 14px 12px; }
+.pair { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-bottom: 10px; }
+.side { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 4px 4px; min-width: 0; }
+.rhs { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; min-width: 0; }
+.side > .drug:not(:last-child)::after { content: "・"; color: #8d9ca8; font-weight: 400; margin-left: -3px; }
+.drug { display: inline-flex; align-items: baseline; flex-wrap: wrap; gap: 0 6px; }
+.drug .dot { display: inline-block; width: 9px; height: 9px; border-radius: 2px; align-self: center; flex: none; }
+.drug .abbr { font-family: var(--mono); font-weight: 700; font-size: 16.5px; letter-spacing: .02em; }
+.drug .dn { font-size: 15px; font-weight: 700; line-height: 1.5; }
+.drug .ds { font-size: 12px; color: var(--muted); font-weight: 400; }
+.times { color: var(--muted); font-size: 18px; font-weight: 700; line-height: 1; }
+.pcap { flex-basis: 100%; font-size: 11.5px; color: var(--muted); }
+.dir { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; padding: 7px 10px; background: #f4f7f9; border-radius: 8px; }
+.dbadge { flex: none; width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+          border: 2px solid currentColor; }
+.dbadge svg { width: 21px; height: 21px; }
+.d-up { color: #C0392B; background: #fdecea; }
+.d-down { color: #1F6FB5; background: #e7f1fa; }
+.d-mixed { color: #7a3b8f; background: #f3ebf8; }
+.d-pd { width: auto; height: 30px; padding: 0 12px; border-radius: 15px; color: #3f4f5b; background: #e9edf0; font-weight: 700; font-size: 13px; white-space: nowrap; }
+.dtxt { font-size: 13px; line-height: 1.5; min-width: 0; }
+.dtxt b { display: block; font-size: 14px; }
+.ct { font-size: 16.5px; line-height: 1.55; margin: 0 0 6px; color: #14212b; text-wrap: balance; }
+.cd { font-size: 14.5px; line-height: 1.8; margin: 0 0 10px; color: #26323c; text-wrap: pretty; }
+.act { background: var(--lt); border-left: 4px solid var(--lc); padding: 8px 12px 9px; border-radius: 0 6px 6px 0; margin: 8px 0 10px; }
+.act .al { font-size: 12px; font-weight: 700; color: var(--lk); letter-spacing: .08em; }
+.act p { margin: 2px 0 0; font-size: 14.5px; line-height: 1.75; font-weight: 700; color: #1b2630; text-wrap: pretty; }
+.src { border-top: 1px dashed #c9d3db; padding-top: 7px; margin-top: 8px; }
+.src h4 { font-size: 11.5px; color: var(--muted); margin: 0 0 1px; font-weight: 700; letter-spacing: .08em; }
+.src ul { margin: 0; padding: 0; list-style: none; }
+.src li { position: relative; font-size: 12px; line-height: 1.55; color: #3f4d58; padding: 2px 0 2px 12px; overflow-wrap: anywhere; }
+.src li::before { content: ""; position: absolute; left: 2px; top: .8em; width: 4px; height: 4px; border-radius: 50%; background: #9fb0bd; }
+.src a, .psrc a { color: var(--navy); text-underline-offset: 2px; text-decoration-color: #8fb2cb; }
+.tg { display: inline-block; font-size: 10.5px; line-height: 1.45; border: 1px solid; border-radius: 3px; padding: 0 5px; margin-left: 6px; vertical-align: 1px; white-space: nowrap; font-weight: 400; }
+.tg-pm { color: #1A5276; border-color: #9bbbd1; background: #eef5fa; }
+.tg-l { color: #245a3c; border-color: #a9cdb8; background: #eef7f1; }
+
+.unl { background: #fff; border: 1.5px dashed #9aa8b4; border-radius: 10px; padding: 12px 14px; margin-top: 16px; scroll-margin-top: 12px; }
+.unl h3 { font-size: 14.5px; margin: 0 0 6px; color: #3f4d58; line-height: 1.55; text-wrap: balance; }
+.unl ul { margin: 0; padding: 0; list-style: none; }
+.unl li { font-size: 13.5px; padding: 3px 0; line-height: 1.6; }
+.unl .ab { font-family: var(--mono); font-weight: 700; }
+.unl .lab { color: var(--muted); font-size: 12px; margin-right: 4px; }
+.unl .pr { white-space: nowrap; }
+.props { margin-top: 18px; }
+.props h3 { font-size: 14px; color: var(--navy); margin: 0 0 6px; padding-bottom: 4px; border-bottom: 2px solid var(--navy); }
+.props ul { list-style: none; margin: 0; padding: 0; }
+.prop { border-left: 4px solid var(--tc); background: #fff; border-radius: 0 6px 6px 0; padding: 6px 10px 7px; margin-top: 6px; border-top: 1px solid var(--line); border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.prop-h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; }
+.prop-h .abbr { font-family: var(--mono); font-size: 15px; }
+.prop-h .pn { font-size: 13.5px; font-weight: 700; }
+.ptag { font-size: 11px; font-weight: 700; color: var(--tcd); background: var(--tbg); border: 1px solid var(--tc); border-radius: 3px; padding: 0 6px; line-height: 1.5; }
+.pnote { margin: 2px 0 0; font-size: 13px; line-height: 1.6; color: #26323c; }
+.psrc { margin: 2px 0 0; font-size: 11.5px; line-height: 1.55; color: #55626d; overflow-wrap: anywhere; }
+
+.foot { margin-top: 28px; border-top: 1px solid var(--line); padding-top: 12px; font-size: 12.5px; color: var(--muted); line-height: 1.8; }
+.foot p { margin: 0 0 2px; }
+.foot a { overflow-wrap: anywhere; }
+
+@media (max-width: 480px) {
+  main { padding: 12px 12px 40px; }
+  .hero h1 { font-size: 20px; }
+  .panel { padding: 12px; }
+  .cbody { padding: 12px 12px 12px; }
+  .band { padding: 7px 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+<nav id="ics-globalnav" style="background:#15324E;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
+<div style="max-width:1040px;margin:0 auto;padding:8px 12px;display:flex;align-items:center;gap:2px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;">
+<a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;padding-right:8px;">医知創造ラボ</a>
+<a href="https://ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ホーム</a>
+<a href="https://blog.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ブログ</a>
+<a href="https://tools.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ツール</a>
+<a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">YouTube</a>
+</div>
+</nav>
+<header class="hero">
+  <div class="hero-in">
+    <div class="back"><a href="index.html">← ツール一覧へ</a></div>
+    <h1>抗てんかん発作薬 相互作用チェッカー</h1>
+    <p class="sub">服用中のASMと併用薬を選ぶと、濃度が動く組み合わせと対応を表示します（医療者向け）</p>
+    <p class="upd">データ更新日：<span id="upd"></span></p>
+  </div>
+</header>
+<main>
+  <div class="notice" role="note">
+    <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5L22 20.5H2Z" fill="none" stroke="#b7791f" stroke-width="2" stroke-linejoin="round"/><path d="M12 10v5" stroke="#b7791f" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17.8" r="1.25" fill="#b7791f"/></svg>
+    <p id="notice-text">医療者向けの参考情報です。収載していない組み合わせが安全という意味ではありません。最終判断は最新の電子添文と専門医で行ってください。数値の多くは海外の試験データです。セノバメート（エキスコプリ）は2026年9月承認・発売前です。</p>
+  </div>
+  <noscript><p class="noscript">このツールの利用にはJavaScriptが必要です。</p></noscript>
+
+  <div class="layout">
+    <div class="picker">
+      <section class="panel" aria-labelledby="h-asm">
+        <h2 id="h-asm"><span class="step" aria-hidden="true">1</span>服用中の抗てんかん発作薬<span class="cnt" id="cnt-asm"></span><a class="jump" href="#results">結果へ ↓</a></h2>
+        <p class="hint">複数選べます。もう一度押すと解除します。</p>
+        <div id="asm-groups"></div>
+      </section>
+      <section class="panel" aria-labelledby="h-med">
+        <h2 id="h-med"><span class="step" aria-hidden="true">2</span>併用薬<span class="cnt" id="cnt-med"></span><a class="jump" href="#results">結果へ ↓</a></h2>
+        <label class="sr-only" for="q">併用薬を名前で絞り込む</label>
+        <input id="q" type="search" placeholder="併用薬を絞り込む（例：アピキサバン）" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
+        <div class="msel" id="med-selected"></div>
+        <div id="med-cats"></div>
+      </section>
+    </div>
+
+    <section class="results" id="results" aria-labelledby="h-res">
+      <div class="res-head">
+        <h2 id="h-res"><span class="step" aria-hidden="true">3</span>結果</h2>
+        <div class="res-actions">
+          <button type="button" class="btn btn-main" id="btn-copy" disabled>結果をコピー</button>
+          <button type="button" class="btn" id="btn-clear" disabled>選択をすべて解除</button>
+        </div>
+      </div>
+      <p class="copymsg" id="copymsg" role="status" aria-live="polite"></p>
+      <div class="sr-only" id="res-status" role="status" aria-live="polite"></div>
+      <div id="res-body"></div>
+    </section>
+  </div>
+
+  <footer class="foot">
+    <p>根拠：PubMedで実在を確認した文献と国内電子添文（改訂年月は出典欄）</p>
+    <p>相互作用マップ（図）：<a href="https://tools.ichisouzo-lab.com/infographics/asm-drug-interactions/">https://tools.ichisouzo-lab.com/infographics/asm-drug-interactions/</a></p>
+    <p>© 医知創造ラボ</p>
+  </footer>
+</main>
+
+<script>
+/* DATA-BEGIN */
+/* =====================================================================
+   抗てんかん発作薬 相互作用チェッカー：データ（2026-10-11 作成）
+   - 根拠：../evidence_ledger.md と ../research/*.md
+     （PubMed 逆引きで実在確認した文献／国内電子添文：PMDA 版・改訂年月つき）
+   - 数値は原文にあるものだけを載せる。新しい主張を足すときは台帳に先に追加すること。
+   - iOS Safari 互換のため ES5（var・function・文字列連結）で書く。
+   - 構造
+     TIERS  … ASM の4タイプ（＋両方向・データ限定）
+     ASMS   … 抗てんかん発作薬（表示順）
+     CATS   … 併用薬の分類
+     MEDS   … 併用薬
+     RULES  … ASM × 併用薬（a: ASM の id 配列 / m: 併用薬の id 配列）
+     ARULES … ASM × ASM（p: 影響を与える側 / v: 影響を受ける側）
+     SRC    … 出典（L_ で始まるものは国内電子添文）
+   - lv（重み）：contra=国内添文の併用禁忌 / major=避ける・要対応 / mod=調整・確認 /
+                 minor=軽微・限定的 / none=影響なし（確認済み）
+   - fx（向き）：up=濃度↑ / down=濃度↓ / mixed=両方向・複雑 / pd=薬力学（濃度は変わらない）
+   - who：濃度が動く側（'med'=併用薬 / 'asm'=ASM / 'both'=双方）
+   ===================================================================== */
+
+var DDI_UPDATED = '2026年10月11日';
+
+var TIERS = {
+  strong: { label: '強い誘導', color: '#173F7A', bg: '#e9eff8',
+            desc: 'CYP1A2・2C9・2C19・3A4とUGTを広く誘導し、多くの併用薬の濃度を下げる' },
+  weak:   { label: '弱い誘導', color: '#3F7FC2', bg: '#f0f6fd',
+            desc: '高用量で主にCYP3Aを誘導し、ホルモン避妊薬の効果を弱める（他剤への影響は強い誘導薬より小さい）' },
+  inh:    { label: '阻害', color: '#B5332A', bg: '#fcf2f1',
+            desc: '代謝酵素を阻害し、併用薬の濃度を上げる' },
+  both:   { label: '阻害＋誘導（両方向）', color: '#7a3b8f', bg: '#f6f0fa',
+            desc: 'CYP2C19を阻害して濃度を上げ、CYP3Aを誘導して濃度を下げる' },
+  neu:    { label: '中立（自分は動きやすい）', color: '#2C6E49', bg: '#eaf4ee',
+            desc: '他剤への影響は小さいが、自分の濃度は他剤で動きやすい' },
+  safe:   { label: '最も相互作用が少ない', color: '#2C6E49', bg: '#eaf4ee',
+            desc: '他剤の濃度をほとんど動かさない（自分は誘導薬で2〜5割下がることがある）' },
+  misc:   { label: 'その他（データ限定）', color: '#5b6770', bg: '#f1f3f5',
+            desc: '他剤への影響の体系的なデータが少ない' }
+};
+
+var ASMS = [
+  { id: 'pht', abbr: 'PHT', name: 'フェニトイン', brand: 'アレビアチン・ホストイン（静注）', tier: 'strong',
+    note: '非線形動態：わずかな変化で中毒域へ。血中濃度測定（TDM）を', src: ['ZAC14', 'RIC79', 'L_PHT'] },
+  { id: 'cbz', abbr: 'CBZ', name: 'カルバマゼピン', brand: 'テグレトール', tier: 'strong',
+    note: '自己誘導：開始1〜2週で自らの濃度も下がる', src: ['ZAC14', 'MIK89', 'L_CBZ'] },
+  { id: 'pb', abbr: 'PB', name: 'フェノバルビタール', brand: 'フェノバール', tier: 'strong',
+    note: '誘導は中止後も2〜8週残る', src: ['ZAC14', 'GHA26', 'L_PB'] },
+  { id: 'prm', abbr: 'PRM', name: 'プリミドン', brand: 'プリミドン', tier: 'strong',
+    note: '体内でPBに変わる強い誘導薬', src: ['ZAC14', 'L_PRM'] },
+  { id: 'tpm', abbr: 'TPM', name: 'トピラマート', brand: 'トピナ', tier: 'weak',
+    note: '200 mg/日以上で避妊薬↓', src: ['ZAC14', 'L_TPM'] },
+  { id: 'per', abbr: 'PER', name: 'ペランパネル', brand: 'フィコンパ', tier: 'weak',
+    note: '12 mg/日で避妊薬（LNG）↓。他のASMへの影響は小さい', src: ['L_PER', 'MAJ16'] },
+  { id: 'ruf', abbr: 'RUF', name: 'ルフィナミド', brand: 'イノベロン', tier: 'weak',
+    note: 'CYP3A4の弱い誘導', src: ['PER08', 'L_RUF'] },
+  { id: 'vpa', abbr: 'VPA', name: 'バルプロ酸', brand: 'デパケン・セレニカ', tier: 'inh',
+    note: 'UGT・CYP2C9・エポキシド水解酵素を阻害', src: ['JOH10', 'WEN01', 'L_VPA'] },
+  { id: 'stp', abbr: 'STP', name: 'スチリペントール', brand: 'ディアコミット', tier: 'inh',
+    note: 'CYP1A2・2C19・3A4・2D6などを阻害', src: ['L_STP', 'TRA97'] },
+  { id: 'cnb', abbr: 'CNB', name: 'セノバメート', brand: 'エキスコプリ（2026年9月承認・発売前）', tier: 'both',
+    note: 'CYP2C19を阻害し、CYP3A・2B6を誘導', src: ['L_CNB', 'GRE22'] },
+  { id: 'ltg', abbr: 'LTG', name: 'ラモトリギン', brand: 'ラミクタール', tier: 'neu',
+    note: '用法は併用薬で3通り（VPA併用／誘導薬併用／その他）', src: ['L_LTG'] },
+  { id: 'clb', abbr: 'CLB', name: 'クロバザム', brand: 'マイスタン', tier: 'neu',
+    note: '活性代謝物N-CLBはCYP2C19で代謝', src: ['L_CLB'] },
+  { id: 'ffa', abbr: 'FFA', name: 'フェンフルラミン', brand: 'フィンテプラ', tier: 'neu',
+    note: 'MAO-B阻害薬と併用禁忌', src: ['L_FFA'] },
+  { id: 'zns', abbr: 'ZNS', name: 'ゾニサミド', brand: 'エクセグラン', tier: 'neu',
+    note: 'CYP3Aで代謝。誘導薬で半減期が短くなる', src: ['JOH10', 'L_ZNS'] },
+  { id: 'esm', abbr: 'ESM', name: 'エトスクシミド', brand: 'エピレオプチマル・ザロンチン', tier: 'misc',
+    note: '誘導薬で低下、VPAで上昇。他剤への影響はPHT↑の報告', src: ['L_ESM', 'GIA96'] },
+  { id: 'lev', abbr: 'LEV', name: 'レベチラセタム', brand: 'イーケプラ', tier: 'safe',
+    note: '主に腎排泄。PHT・CBZで2〜3割↓程度', src: ['MAY03', 'JLP10'] },
+  { id: 'lcm', abbr: 'LCM', name: 'ラコサミド', brand: 'ビムパット', tier: 'safe',
+    note: '誘導薬で25〜39%↓。PR延長に注意', src: ['MAY18', 'L_LCM'] },
+  { id: 'brv', abbr: 'BRV', name: 'ブリーバラセタム', brand: 'ブリィビアクト', tier: 'safe',
+    note: 'リファンピシンで45%↓。CBZエポキシド↑', src: ['STO16', 'L_BRV'] },
+  { id: 'gbp', abbr: 'GBP', name: 'ガバペンチン', brand: 'ガバペン', tier: 'safe',
+    note: '主に腎排泄', src: ['JLP10'] }
+];
+
+var CATS = [
+  { id: 'ac',  label: '抗凝固・抗血小板' },
+  { id: 'hor', label: '避妊・ホルモン' },
+  { id: 'inf', label: '抗菌・抗真菌・抗結核' },
+  { id: 'vir', label: '抗ウイルス（COVID-19・HIV・HCV）' },
+  { id: 'cv',  label: '循環器' },
+  { id: 'imm', label: '免疫抑制・ステロイド' },
+  { id: 'onc', label: '抗がん薬' },
+  { id: 'psy', label: '精神・神経・鎮痛' },
+  { id: 'oth', label: 'その他' }
+];
+
+var MEDS = [
+  { id: 'apix',  cat: 'ac',  name: 'アピキサバン', sub: 'エリキュース' },
+  { id: 'riva',  cat: 'ac',  name: 'リバーロキサバン', sub: 'イグザレルト' },
+  { id: 'edox',  cat: 'ac',  name: 'エドキサバン', sub: 'リクシアナ' },
+  { id: 'dabi',  cat: 'ac',  name: 'ダビガトラン', sub: 'プラザキサ' },
+  { id: 'warf',  cat: 'ac',  name: 'ワルファリン', sub: 'ワーファリン' },
+  { id: 'tica',  cat: 'ac',  name: 'チカグレロル', sub: 'ブリリンタ' },
+
+  { id: 'coc',   cat: 'hor', name: 'エストロゲン含有の経口避妊薬', sub: 'OC・LEP' },
+  { id: 'ecp',   cat: 'hor', name: '緊急避妊薬', sub: 'レボノルゲストレル' },
+  { id: 'iud',   cat: 'hor', name: '子宮内避妊具', sub: '銅付加IUD・LNG-IUS' },
+  { id: 'mife',  cat: 'hor', name: '経口中絶薬', sub: 'メフィーゴ（ミフェプリストン・ミソプロストール）' },
+
+  { id: 'carba', cat: 'inf', name: 'カルバペネム系', sub: 'メロペネム・イミペネム・ドリペネム等' },
+  { id: 'macro', cat: 'inf', name: 'クラリスロマイシン・エリスロマイシン', sub: 'マクロライド' },
+  { id: 'azi',   cat: 'inf', name: 'アジスロマイシン', sub: 'マクロライド' },
+  { id: 'flu',   cat: 'inf', name: 'フルコナゾール', sub: 'アゾール系' },
+  { id: 'itra',  cat: 'inf', name: 'イトラコナゾール', sub: 'アゾール系' },
+  { id: 'vori',  cat: 'inf', name: 'ボリコナゾール', sub: 'ブイフェンド' },
+  { id: 'rif',   cat: 'inf', name: 'リファンピシン', sub: '抗結核薬' },
+  { id: 'inh',   cat: 'inf', name: 'イソニアジド', sub: '抗結核薬' },
+  { id: 'st',    cat: 'inf', name: 'ST合剤', sub: 'スルファメトキサゾール・トリメトプリム' },
+  { id: 'isa',   cat: 'inf', name: 'イサブコナゾニウム', sub: 'クレセンバ（抗真菌薬）' },
+  { id: 'arte',  cat: 'inf', name: 'アルテメテル・ルメファントリン', sub: 'リアメット（抗マラリア薬）' },
+
+  { id: 'paxl',  cat: 'vir', name: 'ニルマトレルビル・リトナビル', sub: 'パキロビッド（COVID-19）' },
+  { id: 'xoco',  cat: 'vir', name: 'エンシトレルビル', sub: 'ゾコーバ（COVID-19）' },
+  { id: 'rpv',   cat: 'vir', name: 'リルピビリン含有製剤', sub: 'エジュラント・ジャルカ・オデフシィ（HIV）' },
+  { id: 'bic',   cat: 'vir', name: 'ビクテグラビル', sub: 'ビクタルビ（HIV）' },
+  { id: 'dtg',   cat: 'vir', name: 'ドルテグラビル単剤・配合剤', sub: 'テビケイ等（HIV、ジャルカを除く）' },
+  { id: 'lpvr',  cat: 'vir', name: 'ロピナビル・リトナビル', sub: 'HIV' },
+  { id: 'hcvsv', cat: 'vir', name: 'ソホスブビル・ベルパタスビル', sub: 'エプクルーサ（HCV）' },
+  { id: 'hcvls', cat: 'vir', name: 'レジパスビル・ソホスブビル', sub: 'ハーボニー（HCV）' },
+  { id: 'hcvgp', cat: 'vir', name: 'グレカプレビル・ピブレンタスビル', sub: 'マヴィレット（HCV）' },
+  { id: 'hcvge', cat: 'vir', name: 'グラゾプレビル・エルバスビル', sub: 'グラジナ・エレルサ（HCV）' },
+  { id: 'hivcb', cat: 'vir', name: 'プレジコビックス・シムツーザ・ゲンボイヤ', sub: 'コビシスタット配合の抗HIV薬' },
+  { id: 'dor',   cat: 'vir', name: 'ドラビリン', sub: 'ピフェルトロ（HIV）' },
+  { id: 'cab',   cat: 'vir', name: 'カボテグラビル', sub: 'ボカブリア（HIV）' },
+  { id: 'len',   cat: 'vir', name: 'レナカパビル', sub: 'シュンレンカ（HIV）' },
+
+  { id: 'amio',  cat: 'cv',  name: 'アミオダロン', sub: '抗不整脈薬' },
+  { id: 'vera',  cat: 'cv',  name: 'ベラパミル', sub: 'Ca拮抗薬' },
+  { id: 'dilt',  cat: 'cv',  name: 'ジルチアゼム', sub: 'Ca拮抗薬' },
+  { id: 'dhp',   cat: 'cv',  name: 'ジヒドロピリジン系Ca拮抗薬', sub: 'ニフェジピン等' },
+  { id: 'statin',cat: 'cv',  name: 'スタチン', sub: 'シンバスタチン・アトルバスタチン' },
+  { id: 'maci',  cat: 'cv',  name: 'マシテンタン', sub: 'オプスミット（肺高血圧症）' },
+  { id: 'tada',  cat: 'cv',  name: 'タダラフィル（肺高血圧症）', sub: 'アドシルカ' },
+  { id: 'yuv',   cat: 'cv',  name: 'マシテンタン・タダラフィル', sub: 'ユバンシ（肺高血圧症）' },
+  { id: 'prlong',cat: 'cv',  name: 'PR間隔を延ばす薬', sub: 'β遮断薬など' },
+  { id: 'diur',  cat: 'cv',  name: '利尿薬', sub: 'サイアザイド等（Na喪失性）' },
+  { id: 'dig',   cat: 'cv',  name: 'ジゴキシン', sub: '強心薬' },
+
+  { id: 'tac',   cat: 'imm', name: 'タクロリムス', sub: '免疫抑制薬' },
+  { id: 'cya',   cat: 'imm', name: 'シクロスポリン', sub: '免疫抑制薬' },
+  { id: 'evr',   cat: 'imm', name: 'エベロリムス', sub: 'mTOR阻害薬' },
+  { id: 'ster',  cat: 'imm', name: '副腎皮質ステロイド', sub: 'デキサメタゾン・プレドニゾロン' },
+
+  { id: 'tki',   cat: 'onc', name: 'キナーゼ阻害薬', sub: 'イマチニブ・ラパチニブ等' },
+  { id: 'taxane',cat: 'onc', name: 'タキサン系', sub: 'パクリタキセル等' },
+  { id: 'irino', cat: 'onc', name: 'イリノテカン', sub: '' },
+  { id: 'fu',    cat: 'onc', name: 'フルオロウラシル系', sub: 'テガフール・カペシタビン等' },
+  { id: 'cis',   cat: 'onc', name: 'シスプラチン・ビンカアルカロイド', sub: '' },
+
+  { id: 'cloz',  cat: 'psy', name: 'クロザピン', sub: '抗精神病薬' },
+  { id: 'quet',  cat: 'psy', name: 'クエチアピン', sub: '抗精神病薬' },
+  { id: 'arip',  cat: 'psy', name: 'アリピプラゾール・リスペリドン', sub: '抗精神病薬' },
+  { id: 'lura',  cat: 'psy', name: 'ルラシドン', sub: 'ラツーダ' },
+  { id: 'tca',   cat: 'psy', name: '三環系抗うつ薬', sub: 'イミプラミン・アミトリプチリン等' },
+  { id: 'serot', cat: 'psy', name: 'セロトニン作動薬', sub: 'SSRI・SNRI・トリプタン・トラマドール等' },
+  { id: 'fluv',  cat: 'psy', name: 'フルボキサミン', sub: 'SSRI' },
+  { id: 'parox', cat: 'psy', name: 'パロキセチン', sub: 'SSRI' },
+  { id: 'maob',  cat: 'psy', name: 'MAO-B阻害薬', sub: 'セレギリン・ラサギリン・サフィナミド' },
+  { id: 'lith',  cat: 'psy', name: 'リチウム', sub: '気分安定薬' },
+  { id: 'bzd',   cat: 'psy', name: 'ベンゾジアゼピン', sub: 'ジアゼパム・ミダゾラム・ロラゼパム等' },
+  { id: 'opi',   cat: 'psy', name: 'オピオイド', sub: 'モルヒネ・オキシコドン等' },
+  { id: 'meth',  cat: 'psy', name: 'メサドン', sub: 'オピオイド' },
+
+  { id: 'ppi',   cat: 'oth', name: 'プロトンポンプ阻害薬', sub: 'オメプラゾール・ランソプラゾール等' },
+  { id: 'acz',   cat: 'oth', name: 'アセタゾラミド', sub: '炭酸脱水酵素阻害薬' },
+  { id: 'thy',   cat: 'oth', name: '甲状腺ホルモン', sub: 'レボチロキシン' },
+  { id: 'apap',  cat: 'oth', name: 'アセトアミノフェン', sub: '' },
+  { id: 'gfj',   cat: 'oth', name: 'グレープフルーツ（ジュース）', sub: '食品' },
+  { id: 'asa',   cat: 'oth', name: 'サリチル酸系', sub: 'アスピリン等' },
+  { id: 'caf',   cat: 'oth', name: 'カフェイン・テオフィリン', sub: 'コーヒー・紅茶・テオフィリン製剤' },
+  { id: 'hypog', cat: 'oth', name: '血糖降下薬', sub: 'インスリン・経口血糖降下薬' }
+];
+
+var STRONG = ['pht', 'cbz', 'pb', 'prm'];
+var ALL_ASM = (function () { var a = []; for (var i = 0; i < ASMS.length; i++) { a.push(ASMS[i].id); } return a; })();
+var DOACS = ['apix', 'riva', 'edox', 'dabi'];
+
+/* ---------------- ASM × 併用薬 ---------------- */
+var RULES = [
+  /* ===== 抗凝固薬 ===== */
+  { a: ['cbz'], m: ['dabi'], lv: 'major', fx: 'down', who: 'med',
+    t: 'ダビガトラン濃度↓（効果減弱）',
+    d: '国内添文：併用注意（P糖蛋白の誘導でダビガトラン↓）。EHRA 2021では「NOAC濃度低下のため禁忌」の色分け（−29%）。誘導薬併用でDOACが期待濃度を下回った割合は37.5%（非併用9.3%）。',
+    act: '可能なら誘導作用のないASMへ切り替える。継続するなら抗凝固の方法を専門医と検討する。',
+    s: ['L_PRZ', 'L_CBZ', 'EHR21', 'PER21'] },
+  { a: ['pht'], m: ['dabi'], lv: 'major', fx: 'down', who: 'med',
+    t: 'ダビガトラン濃度↓のおそれ',
+    d: 'EHRA 2021では禁忌の色分け。国内のプラザキサ添文にフェニトインの記載はない。',
+    act: '可能なら誘導作用のないASMへ。継続するなら抗凝固の方法を専門医と検討する。',
+    s: ['EHR21'] },
+  { a: ['pb'], m: ['dabi'], lv: 'mod', fx: 'down', who: 'med',
+    t: 'ダビガトラン濃度↓の可能性',
+    d: 'EHRA 2021では注意（臨床・PKデータなし）。',
+    act: '出血・血栓症状と腎機能を確認する。', s: ['EHR21'] },
+  { a: ['cbz', 'pht', 'pb'], m: ['riva'], lv: 'major', fx: 'down', who: 'med',
+    t: 'リバーロキサバン濃度↓（効果減弱）',
+    d: '国内添文：併用注意（CYP3A4の強い誘導でクリアランス↑）。EHRA 2021では禁忌の色分け。誘導薬併用でDOACが期待濃度を下回った割合は37.5%（非併用9.3%）。',
+    act: '可能なら誘導作用のないASMへ切り替える。継続するなら抗凝固の方法を専門医と検討する。',
+    s: ['L_XAR', 'EHR21', 'PER21'] },
+  { a: ['cbz', 'pht', 'pb'], m: ['apix'], lv: 'major', fx: 'down', who: 'med',
+    t: 'アピキサバン濃度↓（効果減弱）',
+    d: '国内添文：併用注意（静脈血栓塞栓症の患者では併用を避けることが望ましい）。EHRA 2021では注意の色分け。誘導薬併用でDOACが期待濃度を下回った割合は37.5%（非併用9.3%）。',
+    act: '可能なら誘導作用のないASMへ切り替える。継続するなら抗凝固の方法を専門医と検討する。',
+    s: ['L_ELQ', 'EHR21', 'PER21'] },
+  { a: ['cbz', 'pht', 'pb'], m: ['edox'], lv: 'mod', fx: 'down', who: 'med',
+    t: 'エドキサバン濃度↓の可能性',
+    d: 'EHRA 2021では注意の色分け。国内のリクシアナ添文にASMの記載はない（リファンピシンでAUC約34%↓、PT・APTTに影響なし）。',
+    act: '出血・血栓症状を確認し、方針を専門医と共有する。', s: ['EHR21', 'L_LIX'] },
+  { a: ['prm'], m: DOACS, lv: 'mod', fx: 'down', who: 'med',
+    t: 'DOAC濃度↓の可能性',
+    d: 'PRMは体内でPBに変わる強い誘導薬。DOACの国内添文・EHRA表に個別の記載はない。',
+    act: 'PBに準じて扱い、誘導作用のないASMを検討する。', s: ['ZAC14', 'L_PRM', 'EHR21'] },
+  { a: ['vpa'], m: DOACS, lv: 'mod', fx: 'mixed', who: 'med',
+    t: 'EHRA 2021では禁忌の色分け（根拠は限定的）',
+    d: 'CYP3A4・P糖蛋白への影響が予測しにくいとして全DOACで禁忌の色。根拠は症例報告レベルで、国内のDOAC添文に記載はない。',
+    act: '併用する場合は出血・血栓症状に注意し、方針を専門医と共有する。', s: ['EHR21'] },
+  { a: ['lev'], m: DOACS, lv: 'minor', fx: 'mixed', who: 'med',
+    t: 'EHRA 2021では注意（データなし）',
+    d: 'アピキサバン・リバーロキサバンの濃度研究では、LEVはピーク濃度を下げなかった（期待濃度未満：LEV 7.1%、ASMなし10.6%、誘導薬 36.4%）。転帰の研究は結果が一致せず、LTG・LCMと比べて血栓塞栓が多かった（HR 1.98）とする研究もある。',
+    act: '通常どおり併用されることが多いが、出血・血栓症状は確認する。', s: ['EHR21', 'GOL24', 'SCH26'] },
+  { a: ['tpm'], m: ['apix', 'riva'], lv: 'minor', fx: 'down', who: 'med',
+    t: 'EHRA 2021では注意（データなし）', d: 'CYP3A4誘導の可能性による。', act: '', s: ['EHR21'] },
+  { a: ['brv', 'lcm', 'ltg', 'gbp', 'zns', 'esm'], m: DOACS, lv: 'none', fx: 'none', who: 'med',
+    t: '関連する相互作用なし（EHRA 2021）', d: '既知・想定とも関連する相互作用はないとされる（臨床・薬物動態のデータはない扱い）。', act: '', s: ['EHR21'] },
+  { a: ['cnb'], m: ['apix', 'riva', 'edox'], lv: 'mod', fx: 'down', who: 'med',
+    t: 'DOAC濃度↓のおそれ（CYP3A誘導）',
+    d: 'CNB 200 mg/日のCYP3A誘導はCBZ 600 mg/日と有意差なし（ネットワークメタ解析）。DOACとの直接のデータは限られる。',
+    act: '併用時は相互作用をモニタリングする（専門家合意）。', s: ['COH24', 'STE24', 'L_CNB'] },
+
+  { a: ['pb', 'cbz', 'prm'], m: ['warf'], lv: 'major', fx: 'down', who: 'med',
+    t: 'ワルファリン効果↓（INR低下）',
+    d: '誘導薬の開始・増量でINRが下がり、中止・減量後は上がる（出血に注意）。',
+    act: '開始・中止・用量変更の前後はINRを頻回に測定する。', s: ['L_WAR', 'L_PB', 'L_CBZ', 'L_PRM', 'JOH10'] },
+  { a: ['pht'], m: ['warf'], lv: 'major', fx: 'mixed', who: 'both',
+    t: 'ワルファリン効果↑または↓／PHT↑',
+    d: '蛋白結合の置換で増強、誘導で減弱。ワルファリンがPHTの代謝を阻害しPHTが上がる。',
+    act: 'INRとPHT濃度を頻回に確認する。', s: ['L_WAR', 'L_PHT'] },
+  { a: ['vpa'], m: ['warf'], lv: 'mod', fx: 'up', who: 'med',
+    t: 'ワルファリン作用↑', d: '遊離型の上昇、凝固因子・血小板への影響による。', act: 'INRを確認する。', s: ['L_WAR', 'L_VPA'] },
+  { a: ['stp'], m: ['warf'], lv: 'mod', fx: 'up', who: 'med',
+    t: 'ワルファリン作用↑（CYP2C9阻害）', d: '', act: '血液凝固能を確認し、必要に応じてワルファリンを減量する。', s: ['L_STP'] },
+  { a: ['lev', 'lcm'], m: ['warf'], lv: 'none', fx: 'none', who: 'med',
+    t: '影響なし（添文の試験）', d: '', act: '', s: ['L_LEV', 'L_LCM'] },
+  { a: ['cnb'], m: ['warf'], lv: 'none', fx: 'none', who: 'med',
+    t: 'ほぼ影響なし', d: 'CNB 200 mg/日でS-ワルファリンAUC 1.14倍（R体・S体とも影響なしと添文）。', act: '', s: ['GRE22', 'L_CNB'] },
+  { a: ['cbz', 'pht', 'pb'], m: ['tica'], lv: 'contra', fx: 'down', who: 'med',
+    t: 'チカグレロル↓（効果減弱）', d: '強いCYP3A誘導で血漿中濃度が著しく低下するおそれ。',
+    act: '併用しない。', s: ['L_BRI', 'L_CBZ', 'L_PHT', 'L_PB'] },
+
+  /* ===== 避妊・ホルモン ===== */
+  { a: STRONG, m: ['coc'], lv: 'major', fx: 'down', who: 'med',
+    t: '避妊効果↓（避妊失敗・不正出血）',
+    d: 'CBZ 600 mg/日でEEのクリアランス+127%。',
+    act: 'IUD（銅付加・LNG-IUS）を勧める。経口避妊薬を使うならEE 30 μg以上（US MEC 2024）。',
+    s: ['JOH10', 'MEC24', 'L_CBZ', 'L_PHT', 'L_PB'] },
+  { a: ['tpm'], m: ['coc'], lv: 'mod', fx: 'down', who: 'med',
+    t: '200 mg/日以上で避妊効果↓', d: 'EEのAUC −18〜30%（200〜800 mg/日の試験。国内の承認用量は600 mg/日まで）。不正性器出血も増えるおそれ。',
+    act: 'IUDなど影響を受けない方法を検討する。', s: ['L_TPM', 'ZAC14'] },
+  { a: ['per'], m: ['coc'], lv: 'mod', fx: 'down', who: 'med',
+    t: '12 mg/日で避妊効果↓', d: 'LNGのAUC −41%（8 mg/日では影響なし）。',
+    act: '12 mg/日では追加の避妊法を検討する。', s: ['L_PER', 'PAT15'] },
+  { a: ['ruf'], m: ['coc'], lv: 'mod', fx: 'down', who: 'med',
+    t: '避妊効果↓', d: 'EEのAUC −22%（1600 mg/日。国内の承認用法・用量と異なる条件の試験）。', act: 'IUDなどを検討する。', s: ['L_RUF', 'JOH10'] },
+  { a: ['cnb'], m: ['coc'], lv: 'mod', fx: 'down', who: 'med',
+    t: '避妊効果↓のおそれ（CYP3A誘導）',
+    d: '添文：投与中と最終投与後14日は適切な避妊法を説明する。低下の大きさのデータは限られる。',
+    act: 'IUDなど長期の避妊法を検討する。', s: ['L_CNB', 'STE24'] },
+  { a: ['clb'], m: ['coc'], lv: 'minor', fx: 'down', who: 'med',
+    t: '避妊薬への影響：評価が分かれる', d: 'CLB 40 mg/日でミダゾラム曝露 −27%（弱いCYP3A4誘導）。同じ研究の結論ではCYP3A4で代謝される薬との臨床的に意味のある相互作用はないとされ、避妊薬に影響しないとする総説もある。一方、CLBを弱い誘導薬として経口避妊薬を避けるよう勧める総説もある。国内添文に記載はない。',
+    act: '', s: ['WAL12', 'SCO22', 'TET26'] },
+  { a: ['stp'], m: ['coc'], lv: 'minor', fx: 'up', who: 'med',
+    t: '経口避妊薬の濃度↑のおそれ（CYP3A4阻害）', d: '', act: '', s: ['L_STP'] },
+  { a: ['ltg'], m: ['coc'], lv: 'major', fx: 'down', who: 'asm',
+    t: 'LTGが約半分に↓（休薬週に約2倍）',
+    d: 'LTGのAUCは単独時の48%。休薬期間の終わりには約2倍に戻る。LNGもやや低下（AUC 81%）。',
+    act: '経口避妊薬の開始・中止時はLTGの用量を調整し、濃度を確認する。', s: ['L_LTG', 'SID06', 'REI16'] },
+  { a: ['vpa'], m: ['coc'], lv: 'minor', fx: 'down', who: 'asm',
+    t: 'VPAがやや↓', d: '経口避妊薬でVPAの見かけのクリアランス+22%（総濃度）。現行のデパケン添文に記載はない。',
+    act: '', s: ['JOH10'] },
+  { a: ['cbz', 'pht', 'pb', 'prm', 'tpm', 'per', 'ruf', 'cnb'], m: ['ecp'], lv: 'mod', fx: 'down', who: 'med',
+    t: '緊急避妊薬（LNG）の効果↓のおそれ', d: '酵素誘導で黄体ホルモン単剤の緊急避妊薬が効きにくくなるおそれ（TPM・PERは高用量の場合）。',
+    act: '産婦人科と相談する。', s: ['TET26', 'HEC25'] },
+  { a: ALL_ASM, m: ['iud'], lv: 'none', fx: 'none', who: 'med',
+    t: '影響を受けない', d: '作用が局所的なため、誘導薬の使用中も効果が保たれる（US MEC 2024ではPHT・CBZ・バルビツール酸系・PRM・TPM・OXCの使用中に区分1）。',
+    act: '誘導薬を使う女性の避妊として勧められる。', s: ['MEC24', 'TET26', 'HEC25'] },
+  { a: STRONG, m: ['mife'], lv: 'contra', fx: 'down', who: 'med',
+    t: 'ミフェプリストン↓（効果減弱）', d: '誘導の影響がなくなるまで投与しない。',
+    act: '併用しない。', s: ['L_CBZ', 'L_PHT', 'L_PB', 'L_PRM'] },
+
+  /* ===== 抗菌・抗真菌・抗結核 ===== */
+  { a: ['vpa'], m: ['carba'], lv: 'contra', fx: 'down', who: 'asm',
+    t: 'VPAが急低下（発作の再燃）',
+    d: 'メロペネムで24時間以内に平均66%低下（カルバペネム全体のメタ解析では1〜3日以内に低下）。増量しても戻らず、中止後も回復に1〜2週かかる。',
+    act: '併用しない。抗菌薬を変えるか、ASMを変えるかを決める。',
+    s: ['L_VPA', 'L_MER', 'SPR07', 'CHA21', 'BED17'] },
+  { a: ['cbz'], m: ['macro'], lv: 'major', fx: 'up', who: 'asm',
+    t: 'CBZ↑（中毒：眠気・悪心・めまい）', d: 'マクロライド併用でCBZのトラフ +8.0 μg/mL（メタ解析）。',
+    act: 'アジスロマイシンなどへの変更を検討する。併用するならCBZ濃度を確認する。',
+    s: ['L_CBZ', 'CAR19', 'PAT03'] },
+  { a: ['cbz'], m: ['azi'], lv: 'none', fx: 'none', who: 'asm',
+    t: '影響が小さい（代替の候補）', d: 'エリスロマイシン・クラリスロマイシンと違い、CBZとの相互作用は認められていない。',
+    act: '', s: ['AMS96'] },
+  { a: ['stp'], m: ['macro'], lv: 'mod', fx: 'up', who: 'both',
+    t: '相互に濃度↑', d: 'ともにCYP3A4を阻害する。', act: '併用薬の減量などを検討する。', s: ['L_STP'] },
+  { a: ['per'], m: ['macro', 'itra'], lv: 'minor', fx: 'up', who: 'asm',
+    t: 'PER↑の可能性（CYP3A阻害）', d: 'ケトコナゾールでPERのAUC +20%（10日間の試験）。', act: '', s: ['L_PER', 'GID17'] },
+  { a: ['clb'], m: ['macro', 'itra'], lv: 'minor', fx: 'up', who: 'asm',
+    t: 'CLB↑の可能性（CYP3A4阻害）', d: '', act: '', s: ['L_CLB'] },
+  { a: ['vpa'], m: ['macro'], lv: 'minor', fx: 'up', who: 'asm',
+    t: 'VPA作用↑（エリスロマイシン）', d: '', act: '', s: ['L_VPA'] },
+  { a: ['pht'], m: ['flu'], lv: 'major', fx: 'up', who: 'asm',
+    t: 'PHT↑（AUC +75%）', d: 'フルコナゾール200 mg/日でPHTのAUC +75%・最低濃度 +128%。',
+    act: 'PHT濃度を確認し、減量を検討する。', s: ['BLU91', 'L_PHT'] },
+  { a: ['cbz'], m: ['flu'], lv: 'mod', fx: 'up', who: 'asm',
+    t: 'CBZ↑', d: 'アゾール系がCBZの代謝を阻害する。', act: 'CBZ濃度と中毒症状を確認する。', s: ['L_CBZ'] },
+  { a: ['cbz'], m: ['itra'], lv: 'major', fx: 'mixed', who: 'both',
+    t: 'イトラコナゾール↓・CBZ↑', d: 'CBZの誘導でイトラコナゾールが下がり、イトラコナゾールがCBZの代謝を阻害する。',
+    act: '別の抗真菌薬を検討する。', s: ['L_CBZ'] },
+  { a: ['cbz', 'pht', 'pb'], m: ['isa', 'arte'], lv: 'contra', fx: 'down', who: 'med',
+    t: '併用薬↓（効果減弱）', d: 'ASM側の電子添文で併用禁忌（代謝酵素の誘導）。', act: '併用しない。', s: ['L_CBZ', 'L_PHT', 'L_PB'] },
+  { a: ['cnb'], m: ['isa'], lv: 'mod', fx: 'pd', who: 'both',
+    t: 'QT短縮が重なるおそれ', d: '', act: '心電図を確認する。', s: ['L_CNB'] },
+  { a: ['pht'], m: ['itra'], lv: 'mod', fx: 'down', who: 'med',
+    t: 'イトラコナゾール↓', d: '', act: '効果を確認する。', s: ['L_PHT'] },
+  { a: ['stp'], m: ['flu', 'itra'], lv: 'mod', fx: 'up', who: 'both',
+    t: '相互に濃度↑', d: '', act: '併用薬の減量などを検討する。', s: ['L_STP'] },
+  { a: ['cbz', 'pb'], m: ['vori'], lv: 'contra', fx: 'down', who: 'med',
+    t: 'ボリコナゾール↓（無効化）', d: 'CYP3A4誘導でボリコナゾールの血中濃度が減少するおそれ。',
+    act: '併用しない。', s: ['L_VFE', 'L_CBZ', 'L_PB'] },
+  { a: ['pht'], m: ['vori'], lv: 'major', fx: 'mixed', who: 'both',
+    t: 'ボリコナゾール↓（AUC −69%）・PHT↑（AUC 1.8倍）', d: '国内添文では併用注意。',
+    act: 'ボリコナゾールの用量に注意し、PHTの中毒症状・濃度を確認する（アレビアチン添文）。', s: ['L_VFE', 'L_PHT'] },
+  { a: ['ltg'], m: ['rif'], lv: 'mod', fx: 'down', who: 'asm',
+    t: 'LTG↓（半減期 23.8→14.1時間）', d: '',
+    act: 'ラミクタール添文の「グルクロン酸抱合を誘導する薬剤」併用時の用法を参照する。', s: ['EBE00', 'L_LTG'] },
+  { a: ['brv'], m: ['rif'], lv: 'mod', fx: 'down', who: 'asm',
+    t: 'BRV↓（AUC −45%）', d: '', act: '増量を検討する。', s: ['STO16', 'MOS20', 'L_BRV'] },
+  { a: ['ffa'], m: ['rif'], lv: 'mod', fx: 'down', who: 'asm',
+    t: 'FFA↓（AUC −58%）', d: '', act: '効果の低下に注意する。', s: ['L_FFA'] },
+  { a: ['cbz', 'pht', 'per'], m: ['rif'], lv: 'mod', fx: 'down', who: 'asm',
+    t: 'ASM濃度↓', d: 'リファンピシンの強い誘導による。', act: '濃度と発作を確認する。', s: ['L_CBZ', 'L_PHT', 'L_PER'] },
+  { a: ['vpa', 'lcm'], m: ['rif'], lv: 'minor', fx: 'down', who: 'asm',
+    t: 'ASM濃度↓の報告（症例レベル）', d: '', act: '', s: ['DOR21', 'TAK25'] },
+  { a: ['cbz'], m: ['inh'], lv: 'major', fx: 'mixed', who: 'both',
+    t: 'CBZが急上昇・イソニアジドの肝毒性↑', d: '', act: 'CBZ濃度と肝機能を確認する。', s: ['L_CBZ', 'DES01'] },
+  { a: ['pht'], m: ['inh'], lv: 'major', fx: 'up', who: 'asm',
+    t: 'PHT↑（遅いアセチル化型で大きいおそれ）', d: '', act: 'PHT濃度を確認する。', s: ['L_PHT', 'DES01'] },
+  { a: ['pht'], m: ['st'], lv: 'mod', fx: 'up', who: 'asm',
+    t: 'PHT↑', d: '66歳以上でPHT中毒の調整オッズ比2.11（症例対照研究）。', act: 'PHT濃度を確認する。', s: ['L_PHT', 'ANT11'] },
+
+  /* ===== 抗ウイルス ===== */
+  { a: ['cbz', 'pht', 'pb'], m: ['paxl'], lv: 'contra', fx: 'down', who: 'med',
+    t: 'パキロビッド↓（効果消失・耐性）', d: 'CBZではさらにCBZの濃度上昇のおそれ。',
+    act: '併用しない。', s: ['L_PAX', 'L_CBZ', 'L_PHT', 'L_PB'] },
+  { a: ['ltg', 'vpa'], m: ['paxl'], lv: 'mod', fx: 'down', who: 'asm',
+    t: 'LTG・VPA↓（グルクロン酸抱合の促進）', d: '', act: '発作と濃度を確認する。', s: ['L_PAX', 'L_VPA'] },
+  { a: ['clb', 'per'], m: ['paxl'], lv: 'minor', fx: 'up', who: 'asm',
+    t: 'CLB・PER↑の可能性（リトナビルのCYP3A阻害）', d: '', act: '', s: ['L_CLB', 'L_PER'] },
+  { a: ['cbz', 'pht'], m: ['xoco'], lv: 'contra', fx: 'down', who: 'med',
+    t: 'ゾコーバ↓（効果減弱）', d: 'CBZではゾコーバのCYP3A阻害でCBZ↑のおそれも。',
+    act: '併用しない。', s: ['L_XOC', 'L_CBZ', 'L_PHT'] },
+  { a: ['pb', 'prm'], m: ['xoco'], lv: 'mod', fx: 'down', who: 'med',
+    t: 'ゾコーバ↓（中程度のCYP3A誘導）', d: '国内添文では併用注意。', act: '効果に注意する。', s: ['L_XOC'] },
+  { a: ['cbz', 'pht', 'pb'], m: ['rpv'], lv: 'contra', fx: 'down', who: 'med',
+    t: 'リルピビリン↓（効果減弱・耐性）', d: '', act: '併用しない。', s: ['L_EDU', 'L_JUL', 'L_CBZ', 'L_PHT', 'L_PB'] },
+  { a: ['cbz', 'pht', 'pb'], m: ['bic'], lv: 'contra', fx: 'down', who: 'med',
+    t: 'ビクテグラビル↓（効果減弱・耐性）', d: '', act: '併用しない。', s: ['L_BIK', 'L_CBZ', 'L_PHT', 'L_PB'] },
+  { a: ['cbz', 'pht', 'pb'], m: ['dtg'], lv: 'major', fx: 'down', who: 'med',
+    t: 'ドルテグラビル↓', d: 'CBZでドルテグラビルのCmax −33%・Cτ −73%（ドルテグラビル・リルピビリン配合剤は併用禁忌）。',
+    act: '抗HIV薬の用量・選択を感染症医と相談する。', s: ['L_CBZ', 'L_PHT', 'L_PB'] },
+  { a: ['ltg'], m: ['lpvr'], lv: 'mod', fx: 'down', who: 'asm',
+    t: 'LTG↓（約50%）', d: '', act: '誘導薬併用時の用法を参照し、濃度を確認する。', s: ['L_LTG'] },
+  { a: ['cbz', 'pht', 'pb'], m: ['lpvr'], lv: 'major', fx: 'down', who: 'med',
+    t: 'ロピナビル・リトナビル↓', d: 'PHT併用でロピナビル・リトナビルの約50%増量が必要になりうる（ガイドライン）。PI・NNRTIを含むレジメンでは、誘導作用のあるASMを避けることが重要な可能性がある（エビデンスレベルC）。',
+    act: '感染症医と相談する。', s: ['BIR12', 'L_CBZ'] },
+  { a: ['vpa'], m: ['lpvr'], lv: 'mod', fx: 'down', who: 'asm',
+    t: 'VPA↓（グルクロン酸抱合の促進）', d: '', act: '', s: ['L_VPA'] },
+  { a: ['cbz', 'pht', 'pb'], m: ['hcvsv'], lv: 'contra', fx: 'down', who: 'med',
+    t: 'ソホスブビル・ベルパタスビル↓', d: '', act: '併用しない。', s: ['L_EPC', 'L_CBZ', 'L_PHT', 'L_PB'] },
+  { a: ['cbz', 'pht'], m: ['hcvls'], lv: 'contra', fx: 'down', who: 'med',
+    t: 'レジパスビル・ソホスブビル↓', d: '', act: '併用しない。', s: ['L_HAR', 'L_CBZ', 'L_PHT'] },
+  { a: ['pb'], m: ['hcvls'], lv: 'mod', fx: 'down', who: 'med',
+    t: 'レジパスビル・ソホスブビル↓', d: '国内添文では併用注意。', act: '', s: ['L_HAR'] },
+  { a: ['cbz', 'pht', 'pb'], m: ['hivcb', 'dor', 'cab'], lv: 'contra', fx: 'down', who: 'med',
+    t: '抗HIV薬↓（効果減弱）', d: 'ASM側の電子添文で併用禁忌（代謝酵素・P糖蛋白・UGT1A1の誘導）。', act: '併用しない。', s: ['L_CBZ', 'L_PHT', 'L_PB'] },
+  { a: ['pht'], m: ['len'], lv: 'contra', fx: 'down', who: 'med',
+    t: 'レナカパビル↓（効果減弱）', d: '', act: '併用しない。', s: ['L_PHT'] },
+  { a: ['pb'], m: ['len'], lv: 'major', fx: 'down', who: 'med',
+    t: 'レナカパビル↓', d: '国内添文では併用注意（本剤との併用は推奨されない）。', act: '別の組み合わせを感染症医と検討する。', s: ['L_PB'] },
+  { a: ['cbz'], m: ['hcvge'], lv: 'contra', fx: 'down', who: 'med',
+    t: 'グラゾプレビル・エルバスビル↓', d: '', act: '併用しない。', s: ['L_CBZ'] },
+  { a: ['cbz', 'pht', 'pb'], m: ['hcvgp'], lv: 'mod', fx: 'down', who: 'med',
+    t: 'グレカプレビル・ピブレンタスビル↓', d: '国内添文では併用注意（P糖蛋白の誘導）。', act: '', s: ['L_MAV'] },
+
+  /* ===== 循環器 ===== */
+  { a: ['pht'], m: ['amio'], lv: 'major', fx: 'up', who: 'asm',
+    t: 'PHT↑', d: 'PHTのAUC 208→292 mg·h/L。少なくとも25%の減量が必要とされる。',
+    act: 'PHTを減量し、濃度を確認する。', s: ['NOL90', 'L_PHT'] },
+  { a: ['cbz'], m: ['vera', 'dilt'], lv: 'major', fx: 'up', who: 'asm',
+    t: 'CBZ↑（中毒）', d: '', act: '別の降圧薬を検討する。併用するならCBZ濃度を確認する。', s: ['L_CBZ', 'PAT03'] },
+  { a: ['pht'], m: ['dilt'], lv: 'mod', fx: 'up', who: 'asm', t: 'PHT↑', d: '', act: 'PHT濃度を確認する。', s: ['L_PHT'] },
+  { a: ['pht', 'pb'], m: ['vera'], lv: 'mod', fx: 'down', who: 'med', t: 'ベラパミル↓', d: '', act: '', s: ['L_PHT', 'L_PB'] },
+  { a: ['cbz', 'pht', 'pb'], m: ['dhp'], lv: 'mod', fx: 'down', who: 'med',
+    t: 'Ca拮抗薬↓（降圧効果の減弱）', d: '多くのジヒドロピリジン系が影響を受ける。', act: '血圧を確認する。', s: ['JOH10', 'L_CBZ', 'L_PHT', 'L_PB'] },
+  { a: ['stp'], m: ['dhp'], lv: 'mod', fx: 'up', who: 'med',
+    t: 'Ca拮抗薬↑（CYP3A4阻害）', d: 'ニフェジピン・ニカルジピン・ニソルジピン等。', act: '減量を検討する。', s: ['L_STP'] },
+  { a: ['cbz', 'pht', 'pb'], m: ['statin'], lv: 'mod', fx: 'down', who: 'med',
+    t: 'スタチン↓', d: 'CBZでシンバスタチンのAUC −75%（活性体 −82%）。', act: '脂質を確認する。', s: ['UCA04', 'BRO13'] },
+  { a: ['stp'], m: ['statin'], lv: 'mod', fx: 'up', who: 'med',
+    t: 'スタチン↑（横紋筋融解症のおそれ）', d: '', act: '減量を検討する。', s: ['L_STP'] },
+  { a: ['cbz', 'pht', 'pb'], m: ['maci'], lv: 'contra', fx: 'down', who: 'med',
+    t: 'マシテンタン↓', d: '', act: '併用しない。', s: ['L_OPS', 'L_CBZ', 'L_PHT', 'L_PB'] },
+  { a: ['pht', 'pb'], m: ['yuv'], lv: 'contra', fx: 'down', who: 'med',
+    t: 'マシテンタン・タダラフィル↓', d: '', act: '併用しない。', s: ['L_PHT', 'L_PB'] },
+  { a: ['ruf'], m: ['maci'], lv: 'mod', fx: 'down', who: 'med',
+    t: 'マシテンタン↓（CYP3A4誘導）', d: '国内添文では併用注意。', act: '', s: ['L_OPS'] },
+  { a: ['cbz', 'pht', 'pb'], m: ['tada'], lv: 'contra', fx: 'down', who: 'med',
+    t: 'タダラフィル（肺高血圧症）↓', d: '強いCYP3A4誘導で濃度が下がる（リファンピシンではAUC −88%）。', act: '併用しない。', s: ['L_ADC', 'L_CBZ', 'L_PHT', 'L_PB'] },
+  { a: ['lcm'], m: ['prlong'], lv: 'mod', fx: 'pd', who: 'both',
+    t: 'PR延長が重なる（房室ブロック）', d: 'LCMは用量依存でPRを延ばす（400 mg/日で平均+4.4 ms）。',
+    act: '開始時と投与中に心電図を確認する（添文）。', s: ['L_LCM', 'RUD15'] },
+  { a: ['stp'], m: ['prlong'], lv: 'minor', fx: 'up', who: 'med',
+    t: 'β遮断薬↑（CYP2D6阻害）', d: 'プロプラノロール・カルベジロール等。', act: '', s: ['L_STP'] },
+  { a: ['cbz'], m: ['diur'], lv: 'mod', fx: 'pd', who: 'both',
+    t: '低ナトリウム血症・SIADH', d: 'CBZでは低Na血症がよくみられ、40歳超・高濃度・他のASM併用が危険因子。',
+    act: 'Na喪失性以外の利尿薬を検討し、Naを確認する。', s: ['L_CBZ', 'BER17'] },
+  { a: ['cbz', 'tpm'], m: ['dig'], lv: 'minor', fx: 'down', who: 'med',
+    t: 'ジゴキシン↓', d: '', act: '', s: ['L_CBZ', 'L_TPM'] },
+
+  /* ===== 免疫抑制・ステロイド ===== */
+  { a: ['cbz', 'pht', 'pb'], m: ['tac', 'cya'], lv: 'major', fx: 'down', who: 'med',
+    t: '免疫抑制薬↓（拒絶のおそれ）', d: '',
+    act: '血中濃度を測って用量を調整する。可能なら誘導作用のないASMを検討する。', s: ['L_CBZ', 'L_PHT', 'L_PB', 'PER06'] },
+  { a: ['cbz', 'pht', 'pb', 'prm'], m: ['evr'], lv: 'major', fx: 'down', who: 'med',
+    t: 'エベロリムス↓', d: '誘導薬併用時は開始量を増やす（結節性硬化症：8〜9 mg/m²、非併用は5〜6 mg/m²）。',
+    act: 'トラフ濃度で調整する。', s: ['FRA18', 'L_CBZ'] },
+  { a: ['cnb'], m: ['evr'], lv: 'mod', fx: 'down', who: 'med',
+    t: 'エベロリムス↓', d: 'CNB開始後にエベロリムス濃度が中央値5.1→3.4 ng/mL（結節性硬化症20例のうち、エベロリムス使用の12例）。', act: '血中濃度を確認する。', s: ['BEC24'] },
+  { a: ['stp'], m: ['tac', 'cya'], lv: 'mod', fx: 'up', who: 'med',
+    t: '免疫抑制薬↑（CYP3A4阻害）', d: '', act: '減量・血中濃度の測定を検討する。', s: ['L_STP'] },
+  { a: ['cbz', 'pht', 'pb'], m: ['ster'], lv: 'major', fx: 'down', who: 'med',
+    t: 'ステロイドの効果↓', d: 'PHTでデキサメタゾンのクリアランスが約3倍、経口バイオアベイラビリティ33%（非併用84%）。',
+    act: '効果を確認し、増量を検討する。', s: ['CHA84', 'L_CBZ', 'L_PHT', 'L_PB'] },
+
+  /* ===== 抗がん薬 ===== */
+  { a: ['cbz', 'pht', 'pb'], m: ['tki'], lv: 'major', fx: 'down', who: 'med',
+    t: 'キナーゼ阻害薬↓（効果減弱）', d: 'キナーゼ阻害薬のクリアランスは最大4倍。',
+    act: '誘導作用のないASMへの切り替えを腫瘍医と検討する。', s: ['BEN16', 'L_CBZ', 'L_PHT', 'L_PB'] },
+  { a: ['cbz', 'pht', 'pb'], m: ['taxane'], lv: 'major', fx: 'down', who: 'med',
+    t: 'タキサン系↓（効果減弱）', d: '化学療法薬のクリアランスは2〜3倍。', act: '腫瘍医と相談する。', s: ['BEN16', 'VEC03'] },
+  { a: ['cbz', 'pht', 'pb'], m: ['irino'], lv: 'major', fx: 'down', who: 'med',
+    t: 'イリノテカン（活性代謝物）↓', d: 'PHT・PBの添文：併用を避けることが望ましい。', act: '腫瘍医と相談する。', s: ['L_PHT', 'L_PB', 'L_CBZ', 'BEN16'] },
+  { a: ['pht'], m: ['fu'], lv: 'major', fx: 'up', who: 'asm',
+    t: 'PHT↑（遅れて出現）', d: '化学療法の終了後に再び下がる。', act: '治療中と終了後もPHT濃度を確認する。', s: ['L_PHT', 'BRI03'] },
+  { a: ['pht'], m: ['cis'], lv: 'mod', fx: 'down', who: 'asm', t: 'PHT↓', d: '', act: '発作とPHT濃度を確認する。', s: ['L_PHT'] },
+
+  /* ===== 精神・神経・鎮痛 ===== */
+  { a: ['cbz', 'pht'], m: ['cloz'], lv: 'mod', fx: 'down', who: 'med',
+    t: 'クロザピン↓', d: '誘導薬を中止すると上がる。', act: '症状と濃度を確認する。クロザピンの電子添文（併用禁忌・併用注意）も確認する。', s: ['JOH10', 'L_CBZ'] },
+  { a: ['vpa'], m: ['cloz'], lv: 'mod', fx: 'pd', who: 'med',
+    t: 'クロザピンの副作用（心筋炎・好中球減少）が増強する可能性', d: '', act: '', s: ['L_VPA'] },
+  { a: ['cbz', 'pht'], m: ['quet'], lv: 'major', fx: 'down', who: 'med',
+    t: 'クエチアピン↓', d: '強い誘導薬と併用すべきでないとする総説もある。CBZではCBZ↑も。誘導の影響は中止後も少なくとも3週続いた症例がある。',
+    act: '別の抗精神病薬かASMを検討する。', s: ['DEL15', 'L_CBZ', 'L_PHT', 'KOP17'] },
+  { a: ['cbz'], m: ['arip'], lv: 'mod', fx: 'down', who: 'med', t: 'アリピプラゾール・リスペリドン↓', d: '', act: '', s: ['L_CBZ'] },
+  { a: ['tpm'], m: ['arip'], lv: 'minor', fx: 'down', who: 'med', t: 'リスペリドン↓の報告', d: '', act: '', s: ['L_TPM'] },
+  { a: ['ltg'], m: ['arip'], lv: 'minor', fx: 'pd', who: 'both', t: 'リスペリドン併用で傾眠の報告が多い', d: '', act: '', s: ['L_LTG'] },
+  { a: ['pht'], m: ['lura'], lv: 'contra', fx: 'down', who: 'med',
+    t: 'ルラシドン↓', d: '', act: '併用しない。', s: ['L_LAT', 'L_PHT'] },
+  { a: ['cbz', 'pb'], m: ['lura'], lv: 'mod', fx: 'down', who: 'med',
+    t: 'ルラシドン↓', d: '国内添文では併用注意。', act: '効果を確認する。', s: ['L_LAT', 'L_CBZ'] },
+  { a: ['cbz', 'pb'], m: ['tca'], lv: 'mod', fx: 'down', who: 'med', t: '三環系抗うつ薬↓', d: 'PBでは中枢抑制も重なる。', act: '', s: ['L_CBZ', 'L_PB'] },
+  { a: ['pht'], m: ['tca'], lv: 'mod', fx: 'up', who: 'asm', t: 'PHT↑', d: '', act: 'PHT濃度を確認する。', s: ['L_PHT'] },
+  { a: ['vpa'], m: ['tca'], lv: 'mod', fx: 'up', who: 'med', t: 'アミトリプチリン・ノルトリプチリン↑', d: '', act: '', s: ['L_VPA'] },
+  { a: ['tpm'], m: ['tca'], lv: 'minor', fx: 'up', who: 'med', t: 'アミトリプチリン↑', d: '', act: '必要に応じて用量を調整する。', s: ['L_TPM'] },
+  { a: ['stp'], m: ['tca', 'parox'], lv: 'mod', fx: 'up', who: 'med', t: '抗うつ薬↑（CYP2D6阻害）', d: '', act: '減量を検討する。', s: ['L_STP'] },
+  { a: ['ffa'], m: ['serot', 'tca', 'fluv', 'parox', 'lith'], lv: 'mod', fx: 'pd', who: 'both',
+    t: 'セロトニン症候群のリスク', d: '', act: '精神状態・自律神経・神経筋症状を観察する。', s: ['L_FFA'] },
+  { a: ['pht'], m: ['fluv'], lv: 'major', fx: 'up', who: 'asm', t: 'PHT↑', d: '症例でPHT 16.6→49.1 μg/mL。', act: 'PHT濃度を確認する。', s: ['L_PHT', 'MAM01'] },
+  { a: ['ffa'], m: ['fluv'], lv: 'mod', fx: 'up', who: 'asm', t: 'FFA↑（AUC +102%）', d: '', act: '', s: ['L_FFA'] },
+  { a: ['cbz'], m: ['fluv'], lv: 'mod', fx: 'up', who: 'asm', t: 'CBZ↑', d: '', act: 'CBZ濃度を確認する。', s: ['L_CBZ'] },
+  { a: ['ffa'], m: ['parox'], lv: 'mod', fx: 'up', who: 'asm', t: 'FFA↑（AUC +81%）', d: '', act: '', s: ['L_FFA'] },
+  { a: ['cbz'], m: ['parox'], lv: 'mod', fx: 'mixed', who: 'both', t: 'パロキセチン↓・CBZ↑', d: '', act: '', s: ['L_CBZ'] },
+  { a: ['ffa'], m: ['maob'], lv: 'contra', fx: 'pd', who: 'both',
+    t: 'セロトニン症候群', d: 'MAO阻害薬の投与中・中止後14日以内は投与しない。FFA中止後にMAO阻害薬を使うときも14日以上あける。',
+    act: '併用しない。', s: ['L_FFA'] },
+  { a: ['cbz'], m: ['lith'], lv: 'mod', fx: 'pd', who: 'both', t: '精神神経症状（錯乱・粗大振戦）の報告', d: '', act: '', s: ['L_CBZ'] },
+  { a: ['tpm'], m: ['lith'], lv: 'minor', fx: 'mixed', who: 'med', t: 'リチウムが上昇または低下', d: '', act: 'リチウム濃度を確認する。', s: ['L_TPM'] },
+  { a: ['vpa'], m: ['bzd'], lv: 'mod', fx: 'up', who: 'med', t: 'ジアゼパム（遊離型）↑・ロラゼパムの半減期延長', d: '', act: '', s: ['L_VPA'] },
+  { a: ['stp'], m: ['bzd'], lv: 'mod', fx: 'up', who: 'med', t: 'ベンゾジアゼピン↑（過度の鎮静）', d: '', act: '減量を検討する。', s: ['L_STP'] },
+  { a: ['cnb'], m: ['bzd'], lv: 'mod', fx: 'up', who: 'med', t: 'ジアゼパム↑（CYP2C19阻害）', d: '', act: '', s: ['L_CNB'] },
+  { a: ['cbz'], m: ['bzd'], lv: 'mod', fx: 'down', who: 'med', t: 'ミダゾラム・アルプラゾラム↓', d: '', act: '', s: ['L_CBZ'] },
+  { a: ['cnb'], m: ['bzd'], lv: 'mod', fx: 'down', who: 'med', t: 'ミダゾラム・トリアゾラム↓（CYP3A誘導）', d: 'CNB 200 mg/日でミダゾラムのAUCが0.28倍。', act: '', s: ['L_CNB', 'GRE22'] },
+  { a: ['gbp', 'clb'], m: ['opi'], lv: 'major', fx: 'pd', who: 'both',
+    t: '呼吸抑制・過量死↑', d: 'オピオイド使用者で、GBP併用によるオピオイド関連死の調整オッズ比1.49。オピオイドを処方された米国退役軍人で、ベンゾジアゼピン処方中の過量服薬死のハザード比3.86。',
+    act: '鎮静・呼吸抑制に注意し、必要なら減量する。', s: ['GOM17', 'PAR15', 'L_GBP'] },
+  { a: ['cbz'], m: ['opi'], lv: 'minor', fx: 'down', who: 'med', t: 'トラマドール・ブプレノルフィン↓', d: '', act: '', s: ['L_CBZ'] },
+  { a: ['pht'], m: ['meth'], lv: 'major', fx: 'down', who: 'med',
+    t: 'メサドン↓（約50%）', d: '3〜4日で低下する。', act: '離脱症状に注意する。', s: ['SCL99'] },
+
+  /* ===== その他 ===== */
+  { a: ['cnb'], m: ['ppi'], lv: 'mod', fx: 'up', who: 'med',
+    t: 'オメプラゾール↑（AUC 2.07倍）', d: 'CYP2C19の基質（ランソプラゾール・ジアゼパム等）が上がる。', act: '', s: ['GRE22', 'L_CNB'] },
+  { a: ['stp'], m: ['ppi'], lv: 'mod', fx: 'up', who: 'med', t: 'PPI↑（CYP2C19阻害）', d: '', act: '', s: ['L_STP'] },
+  { a: ['clb'], m: ['ppi'], lv: 'mod', fx: 'up', who: 'asm', t: 'CLBの活性代謝物（N-CLB）↑', d: '', act: '眠気に注意する。', s: ['L_CLB'] },
+  { a: ['pht', 'cbz'], m: ['ppi'], lv: 'minor', fx: 'up', who: 'asm', t: 'オメプラゾール等でASM↑の報告', d: '', act: '', s: ['L_PHT', 'L_CBZ'] },
+  { a: ['tpm'], m: ['acz'], lv: 'mod', fx: 'pd', who: 'both', t: '腎・尿路結石', d: 'ともに炭酸脱水酵素を阻害する。', act: '', s: ['L_TPM', 'SHE04'] },
+  { a: ['zns'], m: ['acz'], lv: 'mod', fx: 'pd', who: 'both', t: '結石・代謝性アシドーシスが重なるおそれ', d: 'ZNSは単独でも腎・尿路結石・代謝性アシドーシスの報告がある（添文）。TPMまたはZNSの使用者で症候性結石が増えた（HR 1.58・1.22）。', act: '', s: ['L_ZNS', 'SAL25', 'SHE04'] },
+  { a: ['cbz'], m: ['acz'], lv: 'mod', fx: 'up', who: 'asm', t: 'CBZが急上昇（中毒）', d: '', act: 'CBZ濃度を確認する。', s: ['L_CBZ'] },
+  { a: ['vpa'], m: ['acz'], lv: 'mod', fx: 'pd', who: 'both', t: '高アンモニア血症↑', d: '小児でアセタゾラミド併用は高アンモニア血症の危険因子（オッズ比6.6）。', act: 'アンモニアを確認する。', s: ['YAM13'] },
+  { a: ['pht', 'pb'], m: ['acz'], lv: 'mod', fx: 'pd', who: 'both', t: 'くる病・骨軟化症', d: '', act: '', s: ['L_PHT', 'L_PB'] },
+  { a: ['cbz', 'pht', 'pb'], m: ['thy'], lv: 'mod', fx: 'down', who: 'med',
+    t: '甲状腺ホルモン↓', d: 'T4補充中の患者でCBZ開始後にT4・FT4が低下（TSHは不変）。', act: '甲状腺機能を確認し、増量を検討する。', s: ['AAN81', 'L_PHT', 'L_PB'] },
+  { a: ['cbz'], m: ['apap'], lv: 'mod', fx: 'mixed', who: 'med',
+    t: '効果↓・肝毒性のある代謝物↑', d: '肝障害を生じやすくなるとの報告がある。', act: '', s: ['L_CBZ'] },
+  { a: ['pht', 'pb'], m: ['apap'], lv: 'mod', fx: 'mixed', who: 'med',
+    t: '肝毒性のある代謝物↑', d: '長期連用で肝障害を生じやすくなる。', act: '', s: ['L_PHT', 'L_PB'] },
+  { a: ['cbz'], m: ['gfj'], lv: 'mod', fx: 'up', who: 'asm',
+    t: 'CBZ↑', d: 'グレープフルーツジュースでCBZのAUC 43.99→61.95 μg·h/mL。', act: 'グレープフルーツジュースは控える。', s: ['GAR98', 'L_CBZ'] },
+  { a: ['vpa'], m: ['asa'], lv: 'mod', fx: 'up', who: 'asm', t: '遊離型VPA↑', d: '', act: '', s: ['L_VPA'] },
+  { a: ['stp'], m: ['caf'], lv: 'minor', fx: 'up', who: 'med', t: 'カフェイン・テオフィリン↑（CYP1A2阻害）', d: '', act: '', s: ['L_STP'] },
+  { a: ['pht'], m: ['caf'], lv: 'mod', fx: 'down', who: 'both', t: 'テオフィリン↓・PHT↓', d: '', act: '濃度を確認する。', s: ['L_PHT'] },
+  { a: ['pht'], m: ['hypog'], lv: 'mod', fx: 'pd', who: 'med', t: '血糖降下作用↓（高血糖）', d: 'PHTのインスリン分泌抑制作用による。', act: '血糖を確認する。', s: ['L_PHT'] },
+  { a: ['stp'], m: ['hypog'], lv: 'minor', fx: 'up', who: 'med', t: 'グリベンクラミドの作用↑', d: '', act: '', s: ['L_STP'] }
+];
+
+/* ---------------- ASM × ASM ---------------- */
+var ARULES = [
+  { p: ['vpa'], v: ['ltg'], lv: 'major', fx: 'up',
+    t: 'LTG↑↑（半減期 約2倍）・重症薬疹のリスク',
+    d: '単剤の半減期22.8〜37.4時間がVPA併用で48.3〜59時間に。用量が半分でも濃度は約2倍。相乗効果も示唆されている。',
+    act: 'ラミクタール添文のVPA併用時の用法（少量・緩徐な漸増）で。', s: ['L_LTG', 'RAM93', 'MAY96', 'BRO97', 'ZAC14'] },
+  { p: STRONG, v: ['ltg'], lv: 'mod', fx: 'down',
+    t: 'LTG↓（半減期 約1/2）', d: '誘導薬併用で半減期13.5〜15時間。誘導薬を中止するとLTGが上がる（PHT中止で約2倍）。',
+    act: 'ラミクタール添文の誘導薬併用時の用法で。誘導薬の中止時はLTGを減量・濃度確認。', s: ['L_LTG', 'RAM93', 'AND02'] },
+  { p: ['cnb'], v: ['ltg'], lv: 'mod', fx: 'down', t: 'LTG↓（0.48〜0.79倍）', d: '', act: 'LTG濃度と発作を確認する。', s: ['L_CNB', 'JLA26'] },
+  { p: ['vpa'], v: ['pb'], lv: 'mod', fx: 'up', t: 'PB↑', d: '', act: '眠気に注意し、PB濃度を確認する。', s: ['L_PB', 'L_VPA', 'ZAC14'] },
+  { p: ['vpa'], v: ['pht'], lv: 'mod', fx: 'mixed', t: 'PHT：総濃度↓・遊離型↑',
+    d: 'VPAが蛋白結合からPHTを追い出し、代謝も阻害する（遊離分画 9.6→15.6%）。', act: '総濃度ではなく遊離PHTや症状で判断する。', s: ['PEU80', 'RIC79', 'L_PHT'] },
+  { p: ['pht', 'pb'], v: ['vpa'], lv: 'mod', fx: 'pd', t: 'VPAによる高アンモニア血症のリスク↑', d: '', act: 'アンモニアを確認する。', s: ['L_VPA', 'YAM12'] },
+  { p: ['vpa'], v: ['cbz'], lv: 'mod', fx: 'up', t: 'CBZ-エポキシド約2倍', d: '+101%（1週以内）。CBZ値が正常でも中毒症状が出ることがある。小規模試験ではCBZ本体は不変だが、添文ではCBZの上昇・低下の報告もある。', act: '症状とCBZ濃度を確認する。', s: ['PIS86', 'JOH10', 'L_CBZ'] },
+  { p: STRONG, v: ['vpa'], lv: 'mod', fx: 'down', t: 'VPA↓', d: 'CBZ追加でVPAが50〜75%低下することがある。', act: 'VPA濃度を確認する。', s: ['JOH10', 'L_VPA'] },
+  { p: ['vpa'], v: ['ruf'], lv: 'mod', fx: 'up', t: 'RUF↑（最大85%）', d: '体重30 kg未満で影響が大きい。', act: '慎重に症状を観察しながら増量する。', s: ['L_RUF', 'PER08'] },
+  { p: ['vpa'], v: ['esm'], lv: 'mod', fx: 'up', t: 'ESM↑', d: '', act: '', s: ['L_ESM', 'L_VPA'] },
+  { p: ['vpa'], v: ['clb'], lv: 'minor', fx: 'mixed', t: 'CLB本体↓（蛋白結合）・VPA↑', d: '', act: '', s: ['L_CLB', 'L_VPA'] },
+  { p: ['tpm'], v: ['vpa'], lv: 'mod', fx: 'pd', t: '高アンモニア血症・脳症', d: 'TPM併用でVPA脳症のオッズ比10.16（脳症自体はまれ：0.13%）。', act: '意識・行動の変化があればアンモニアを測る。', s: ['NOH13', 'YAM12'] },
+  { p: ['cbz'], v: ['per'], lv: 'major', fx: 'down', t: 'PER↓↓（AUC −67%）', d: 'クリアランス約3倍。', act: 'PERの維持量は8〜12 mg（添文）。CBZ中止後は数週かけてPERが上がる。', s: ['GID15', 'L_PER', 'MUR20'] },
+  { p: ['pht'], v: ['per'], lv: 'mod', fx: 'down', t: 'PER↓（約1/2）', d: '', act: 'PERの維持量は8〜12 mg（添文）。', s: ['GID15', 'L_PER'] },
+  { p: ['pb'], v: ['per'], lv: 'minor', fx: 'down', t: 'PER↓は小さい', d: '母集団解析で −18%（影響なしとする報告も）。', act: '', s: ['L_PER', 'GID15'] },
+  { p: STRONG, v: ['tpm'], lv: 'mod', fx: 'down', t: 'TPM↓（40〜48%）', d: '', act: '誘導薬を減量・中止するとTPMが上がる。', s: ['L_TPM', 'JOH10'] },
+  { p: STRONG, v: ['zns'], lv: 'mod', fx: 'down', t: 'ZNS↓（半減期 −25〜35%）', d: '出典はPHT・CBZを例に挙げている。', act: '誘導薬を減量・中止するとZNSが上がる。', s: ['JOH10', 'L_ZNS'] },
+  { p: ['pht', 'cbz', 'pb'], v: ['clb'], lv: 'mod', fx: 'mixed', t: 'CLB本体↓・活性代謝物N-CLB↑', d: 'N-CLBの上昇はPHT・CBZのデータで、CYP2C19のEM・IMでみられ、PMでは上がらなかった。母集団解析では影響は小さいとの報告もある。', act: '効果と眠気を確認する。', s: ['L_CLB', 'YAM13b', 'WAL12'] },
+  { p: ['clb'], v: ['pht', 'cbz', 'pb'], lv: 'minor', fx: 'up', t: 'これらのASM↑の報告（機序不明）', d: '', act: 'PHTでは眼振などに注意する。', s: ['L_CLB'] },
+  { p: STRONG, v: ['ruf'], lv: 'mod', fx: 'down', t: 'RUF↓（22〜50%）', d: '', act: '', s: ['L_RUF'] },
+  { p: ['ruf'], v: ['pht'], lv: 'minor', fx: 'up', t: 'PHT↑（7〜21%）', d: '', act: 'PHTの減量を考慮する。', s: ['L_RUF', 'PER08'] },
+  { p: ['ruf'], v: ['cbz', 'clb', 'esm', 'tpm', 'zns'], lv: 'minor', fx: 'down', t: 'CYP3A4で代謝されるASM↓', d: '', act: '', s: ['L_RUF'] },
+  { p: STRONG, v: ['esm'], lv: 'mod', fx: 'down', t: 'ESM↓', d: 'ESMの半減期は、誘導薬を併用する患者で29.0時間、健常者で53.7時間（群間の比較）。', act: '', s: ['GIA96', 'L_ESM'] },
+  { p: ['esm'], v: ['pht'], lv: 'minor', fx: 'up', t: 'PHT↑', d: '', act: '', s: ['L_ESM'] },
+  { p: STRONG, v: ['lcm'], lv: 'minor', fx: 'down', t: 'LCM↓（25〜39%）', d: '同じ濃度に約30%多い用量が必要になりうる。', act: '', s: ['L_LCM', 'MAY18', 'CON13'] },
+  { p: STRONG, v: ['brv'], lv: 'minor', fx: 'down', t: 'BRV↓（19〜29%）', d: '実臨床の濃度測定では −49%。', act: '', s: ['L_BRV', 'SCM16', 'HAG20'] },
+  { p: ['brv'], v: ['cbz'], lv: 'mod', fx: 'up', t: 'CBZ-エポキシド↑（最大2倍）', d: '健常者の試験（BRV 400 mg/日）では2.6倍。CBZ本体は不変。', act: '忍容性に問題があればCBZ減量を検討する。', s: ['L_BRV', 'MOS19', 'STO15'] },
+  { p: ['brv'], v: ['pht'], lv: 'minor', fx: 'up', t: 'PHT↑（約20%、承認上限を超える用量の試験）', d: '通常量では関連する相互作用は認められていない。', act: '', s: ['L_BRV', 'KLE18', 'MOS19'] },
+  { p: ['pht', 'cbz'], v: ['lev'], lv: 'minor', fx: 'down', t: 'LEV↓（20〜30%）', d: 'TDMの横断解析で、PHT・CBZ併用時に有意に低かった。', act: '', s: ['MAY03'] },
+  { p: ['pht', 'cbz', 'pb'], v: ['stp'], lv: 'mod', fx: 'down', t: 'STP↓', d: '', act: '', s: ['L_STP'] },
+  { p: ['stp'], v: ['pht', 'cbz', 'pb', 'prm'], lv: 'mod', fx: 'up', t: 'これらのASM↑・中枢抑制の増強',
+    d: 'STP併用でPHT・PBの投与量はそれぞれ45.0%・26.3%減ったとの報告。CBZを平均36%減量しても54%上昇（STP 3000 mg/日、承認上限を超える用量）。',
+    act: '減量や血中濃度の測定を検討する。', s: ['L_STP'] },
+  { p: ['stp'], v: ['clb'], lv: 'major', fx: 'up', t: 'N-CLB 5〜8倍（傾眠・ふらつき）', d: 'CLB本体は1.1〜1.2倍。',
+    act: 'STP導入時はCLBを0.5 mg/kg/日以下に（専門家合意）。症状で減量する。', s: ['KLE19', 'L_STP', 'CRO26'] },
+  { p: ['stp'], v: ['vpa'], lv: 'mod', fx: 'up', t: 'VPA↑', d: '',
+    act: 'STP導入時はVPAを30 mg/kg/日以下に（専門家合意）。食欲低下・傾眠で減量を考慮。', s: ['L_STP', 'CRO26'] },
+  { p: ['stp'], v: ['ffa'], lv: 'major', fx: 'up', t: 'FFA↑（AUC 約2.2倍）', d: '健康成人の試験で、日本人ではSTP＋CLB併用時にAUC +120%（約2.2倍）。STP＋CLB＋VPAの海外試験では約1.7倍。',
+    act: 'Dravet症候群でSTP併用時の上限は0.4 mg/kg/日・17 mg/日（添文）。', s: ['L_FFA', 'BOY19'] },
+  { p: ['stp'], v: ['zns', 'tpm', 'esm'], lv: 'mod', fx: 'up', t: 'これらのASM↑・中枢抑制の増強', d: '', act: '減量や血中濃度の測定を検討する。', s: ['L_STP'] },
+  { p: ['cnb'], v: ['pht'], lv: 'major', fx: 'up', t: 'PHT↑（AUC 1.84倍）', d: '',
+    act: 'PHTの減量を前もって検討し、濃度を確認する（専門家推奨）。', s: ['L_CNB', 'SMI22'] },
+  { p: ['pht'], v: ['cnb'], lv: 'minor', fx: 'down', t: 'CNB↓（AUC 0.72倍）', d: '', act: '', s: ['L_CNB'] },
+  { p: ['cnb'], v: ['pb'], lv: 'mod', fx: 'up', t: 'PB↑（AUC 1.37倍）', d: '', act: 'PBの減量を検討する。', s: ['L_CNB', 'SMI22'] },
+  { p: ['cnb'], v: ['clb'], lv: 'mod', fx: 'up', t: 'N-CLB↑', d: '実臨床で濃度/用量比 +233%。', act: '眠気があればCLBを減量する。', s: ['L_CNB', 'JLA26', 'ELA23'] },
+  { p: ['cnb'], v: ['cbz'], lv: 'mod', fx: 'down', t: 'CBZ↓（0.65〜0.76倍）', d: '', act: '発作とCBZ濃度を確認する。', s: ['L_CNB'] },
+  { p: ['cnb'], v: ['brv'], lv: 'minor', fx: 'mixed', t: 'BRVが変動', d: 'CNB低用量でBRV +32%、高用量で −21%（後ろ向き研究）。', act: '', s: ['HAY26'] },
+  { p: ['cnb'], v: ['ruf'], lv: 'mod', fx: 'pd', t: 'QT短縮が重なるおそれ', d: '', act: '心電図を確認する。', s: ['L_CNB'] },
+  { p: ['ltg'], v: ['cbz'], lv: 'mod', fx: 'pd', t: 'めまい・複視・失調（濃度は不変）', d: '47例中9例で複視・めまい。', act: 'CBZの減量で改善することが多い。', s: ['L_LTG', 'BES98'] },
+  { p: ['tpm'], v: ['pht'], lv: 'minor', fx: 'up', t: '一部の患者でPHT↑', d: '添文：12例中6例でPHTのAUCが25%程度上昇。Sachdeo 2002では12例中3例でAUC比1.25〜1.55。', act: '', s: ['L_TPM', 'SAC02'] },
+  { p: ['zns'], v: ['pht'], lv: 'minor', fx: 'up', t: 'PHT↑の報告', d: '', act: '眼振・構音障害などがあればPHT濃度を測る。', s: ['L_ZNS'] },
+  { p: ['pht'], v: ['cbz'], lv: 'mod', fx: 'mixed', t: '相互に変動（CBZ↓、PHTは↑または↓）', d: '', act: '両方の濃度を確認する。', s: ['L_CBZ', 'L_PHT'] },
+  { p: ['pb', 'prm'], v: ['cbz'], lv: 'mod', fx: 'down', t: 'CBZ↓', d: 'PB・PRMの誘導でCBZの代謝が促進される。', act: 'CBZ濃度を確認する。', s: ['L_CBZ', 'L_PB', 'L_PRM'] },
+  { p: ['cbz'], v: ['prm'], lv: 'mod', fx: 'down', t: 'PRM↓（相互に低下）', d: 'PRMでCBZの代謝物が上がることもある。', act: '', s: ['L_CBZ', 'L_PRM'] },
+  { p: ['lcm'], v: ['cbz', 'pht', 'ltg'], lv: 'minor', fx: 'pd', t: 'Naチャネル遮断薬どうし：神経毒性（めまい・複視）が重なることがある', d: 'PR延長について、CBZ・LTGとの相互作用は試験で認められていない。', act: '', s: ['ZAC14', 'RUD15'] }
+];
+
+/* ---------------- 出典 ---------------- */
+var SRC = {
+  /* 国内電子添文（PMDA 版。改訂年月は2026-10-11確認） */
+  L_CBZ: { t: 'テグレトール 電子添文（2026年3月改訂 第3版）' },
+  L_PHT: { t: 'アレビアチン錠 電子添文（2026年4月改訂 第3版）' },
+  L_PB:  { t: 'フェノバール 電子添文（2026年4月改訂 第3版）' },
+  L_PRM: { t: 'プリミドン錠「日医工」電子添文（2026年4月改訂 第3版）' },
+  L_VPA: { t: 'デパケン錠 電子添文（2026年3月改訂 第7版）' },
+  L_LTG: { t: 'ラミクタール錠 電子添文（2026年8月改訂 第8版）' },
+  L_PER: { t: 'フィコンパ 電子添文（2025年10月改訂 第6版）' },
+  L_TPM: { t: 'トピナ錠 電子添文（2024年2月改訂 第3版）' },
+  L_STP: { t: 'ディアコミット 電子添文（2023年12月改訂 第3版）' },
+  L_FFA: { t: 'フィンテプラ内用液 電子添文（2026年4月改訂 第5版）' },
+  L_BRV: { t: 'ブリィビアクト錠 電子添文（2025年9月改訂 第3版）' },
+  L_RUF: { t: 'イノベロン錠 電子添文（2022年11月改訂 第2版）' },
+  L_LCM: { t: 'ビムパット錠 電子添文（2026年8月改訂 第6版）' },
+  L_CLB: { t: 'マイスタン 電子添文（2025年4月改訂 第3版）' },
+  L_ZNS: { t: 'エクセグラン 電子添文（2025年10月改訂 第2版）' },
+  L_ESM: { t: 'エピレオプチマル散（2022年1月 第1版）・ザロンチンシロップ（2022年8月 第1版）電子添文' },
+  L_GBP: { t: 'ガバペン錠 電子添文（2026年4月改訂 第4版）' },
+  L_LEV: { t: 'イーケプラ錠 電子添文（2026年3月改訂 第6版）' },
+  L_CNB: { t: 'エキスコプリ錠 電子添文（2026年9月作成 第1版、小野薬品）' },
+  L_XAR: { t: 'イグザレルト錠 電子添文（2026年3月改訂 第10版）' },
+  L_ELQ: { t: 'エリキュース錠 電子添文（2026年3月改訂 第9版）' },
+  L_LIX: { t: 'リクシアナ錠 電子添文（2025年11月改訂 第8版）' },
+  L_PRZ: { t: 'プラザキサカプセル 電子添文（2025年11月改訂 第5版）' },
+  L_WAR: { t: 'ワーファリン錠 電子添文（2026年4月改訂 第4版）' },
+  L_BRI: { t: 'ブリリンタ錠 電子添文（2026年3月改訂 第6版）' },
+  L_MER: { t: 'メロペン点滴用 電子添文（2026年4月改訂 第4版）' },
+  L_VFE: { t: 'ブイフェンド錠 電子添文（2026年6月改訂 第10版）' },
+  L_PAX: { t: 'パキロビッドパック 電子添文（2026年3月改訂 第10版）' },
+  L_XOC: { t: 'ゾコーバ錠 電子添文（2026年6月改訂 第30版）' },
+  L_EDU: { t: 'エジュラント錠 電子添文（2026年8月改訂 第8版）' },
+  L_JUL: { t: 'ジャルカ配合錠 電子添文（2026年8月改訂 第9版）' },
+  L_BIK: { t: 'ビクタルビ配合錠 電子添文（2026年8月改訂 第8版）' },
+  L_EPC: { t: 'エプクルーサ配合錠 電子添文（2023年5月改訂 第3版）' },
+  L_HAR: { t: 'ハーボニー配合錠 電子添文（2025年2月改訂 第3版）' },
+  L_MAV: { t: 'マヴィレット配合錠 電子添文（2024年9月改訂 第2版）' },
+  L_OPS: { t: 'オプスミット錠 電子添文（2025年12月改訂 第4版）' },
+  L_ADC: { t: 'アドシルカ錠 電子添文（2026年3月改訂 第6版）' },
+  L_LAT: { t: 'ラツーダ錠 電子添文（2026年8月改訂 第11版）' },
+
+  /* 文献（PubMed 逆引きで実在確認済み） */
+  ZAC14: { t: 'Zaccara G, Perucca E. Epileptic Disord 2014;16(4):409-31', pmid: '25515681' },
+  JOH10: { t: 'Johannessen SI, Landmark CJ. Curr Neuropharmacol 2010;8(3):254-67', pmid: '21358975' },
+  JLP10: { t: 'Johannessen Landmark C, Patsalos PN. Expert Rev Neurother 2010;10(1):119-40', pmid: '20021326' },
+  PER06: { t: 'Perucca E. Br J Clin Pharmacol 2006;61(3):246-55', pmid: '16487217' },
+  PAT03: { t: 'Patsalos PN, Perucca E. Lancet Neurol 2003;2(8):473-81', pmid: '12878435' },
+  RIC79: { t: 'Richens A. Clin Pharmacokinet 1979;4(3):153-69', pmid: '383353' },
+  PEU80: { t: 'Perucca E, et al. Clin Pharmacol Ther 1980;28(6):779-89', pmid: '6777108' },
+  PIS86: { t: 'Pisani F, et al. Epilepsia 1986;27(5):548-52', pmid: '3093212' },
+  RAM93: { t: 'Rambeck B, Wolf P. Clin Pharmacokinet 1993;25(6):433-43', pmid: '8119045' },
+  MAY96: { t: 'May TW, et al. Ther Drug Monit 1996;18(5):523-31', pmid: '8885114' },
+  BRO97: { t: 'Brodie MJ, Yuen AW. Epilepsy Res 1997;26(3):423-32', pmid: '9127723' },
+  AND02: { t: 'Anderson GD, et al. Epilepsy Res 2002;49(3):211-7', pmid: '12076842' },
+  SID06: { t: 'Sidhu J, et al. Br J Clin Pharmacol 2006;61(2):191-9', pmid: '16433873' },
+  REI16: { t: 'Reimers A. Open Access J Contracept 2016;7:69-76', pmid: '29386938' },
+  GID15: { t: 'Gidal BE, et al. Neurology 2015;84(19):1972-80', pmid: '25878177' },
+  GID17: { t: 'Gidal BE, et al. Epilepsy Res 2017;134:41-48', pmid: '28535410' },
+  PAT15: { t: 'Patsalos PN. Epilepsia 2015;56(1):12-27', pmid: '25495693' },
+  MAJ16: { t: 'Majid O, et al. Br J Clin Pharmacol 2016;82(2):422-30', pmid: '27038098' },
+  MUR20: { t: 'Murugesu S, et al. Epileptic Disord 2020;22(4):455-461', pmid: '32782230' },
+  SPR07: { t: 'Spriet I, et al. Ann Pharmacother 2007;41(7):1130-6', pmid: '17609232' },
+  CHA21: { t: 'Chai PY, et al. Expert Opin Drug Saf 2021;20(2):215-223', pmid: '33322967' },
+  BED17: { t: 'Bede P, et al. Epilepsia Open 2017;2(1):107-111', pmid: '29750220' },
+  CAR19: { t: 'Carnovale C, et al. Clin Pharmacokinet 2019;58(7):875-886', pmid: '30406474' },
+  AMS96: { t: 'Amsden GW. Clin Ther 1996;18(1):56-72', pmid: '8851453' },
+  GAR98: { t: 'Garg SK, et al. Clin Pharmacol Ther 1998;64(3):286-8', pmid: '9757152' },
+  BLU91: { t: 'Blum RA, et al. Clin Pharmacol Ther 1991;49(4):420-5', pmid: '2015731' },
+  NOL90: { t: 'Nolan PE Jr, et al. Am J Cardiol 1990;65(18):1252-7', pmid: '2337037' },
+  ANT11: { t: 'Antoniou T, et al. Br J Clin Pharmacol 2011;71(4):544-9', pmid: '21395647' },
+  DES01: { t: 'Desta Z, et al. Antimicrob Agents Chemother 2001;45(2):382-92', pmid: '11158730' },
+  MAM01: { t: 'Mamiya K, et al. Ther Drug Monit 2001;23(1):75-7', pmid: '11206048' },
+  BRI03: { t: 'Brickell K, et al. Br J Cancer 2003;89(4):615-6', pmid: '12915866' },
+  EBE00: { t: 'Ebert U, et al. Eur J Clin Pharmacol 2000;56(4):299-304', pmid: '10954343' },
+  STO16: { t: 'Stockis A, et al. Drug Metab Dispos 2016;44(6):792-9', pmid: '27002062' },
+  STO15: { t: 'Stockis A, et al. Epilepsy Res 2015;113:19-27', pmid: '25986188' },
+  MOS19: { t: 'Moseley BD, et al. Epilepsy Res 2019;158:106218', pmid: '31675621' },
+  KLE18: { t: 'Klein P, et al. Clin Pharmacol 2018;10:1-22', pmid: '29403319' },
+  SCM16: { t: 'Schoemaker R, et al. J Clin Pharmacol 2016;56(12):1591-1602', pmid: '27146213' },
+  HAG20: { t: 'Hagemann A, et al. Epilepsia 2020;61(5):e43-e48', pmid: '32304097' },
+  UCA04: { t: 'Ucar M, et al. Eur J Clin Pharmacol 2004;59(12):879-82', pmid: '14691614' },
+  CHA84: { t: 'Chalk JB, et al. J Neurol Neurosurg Psychiatry 1984;47(10):1087-90', pmid: '6502166' },
+  BEN16: { t: 'Bénit CP, Vecht CJ. Neurooncol Pract 2016;3(4):245-260', pmid: '31385988' },
+  VEC03: { t: 'Vecht CJ, et al. Lancet Neurol 2003;2(7):404-9', pmid: '12849118' },
+  FRA18: { t: 'Franz DN, et al. Epilepsia 2018;59(6):1188-1197', pmid: '29727013' },
+  SCL99: { t: 'Schlatter J, et al. Presse Med 1999;28(25):1381-4', pmid: '10506872' },
+  AAN81: { t: 'Aanderud S, et al. Clin Endocrinol (Oxf) 1981;15(3):247-52', pmid: '6796303' },
+  BRO13: { t: 'Brodie MJ, et al. Epilepsia 2013;54(1):11-27', pmid: '23016553' },
+  DEL15: { t: 'de Leon J. Rev Psiquiatr Salud Ment 2015;8(2):97-115', pmid: '25745819' },
+  KOP17: { t: 'Kopecek M, Potmesil P. Neuro Endocrinol Lett 2017;38(7):475-478', pmid: '29369597' },
+  DOR21: { t: 'Doran C, et al. Ment Health Clin 2021;11(1):19-22', pmid: '33505821' },
+  TAK25: { t: 'Takeda R, et al. Biol Pharm Bull 2025;48(10):1634-1638', pmid: '41161772' },
+  BIR12: { t: 'Birbeck GL, et al. Neurology 2012;78(2):139-45（AAN/ILAE ガイドライン）', pmid: '22218281' },
+  EHR21: { t: 'Steffel J, et al. 2021 EHRA Practical Guide. Europace 2021;23(10):1612-1676（表7）', pmid: '33895845' },
+  PER21: { t: 'Perlman A, et al. CNS Drugs 2021;35(3):305-316', pmid: '33595834' },
+  GOL24: { t: 'Goldstein R, et al. CNS Drugs 2024;38(5):399-408', pmid: '38520503' },
+  SCH26: { t: 'Schubert KM, et al. JAMA Neurol 2026', pmid: '42606848' },
+  GRE22: { t: 'Greene SA, et al. Clin Transl Sci 2022;15(4):899-911', pmid: '34877801' },
+  SMI22: { t: 'Smith MC, et al. Neurol Ther 2022;11(4):1705-1720', pmid: '36057761' },
+  JLA26: { t: 'Johannessen Landmark C, et al. Epilepsia 2026;67(6):2820-2835', pmid: '41874535' },
+  ELA23: { t: 'Elakkary S, et al. Epilepsia 2023;64(4):e36-e42', pmid: '36661382' },
+  BEC24: { t: 'Becker LL, et al. Pediatr Neurol 2024;161:73-75', pmid: '39305575' },
+  STE24: { t: 'Steinhoff BJ, et al. Ther Adv Neurol Disord 2024;17:17562864241256733', pmid: '38883228' },
+  COH24: { t: 'Cohen H, et al. Epilepsia 2024;65(2):445-455', pmid: '38010146' },
+  HAY26: { t: 'Hayani E, et al. Ther Drug Monit 2026', pmid: '42853999' },
+  KLE19: { t: 'Klein P, et al. Epilepsy Behav 2019;99:106459', pmid: '31519475' },
+  CRO26: { t: 'Cross JH, et al. Epilepsia Open 2026;11(3):833-846', pmid: '41848774' },
+  BOY19: { t: 'Boyd B, et al. Int J Clin Pharmacol Ther 2019;57(1):11-19', pmid: '30336805' },
+  TRA97: { t: 'Tran A, et al. Clin Pharmacol Ther 1997;62(5):490-504', pmid: '9390105' },
+  NOH13: { t: 'Noh Y, et al. Epilepsia 2013;54(1):e1-4', pmid: '22691153' },
+  YAM12: { t: 'Yamamoto Y, et al. Epilepsy Res 2012;101(3):202-9', pmid: '22542569' },
+  YAM13: { t: 'Yamamoto Y, et al. Epilepsia 2013;54(6):983-9', pmid: '23409971' },
+  YAM13b:{ t: 'Yamamoto Y, et al. Ther Drug Monit 2013;35(3):305-12', pmid: '23666564' },
+  BES98: { t: 'Besag FM, et al. Epilepsia 1998;39(2):183-7', pmid: '9577998' },
+  PAR15: { t: 'Park TW, et al. BMJ 2015;350:h2698', pmid: '26063215' },
+  GOM17: { t: 'Gomes T, et al. PLoS Med 2017;14(10):e1002396', pmid: '28972983' },
+  SHE04: { t: 'Sheth RD. Neurology 2004;63(10 Suppl 4):S24-9', pmid: '15557547' },
+  BER17: { t: 'Berghuis B, et al. Epilepsia 2017;58(7):1227-1233', pmid: '28542738' },
+  RUD15: { t: 'Rudd GD, et al. Acta Neurol Scand 2015;132(5):355-63', pmid: '25933358' },
+  MEC24: { t: 'Nguyen AT, et al. U.S. Medical Eligibility Criteria for Contraceptive Use, 2024. MMWR Recomm Rep 2024;73(4):1-126', pmid: '39106314' },
+  TET26: { t: 'Tettenborn B, et al. Epilepsia 2026;67(6):2689-2706', pmid: '41854534' },
+  HEC25: { t: 'Heckelmann J, et al. Neurol Res Pract 2025;7(1):72', pmid: '41053829' },
+  WAL12: { t: 'Walzer M, et al. Pharmacotherapy 2012;32(4):340-53', pmid: '22422635' },
+  SCO22: { t: 'Schoretsanitis G, et al. Expert Opin Drug Metab Toxicol 2022;18(6):395-411', pmid: '35876180' },
+  MIK89: { t: 'Mikati MA, et al. Neurology 1989;39(4):592-4', pmid: '2927687' },
+  GHA26: { t: 'Ghattas K, et al. Pharmacotherapy 2026;46(4):e70133', pmid: '41833537' },
+  MAY18: { t: 'May TW, et al. Ther Drug Monit 2018;40(5):620-627', pmid: '30086089' },
+  MAY03: { t: 'May TW, et al. Ther Drug Monit 2003;25(6):690-9', pmid: '14639055' },
+  GIA96: { t: 'Giaccone M, et al. Br J Clin Pharmacol 1996;41(6):575-9', pmid: '8799524' },
+  PER08: { t: 'Perucca E, et al. Epilepsia 2008;49(7):1123-41', pmid: '18503564' },
+  SAC02: { t: 'Sachdeo RC, et al. Epilepsia 2002;43(7):691-6', pmid: '12102670' },
+  WEN01: { t: 'Wen X, et al. Br J Clin Pharmacol 2001;52(5):547-53', pmid: '11736863' },
+  CON13: { t: 'Contin M, et al. Ther Drug Monit 2013;35(6):849-52', pmid: '23942540' },
+  MOS20: { t: 'Moseley BD, et al. Epilepsy Res 2020;163:106327', pmid: '32361205' },
+  SAL25: { t: 'Salka BR, et al. Am J Kidney Dis 2025;85(6):687-694.e1', pmid: '40023213' }
+};
+/* DATA-END */
+</script>
+<script>
+/* =====================================================================
+   画面のロジック（表示のみ）
+   - 医学的な文言・数値・ルールはすべて DATA-BEGIN 〜 DATA-END のデータから出す。
+     ここに書き足さない（足すときは根拠台帳が先）。
+   - データ差し替え：DATA-BEGIN 〜 DATA-END の間を asm_ddi_data.js の中身に置き換える。
+   - ES5：var・function(){}・文字列連結。
+   ===================================================================== */
+
+/* ---------- 表示用の定数 ---------- */
+var LEVELS = {
+  contra: { order: 0, label: '併用禁忌（国内添文）', short: '併用禁忌', color: '#8B1A1A', on: '#ffffff', tint: '#fbeeee', ink: '#8B1A1A' },
+  major:  { order: 1, label: '要対応', short: '要対応', color: '#C0392B', on: '#ffffff', tint: '#fdf0ee', ink: '#A12E22' },
+  mod:    { order: 2, label: '注意', short: '注意', color: '#D68910', on: '#1f1400', tint: '#fff5e1', ink: '#7a4d00' },
+  minor:  { order: 3, label: '軽微', short: '軽微', color: '#7F8C8D', on: '#101417', tint: '#f1f3f3', ink: '#47545a' },
+  none:   { order: 4, label: '影響なし', short: '影響なし', color: '#2C6E49', on: '#ffffff', tint: '#ecf6ef', ink: '#245a3c' }
+};
+var LEVEL_ORDER = ['contra', 'major', 'mod', 'minor', 'none'];
+var LEVEL_FALLBACK = { order: 9, label: '', short: '', color: '#7F8C8D', on: '#101417', tint: '#f1f3f3', ink: '#47545a' };
+
+var ICON_UP = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20V5M5.5 11.5L12 5l6.5 6.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+var ICON_DOWN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v15M5.5 12.5L12 19l6.5-6.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+var ICON_MIXED = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 20V5M3.5 9.5L8 5l4.5 4.5M16 4v15M11.5 14.5L16 19l4.5-4.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+/* ---------- 状態 ---------- */
+var selAsm = {};
+var selMed = {};
+var catOpen = {};
+var query = '';
+var lastView = null;
+var NOTICE_TEXT = '';
+
+/* ---------- 索引 ---------- */
+var ASM_BY_ID = {}, ASM_IDX = {}, MED_BY_ID = {}, ix;
+for (ix = 0; ix < ASMS.length; ix++) { ASM_BY_ID[ASMS[ix].id] = ASMS[ix]; ASM_IDX[ASMS[ix].id] = ix; }
+for (ix = 0; ix < MEDS.length; ix++) { MED_BY_ID[MEDS[ix].id] = MEDS[ix]; }
+
+/* ---------- 小道具 ---------- */
+function esc(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/* 数値＋単位・数値の範囲（例：2〜5割、200 mg/日、22.8〜37.4時間）が行末で割れないようにする。
+   表示だけの処理で、文字は変えない（<span class="nb"> で包むだけ） */
+var NB_RE = /\d+(?:\.\d+)?(?:[〜～]\d+(?:\.\d+)?)?(?: ?(?:mg\/m²|μg\/mL|ng\/mL|mg\/kg\/日|mg\/日|mg·h\/L|μg|mg|kg|mL|ms)|%|％|割|倍|時間|週|日|歳|例|年|通り)/g;
+function nb(s) {
+  return esc(s).replace(NB_RE, function (m, off, str) {
+    var prev = off > 0 ? str.charAt(off - 1) : '';
+    if (/[A-Za-z]/.test(prev)) { return m; }
+    return '<span class="nb">' + m + '</span>';
+  });
+}
+
+/* 検索用の正規化：全角英数→半角、ひらがな→カタカナ、空白・中黒を除いて小文字化 */
+function norm(s) {
+  return String(s)
+    .replace(/[Ａ-Ｚａ-ｚ０-９]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); })
+    .replace(/[ぁ-ゖ]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) + 0x60); })
+    .replace(/[\s　・･]/g, '')
+    .toLowerCase();
+}
+
+function findUp(el, attr, stop) {
+  while (el && el !== stop && el.nodeType === 1) {
+    if (el.hasAttribute(attr)) { return el; }
+    el = el.parentNode;
+  }
+  return null;
+}
+
+/* 色を暗くする（見出し文字のコントラスト確保用）。hex '#rrggbb' → '#rrggbb' */
+function darken(hex, f) {
+  var n = parseInt(hex.slice(1), 16);
+  var r = Math.round(((n >> 16) & 255) * f), g = Math.round(((n >> 8) & 255) * f), b = Math.round((n & 255) * f);
+  return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+}
+
+function lvOf(r) {
+  return LEVELS[r.lv] || LEVEL_FALLBACK;
+}
+
+function selectedAsms() {
+  var o = [], i;
+  for (i = 0; i < ASMS.length; i++) { if (selAsm[ASMS[i].id]) { o.push(ASMS[i].id); } }
+  return o;
+}
+function selectedMeds() {
+  var o = [], i;
+  for (i = 0; i < MEDS.length; i++) { if (selMed[MEDS[i].id]) { o.push(MEDS[i].id); } }
+  return o;
+}
+function pick(selected, ids) {
+  var o = [], i;
+  for (i = 0; i < selected.length; i++) { if (ids.indexOf(selected[i]) !== -1) { o.push(selected[i]); } }
+  return o;
+}
+function asmAbbrs(ids) {
+  var o = [], i;
+  for (i = 0; i < ids.length; i++) { o.push(ASM_BY_ID[ids[i]].abbr); }
+  return o.join('・');
+}
+function medNames(ids) {
+  var o = [], i;
+  for (i = 0; i < ids.length; i++) { o.push(MED_BY_ID[ids[i]].name); }
+  return o.join('、');
+}
+function pairKey(a, b) {
+  return ASM_IDX[a] < ASM_IDX[b] ? a + '|' + b : b + '|' + a;
+}
+
+/* ---------- 照合（純粋関数：選択 → カード・収載なし） ---------- */
+function computeResults(asmIds, medIds) {
+  var cards = [], covPM = {}, covAA = {}, counts = {}, n, r, as, ms, ps, vs, i, j, pairs, disjoint;
+  var unPM = [], unAA = [], unCount = 0, row, k;
+
+  for (i = 0; i < LEVEL_ORDER.length; i++) { counts[LEVEL_ORDER[i]] = 0; }
+
+  /* ASM × 併用薬 */
+  for (n = 0; n < RULES.length; n++) {
+    r = RULES[n];
+    as = pick(asmIds, r.a);
+    ms = pick(medIds, r.m);
+    if (as.length && ms.length) {
+      cards.push({ kind: 'pm', seq: n, r: r, asm: as, meds: ms });
+      for (i = 0; i < as.length; i++) {
+        for (j = 0; j < ms.length; j++) { covPM[as[i] + '|' + ms[j]] = true; }
+      }
+    }
+  }
+
+  /* ASM × ASM（p と v の両方が選択済み・p≠v） */
+  if (asmIds.length > 1) {
+    for (n = 0; n < ARULES.length; n++) {
+      r = ARULES[n];
+      ps = pick(asmIds, r.p);
+      vs = pick(asmIds, r.v);
+      pairs = [];
+      for (i = 0; i < ps.length; i++) {
+        for (j = 0; j < vs.length; j++) {
+          if (ps[i] !== vs[j]) { pairs.push([ps[i], vs[j]]); }
+        }
+      }
+      if (!pairs.length) { continue; }
+      disjoint = true;
+      for (i = 0; i < ps.length; i++) { if (vs.indexOf(ps[i]) !== -1) { disjoint = false; } }
+      for (i = 0; i < pairs.length; i++) { covAA[pairKey(pairs[i][0], pairs[i][1])] = true; }
+      if (disjoint) {
+        cards.push({ kind: 'aa', seq: 1000 + n, r: r, from: ps, to: vs });
+      } else {
+        for (i = 0; i < pairs.length; i++) {
+          cards.push({ kind: 'aa', seq: 1000 + n + (i + 1) / 1000, r: r, from: [pairs[i][0]], to: [pairs[i][1]] });
+        }
+      }
+    }
+  }
+
+  /* レベル順（contra → major → mod → minor → none）。同じレベルはデータの並び順 */
+  cards.sort(function (x, y) {
+    var d = lvOf(x.r).order - lvOf(y.r).order;
+    return d !== 0 ? d : x.seq - y.seq;
+  });
+  for (i = 0; i < cards.length; i++) {
+    if (counts[cards[i].r.lv] !== undefined) { counts[cards[i].r.lv]++; }
+  }
+
+  /* 収載なし：どのルールにも当たらなかった組み合わせ */
+  for (i = 0; i < asmIds.length; i++) {
+    row = { asm: asmIds[i], meds: [] };
+    for (j = 0; j < medIds.length; j++) {
+      if (!covPM[asmIds[i] + '|' + medIds[j]]) { row.meds.push(medIds[j]); }
+    }
+    if (row.meds.length) { unPM.push(row); unCount += row.meds.length; }
+  }
+  for (i = 0; i < asmIds.length; i++) {
+    for (k = i + 1; k < asmIds.length; k++) {
+      if (!covAA[pairKey(asmIds[i], asmIds[k])]) { unAA.push([asmIds[i], asmIds[k]]); unCount++; }
+    }
+  }
+  return { cards: cards, counts: counts, unPM: unPM, unAA: unAA, unCount: unCount };
+}
+
+function currentView() {
+  var a = selectedAsms(), m = selectedMeds(), res = computeResults(a, m);
+  return { asm: a, med: m, cards: res.cards, counts: res.counts, unPM: res.unPM, unAA: res.unAA, unCount: res.unCount,
+           any: (a.length + m.length) > 0, judged: a.length > 0 && (m.length > 0 || a.length > 1) };
+}
+
+/* ---------- 部品の HTML ---------- */
+function srcItem(k) {
+  var s = SRC[k], t;
+  if (!s) { return '<li>' + esc(k) + '</li>'; }
+  t = esc(s.t);
+  if (s.pmid) {
+    return '<li><a href="https://pubmed.ncbi.nlm.nih.gov/' + esc(s.pmid) + '/" target="_blank" rel="noopener noreferrer">' + t +
+           '<span class="tg tg-pm">PubMed</span></a></li>';
+  }
+  return '<li>' + t + (k.indexOf('L_') === 0 ? '<span class="tg tg-l">国内添文</span>' : '') + '</li>';
+}
+function srcBlock(keys) {
+  var o = [], i;
+  if (!keys || !keys.length) { return ''; }
+  for (i = 0; i < keys.length; i++) { o.push(srcItem(keys[i])); }
+  return '<div class="src"><h4>出典</h4><ul>' + o.join('') + '</ul></div>';
+}
+function srcInline(keys) {
+  var o = [], i, s;
+  if (!keys || !keys.length) { return ''; }
+  for (i = 0; i < keys.length; i++) {
+    s = SRC[keys[i]];
+    if (!s) { o.push(esc(keys[i])); continue; }
+    if (s.pmid) {
+      o.push('<a href="https://pubmed.ncbi.nlm.nih.gov/' + esc(s.pmid) + '/" target="_blank" rel="noopener noreferrer">' + esc(s.t) + '</a>');
+    } else {
+      o.push(esc(s.t));
+    }
+  }
+  return '<p class="psrc">出典：' + o.join(' ／ ') + '</p>';
+}
+
+function asmDrugHtml(id) {
+  var a = ASM_BY_ID[id], t = TIERS[a.tier];
+  return '<span class="drug"><i class="dot" style="background:' + t.color + '"></i><b class="abbr">' + esc(a.abbr) + '</b>' +
+         '<span class="dn">' + esc(a.name) + '</span></span>';
+}
+function medDrugHtml(id) {
+  var m = MED_BY_ID[id];
+  return '<span class="drug"><span class="dn">' + esc(m.name) + '</span>' + (m.sub ? '<span class="ds">' + esc(m.sub) + '</span>' : '') + '</span>';
+}
+function sideHtml(ids, fn) {
+  var o = [], i;
+  for (i = 0; i < ids.length; i++) { o.push(fn(ids[i])); }
+  return '<span class="side">' + o.join('') + '</span>';
+}
+
+/* 濃度が動く側（RULES の who）。ASM × ASM の規則には who が無いので出さない */
+function whoName(c) {
+  var r = c.r;
+  if (c.kind !== 'pm') { return ''; }
+  if (r.who === 'med') { return '併用薬（' + medNames(c.meds) + '）'; }
+  if (r.who === 'asm') { return 'ASM（' + asmAbbrs(c.asm) + '）'; }
+  return '双方（ASMと併用薬）';
+}
+function fxMain(f) {
+  if (f === 'up') { return '濃度↑'; }
+  if (f === 'down') { return '濃度↓'; }
+  if (f === 'mixed') { return '両方向・複雑'; }
+  if (f === 'pd') { return '濃度は変わらない'; }
+  return '';
+}
+function whoLabel(f) {
+  return f === 'pd' ? '影響を受ける側：' : '濃度が動く側：';
+}
+function dirHtml(c) {
+  var f = c.r.fx, badge, who = whoName(c);
+  if (f === 'up') { badge = '<span class="dbadge d-up">' + ICON_UP + '</span>'; }
+  else if (f === 'down') { badge = '<span class="dbadge d-down">' + ICON_DOWN + '</span>'; }
+  else if (f === 'mixed') { badge = '<span class="dbadge d-mixed">' + ICON_MIXED + '</span>'; }
+  else if (f === 'pd') { badge = '<span class="dbadge d-pd">薬力学</span>'; }
+  else { return ''; }
+  return '<div class="dir">' + badge + '<div class="dtxt"><b>' + fxMain(f) + '</b>' +
+         (who ? '<span>' + whoLabel(f) + esc(who) + '</span>' : '') + '</div></div>';
+}
+
+function cardHtml(c, firstOfLevel) {
+  var r = c.r, L = lvOf(r), h = [], pair, kind;
+  kind = c.kind === 'pm' ? 'ASM × 併用薬' : 'ASM同士';
+  if (c.kind === 'pm') {
+    pair = sideHtml(c.asm, asmDrugHtml) + '<span class="rhs"><span class="times" aria-hidden="true">×</span><span class="sr-only">と</span>' + sideHtml(c.meds, medDrugHtml) + '</span>';
+  } else {
+    pair = sideHtml(c.from, asmDrugHtml) + '<span class="rhs"><span class="times" aria-hidden="true">→</span><span class="sr-only">から</span>' + sideHtml(c.to, asmDrugHtml) + '</span>' +
+           '<span class="pcap">影響を与える側 → 影響を受ける側</span>';
+  }
+  h.push('<article class="card"' + (firstOfLevel ? ' id="lv-' + esc(r.lv) + '"' : '') +
+         ' style="--lc:' + L.color + ';--li:' + L.on + ';--lt:' + L.tint + ';--lk:' + L.ink + '">');
+  h.push('<div class="band"><span class="bl">' + esc(L.label || r.lv) + '</span><span class="bk">' + kind + '</span></div>');
+  h.push('<div class="cbody">');
+  h.push('<div class="pair">' + pair + '</div>');
+  h.push(dirHtml(c));
+  h.push('<h3 class="ct">' + nb(r.t) + '</h3>');
+  if (r.d) { h.push('<p class="cd">' + nb(r.d) + '</p>'); }
+  if (r.act) { h.push('<div class="act"><div class="al">対応</div><p>' + nb(r.act) + '</p></div>'); }
+  h.push(srcBlock(r.s));
+  h.push('</div></article>');
+  return h.join('');
+}
+
+function summaryHtml(v) {
+  var h = [], i, lv, L, n;
+  h.push('<div class="sumrow"><span class="sum-total">該当 ' + v.cards.length + ' 件</span>');
+  for (i = 0; i < LEVEL_ORDER.length; i++) {
+    lv = LEVEL_ORDER[i];
+    L = LEVELS[lv];
+    n = v.counts[lv];
+    if (n) {
+      h.push('<a class="sc" href="#lv-' + lv + '" style="--lc:' + L.color + ';--li:' + L.on + '"><span class="sw">' + n + '</span>' + esc(L.short) + '</a>');
+    } else {
+      h.push('<span class="sc zero" style="--lc:' + L.color + ';--li:' + L.on + '"><span class="sw">0</span>' + esc(L.short) + '</span>');
+    }
+  }
+  if (v.unCount) {
+    h.push('<a class="sc un" href="#unlisted"><span class="sw">' + v.unCount + '</span>収載なし</a>');
+  } else {
+    h.push('<span class="sc un zero"><span class="sw">0</span>収載なし</span>');
+  }
+  h.push('</div>');
+  return h.join('');
+}
+
+function unlistedHtml(v) {
+  var o = [], i, j, row, names;
+  if (!v.unCount) { return ''; }
+  for (i = 0; i < v.unPM.length; i++) {
+    row = v.unPM[i];
+    names = [];
+    for (j = 0; j < row.meds.length; j++) { names.push(esc(MED_BY_ID[row.meds[j]].name)); }
+    o.push('<li><span class="ab">' + esc(ASM_BY_ID[row.asm].abbr) + '</span> × ' + names.join('、') + '</li>');
+  }
+  if (v.unAA.length) {
+    names = [];
+    for (i = 0; i < v.unAA.length; i++) {
+      names.push('<span class="pr"><span class="ab">' + esc(ASM_BY_ID[v.unAA[i][0]].abbr) + '</span> × <span class="ab">' + esc(ASM_BY_ID[v.unAA[i][1]].abbr) + '</span></span>');
+    }
+    o.push('<li><span class="lab">ASM同士：</span>' + names.join('、') + '</li>');
+  }
+  return '<section class="unl" id="unlisted"><h3>このツールには収載なし（相互作用がないという意味ではありません）</h3><ul>' + o.join('') + '</ul></section>';
+}
+
+function propsHtml(asmIds) {
+  var o = [], i, a, t;
+  if (!asmIds.length) { return ''; }
+  for (i = 0; i < asmIds.length; i++) {
+    a = ASM_BY_ID[asmIds[i]];
+    t = TIERS[a.tier];
+    o.push('<li class="prop" style="--tc:' + t.color + ';--tcd:' + darken(t.color, 0.8) + ';--tbg:' + t.bg + '">' +
+           '<div class="prop-h"><b class="abbr">' + esc(a.abbr) + '</b><span class="pn">' + esc(a.name) + '</span><span class="ptag">' + esc(t.label) + '</span></div>' +
+           '<p class="pnote">' + nb(a.note) + '</p>' + srcInline(a.src) + '</li>');
+  }
+  return '<section class="props"><h3>選んだ抗てんかん発作薬の性質</h3><ul>' + o.join('') + '</ul></section>';
+}
+
+function noticeHtml() {
+  return '<div class="notice notice-b" role="note"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">' +
+         '<path d="M12 3.5L22 20.5H2Z" fill="none" stroke="#b7791f" stroke-width="2" stroke-linejoin="round"/>' +
+         '<path d="M12 10v5" stroke="#b7791f" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17.8" r="1.25" fill="#b7791f"/></svg>' +
+         '<p>' + esc(NOTICE_TEXT) + '</p></div>';
+}
+
+/* ---------- 結果の描画 ---------- */
+function renderResults() {
+  var v = currentView(), body = document.getElementById('res-body'), h = [], i, seen = {}, parts = [], st;
+  lastView = v;
+  document.getElementById('btn-copy').disabled = !v.any;
+  document.getElementById('btn-clear').disabled = !v.any;
+  document.getElementById('copymsg').innerHTML = '';
+
+  if (!v.any) {
+    body.innerHTML = '<div class="empty-state">抗てんかん発作薬と併用薬を選ぶと、ここに結果が表示されます。</div>';
+    document.getElementById('res-status').innerHTML = '';
+    return;
+  }
+
+  if (v.asm.length) { parts.push('<b>ASM</b> ' + esc(asmAbbrs(v.asm))); }
+  if (v.med.length) { parts.push('<b>併用薬</b> ' + esc(medNames(v.med))); }
+  h.push('<p class="selline">選択中：' + parts.join('　／　') + '</p>');
+
+  if (!v.asm.length) {
+    h.push('<p class="hintline">抗てんかん発作薬を選んでください。</p>');
+  } else if (!v.med.length && v.asm.length === 1) {
+    h.push('<p class="hintline">併用薬を選ぶと、組み合わせごとの結果が表示されます。抗てんかん発作薬を2剤以上選ぶと、ASM同士の組み合わせも表示されます。</p>');
+  } else if (!v.med.length) {
+    h.push('<p class="hintline">併用薬を選ぶと、ASMと併用薬の組み合わせも表示されます。</p>');
+  }
+
+  if (v.judged) {
+    h.push(summaryHtml(v));
+    for (i = 0; i < v.cards.length; i++) {
+      h.push(cardHtml(v.cards[i], !seen[v.cards[i].r.lv]));
+      seen[v.cards[i].r.lv] = true;
+    }
+    h.push(unlistedHtml(v));
+  }
+  h.push(propsHtml(v.asm));
+  h.push(noticeHtml());
+  body.innerHTML = h.join('');
+
+  st = v.judged ? ('該当 ' + v.cards.length + ' 件。収載なし ' + v.unCount + ' 件。') : '';
+  document.getElementById('res-status').innerHTML = esc(st);
+}
+
+/* ---------- 選択パネルの描画 ---------- */
+function renderAsmGroups() {
+  var keys = Object.keys(TIERS), h = [], k, t, i, a, items;
+  for (k = 0; k < keys.length; k++) {
+    t = TIERS[keys[k]];
+    items = [];
+    for (i = 0; i < ASMS.length; i++) {
+      a = ASMS[i];
+      if (a.tier !== keys[k]) { continue; }
+      items.push('<button type="button" class="achip" data-asm="' + esc(a.id) + '" aria-pressed="false">' +
+                 '<span class="tick" aria-hidden="true"></span>' +
+                 '<span class="ab">' + esc(a.abbr) + '</span> ' +
+                 '<span class="an">' + esc(a.name) + '</span> ' +
+                 '<span class="abr">' + esc(a.brand) + '</span></button>');
+    }
+    if (!items.length) { continue; }
+    h.push('<div class="tier" style="--tc:' + t.color + ';--tcd:' + darken(t.color, 0.8) + ';--tbg:' + t.bg + '">' +
+           '<div class="tier-label">' + esc(t.label) + '</div>' +
+           '<p class="tier-desc">' + nb(t.desc) + '</p>' +
+           '<div class="chips">' + items.join('') + '</div></div>');
+  }
+  document.getElementById('asm-groups').innerHTML = h.join('');
+}
+
+function renderMedList() {
+  var q = norm(query), h = [], ci, mi, c, m, items, selN, total, open, rows, shown = 0, head;
+  for (ci = 0; ci < CATS.length; ci++) {
+    c = CATS[ci];
+    items = [];
+    selN = 0;
+    total = 0;
+    for (mi = 0; mi < MEDS.length; mi++) {
+      m = MEDS[mi];
+      if (m.cat !== c.id) { continue; }
+      total++;
+      if (selMed[m.id]) { selN++; }
+      if (!q || norm(m.name).indexOf(q) !== -1 || norm(m.sub).indexOf(q) !== -1) { items.push(m); }
+    }
+    if (q && !items.length) { continue; }
+    open = q ? true : !!catOpen[c.id];
+    shown += items.length;
+    rows = [];
+    if (open) {
+      for (mi = 0; mi < items.length; mi++) {
+        m = items[mi];
+        rows.push('<button type="button" class="mrow" data-med="' + esc(m.id) + '" aria-pressed="false">' +
+                  '<span class="box" aria-hidden="true"></span><span class="mtx"><span class="mn">' + esc(m.name) + '</span>' +
+                  (m.sub ? ' <span class="ms">' + esc(m.sub) + '</span>' : '') + '</span></button>');
+      }
+    }
+    head = '<span>' + esc(c.label) + '</span><span class="n">' + (q ? items.length + '/' + total : total) + '</span>' +
+           '<span class="cat-r"><span class="sel" data-catsel="' + esc(c.id) + '"' + (selN ? '' : ' hidden') + '>選択 ' + selN + '</span>' +
+           (q ? '' : '<span class="chev" aria-hidden="true"></span>') + '</span>';
+    if (q) {
+      h.push('<div class="cat"><div class="cat-h static">' + head + '</div><div class="cat-body">' + rows.join('') + '</div></div>');
+    } else {
+      h.push('<div class="cat"><button type="button" class="cat-h" data-cat="' + esc(c.id) + '" aria-expanded="' + (open ? 'true' : 'false') +
+             '" aria-controls="cb-' + esc(c.id) + '">' + head + '</button>' +
+             (open ? '<div class="cat-body" id="cb-' + esc(c.id) + '">' + rows.join('') + '</div>' : '') + '</div>');
+    }
+  }
+  if (q && !shown) { h.push('<p class="empty">該当する併用薬がありません。</p>'); }
+  document.getElementById('med-cats').innerHTML = h.join('');
+  refreshMarks();
+}
+
+function renderMedSelected() {
+  var ids = selectedMeds(), h = [], i, m, box = document.getElementById('med-selected');
+  for (i = 0; i < ids.length; i++) {
+    m = MED_BY_ID[ids[i]];
+    h.push('<button type="button" class="pill" data-medrm="' + esc(m.id) + '" aria-label="' + esc(m.name) + 'の選択を解除">' +
+           esc(m.name) + '<span class="x" aria-hidden="true">×</span></button>');
+  }
+  box.innerHTML = h.length ? '<span class="msel-l">選択中</span>' + h.join('') : '';
+}
+
+/* チップの押下状態・件数バッジを選択状態に合わせる（要素は作り直さない＝キーボードのフォーカスを保つ） */
+function refreshMarks() {
+  var nodes, i, id, c, counts = {}, ids, na = 0, nm = 0, cs, m;
+  nodes = document.querySelectorAll('[data-asm]');
+  for (i = 0; i < nodes.length; i++) {
+    nodes[i].setAttribute('aria-pressed', selAsm[nodes[i].getAttribute('data-asm')] ? 'true' : 'false');
+  }
+  nodes = document.querySelectorAll('[data-med]');
+  for (i = 0; i < nodes.length; i++) {
+    nodes[i].setAttribute('aria-pressed', selMed[nodes[i].getAttribute('data-med')] ? 'true' : 'false');
+  }
+  for (id in selAsm) { if (selAsm[id]) { na++; } }
+  for (id in selMed) { if (selMed[id]) { nm++; counts[MED_BY_ID[id].cat] = (counts[MED_BY_ID[id].cat] || 0) + 1; } }
+  cs = document.querySelectorAll('[data-catsel]');
+  for (i = 0; i < cs.length; i++) {
+    c = counts[cs[i].getAttribute('data-catsel')] || 0;
+    cs[i].innerHTML = '選択 ' + c;
+    if (c) { cs[i].removeAttribute('hidden'); } else { cs[i].setAttribute('hidden', ''); }
+  }
+  document.getElementById('cnt-asm').innerHTML = na ? na + '剤' : '';
+  document.getElementById('cnt-med').innerHTML = nm ? nm + '項目' : '';
+  renderMedSelected();
+}
+
+function update() {
+  refreshMarks();
+  renderResults();
+}
+
+/* ---------- コピー ---------- */
+function srcText(keys) {
+  var o = [], i, s;
+  for (i = 0; i < keys.length; i++) {
+    s = SRC[keys[i]];
+    o.push(s ? s.t + (s.pmid ? '（PMID ' + s.pmid + '）' : '') : keys[i]);
+  }
+  return o.join('／');
+}
+function medLabelText(id) {
+  var m = MED_BY_ID[id];
+  return m.name + (m.sub ? '（' + m.sub + '）' : '');
+}
+function buildCopyText() {
+  var v = lastView, L = [], i, j, c, r, lv, who, pairText, names, parts;
+  L.push('抗てんかん発作薬 相互作用チェッカー');
+  L.push('データ更新日：' + DDI_UPDATED);
+  L.push('https://tools.ichisouzo-lab.com/asm_interaction_checker.html');
+  L.push('');
+  L.push('【選択】');
+  names = [];
+  for (i = 0; i < v.asm.length; i++) { names.push(ASM_BY_ID[v.asm[i]].abbr + ' ' + ASM_BY_ID[v.asm[i]].name); }
+  L.push('抗てんかん発作薬：' + (names.length ? names.join('／') : '（未選択）'));
+  names = [];
+  for (i = 0; i < v.med.length; i++) { names.push(medLabelText(v.med[i])); }
+  L.push('併用薬：' + (names.length ? names.join('／') : '（未選択）'));
+  L.push('');
+
+  if (v.judged) {
+    parts = [];
+    for (i = 0; i < LEVEL_ORDER.length; i++) { parts.push(LEVELS[LEVEL_ORDER[i]].short + ' ' + v.counts[LEVEL_ORDER[i]]); }
+    L.push('【結果】該当 ' + v.cards.length + ' 件（' + parts.join('／') + '）、収載なし ' + v.unCount + ' 件');
+    L.push('');
+    for (i = 0; i < v.cards.length; i++) {
+      c = v.cards[i];
+      r = c.r;
+      lv = lvOf(r);
+      names = [];
+      if (c.kind === 'pm') {
+        for (j = 0; j < c.asm.length; j++) { names.push(ASM_BY_ID[c.asm[j]].abbr + ' ' + ASM_BY_ID[c.asm[j]].name); }
+        pairText = names.join('・') + ' × ';
+        names = [];
+        for (j = 0; j < c.meds.length; j++) { names.push(medLabelText(c.meds[j])); }
+        pairText += names.join('・');
+      } else {
+        for (j = 0; j < c.from.length; j++) { names.push(ASM_BY_ID[c.from[j]].abbr + ' ' + ASM_BY_ID[c.from[j]].name); }
+        pairText = names.join('・') + ' → ';
+        names = [];
+        for (j = 0; j < c.to.length; j++) { names.push(ASM_BY_ID[c.to[j]].abbr + ' ' + ASM_BY_ID[c.to[j]].name); }
+        pairText += names.join('・') + '（影響を与える側 → 影響を受ける側）';
+      }
+      L.push('■ ' + (lv.label || r.lv) + '｜' + pairText);
+      if (r.fx !== 'none') {
+        who = whoName(c);
+        L.push('向き：' + (r.fx === 'pd' ? '薬力学（' + fxMain('pd') + '）' : fxMain(r.fx)) + (who ? '（' + whoLabel(r.fx).replace('：', '') + '：' + who + '）' : ''));
+      }
+      L.push(r.t);
+      if (r.d) { L.push('詳細：' + r.d); }
+      if (r.act) { L.push('対応：' + r.act); }
+      if (r.s && r.s.length) { L.push('出典：' + srcText(r.s)); }
+      L.push('');
+    }
+    if (v.unCount) {
+      L.push('【このツールには収載なし（相互作用がないという意味ではありません）】');
+      for (i = 0; i < v.unPM.length; i++) {
+        names = [];
+        for (j = 0; j < v.unPM[i].meds.length; j++) { names.push(MED_BY_ID[v.unPM[i].meds[j]].name); }
+        L.push(ASM_BY_ID[v.unPM[i].asm].abbr + ' × ' + names.join('、'));
+      }
+      if (v.unAA.length) {
+        names = [];
+        for (i = 0; i < v.unAA.length; i++) { names.push(ASM_BY_ID[v.unAA[i][0]].abbr + ' × ' + ASM_BY_ID[v.unAA[i][1]].abbr); }
+        L.push('ASM同士：' + names.join('、'));
+      }
+      L.push('');
+    }
+  }
+  if (v.asm.length) {
+    L.push('【選んだ抗てんかん発作薬の性質】');
+    for (i = 0; i < v.asm.length; i++) {
+      c = ASM_BY_ID[v.asm[i]];
+      L.push(c.abbr + ' ' + c.name + '（' + TIERS[c.tier].label + '）：' + c.note + '　出典：' + srcText(c.src || []));
+    }
+    L.push('');
+  }
+  L.push('【注意】' + NOTICE_TEXT);
+  return L.join('\n');
+}
+
+function copyResults() {
+  var msg = document.getElementById('copymsg'), text;
+  if (!lastView || !lastView.any) { return; }
+  text = buildCopyText();
+  text = text.replace(/[～〜]/g, '-');
+  // 電子カルテ等（Shift_JIS）で化ける文字を置き換える
+  text = text.replace(/·/g, '・').replace(/²/g, '2').replace(/é/g, 'e');
+  function done() {
+    msg.innerHTML = 'コピーしました';
+    setTimeout(function () { msg.innerHTML = ''; }, 2500);
+  }
+  function fallback() {
+    var tmp = document.createElement('textarea');
+    tmp.value = text;
+    tmp.setAttribute('readonly', '');
+    tmp.style.position = 'fixed';
+    tmp.style.left = '-9999px';
+    tmp.style.top = '0';
+    document.body.appendChild(tmp);
+    tmp.select();
+    try { document.execCommand('copy'); done(); } catch (err) { msg.innerHTML = 'コピーできませんでした。手動で選択してください'; }
+    document.body.removeChild(tmp);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done, fallback);
+  } else {
+    fallback();
+  }
+}
+
+/* ---------- 起動 ---------- */
+function toggleKey(map, id) {
+  if (map[id]) { delete map[id]; } else { map[id] = true; }
+}
+
+NOTICE_TEXT = document.getElementById('notice-text').textContent.replace(/^\s+|\s+$/g, '');
+document.getElementById('upd').textContent = DDI_UPDATED;
+renderAsmGroups();
+renderMedList();
+renderResults();
+
+document.getElementById('asm-groups').addEventListener('click', function (e) {
+  var b = findUp(e.target, 'data-asm', this);
+  if (!b) { return; }
+  toggleKey(selAsm, b.getAttribute('data-asm'));
+  update();
+});
+
+document.getElementById('med-cats').addEventListener('click', function (e) {
+  var b = findUp(e.target, 'data-med', this), h;
+  if (b) {
+    toggleKey(selMed, b.getAttribute('data-med'));
+    update();
+    return;
+  }
+  h = findUp(e.target, 'data-cat', this);
+  if (h) {
+    catOpen[h.getAttribute('data-cat')] = !catOpen[h.getAttribute('data-cat')];
+    renderMedList();
+    h = document.querySelector('[data-cat="' + h.getAttribute('data-cat') + '"]');
+    if (h) { h.focus(); }
+  }
+});
+
+document.getElementById('med-selected').addEventListener('click', function (e) {
+  var b = findUp(e.target, 'data-medrm', this);
+  if (!b) { return; }
+  delete selMed[b.getAttribute('data-medrm')];
+  update();
+});
+
+document.getElementById('q').addEventListener('input', function () {
+  query = this.value;
+  renderMedList();
+});
+
+document.getElementById('btn-copy').addEventListener('click', copyResults);
+document.getElementById('btn-clear').addEventListener('click', function () {
+  selAsm = {};
+  selMed = {};
+  update();
+});
+</script>
+</body>
+</html>
