@@ -20,7 +20,7 @@ DECK = {
     "subtitle": "遺伝的構造・発症年齢と遺伝形式・3つの経路・検査で見つかる割合・日本人のデータ・SAAとDBS・検査の考え方・治療開発（医師向け）",
     "description": "パーキンソン病と遺伝子異常を、医師向けに図で整理します。北米で8301人を調べた研究では12.9%で変異が見つかり、最も多いのはGBA1でした（白人中心のデータ）。GBA1は重症型ほどリスクが高く、認知症の危険も高いと報告されています。LRRK2 G2019Sを受け継いでも高齢で全員が発症するわけではなく、日本人ではLRRK2の病的変異はまれで、G2385Rが発症と関連します。PRKNは日本人の患者から発見された遺伝子で、若年発症ほど見つかりやすい遺伝子です。髄液SAAの陽性率は遺伝型で異なり、視床下核DBSの後はGBA1で認知機能の低下に注意が必要です。調べた範囲では、遺伝子型に合わせて承認された治療はまだありません。全19枚のスライドで説明します。",
     "youtube_id": "owAAzGe1M7Q",
-    "blog_url": "",
+    "blog_url": "https://blog.ichisouzo-lab.com/entry/2026/10/11/025722",
     "source_dir": "parkinson-genetics/work/rc6-20261010c/viewer/generated",
     "slide_prefix": "slide_",
     "pdf_filename": "slides.pdf",
