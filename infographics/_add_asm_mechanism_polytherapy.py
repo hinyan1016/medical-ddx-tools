@@ -20,7 +20,7 @@ ITEM = {
     "title": "抗てんかん発作薬の作用機序と合理的多剤併用｜図で読むポイント",
     "desc": "Naチャネル・SV2A・α2δ・GABA・AMPA・T型Caの標的と代表薬、複数の標的をもつ薬、単剤で発作が止まる割合、相乗・相加・拮抗、組み合わせの根拠の強さ、バルプロ酸＋ラモトリギン、Na遮断薬の重ね合わせ、2剤目の考え方を14枚の図で整理（医師向け）",
     "audience": "医師向け",
-    "blog_url": "",
+    "blog_url": "https://blog.ichisouzo-lab.com/entry/2026/10/12/000954",
     "date": "2026-10-11",
     "youtube_id": "gxXwoDWKvoA",
 }
