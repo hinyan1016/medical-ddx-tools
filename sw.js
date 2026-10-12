@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v227';
+const CACHE_NAME = 'ddx-tools-v228';
 const ASSETS = [
   './infographics/asm-drug-interactions/index.html',
   './infographics/urine-cancer-screening/index.html',
@@ -10,6 +10,7 @@ const ASSETS = [
   './infographics/cerebellar-stroke-vomiting/index.html',
   './infographics/orforglipron/index.html',
   './handouts/orforglipron/index.html',
+  './handouts/anti-aging-gh-dhea/index.html',
   './handouts/anti-aging-retinoid/index.html',
   './handouts/anti-aging-collagen/index.html',
   './handouts/anti-aging-stem-cell/index.html',
@@ -29,6 +30,7 @@ const ASSETS = [
   './infographics/evidence-based-diet/index.html',
   './infographics/optogenetics-nobel-2026/index.html',
   './infographics/brivaracetam-clinical-guide/index.html',
+  './infographics/anti-aging-gh-dhea/index.html',
   './infographics/anti-aging-retinoid/index.html',
   './infographics/parkinson-genetics/index.html',
   './infographics/asm-mechanism-polytherapy/index.html',
