@@ -51,11 +51,15 @@ def main():
     ap.add_argument('--data', default=str(HERE / 'atlas_data.bin.gz'))
     ap.add_argument('--content', default=str(HERE / 'content.json'))
     ap.add_argument('--build-info', default=str(HERE / 'build_info.json'))
+    ap.add_argument('--learning', default=str(HERE / 'learning.json'))
+    ap.add_argument('--learning-data', default=str(HERE / 'learning_data.bin.gz'))
     ap.add_argument('--out', default=str(ROOT / 'vascular-territory-atlas.html'))
     ap.add_argument('--zip', action='store_true')
     args = ap.parse_args()
 
     tpl = Path(args.template).read_text(encoding='utf-8')
+    tpl = tpl.replace('/*@@LEARNING_JS@@*/', (HERE / 'learning.js').read_text(encoding='utf-8'))
+    tpl = tpl.replace('/*@@LEARNING_3D_JS@@*/', (HERE / 'learning_3d.js').read_text(encoding='utf-8'))
     scripts = re.findall(r'<script>(.*?)</script>', tpl, flags=re.S)
     bad = es5_violations('\n'.join(scripts))
     if bad:
@@ -79,9 +83,12 @@ def main():
         return s.replace('</', '<\\/').replace('\u2028', '\\u2028').replace('\u2029', '\\u2029')
 
     html = tpl
+    learning = json.loads(Path(args.learning).read_text(encoding='utf-8'))
     for key, val in (('@@ATLAS_DATA_B64@@', b64),
                      ('/*@@CONTENT@@*/null', js_literal(content)),
-                     ('/*@@BUILD_INFO@@*/{}', js_literal(info))):
+                     ('/*@@BUILD_INFO@@*/{}', js_literal(info)),
+                     ('/*@@LEARNING@@*/null', js_literal(learning)),
+                     ('@@LEARNING_DATA_B64@@', base64.b64encode(Path(args.learning_data).read_bytes()).decode('ascii'))):
         if html.count(key) != 1:
             print('テンプレートの差し込み位置が見つからないか重複:', key)
             return 1
@@ -95,6 +102,9 @@ def main():
         with zipfile.ZipFile(zpath, 'w', compression=zipfile.ZIP_DEFLATED) as z:
             z.writestr(ZIP_HTML_NAME, html.encode('utf-8'))
             z.writestr(ZIP_README_NAME, readme.encode('utf-8'))
+            for f in sorted(HERE.rglob('*')):
+                if f.is_file() and '__pycache__' not in f.parts and f.suffix != '.pyc':
+                    z.write(f, 'source/' + f.relative_to(HERE).as_posix())
         print('ZIP:', zpath)
     return 0
 

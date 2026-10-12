@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v225';
+const CACHE_NAME = 'ddx-tools-v226';
 const ASSETS = [
   './infographics/asm-drug-interactions/index.html',
   './infographics/urine-cancer-screening/index.html',
@@ -356,7 +356,6 @@ const ASSETS = [
   './status_epilepticus_sedation.html',
   './handouts/status-epilepticus-sedation/index.html',
   './handouts/bppv-exercises-guidance/index.html',
-  './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png'
 ];

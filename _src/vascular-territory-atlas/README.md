@@ -35,6 +35,36 @@ PYTHONIOENCODING=utf-8 "$PY" test_atlas.py
 
 公開前は `sw.js` の `CACHE_NAME` を1つ上げ、`check_sw_cache.py` を通す。
 
+## 解剖・神経束の追加（2026-10-12 改修）
+
+- `learning.json`: 日本語/英語名、解剖・機能・関連症候・出典と全20構造の共通レジストリ。
+- `learning.js`: 完全affineによる位置照会、候補表示、検索/複数選択、断面確率オーバーレイ、URL状態。
+- `build_learning.py`: FSL配布元NIfTI/XMLから `learning_data.bin.gz` を生成。既存 `atlas_data.bin.gz` を変更しない。
+- `sources/` / `licenses/` / `SOURCES_AND_LICENSES.md`: 元データ、対応XML、ライセンス全文、出典と改変記録。
+- `test_learning.py`: 原画像との全チャネル照合、左右/名前/ラベル番号、回転・せん断/補間、UI・URL・オフライン検証。
+
+```powershell
+$env:PYTHONIOENCODING='utf-8'
+python build_learning.py --inputs sources
+python build.py --zip
+python test_atlas.py --shots <検証画像の保存先>
+python test_learning.py --shots <追加機能の検証画像の保存先>
+```
+
+全20構造は11束種（9組の左右別領域＋2交連領域）。SLF側頭部をAFと同一視しない。
+神経束は断面と3Dで確率領域を表示。`learning_3d.js` は元2mm格子の閾値境界を追加間引きせず点群化する。
+「選択した神経束を3Dで見る」または3Dの表示内容「神経束（確率分布）」を使う。
+断面と選択・閾値・不透明度を共有し、3Dの薄い脳表参照を切り替えられる。3Dの黄色のカーソル印にはHOの位置名も表示する。
+各束の手前側の面を個別Zバッファで描き、複数束を半透明色合成する。重なりの前後関係を厳密に判定する描画ではない。
+3Dの面の不透明度はスライダー、確率は色の明るさに反映する。断面は確率に応じた不透明度なので見え方は同一ではない。
+`test_learning_3d.py --shots <保存先>` で原境界一致、左右/交連、回転/ズーム、閾値、モバイル等を確認する。
+既存3Dの血管・病変モードも保持。個人のstreamline、軸索、走行方向は描画しない。
+解剖ラベルは原maxprob最近傍、候補確率は2mm各格子点の上位3候補を補間（小候補の省略を表示）。
+神経束確率は2mmのまま保持し、選択された束だけを断面上で連続補間する。
+異なるatlasを追加するときは `learning.json` にatlas/volume/channel/side/source等を登録し、同形式のボリュームをpackする。
+名前や左右をコードに固定せず、複数束の重なりを許す。許諾・テンプレート・affineの確認なしに新データを加えない。
+詳細な配布条件は `SOURCES_AND_LICENSES.md`。単体HTMLの再配布時もソース一式を省略しない。
+
 ## 座標の約束
 
 - ボリュームは x 最速（`idx = i + j*nx + k*nx*ny`）。各ボリュームに voxel→MNI(mm) の affine を持たせ、

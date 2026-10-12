@@ -180,7 +180,7 @@
   .sidebar-tabs::-webkit-scrollbar { display: none; }
   .sidebar-tabs button {
     flex: 1; padding: 8px 4px; font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); cursor: pointer;
-    border: none; background: transparent; border-bottom: 2px solid transparent; white-space: nowrap; min-width: 60px;
+    border: none; background: transparent; border-bottom: 2px solid transparent; white-space: nowrap; min-width: 60px; flex-shrink: 0;
   }
   .sidebar-tabs button.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background-color: var(--bg-panel); }
   .sidebar-content { flex: 1; overflow-y: auto; padding: 10px 12px; display: none; flex-direction: column; gap: 9px; }
@@ -412,9 +412,11 @@
               <option value="all">全領域</option>
               <option value="selected">選択中の領域</option>
               <option value="lesion">病変</option>
+              <option value="tracts">神経束（確率分布）</option>
             </select>
           </div>
         </div>
+        <div id="tract3d-status" class="note" role="status" style="display:none;padding:6px 10px;max-height:120px;overflow:auto;background:#0b1120;font-size:0.68rem;flex-shrink:0;"></div>
         <div class="canvas-wrapper mode-3d" id="wrap-3d">
           <canvas id="canvas-3d" aria-label="3D表示（ドラッグで回転）"></canvas>
           <div class="view3d-ctrl" id="view3d-ctrl">
@@ -434,6 +436,7 @@
   <aside class="sidebar">
     <div class="sidebar-tabs" id="sidebar-tabs" role="tablist">
       <button type="button" data-tab="info" class="active">🩺 所見</button>
+      <button type="button" data-tab="learning">🧠 解剖・神経束</button>
       <button type="button" data-tab="list">📚 一覧</button>
       <button type="button" data-tab="lookup">🔎 逆引き</button>
       <button type="button" data-tab="lesion">✏️ 病変</button>
@@ -443,6 +446,22 @@
 
     <div class="sidebar-content on" id="tab-info"></div>
 
+    <div class="sidebar-content" id="tab-learning">
+      <div id="learning-position"></div>
+      <div class="info-card">
+        <div class="section-title">神経束を比較する</div>
+        <div class="note">集団の線維束分布を2mm格子で重ねます。実際の患者の線維・走行方向・病変による機能低下を示すものではありません。3Dでも閾値以上の確率領域を表示できます。複数選択の重なりは色を混合します。確率は選択束間で正規化しません。</div>
+        <div class="control-row"><label for="sl-tract-opacity">透明度</label><input type="range" id="sl-tract-opacity" min="0" max="100" value="65"><span id="lb-tract-opacity">65%</span></div>
+        <div class="control-row"><label for="sl-tract-threshold">表示しきい値</label><input type="range" id="sl-tract-threshold" min="1" max="100" value="10"><span id="lb-tract-threshold">10%</span></div>
+        <button type="button" class="btn btn-secondary btn-small" id="btn-tract-3d">選択した神経束を3Dで見る</button>
+        <label><input type="checkbox" id="chk-tract-brain" checked> 3Dの脳表参照（血管アトラスの外形）</label>
+        <button type="button" class="btn btn-secondary btn-small" id="btn-tract-clear">神経束の選択を解除</button>
+        <input type="search" id="tract-search" class="search-input" placeholder="神経束を検索（例: 帯状束、CST、ILF）" aria-label="神経束を検索">
+      </div>
+      <div id="tract-position"></div>
+      <div id="tract-list" class="legend-list"></div>
+      <div id="learning-license"></div>
+    </div>
     <div class="sidebar-content" id="tab-list">
       <input type="search" class="search-input" id="search-input" placeholder="血管名・症候・解剖で検索（例: 失語、視床、PICA）">
       <div class="legend-list" id="legend-container"></div>
@@ -551,9 +570,11 @@
 <div class="toast" id="toast"></div>
 
 <script id="atlas-data" type="application/octet-stream">@@ATLAS_DATA_B64@@</script>
+<script id="learning-data" type="application/octet-stream">@@LEARNING_DATA_B64@@</script>
 <script>
 var CONTENT = /*@@CONTENT@@*/null;
 var BUILD_INFO = /*@@BUILD_INFO@@*/{};
+var LEARNING = /*@@LEARNING@@*/null;
 </script>
 <script>
 (function () {
@@ -936,6 +957,9 @@ function undeltaX(d, nx) {
 // 別格子のボリュームを主格子へ。軸が平行な前提で、軸ごとの対応表を作る
 function axisMaps(meta) {
   var M = matMul4(matInv4(meta.affine), A.aff); // 主格子 voxel → 副格子 voxel
+  if (Math.abs(M[1]) + Math.abs(M[2]) + Math.abs(M[4]) + Math.abs(M[6]) + Math.abs(M[8]) + Math.abs(M[9]) > 0.000001) {
+    throw new Error('血管副格子に回転・せん断があります。ビルド時に主格子へ位置合わせしてください。解剖・神経束は完全なaffineで照会します。');
+  }
   var maps = [], ax, n, arr, c;
   for (ax = 0; ax < 3; ax++) {
     n = ax === 0 ? A.nx : (ax === 1 ? A.ny : A.nz);
@@ -1009,6 +1033,9 @@ function loadBorderZone(v) {
   }
 }
 // 境界領域: 原著（Fig.7D）と同じく、2つの大血管（ACA・MCA・PCA）の確率がどちらも0より大きい部位
+/*@@LEARNING_JS@@*/
+/*@@LEARNING_3D_JS@@*/
+
 var BZ_MIN = 1; // 0-255 の量子化で 1 以上（原データの 1/255 未満は 0 に丸まる）
 function buildBorderZone() {
   var P = A.prob, bz = new Uint8Array(A.n), i, j, k, p = 0, b, aca, mca, pca, nv = P.nvox;
@@ -1238,6 +1265,7 @@ function rebuildGray() {
 function buildSliceImages(v) {
   var g = v.geom, W = g.W, H = g.H, idx = sliceIndex(g);
   var vol = S.level === 1 ? A.l1 : A.l2, t1 = A.t1, bz = A.bz, les = S.showLesion ? S.lesion : null;
+  var tracts = S.hideOverlay ? [] : selectedTracts();
   var b = v.bimg.data, o = v.oimg.data, p, q, id, gv, u, vv, nb, isEdge, la, showBz = S.bz && bz;
   for (p = 0; p < W * H; p++) {
     q = idx[p]; gv = GRAY[t1[q]];
@@ -1263,6 +1291,16 @@ function buildSliceImages(v) {
       }
       if (showBz && bz[q] && ((u + vv) % 4 === 0)) {
         r = bz[q] === 1 ? 255 : (bz[q] === 2 ? 255 : 200); gg = bz[q] === 1 ? 235 : (bz[q] === 2 ? 170 : 200); bb = bz[q] === 1 ? 120 : (bz[q] === 2 ? 60 : 255); a = 235;
+      }
+      if (tracts.length) {
+        var ti = q % A.nx, tj = ((q / A.nx) | 0) % A.ny, tk = (q / (A.nx * A.ny)) | 0;
+        var tc = tractColorAt(vox2mm(ti, tj, tk), tracts);
+        if (tc) {
+          var oldAlpha = a / 255, ta = tc[3], totalAlpha = ta + oldAlpha * (1 - ta);
+          r = Math.round((tc[0] * ta + r * oldAlpha * (1 - ta)) / totalAlpha);
+          gg = Math.round((tc[1] * ta + gg * oldAlpha * (1 - ta)) / totalAlpha);
+          bb = Math.round((tc[2] * ta + bb * oldAlpha * (1 - ta)) / totalAlpha); a = Math.round(totalAlpha * 255);
+        }
       }
       if (les && les[q]) {
         var le = (u > 0 && !les[idx[p - 1]]) || (u < W - 1 && !les[idx[p + 1]]) || (vv > 0 && !les[idx[p - W]]) || (vv < H - 1 && !les[idx[p + W]]);
@@ -1421,6 +1459,8 @@ var R3 = {
     var c = this.canvas, wrap = $('wrap-3d');
     if (!this.pts || !wrap.clientWidth) return;
     if (this.lesVersion !== S.lesionVersion) this.buildLesion();
+    var nerveMode = this.mode === 'tracts';
+    tract3DStatus(nerveMode ? ensureTractSurfaces() : []);
     var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     var w = Math.max(1, Math.round(wrap.clientWidth * dpr)), h = Math.max(1, Math.round(wrap.clientHeight * dpr)), N = w * h;
     if (c.width !== w || c.height !== h) { c.width = w; c.height = h; this.img = null; }
@@ -1528,7 +1568,7 @@ var R3 = {
     }
     // 3) ぼかした奥行きの傾きから法線を出し、左上手前からの光で陰影をつける
     var LX = -0.32, LY = 0.45, LD = -0.83, edgeMm = Math.max(10, this.step * 5);
-    var gsOn = (mode === 'all' && !S.highlight) ? 0 : 1;
+    var gsOn = (mode === 'all' && !S.highlight) ? 0 : (nerveMode && !T3.brain ? 0 : 1);
     for (y = 0; y < h; y++) {
       for (x = 0; x < w; x++) {
         p = y * w + x;
@@ -1548,12 +1588,13 @@ var R3 = {
         }
         if (gsOn && glass[p]) {
           // 脳の輪郭（すりガラス）。選んだ領域の上では薄く、背景の上でだけはっきり見せる
-          var ga = valid[p] ? Math.min(0.12, glass[p] * 0.006) : Math.min(0.3, glass[p] * 0.012);
+          var ga = nerveMode ? Math.min(0.12, glass[p] * 0.006) : (valid[p] ? Math.min(0.12, glass[p] * 0.006) : Math.min(0.3, glass[p] * 0.012));
           R = R * (1 - ga) + 150 * ga; G = G * (1 - ga) + 165 * ga; B = B * (1 - ga) + 190 * ga;
         }
         img[p * 4] = R; img[p * 4 + 1] = G; img[p * 4 + 2] = B; img[p * 4 + 3] = 255;
       }
     }
+    if (nerveMode) drawTracts3D(this, img, w, h, scale);
     this.ctx.putImageData(this.img, 0, 0);
     // 十字線の位置
     var mmc = vox2mm(S.i, S.j, S.k);
@@ -1617,12 +1658,15 @@ function scheduleHash() {
   hashTimer = setTimeout(function () {
     var mm = vox2mm(S.i, S.j, S.k);
     var h = '#x=' + Math.round(mm[0]) + '&y=' + Math.round(mm[1]) + '&z=' + Math.round(mm[2]) + '&lv=' + S.level;
+    var ts = selectedTracts();
+    if (ts.length) h += '&tracts=' + ts.map(function (t) { return t.id; }).join(',') + '&tt=' + G.threshold + '&to=' + Math.round(G.opacity * 100);
+    if (R3.mode === 'tracts') h += '&d3t=1&d3b=' + (T3.brain ? 1 : 0) + '&d3l=' + (S.layout === '3d' ? 1 : 0);
     if (window.history && history.replaceState) { try { history.replaceState(null, '', h); } catch (e) { /* file: など */ } }
   }, 250);
 }
 function readHash() {
   var h = (location.hash || '').replace(/^#/, ''), parts = h.split('&'), o = {}, n, kv;
-  for (n = 0; n < parts.length; n++) { kv = parts[n].split('='); if (kv.length === 2) o[kv[0]] = parseFloat(kv[1]); }
+  for (n = 0; n < parts.length; n++) { kv = parts[n].split('='); if (kv.length === 2) o[kv[0]] = kv[0] === 'tracts' ? kv[1] : parseFloat(kv[1]); }
   return o;
 }
 
@@ -1682,10 +1726,12 @@ function updateInfo() {
   var id1 = A.l1[idxOf(S.i, S.j, S.k)], id2 = A.l2[idxOf(S.i, S.j, S.k)];
   var both = (id1 ? labelInfo(1, id1).name : '—') + ' ／ ' + (id2 ? labelInfo(2, id2).name : '—');
   var h = '';
+  updateLearningPosition(mm);
   if (S.hideOverlay) {
     el.innerHTML = '<div class="info-card"><div class="note">クイズ中は所見を隠しています。答えると表示されます。</div></div>';
     return;
   }
+  h += anatomyHTML(mm);
   if (!info) {
     h += '<div class="info-card"><div class="info-card-header"><span class="territory-badge" style="background:#334155;">ラベルなし</span></div>' +
       '<div class="territory-name">血管支配領域のラベルがない部位</div>' +
@@ -2171,7 +2217,9 @@ function attachViewEvents(v) {
     var ijk = toVoxel(pt);
     if (!ijk || drag || S.hideOverlay) { tip.style.display = 'none'; return; }
     var id = (S.level === 1 ? A.l1 : A.l2)[idxOf(ijk[0], ijk[1], ijk[2])], info = labelInfo(S.level, id), mm = vox2mm(ijk[0], ijk[1], ijk[2]);
-    tip.textContent = (info ? info.code + ' ' + info.name : 'ラベルなし') + '  (' + fmtSigned(mm[0]) + ', ' + fmtSigned(mm[1]) + ', ' + fmtSigned(mm[2]) + ')';
+    var ar = anatomyAt(mm), an = '';
+    for (var ag = 0; ag < ar.groups.length; ag++) if (ar.groups[ag].label) { an = anatomyName(ar.groups[ag].key, ar.groups[ag].label, mm, false); break; }
+    tip.textContent = (an ? an + ' / ' : '') + (info ? info.code + ' ' + info.name : '血管ラベルなし') + '  (' + fmtSigned(mm[0]) + ', ' + fmtSigned(mm[1]) + ', ' + fmtSigned(mm[2]) + ')';
     tip.style.display = 'block';
     var tx = pt.x + 14, ty = pt.y + 12;
     if (tx + tip.offsetWidth > wrap.clientWidth) tx = pt.x - tip.offsetWidth - 10;
@@ -2290,6 +2338,7 @@ function setLevel(lv) {
 }
 function setLayout(mode) {
   S.layout = mode;
+  if (mode === '3d' && R3.mode === 'all' && selectedTracts().length) { R3.mode = 'tracts'; $('sel-3dmode').value = 'tracts'; }
   forEachNode(document.querySelectorAll('#plane-tabs button'), function (b) { b.classList.toggle('active', b.getAttribute('data-layout') === mode); });
   var grid = $('viewports-grid');
   grid.classList.toggle('single', mode !== 'all');
@@ -2298,7 +2347,7 @@ function setLayout(mode) {
     p.classList.toggle('on', mode === 'all' || pl === mode);
   });
   if (mode !== 'all') setActiveView(mode);
-  markAllDirty(); requestRender();
+  markAllDirty(); scheduleHash(); requestRender();
 }
 function setTab(tab) {
   S.tab = tab;
@@ -2330,6 +2379,7 @@ function resetSettings() {
   $('sl-bright').value = S.bright; $('lb-bright').textContent = '0';
   $('chk-smooth').checked = S.smooth; $('sel-convention').value = S.convention; $('sel-filter').value = S.filter;
   $('chk-cross').checked = S.cross; $('chk-bz').checked = S.bz;
+  G.selected = {}; G.opacity = 0.65; G.threshold = 10; restoreLearningHash({});
   setOvMode(DEFAULTS.ovmode);
   for (var n = 0; n < PLANES.length; n++) { V[PLANES[n]].zoom = 1; V[PLANES[n]].panX = 0; V[PLANES[n]].panY = 0; }
   rebuildGeoms(); rebuildGray(); rebuildLUT(); requestRender();
@@ -2370,7 +2420,7 @@ function bindUI() {
   on($('chk-bz'), 'change', function () { S.bz = this.checked; markAllDirty(); requestRender(); });
   on($('sel-convention'), 'change', function () { S.convention = this.value; rebuildGeoms(); requestRender(); });
   on($('sel-filter'), 'change', function () { S.filter = this.value; rebuildLUT(); requestRender(); });
-  on($('sel-3dmode'), 'change', function () { R3.mode = this.value; requestRender(); });
+  on($('sel-3dmode'), 'change', function () { R3.mode = this.value; scheduleHash(); requestRender(); });
   on($('sel-3dq'), 'change', function () { R3.step = parseInt(this.value, 10); R3.build(); requestRender(); });
   forEachNode(document.querySelectorAll('[data-view3d]'), function (b) { on(b, 'click', function () { R3.setView(b.getAttribute('data-view3d')); }); });
   on($('coord-form'), 'submit', function (e) {
@@ -2432,6 +2482,7 @@ function bindUI() {
   on(window, 'resize', function () { requestRender(); });
   on(window, 'hashchange', function () {
     var h = readHash();
+    restoreLearningHash(h); markAllDirty();
     if (!isNaN(h.x) && !isNaN(h.y) && !isNaN(h.z)) { var v = mm2vox(h.x, h.y, h.z); if (v[0] !== S.i || v[1] !== S.j || v[2] !== S.k) setCursor(v[0], v[1], v[2]); }
   });
   var fsel = $('sel-filter'), h = '', n;
@@ -2528,6 +2579,10 @@ function init() {
   if (!b64 || b64.indexOf('@@') >= 0) { showError('アトラスデータが埋め込まれていません'); return; }
   gunzipAsync(b64ToBytes(b64)).then(function (raw) {
     parseAtlas(raw);
+    return gunzipAsync(b64ToBytes($('learning-data').textContent));
+  }).then(function (learningRaw) {
+    parseLearning(learningRaw);
+    $('learning-data').textContent = '';
     el.textContent = ''; // 文字列を手放してメモリを空ける（単体HTML用には PRISTINE_HTML を保持）
     buildLabels();
     computeStats();
@@ -2538,19 +2593,22 @@ function init() {
     R3.init(); attach3DEvents();
     bindUI();
     buildLookupUI();
+    buildLearningUI();
     buildCredit();
     if (!A.prob) { $('chk-bz').disabled = true; $('chk-bz').parentNode.title = 'このデータには確率マップが含まれていません'; $('chk-bz').parentNode.style.opacity = '0.45'; }
     rebuildGray(); rebuildLUT();
     var h = readHash();
+    restoreLearningHash(h);
     if (h.lv === 2) setLevel(2);
     if (!isNaN(h.x) && !isNaN(h.y) && !isNaN(h.z)) setCursorMM(h.x, h.y, h.z);
     else setCursorMM(PRESETS[4].x, PRESETS[4].y, PRESETS[4].z);
-    setLayout(window.innerWidth > 900 ? 'all' : 'axial');
-    setActiveView('axial');
+    setLayout(h.d3t === 1 && h.d3l !== 0 ? '3d' : (window.innerWidth > 900 ? 'all' : 'axial'));
+    setActiveView(h.d3t === 1 && h.d3l !== 0 ? '3d' : 'axial');
     $('loading-overlay').style.display = 'none';
     window.__atlas = { A: A, S: S, V: V, R3: R3, setCursorMM: setCursorMM, vox2mm: vox2mm, labelInfo: labelInfo, currentLabelId: currentLabelId,
       lesionStats: function () { return LAST_STATS; }, setLevel: setLevel, setTab: setTab, setLayout: setLayout, PRESETS: PRESETS };
     window.__atlasProb = probAt;
+    window.__learning = { G: G, anatomyAt: anatomyAt, sample: sampleLearning, tractValuesAt: tractValuesAt, setCursorMM: setCursorMM, colorAt: tractColorAt, T3: T3, ensureSurfaces: ensureTractSurfaces };
   }).then(null, function (err) { showError(err && err.message ? err.message : String(err)); });
 }
 function showError(msg) {
