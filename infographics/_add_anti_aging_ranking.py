@@ -19,9 +19,9 @@ ITEM = {
     "title": "アンチエイジング18の方法、ランキング発表",
     "desc": "医師が採点した18の方法の順位。「効く」と言えたのは4つだけ。老化予防の目的でおすすめできない3つは順位なし",
     "audience": "一般向け",
-    "blog_url": "",
+    "blog_url": "https://blog.ichisouzo-lab.com/entry/2026/10/13/215843",
     "date": "2026-10-13",
-    "youtube_id": "",
+    "youtube_id": "kqNCbV7dudo",
 }
 
 
