@@ -19,7 +19,7 @@ ITEM = {
     "title": "ICIによる筋炎を見逃さない",
     "desc": "免疫チェックポイント阻害薬による筋炎──MGに見えても筋炎と心筋炎を疑い、1つを疑ったら3つとも調べる。頻度・時期、合併と死亡、検査の注意点、治療の柱を1枚に整理（医師向け）",
     "audience": "医師向け",
-    "blog_url": "",
+    "blog_url": "https://blog.ichisouzo-lab.com/entry/2026/10/13/122059",
     "date": "2026-10-13",
     "youtube_id": "xXp9DywlVu0",
 }

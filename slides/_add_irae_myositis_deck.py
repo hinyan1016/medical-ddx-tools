@@ -20,7 +20,7 @@ DECK = {
     "subtitle": "頻度と時期・MGに似た症状・合併と死亡・疑ったときの検査・治療と再投与（医師向け）",
     "description": "免疫チェックポイント阻害薬（ICI）による筋炎を、脳神経内科医向けに整理します。頻度はICIを受けた人の0.2〜0.4%と高くありませんが、ICIを始めて1か月ほどで起こり、眼瞼下垂などMGに似た症状や、飲み込み・呼吸の障害を伴いやすい病気です。亡くなる人の多くは、心筋炎かMGを合併した例です。どれか1つを疑ったら3つとも調べ、CKが正常でも筋炎は否定しません。トロポニンTは筋の病気でも上がるので、トロポニンIや心電図、心臓MRIも合わせて判断します。治療の柱はICIの中止とステロイドです。全16枚のスライドで説明します。",
     "youtube_id": "xXp9DywlVu0",
-    "blog_url": "",
+    "blog_url": "https://blog.ichisouzo-lab.com/entry/2026/10/13/122059",
     "source_dir": "irae-myositis/work/rc6-20261013e/viewer/generated",
     "slide_prefix": "slide_",
     "pdf_filename": "slides.pdf",
