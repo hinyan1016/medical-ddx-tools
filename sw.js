@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v232';
+const CACHE_NAME = 'ddx-tools-v233';
 const ASSETS = [
   './infographics/asm-drug-interactions/index.html',
   './infographics/urine-cancer-screening/index.html',
@@ -170,6 +170,7 @@ const ASSETS = [
   './nad_calculator.html',
   './ivig_calculator.html',
   './spikes_explainer.html',
+  './stroke_ic_note.html',
   './news2_calculator.html',
   './bfcrs_calculator.html',
   './glim_nutrition.html',

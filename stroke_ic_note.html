@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A5276">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>脳梗塞 病状説明記録ツール</title>
+<meta name="description" content="脳梗塞の病型（アテローム血栓性・心原性・ラクナ・BAD・精査中）、症状、治療、今後の注意点、再発予防などを選ぶと、カルテに貼り付けられる病状説明の記録文を作ります。入力内容は保存も送信もしません。">
+<meta property="og:title" content="脳梗塞 病状説明記録ツール">
+<meta property="og:description" content="脳梗塞の病型（アテローム血栓性・心原性・ラクナ・BAD・精査中）、症状、治療、今後の注意点、再発予防などを選ぶと、カルテに貼り付けられる病状説明の記録文を作ります。入力内容は保存も送信もしません。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tools.ichisouzo-lab.com/stroke_ic_note.html">
+<meta property="og:image" content="https://tools.ichisouzo-lab.com/assets/og-tools.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="医知創造ラボ">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root {
+    --dark: #1A5276;
+    --primary: #2E86C1;
+    --accent: #C0392B;
+    --light: #EAF2F8;
+    --paper: #FFFFFF;
+    --ink: #1F2D3A;
+    --muted: #5B6B7A;
+    --line: #D5DFE8;
+    --shadow: 0 2px 12px rgba(26,82,118,0.12);
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Hiragino Kaku Gothic ProN", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #EAF2F8 0%, #F5F7FA 100%);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 0 0 60px;
+    line-height: 1.7;
+  }
+  header {
+    background: linear-gradient(135deg, var(--dark), var(--primary));
+    color: #fff;
+    padding: 26px 20px 22px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(26,82,118,0.2);
+  }
+  header h1 { font-size: 1.5em; font-weight: 700; letter-spacing: 0.02em; }
+  header p { font-size: 0.9em; margin-top: 6px; opacity: 0.92; }
+  header .back { display:inline-block; margin-top:12px; font-size:0.82em; color:#d6e9f6; text-decoration:none; }
+
+  .layout { max-width: 1240px; margin: 0 auto; padding: 22px 16px; display: flex; gap: 20px; align-items: flex-start; }
+  .col-input { flex: 1 1 56%; min-width: 0; }
+  .col-output { flex: 1 1 44%; min-width: 0; position: sticky; top: 12px; }
+
+  .panel {
+    background: var(--paper);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 18px 18px 8px;
+    margin-bottom: 18px;
+  }
+  .panel h2 {
+    font-size: 1.05em; color: var(--dark); margin-bottom: 10px;
+    padding-bottom: 6px; border-bottom: 2px solid var(--light);
+  }
+  .panel .sub { font-size: 0.82em; color: var(--muted); margin: -4px 0 12px; }
+
+  .field { margin-bottom: 14px; }
+  .field > label, .field .label { display:block; font-size:0.86em; font-weight:700; color:var(--dark); margin-bottom:6px; }
+  .hint { font-weight: 400; color: var(--muted); font-size: 0.92em; }
+  input[type=text], input[type=number], input[type=date], input[type=time], select, textarea {
+    width: 100%;
+    padding: 9px 11px;
+    border: 2px solid var(--line);
+    border-radius: 9px;
+    font-size: 0.95em;
+    font-family: inherit;
+    color: var(--ink);
+    background: #fff;
+    outline: none;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--primary); }
+  textarea { resize: vertical; min-height: 64px; line-height: 1.6; }
+  .row { display:flex; gap:12px; flex-wrap:wrap; }
+  .row > .field { flex:1; min-width: 150px; }
+
+  /* 選択肢（チップ型） */
+  .chips { display:flex; flex-wrap:wrap; gap:7px; }
+  .chip { position: relative; }
+  .chip input { position:absolute; opacity:0; width:1px; height:1px; }
+  .chip span {
+    display:inline-block; padding:7px 12px; border-radius:20px;
+    border:2px solid var(--line); background:#fff; color:var(--ink);
+    font-size:0.88em; cursor:pointer; user-select:none; line-height:1.4;
+  }
+  .chip input:checked + span { background: var(--primary); border-color: var(--primary); color:#fff; font-weight:700; }
+  .chip input:focus-visible + span { outline: 3px solid #F5B041; outline-offset: 1px; }
+  .chips.stack { flex-direction: column; gap:6px; }
+  .chips.stack .chip span { border-radius:9px; display:block; }
+
+  .type-chips .chip span { font-size: 0.95em; padding: 9px 14px; }
+  .typebox { display:none; background:#F7FAFC; border:1px dashed #BFD3E3; border-radius:10px; padding:12px 12px 2px; margin-bottom:14px; }
+  .typebox.show { display:block; }
+  .note { font-size:0.8em; color:var(--muted); margin:-4px 0 12px; }
+
+  .privacy-note {
+    font-size:0.82em; color:#154360; background:#EAF2F8;
+    border:1px solid #BBD6EA; border-radius:9px; padding:10px 13px; margin-bottom:16px; line-height:1.6;
+  }
+
+  /* 出力 */
+  .out-head { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+  .out-head h2 { border:none; margin:0; padding:0; flex:1; }
+  .btn {
+    display:inline-flex; align-items:center; justify-content:center; gap:6px;
+    border:none; border-radius:9px; cursor:pointer;
+    font-family:inherit; font-size:0.92em; font-weight:700;
+    padding:10px 16px; -webkit-tap-highlight-color:transparent;
+  }
+  .btn-primary { background: var(--primary); color:#fff; }
+  .btn-primary:hover { background: var(--dark); }
+  .btn-ghost { background: var(--light); color: var(--dark); }
+  .btn-ghost:hover { background: #D6E6F2; }
+  #copyMsg { font-size:0.85em; color:#1E8449; font-weight:700; min-height:1.2em; }
+  #note {
+    width:100%; min-height: 520px; max-height: 72vh;
+    font-family: "MS Gothic", "Osaka-Mono", monospace; font-size: 13px; line-height: 1.65;
+    background:#FCFDFE; border:2px solid var(--line); border-radius:9px; padding:12px; resize: vertical;
+  }
+  .warn { font-size:0.84em; color:#922B21; background:#FDEDEC; border-radius:8px; padding:8px 11px; margin-bottom:10px; display:none; }
+  .warn.show { display:block; }
+
+  .disclaimer, .refs {
+    font-size:0.8em; color:var(--muted); background:#FBFCFD;
+    border:1px solid var(--line); border-radius:9px; padding:12px 14px; margin-bottom:12px; line-height:1.65;
+  }
+  .refs ol { padding-left: 1.4em; }
+  .refs li { margin-bottom: 4px; }
+  .refs a { color: var(--primary); }
+  #selftest { display:none; margin: 12px 16px 0; padding: 12px 14px; border-radius: 9px; font-size: 0.9em; }
+
+  footer { text-align:center; margin-top:24px; font-size:0.8em; color:#99A3AD; padding:0 16px; }
+
+  @media (max-width: 900px) {
+    .layout { flex-direction: column; }
+    .col-input, .col-output { flex: 1 1 auto; width: 100%; }
+    .col-output { position: static; }
+    #note { min-height: 360px; max-height: none; }
+  }
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.22em; }
+    .layout { padding: 14px 10px; }
+    .panel { padding: 14px 12px 4px; }
+  }
+</style>
+</head>
+<body>
+<nav id="ics-globalnav" style="background:#15324E;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
+<div style="max-width:1040px;margin:0 auto;padding:8px 12px;display:flex;align-items:center;gap:2px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;">
+<a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;padding-right:8px;">医知創造ラボ</a>
+<a href="https://ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ホーム</a>
+<a href="https://blog.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ブログ</a>
+<a href="https://tools.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ツール</a>
+<a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">YouTube</a>
+</div>
+</nav>
+
+<header>
+  <h1>🧠 脳梗塞 病状説明記録ツール</h1>
+  <p>選択と短い入力で、カルテに貼り付けられる病状説明の記録文を作ります</p>
+  <a class="back" href="index.html">← ツール一覧へ戻る</a>
+</header>
+
+<div id="selftest"></div>
+
+<div class="layout">
+<form class="col-input" id="form" autocomplete="off" onsubmit="return false;">
+
+  <div class="privacy-note">🔒 入力内容は保存も送信もしません（ページを閉じると消えます）。患者さんの氏名やIDは入力しないでください。</div>
+
+  <!-- 1. 基本情報 -->
+  <div class="panel">
+    <h2>1. 説明の場</h2>
+    <div class="row">
+      <div class="field"><label for="date">説明した日</label><input type="date" id="date"></div>
+      <div class="field"><label for="time">時刻 <span class="hint">（任意）</span></label><input type="time" id="time"></div>
+      <div class="field"><label for="explainer">説明者</label><input type="text" id="explainer" placeholder="例：脳神経内科 ○○"></div>
+    </div>
+    <div class="field">
+      <span class="label">同席した家族など</span>
+      <div class="chips" id="attendFamily"></div>
+    </div>
+    <div class="field">
+      <label for="attendOther">その他の同席者 <span class="hint">（続柄などを自由記載）</span></label>
+      <input type="text" id="attendOther" placeholder="例：長男の妻">
+    </div>
+    <div class="field">
+      <span class="label">同席した医療者</span>
+      <div class="chips" id="attendStaff"></div>
+    </div>
+  </div>
+
+  <!-- 2. 診断 -->
+  <div class="panel">
+    <h2>2. 診断</h2>
+    <div class="field">
+      <span class="label">病型</span>
+      <div class="chips type-chips" id="types"></div>
+    </div>
+    <p class="note">病型を選ぶと、「今後の経過で気をつけること」と「再発を防ぐ薬」が病型に合わせて入れ替わります（精査中では検査の項目も足します）。あとから自由に変えられます。</p>
+    <div class="row">
+      <div class="field">
+        <label for="side">左右</label>
+        <select id="side">
+          <option value="">（指定しない）</option>
+          <option value="右">右</option>
+          <option value="左">左</option>
+          <option value="両側">両側</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="region">血管領域</label>
+        <select id="region">
+          <option value="">（指定しない）</option>
+          <option>中大脳動脈領域</option>
+          <option>前大脳動脈領域</option>
+          <option>後大脳動脈領域</option>
+          <option>椎骨脳底動脈領域</option>
+          <option>穿通枝領域</option>
+          <option>複数の血管領域</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="site">部位 <span class="hint">（任意）</span></label>
+        <input type="text" id="site" placeholder="例：放線冠、橋">
+      </div>
+    </div>
+    <div class="row">
+      <div class="field"><label for="onset">発症した日時</label><input type="text" id="onset" placeholder="例：10/14 朝 7時ごろ"></div>
+      <div class="field"><label for="nihss">来院時のNIHSS <span class="hint">（任意）</span></label><input type="number" id="nihss" min="0" max="42" inputmode="numeric"></div>
+    </div>
+    <div class="field">
+      <span class="label">症状</span>
+      <div class="chips" id="symptoms"></div>
+    </div>
+    <div class="field">
+      <label for="symptomNote">症状の補足 <span class="hint">（任意）</span></label>
+      <input type="text" id="symptomNote" placeholder="例：右上下肢の麻痺、歩行は介助が必要">
+    </div>
+    <div class="field">
+      <label for="imaging">画像所見 <span class="hint">（任意）</span></label>
+      <input type="text" id="imaging" placeholder="例：MRI拡散強調画像で左放線冠に新しい梗塞">
+    </div>
+  </div>
+
+  <!-- 3. 原因 -->
+  <div class="panel">
+    <h2>3. 原因</h2>
+    <p class="sub" id="causeHint">先に病型を選んでください。</p>
+
+    <div class="typebox" id="box-athero">
+      <div class="row">
+        <div class="field">
+          <label for="atheroVessel">原因の血管</label>
+          <select id="atheroVessel">
+            <option value="">（指定しない）</option>
+            <option>頸部内頸動脈</option>
+            <option>頭蓋内の内頸動脈</option>
+            <option>中大脳動脈</option>
+            <option>前大脳動脈</option>
+            <option>後大脳動脈</option>
+            <option>椎骨動脈</option>
+            <option>脳底動脈</option>
+          </select>
+        </div>
+        <div class="field">
+          <span class="label">血管の状態</span>
+          <div class="chips" id="atheroLesion"></div>
+        </div>
+      </div>
+      <div class="field">
+        <span class="label">発症のしかた（機序）</span>
+        <div class="chips stack" id="atheroMech"></div>
+      </div>
+    </div>
+
+    <div class="typebox" id="box-ce">
+      <div class="field">
+        <span class="label">血栓ができた原因</span>
+        <div class="chips stack" id="ceSource"></div>
+      </div>
+      <div class="field" id="ceOtherWrap" style="display:none;">
+        <label for="ceOther">その他の心疾患</label>
+        <input type="text" id="ceOther" placeholder="例：心筋梗塞後の左室内血栓">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="causeNote">原因の補足 <span class="hint">（任意）</span></label>
+      <input type="text" id="causeNote" placeholder="自由記載">
+    </div>
+  </div>
+
+  <!-- 4. 治療 -->
+  <div class="panel">
+    <h2>4. これまでに行った治療</h2>
+    <div class="field"><div class="chips" id="treatments"></div></div>
+    <div class="field">
+      <label for="treatNote">治療の補足 <span class="hint">（任意）</span></label>
+      <input type="text" id="treatNote" placeholder="例：左中大脳動脈は再開通した">
+    </div>
+  </div>
+
+  <!-- 5. 検査 -->
+  <div class="panel">
+    <h2>5. これから行う検査</h2>
+    <div class="field"><div class="chips" id="tests"></div></div>
+    <div class="field">
+      <label for="testNote">検査の補足 <span class="hint">（任意）</span></label>
+      <input type="text" id="testNote" placeholder="自由記載">
+    </div>
+  </div>
+
+  <!-- 6. 注意点 -->
+  <div class="panel">
+    <h2>6. 今後の経過で気をつけること</h2>
+    <div class="field"><div class="chips stack" id="course"></div></div>
+    <div class="field">
+      <label for="courseNote">補足 <span class="hint">（任意）</span></label>
+      <input type="text" id="courseNote" placeholder="自由記載">
+    </div>
+  </div>
+
+  <!-- 7. 再発予防 -->
+  <div class="panel">
+    <h2>7. 再発予防</h2>
+    <div class="field">
+      <span class="label">再発を防ぐ薬の方針</span>
+      <div class="chips stack" id="drug"></div>
+    </div>
+    <div class="field">
+      <span class="label">危険因子 <span class="hint">（選ぶと対策の一文が入ります）</span></span>
+      <div class="chips" id="risks"></div>
+    </div>
+    <div class="field">
+      <span class="label">そのほかに伝えたこと</span>
+      <div class="chips stack" id="preventExtra"></div>
+    </div>
+    <div class="field">
+      <label for="preventNote">補足 <span class="hint">（任意）</span></label>
+      <input type="text" id="preventNote" placeholder="自由記載">
+    </div>
+  </div>
+
+  <!-- 8. 方針 -->
+  <div class="panel">
+    <h2>8. 今後の見通しと方針</h2>
+    <div class="field">
+      <span class="label">後遺症の見込み</span>
+      <div class="chips stack" id="outlook"></div>
+    </div>
+    <div class="field">
+      <span class="label">退院の見込み</span>
+      <div class="chips stack" id="discharge"></div>
+    </div>
+    <div class="field">
+      <span class="label">リハビリ</span>
+      <div class="chips" id="rehabPlan"></div>
+    </div>
+    <div class="field">
+      <span class="label">急変時の対応</span>
+      <div class="chips stack" id="code"></div>
+    </div>
+    <div class="field">
+      <label for="planNote">方針の補足 <span class="hint">（任意）</span></label>
+      <input type="text" id="planNote" placeholder="自由記載">
+    </div>
+  </div>
+
+  <!-- 9. 理解と質問 -->
+  <div class="panel">
+    <h2>9. 理解と質問</h2>
+    <div class="field">
+      <span class="label">説明への理解</span>
+      <div class="chips stack" id="understanding"></div>
+    </div>
+    <div class="field">
+      <label for="qa">質問と回答 <span class="hint">（任意・改行はそのまま反映）</span></label>
+      <textarea id="qa" rows="4" placeholder="例：&#10;Q：仕事に戻れるか&#10;A：回復の程度をみて、リハビリの担当者と一緒に考える"></textarea>
+    </div>
+    <div class="field">
+      <label for="free">その他 <span class="hint">（任意）</span></label>
+      <textarea id="free" rows="3" placeholder="自由記載"></textarea>
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    出力は、説明した内容を記録するための下書きです。実際に説明した内容と違うところは、カルテに貼り付けたあとで直してください。定型文は個々の患者さんへの治療方針を決めるものではありません。
+  </div>
+
+  <div class="refs">
+    <b>定型文の根拠とした資料</b>
+    <ol>
+      <li>Miyamoto S, et al. Japan Stroke Society Guideline 2021 for the Treatment of Stroke. Int J Stroke. 2022. 17(9):1039-1049. <a href="https://pubmed.ncbi.nlm.nih.gov/35443847/" target="_blank" rel="noopener">PubMed</a></li>
+      <li>Wang Y, et al. Clopidogrel with aspirin in acute minor stroke or transient ischemic attack. N Engl J Med. 2013. 369(1):11-9. <a href="https://pubmed.ncbi.nlm.nih.gov/23803136/" target="_blank" rel="noopener">PubMed</a></li>
+      <li>Johnston SC, et al. Clopidogrel and Aspirin in Acute Ischemic Stroke and High-Risk TIA. N Engl J Med. 2018. 379(3):215-225. <a href="https://pubmed.ncbi.nlm.nih.gov/29766750/" target="_blank" rel="noopener">PubMed</a></li>
+      <li>Fischer U, et al. Early versus Later Anticoagulation for Stroke with Atrial Fibrillation. N Engl J Med. 2023. 388(26):2411-2421. <a href="https://pubmed.ncbi.nlm.nih.gov/37222476/" target="_blank" rel="noopener">PubMed</a></li>
+      <li>Yamamoto Y, et al. Characteristics of intracranial branch atheromatous disease and its association with progressive motor deficits. J Neurol Sci. 2011. 304(1-2):78-82. <a href="https://pubmed.ncbi.nlm.nih.gov/21402390/" target="_blank" rel="noopener">PubMed</a></li>
+    </ol>
+  </div>
+</form>
+
+<div class="col-output">
+  <div class="panel">
+    <div class="out-head">
+      <h2>カルテ記載用テキスト</h2>
+      <button type="button" class="btn btn-primary" id="btn-copy">📋 コピー</button>
+      <button type="button" class="btn btn-ghost" id="btn-reset">クリア</button>
+    </div>
+    <div class="warn" id="warn"></div>
+    <div id="copyMsg"></div>
+    <textarea id="note" readonly spellcheck="false" aria-label="カルテ記載用テキスト"></textarea>
+    <p class="note" style="margin:8px 0 10px;">入力を変えると、その場で文章が書き換わります。</p>
+  </div>
+</div>
+</div>
+
+<footer>医知創造ラボ ｜ 脳梗塞 病状説明記録ツール</footer>
+
+<script>
+(function () {
+  function $(id) { return document.getElementById(id); }
+
+  /* ================= 定型文データ ================= */
+
+  var TYPES = [
+    { id: 'athero', label: 'アテローム血栓性脳梗塞', diag: 'アテローム血栓性脳梗塞',
+      cause: '首や脳の太い血管に動脈硬化が起こり、そこにできた血栓で血管が詰まったり、はがれた血栓がその先の血管を詰まらせたり、血流が足りなくなったりして起こる脳梗塞である。',
+      causeShort: '首や脳の太い血管に起こった動脈硬化がもとになって起こる脳梗塞である。' },
+    { id: 'ce', label: '心原性脳塞栓症', diag: '心原性脳塞栓症',
+      cause: '心臓の中でできた血栓が血流に乗って脳に運ばれ、脳の血管を詰まらせて起こる脳梗塞である。突然発症し、梗塞の範囲が大きくなりやすい。' },
+    { id: 'lacunar', label: 'ラクナ梗塞', diag: 'ラクナ梗塞',
+      cause: '脳の深い部分に血液を送る細い血管（穿通枝）が、主に高血圧による変化で詰まって起こる小さな脳梗塞である。' },
+    { id: 'bad', label: 'BAD（分枝粥腫型梗塞）', diag: '分枝粥腫型梗塞（BAD）',
+      cause: '脳の深い部分に血液を送る細い血管（穿通枝）が、太い血管から枝分かれする根元の動脈硬化で詰まって起こる脳梗塞である。ラクナ梗塞より、梗塞の範囲が長くなりやすい。' },
+    { id: 'undetermined', label: '病型は精査中', diag: '脳梗塞（病型は精査中）',
+      cause: '脳梗塞の原因（病型）は、いま検査を進めて調べている。原因によって再発を防ぐ薬の選び方が変わるため、検査の結果がそろってから改めて説明する。' }
+  ];
+
+  var FAMILY = ['本人', '配偶者', '子', '親', 'きょうだい', '孫'];
+  var STAFF = ['看護師', 'MSW', 'リハビリ担当', '研修医'];
+
+  var SYMPTOMS = ['片麻痺', '感覚障害', '構音障害', '失語', '半側空間無視', '嚥下障害', '視野障害', '複視', '失調', '意識障害'];
+
+  var ATHERO_LESION = [
+    { id: 'stenosis', label: '狭窄', text: '狭くなっている' },
+    { id: 'occlusion', label: '閉塞', text: '詰まっている' }
+  ];
+
+  /* アテローム血栓性の発症機序 */
+  var ATHERO_MECH = [
+    { id: 'thrombotic', label: '血栓性（狭窄部でその場で詰まる）',
+      text: '動脈硬化で狭くなった部分に血栓ができ、その場で血管が詰まったと考えられる。' },
+    { id: 'a2a', label: '塞栓性（artery to artery）',
+      text: '動脈硬化を起こした部分にできた血栓がはがれて血流に乗り、その先の脳の血管を詰まらせたと考えられる（artery to artery塞栓）。' },
+    { id: 'hemodynamic', label: '血行力学性（狭窄の先で血流不足）',
+      text: '血管が強く狭くなっているため、その先の脳に流れる血液が足りなくなったと考えられる。' }
+  ];
+
+  var CE_SOURCE = [
+    { id: 'af_known', label: '心房細動（以前から指摘あり）', text: '血栓ができた原因は、以前から指摘されていた心房細動と考えられる。' },
+    { id: 'af_new', label: '心房細動（今回初めて判明）', text: '血栓ができた原因は心房細動と考えられ、今回の入院で初めて見つかった。' },
+    { id: 'af_suspect', label: '心房細動などを疑い精査中', text: '心房細動などの不整脈が隠れていないか、検査を続けている。' },
+    { id: 'other', label: 'その他の心疾患', text: '' }
+  ];
+
+  var TREATMENTS = [
+    { id: 'tpa', label: '血栓溶解療法（rt-PA静注）', text: '血栓溶解療法（rt-PA静注）を行った。' },
+    { id: 'evt', label: '血栓回収療法', text: 'カテーテルで血栓を取り除く治療（血栓回収療法）を行った。' },
+    { id: 'noreperf', label: '再開通療法の対象外', text: '発症からの時間や病状から、血栓溶解療法や血栓回収療法の対象にはならなかった。' },
+    { id: 'ap1', label: '抗血小板薬（1剤）', text: '抗血小板薬を開始した。' },
+    { id: 'dapt', label: '抗血小板薬（2剤併用）', text: '抗血小板薬を2種類併用して開始した。' },
+    { id: 'argatroban', label: 'アルガトロバン点滴', text: '血栓ができるのを抑える点滴（アルガトロバン）を開始した。' },
+    { id: 'anticoag', label: '抗凝固薬', text: '抗凝固薬を開始した。' },
+    { id: 'edaravone', label: 'エダラボン点滴', text: '脳を保護する点滴（エダラボン）を開始した。' },
+    { id: 'fluid', label: '輸液', text: '点滴で水分を補っている。' },
+    { id: 'bpglu', label: '血圧・血糖の管理', text: '血圧と血糖を管理している。' },
+    { id: 'rehab', label: '早期リハビリ', text: '早い時期からリハビリを始めている。' }
+  ];
+
+  var TESTS = [
+    { id: 'holter', label: '心電図モニター・ホルター心電図', text: '心電図モニター・ホルター心電図（不整脈がないか）' },
+    { id: 'tte', label: '心エコー', text: '心エコー（心臓の動き、心臓の中の血栓）' },
+    { id: 'tee', label: '経食道心エコー', text: '経食道心エコー（心臓の中や大動脈をくわしく見る）' },
+    { id: 'carotid', label: '頸動脈エコー', text: '頸動脈エコー（首の血管の動脈硬化）' },
+    { id: 'mra', label: 'MRA・CTA', text: 'MRA・CTA（脳や首の血管の狭窄・閉塞）' },
+    { id: 'blood', label: '血液検査', text: '血液検査（血液の固まりやすさなど）' }
+  ];
+
+  var COURSE = [
+    { id: 'progress', label: '数日は症状が悪くなることがある', text: '発症から数日のあいだは、治療をしていても症状が悪くなることがある。',
+      textBad: '発症から数日のあいだは、治療をしていても麻痺が進むことがある。BADはラクナ梗塞と比べて、症状が進みやすい。' },
+    { id: 'recur', label: '入院中の再発', text: '入院中に再発する可能性もある。' },
+    { id: 'hemorrhagic', label: '出血性梗塞', text: '梗塞を起こした部分に出血が起こること（出血性梗塞）がある。' },
+    { id: 'edema', label: '脳浮腫（大きな梗塞）', text: '梗塞が大きいため、数日のうちに脳がむくみ（脳浮腫）、意識が悪くなるおそれがある。' },
+    { id: 'pneumonia', label: '誤嚥性肺炎', text: '飲み込む力が落ちている間は、誤嚥性肺炎に注意が必要である。' },
+    { id: 'seizure', label: 'けいれん', text: '梗塞の部位によっては、けいれんが起こりうる。' },
+    { id: 'dvt', label: '深部静脈血栓症', text: '体を動かしにくい間は、足の静脈に血栓（深部静脈血栓症）ができやすい。' },
+    { id: 'bleeding', label: '抗血栓薬による出血', text: '血栓を防ぐ薬を使うため、脳や胃腸などからの出血に気をつける必要がある。' },
+    { id: 'fall', label: '転倒', text: '麻痺やふらつきのため、転びやすい。' },
+    { id: 'depression', label: '気分の落ち込み', text: '脳卒中のあとは、気分が落ち込みやすい時期がある。' }
+  ];
+
+  var DRUG = [
+    { id: 'ap1', label: '抗血小板薬（1剤）を続ける', text: '抗血小板薬（血小板の働きを抑えて血栓をできにくくする薬）を続ける。' },
+    { id: 'dapt', label: '抗血小板薬2剤を期間を区切って使い、1剤に減らす', text: '当面は抗血小板薬を2種類使い、一定の期間がたったら1種類に減らす。2種類を長く続けると出血が増えるため、期間を区切って使う。' },
+    { id: 'ac_start', label: '抗凝固薬を始める（時期は状態をみて判断）', text: '抗凝固薬（心臓の中で血栓ができるのを防ぐ薬）を使う。飲み始める時期は、梗塞の大きさと出血の有無をみて決める。' },
+    { id: 'ac_continue', label: '抗凝固薬を続ける', text: '抗凝固薬（心臓の中で血栓ができるのを防ぐ薬）を続ける。' },
+    { id: 'later', label: '病型が決まってから決める', text: '再発を防ぐ薬を抗血小板薬にするか抗凝固薬にするかは、検査で原因がわかってから決める。' },
+    { id: 'none', label: '記載しない', text: '' }
+  ];
+
+  var RISKS = [
+    { id: 'htn', label: '高血圧', text: '高血圧：血圧を下げる治療を続ける。', textStrong: '高血圧：再発を防ぐうえで特に大切なため、血圧をしっかり下げる。' },
+    { id: 'dm', label: '糖尿病', text: '糖尿病：血糖の管理を続ける。' },
+    { id: 'dl', label: '脂質異常症', text: '脂質異常症：コレステロールを下げる治療を続ける。' },
+    { id: 'smoke', label: '喫煙', text: '喫煙：たばこをやめる。' },
+    { id: 'alcohol', label: '多量飲酒', text: '飲酒：お酒の量を減らす。' },
+    { id: 'af', label: '心房細動', text: '心房細動：抗凝固薬の飲み忘れがないようにする。' },
+    { id: 'ckd', label: '慢性腎臓病', text: '慢性腎臓病：腎臓の働きをみながら、薬の種類や量を調整する。' },
+    { id: 'obesity', label: '肥満', text: '肥満：食事と運動で体重を減らす。' },
+    { id: 'sas', label: '睡眠時無呼吸', text: '睡眠時無呼吸：検査と治療を受ける。' }
+  ];
+
+  var PREVENT_EXTRA = [
+    { id: 'carotidSurg', label: '頸動脈の手術・ステントを検討', text: '頸動脈の狭窄に対して、頸動脈内膜剥離術またはステント留置術を検討する。', only: 'athero' },
+    { id: 'adherence', label: '薬を自己判断でやめない・手術や抜歯の前は相談', text: '血栓を防ぐ薬は自己判断でやめないこと、手術や抜歯の前には主治医に相談することを伝えた。' },
+    { id: 'fast', label: '再発のサインと救急車', text: '顔のゆがみ、片側の手足の麻痺、言葉のもつれが急に出たときは、すぐに救急車を呼ぶようお願いした。' }
+  ];
+
+  var OUTLOOK = [
+    { id: 'good', label: '症状は軽くなっていく見込み', text: '症状は軽くなっていく見込みである。' },
+    { id: 'residual', label: '後遺症がある程度残る可能性', text: '麻痺などの後遺症が、ある程度残る可能性がある。' },
+    { id: 'unknown', label: '現時点では予測が難しい', text: '後遺症がどの程度残るかは、現時点では予測が難しい。' },
+    { id: 'none', label: '記載しない', text: '' }
+  ];
+
+  var DISCHARGE = [
+    { id: 'home', label: '自宅への退院をめざす', text: '自宅への退院をめざす。' },
+    { id: 'rehabHosp', label: '回復期リハビリ病院への転院を検討', text: '回復期リハビリテーション病院への転院を検討する。' },
+    { id: 'unknown', label: '回復をみて相談', text: '退院先は、今後の回復をみて相談する。' },
+    { id: 'none', label: '記載しない', text: '' }
+  ];
+
+  var REHAB_PLAN = [ { id: 'rehab', label: 'リハビリを続ける', text: 'リハビリを続け、生活に必要な動作の回復をめざす。' } ];
+
+  var CODE = [
+    { id: 'none', label: '記載しない', text: '' },
+    { id: 'full', label: '急変時も全面的な治療を希望', text: '急変時には、心肺蘇生を含めてできる限りの治療を希望された。' },
+    { id: 'later', label: '改めて相談する', text: '急変時の対応については、改めて相談することにした。' },
+    { id: 'dnar', label: '心肺蘇生を行わない方針（DNAR）を確認', text: '急変時に心肺蘇生を行わない方針（DNAR）を確認した。' }
+  ];
+
+  var UNDERSTANDING = [
+    { id: 'both', label: '本人と家族は理解された様子', text: '本人と家族は、説明の内容を理解された様子であった。' },
+    { id: 'family', label: '家族は理解（本人は病状のため理解が難しい）', text: '家族は説明の内容を理解された。本人は病状のため、十分な理解は難しい状態であった。' },
+    { id: 'patient', label: '本人は理解された様子（家族の同席なし）', text: '本人は、説明の内容を理解された様子であった。' },
+    { id: 'insufficient', label: '理解が十分でなく、改めて説明する', text: '理解が十分でない様子があり、改めて説明する予定とした。' },
+    { id: 'none', label: '記載しない', text: '' }
+  ];
+
+  /* 病型ごとの初期値 */
+  var DEFAULTS = {
+    athero:       { course: ['progress', 'recur', 'pneumonia', 'bleeding'], drug: 'ap1', tests: [] },
+    ce:           { course: ['progress', 'recur', 'hemorrhagic', 'pneumonia', 'bleeding'], drug: 'ac_start', tests: [] },
+    lacunar:      { course: ['progress', 'recur', 'bleeding'], drug: 'ap1', tests: [] },
+    bad:          { course: ['progress', 'recur', 'bleeding'], drug: 'ap1', tests: [] },
+    undetermined: { course: ['progress', 'recur', 'bleeding'], drug: 'later', tests: ['holter', 'tte', 'carotid'] }
+  };
+
+  /* ================= 画面の組み立て ================= */
+
+  function chipHtml(type, name, value, label, checked) {
+    return '<label class="chip"><input type="' + type + '" name="' + name + '" value="' + value + '"' +
+      (checked ? ' checked' : '') + '><span>' + label + '</span></label>';
+  }
+  function buildChips(containerId, items, type, name, defaultId) {
+    var html = '';
+    for (var i = 0; i < items.length; i++) {
+      var it = items[i];
+      var id = (typeof it === 'string') ? it : it.id;
+      var label = (typeof it === 'string') ? it : it.label;
+      html += chipHtml(type, name, id, label, defaultId === id);
+    }
+    $(containerId).innerHTML = html;
+  }
+
+  buildChips('attendFamily', FAMILY, 'checkbox', 'family');
+  buildChips('attendStaff', STAFF, 'checkbox', 'staff');
+  buildChips('types', TYPES, 'radio', 'type');
+  buildChips('symptoms', SYMPTOMS, 'checkbox', 'symptom');
+  buildChips('atheroLesion', ATHERO_LESION, 'radio', 'atheroLesion');
+  buildChips('atheroMech', ATHERO_MECH, 'radio', 'atheroMech');
+  buildChips('ceSource', CE_SOURCE, 'radio', 'ceSource');
+  buildChips('treatments', TREATMENTS, 'checkbox', 'treat');
+  buildChips('tests', TESTS, 'checkbox', 'test');
+  buildChips('course', COURSE, 'checkbox', 'course');
+  buildChips('drug', DRUG, 'radio', 'drug');
+  buildChips('risks', RISKS, 'checkbox', 'risk');
+  buildChips('preventExtra', PREVENT_EXTRA, 'checkbox', 'preventExtra');
+  buildChips('outlook', OUTLOOK, 'radio', 'outlook', 'none');
+  buildChips('discharge', DISCHARGE, 'radio', 'discharge', 'none');
+  buildChips('rehabPlan', REHAB_PLAN, 'checkbox', 'rehabPlan');
+  buildChips('code', CODE, 'radio', 'code', 'none');
+  buildChips('understanding', UNDERSTANDING, 'radio', 'understanding', 'none');
+
+  function setInitialChecks() {
+    setChecked('preventExtra', ['adherence', 'fast']);
+    setChecked('rehabPlan', ['rehab']);
+    setRadio('drug', 'none');
+  }
+
+  /* ================= 入力の読み取り ================= */
+
+  function checkedValues(name) {
+    var els = document.getElementsByName(name), out = [];
+    for (var i = 0; i < els.length; i++) { if (els[i].checked) out.push(els[i].value); }
+    return out;
+  }
+  function radioValue(name) {
+    var v = checkedValues(name);
+    return v.length ? v[0] : '';
+  }
+  function setChecked(name, ids) {
+    var els = document.getElementsByName(name);
+    for (var i = 0; i < els.length; i++) { els[i].checked = ids.indexOf(els[i].value) >= 0; }
+  }
+  function setRadio(name, id) { setChecked(name, [id]); }
+  function val(id) { return ($(id).value || '').replace(/^\s+|\s+$/g, ''); }
+  function findById(items, id) {
+    for (var i = 0; i < items.length; i++) { if (items[i].id === id) return items[i]; }
+    return null;
+  }
+  function pickTexts(items, ids) {
+    var out = [];
+    for (var i = 0; i < items.length; i++) {
+      if (ids.indexOf(items[i].id) >= 0 && items[i].text) out.push(items[i].text);
+    }
+    return out;
+  }
+
+  /* ================= 文章の組み立て ================= */
+
+  function formatDate(iso) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
+    if (!m) return '';
+    return m[1] + '年' + parseInt(m[2], 10) + '月' + parseInt(m[3], 10) + '日';
+  }
+
+  function diagnosisName(typeId) {
+    var t = findById(TYPES, typeId);
+    var name = t ? t.diag : '脳梗塞';
+    var side = val('side'), region = val('region'), site = val('site');
+    var sidePart = side === '両側' ? '両側の' : side;
+    var loc = '';
+    if (region && site) loc = sidePart + region + '（' + site + '）';
+    else if (region) loc = sidePart + region;
+    else if (site) loc = sidePart + site;
+    else if (side) loc = side === '両側' ? '両側' : side;
+    return loc ? loc + 'の' + name : name;
+  }
+
+  function bullets(lines) {
+    var out = [];
+    for (var i = 0; i < lines.length; i++) { if (lines[i]) out.push('・' + lines[i]); }
+    return out;
+  }
+
+  function buildNote() {
+    var typeId = radioValue('type');
+    var lines = [];
+    var sections = [];
+
+    /* 見出し */
+    var head = '【病状説明】';
+    var d = formatDate(val('date'));
+    if (d) head += d;
+    if (val('time')) head += ' ' + val('time');
+    lines.push(head);
+    if (val('explainer')) lines.push('説明者：' + val('explainer'));
+    var fam = checkedValues('family');
+    if (val('attendOther')) fam.push(val('attendOther'));
+    if (fam.length) lines.push('同席：' + fam.join('、'));
+    var staff = checkedValues('staff');
+    if (staff.length) lines.push('同席した医療者：' + staff.join('、'));
+    lines.push('以下の内容を説明した。');
+    sections.push(lines.join('\n'));
+
+    /* 診断 */
+    var dx = ['■診断', diagnosisName(typeId)];
+    if (val('onset')) dx.push('発症：' + val('onset'));
+    var sym = checkedValues('symptom');
+    var symLine = sym.join('、');
+    if (val('symptomNote')) symLine += (symLine ? '（' + val('symptomNote') + '）' : val('symptomNote'));
+    if (symLine) dx.push('症状：' + symLine);
+    if (val('nihss') !== '') dx.push('来院時のNIHSS：' + val('nihss') + '点');
+    if (val('imaging')) dx.push('画像：' + val('imaging'));
+    sections.push(dx.join('\n'));
+
+    /* 原因 */
+    var t = findById(TYPES, typeId);
+    var cause = [];
+    if (t) {
+      /* アテローム血栓性で機序を選んだときは、機序の文と重ならない短い説明にする */
+      cause.push(typeId === 'athero' && radioValue('atheroMech') ? t.causeShort : t.cause);
+      if (typeId === 'athero') {
+        var vessel = val('atheroVessel');
+        var lesion = findById(ATHERO_LESION, radioValue('atheroLesion'));
+        if (vessel) {
+          var side = val('side');
+          var vSide = (side === '右' || side === '左') && vessel !== '脳底動脈' ? side : '';
+          cause.push(lesion
+            ? '原因となった血管は' + vSide + vessel + 'で、' + lesion.text + '。'
+            : '原因となった血管は' + vSide + vessel + 'と考えられる。');
+        }
+        var mech = findById(ATHERO_MECH, radioValue('atheroMech'));
+        if (mech) cause.push(mech.text);
+      }
+      if (typeId === 'ce') {
+        var src = radioValue('ceSource');
+        if (src === 'other') {
+          if (val('ceOther')) cause.push('血栓ができた原因として、' + val('ceOther') + 'が考えられる。');
+        } else {
+          var s = findById(CE_SOURCE, src);
+          if (s) cause.push(s.text);
+        }
+      }
+    }
+    if (val('causeNote')) cause.push(val('causeNote'));
+    if (cause.length) sections.push('■病型と原因\n' + cause.join(''));
+
+    /* 治療 */
+    var treat = pickTexts(TREATMENTS, checkedValues('treat'));
+    if (val('treatNote')) treat.push(val('treatNote'));
+    if (treat.length) sections.push('■これまでの治療\n' + bullets(treat).join('\n'));
+
+    /* 検査 */
+    var tests = pickTexts(TESTS, checkedValues('test'));
+    if (tests.length || val('testNote')) {
+      var tl = ['■これから行う検査'];
+      if (tests.length) tl.push('原因をくわしく調べるため、次の検査を行う予定である。');
+      tl = tl.concat(bullets(tests));
+      if (val('testNote')) tl.push('・' + val('testNote'));
+      sections.push(tl.join('\n'));
+    }
+
+    /* 注意点 */
+    var courseIds = checkedValues('course');
+    var course = [];
+    for (var i = 0; i < COURSE.length; i++) {
+      var c = COURSE[i];
+      if (courseIds.indexOf(c.id) < 0) continue;
+      course.push(c.id === 'progress' && typeId === 'bad' ? c.textBad : c.text);
+    }
+    if (val('courseNote')) course.push(val('courseNote'));
+    if (course.length) sections.push('■今後の経過で気をつけること\n' + bullets(course).join('\n'));
+
+    /* 再発予防 */
+    var pv = [];
+    var drug = findById(DRUG, radioValue('drug'));
+    if (drug && drug.text) pv.push(drug.text);
+    var riskIds = checkedValues('risk');
+    var strongHtn = (typeId === 'lacunar' || typeId === 'bad');
+    var riskLines = [];
+    for (var j = 0; j < RISKS.length; j++) {
+      var r = RISKS[j];
+      if (riskIds.indexOf(r.id) < 0) continue;
+      riskLines.push(r.id === 'htn' && strongHtn ? r.textStrong : r.text);
+    }
+    var extraIds = checkedValues('preventExtra');
+    var extra = [];
+    for (var k = 0; k < PREVENT_EXTRA.length; k++) {
+      var e = PREVENT_EXTRA[k];
+      if (extraIds.indexOf(e.id) < 0) continue;
+      if (e.only && e.only !== typeId) continue;
+      extra.push(e.text);
+    }
+    if (pv.length || riskLines.length || extra.length || val('preventNote')) {
+      var pl = ['■再発予防'].concat(pv);
+      if (riskLines.length) pl.push('危険因子への対策');
+      pl = pl.concat(bullets(riskLines));
+      pl = pl.concat(extra);
+      if (val('preventNote')) pl.push(val('preventNote'));
+      sections.push(pl.join('\n'));
+    }
+
+    /* 方針 */
+    var plan = [];
+    var o = findById(OUTLOOK, radioValue('outlook'));
+    if (o && o.text) plan.push(o.text);
+    plan = plan.concat(pickTexts(REHAB_PLAN, checkedValues('rehabPlan')));
+    var dc = findById(DISCHARGE, radioValue('discharge'));
+    if (dc && dc.text) plan.push(dc.text);
+    var cd = findById(CODE, radioValue('code'));
+    if (cd && cd.text) plan.push(cd.text);
+    if (val('planNote')) plan.push(val('planNote'));
+    if (plan.length) sections.push('■今後の見通しと方針\n' + plan.join('\n'));
+
+    /* 理解と質問 */
+    var un = findById(UNDERSTANDING, radioValue('understanding'));
+    var qa = ($('qa').value || '').replace(/\s+$/, '');
+    if ((un && un.text) || qa) {
+      var ul = ['■理解と質問'];
+      if (un && un.text) ul.push(un.text);
+      if (qa) ul.push(qa);
+      sections.push(ul.join('\n'));
+    }
+
+    var free = ($('free').value || '').replace(/\s+$/, '');
+    if (free) sections.push('■その他\n' + free);
+
+    return sanitize(sections.join('\n\n'));
+  }
+
+  /* 文字化け対策：波ダッシュ・全角チルダを半角ハイフンへ */
+  function sanitize(text) { return text.replace(/[～〜]/g, '-'); }
+
+  /* ================= 画面の更新 ================= */
+
+  function updateTypeUi() {
+    var typeId = radioValue('type');
+    $('box-athero').className = 'typebox' + (typeId === 'athero' ? ' show' : '');
+    $('box-ce').className = 'typebox' + (typeId === 'ce' ? ' show' : '');
+    $('causeHint').textContent = typeId ? '病型の説明文は自動で入ります。必要なら補足してください。' : '先に病型を選んでください。';
+    $('ceOtherWrap').style.display = radioValue('ceSource') === 'other' ? 'block' : 'none';
+    /* アテローム血栓性以外では頸動脈の手術項目を隠す */
+    var els = document.getElementsByName('preventExtra');
+    for (var i = 0; i < els.length; i++) {
+      if (els[i].value === 'carotidSurg') els[i].parentNode.style.display = typeId === 'athero' ? '' : 'none';
+    }
+  }
+
+  function applyTypeDefaults(typeId) {
+    var d = DEFAULTS[typeId];
+    if (!d) return;
+    var course = d.course.slice();
+    var treat = checkedValues('treat');
+    if (treat.indexOf('tpa') >= 0 || treat.indexOf('evt') >= 0) {
+      if (course.indexOf('hemorrhagic') < 0) course.push('hemorrhagic');
+    }
+    setChecked('course', course);
+    setRadio('drug', d.drug);
+    /* 検査は先生が選んだものを消さず、標準の項目だけ足す */
+    var tests = checkedValues('test');
+    for (var i = 0; i < d.tests.length; i++) { if (tests.indexOf(d.tests[i]) < 0) tests.push(d.tests[i]); }
+    setChecked('test', tests);
+  }
+
+  function render() {
+    updateTypeUi();
+    var text = buildNote();
+    $('note').value = text;
+    var warn = $('warn');
+    if (!radioValue('type')) {
+      warn.textContent = '病型がまだ選ばれていません。';
+      warn.className = 'warn show';
+    } else {
+      warn.className = 'warn';
+    }
+  }
+
+  /* ================= コピー（3段フォールバック） ================= */
+
+  function copyNote() {
+    var ta = $('note'), msg = $('copyMsg');
+    var text = sanitize(ta.value);
+    ta.value = text;
+    function done(ok) {
+      msg.textContent = ok ? 'コピーしました。カルテに貼り付けてください。' : '全選択しました。Ctrl+C でコピーしてください。';
+      if (ok) setTimeout(function () { msg.textContent = ''; }, 3000);
+    }
+    function fallback() {
+      ta.removeAttribute('readonly');
+      ta.focus(); ta.select(); ta.setSelectionRange(0, text.length);
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+      ta.setAttribute('readonly', 'readonly');
+      done(ok);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { done(true); })['catch'](fallback);
+    } else {
+      fallback();
+    }
+  }
+
+  function todayIso() {
+    var n = new Date();
+    function p(x) { return (x < 10 ? '0' : '') + x; }
+    return n.getFullYear() + '-' + p(n.getMonth() + 1) + '-' + p(n.getDate());
+  }
+
+  function resetAll() {
+    $('form').reset();
+    $('date').value = todayIso();
+    setInitialChecks();
+    $('copyMsg').textContent = '';
+    render();
+  }
+
+  /* ================= イベント ================= */
+
+  $('form').addEventListener('change', function (e) {
+    var t = e.target;
+    if (t.name === 'type') applyTypeDefaults(t.value);
+    if (t.name === 'treat' && t.checked && (t.value === 'tpa' || t.value === 'evt')) {
+      var cur = checkedValues('course');
+      if (cur.indexOf('hemorrhagic') < 0) { cur.push('hemorrhagic'); setChecked('course', cur); }
+    }
+    render();
+  });
+  $('form').addEventListener('input', render);
+  $('btn-copy').addEventListener('click', copyNote);
+  $('btn-reset').addEventListener('click', function () {
+    if (window.confirm('入力をすべて消して、最初の状態に戻します。よろしいですか？')) resetAll();
+  });
+
+  $('date').value = todayIso();
+  setInitialChecks();
+  render();
+
+  /* ================= セルフテスト（?selftest で実行） ================= */
+
+  function selfTest() {
+    var fails = [];
+    function check(cond, label) { if (!cond) fails.push(label); }
+    for (var i = 0; i < TYPES.length; i++) {
+      resetAll();
+      var t = TYPES[i];
+      setRadio('type', t.id); applyTypeDefaults(t.id);
+      $('side').value = '左'; $('region').value = '中大脳動脈領域';
+      setChecked('symptom', ['片麻痺', '失語']);
+      setChecked('risk', ['htn', 'dm']);
+      $('onset').value = '10/14 朝〜昼';
+      render();
+      var txt = $('note').value;
+      check(txt.indexOf(t.diag) >= 0, t.id + '：診断名が出ない');
+      check(txt.indexOf('左中大脳動脈領域の') >= 0, t.id + '：部位が出ない');
+      check(txt.indexOf(t.cause) >= 0, t.id + '：原因の定型文が出ない');
+      check(!/[～〜]/.test(txt), t.id + '：波ダッシュが残る');
+      check(txt.indexOf('undefined') < 0 && txt.indexOf('null') < 0, t.id + '：undefined/null が混入');
+      check(txt.indexOf('■再発予防') >= 0, t.id + '：再発予防が出ない');
+      if (t.id === 'bad') check(txt.indexOf('BADはラクナ梗塞と比べて') >= 0, 'bad：進行の文が出ない');
+      if (t.id === 'lacunar' || t.id === 'bad') check(txt.indexOf('再発を防ぐうえで特に大切') >= 0, t.id + '：高血圧の強調文が出ない');
+      if (t.id === 'ce') check(txt.indexOf('出血性梗塞') >= 0 && txt.indexOf('飲み始める時期') >= 0, 'ce：初期値が入らない');
+      if (t.id === 'undetermined') check(txt.indexOf('ホルター心電図') >= 0 && txt.indexOf('原因がわかってから決める') >= 0, 'undetermined：初期値が入らない');
+      check(txt.indexOf('頸動脈内膜剥離術') < 0, t.id + '：頸動脈手術の文が出ている（未選択）');
+    }
+    /* 空のまま */
+    resetAll();
+    var empty = $('note').value;
+    check(empty.indexOf('■診断\n脳梗塞') >= 0, '空入力：診断の既定値が出ない');
+    check(empty.indexOf('■病型と原因') < 0, '空入力：原因の節が出ている');
+    /* アテローム血栓性の頸動脈手術 */
+    setRadio('type', 'athero'); applyTypeDefaults('athero');
+    setChecked('preventExtra', ['carotidSurg']);
+    $('atheroVessel').value = '頸部内頸動脈'; setRadio('atheroLesion', 'stenosis');
+    setRadio('atheroMech', 'a2a');
+    $('side').value = '右';
+    render();
+    var at = $('note').value;
+    check(at.indexOf('原因となった血管は右頸部内頸動脈で、狭くなっている。') >= 0, 'athero：責任血管の文が出ない');
+    check(at.indexOf('（artery to artery塞栓）') >= 0, 'athero：artery to artery の文が出ない');
+    check(at.indexOf('動脈硬化がもとになって起こる脳梗塞である。') >= 0 && at.indexOf('はがれた血栓がその先の血管を詰まらせたり') < 0, 'athero：機序を選んだのに原因の定型文が長いまま');
+    /* 機序だけ選んで血管を選ばない場合 */
+    $('atheroVessel').value = ''; setRadio('atheroMech', 'hemodynamic');
+    render();
+    var at2 = $('note').value;
+    check(at2.indexOf('原因となった血管は') < 0 && at2.indexOf('その先の脳に流れる血液が足りなくなった') >= 0, 'athero：血管なし・血行力学性の文が正しくない');
+    check(at.indexOf('頸動脈内膜剥離術') >= 0, 'athero：頸動脈手術の文が出ない');
+    /* rt-PA で出血性梗塞が自動で入る */
+    resetAll();
+    setRadio('type', 'lacunar'); applyTypeDefaults('lacunar');
+    var tpa = document.querySelector('input[name=treat][value=tpa]');
+    tpa.checked = true; tpa.dispatchEvent(new Event('change', { bubbles: true }));
+    check($('note').value.indexOf('出血性梗塞') >= 0, 'rt-PA 選択で出血性梗塞が入らない');
+    resetAll();
+
+    var box = $('selftest');
+    box.style.display = 'block';
+    if (fails.length) {
+      box.style.background = '#FDEDEC'; box.style.color = '#922B21';
+      box.innerHTML = '<b>セルフテスト不合格（' + fails.length + '件）</b><br>' + fails.join('<br>');
+    } else {
+      box.style.background = '#E9F7EF'; box.style.color = '#1E8449';
+      box.innerHTML = '<b>セルフテスト合格</b>';
+    }
+    window.__selftest = { pass: fails.length === 0, fails: fails };
+  }
+  if (/[?&]selftest\b/.test(location.search)) selfTest();
+})();
+</script>
+</body>
+</html>
