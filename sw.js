@@ -1,5 +1,6 @@
-const CACHE_NAME = 'ddx-tools-v233';
+const CACHE_NAME = 'ddx-tools-v234';
 const ASSETS = [
+  './handouts/manifest.json',
   './infographics/asm-drug-interactions/index.html',
   './infographics/urine-cancer-screening/index.html',
   './infographics/urine-cancer-screening/infographic.png',
@@ -387,12 +388,13 @@ self.addEventListener('activate', e => {
   );
 });
 
-// Fetch: network-first for HTML, cache-first for other assets
+// Fetch: network-first for HTML and directory data, cache-first for other assets
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
   const isHTML = e.request.mode === 'navigate' ||
                  url.pathname.endsWith('.html') ||
-                 url.pathname.endsWith('/');
+                 url.pathname.endsWith('/') ||
+                 url.pathname.endsWith('/handouts/manifest.json');
 
   if (isHTML) {
     // Network-first for HTML pages

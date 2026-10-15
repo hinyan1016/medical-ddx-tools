@@ -10,10 +10,10 @@
 <meta name="apple-mobile-web-app-title" content="DDxツール">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
-<title>臨床鑑別診断ツール集</title>
-<meta name="description" content="臨床所見・検査所見から系統的に鑑別診断を行うインタラクティブツール">
-<meta property="og:title" content="臨床鑑別診断ツール集">
-<meta property="og:description" content="臨床所見・検査所見から系統的に鑑別診断を行うインタラクティブツール">
+<title>診療ツール・配布資料を探す｜医知創造ラボ</title>
+<meta name="description" content="医療者向けの診療ツールと患者さん・ご家族向けの配布資料を、診療テーマ・用途・キーワードから探せます。">
+<meta property="og:title" content="診療ツール・配布資料を探す｜医知創造ラボ">
+<meta property="og:description" content="医療者向けの診療ツールと患者さん・ご家族向けの配布資料を、診療テーマ・用途・キーワードから探せます。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://tools.ichisouzo-lab.com/">
 <meta property="og:image" content="https://tools.ichisouzo-lab.com/assets/og-tools.png">
@@ -23,145 +23,109 @@
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
 <style>
-  :root {
-    --navy: #1B3A5C;
-    --blue: #2C5AA0;
-    --light-blue: #E8F0FE;
-    --white: #FFFFFF;
-    --shadow: 0 2px 12px rgba(27,58,92,0.12);
-    --radius: 12px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
-    background: linear-gradient(135deg, #E8F0FE 0%, #F4F6F8 100%);
-    color: #222;
-    min-height: 100vh;
-    padding: 0 0 60px;
-  }
-  header {
-    background: linear-gradient(135deg, var(--navy), var(--blue));
-    color: var(--white);
-    padding: 36px 20px 30px;
-    text-align: center;
-    box-shadow: 0 4px 16px rgba(27,58,92,0.18);
-  }
-  header h1 { font-size: 1.8em; font-weight: 700; letter-spacing: 0.04em; }
-  header p { font-size: 0.95em; margin-top: 8px; opacity: 0.85; }
-  .container { max-width: 720px; margin: 0 auto; padding: 32px 16px; }
-  .tool-grid { display: flex; flex-direction: column; gap: 20px; }
-  .tool-card {
-    background: var(--white);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    padding: 28px 24px;
-    text-decoration: none;
-    color: #222;
-    transition: all 0.2s;
-    border-left: 5px solid var(--blue);
-    display: block;
-  }
-  .tool-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 24px rgba(27,58,92,0.18);
-    border-left-color: var(--navy);
-  }
-  .tool-card .tool-emoji { font-size: 2em; margin-bottom: 8px; }
-  .tool-card .tool-name { font-size: 1.25em; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
-  .tool-card .tool-desc { font-size: 0.92em; color: #555; line-height: 1.6; }
-  .tool-card .tool-tag {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 3px 12px;
-    border-radius: 20px;
-    font-size: 0.78em;
-    font-weight: 600;
-    background: var(--light-blue);
-    color: var(--blue);
-  }
-  .search-box {
-    position: relative;
-    margin-bottom: 20px;
-  }
-  .search-icon {
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 1.1em;
-    color: #999;
-    pointer-events: none;
-  }
-  .search-input {
-    width: 100%;
-    padding: 12px 14px 12px 42px;
-    border: 2px solid #D1D5DB;
-    border-radius: var(--radius);
-    font-size: 1em;
-    font-family: inherit;
-    color: #222;
-    background: var(--white);
-    box-shadow: var(--shadow);
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .search-input:focus {
-    border-color: var(--blue);
-  }
-  .search-input::placeholder {
-    color: #aaa;
-  }
-  .search-count {
-    text-align: center;
-    font-size: 0.82em;
-    color: #999;
-    margin-bottom: 14px;
-    display: none;
-  }
-  .tool-card.hidden {
-    display: none;
-  }
-  .no-results {
-    text-align: center;
-    padding: 40px 0;
-    color: #999;
-    font-size: 0.95em;
-    display: none;
-  }
-  footer {
-    text-align: center;
-    margin-top: 40px;
-    font-size: 0.82em;
-    color: #999;
-    line-height: 1.6;
-  }
-  @media (max-width: 600px) {
-    header { padding: 28px 16px 22px; }
-    header h1 { font-size: 1.35em; }
-    header p { font-size: 0.88em; }
-    .container { padding: 16px 10px; }
-    .tool-grid { gap: 14px; }
-    .tool-card {
-      padding: 18px 16px;
-      border-left-width: 4px;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .tool-card:active {
-      transform: scale(0.98);
-      background: #f8faff;
-    }
-    .tool-card .tool-emoji { font-size: 1.7em; margin-bottom: 6px; }
-    .tool-card .tool-name { font-size: 1.1em; }
-    .tool-card .tool-desc { font-size: 0.88em; line-height: 1.55; }
-    .tool-card .tool-tag { font-size: 0.75em; padding: 3px 10px; }
-    .search-input { padding: 10px 12px 10px 38px; font-size: 0.95em; }
-    .search-icon { left: 12px; font-size: 1em; }
-    .search-box { margin-bottom: 14px; }
-    footer { font-size: 0.78em; margin-top: 28px; }
-  }
+:root { --navy:#1b3a5c; --blue:#2c5aa0; --teal:#25675d; --line:#dce4eb; --muted:#536476; }
+* { box-sizing:border-box; margin:0; padding:0; }
+[hidden] { display:none !important; }
+body { font-family:"Yu Gothic",Meiryo,"Segoe UI",sans-serif; background:#f3f6f9; color:#243648; line-height:1.6; }
+a { color:var(--blue); }
+button,input,select { font:inherit; }
+button,select { cursor:pointer; }
+:focus-visible { outline:3px solid #cb7900; outline-offset:4px; }
+.skip-link { position:absolute; top:-80px; left:12px; z-index:10; padding:10px; background:white; }
+.skip-link:focus { top:6px; }
+header { background:linear-gradient(120deg,#1b3a5c,#29557e); color:white; padding:26px 20px; }
+.header-inner,.container { max-width:1180px; margin:auto; }
+.eyebrow { color:#c8dded; font-size:.78rem; letter-spacing:.12em; font-weight:bold; }
+header h1 { font-size:clamp(1.45rem,3vw,2rem); margin:4px 0; letter-spacing:.02em; }
+header p { color:#e0eaf3; font-size:.9rem; }
+.container { padding:22px 22px 44px; }
+.directory-panel { background:white; border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:25px; box-shadow:0 3px 14px #1b3a5c08; }
+.type-options { display:grid; grid-template-columns:.65fr 1fr 1fr; gap:10px; margin-bottom:17px; }
+.type-option { text-align:left; background:#f8fafc; border:1px solid #c9d5df; border-radius:10px; padding:12px 14px; color:var(--navy); min-height:76px; }
+.type-option strong { display:block; font-size:1rem; }
+.type-option small { display:block; font-size:.74rem; color:var(--muted); margin-top:3px; }
+.type-option[aria-pressed="true"] { background:#eaf1fa; border:2px solid var(--blue); padding:11px 13px; box-shadow:inset 0 0 0 1px #2c5aa012; }
+.type-option[data-kind="handout"][aria-pressed="true"] { background:#edf6f2; border-color:var(--teal); }
+.number { font-size:.82em; font-weight:normal; white-space:nowrap; }
+.search-label { display:block; font-weight:bold; font-size:.84rem; margin-bottom:5px; }
+.search-row { display:flex; gap:8px; }
+.search-input { width:100%; min-width:0; border:1px solid #9bafbf; border-radius:8px; padding:11px 13px; color:#243648; background:white; }
+.clear-search,.reset-button { border:1px solid #c1ced8; background:white; color:var(--blue); border-radius:8px; padding:8px 13px; flex-shrink:0; }
+.search-hint { font-size:.75rem; color:var(--muted); margin-top:5px; }
+.theme-label { font-size:.84rem; font-weight:bold; margin:16px 0 7px; }
+.theme-options { display:flex; flex-wrap:wrap; gap:7px; }
+.mobile-theme { display:none; }
+.theme-button { border:1px solid #d5dfe7; background:white; color:#3c5268; border-radius:7px; padding:7px 10px; font-size:.8rem; min-height:36px; }
+.theme-button[aria-pressed="true"] { border-color:var(--navy); background:var(--navy); color:white; }
+.theme-button span { font-size:.85em; margin-left:5px; opacity:.8; }
+.filter-row { display:flex; flex-wrap:wrap; align-items:end; gap:12px; border-top:1px solid var(--line); padding-top:15px; margin-top:16px; }
+.select-field { display:flex; align-items:center; gap:7px; font-size:.8rem; }
+select { padding:8px; border:1px solid #bccbd7; border-radius:6px; background:white; color:#243648; max-width:100%; }
+.reset-button { margin-left:auto; min-height:39px; font-size:.8rem; }
+.result-bar { display:flex; flex-wrap:wrap; gap:5px 16px; justify-content:space-between; align-items:center; margin:17px 0 0; }
+.result-count { font-weight:bold; font-size:.9rem; color:var(--navy); }
+.active-filters,.load-status { font-size:.76rem; color:var(--muted); }
+.load-status { margin-top:7px; }
+.catalog-section { margin:0 0 30px; scroll-margin-top:20px; }
+.section-heading { display:flex; align-items:baseline; flex-wrap:wrap; gap:9px; font-size:1.12rem; padding-bottom:9px; border-bottom:2px solid #ccd9e5; color:var(--navy); }
+.section-heading span { font-size:.76rem; font-weight:normal; color:var(--muted); }
+.kind-heading { font-size:.76rem; font-weight:bold; color:var(--muted); margin:13px 0 8px; }
+.kind-heading.handout-heading { color:var(--teal); }
+.tool-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+.tool-card { display:block; background:white; padding:13px 15px; border:1px solid var(--line); border-left:3px solid #7294b7; border-radius:9px; text-decoration:none; color:inherit; min-width:0; position:relative; }
+.tool-card:hover { border-color:#8da9c0; background:#f9fcff; box-shadow:0 3px 9px #1b3a5c0d; }
+.tool-card.handout-card { border-left-color:#699c8b !important; }
+.card-audience { display:block; font-size:.66rem; color:#3e5f80; font-weight:bold; margin-bottom:4px; }
+.handout-card .card-audience { color:var(--teal); }
+.tool-emoji { display:none; }
+.tool-name { font-size:.94rem; font-weight:bold; color:var(--navy); line-height:1.5; overflow-wrap:anywhere; padding-right:10px; }
+.tool-name::after { content:'↗'; position:absolute; top:13px; right:11px; font-size:.8rem; color:#7b91a6; }
+.tool-desc { font-size:.76rem; line-height:1.65; margin-top:5px; color:var(--muted); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.tool-tag { display:none; }
+.series-label { display:block; color:#657969; font-size:.66rem; margin-top:6px; }
+.empty-state { text-align:center; background:white; padding:35px 18px; border:1px dashed #c1ced8; border-radius:10px; margin-bottom:25px; }
+.empty-state h2 { font-size:1.05rem; margin-bottom:8px; }
+.empty-state p { font-size:.86rem; color:var(--muted); margin-bottom:16px; }
+.other-resources { border-top:1px solid #d0dce5; padding-top:22px; margin-top:30px; }
+.other-resources h2 { font-size:1rem; margin-bottom:10px; color:var(--navy); }
+.resource-links { display:flex; flex-wrap:wrap; gap:8px 20px; font-size:.82rem; }
+.audience-note { font-size:.75rem; color:var(--muted); margin-top:12px; }
+footer { margin-top:28px; font-size:.72rem; color:var(--muted); line-height:1.8; }
+noscript p { padding:12px; background:#fff3d9; margin-bottom:15px; }
+@media(max-width:960px) { .tool-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:600px) {
+  header { padding:20px 16px; }
+  header p { font-size:.8rem; }
+  .container { padding:15px 12px 32px; }
+  .directory-panel { padding:14px 12px; margin-bottom:22px; }
+  .type-options { grid-template-columns:1fr 1fr; gap:7px; }
+  .type-option { padding:9px 10px; min-height:78px; }
+  .type-option strong { font-size:.88rem; }
+  .type-option small { font-size:.65rem; }
+  .type-option[aria-pressed="true"] { padding:8px 9px; }
+  .type-option:first-child { grid-column:1/-1; min-height:43px; display:flex; gap:9px; align-items:baseline; }
+  .type-option:first-child small { margin:0; }
+  .theme-options,.theme-label { display:none; }
+  .mobile-theme { display:flex; margin-top:14px; }
+  .search-input { font-size:16px; padding:9px; }
+  .clear-search { font-size:.8rem; padding:7px 9px; }
+  .filter-row { gap:10px; }
+  .select-field { width:100%; justify-content:space-between; }
+  .select-field select { flex:1; max-width:75%; }
+  .reset-button { width:100%; }
+  .tool-grid { grid-template-columns:1fr; gap:8px; }
+  .tool-card { padding:11px 13px; }
+  .section-heading { font-size:1rem; }
+  .tool-name { font-size:.92rem; }
+  .catalog-section { margin-bottom:24px; }
+}
+@media(prefers-reduced-motion:reduce) { * { scroll-behavior:auto !important; } }
+
 </style>
 </head>
 <body>
+
+<a class="skip-link" href="#main">一覧へ移動</a>
 <nav id="ics-globalnav" style="background:#15324E;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
 <div style="max-width:1040px;margin:0 auto;padding:8px 12px;display:flex;align-items:center;gap:2px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;">
 <a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;padding-right:8px;">医知創造ラボ</a>
@@ -171,66 +135,49 @@
 <a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">YouTube</a>
 </div>
 </nav>
-
-<header>
-  <h1>臨床鑑別診断ツール集</h1>
-  <p>臨床所見・検査所見から系統的に鑑別診断を行うインタラクティブツール</p>
-</header>
-
-<div class="container">
-  <a href="slides/" style="display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#E8F0FE 0%,#F4F6F8 100%);border-left:5px solid #2E7D32;border-radius:12px;padding:14px 18px;margin-bottom:18px;box-shadow:0 2px 12px rgba(27,58,92,0.12);text-decoration:none;color:#222;transition:all 0.2s;">
-    <div style="font-size:1.8em;line-height:1;">📊</div>
-    <div style="flex:1;">
-      <div style="font-weight:700;color:#1B3A5C;font-size:1.05em;">スライド資料一覧</div>
-      <div style="font-size:0.86em;color:#555;line-height:1.5;margin-top:2px;">YouTube動画で使用したスライドをPDF・Webで閲覧できます</div>
+<header><div class="header-inner">
+  <div class="eyebrow">医知創造ラボ / TOOLS &amp; HANDOUTS</div>
+  <h1>診療ツール・配布資料を探す</h1>
+  <p>病名・症状・診療テーマから探せます。</p>
+</div></header>
+<main class="container" id="main">
+  <section class="directory-panel" id="directoryPanel" aria-label="一覧の検索と絞り込み" hidden>
+    <div class="type-options" role="group" aria-label="探すもの">
+      <button class="type-option" type="button" data-kind="all" aria-pressed="true"><strong>すべて <span class="number">読込中</span></strong><small>ツールと配布資料をまとめて探す</small></button>
+      <button class="type-option" type="button" data-kind="tool" aria-pressed="false"><strong>診療ツール <span class="number">57件</span></strong><small>主に医療者向け · 鑑別・計算・治療支援</small></button>
+      <button class="type-option" type="button" data-kind="handout" aria-pressed="false"><strong>配布資料 <span class="number">読込中</span></strong><small>主に患者さん・ご家族向け · 印刷して説明に</small></button>
     </div>
-    <div style="color:#2E7D32;font-size:1.4em;line-height:1;">→</div>
-  </a>
-  <a href="infographics/" style="display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#FDEEE9 0%,#F4F6F8 100%);border-left:5px solid #FF7A59;border-radius:12px;padding:14px 18px;margin-bottom:18px;box-shadow:0 2px 12px rgba(27,58,92,0.12);text-decoration:none;color:#222;transition:all 0.2s;">
-    <div style="font-size:1.8em;line-height:1;">🖼️</div>
-    <div style="flex:1;">
-      <div style="font-weight:700;color:#1B3A5C;font-size:1.05em;">インフォグラフィック一覧</div>
-      <div style="font-size:0.86em;color:#555;line-height:1.5;margin-top:2px;">診断・治療・生活のポイントを1枚に。拡大しても鮮明なHTML図解集です。</div>
+    <label class="search-label" for="searchInput">病名・症状・ツール名で探す</label>
+    <div class="search-row"><input class="search-input" id="searchInput" type="search" placeholder="例：脳梗塞、めまい、血圧" aria-describedby="searchHint" autocomplete="off"><button class="clear-search" id="clearSearch" type="button">検索を消す</button></div>
+    <p class="search-hint" id="searchHint">説明文も検索します。空白で区切ると、すべての語を含むものを表示します。</p>
+    <div class="theme-label" id="themeLabel">診療テーマから絞る</div>
+    <div class="theme-options" id="themeOptions" role="group" aria-labelledby="themeLabel"></div>
+    <label class="select-field mobile-theme" for="themeSelect">診療テーマ <select id="themeSelect"></select></label>
+    <div class="filter-row">
+      <label class="select-field" for="purposeFilter">用途 <select id="purposeFilter"><option value="all">すべての用途</option></select></label>
+      <label class="select-field" for="sortOrder">並び順 <select id="sortOrder"><option value="theme">テーマ別・テーマ内は名称順</option><option value="name">名称順（ツール・配布資料ごと）</option></select></label>
+      <button class="reset-button" type="button" data-reset>すべての条件を解除</button>
     </div>
-    <div style="color:#FF7A59;font-size:1.4em;line-height:1;">→</div>
-  </a>
-  <a href="handouts/" style="display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#EAF1FB 0%,#F4F6F8 100%);border-left:5px solid #1B3A5C;border-radius:12px;padding:14px 18px;margin-bottom:18px;box-shadow:0 2px 12px rgba(27,58,92,0.12);text-decoration:none;color:#222;transition:all 0.2s;">
-    <div style="font-size:1.8em;line-height:1;">📄</div>
-    <div style="flex:1;">
-      <div style="font-weight:700;color:#1B3A5C;font-size:1.05em;">ハンドアウト一覧（患者さん・ご家族向け配布資料）</div>
-      <div style="font-size:0.86em;color:#555;line-height:1.5;margin-top:2px;">外来でそのまま印刷して渡せるA4資料。脳梗塞・パーキンソン病・認知症・高血圧・めまい/ふらつき・てんかんなど。</div>
-    </div>
-    <div style="color:#1B3A5C;font-size:1.4em;line-height:1;">→</div>
-  </a>
-  <a href="https://check.ichisouzo-lab.com/" style="display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#E3EDF9 0%,#F4F6F8 100%);border-left:5px solid #2C5AA0;border-radius:12px;padding:14px 18px;margin-bottom:18px;box-shadow:0 2px 12px rgba(27,58,92,0.12);text-decoration:none;color:inherit;">
-    <div style="font-size:1.8em;line-height:1;">🩺</div>
-    <div style="flex:1;">
-      <div style="font-weight:700;color:#1B3A5C;font-size:1.05em;">症状セルフチェック（一般の方・ご家族向け）</div>
-      <div style="font-size:0.86em;color:#555;line-height:1.5;margin-top:2px;">質問に答えながら、症状を確認。医療機関に相談する目安を考えるお手伝いです（診断ではありません）。</div>
-    </div>
-    <div style="color:#2C5AA0;font-size:1.4em;line-height:1;">→</div>
-  </a>
-  <div class="search-box">
-    <span class="search-icon">&#x1F50D;</span>
-    <input type="text" class="search-input" id="searchInput" placeholder="&#x30C4;&#x30FC;&#x30EB;&#x3092;&#x691C;&#x7D22;&#xFF08;&#x4F8B;: &#x8133;&#x6CE2;&#x3001;&#x96FB;&#x89E3;&#x8CEA;&#x3001;&#x795E;&#x7D4C;&#xFF09;">
-  </div>
-  <div class="search-count" id="searchCount"></div>
-  <div class="no-results" id="noResults">&#x8A72;&#x5F53;&#x3059;&#x308B;&#x30C4;&#x30FC;&#x30EB;&#x304C;&#x898B;&#x3064;&#x304B;&#x308A;&#x307E;&#x305B;&#x3093;</div>
-  <div class="tool-grid" id="toolGrid">
-
-    <a class="tool-card" href="periop_medication_navigator.html">
+    <div class="result-bar"><p class="result-count" id="searchCount" role="status" aria-live="polite" aria-atomic="true"></p><p class="active-filters" id="activeFilters"></p></div>
+    <p class="load-status" id="loadStatus" role="status">配布資料の検索データを読み込んでいます…</p>
+  </section>
+  <noscript><p>検索・絞り込みにはJavaScriptが必要です。診療ツールは下にすべて掲載しています。<a href="handouts/">配布資料の専用一覧はこちら</a>。</p></noscript>
+  <div class="empty-state" id="noResults" hidden><h2>条件に合う項目が見つかりませんでした</h2><p>語句を短くするか、診療テーマ・用途の条件を解除してください。</p><button class="reset-button" type="button" data-reset>すべての条件を解除</button></div>
+  <div id="catalog"><section class="catalog-section"><h2 class="section-heading">診療ツール</h2><div class="tool-grid">
+<a class="tool-card" href="periop_medication_navigator.html">
       <div class="tool-emoji">💊</div>
       <div class="tool-name">周術期の薬剤管理ナビ</div>
       <div class="tool-desc">糖尿病薬・循環器薬・神経疾患の薬などの休薬・継続・再開を条件別に確認。複数薬の一覧、休薬忘れ時の確認、申し送り・印刷に対応。</div>
       <span class="tool-tag">医療従事者向け / 根拠・未確認条件を表示</span>
     </a>
 
-    <a class="tool-card" href="periop_antithrombotic_consult.html">
+<a class="tool-card" href="periop_antithrombotic_consult.html">
       <div class="tool-emoji">🩸</div>
       <div class="tool-name">周術期抗血栓薬コンサルト返書ツール</div>
       <div class="tool-desc">脳梗塞既往患者の周術期抗血栓療法について、消化器内視鏡・外科手術・抜歯・白内障・皮膚小手術の各ガイドラインから休薬・継続の参考情報と返書文案を作成します。機械弁・発症3か月以内・ステント留置後など定型判断の範囲外は休薬日数を出さず個別協議を促します。医療従事者向け。</div>
     </a>
-    <a class="tool-card" href="antiepileptic_load_calculator.html">
+
+<a class="tool-card" href="antiepileptic_load_calculator.html">
       <div class="tool-emoji">⚡</div>
       <div class="tool-name">抗てんかん薬 AED Load・等価換算ツール</div>
       <div class="tool-desc">
@@ -239,14 +186,15 @@
       </div>
       <span class="tool-tag">WHO-DDD準拠 / 14薬剤 / TDM基準値</span>
     </a>
-    <a class="tool-card" href="asm_interaction_checker.html">
+
+<a class="tool-card" href="asm_interaction_checker.html">
       <div class="tool-emoji">💊</div>
       <div class="tool-name">抗てんかん発作薬 相互作用チェッカー</div>
       <div class="tool-desc">服用中の抗てんかん発作薬と併用薬を選ぶと、濃度が動く組み合わせと対応を、出典つきで表示する医療者向けツール。国内電子添文とPubMedで実在を確認した文献に基づきます。</div>
       <span class="tool-tag">19剤 × 併用薬76種 / 国内の併用禁忌 / 出典つき</span>
     </a>
 
-    <a class="tool-card" href="vascular-territory-atlas.html">
+<a class="tool-card" href="vascular-territory-atlas.html">
       <div class="tool-emoji">🧠</div>
       <div class="tool-name">MNI脳血管支配領域 3Dアトラス</div>
       <div class="tool-desc">
@@ -255,14 +203,14 @@
       <span class="tool-tag">3断面＋3D / 30血管領域 / 病変の領域内訳</span>
     </a>
 
-    <a class="tool-card" href="bfcrs_calculator.html">
+<a class="tool-card" href="bfcrs_calculator.html">
       <div class="tool-emoji">🧠</div>
       <div class="tool-name">BFCRS 緊張病評価尺度 計算ツール</div>
       <div class="tool-desc">Bush-Francis Catatonia Rating Scale（23項目）。スクリーニング14項目で2項目以上陽性→カタトニア疑い、総得点で重症度を評価します。</div>
       <span class="tool-tag">23項目 / スクリーニング14項目</span>
     </a>
 
-    <a class="tool-card" href="aki.html">
+<a class="tool-card" href="aki.html">
       <div class="tool-emoji">🫘</div>
       <div class="tool-name">急性腎障害（AKI）鑑別診断ツール</div>
       <div class="tool-desc">
@@ -272,7 +220,7 @@
       <span class="tool-tag">6ステップ / 13疾患</span>
     </a>
 
-    <a class="tool-card" href="edema.html">
+<a class="tool-card" href="edema.html">
       <div class="tool-emoji">🫧</div>
       <div class="tool-name">全身浮腫 鑑別診断ツール</div>
       <div class="tool-desc">
@@ -282,7 +230,7 @@
       <span class="tool-tag">6ステップ / 9疾患</span>
     </a>
 
-    <a class="tool-card" href="edema_distribution.html">
+<a class="tool-card" href="edema_distribution.html">
       <div class="tool-emoji">🦵</div>
       <div class="tool-name">浮腫 分布・左右差から原因鑑別</div>
       <div class="tool-desc">
@@ -292,7 +240,7 @@
       <span class="tool-tag">7ステップ / 15疾患</span>
     </a>
 
-    <a class="tool-card" href="hyponatremia.html">
+<a class="tool-card" href="hyponatremia.html">
       <div class="tool-emoji">🧪</div>
       <div class="tool-name">低ナトリウム血症 鑑別診断ツール</div>
       <div class="tool-desc">
@@ -302,7 +250,7 @@
       <span class="tool-tag">7ステップ / 14疾患</span>
     </a>
 
-    <a class="tool-card" href="hyperckemia.html">
+<a class="tool-card" href="hyperckemia.html">
       <div class="tool-emoji">💪</div>
       <div class="tool-name">無症候性高CK血症 鑑別診断ツール</div>
       <div class="tool-desc">
@@ -312,7 +260,7 @@
       <span class="tool-tag">12ステップ / EAN 2024準拠</span>
     </a>
 
-    <a class="tool-card" href="hypokalemia.html">
+<a class="tool-card" href="hypokalemia.html">
       <div class="tool-emoji">⚡</div>
       <div class="tool-name">低カリウム血症 鑑別診断ツール</div>
       <div class="tool-desc">
@@ -322,7 +270,7 @@
       <span class="tool-tag">7ステップ / 分岐型アルゴリズム</span>
     </a>
 
-    <a class="tool-card" href="hypernatremia.html">
+<a class="tool-card" href="hypernatremia.html">
       <div class="tool-emoji">🔥</div>
       <div class="tool-name">高ナトリウム血症 鑑別診断ツール</div>
       <div class="tool-desc">
@@ -332,7 +280,7 @@
       <span class="tool-tag">7ステップ / 10疾患鑑別</span>
     </a>
 
-    <a class="tool-card" href="hypercalcemia.html">
+<a class="tool-card" href="hypercalcemia.html">
       <div class="tool-emoji">🧪</div>
       <div class="tool-name">高カルシウム血症 鑑別診断ツール</div>
       <div class="tool-desc">
@@ -342,7 +290,7 @@
       <span class="tool-tag">7ステップ / 14疾患鑑別</span>
     </a>
 
-    <a class="tool-card" href="abdominal_pain.html">
+<a class="tool-card" href="abdominal_pain.html">
       <div class="tool-emoji">🩺</div>
       <div class="tool-name">腹痛 鑑別診断ツール</div>
       <div class="tool-desc">
@@ -352,7 +300,7 @@
       <span class="tool-tag">7ステップ / 13疾患鑑別</span>
     </a>
 
-    <a class="tool-card" href="liver_dysfunction.html">
+<a class="tool-card" href="liver_dysfunction.html">
       <div class="tool-emoji">🫀</div>
       <div class="tool-name">肝機能障害 鑑別診断ツール</div>
       <div class="tool-desc">
@@ -362,7 +310,7 @@
       <span class="tool-tag">7ステップ / 20疾患鑑別</span>
     </a>
 
-    <a class="tool-card" href="anemia.html">
+<a class="tool-card" href="anemia.html">
       <div class="tool-emoji">🩸</div>
       <div class="tool-name">貧血 鑑別診断ツール</div>
       <div class="tool-desc">
@@ -372,7 +320,7 @@
       <span class="tool-tag">8ステップ / 20疾患鑑別</span>
     </a>
 
-    <a class="tool-card" href="highbun.html">
+<a class="tool-card" href="highbun.html">
       <div class="tool-emoji">🩸</div>
       <div class="tool-name">高BUN血症 鑑別診断ツール</div>
       <div class="tool-desc">
@@ -382,7 +330,7 @@
       <span class="tool-tag">7ステップ / 4カテゴリー鑑別</span>
     </a>
 
-    <a class="tool-card" href="bilateral_thalamus.html">
+<a class="tool-card" href="bilateral_thalamus.html">
       <div class="tool-emoji">🟣</div>
       <div class="tool-name">両側視床FLAIR高信号 鑑別診断ツール</div>
       <div class="tool-desc">
@@ -392,7 +340,7 @@
       <span class="tool-tag">6ステップ / 14疾患鑑別</span>
     </a>
 
-    <a class="tool-card" href="sensory_polyneuropathy.html">
+<a class="tool-card" href="sensory_polyneuropathy.html">
       <div class="tool-emoji">🦶</div>
       <div class="tool-name">感覚性ポリニューロパチー 鑑別診断ツール</div>
       <div class="tool-desc">
@@ -402,7 +350,7 @@
       <span class="tool-tag">7ステップ / 25疾患鑑別</span>
     </a>
 
-    <a class="tool-card" href="polyneuropathy_workup.html">
+<a class="tool-card" href="polyneuropathy_workup.html">
       <div class="tool-emoji">🔎</div>
       <div class="tool-name">ポリニューロパチー鑑別・検査ワークアップツール</div>
       <div class="tool-desc">
@@ -412,7 +360,7 @@
       <span class="tool-tag">7ステップ / 24疾患鑑別 + 検査リスト生成</span>
     </a>
 
-    <a class="tool-card" href="secondary_hypertension.html">
+<a class="tool-card" href="secondary_hypertension.html">
       <div class="tool-emoji">🩺</div>
       <div class="tool-name">二次性高血圧 鑑別診断ツール</div>
       <div class="tool-desc">
@@ -422,7 +370,7 @@
       <span class="tool-tag">7ステップ / 12疾患鑑別</span>
     </a>
 
-    <a class="tool-card" href="abducens_palsy.html">
+<a class="tool-card" href="abducens_palsy.html">
       <div class="tool-emoji">👁️</div>
       <div class="tool-name">外転神経麻痺 鑑別診断ツール</div>
       <div class="tool-desc">
@@ -432,7 +380,7 @@
       <span class="tool-tag">6ステップ / 19疾患鑑別</span>
     </a>
 
-    <a class="tool-card" href="headache.html">
+<a class="tool-card" href="headache.html">
       <div class="tool-emoji">🤕</div>
       <div class="tool-name">頭痛鑑別診断ツール</div>
       <div class="tool-desc">
@@ -442,7 +390,7 @@
       <span class="tool-tag">7ステップ / 22疾患鑑別</span>
     </a>
 
-    <a class="tool-card" href="hit6_calculator.html" style="border-left-color:#6D3A94;">
+<a class="tool-card" href="hit6_calculator.html" style="border-left-color:#6D3A94;">
       <div class="tool-emoji">📋</div>
       <div class="tool-name">HIT-6 頭痛インパクトテスト 採点ツール</div>
       <div class="tool-desc">
@@ -451,7 +399,7 @@
       <span class="tool-tag">6項目 / 36-78点 / 4段階判定 + 変化量</span>
     </a>
 
-    <a class="tool-card" href="mibs4_calculator.html" style="border-left-color:#2F5597;">
+<a class="tool-card" href="mibs4_calculator.html" style="border-left-color:#2F5597;">
       <div class="tool-emoji">🗓️</div>
       <div class="tool-name">MIBS-4 片頭痛発作間欠期負担スケール 採点ツール</div>
       <div class="tool-desc">
@@ -460,7 +408,7 @@
       <span class="tool-tag">4項目 / 0-12点 / 発作間欠期の負担</span>
     </a>
 
-    <a class="tool-card" href="midas_calculator.html" style="border-left-color:#2A7F6F;">
+<a class="tool-card" href="midas_calculator.html" style="border-left-color:#2A7F6F;">
       <div class="tool-emoji">📆</div>
       <div class="tool-name">MIDAS 片頭痛支障度評価 採点ツール</div>
       <div class="tool-desc">
@@ -469,7 +417,7 @@
       <span class="tool-tag">5問 / 日数合計 / Grade I-IV + AHS改善基準</span>
     </a>
 
-    <a class="tool-card" href="vertigo.html">
+<a class="tool-card" href="vertigo.html">
       <div class="tool-emoji">🌀</div>
       <div class="tool-name">めまい鑑別診断ツール</div>
       <div class="tool-desc">
@@ -479,7 +427,7 @@
       <span class="tool-tag">7ステップ / 13疾患鑑別</span>
     </a>
 
-    <a class="tool-card" href="consciousness.html">
+<a class="tool-card" href="consciousness.html">
       <div class="tool-emoji">🚨</div>
       <div class="tool-name">意識障害 鑑別診断ツール</div>
       <div class="tool-desc">
@@ -489,7 +437,7 @@
       <span class="tool-tag">8ステップ / 20疾患鑑別</span>
     </a>
 
-    <a class="tool-card" href="cceeg.html">
+<a class="tool-card" href="cceeg.html">
       <div class="tool-emoji">🧠</div>
       <div class="tool-name">CCEEG 薬剤調整判断サポートツール</div>
       <div class="tool-desc">
@@ -499,7 +447,7 @@
       <span class="tool-tag">分岐型フローチャート / ACNS 2021準拠</span>
     </a>
 
-    <a class="tool-card" href="status_epilepticus_sedation.html">
+<a class="tool-card" href="status_epilepticus_sedation.html">
       <div class="tool-emoji">💤</div>
       <div class="tool-name">てんかん重積 麻酔薬導入 判断整理ツール</div>
       <div class="tool-desc">
@@ -509,7 +457,7 @@
       <span class="tool-tag">5ステップ / 一次文献ベース・医療者向け</span>
     </a>
 
-    <a class="tool-card" href="fuo.html">
+<a class="tool-card" href="fuo.html">
       <div class="tool-emoji">🌡️</div>
       <div class="tool-name">不明熱（FUO）鑑別診断ツール</div>
       <div class="tool-desc">
@@ -519,7 +467,7 @@
       <span class="tool-tag">7ステップ / 16疾患鑑別</span>
     </a>
 
-    <a class="tool-card" href="chest_pain.html">
+<a class="tool-card" href="chest_pain.html">
       <div class="tool-emoji">💔</div>
       <div class="tool-name">胸痛 鑑別診断ツール</div>
       <div class="tool-desc">
@@ -529,7 +477,7 @@
       <span class="tool-tag">7ステップ / 14疾患鑑別</span>
     </a>
 
-    <a class="tool-card" href="dyspnea.html">
+<a class="tool-card" href="dyspnea.html">
       <div class="tool-emoji">🫁</div>
       <div class="tool-name">呼吸困難 鑑別診断ツール</div>
       <div class="tool-desc">
@@ -539,7 +487,7 @@
       <span class="tool-tag">7ステップ / 18疾患鑑別</span>
     </a>
 
-    <a class="tool-card" href="nerve_localization.html">
+<a class="tool-card" href="nerve_localization.html">
       <div class="tool-emoji">🔍</div>
       <div class="tool-name">神経障害部位推測ツール</div>
       <div class="tool-desc">
@@ -549,7 +497,7 @@
       <span class="tool-tag">上肢23筋 / 下肢16筋 / 重み付けスコアリング</span>
     </a>
 
-    <a class="tool-card" href="neurodiagnosis.html">
+<a class="tool-card" href="neurodiagnosis.html">
       <div class="tool-emoji">🧠</div>
       <div class="tool-name">多発脳神経障害 局在診断ツール</div>
       <div class="tool-desc">
@@ -559,7 +507,7 @@
       <span class="tool-tag">14症状 / 8局在 / カバレッジ分析</span>
     </a>
 
-    <a class="tool-card" href="tremor.html">
+<a class="tool-card" href="tremor.html">
       <div class="tool-emoji">🤲</div>
       <div class="tool-name">振戦 鑑別診断ツール</div>
       <div class="tool-desc">
@@ -569,7 +517,7 @@
       <span class="tool-tag">7ステップ / 13疾患鑑別</span>
     </a>
 
-    <a class="tool-card" href="levodopa_equivalent_calculator.html">
+<a class="tool-card" href="levodopa_equivalent_calculator.html">
       <div class="tool-emoji">💊</div>
       <div class="tool-name">抗パーキンソン病薬 LEDD換算ツール</div>
       <div class="tool-desc">
@@ -579,7 +527,7 @@
       <span class="tool-tag">国内薬一覧 / 総LEDD / 参考換算</span>
     </a>
 
-    <a class="tool-card" href="gait_ataxia.html">
+<a class="tool-card" href="gait_ataxia.html">
       <div class="tool-emoji">🚶</div>
       <div class="tool-name">歩行障害・協調運動障害 鑑別診断ツール</div>
       <div class="tool-desc">
@@ -589,7 +537,7 @@
       <span class="tool-tag">6ステップ / 13疾患鑑別</span>
     </a>
 
-    <a class="tool-card" href="syncope.html">
+<a class="tool-card" href="syncope.html">
       <div class="tool-emoji">😵</div>
       <div class="tool-name">意識消失発作（TLOC）鑑別診断ツール</div>
       <div class="tool-desc">
@@ -599,7 +547,7 @@
       <span class="tool-tag">7ステップ / 14疾患鑑別</span>
     </a>
 
-    <a class="tool-card" href="vestibular_neuritis.html">
+<a class="tool-card" href="vestibular_neuritis.html">
       <div class="tool-emoji">🌀</div>
       <div class="tool-name">前庭神経炎 鑑別診断ツール</div>
       <div class="tool-desc">
@@ -609,7 +557,7 @@
       <span class="tool-tag">7ステップ / 6疾患鑑別</span>
     </a>
 
-    <a class="tool-card" href="vestibular_migraine.html">
+<a class="tool-card" href="vestibular_migraine.html">
       <div class="tool-emoji">💜</div>
       <div class="tool-name">前庭性片頭痛 セルフチェック</div>
       <div class="tool-desc">
@@ -620,7 +568,7 @@
       <span class="tool-tag">8ステップ / Bárány基準ベース</span>
     </a>
 
-    <a class="tool-card" href="thyroid_dysfunction.html">
+<a class="tool-card" href="thyroid_dysfunction.html">
       <div class="tool-emoji">🦋</div>
       <div class="tool-name">甲状腺機能異常 鑑別診断ツール</div>
       <div class="tool-desc">
@@ -630,7 +578,7 @@
       <span class="tool-tag">7ステップ / 25疾患鑑別</span>
     </a>
 
-    <a class="tool-card" href="hemichorea.html">
+<a class="tool-card" href="hemichorea.html">
       <div class="tool-emoji">🧠</div>
       <div class="tool-name">片側性舞踏病 鑑別診断ツール</div>
       <div class="tool-desc">
@@ -640,7 +588,7 @@
       <span class="tool-tag">6ステップ / 5疾患群鑑別</span>
     </a>
 
-    <a class="tool-card" href="stroke_reperfusion.html">
+<a class="tool-card" href="stroke_reperfusion.html">
       <div class="tool-emoji">🩺</div>
       <div class="tool-name">脳梗塞 再灌流療法 適応判定</div>
       <div class="tool-desc">
@@ -649,7 +597,7 @@
       <span class="tool-tag">7ステップ / rt-PA + EVT判定</span>
     </a>
 
-    <a class="tool-card" href="hypoactive_delirium.html">
+<a class="tool-card" href="hypoactive_delirium.html">
       <div class="tool-emoji">🤫</div>
       <div class="tool-name">低活動性せん妄 スクリーニング＆原因検索</div>
       <div class="tool-desc">
@@ -658,7 +606,7 @@
       <span class="tool-tag">6ステップ / CAM判定 + 原因検索</span>
     </a>
 
-    <a class="tool-card" href="glim_nutrition.html" style="border-left-color:#2C6E49;">
+<a class="tool-card" href="glim_nutrition.html" style="border-left-color:#2C6E49;">
       <div class="tool-emoji">🥗</div>
       <div class="tool-name">GLIM基準 低栄養診断ツール</div>
       <div class="tool-desc">
@@ -667,7 +615,7 @@
       <span class="tool-tag">表現型×病因の自動判定 + 重症度</span>
     </a>
 
-    <a class="tool-card" href="refeeding_risk.html" style="border-left-color:#1C7C72;">
+<a class="tool-card" href="refeeding_risk.html" style="border-left-color:#1C7C72;">
       <div class="tool-emoji">🍴</div>
       <div class="tool-name">リフィーディング症候群 リスク判定ツール</div>
       <div class="tool-desc">
@@ -676,7 +624,7 @@
       <span class="tool-tag">NICE Box 1 自動判定 + 開始kcal計算</span>
     </a>
 
-    <a class="tool-card" href="news2_calculator.html" style="border-left-color:#0B5563;">
+<a class="tool-card" href="news2_calculator.html" style="border-left-color:#0B5563;">
       <div class="tool-emoji">🚨</div>
       <div class="tool-name">NEWS2 計算ツール（早期警告スコア）</div>
       <div class="tool-desc">
@@ -685,7 +633,7 @@
       <span class="tool-tag">NEWS2自動採点 + 起動基準判定</span>
     </a>
 
-    <a class="tool-card" href="dex_calculator.html">
+<a class="tool-card" href="dex_calculator.html">
       <div class="tool-emoji">💉</div>
       <div class="tool-name">デクスメデトミジン投与量計算機（RASS連動）</div>
       <div class="tool-desc">
@@ -694,7 +642,7 @@
       <span class="tool-tag">体重別早見表 + 指示テンプレ生成</span>
     </a>
 
-    <a class="tool-card" href="nad_calculator.html" style="border-left-color:#A02335;">
+<a class="tool-card" href="nad_calculator.html" style="border-left-color:#A02335;">
       <div class="tool-emoji">🩸</div>
       <div class="tool-name">ノルアドレナリン投与量計算機（γ⇄mL/hr）</div>
       <div class="tool-desc">
@@ -703,7 +651,7 @@
       <span class="tool-tag">体重別γ早見表 + SSC 2021準拠</span>
     </a>
 
-    <a class="tool-card" href="ivig_calculator.html">
+<a class="tool-card" href="ivig_calculator.html">
       <div class="tool-emoji">🧬</div>
       <div class="tool-name">免疫グロブリン投与支援（IVIG/SCIG）</div>
       <div class="tool-desc">
@@ -712,7 +660,7 @@
       <span class="tool-tag">国内IVIG/SCIG製剤網羅 / 製剤別レジメン・速度</span>
     </a>
 
-    <a class="tool-card" href="hoken_byomei_checker.html" style="border-left-color:#1A5276;">
+<a class="tool-card" href="hoken_byomei_checker.html" style="border-left-color:#1A5276;">
       <div class="tool-emoji">🧾</div>
       <div class="tool-name">保険病名チェッカー（脳神経内科版）</div>
       <div class="tool-desc">
@@ -721,12 +669,7 @@
       <span class="tool-tag">37項目 / 添付文書・点数表・審査事例で確認</span>
     </a>
 
-  </div>
-
-  <div style="margin-top:40px; padding-top:28px; border-top:2px solid #d0d8e0;">
-    <h2 style="font-size:1.25em; color:#1B3A5C; text-align:center; margin-bottom:18px;">🗣️ コミュニケーション支援</h2>
-    <div class="tool-grid">
-      <a class="tool-card" href="spikes_explainer.html" style="border-left-color:#14746F;">
+<a class="tool-card" href="spikes_explainer.html" style="border-left-color:#14746F;">
         <div class="tool-emoji">🗣️</div>
         <div class="tool-name">SPIKES 病状説明アシスタント</div>
         <div class="tool-desc">
@@ -734,7 +677,8 @@
         </div>
         <span class="tool-tag">SPIKES 6ステップ / 説明フロー＋AIプロンプト生成</span>
       </a>
-      <a class="tool-card" href="stroke_ic_note.html" style="border-left-color:#1A5276;">
+
+<a class="tool-card" href="stroke_ic_note.html" style="border-left-color:#1A5276;">
         <div class="tool-emoji">📝</div>
         <div class="tool-name">脳梗塞 病状説明記録ツール</div>
         <div class="tool-desc">
@@ -742,13 +686,8 @@
         </div>
         <span class="tool-tag">5病型 / カルテ用の説明記録文</span>
       </a>
-    </div>
-  </div>
 
-  <div style="margin-top:40px; padding-top:28px; border-top:2px solid #d0d8e0;">
-    <h2 style="font-size:1.25em; color:#1B3A5C; text-align:center; margin-bottom:18px;">🔬 解剖学習ツール</h2>
-    <div class="tool-grid">
-      <a class="tool-card" href="cavernous_sinus.html" style="border-left-color:#2C5AA0;">
+<a class="tool-card" href="cavernous_sinus.html" style="border-left-color:#2C5AA0;">
         <div class="tool-emoji">🧬</div>
         <div class="tool-name">海綿静脈洞 解剖エクスプローラー</div>
         <div class="tool-desc">
@@ -756,13 +695,8 @@
         </div>
         <span class="tool-tag">2ビュー / 8構造 / THSモード</span>
       </a>
-    </div>
-  </div>
 
-  <div style="margin-top:40px; padding-top:28px; border-top:2px solid #d0d8e0;">
-    <h2 style="font-size:1.25em; color:#1B3A5C; text-align:center; margin-bottom:18px;">📊 インフォグラフィック</h2>
-    <div class="tool-grid">
-      <a class="tool-card" href="infographics/tolosa_hunt.html" style="border-left-color:#6a1b9a;">
+<a class="tool-card" href="infographics/tolosa_hunt.html" style="border-left-color:#6a1b9a;">
         <div class="tool-emoji">🧠</div>
         <div class="tool-name">Tolosa-Hunt症候群</div>
         <div class="tool-desc">
@@ -770,53 +704,236 @@
         </div>
         <span class="tool-tag">インフォグラフィック</span>
       </a>
-    </div>
-  </div>
-
-  <footer>
-    本ツールは臨床判断の補助を目的としており、確定診断を行うものではありません。<br>
-    実臨床では総合的な臨床判断が必要です。
-  </footer>
-</div>
+  </div></section></div>
+  <aside class="other-resources" aria-labelledby="otherResources"><h2 id="otherResources">ほかの資料・専用一覧</h2><div class="resource-links">
+    <a href="handouts/">📄 配布資料の専用一覧 →</a><a href="slides/">📊 スライド資料 →</a><a href="infographics/">🖼️ インフォグラフィック →</a><a href="https://check.ichisouzo-lab.com/">🩺 一般向け症状セルフチェック →</a>
+  </div><p class="audience-note">各カードに利用対象を表示しています。診療ツールには一般向けセルフチェック、配布資料には医療者向け資料も一部含まれます。</p></aside>
+  <footer>診療ツールは臨床判断の補助であり、確定診断を行うものではありません。実臨床では総合的な臨床判断が必要です。<br>配布資料は一般的な情報です。個別の診断・治療については主治医にご相談ください。</footer>
+</main>
 
 <script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
-    .then(function(reg) { reg.update(); })
-    .catch(function() {});
-}
-
-(function() {
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(function(reg) { reg.update(); }).catch(function() {}); }
+(function () {
+  'use strict';
+  // ツールの正本は既存の .tool-card、配布資料の正本は handouts/manifest.json。
+  // ここでは分類と検索語だけを補い、タイトル・説明・URLを複製管理しない。
+  var themes = [
+    ['stroke','脳卒中・脳画像','脳梗塞 脳血管 MNI MRI'],
+    ['epilepsy','てんかん・脳波','癲癇 発作 AED ASM EEG'],
+    ['headache','頭痛・めまい','片頭痛 偏頭痛 ずつう ふらつき'],
+    ['neuro','神経・運動・しびれ','神経 しびれ 痺れ 振戦 ふるえ パーキンソン'],
+    ['dementia','認知症・せん妄','もの忘れ 物忘れ BPSD'],
+    ['renal','腎臓・電解質・むくみ','腎障害 腎不全 浮腫 むくみ Na K Ca CKD'],
+    ['metabolic','糖尿病・内分泌・生活習慣病','血糖 脂質 血圧 甲状腺 痛風'],
+    ['cardioresp','循環器・呼吸器','心臓 心房細動 心不全 胸痛 呼吸 睡眠時無呼吸 CPAP'],
+    ['digestive','消化器・肝臓','腹痛 肝機能 便秘 胃 食道 脂肪肝'],
+    ['general','全身症状・感染症・血液','不明熱 感染 貧血 ワクチン'],
+    ['nutrition','栄養・リハビリ・暮らし','低栄養 運動 食事 転倒 睡眠 禁煙 飲酒'],
+    ['medication','薬剤・周術期・診療支援','薬 くすり 手術 休薬 病状説明 保険病名'],
+    ['antiaging','アンチエイジング','老化 加齢 若返り サプリ']
+  ];
+  var purposes = {
+    diagnosis:'鑑別・原因検索', calculation:'計算・スコア', treatment:'薬剤・治療の確認',
+    communication:'説明・記録', learning:'学習・解剖', selfcheck:'セルフチェック', handout:'配布・説明資料'
+  };
+  // URL単位の分類メタデータ。未分類の新規カードも「診療支援」に表示して隠さない。
+  var toolGroups = [
+    ['stroke','learning','vascular-territory-atlas'],
+    ['stroke','diagnosis','bilateral_thalamus'],
+    ['stroke','treatment','stroke_reperfusion'],
+    ['stroke medication','communication','stroke_ic_note'],
+    ['epilepsy medication','calculation','antiepileptic_load_calculator'],
+    ['epilepsy medication','treatment','asm_interaction_checker cceeg status_epilepticus_sedation'],
+    ['headache','diagnosis','headache vertigo vestibular_neuritis'],
+    ['headache','calculation','hit6_calculator mibs4_calculator midas_calculator'],
+    ['headache','selfcheck','vestibular_migraine'],
+    ['neuro','diagnosis','hyperckemia sensory_polyneuropathy polyneuropathy_workup abducens_palsy nerve_localization neurodiagnosis tremor gait_ataxia hemichorea'],
+    ['neuro medication','calculation','levodopa_equivalent_calculator'],
+    ['neuro','learning','cavernous_sinus infographics/tolosa_hunt'],
+    ['dementia','diagnosis','hypoactive_delirium'],
+    ['renal','diagnosis','aki edema edema_distribution hyponatremia hypokalemia hypernatremia hypercalcemia highbun'],
+    ['metabolic','diagnosis','secondary_hypertension thyroid_dysfunction'],
+    ['cardioresp','diagnosis','chest_pain dyspnea syncope'],
+    ['digestive','diagnosis','abdominal_pain liver_dysfunction'],
+    ['general','diagnosis','anemia consciousness fuo'],
+    ['general','calculation','bfcrs_calculator news2_calculator'],
+    ['nutrition','diagnosis','glim_nutrition refeeding_risk'],
+    ['medication','treatment','periop_medication_navigator periop_antithrombotic_consult ivig_calculator'],
+    ['medication','calculation','dex_calculator nad_calculator'],
+    ['medication','communication','hoken_byomei_checker spikes_explainer']
+  ];
+  var toolMeta = {};
+  toolGroups.forEach(function (group) {
+    group[2].split(' ').forEach(function (slug) { toolMeta[slug + '.html'] = {themes:group[0].split(' '),purpose:group[1]}; });
+  });
+  var themeMap = {};
+  themes.forEach(function (t) { themeMap[t[0]] = t; });
   var input = document.getElementById('searchInput');
-  var grid = document.getElementById('toolGrid');
-  var countEl = document.getElementById('searchCount');
-  var noResults = document.getElementById('noResults');
-  var cards = grid.querySelectorAll('.tool-card');
-  var total = cards.length;
+  var themeBox = document.getElementById('themeOptions');
+  var themeSelect = document.getElementById('themeSelect');
+  var purpose = document.getElementById('purposeFilter');
+  var sort = document.getElementById('sortOrder');
+  var catalog = document.getElementById('catalog');
+  var kind = 'all';
+  var theme = 'all';
+  var handoutState = 'loading';
+  var items = [];
+  var collator = new Intl.Collator('ja', {numeric:true,sensitivity:'base'});
 
-  input.addEventListener('input', function() {
-    var query = input.value.trim().toLowerCase();
-    var visible = 0;
-
-    for (var i = 0; i < cards.length; i++) {
-      var text = cards[i].textContent.toLowerCase();
-      if (!query || text.indexOf(query) !== -1) {
-        cards[i].classList.remove('hidden');
-        visible++;
-      } else {
-        cards[i].classList.add('hidden');
-      }
-    }
-
-    if (query) {
-      countEl.textContent = total + ' 件中 ' + visible + ' 件を表示';
-      countEl.style.display = 'block';
-    } else {
-      countEl.style.display = 'none';
-    }
-    noResults.style.display = (query && visible === 0) ? 'block' : 'none';
+  function normalize(text) {
+    var value = String(text).toLowerCase();
+    if (value.normalize) value = value.normalize('NFKC');
+    return value.replace(/[ァ-ヶ]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 96); });
+  }
+  function prepare(item) {
+    item.search = normalize(item.title + ' ' + item.description + ' ' + item.extra + ' ' + item.audience + ' ' + purposes[item.purpose] + ' ' + item.themes.map(function (id) { return themeMap[id].slice(1).join(' '); }).join(' '));
+    return item;
+  }
+  function audienceBadge(card, text) {
+    var badge = document.createElement('span');
+    badge.className = 'card-audience';
+    badge.textContent = text;
+    card.insertBefore(badge, card.firstChild);
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('a.tool-card'), function (card) {
+    var href = card.getAttribute('href');
+    var meta = toolMeta[href] || {themes:['medication'],purpose:'learning'};
+    var audience = meta.purpose === 'selfcheck' ? '一般向け・セルフチェック' : '医療者向け';
+    audienceBadge(card, 'ツール · ' + audience);
+    items.push(prepare({card:card,kind:'tool',title:card.querySelector('.tool-name').textContent.trim(),description:card.querySelector('.tool-desc').textContent.trim(),extra:card.textContent,audience:audience,themes:meta.themes,purpose:meta.purpose,href:href}));
+  });
+  function handoutThemes(it) {
+    var slug = it.slug;
+    var text = it.title + ' ' + it.series;
+    var ids = [];
+    if (/^anti-aging-/.test(slug)) return ['antiaging'];
+    if (/^dementia-|bpsd/.test(slug)) ids.push('dementia');
+    if (/stroke/.test(slug)) ids.push('stroke');
+    if (/epilep/.test(slug)) ids.push('epilepsy');
+    if (/migraine|headache|dizziness|bppv/.test(slug)) ids.push('headache');
+    if (/parkinson|tremor|carpal-tunnel|facial-palsy|diabetic-foot/.test(slug)) ids.push('neuro');
+    if (/ckd|edema|bladder/.test(slug)) ids.push('renal');
+    if (/hypertension|diabet|dyslipid|gout|obesity|ldl|orforglipron/.test(slug)) ids.push('metabolic');
+    if (/orthostatic|atrial|heart-failure|cpap|sleep-apnea|aspiration|atherosclerosis/.test(slug)) ids.push('cardioresp');
+    if (/gerd|constipation|fatty-liver/.test(slug)) ids.push('digestive');
+    if (/shingles|cold|flu-covid|anemia|cancer/.test(slug)) ids.push('general');
+    if (/rls|anxiety|smoking|alcohol|heatstroke|fall-prevention|sleeping-pills|osteoporosis|multidomain|multiple-risk/.test(slug)) ids.push('nutrition');
+    if (slug === 'status-epilepticus-sedation') ids = ['epilepsy','medication'];
+    // 分類の追加がまだ無い資料も取りこぼさない。
+    return ids.length ? ids : ['nutrition'];
+  }
+  function handoutCard(it) {
+    var a = document.createElement('a');
+    a.className = 'tool-card handout-card';
+    a.href = 'handouts/' + it.slug + '/';
+    audienceBadge(a, '配布資料 · ' + it.audience);
+    [['tool-name',it.title],['tool-desc',it.desc],['series-label',it.series]].forEach(function (part) {
+      var el = document.createElement('div');
+      el.className = part[0]; el.textContent = part[1]; a.appendChild(el);
+    });
+    return a;
+  }
+  function button(label, value) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'theme-button'; b.dataset.theme = value;
+    b.appendChild(document.createTextNode(label));
+    b.appendChild(document.createElement('span'));
+    b.setAttribute('aria-pressed', value === theme ? 'true' : 'false');
+    b.addEventListener('click', function () { theme = value; render(); });
+    themeBox.appendChild(b);
+  }
+  button('すべてのテーマ','all');
+  themes.forEach(function (t) { button(t[1],t[0]); });
+  [['all','すべてのテーマ']].concat(themes).forEach(function (t) {
+    var opt = document.createElement('option'); opt.value = t[0]; opt.textContent = t[1]; themeSelect.appendChild(opt);
+  });
+  Object.keys(purposes).forEach(function (key) {
+    var opt = document.createElement('option'); opt.value = key; opt.textContent = purposes[key]; purpose.appendChild(opt);
+  });
+  function matches(item, ignoreTheme) {
+    if (kind !== 'all' && item.kind !== kind) return false;
+    if (!ignoreTheme && theme !== 'all' && item.themes.indexOf(theme) === -1) return false;
+    if (purpose.value !== 'all' && item.purpose !== purpose.value) return false;
+    var query = normalize(input.value.trim());
+    return !query || query.split(/\s+/).every(function (word) { return item.search.indexOf(word) !== -1; });
+  }
+  function renderGroup(list, heading, id) {
+    if (!list.length) return;
+    var section = document.createElement('section'); section.className = 'catalog-section';
+    var h2 = document.createElement('h2'); h2.className = 'section-heading'; h2.id = 'section-' + id;
+    h2.appendChild(document.createTextNode(heading));
+    var count = document.createElement('span'); count.textContent = list.length + '件'; h2.appendChild(count);
+    section.setAttribute('aria-labelledby',h2.id); section.appendChild(h2);
+    ['tool','handout'].forEach(function (type) {
+      var group = list.filter(function (it) { return it.kind === type; });
+      if (!group.length) return;
+      var h3 = document.createElement('h3'); h3.className = 'kind-heading ' + (type === 'handout' ? 'handout-heading' : '');
+      h3.textContent = (type === 'tool' ? '診療ツール' : '配布資料・ハンドアウト') + ' · ' + group.length + '件';
+      section.appendChild(h3);
+      var grid = document.createElement('div'); grid.className = 'tool-grid';
+      group.forEach(function (it) { grid.appendChild(it.card); }); section.appendChild(grid);
+    });
+    catalog.appendChild(section);
+  }
+  function render() {
+    var filtered = items.filter(function (it) { return matches(it,false); });
+    filtered.sort(function (a,b) { return collator.compare(a.title,b.title) || collator.compare(a.href,b.href); });
+    while (catalog.firstChild) catalog.removeChild(catalog.firstChild);
+    if (sort.value === 'name') renderGroup(filtered,'名称順','all');
+    else themes.forEach(function (t) {
+      renderGroup(filtered.filter(function (it) { return (theme !== 'all' ? theme : it.themes[0]) === t[0]; }),t[1],t[0]);
+    });
+    var tools = filtered.filter(function (it) { return it.kind === 'tool'; }).length;
+    var handouts = filtered.length - tools;
+    var total = items.length;
+    document.getElementById('searchCount').textContent = filtered.length + '件 / 全' + total + '件（ツール ' + tools + '件・配布資料 ' + handouts + '件）';
+    document.getElementById('activeFilters').textContent = (kind === 'tool' ? '診療ツール' : kind === 'handout' ? '配布資料' : 'すべて') + ' / ' + (theme === 'all' ? '全テーマ' : themeMap[theme][1]) + ' / ' + (purpose.value === 'all' ? '全用途' : purposes[purpose.value]) + (input.value.trim() ? ' / 「' + input.value.trim() + '」' : '');
+    document.getElementById('noResults').hidden = filtered.length !== 0 || handoutState === 'loading';
+    Array.prototype.forEach.call(document.querySelectorAll('[data-kind]'), function (b) {
+      b.setAttribute('aria-pressed', b.dataset.kind === kind ? 'true' : 'false');
+      var n = items.filter(function (it) { return b.dataset.kind === 'all' || it.kind === b.dataset.kind; }).length;
+      b.querySelector('.number').textContent = (b.dataset.kind !== 'tool' && handoutState === 'loading') ? '読込中' : n + '件';
+    });
+    var candidates = items.filter(function (it) { return matches(it,true); });
+    Array.prototype.forEach.call(themeBox.children, function (b) {
+      b.setAttribute('aria-pressed',b.dataset.theme === theme ? 'true' : 'false');
+      b.lastChild.textContent = candidates.filter(function (it) { return b.dataset.theme === 'all' || it.themes.indexOf(b.dataset.theme) !== -1; }).length;
+    });
+    themeSelect.value = theme;
+  }
+  function reset() { kind = 'all'; theme = 'all'; input.value = ''; purpose.value = 'all'; sort.value = 'theme'; render(); }
+  Array.prototype.forEach.call(document.querySelectorAll('[data-kind]'), function (b) {
+    b.addEventListener('click',function () { kind = b.dataset.kind; render(); });
+  });
+  input.addEventListener('input',render);
+  document.getElementById('clearSearch').addEventListener('click',function () { input.value = ''; render(); input.focus(); });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-reset]'),function (b) { b.addEventListener('click',function () { reset(); input.focus(); }); });
+  purpose.addEventListener('change',render); sort.addEventListener('change',render);
+  themeSelect.addEventListener('change',function () { theme = themeSelect.value; render(); });
+  document.getElementById('directoryPanel').hidden = false;
+  render();
+  fetch('handouts/manifest.json', {cache:'no-cache'}).then(function (response) {
+    if (!response.ok) throw new Error('manifest');
+    return response.json();
+  }).then(function (data) {
+    if (!Array.isArray(data.items)) throw new Error('items');
+    var seen = {};
+    // 読み込み全体を検証してから反映し、途中までの件数を確定値にしない。
+    var handouts = data.items.map(function (it) {
+      if (!it.slug || !/^[a-z0-9-]+$/.test(it.slug) || seen[it.slug] || typeof it.title !== 'string' || typeof it.desc !== 'string' || typeof it.audience !== 'string') throw new Error('item');
+      seen[it.slug] = true;
+      var card = handoutCard(it);
+      return prepare({card:card,kind:'handout',title:it.title,description:it.desc,extra:it.series || '',audience:it.audience,themes:handoutThemes(it),purpose:'handout',href:card.getAttribute('href')});
+    });
+    items = items.concat(handouts); handoutState = 'ready';
+    document.getElementById('loadStatus').hidden = true; render();
+  }).catch(function () {
+    handoutState = 'error';
+    document.getElementById('loadStatus').textContent = '配布資料の検索データを読み込めませんでした。下の「配布資料の専用一覧」からお探しください。表示件数は読み込めたツールのみです。';
+    render();
   });
 })();
+
 </script>
 </body>
 </html>
