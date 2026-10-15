@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v236';
+const CACHE_NAME = 'ddx-tools-v237';
 const ASSETS = [
   './daily_living_independence.html',
   './handouts/manifest.json',
@@ -33,6 +33,7 @@ const ASSETS = [
   './infographics/evidence-based-diet/index.html',
   './infographics/optogenetics-nobel-2026/index.html',
   './infographics/brivaracetam-clinical-guide/index.html',
+  './infographics/hypoglycemic-encephalopathy/index.html',
   './infographics/irae-myositis/index.html',
   './infographics/anti-aging-ranking/index.html',
   './infographics/anti-aging-gh-dhea/index.html',
