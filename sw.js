@@ -1,5 +1,6 @@
-const CACHE_NAME = 'ddx-tools-v235';
+const CACHE_NAME = 'ddx-tools-v236';
 const ASSETS = [
+  './daily_living_independence.html',
   './handouts/manifest.json',
   './infographics/asm-drug-interactions/index.html',
   './infographics/urine-cancer-screening/index.html',
