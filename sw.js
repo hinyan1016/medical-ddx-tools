@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v234';
+const CACHE_NAME = 'ddx-tools-v235';
 const ASSETS = [
   './handouts/manifest.json',
   './infographics/asm-drug-interactions/index.html',
