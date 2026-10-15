@@ -19,7 +19,7 @@ ITEM = {
     "title": "低血糖脳症の画像と予後",
     "desc": "ブドウ糖で意識が戻らないとき──片麻痺でも、まず血糖を測り、予後は画像と経過を合わせて考える。血糖の目安、MRIの所見と経過、注意点、初期対応を1枚に整理（医師向け）",
     "audience": "医師向け",
-    "blog_url": "",
+    "blog_url": "https://blog.ichisouzo-lab.com/entry/2026/10/16/051721",
     "date": "2026-10-16",
     "youtube_id": "kp94SIZhoME",
 }
