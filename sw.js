@@ -1,5 +1,7 @@
-const CACHE_NAME = 'ddx-tools-v242';
+const CACHE_NAME = 'ddx-tools-v243';
 const ASSETS = [
+  './infographics/poems-syndrome/index.html',
+  './infographics/poems-syndrome/infographic.png',
   './infographics/lennox-gastaut-diagnosis/index.html',
   './infographics/lennox-gastaut-diagnosis/infographic.png',
   './infographics/fenfluramine-review/index.html',
