@@ -1,5 +1,6 @@
-const CACHE_NAME = 'ddx-tools-v244';
+const CACHE_NAME = 'ddx-tools-v245';
 const ASSETS = [
+  './hyperammonemia.html',
   './infographics/ward-alarm-fatigue/index.html',
   './infographics/ward-alarm-fatigue/infographic.png',
   './infographics/hyperammonemia-differential/index.html',

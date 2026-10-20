@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A5276">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>高アンモニア血症 鑑別診断ツール</title>
+<meta name="description" content="検体取扱い（偽高値除外）、重症度・緊急度（＞100/＞150 μmol/L）、肝疾患背景、けいれん・意識状態、薬剤歴（バルプロ酸等）、感染・消化管・解剖要因、代謝・栄養誘因の7ステップで、肝性脳症と非肝性高アンモニア血症（けいれん後・VPA・ウレアーゼ産生菌尿路感染・門脈大循環シャント・遅発型OTCD等）9病態を系統的に鑑別します。">
+<meta property="og:title" content="高アンモニア血症 鑑別診断ツール">
+<meta property="og:description" content="検体取扱い（偽高値除外）、重症度・緊急度（＞100/＞150 μmol/L）、肝疾患背景、けいれん・意識状態、薬剤歴（バルプロ酸等）、感染・消化管・解剖要因、代謝・栄養誘因の7ステップで、肝性脳症と非肝性高アンモニア血症（けいれん後・VPA・ウレアーゼ産生菌尿路感染・門脈大循環シャント・遅発型OTCD等）9病態を系統的に鑑別します。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tools.ichisouzo-lab.com/hyperammonemia.html">
+<meta property="og:image" content="https://tools.ichisouzo-lab.com/assets/og-tools.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="医知創造ラボ">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root {
+    --navy: #1A5276;
+    --blue: #2E86C1;
+    --light-blue: #E8F4FD;
+    --red: #DC3545;
+    --yellow: #F5C518;
+    --green: #28A745;
+    --orange: #E8850C;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(26,82,118,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #E8F4FD 0%, #F4F6F8 100%);
+    color: #222;
+    min-height: 100vh;
+    padding: 0 0 40px;
+  }
+  header {
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    padding: 24px 20px 20px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(26,82,118,0.18);
+  }
+  .back-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .back-bar a {
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    font-size: 0.85em;
+    padding: 4px 10px;
+    border-radius: 6px;
+    transition: background 0.2s;
+  }
+  .back-bar a:active { background: rgba(255,255,255,0.15); }
+  header h1 { font-size: 1.65em; font-weight: 700; letter-spacing: 0.04em; }
+  header p { font-size: 0.92em; margin-top: 6px; opacity: 0.9; }
+  .header-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .header-links a {
+    display: inline-block;
+    padding: 6px 15px;
+    background: rgba(255,255,255,0.18);
+    color: #fff;
+    border-radius: 20px;
+    font-size: 0.84em;
+    text-decoration: none;
+    border: 1px solid rgba(255,255,255,0.35);
+    transition: background 0.15s;
+  }
+  .header-links a:hover { background: rgba(255,255,255,0.28); }
+
+  .container { max-width: 820px; margin: 0 auto; padding: 24px 16px; }
+
+  .progress-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .progress-dot {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.82em;
+    font-weight: 700;
+    color: var(--white);
+    background: #B0BEC5;
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .progress-dot.done { background: var(--green); }
+  .progress-dot.active { background: var(--blue); transform: scale(1.15); }
+  .progress-line {
+    width: 20px; height: 3px;
+    background: #D0D8E4;
+    border-radius: 2px;
+  }
+  .progress-line.done { background: var(--green); }
+
+  .step-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+    overflow: hidden;
+    transition: opacity 0.3s;
+  }
+  .step-card.inactive { opacity: 0.45; pointer-events: none; }
+  .step-card.completed { opacity: 1; }
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    background: var(--light-blue);
+    border-bottom: 2px solid var(--blue);
+    cursor: pointer;
+  }
+  .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--blue);
+    color: var(--white);
+    font-weight: 700;
+    font-size: 0.95em;
+    flex-shrink: 0;
+  }
+  .step-number.done { background: var(--green); }
+  .step-title-wrap { flex: 1; }
+  .step-title { font-weight: 700; font-size: 1.05em; color: var(--navy); }
+  .step-subtitle { font-size: 0.82em; color: var(--gray); margin-top: 2px; }
+  .step-body { padding: 18px; }
+
+  .option-group { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border: 2px solid #D0D8E4;
+    border-radius: 8px;
+    background: var(--white);
+    font-size: 0.96em;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: left;
+    color: #222;
+    font-family: inherit;
+    width: 100%;
+    line-height: 1.5;
+  }
+  .option-btn:hover { border-color: var(--blue); background: var(--light-blue); }
+  .option-btn.selected {
+    border-color: var(--blue);
+    background: var(--light-blue);
+    font-weight: 700;
+  }
+  .option-btn .icon { font-size: 1.2em; flex-shrink: 0; width: 28px; text-align: center; }
+
+  .checklist { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--light-gray);
+    cursor: pointer;
+    transition: background 0.15s;
+    user-select: none;
+    font-size: 0.94em;
+    line-height: 1.5;
+  }
+  .check-item:hover { background: #E0E8F0; }
+  .check-item.checked { background: #D6EAF8; font-weight: 600; }
+  .check-item input[type="checkbox"] {
+    width: 18px; height: 18px;
+    accent-color: var(--blue);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+  .check-item label { cursor: pointer; flex: 1; }
+
+  .result-panel {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(26,82,118,0.15);
+    overflow: hidden;
+    margin-top: 24px;
+    display: none;
+  }
+  .result-panel.show { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  .result-header {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--navy), var(--blue));
+    color: var(--white);
+    font-weight: 700;
+    font-size: 1.15em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .result-body { padding: 20px; }
+
+  .dx-card {
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    position: relative;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .dx-card.high { border-color: var(--red); background: #FFF5F5; }
+  .dx-card.moderate { border-color: var(--orange); background: #FFF8F0; }
+  .dx-card.low { border-color: #B0BEC5; background: var(--light-gray); }
+  .dx-card.very_low { border-color: #E0E0E0; background: #FAFAFA; }
+
+  .dx-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .dx-name {
+    font-weight: 700;
+    font-size: 1.06em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    min-width: 200px;
+  }
+  .prob-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.78em;
+    font-weight: 700;
+    color: var(--white);
+    flex-shrink: 0;
+  }
+  .dx-card.high .prob-badge { background: var(--red); }
+  .dx-card.moderate .prob-badge { background: var(--orange); }
+  .dx-card.low .prob-badge { background: var(--gray); }
+  .dx-card.very_low .prob-badge { background: #BDBDBD; }
+
+  .category-label {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.76em;
+    font-weight: 700;
+    margin-top: 6px;
+    margin-bottom: 4px;
+  }
+  .cat-preanalytical { background: #EBF5FB; color: #1B4F72; }
+  .cat-hepatic { background: #FDEDEC; color: #A93226; }
+  .cat-transient { background: #E8F8F5; color: #117864; }
+  .cat-drug { background: #FEF9E7; color: #9A7D0A; }
+  .cat-bypass { background: #F5EEF8; color: #6C3483; }
+  .cat-metabolic { background: #FDEBD0; color: #AF601A; }
+
+  .dx-detail {
+    font-size: 0.9em;
+    color: #333;
+    line-height: 1.65;
+    margin-top: 8px;
+    display: none;
+  }
+  .dx-detail.open { display: block; }
+  .dx-detail strong { color: var(--navy); }
+
+  .dx-workup {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #ccc;
+    font-size: 0.88em;
+    color: var(--navy);
+    line-height: 1.55;
+    display: none;
+  }
+  .dx-workup.open { display: block; }
+
+  .dx-toggle {
+    font-size: 0.82em;
+    color: var(--blue);
+    margin-top: 4px;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  .next-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    padding: 10px 22px;
+    background: var(--blue);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: inherit;
+  }
+  .next-btn:hover { background: var(--navy); }
+
+  .reset-btn {
+    display: block;
+    margin: 24px auto 0;
+    padding: 10px 32px;
+    background: var(--white);
+    color: var(--red);
+    border: 2px solid var(--red);
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .reset-btn:hover { background: var(--red); color: var(--white); }
+
+  .hint {
+    font-size: 0.85em;
+    color: var(--gray);
+    margin-bottom: 8px;
+    line-height: 1.5;
+  }
+
+  .algo-note {
+    background: #FFFDE7;
+    border-left: 4px solid var(--yellow);
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 18px;
+    font-size: 0.89em;
+    line-height: 1.65;
+    color: #444;
+  }
+  .algo-note strong { color: var(--navy); }
+
+  .conv-bar {
+    background: var(--white);
+    border: 1px solid #D0D8E4;
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    margin-bottom: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.88em;
+    box-shadow: var(--shadow);
+  }
+  .conv-bar strong { color: var(--navy); }
+  .conv-input {
+    width: 96px;
+    padding: 6px 10px;
+    border: 1px solid #B0BEC5;
+    border-radius: 6px;
+    font-size: 0.95em;
+    text-align: right;
+  }
+  .conv-result {
+    font-weight: 700;
+    color: var(--blue);
+    background: var(--light-blue);
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+
+  .alert-box {
+    background: #FFF3CD;
+    border: 2px solid var(--orange);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    font-size: 0.91em;
+    line-height: 1.65;
+  }
+  .alert-box.danger {
+    background: #F8D7DA;
+    border-color: var(--red);
+  }
+  .alert-box .alert-title {
+    font-weight: 700;
+    color: var(--red);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .summary-box {
+    background: var(--light-blue);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    font-size: 0.9em;
+    line-height: 1.65;
+  }
+  .summary-box .summary-title {
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .step-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.86em;
+    margin-top: 8px;
+    background: var(--white);
+  }
+  .step-table th, .step-table td {
+    border: 1px solid #CFD8DC;
+    padding: 8px 10px;
+    text-align: left;
+    vertical-align: top;
+  }
+  .step-table th {
+    background: var(--navy);
+    color: var(--white);
+    white-space: nowrap;
+  }
+
+  .red-flag-box {
+    background: #F8D7DA;
+    border: 2px solid var(--red);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 16px;
+    font-size: 0.89em;
+    line-height: 1.65;
+  }
+  .red-flag-box .rf-title {
+    font-weight: 700;
+    color: var(--red);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .red-flag-box ul { padding-left: 20px; margin-top: 4px; }
+  .red-flag-box li { margin-bottom: 4px; }
+
+  .ref-box {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid #D0D8E4;
+    font-size: 0.8em;
+    color: #555;
+    line-height: 1.6;
+  }
+  .ref-box ol { padding-left: 20px; margin-top: 6px; }
+  .ref-box li { margin-bottom: 4px; }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.3em; }
+    .step-body, .result-body { padding: 14px; }
+    .dx-card { padding: 12px; }
+    .progress-dot { width: 26px; height: 26px; font-size: 0.72em; }
+    .progress-line { width: 10px; }
+    .conv-bar { font-size: 0.82em; }
+  }
+</style>
+</head>
+<body>
+<nav id="ics-globalnav" style="background:#15324E;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
+<div style="max-width:1040px;margin:0 auto;padding:8px 12px;display:flex;align-items:center;gap:2px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;">
+<a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;padding-right:8px;">医知創造ラボ</a>
+<a href="https://ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ホーム</a>
+<a href="https://blog.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ブログ</a>
+<a href="https://tools.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ツール</a>
+<a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">YouTube</a>
+</div>
+</nav>
+
+<header>
+  <div class="back-bar"><a href="index.html">‹ ツール一覧</a></div>
+  <h1>高アンモニア血症 鑑別診断ツール</h1>
+  <p>「アンモニア高値＝肝性脳症」と決めつけないための系統的アプローチ</p>
+  <div class="header-links">
+    <a href="https://blog.ichisouzo-lab.com/entry/2026/10/21/084039" target="_blank" rel="noopener">📝 解説ブログ記事を読む</a>
+    <a href="infographics/hyperammonemia-differential/" target="_blank" rel="noopener">🖼️ 早見インフォグラフィック</a>
+  </div>
+</header>
+
+<div class="container">
+  <div class="conv-bar">
+    <strong>🔄 単位換算（分子量 17.03）：</strong>
+    <label>μg/dL <input type="number" id="ugInput" class="conv-input" placeholder="例: 100" oninput="convertFromUg(this.value)"></label>
+    <span>⇄</span>
+    <label>μmol/L <input type="number" id="umolInput" class="conv-input" placeholder="例: 58.7" oninput="convertFromUmol(this.value)"></label>
+    <span id="convNote" class="conv-result">1 μg/dL ≈ 0.587 μmol/L（100 μmol/L ≈ 170 μg/dL）</span>
+  </div>
+  <div id="app"></div>
+</div>
+
+<script>
+// ===== 単位換算 =====
+function convertFromUg(val) {
+  var umolEl = document.getElementById("umolInput");
+  var noteEl = document.getElementById("convNote");
+  var num = parseFloat(val);
+  if (isNaN(num) || val === "") {
+    umolEl.value = "";
+    noteEl.textContent = "1 μg/dL ≈ 0.587 μmol/L（100 μmol/L ≈ 170 μg/dL）";
+    return;
+  }
+  var umol = (num * 0.5872).toFixed(1);
+  umolEl.value = umol;
+  var stage = "";
+  if (umol >= 150) stage = " 【>150 μmol/L：腎代替療法による早期体外除去を検討】";
+  else if (umol >= 100) stage = " 【>100 μmol/L：先天代謝異常症の評価・相談を検討】";
+  else if (umol >= 60) stage = " 【60-100 μmol/L：冷却再検と原因検索・治療】";
+  noteEl.textContent = num + " μg/dL = " + umol + " μmol/L" + stage;
+}
+
+function convertFromUmol(val) {
+  var ugEl = document.getElementById("ugInput");
+  var noteEl = document.getElementById("convNote");
+  var num = parseFloat(val);
+  if (isNaN(num) || val === "") {
+    ugEl.value = "";
+    noteEl.textContent = "1 μg/dL ≈ 0.587 μmol/L（100 μmol/L ≈ 170 μg/dL）";
+    return;
+  }
+  var ug = (num / 0.5872).toFixed(0);
+  ugEl.value = ug;
+  var stage = "";
+  if (num >= 150) stage = " 【>150 μmol/L：腎代替療法による早期体外除去を検討】";
+  else if (num >= 100) stage = " 【>100 μmol/L：先天代謝異常症の評価・相談を検討】";
+  else if (num >= 60) stage = " 【60-100 μmol/L：冷却再検と原因検索・治療】";
+  noteEl.textContent = num + " μmol/L ≈ " + ug + " μg/dL" + stage;
+}
+
+// ===== 疾患データ =====
+var DISEASES = {
+  pseudo: {
+    name: "偽性高アンモニア血症（検体取扱いの問題）",
+    emoji: "🧪",
+    category: "測定前誤差（Pre-analytical）",
+    catClass: "cat-preanalytical",
+    detail: "室温放置や搬送遅延により試験管内でアミノ酸の脱アミノ化が進み、見かけ上の高値を生じる。溶血・駆血帯の長時間使用・激しい運動直後（2時間以内）・食後（4時間以内）も影響する。<strong>臨床像（意識清明など）と検査値が乖離するときは最初に疑う</strong>（Ballester 2024 / Sakusic 2018）。",
+    workup: "冷却したEDTA管に採血し、ベッドサイドで直ちに氷冷して30〜60分以内に再測定。施設基準上限との比（AMM-ULN）も参考にする。"
+  },
+  hepatic: {
+    name: "肝性脳症（非代償性肝硬変・急性肝不全）",
+    emoji: "🫀",
+    category: "肝性（クリアランス低下＋シャント）",
+    catClass: "cat-hepatic",
+    detail: "肝細胞機能不全と門脈大循環シャントによりアンモニアが上昇する。<strong>血中アンモニア正常値は顕性肝性脳症に対する陰性的中率が高く</strong>、肝硬変患者の意識障害でアンモニアが正常なら他の原因を調べ直す。一方、単回の高値だけで肝性脳症の診断は決まらず重症度とも一対一には対応しない。30%では誘因が特定されない（Ballester 2024）。",
+    workup: "誘因検索（消化管出血・感染・便秘・脱水・向精神薬・電解質異常）、PT-INR・ビリルビン・アルブミン、腹部画像。治療は誘因是正＋ラクツロース・リファキシミン等。"
+  },
+  postictal: {
+    name: "全般性けいれん発作後の一過性高アンモニア血症",
+    emoji: "⚡",
+    category: "非肝性・産生増加（一過性）",
+    catClass: "cat-transient",
+    detail: "激しい骨格筋収縮に伴うATP消費とAMP脱アミノ化によりアンモニアが一過性に急上昇する。持続ビデオ脳波で確定した研究では<strong>発作後15〜60分の有意な上昇は全般性けいれん発作のみでみられ（カットオフ≧80 μmol/Lで感度53.9%・特異度100%、AUC 0.88）</strong>、焦点発作や心因性非てんかん発作（PNES）では上昇しなかった（Albadareen 2016）。通常は特別なアンモニア低下薬なしで<strong>24〜48時間以内に自然低下</strong>する（Puppala 2025）。",
+    workup: "意識の順調な回復を確認し、24〜48時間後にアンモニア再検でベースラインへの低下を確認。意識障害が遷延・アンモニアが再上昇する場合は他の非肝性原因やNCSE・潜在性UCDを再検索。"
+  },
+  vpa: {
+    name: "バルプロ酸（VPA）誘発性高アンモニア血症",
+    emoji: "💊",
+    category: "非肝性・薬剤性（代謝阻害）",
+    catClass: "cat-drug",
+    detail: "VPAによる尿素サイクル律速段階（N-アセチルグルタミン酸）の直接阻害およびカルニチン欠乏で生じる。<strong>肝機能やVPA血中濃度が正常でも発症しうる</strong>。精神科入院患者347人の研究では36%に高アンモニア血症を認めたが<strong>症候性は43.2%にとどまり、無症候例でのルーチン測定や数値のみでのVPA中止は不要</strong>とされる。危険因子は<strong>トピラマート併用</strong>・潜在する尿素サイクル異常症・カルニチン欠乏・知的障害（Baddour 2018）。",
+    workup: "傾眠・錯乱・嘔吐・発作増悪など症候性の場合やトピラマート併用時に評価。症候性では被疑薬（VPA）中止を第一に検討（退院時正常化率56.3%）し、レボカルニチン補充（50%）やラクツロース（41.8%）を併用。"
+  },
+  other_drugs: {
+    name: "その他の薬剤性高アンモニア血症（5-FU・アスパラギナーゼ・ステロイド等）",
+    emoji: "💉",
+    category: "非肝性・薬剤性",
+    catClass: "cat-drug",
+    detail: "フルオロウラシル（5-FU：代謝産物フルオロ酢酸によるATP産生・TCAサイクル阻害）、アスパラギナーゼ（アスパラギン加水分解によるアンモニア産生増加）、カルバマゼピン・フェニトイン・フェノバルビタール・リスペリドン、副腎皮質ステロイド（蛋白異化亢進・遅発型OTCDの誘発）などで生じる。",
+    workup: "直近の化学療法・免疫抑制薬・新規薬剤の投与歴確認、血液ガス・乳酸、被疑薬の中止・減量検討と支持療法。"
+  },
+  obstructive_uti: {
+    name: "閉塞性尿路感染症（ウレアーゼ産生菌）",
+    emoji: "🦠",
+    category: "非肝性・産生増加＋肝バイパス",
+    catClass: "cat-bypass",
+    detail: "Proteus属・Klebsiella属・Morganella属・Corynebacterium urealyticum等のウレアーゼ産生菌が尿中尿素を加水分解してアンモニアを産生し、<strong>強アルカリ尿（pH高値）</strong>となる。ここに<strong>尿閉・高度残尿による膀胱拡張</strong>が加わると、膀胱静脈叢から門脈を介さず直接体循環へアンモニアが流入し、肝臓が正常でも急性脳症を起こす。<strong>NCSEと誤診してバルプロ酸を追加すると急激に悪化するピットフォール</strong>がある（Lee 2023）。",
+    workup: "尿定性（pH強アルカリ・亜硝酸塩・白血球）・尿沈渣・尿培養、膀胱エコー/腹部CT（残尿・膀胱拡張・水腎症の評価）。治療は速やかな膀胱カテーテル留置（減圧）＋感受性のある抗菌薬投与。"
+  },
+  pss: {
+    name: "非肝硬変性 門脈大循環シャント（＋高度便秘・腸閉塞）",
+    emoji: "🔀",
+    category: "非肝性・解剖学的バイパス",
+    catClass: "cat-bypass",
+    detail: "先天性または後天性の門脈-肝静脈/下大静脈シャントにより、腸管内で発生したアンモニアが肝臓をバイパスして体循環へ流入する。<strong>高度の便秘や宿便性腸閉塞</strong>が重なるとアンモニアが著明高値（>600 μmol/Lの報告あり）に達し、難治性てんかん重積状態やアストロサイトのグルタミン蓄積による<strong>びまん性脳浮腫</strong>を招きうる（Kawakami 2023）。",
+    workup: "腹部造影CT・ドプラエコーによるシャント血管および腸閉塞・宿便の評価。治療は腸管減圧・排便コントロール・ラクツロース/リファキシミン、適応があればIVR（シャント塞栓術）や外科的介入。"
+  },
+  otcd: {
+    name: "遅発型尿素サイクル異常症（OTCDなど）",
+    emoji: "🧬",
+    category: "非肝性・先天代謝異常症",
+    catClass: "cat-metabolic",
+    detail: "最も頻度が高いX連鎖性オルニチントランスカルバミラーゼ欠損症（OTCD）は<strong>70%が生後28日以降の遅発型</strong>であり、男女（ヘテロ接合体女性を含む）ともに成人期に急性脳症・けいれん・精神行動異常で初発しうる。<strong>産褥期（特に分娩後3日以内）・ステロイド・絶食/急激な減量・高蛋白負荷・肥満手術後・VPA開始</strong>が誘因となり、<strong>無意識の蛋白嫌悪（肉を避ける・菜食傾向）</strong>が重要な病歴の手がかり。初発から診断まで中央値5年の遅れがあり、<strong>ラクツロース単独では改善しない</strong>（Konczal 2026）。",
+    workup: "血漿アミノ酸分析（グルタミン著増＞800 μmol/L、シトルリン・アルギニン評価）、尿中オロト酸、遺伝子検査（約15%は通常の遺伝子検査で検出されず）。※非発作時の単回アンモニア正常値では否定できない。治療は蛋白負荷中止・ブドウ糖＋脂質による異化抑制・窒素スカベンジャー・血液浄化療法・遺伝代謝専門医への早期相談。"
+  },
+  renal_gi: {
+    name: "腎不全・消化管出血・高腫瘍量・重度異化亢進（ICU複合要因）",
+    emoji: "🏥",
+    category: "非肝性・全身性/複合要因",
+    catClass: "cat-metabolic",
+    detail: "ICUの非肝性高アンモニア血症（Sakusic 2018：167人）の背景では<strong>腎不全が49.1%</strong>、<strong>栄養関連因子が22%</strong>（低栄養16%・胃バイパス術後3.6%・TPN 2.4%）、<strong>高腫瘍量（多発性骨髄腫・白血病・化学療法後など）が11.3%</strong>を占める。消化管出血（血液蛋白の腸内分解）や敗血症・外傷による異化亢進もアンモニア産生を増大させる。韓国ICU研究（Kim 2021）では非肝性高アンモニア血症のグレードが高いほど90日死亡率が段階的に上昇（グレード3［>240 μg/dL］で61.0%）した。",
+    workup: "腎機能（BUN/Cr）・電解質・血液ガス、消化管出血評価、栄養・TPN組成の見直し、多発性骨髄腫/血液腫瘍の評価。基礎疾患の治療と必要に応じた腎代替療法。"
+  }
+};
+
+// ===== ステップ定義 =====
+var STEPS = [
+  {
+    id: "sample",
+    title: "Step 1：検体取扱いと測定条件（偽高値の除外）",
+    subtitle: "アンモニアは室温放置で容易に偽高値を生じます。まず採血・搬送条件を確認します",
+    type: "single",
+    options: [
+      { id: "proper", label: "冷却EDTA採血・氷冷搬送・30〜60分以内の迅速測定を確認済み（真の高値）", icon: "❄️" },
+      { id: "delayed", label: "室温放置・搬送遅延・溶血・運動直後/食後などの可能性あり（偽高値の疑い）", icon: "⚠️" },
+      { id: "unknown_sample", label: "採血・搬送条件は不明（再検と並行して鑑別を進める）", icon: "❓" }
+    ]
+  },
+  {
+    id: "level_severity",
+    title: "Step 2：アンモニア値と神経学的重症度（3段階アプローチ）",
+    subtitle: "脳浮腫と不可逆的神経障害を防ぐため、数値と意識障害の程度から初期対応の緊急度を判定します",
+    type: "single",
+    options: [
+      { id: "asymptomatic_mild", label: "無症候、または軽度上昇（＜60 μmol/L［約100 μg/dL未満］）", icon: "🟢" },
+      { id: "mod_60_100", label: "60〜100 μmol/L（約100〜170 μg/dL）＋ 軽度〜中等度の傾眠・錯乱", icon: "🟡" },
+      { id: "high_100_150", label: "＞100 μmol/L（約170 μg/dL超）＋ 急性脳症・意識変容（代謝異常症も念頭に置く領域）", icon: "🟠" },
+      { id: "critical_150", label: "＞150 μmol/L（約255 μg/dL超）または急速進行する昏睡・てんかん重積・脳浮腫徴候", icon: "🚨" }
+    ]
+  },
+  {
+    id: "liver_status",
+    title: "Step 3：肝疾患・門脈圧亢進症の背景",
+    subtitle: "急性・慢性の肝不全があるか、非肝性高アンモニア血症（NHH）かを分岐します",
+    type: "single",
+    options: [
+      { id: "cirrhosis_alf", label: "非代償性肝硬変・急性肝不全・重度肝障害あり（黄疸・腹水・PT-INR延長・トランスアミナーゼ著増など）", icon: "🫀" },
+      { id: "no_liver_disease", label: "肝機能は正常〜軽度異常のみで、急性・慢性肝不全の所見なし（非肝性高アンモニア血症）", icon: "🔍" },
+      { id: "shunt_known", label: "肝硬変はないが、先天性/後天性の門脈大循環シャントが既知または疑われる", icon: "🔀" }
+    ]
+  },
+  {
+    id: "seizure_neuro",
+    title: "Step 4：けいれん発作と意識の推移",
+    subtitle: "全般性けいれん直後の一過性上昇か、遷延する脳症・NCSE誤診リスクかを評価します",
+    type: "single",
+    options: [
+      { id: "post_gtcs_recovering", label: "全般性強直間代発作（全身けいれん）直後（特に15分〜8時間以内）で、意識は順調に回復傾向", icon: "⚡" },
+      { id: "post_seizure_prolonged", label: "けいれん発作後だが、意識障害が遷延 / 24時間後もアンモニアが低下しない・再上昇する", icon: "⏳" },
+      { id: "focal_or_pnes", label: "焦点発作のみ、または心因性非てんかん発作（PNES）疑い（※通常これら単独ではアンモニアは上昇しない）", icon: "🧠" },
+      { id: "encephalopathy_no_conv", label: "明らかな全身けいれんを伴わない急性意識障害・せん妄・精神行動異常・三相波/律動性デルタ波", icon: "💭" }
+    ]
+  },
+  {
+    id: "medications",
+    title: "Step 5：薬剤歴・化学療法（該当するものをすべて選択）",
+    subtitle: "バルプロ酸をはじめとする尿素サイクル阻害薬・異化亢進薬を確認します",
+    type: "multi",
+    options: [
+      { id: "vpa_use", label: "バルプロ酸（VPA）を投与中（新規開始・増量・長期投与すべて含む）", icon: "💊" },
+      { id: "topiramate_carnitine", label: "トピラマート併用、またはカルニチン欠乏リスク（知的障害・重症心身障害・経管栄養など）", icon: "⚠️" },
+      { id: "steroid_use", label: "副腎皮質ステロイドの投与・増量（異化亢進・遅発型OTCDの誘因）", icon: "💉" },
+      { id: "chemo_use", label: "5-FU（フルオロウラシル）、アスパラギナーゼ、または多剤化学療法中", icon: "🧪" },
+      { id: "other_asm", label: "その他の抗てんかん発作薬（カルバマゼピン・フェニトイン・フェノバルビタール等）", icon: "💊" }
+    ]
+  },
+  {
+    id: "uti_gi_shunt",
+    title: "Step 6：尿路・消化管・腎・腫瘍の所見（該当するものをすべて選択）",
+    subtitle: "高齢者やICUで見逃しやすい「肝バイパス経路」と「産生増加・排泄低下」を確認します",
+    type: "multi",
+    options: [
+      { id: "urinary_retention_alkaline", label: "尿閉・高度残尿・膀胱拡張 ＋ アルカリ尿（pH高値）/ 尿路感染症（Proteus・Klebsiella等）", icon: "🦠" },
+      { id: "constipation_ileus", label: "高度の便秘・宿便性腸閉塞・消化管通過障害", icon: "🚧" },
+      { id: "portosystemic_shunt", label: "腹部エコー/造影CTで門脈大循環シャント（門脈-肝静脈/下大静脈短絡など）を認める", icon: "🔀" },
+      { id: "gi_bleeding", label: "消化管出血（吐血・黒色便・血便・貧血進行）", icon: "🩸" },
+      { id: "aki_ckd", label: "急性腎障害（AKI）または慢性腎不全（CKD）", icon: "🫘" },
+      { id: "high_tumor", label: "多発性骨髄腫・白血病・悪性リンパ腫などの高腫瘍量", icon: "🔬" }
+    ]
+  },
+  {
+    id: "metabolic_clues",
+    title: "Step 7：遅発型尿素サイクル異常症（OTCD等）・栄養の手がかり",
+    subtitle: "成人期にも初発する遅発型OTCDの誘因と病歴をスクリーニングします",
+    type: "multi",
+    options: [
+      { id: "postpartum", label: "妊娠・産褥期（特に分娩後3日以内の急性脳症・精神症状）", icon: "🤱" },
+      { id: "fasting_catabolism", label: "絶食・経口摂取不良・急激な減量・重度感染症・手術侵襲", icon: "📉" },
+      { id: "protein_load_tpn", label: "高蛋白負荷（プロテイン・焼肉等）または完全静脈栄養（TPN）・アミノ酸製剤投与", icon: "🥩" },
+      { id: "bariatric_surgery", label: "肥満手術（ルーワイ胃バイパス術など）の既往・低栄養", icon: "🏥" },
+      { id: "protein_aversion", label: "以前から肉や高蛋白食を避けていた（食後の頭痛・嘔気・倦怠感、菜食傾向）", icon: "🥗" },
+      { id: "family_episodic", label: "原因不明の脳症・精神症状・けいれんの反復歴、または家族歴", icon: "🧬" }
+    ]
+  }
+];
+
+// ===== スコアリングロジック =====
+function calcScores(answers) {
+  var scores = {};
+  var keys = Object.keys(DISEASES);
+  var i;
+  for (i = 0; i < keys.length; i++) {
+    scores[keys[i]] = 0;
+  }
+
+  // Step 1: 検体条件
+  var smp = answers.sample;
+  if (smp === "delayed") {
+    scores.pseudo += 9;
+  } else if (smp === "unknown_sample") {
+    scores.pseudo += 4;
+  } else if (smp === "proper") {
+    scores.pseudo -= 6;
+  }
+
+  // Step 2: 重症度・数値
+  var sev = answers.level_severity;
+  if (sev === "asymptomatic_mild") {
+    scores.pseudo += 4;
+    scores.vpa += 4;
+    scores.postictal += 2;
+    scores.otcd -= 1;
+  } else if (sev === "mod_60_100") {
+    scores.postictal += 4;
+    scores.vpa += 3;
+    scores.hepatic += 3;
+    scores.renal_gi += 3;
+    scores.obstructive_uti += 2;
+  } else if (sev === "high_100_150") {
+    scores.otcd += 4;
+    scores.obstructive_uti += 4;
+    scores.pss += 4;
+    scores.hepatic += 3;
+    scores.vpa += 3;
+    scores.renal_gi += 3;
+    scores.pseudo -= 2;
+  } else if (sev === "critical_150") {
+    scores.otcd += 6;
+    scores.pss += 6;
+    scores.obstructive_uti += 5;
+    scores.hepatic += 4;
+    scores.other_drugs += 3;
+    scores.pseudo -= 4;
+  }
+
+  // Step 3: 肝疾患背景
+  var liv = answers.liver_status;
+  if (liv === "cirrhosis_alf") {
+    scores.hepatic += 9;
+  } else if (liv === "no_liver_disease") {
+    scores.hepatic -= 6;
+    scores.postictal += 2;
+    scores.vpa += 2;
+    scores.obstructive_uti += 2;
+    scores.pss += 2;
+    scores.otcd += 2;
+    scores.renal_gi += 2;
+  } else if (liv === "shunt_known") {
+    scores.pss += 7;
+    scores.hepatic -= 3;
+  }
+
+  // Step 4: けいれん・意識推移
+  var sz = answers.seizure_neuro;
+  if (sz === "post_gtcs_recovering") {
+    scores.postictal += 8;
+    scores.otcd -= 1;
+  } else if (sz === "post_seizure_prolonged") {
+    scores.otcd += 4;
+    scores.vpa += 3;
+    scores.obstructive_uti += 3;
+    scores.pss += 3;
+    scores.postictal -= 3;
+  } else if (sz === "focal_or_pnes") {
+    scores.postictal -= 6;
+    scores.pseudo += 2;
+    scores.vpa += 2;
+    scores.otcd += 2;
+  } else if (sz === "encephalopathy_no_conv") {
+    scores.hepatic += 2;
+    scores.obstructive_uti += 3;
+    scores.pss += 3;
+    scores.vpa += 2;
+    scores.otcd += 3;
+    scores.postictal -= 6;
+  }
+
+  // Step 5: 薬剤歴
+  var meds = answers.medications || [];
+  for (i = 0; i < meds.length; i++) {
+    if (meds[i] === "vpa_use") {
+      scores.vpa += 8;
+      scores.otcd += 2; // VPAは遅発型OTCDの顕在化誘因にもなる
+    }
+    if (meds[i] === "topiramate_carnitine") {
+      scores.vpa += 4;
+    }
+    if (meds[i] === "steroid_use") {
+      scores.otcd += 4;
+      scores.other_drugs += 3;
+      scores.renal_gi += 2;
+    }
+    if (meds[i] === "chemo_use") {
+      scores.other_drugs += 8;
+      scores.otcd += 2;
+    }
+    if (meds[i] === "other_asm") {
+      scores.other_drugs += 4;
+    }
+  }
+
+  // Step 6: 尿路・消化管・解剖・全身
+  var ugs = answers.uti_gi_shunt || [];
+  for (i = 0; i < ugs.length; i++) {
+    if (ugs[i] === "urinary_retention_alkaline") {
+      scores.obstructive_uti += 9;
+    }
+    if (ugs[i] === "constipation_ileus") {
+      scores.pss += 5;
+      scores.hepatic += 3;
+    }
+    if (ugs[i] === "portosystemic_shunt") {
+      scores.pss += 8;
+    }
+    if (ugs[i] === "gi_bleeding") {
+      scores.hepatic += 4;
+      scores.renal_gi += 5;
+      scores.pss += 2;
+    }
+    if (ugs[i] === "aki_ckd") {
+      scores.renal_gi += 6;
+    }
+    if (ugs[i] === "high_tumor") {
+      scores.renal_gi += 6;
+      scores.other_drugs += 2;
+    }
+  }
+
+  // Step 7: 代謝異常・栄養の手がかり
+  var met = answers.metabolic_clues || [];
+  for (i = 0; i < met.length; i++) {
+    if (met[i] === "postpartum") {
+      scores.otcd += 7;
+    }
+    if (met[i] === "fasting_catabolism") {
+      scores.otcd += 4;
+      scores.renal_gi += 3;
+    }
+    if (met[i] === "protein_load_tpn") {
+      scores.otcd += 5;
+      scores.renal_gi += 4;
+    }
+    if (met[i] === "bariatric_surgery") {
+      scores.otcd += 5;
+      scores.renal_gi += 4;
+    }
+    if (met[i] === "protein_aversion") {
+      scores.otcd += 8;
+    }
+    if (met[i] === "family_episodic") {
+      scores.otcd += 6;
+    }
+  }
+
+  return scores;
+}
+
+function getProbLevel(score, maxScore) {
+  if (maxScore <= 0) return "very_low";
+  var ratio = score / maxScore;
+  if (ratio >= 0.65 && score >= 5) return "high";
+  if (ratio >= 0.35 && score >= 3) return "moderate";
+  if (score >= 2) return "low";
+  return "very_low";
+}
+
+function getProbLabel(level) {
+  if (level === "high") return "可能性 高";
+  if (level === "moderate") return "可能性 中";
+  if (level === "low") return "可能性 低";
+  return "可能性 極低";
+}
+
+// ===== UI状態 =====
+var app = document.getElementById("app");
+var currentStep = 0;
+var answers = {};
+
+function render() {
+  var html = "";
+  var i, j, step, opt, isActive, isDone, cls, selected, checked, currentAnswers;
+
+  // アルゴリズムノート
+  html += '<div class="algo-note">';
+  html += '<strong>💡 鑑別の4原則：</strong><br>';
+  html += '<strong>① 測定条件の確認：</strong>室温放置や搬送遅延による偽高値を除外（冷却EDTA管・氷冷・30〜60分以内の測定が鉄則）。<br>';
+  html += '<strong>② 肝硬変での解釈：</strong>アンモニア正常は顕性肝性脳症に対する陰性的中率が高い（正常なら他原因を検索）。一方、高値単独では肝性脳症の診断は決まらない。<br>';
+  html += '<strong>③ 非肝性原因の整理：</strong>けいれん後（一過性）・バルプロ酸・閉塞性尿路感染（ウレアーゼ産生菌）・門脈大循環シャント・遅発型OTCDを系統的に確認。<br>';
+  html += '<strong>④ 重症例の段階的対応：</strong>＞100 μmol/Lで先天代謝異常症の評価・相談、＞150 μmol/Lで腎代替療法による早期体外除去を並行検討。';
+  html += '</div>';
+
+  // プログレスバー
+  html += '<div class="progress-bar">';
+  for (i = 0; i < STEPS.length; i++) {
+    if (i > 0) {
+      html += '<div class="progress-line' + (i <= currentStep ? ' done' : '') + '"></div>';
+    }
+    var dotCls = "";
+    if (i < currentStep) dotCls = " done";
+    else if (i === currentStep) dotCls = " active";
+    html += '<div class="progress-dot' + dotCls + '" onclick="jumpToStep(' + i + ')">';
+    if (i < currentStep) {
+      html += '&#10003;';
+    } else {
+      html += (i + 1);
+    }
+    html += '</div>';
+  }
+  html += '</div>';
+
+  // 各ステップ
+  for (i = 0; i < STEPS.length; i++) {
+    step = STEPS[i];
+    isActive = (i === currentStep);
+    isDone = (i < currentStep);
+    cls = isDone ? "completed" : (isActive ? "" : "inactive");
+
+    html += '<div class="step-card ' + cls + '" id="step-' + i + '">';
+    html += '<div class="step-header" onclick="jumpToStep(' + i + ')">';
+    html += '<span class="step-number ' + (isDone ? 'done' : '') + '">' + (isDone ? '&#10003;' : (i + 1)) + '</span>';
+    html += '<div class="step-title-wrap">';
+    html += '<div class="step-title">' + step.title + '</div>';
+    if (step.subtitle) {
+      html += '<div class="step-subtitle">' + step.subtitle + '</div>';
+    }
+    html += '</div>';
+    html += '</div>';
+
+    if (isActive || isDone) {
+      html += '<div class="step-body">';
+
+      if (step.type === "single") {
+        html += '<div class="option-group">';
+        for (j = 0; j < step.options.length; j++) {
+          opt = step.options[j];
+          selected = (answers[step.id] === opt.id);
+          html += '<button class="option-btn' + (selected ? ' selected' : '') + '"';
+          html += ' onclick="selectSingle(\'' + step.id + '\', \'' + opt.id + '\', ' + i + ')"';
+          if (isDone && !isActive) html += ' disabled';
+          html += '>';
+          html += '<span class="icon">' + (opt.icon || '') + '</span><span>' + opt.label + '</span>';
+          html += '</button>';
+        }
+        html += '</div>';
+      } else {
+        currentAnswers = answers[step.id] || [];
+        html += '<div class="checklist">';
+        for (j = 0; j < step.options.length; j++) {
+          opt = step.options[j];
+          checked = false;
+          for (var k = 0; k < currentAnswers.length; k++) {
+            if (currentAnswers[k] === opt.id) { checked = true; break; }
+          }
+          html += '<div class="check-item' + (checked ? ' checked' : '') + '"';
+          html += ' onclick="toggleCheck(\'' + step.id + '\', \'' + opt.id + '\')">';
+          html += '<input type="checkbox"' + (checked ? ' checked' : '') + '>';
+          html += '<label><span class="icon" style="margin-right:6px;">' + (opt.icon || '') + '</span>' + opt.label + '</label>';
+          html += '</div>';
+        }
+        html += '</div>';
+        if (isActive) {
+          html += '<p style="font-size:0.84em;color:#666;margin:10px 0 4px;">該当する項目を選択して「次へ」を押してください（該当なしの場合はそのまま「次へ」）</p>';
+          html += '<button class="next-btn" onclick="nextStep(' + i + ')">' + (i === STEPS.length - 1 ? '鑑別結果を表示 &#9654;' : '次へ &#9654;') + '</button>';
+        }
+      }
+
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+
+  // 結果パネル
+  if (currentStep >= STEPS.length) {
+    html += renderResults();
+  }
+
+  // リセットボタン
+  if (currentStep > 0) {
+    html += '<button class="reset-btn" onclick="resetAll()">&#128260; 最初からやり直す</button>';
+  }
+
+  app.innerHTML = html;
+
+  if (currentStep >= STEPS.length) {
+    setTimeout(function() {
+      var panel = document.querySelector('.result-panel');
+      if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+}
+
+function selectSingle(stepId, value, stepIndex) {
+  answers[stepId] = value;
+  currentStep = stepIndex + 1;
+  render();
+  scrollToStep(currentStep);
+}
+
+function toggleCheck(stepId, value) {
+  if (!answers[stepId]) answers[stepId] = [];
+  var idx = -1;
+  for (var i = 0; i < answers[stepId].length; i++) {
+    if (answers[stepId][i] === value) { idx = i; break; }
+  }
+  if (idx >= 0) {
+    answers[stepId].splice(idx, 1);
+  } else {
+    answers[stepId].push(value);
+  }
+  render();
+}
+
+function nextStep(stepIndex) {
+  currentStep = stepIndex + 1;
+  render();
+  scrollToStep(currentStep);
+}
+
+function jumpToStep(idx) {
+  if (idx <= currentStep) {
+    currentStep = idx;
+    render();
+  }
+}
+
+function scrollToStep(idx) {
+  setTimeout(function() {
+    var el = document.getElementById('step-' + idx) || document.querySelector('.result-panel');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+function resetAll() {
+  var keys = Object.keys(answers);
+  for (var i = 0; i < keys.length; i++) {
+    delete answers[keys[i]];
+  }
+  currentStep = 0;
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleDetail(cardId) {
+  var detail = document.getElementById('detail-' + cardId);
+  var workup = document.getElementById('workup-' + cardId);
+  var toggle = document.getElementById('toggle-' + cardId);
+  if (detail) {
+    if (detail.className.indexOf('open') >= 0) {
+      detail.className = 'dx-detail';
+      if (workup) workup.className = 'dx-workup';
+      if (toggle) toggle.textContent = '詳細・対応を表示 ▼';
+    } else {
+      detail.className = 'dx-detail open';
+      if (workup) workup.className = 'dx-workup open';
+      if (toggle) toggle.textContent = '詳細を閉じる ▲';
+    }
+  }
+}
+
+function renderResults() {
+  var scores = calcScores(answers);
+  var entries = [];
+  var keys = Object.keys(scores);
+  var i;
+  for (i = 0; i < keys.length; i++) {
+    if (scores[keys[i]] > 0) {
+      entries.push({ id: keys[i], score: scores[keys[i]] });
+    }
+  }
+  entries.sort(function(a, b) { return b.score - a.score; });
+
+  var maxScore = entries.length > 0 ? entries[0].score : 0;
+
+  var html = '<div class="result-panel show">';
+  html += '<div class="result-header">&#128203; 高アンモニア血症 鑑別診断と初期対応</div>';
+  html += '<div class="result-body">';
+
+  // 状況別クリティカル・アラート
+  var alerts = [];
+  var sev = answers.level_severity;
+  var meds = answers.medications || [];
+  var ugs = answers.uti_gi_shunt || [];
+  var sz = answers.seizure_neuro;
+
+  if (sev === "critical_150") {
+    alerts.push('<strong>＞150 μmol/L（または重篤な脳症・てんかん重積）：</strong>脳浮腫と不可逆的な神経障害を防ぐため、原因検索・被疑薬中止・原因除去と並行して、<strong>腎代替療法（血液透析・持続血液濾過透析など）による早期の体外アンモニア除去</strong>を検討してください（Long &amp; Coursinの枠組み / Kawakami 2023）。');
+  } else if (sev === "high_100_150") {
+    alerts.push('<strong>＞100 μmol/L（急性脳症）：</strong>遅発型尿素サイクル異常症（OTCDなど）を念頭に置いた検体採取（血漿アミノ酸分析・尿中オロト酸など）と、遺伝・代謝診療チームへの早期コンサルトを検討してください。');
+  }
+
+  var hasUti = ugs.indexOf("urinary_retention_alkaline") >= 0;
+  var hasVpa = meds.indexOf("vpa_use") >= 0;
+  if (hasUti) {
+    alerts.push('<strong>閉塞性尿路感染症のピットフォール：</strong>高アンモニア脳症の前頭部律動性デルタ波や意識変容を<strong>非けいれん性てんかん重積状態（NCSE）と誤診してバルプロ酸を追加すると、アンモニアが急上昇して重篤化する</strong>報告があります（Lee 2023）。速やかな膀胱カテーテル留置（尿閉解除）と抗菌薬投与を優先してください。');
+  }
+  if (hasVpa && sev === "asymptomatic_mild") {
+    alerts.push('<strong>無症候性のバルプロ酸関連高アンモニア血症：</strong>精神科入院患者347人の研究ではVPA投与中の36%に高アンモニア血症を認めましたが、半数以上は無症候性でした（Baddour 2018）。無症候例でのルーチン測定や数値のみを理由とした直ちの中止は必須ではなく、傾眠・嘔吐・錯乱などの症状出現時やトピラマート併用時に中止・レボカルニチン補充を検討します。');
+  }
+  if (sz === "post_gtcs_recovering" && answers.liver_status === "no_liver_disease" && !hasVpa) {
+    alerts.push('<strong>全般性けいれん発作後の一過性上昇：</strong>全身けいれん直後のアンモニア上昇は骨格筋収縮に伴う一過性の産生増加で説明できることが多く、意識が順調に回復していれば特別なアンモニア低下薬なしで<strong>24〜48時間でベースラインへ自然低下</strong>します（Albadareen 2016 / Puppala 2025）。再検で低下を確認してください。');
+  }
+
+  if (alerts.length > 0) {
+    html += '<div class="alert-box' + (sev === "critical_150" || hasUti ? ' danger' : '') + '">';
+    html += '<div class="alert-title">&#128680; 臨床判断の重要ポイント</div>';
+    for (i = 0; i < alerts.length; i++) {
+      html += '<div style="margin-bottom:6px;">・' + alerts[i] + '</div>';
+    }
+    html += '</div>';
+  }
+
+  // 鑑別診断リスト
+  html += '<p style="margin-bottom:12px; color:#555; font-size:0.88em;">カードをクリックすると病態の詳細と推奨ワークアップが開きます（上位2疾患は初期表示で開いています）。</p>';
+
+  if (entries.length === 0) {
+    html += '<p style="color:var(--gray);text-align:center;padding:20px;">入力された情報からは特定の原因が強く示唆されませんでした。冷却採血での再検と基本検査（肝腎機能・尿検査・血液ガス・薬剤歴）を確認してください。</p>';
+  } else {
+    for (i = 0; i < entries.length; i++) {
+      var d = DISEASES[entries[i].id];
+      var level = getProbLevel(entries[i].score, maxScore);
+      var levelLabel = getProbLabel(level);
+      var cardId = entries[i].id;
+      var isOpen = (i < 2);
+
+      html += '<div class="dx-card ' + level + '" onclick="toggleDetail(\'' + cardId + '\')">';
+      html += '<div class="dx-top">';
+      html += '<div class="dx-name">';
+      html += '<span>' + d.emoji + '</span>';
+      html += '<span>' + d.name + '</span>';
+      html += '</div>';
+      html += '<span class="prob-badge">' + levelLabel + '</span>';
+      html += '</div>';
+
+      html += '<span class="category-label ' + d.catClass + '">' + d.category + '</span>';
+      html += '<div class="dx-toggle" id="toggle-' + cardId + '">' + (isOpen ? '詳細を閉じる ▲' : '詳細・対応を表示 ▼') + '</div>';
+      html += '<div class="dx-detail' + (isOpen ? ' open' : '') + '" id="detail-' + cardId + '">' + d.detail + '</div>';
+      html += '<div class="dx-workup' + (isOpen ? ' open' : '') + '" id="workup-' + cardId + '">&#128269; <strong>確認検査・初期対応：</strong>' + d.workup + '</div>';
+      html += '</div>';
+    }
+  }
+
+  // 原因未確定の重症例に対する3段階アプローチ表
+  html += '<div class="summary-box" style="margin-top:18px;">';
+  html += '<div class="summary-title">&#127919; 原因未確定の成人非肝性高アンモニア血症：3段階の実践的対応目安（Long &amp; Coursinの提案）</div>';
+  html += '<table class="step-table">';
+  html += '<thead><tr><th>血中アンモニア値の目安</th><th>推奨される診断・初期対応のステップ</th></tr></thead>';
+  html += '<tbody>';
+  html += '<tr><td><strong>60〜100 μmol/L</strong><br><span style="font-size:0.85em;color:#555;">（約102〜170 μg/dL）</span></td><td>冷却採血でアンモニア値を綿密にフォローアップし、疑われる原因（けいれん後、薬剤、便秘・消化管出血、尿閉・尿路感染、腎障害など）の検索と原因治療を開始する</td></tr>';
+  html += '<tr><td><strong>＞100 μmol/L</strong><br><span style="font-size:0.85em;color:#555;">（約170 μg/dL超）</span></td><td>上記に加え、先天代謝異常症（遅発型尿素サイクル異常症など）を念頭に置いた検体採取（血漿アミノ酸・尿中オロト酸など）と治療を検討し、遺伝・代謝診療チームへコンサルトする</td></tr>';
+  html += '<tr><td><strong>＞150 μmol/L</strong><br><span style="font-size:0.85em;color:#555;">（約255 μg/dL超）</span></td><td>原因検索や内科的治療・原因除去と並行して、<strong>腎代替療法（血液透析・持続血液濾過透析など）による体外からの早期アンモニア除去</strong>を検討する</td></tr>';
+  html += '</tbody></table>';
+  html += '</div>';
+
+  // 見逃し防止チェックリスト
+  html += '<div class="red-flag-box">';
+  html += '<div class="rf-title">&#9888;&#65039; 非肝性高アンモニア血症の見逃し防止チェックリスト</div>';
+  html += '<ul>';
+  html += '<li><strong>検体条件：</strong>室温放置・搬送遅延による偽高値ではないか？（冷却EDTA管・氷冷速測定で再検）</li>';
+  html += '<li><strong>尿閉＋アルカリ尿：</strong>高齢者の意識障害で膀胱拡張とウレアーゼ産生菌尿路感染を見落としていないか？</li>';
+  html += '<li><strong>NCSE誤診とVPA追加：</strong>高アンモニア脳症の脳波異常にバルプロ酸を追加して悪化させていないか？</li>';
+  html += '<li><strong>門脈大循環シャント＋便秘：</strong>肝硬変がなくてもシャント＋宿便性腸閉塞で重篤な脳浮腫を起こしうる。</li>';
+  html += '<li><strong>遅発型OTCDの手がかり：</strong>産褥期・ステロイド・絶食・高蛋白負荷後の発症や「以前から肉を避けていた（蛋白嫌悪）」病歴はないか？（ラクツロース単独では改善しない）</li>';
+  html += '</ul>';
+  html += '</div>';
+
+  // 主要文献
+  html += '<div class="ref-box">';
+  html += '<strong>📚 主な根拠文献（詳細は<a href="https://blog.ichisouzo-lab.com/entry/2026/10/21/084039" target="_blank" rel="noopener">解説ブログ記事</a>を参照）：</strong>';
+  html += '<ol>';
+  html += '<li>Ballester MP, et al. The Value of Ammonia as a Biomarker in Patients with Cirrhosis. <em>Semin Liver Dis</em>. 2024;44(3):356-368. PMID: 39095029.</li>';
+  html += '<li>Sakusic A, et al. Features of Adult Hyperammonemia Not Due to Liver Failure in the ICU. <em>Crit Care Med</em>. 2018;46(9):e897-e903. PMID: 29985210.</li>';
+  html += '<li>Kim JH, et al. Impact of non-hepatic hyperammonemia on mortality in intensive care unit patients. <em>Korean J Intern Med</em>. 2021;36(6):1347-1355. PMID: 34256430.</li>';
+  html += '<li>Albadareen R, et al. Postictal ammonia as a biomarker for electrographic convulsive seizures. <em>Epilepsia</em>. 2016;57(8):1221-1227. PMID: 27245120.</li>';
+  html += '<li>Puppala S, et al. Serum Ammonia as a Biomarker to Differentiate Between True Epileptic and Psychogenic Non-epileptic Seizures. <em>Ann Neurosci</em>. 2025. PMID: 40177522.</li>';
+  html += '<li>Baddour E, et al. Valproic acid-induced hyperammonemia: Incidence, clinical significance, and treatment management. <em>Ment Health Clin</em>. 2018;8(2):73-77. PMID: 29955549.</li>';
+  html += '<li>Lee Y, et al. Urinary-Tract-Infection Induced Noncirrhotic Hyperammonemic Encephalopathy Mimicking Nonconvulsive Status Epilepticus. <em>J Clin Neurol</em>. 2023;19(6):627-629. PMID: 37901902.</li>';
+  html += '<li>Kawakami T, et al. Severe Hyperammonemia Due to Fecal Bowel Obstruction With a Congenital Portosystemic Shunt. <em>Cureus</em>. 2023;15(7):e42452. PMID: 37637566.</li>';
+  html += '<li>Konczal L, et al. Emerging neurological and cognitive symptoms in patients with late-onset ornithine transcarbamylase deficiency. <em>Metab Brain Dis</em>. 2026;41(1):54. PMID: 41824151.</li>';
+  html += '</ol>';
+  html += '<p style="margin-top:8px;">監修：今村久司（滋賀県の脳神経内科医。京都大学医学部卒・医学博士。脳神経内科専門医・指導医、総合内科専門医・指導医、てんかん専門医・指導医）。本ツールは医療従事者向けの臨床判断補助であり、確定診断を行うものではありません。</p>';
+  html += '</div>';
+
+  html += '</div></div>';
+  return html;
+}
+
+// 初期描画
+render();
+</script>
+</body>
+</html>
