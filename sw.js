@@ -1,5 +1,14 @@
-const CACHE_NAME = 'ddx-tools-v243';
+const CACHE_NAME = 'ddx-tools-v244';
 const ASSETS = [
+  './infographics/ward-alarm-fatigue/index.html',
+  './infographics/ward-alarm-fatigue/infographic.png',
+  './infographics/hyperammonemia-differential/index.html',
+  './infographics/hyperammonemia-differential/infographic.png',
+  './infographics/japan-corporate-data-leaks/index.html',
+  './infographics/japan-corporate-data-leaks/infographic.png',
+  './infographics/lecanemab-donanemab-comparison/index.html',
+  './infographics/happiness-gemini4-argon/index.html',
+  './infographics/happiness-gemini4-argon/infographic.png',
   './infographics/poems-syndrome/index.html',
   './infographics/poems-syndrome/infographic.png',
   './infographics/lennox-gastaut-diagnosis/index.html',
