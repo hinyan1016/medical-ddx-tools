@@ -1,5 +1,9 @@
-const CACHE_NAME = 'ddx-tools-v249';
+const CACHE_NAME = 'ddx-tools-v250';
 const ASSETS = [
+  './infographics/mrhe-siadh-differential/index.html',
+  './infographics/mrhe-siadh-differential/infographic.png',
+  './infographics/core-vns/index.html',
+  './infographics/zinc-copper-low/index.html',
   './hyperammonemia.html',
   './infographics/ward-alarm-fatigue/index.html',
   './infographics/ward-alarm-fatigue/infographic.png',
