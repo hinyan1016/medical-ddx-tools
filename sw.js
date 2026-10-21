@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v247';
+const CACHE_NAME = 'ddx-tools-v248';
 const ASSETS = [
   './hyperammonemia.html',
   './infographics/ward-alarm-fatigue/index.html',
