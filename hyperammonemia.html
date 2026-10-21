@@ -686,7 +686,8 @@ var STEPS = [
       { id: "post_gtcs_recovering", label: "全般性強直間代発作（全身けいれん）直後（特に15分〜8時間以内）で、意識は順調に回復傾向", icon: "⚡" },
       { id: "post_seizure_prolonged", label: "けいれん発作後だが、意識障害が遷延 / 24時間後もアンモニアが低下しない・再上昇する", icon: "⏳" },
       { id: "focal_or_pnes", label: "焦点発作のみ、または心因性非てんかん発作（PNES）疑い（※通常これら単独ではアンモニアは上昇しない）", icon: "🧠" },
-      { id: "encephalopathy_no_conv", label: "明らかな全身けいれんを伴わない急性意識障害・せん妄・精神行動異常・三相波/律動性デルタ波", icon: "💭" }
+      { id: "encephalopathy_no_conv", label: "明らかな全身けいれんを伴わない急性意識障害・せん妄・精神行動異常・三相波/律動性デルタ波", icon: "💭" },
+      { id: "no_seizure_no_encephalopathy", label: "けいれん発作も意識障害もない（意識清明・無症候での偶発的高値や定期採血など）", icon: "✅" }
     ]
   },
   {
@@ -821,6 +822,12 @@ function calcScores(answers) {
     scores.vpa += 2;
     scores.otcd += 3;
     scores.postictal -= 6;
+  } else if (sz === "no_seizure_no_encephalopathy") {
+    scores.pseudo += 4;
+    scores.vpa += 4;
+    scores.hepatic += 1;
+    scores.pss += 1;
+    scores.postictal -= 8;
   }
 
   // Step 5: 薬剤歴
@@ -1141,7 +1148,7 @@ function renderResults() {
   if (hasUti) {
     alerts.push('<strong>閉塞性尿路感染症のピットフォール：</strong>高アンモニア脳症の前頭部律動性デルタ波や意識変容を<strong>非けいれん性てんかん重積状態（NCSE）と誤診してバルプロ酸を追加すると、アンモニアが急上昇して重篤化する</strong>報告があります（Lee 2023）。速やかな膀胱カテーテル留置（尿閉解除）と抗菌薬投与を優先してください。');
   }
-  if (hasVpa && sev === "asymptomatic_mild") {
+  if (hasVpa && (sev === "asymptomatic_mild" || sz === "no_seizure_no_encephalopathy")) {
     alerts.push('<strong>無症候性のバルプロ酸関連高アンモニア血症：</strong>精神科入院患者347人の研究ではVPA投与中の36%に高アンモニア血症を認めましたが、半数以上は無症候性でした（Baddour 2018）。無症候例でのルーチン測定や数値のみを理由とした直ちの中止は必須ではなく、傾眠・嘔吐・錯乱などの症状出現時やトピラマート併用時に中止・レボカルニチン補充を検討します。');
   }
   if (sz === "post_gtcs_recovering" && answers.liver_status === "no_liver_disease" && !hasVpa) {
