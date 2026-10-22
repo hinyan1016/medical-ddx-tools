@@ -1,5 +1,7 @@
-const CACHE_NAME = 'ddx-tools-v256';
+const CACHE_NAME = 'ddx-tools-v257';
 const ASSETS = [
+  './infographics/post-cardiac-arrest-prognosis/index.html',
+  './infographics/post-cardiac-arrest-prognosis/infographic.png',
   './infographics/post-cardiac-arrest-legacy/index.html',
   './infographics/aseptic-meningitis-treatment/index.html',
   './infographics/aseptic-meningitis-treatment/infographic.png',
