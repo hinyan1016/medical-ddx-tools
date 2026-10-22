@@ -1,5 +1,9 @@
-const CACHE_NAME = 'ddx-tools-v260';
+const CACHE_NAME = 'ddx-tools-v261';
 const ASSETS = [
+  './infographics/benzodiazepine-withdrawal/index.html',
+  './infographics/benzodiazepine-withdrawal/infographic.png',
+  './infographics/herpes-zoster-vaccine-comparison/index.html',
+  './infographics/herpes-zoster-vaccine-comparison/infographic.png',
   './infographics/post-cardiac-arrest-prognosis/index.html',
   './infographics/post-cardiac-arrest-prognosis/infographic.png',
   './infographics/post-cardiac-arrest-legacy/index.html',
