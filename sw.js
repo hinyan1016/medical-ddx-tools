@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v251';
+const CACHE_NAME = 'ddx-tools-v252';
 const ASSETS = [
   './infographics/php-vulnerability-clinic/index.html',
   './infographics/php-vulnerability-clinic/infographic.png',
