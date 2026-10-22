@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update().catch(function(){})})}).catch(function(){});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A5276">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="description" content="成人の心停止蘇生後に、神経学的予後評価の時期・交絡因子・検査所見を整理する医療従事者向け支援ツール。ERC/ESICM 2025を軸にAHA 2025・NCS 2023の注意点を併記。">
+<title>蘇生後の脳機能予後判定支援ツール｜医知創造ラボ</title>
+<style>
+:root{--navy:#1a5276;--ink:#183349;--muted:#526878;--line:#cddce5;--teal:#216e67;--paper:#f2f6f8;--amber:#805719;--red:#963b36}*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:18px}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.75 -apple-system,BlinkMacSystemFont,"Yu Gothic","Meiryo",sans-serif}a{color:var(--navy);text-underline-offset:3px}button,input,select,textarea{font:inherit}button,a,input,select,summary,textarea{touch-action:manipulation}button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible,textarea:focus-visible{outline:3px solid #c67a17;outline-offset:3px}.wrap{max-width:1240px;margin:auto;padding:22px 28px 45px}header{background:var(--navy);color:#fff}header .wrap{padding-top:24px;padding-bottom:30px}header a{color:#e8f4fc;font-size:.85rem}.eyebrow{font-size:.78rem;letter-spacing:.07em;margin:20px 0 5px;color:#d7eaf4}h1{font-size:clamp(1.65rem,3vw,2.35rem);line-height:1.45;margin:0 0 10px}header p{max-width:840px;margin:0;color:#eef7fb}.badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}.badge{border:1px solid #92bbd1;border-radius:5px;font-size:.76rem;padding:3px 9px}.intro{padding:18px 22px;background:#fff;border-left:5px solid var(--teal);margin:22px 0}.intro p{margin:0}.intro small{display:block;color:var(--muted);margin-top:7px}.layout{display:grid;grid-template-columns:minmax(0,1fr) 370px;gap:24px;align-items:start}.maincol{min-width:0}.nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}.nav a{font-size:.88rem;text-decoration:none;background:#fff;border:1px solid var(--line);border-radius:6px;padding:7px 12px}.section{background:#fff;border:1px solid var(--line);border-radius:10px;padding:24px;margin-bottom:20px}.section h2{font-size:1.3rem;margin:0 0 7px;line-height:1.5}.num{display:inline-block;color:var(--teal);font-size:.8rem;font-weight:bold;margin-right:9px}.sub{font-size:.88rem;color:var(--muted);margin:5px 0 18px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field{min-width:0}.field label{display:block;font-weight:600;font-size:.88rem;margin:0 0 5px}.field small{display:block;font-size:.78rem;color:var(--muted);line-height:1.6;margin-top:5px}select,input[type=number]{width:100%;min-height:46px;border:1px solid #a9bdcb;border-radius:5px;background:#fff;color:var(--ink);padding:8px 9px;min-width:0}input:disabled{background:#eef2f5;color:#697e8a}.full{grid-column:1/-1}.checkgrid{display:grid;grid-template-columns:1fr;gap:12px}.checkrow{display:grid;grid-template-columns:1fr 150px;gap:14px;align-items:center;border-bottom:1px solid #e4ecf1;padding-bottom:12px}.checkrow label{font-size:.9rem;font-weight:600}.checkrow small{display:block;font-size:.78rem;font-weight:normal;color:var(--muted)}.test{border-top:1px solid var(--line);padding-top:21px;margin-top:21px}.test h3{font-size:1.08rem;margin:0 0 3px}.tag{color:var(--teal);font-size:.74rem;font-weight:normal;display:inline-block;padding:1px 7px;border-radius:4px;background:#edf7f4;margin-left:5px}.note{font-size:.84rem;color:var(--muted);margin:7px 0 14px}details{margin-top:17px;border:1px solid var(--line);border-radius:7px;padding:10px 13px}summary{cursor:pointer;color:var(--navy);font-size:.9rem;font-weight:600}details p,details li{font-size:.85rem}.result{position:sticky;top:18px;border:1px solid #b8cdd9;background:#fff;border-radius:10px;overflow:hidden}.resulttop{padding:20px 22px;background:#e8f0f5;border-top:5px solid var(--navy)}.resulttop p{margin:0;font-size:.78rem;letter-spacing:.04em;color:var(--muted)}.result h2{font-size:1.2rem;line-height:1.5;margin:6px 0 0}.resultbody{padding:17px 22px}.resultbody p{margin:0 0 13px;font-size:.89rem}.resultbody h3{font-size:.92rem;margin:19px 0 7px}.resultbody ul{margin:5px 0 14px;padding-left:20px;font-size:.83rem}.resultbody li{margin:6px 0}.result.pending .resulttop{border-color:var(--amber);background:#fff6e6}.result.discordant .resulttop{border-color:var(--red);background:#fff0ee}.result.multi .resulttop{border-color:var(--red);background:#fff0ee}.result.recovery .resulttop{border-color:var(--teal);background:#e8f5f1}.countline{font-weight:600;color:var(--navy);border-bottom:1px solid var(--line);padding-bottom:12px}.fixednote{border-top:1px solid var(--line);padding-top:14px;color:var(--muted);font-size:.8rem!important}.buttons{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}button{border:1px solid var(--navy);border-radius:5px;background:var(--navy);color:white;padding:9px 12px;cursor:pointer;font-size:.85rem}button.secondary{background:white;color:var(--navy)}textarea{width:100%;min-height:210px;padding:12px;border:1px solid var(--line);border-radius:5px;font-size:.8rem;color:var(--ink);line-height:1.7;resize:vertical}#copyStatus{font-size:.8rem;min-height:1.5em}.source-list{padding-left:22px;overflow-wrap:anywhere}.source-list li{margin:13px 0;font-size:.86rem}footer{font-size:.78rem;text-align:center;color:var(--muted);padding:12px 0}.notice{padding:11px 14px;background:#f2f7fa;border-radius:5px;font-size:.84rem}.hidden{display:none!important}.skip{position:absolute;left:-9999px}.skip:focus{position:static;background:#fff;padding:8px}noscript p{background:#fff1d7;padding:20px}@media(max-width:980px){.layout{grid-template-columns:1fr}.result{position:static}.resultbody{padding:20px}.result{margin-bottom:24px}}@media(max-width:560px){.wrap{padding:16px}.section{padding:18px}.grid{grid-template-columns:1fr}.full{grid-column:auto}.checkrow{grid-template-columns:1fr;gap:7px}.intro{padding:15px}.section h2{font-size:1.17rem}.tag{margin-left:0}.buttons button{flex:1}header .wrap{padding-top:18px}.source-list{padding-left:18px}}@media print{body{background:#fff;font-size:11pt}.wrap{max-width:none;padding:8px}.layout{display:block}.result{position:static;break-inside:avoid}.section{break-inside:avoid}.nav,.buttons,#copyStatus,.skip{display:none}header{background:#fff;color:#000}header p,header a,.eyebrow{color:#333}.badge{color:#333}select,input{border:0!important;padding:0!important;min-height:25px!important}details>*{display:block!important}.resulttop{background:#fff!important}textarea{min-height:320px}a{color:#000}}
+</style>
+</head>
+<body>
+<a class="skip" href="#assessment">入力欄へ移動</a>
+<header><div class="wrap"><a href="index.html">← 診療ツール一覧</a><p class="eyebrow">医知創造ラボ / 医療従事者向け</p><h1>蘇生後の脳機能予後判定支援</h1><p>「いま評価してよいか」を確かめ、神経所見・脳波・誘発電位・血液検査・画像をまとめます。</p><div class="badges"><span class="badge">成人・非外傷性心停止後</span><span class="badge">ERC/ESICM 2025を軸に整理</span><span class="badge">根拠確認：2026年10月22日</span></div></div></header>
+<div class="wrap"><div class="intro"><p><strong>予後判定は、時期と交絡因子の確認から。</strong> 単一所見や昏睡の持続だけでは結論を出せません。このツールは、専門チームが複数の情報を統合するための補助です。</p><small>回復確率・脳死・生命維持治療の中止適応は判定しません。入力は端末内で処理し、保存・送信しません。</small></div>
+<noscript><p>このツールにはJavaScriptが必要です。下部の参考資料をご確認ください。</p></noscript>
+<nav class="nav" aria-label="ページ内移動"><a href="#assessment">1 評価の前提</a><a href="#findings">2 検査所見</a><a href="#result">評価結果</a><a href="#sources">根拠と使い方</a></nav>
+<div class="layout"><main class="maincol"><form id="clinicalForm" autocomplete="off">
+<section class="section" id="assessment"><h2><span class="num">01</span>評価の前提を確認する</h2><p class="sub">未確認の項目は、そのまま「未確認」にしてください。未入力を正常とは扱いません。</p>
+<div class="grid">
+<div class="field"><label for="scope">対象</label><select id="scope"><option value="">未確認</option><option value="adult">18歳以上・非外傷性心停止からの蘇生後</option><option value="outside">小児／外傷性心停止／心停止を伴わない脳症</option></select></div>
+<div class="field"><label for="motor">現在の最良運動反応（GCS-M）</label><select id="motor"><option value="">未確認・評価不能</option><option value="1">M1：反応なし</option><option value="2">M2：伸展</option><option value="3">M3：異常屈曲</option><option value="4">M4：逃避</option><option value="5">M5：疼痛部位へ手を持っていく</option><option value="6">M6：指示に従う</option></select><small>開眼だけで覚醒とせず、指示に従えるかを確認します。M1〜3だけを不良所見として加算しません。</small></div>
+<div class="field"><label for="rosc">評価時点：ROSCからの経過時間（時間）</label><input id="rosc" type="number" min="0" step="any" inputmode="decimal" placeholder="例：120"><small>ROSC＝自己心拍再開。心停止からの時間とは区別します。</small></div>
+<div class="field"><label for="timing">統合評価の時期待機</label><select id="timing"><option value="cautious">慎重な待機設定（初期設定）</option><option value="erc">ERC/ESICM 2025の時間軸</option></select><small>初期設定はAHA 2025を参考に、正常体温・鎮静中止からも72時間待ちます。所見の集約基準は両設定ともERCに基づきます。</small></div>
+<div class="field"><label for="cooling">低体温による体温管理を実施したか</label><select id="cooling"><option value="">未確認</option><option value="yes">実施した／実施中</option><option value="no">実施していない</option></select></div>
+<div class="field"><label for="rewarm">復温完了からの経過時間（時間）</label><input id="rewarm" type="number" min="0" step="any" inputmode="decimal" placeholder="復温未完了なら空欄"><small>低体温管理をしていない場合は不要です。</small></div>
+<div class="field"><label for="sedation">鎮静薬を投与したか</label><select id="sedation"><option value="">未確認</option><option value="yes">投与した／投与中</option><option value="no">投与していない</option></select></div>
+<div class="field"><label for="sedstop">鎮静薬中止からの経過時間（時間）</label><input id="sedstop" type="number" min="0" step="any" inputmode="decimal" placeholder="持続投与中なら空欄"><small>時間だけでは薬剤の残存作用を除外できません。</small></div>
+</div>
+<h3>交絡因子は除外できているか</h3><div class="checkgrid" id="confounders"></div>
+<details><summary>ガイドラインの時間軸の違い</summary><p>ERC/ESICM 2025はROSC後72時間以降、主要な交絡因子を除いた時点で所見を統合します。AHA 2025は正常体温および鎮静薬中止後、最低72時間を経た統合評価を妥当としています。NCS 2023も低体温管理後は復温から72時間以上待つことを勧めています。初期設定の待機条件はこれらを踏まえた実装上の慎重な設定で、AHA固有の予測アルゴリズムではありません。薬剤の半減期、投与期間、肝腎機能などから、さらに待機が必要な場合があります。<a href="#ref1">[1]</a> <a href="#ref2">[2]</a> <a href="#ref3">[3]</a></p></details>
+</section>
+<section class="section" id="findings"><h2><span class="num">02</span>検査所見を整理する</h2><p class="sub">各検査の時間は、すべてROSCからの経過時間です。技術的条件と交絡因子を確認できない所見は採用しません。</p>
+<div class="test"><h3>対光反射・角膜反射 <span class="tag">両方の消失で1項目</span></h3><p class="note">両側の対光反射と両側の角膜反射が、いずれも72時間以降に消失している場合。対光反射は瞳孔計も活用します。<a href="#ref2">[2]</a></p><div class="grid">
+<div class="field"><label for="pupils">対光反射</label><select id="pupils"><option value="">未確認・評価不能</option><option value="absent">両側とも消失</option><option value="present">片側以上で反射あり</option></select></div>
+<div class="field"><label for="corneal">角膜反射</label><select id="corneal"><option value="">未確認・評価不能</option><option value="absent">両側とも消失</option><option value="present">片側以上で反射あり</option></select></div>
+<div class="field"><label for="reflexTime">診察時点（時間）</label><input id="reflexTime" type="number" min="0" step="any" inputmode="decimal"></div>
+<div class="field"><label for="reflexQuality">薬剤・眼局所因子・診察手技の影響を除外</label><select id="reflexQuality" class="quality"></select></div></div></div>
+<div class="test"><h3>SSEP・N20 <span class="tag">1項目</span></h3><p class="note">ERCでは24時間以降の両側N20消失。末梢・頸髄電位の保持、ノイズ、再現性を確認します。AHA/NCSでは48時間以降が基準です。<a href="#ref1">[1]</a> <a href="#ref2">[2]</a> <a href="#ref3">[3]</a></p><div class="grid">
+<div class="field"><label for="ssep">皮質N20</label><select id="ssep"><option value="">未実施・判定不能</option><option value="absent">両側とも消失</option><option value="present">片側以上で記録あり</option></select></div>
+<div class="field"><label for="ssepTime">記録時点（時間）</label><input id="ssepTime" type="number" min="0" step="any" inputmode="decimal"></div>
+<div class="field full"><label for="ssepQuality">末梢・頸髄電位と技術的妥当性を確認</label><select id="ssepQuality" class="quality"></select></div></div></div>
+<div class="test"><h3>脳波（EEG） <span class="tag">背景所見で1項目</span></h3><p class="note">ERCでは24時間を超えた時点の抑制背景（周期性放電の有無を問わない）またはバースト抑制。鎮静・低体温の影響を除き、ACNS用語で専門家が判読します。発作・周期性放電・反応性消失だけでは加算しません。<a href="#ref1">[1]</a> <a href="#ref2">[2]</a></p><div class="grid">
+<div class="field"><label for="eeg">背景脳波</label><select id="eeg"><option value="">未実施・判定不能</option><option value="suppression">抑制背景（±周期性放電）</option><option value="burst">バースト抑制</option><option value="continuous">連続した正常電位背景・放電なし</option><option value="other">その他（発作・放電・反応性消失のみ等）</option></select></div>
+<div class="field"><label for="eegTime">記録時点（時間）</label><input id="eegTime" type="number" min="0" step="any" inputmode="decimal"></div>
+<div class="field full"><label for="eegQuality">記録時の鎮静・低体温の影響を除外し、専門家が判読</label><select id="eegQuality" class="quality"></select></div></div></div>
+<div class="test"><h3>NSE <span class="tag">48・72時間をまとめて1項目</span></h3><p class="note">ERCの不良所見の目安は48時間または72時間のNSE &gt;60 µg/L（ng/mLと同値）。72時間以内のNSE ≤17 µg/Lは回復を支持する情報として併記します。いずれも測定系・溶血・脳外由来を確認し、万能な閾値とは扱いません。24時間のNSEはこの入力・判定の対象に含めません。<a href="#ref1">[1]</a> <a href="#ref2">[2]</a> <a href="#ref3">[3]</a></p><div class="grid">
+<div class="field"><label for="nse48">48時間採血：NSE（µg/L）</label><input id="nse48" type="number" min="0" step="any" inputmode="decimal"><small>48時間の採血と確認できる値のみ入力。</small></div>
+<div class="field"><label for="nse48Quality">48時間採血の溶血・測定条件を確認</label><select id="nse48Quality" class="quality"></select></div>
+<div class="field"><label for="nse72">72時間採血：NSE（µg/L）</label><input id="nse72" type="number" min="0" step="any" inputmode="decimal"><small>72時間の採血と確認できる値のみ入力。</small></div>
+<div class="field"><label for="nse72Quality">72時間採血の溶血・測定条件を確認</label><select id="nse72Quality" class="quality"></select></div>
+<div class="field full"><label for="nfl">NfLなど、追加バイオマーカーの所見</label><select id="nfl"><option value="">未実施・未確認</option><option value="high">専門家が高値と評価した</option><option value="other">その他</option></select><small>NfLはAHA 2025では補助情報。測定法と閾値が標準化されておらず、このERC集約には加算しません。</small></div></div></div>
+<div class="test"><h3>全身性の持続性ミオクローヌス <span class="tag">厳密な定義を満たす場合に1項目</span></h3><p class="note">ERCのstatus myoclonusは、全身性で30分以上連続するミオクローヌス。ROSC後72時間以内の出現が対象です。一般的なミオクローヌスや発作と区別し、EEGと併せて評価します。AHAは分類されていないミオクローヌスの予測価値を不確実としています。<a href="#ref1">[1]</a> <a href="#ref2">[2]</a></p><div class="grid">
+<div class="field"><label for="myoclonus">ミオクローヌスの状態</label><select id="myoclonus"><option value="">未確認</option><option value="status">全身性で30分以上連続</option><option value="other">その他のミオクローヌス</option><option value="none">なし</option></select></div>
+<div class="field"><label for="myoTime">出現時点（時間）</label><input id="myoTime" type="number" min="0" step="any" inputmode="decimal"></div>
+<div class="field full"><label for="myoQuality">専門家が定義を確認し、EEGとの関係を評価</label><select id="myoQuality" class="quality"></select></div></div></div>
+<div class="test"><h3>頭部CT・MRI <span class="tag">両方あっても合わせて1項目</span></h3><p class="note">びまん性・広範な低酸素性虚血性傷害を専門家が評価します。局所病変や単一部位の異常だけでは加算しません。GWR・ADCの一律カットオフは設けません。<a href="#ref1">[1]</a> <a href="#ref2">[2]</a></p><div class="grid">
+<div class="field"><label for="ct">頭部CT</label><select id="ct"><option value="">未実施・判定不能</option><option value="diffuse">広範な脳浮腫・灰白質白質境界の消失</option><option value="other">その所見は認めない／その他</option></select></div>
+<div class="field"><label for="ctTime">CT撮影時点（時間）</label><input id="ctTime" type="number" min="0" step="any" inputmode="decimal"></div>
+<div class="field"><label for="ctQuality">CTを専門家が判読し、技術的に妥当</label><select id="ctQuality" class="quality"></select></div>
+<div class="field"><label for="mri">MRI（DWI・ADC）</label><select id="mri"><option value="">未実施・判定不能</option><option value="diffuse">両側皮質・深部灰白質に及ぶ広範な拡散制限</option><option value="normal">拡散制限を認めない</option><option value="other">局所的変化・その他</option></select></div>
+<div class="field"><label for="mriTime">MRI撮影時点（時間）</label><input id="mriTime" type="number" min="0" step="any" inputmode="decimal"><small>このツールでは2〜7日（48〜168時間）のMRIを採用します。</small></div>
+<div class="field"><label for="mriQuality">MRIを専門家が判読し、発作等の別原因を除外</label><select id="mriQuality" class="quality"></select></div></div></div>
+</section></form>
+<section class="section" id="sources"><h2><span class="num">03</span>根拠と使い方</h2><p>結果は「所見の組み合わせが予後不良を支持するか」を確認する参考情報です。検査を受けた患者集団の研究結果を、そのまま個人の回復確率には変換できません。</p>
+<details open><summary>このツールで採用したルール</summary><ul><li>ERC/ESICM 2025の6項目を集約。対光反射と角膜反射、CTとMRI、48時間と72時間のNSEはそれぞれ重複加算しません。</li><li>初期設定はAHA 2025を参考に統合評価を遅らせます。検査ごとの基準はERCに基づき、AHA/NCSの時間・推奨の違いを結果に併記します。</li><li>MRIはAHA/NCSの2〜7日の範囲に限ります。ERCの画像基準の完全再現ではなく、採用範囲を明示した実装です。</li><li>所見の数は確率や重症度スコアではありません。2項目以上でも検査間の独立性・再現性・全体像を専門チームが確認します。</li><li>M4/M5、72時間以内の連続正常電位背景（放電なし）、48・72時間のNSE ≤17 µg/L、2〜7日のMRIで拡散制限なしを回復を支持する情報として併記します。対光反射・角膜反射やN20の残存だけでは良好予後と判定しません。</li><li>不良所見と回復を支持する所見が混在した場合、結論を保留して検査・交絡因子を再確認します。所見不足も良好予後とは扱いません。</li><li>脳死判定・小児・外傷性心停止・心停止を伴わない低酸素脳症には使用しません。予後評価と生命維持治療の差し控え・中止の判断は別の過程です。</li></ul></details>
+<details><summary>更新時に確認した資料の範囲</summary><p>AHA 2025、ERC/ESICM 2025、NCS 2023の推奨を主に使用。2026年のSingaporeガイドラインとILCORの2026年公開プレプリントも確認しました。JRC 2025は2026年7月13日の書籍版刊行を公式サイトで確認しましたが、最終版の該当章全文は未確認のため「JRC 2025準拠」とは表示していません。2026年10月22日時点の確認です。</p></details>
+<ol class="source-list"><li id="ref1">Hirsch KG, et al. AHA 2025, Part 11: Post–Cardiac Arrest Care. <a href="https://pubmed.ncbi.nlm.nih.gov/41122894/" target="_blank" rel="noopener">PMID 41122894</a> ／ <a href="https://cpr.heart.org/en/resuscitation-science/cpr-and-ecc-guidelines/post-cardiac-arrest-care" target="_blank" rel="noopener">公式推奨 §14.2〜14.6</a></li>
+<li id="ref2">Nolan JP, et al. ERC/ESICM Guidelines 2025 Post-Resuscitation Care. <a href="https://pubmed.ncbi.nlm.nih.gov/41117575/" target="_blank" rel="noopener">PMID 41117575</a> ／ <a href="https://www.erc.edu/media/atqopqm4/gl2025-07-post-resus-e.pdf" target="_blank" rel="noopener">公式全文・Fig. 5</a></li>
+<li id="ref3">Rajajee V, et al. Guidelines for Neuroprognostication in Comatose Adult Survivors of Cardiac Arrest. Neurocrit Care. 2023;38:533–563. <a href="https://pubmed.ncbi.nlm.nih.gov/36949360/" target="_blank" rel="noopener">PMID 36949360</a> ／ <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10241762/" target="_blank" rel="noopener">全文・Table 3</a></li>
+<li>Turella S, et al. The predictive value of highly malignant EEG patterns after cardiac arrest. Intensive Care Med. 2024;50:90–102. <a href="https://pubmed.ncbi.nlm.nih.gov/38172300/" target="_blank" rel="noopener">PMID 38172300</a></li>
+<li>De Stefano P, et al. Features, Outcome, and Treatment of Postanoxic Status Epilepticus: Pooled Analysis of 3 Cohorts. Neurology. 2025;105:e213913. <a href="https://pubmed.ncbi.nlm.nih.gov/40720710/" target="_blank" rel="noopener">PMID 40720710</a></li>
+<li>Singapore Post-cardiac Arrest Care Guidelines 2026. <a href="https://pubmed.ncbi.nlm.nih.gov/42507344/" target="_blank" rel="noopener">PMID 42507344</a></li></ol>
+<p class="notice">関連ブログ：<a href="https://blog.ichisouzo-lab.com/entry/2025/08/18/204551" target="_blank" rel="noopener">心肺蘇生後の脳機能予後評価</a>（旧記事の記載と異なる場合は、本ツール内の更新資料・原典を確認してください）</p>
+</section></main>
+<aside class="result pending" id="result" aria-labelledby="resultTitle"><div class="resulttop" aria-live="polite" aria-atomic="true"><p>入力に基づく評価の整理</p><h2 id="resultTitle">評価の前提を確認してください</h2></div><div class="resultbody"><div id="resultDetails"></div><p class="fixednote">この結果で治療の中止や脳死を判断できません。本人の価値観、全身状態、検査の不確実性を含めて専門チームで協議します。</p><div class="buttons"><button type="button" id="copyButton" aria-label="記録をコピー">コピー</button><button type="button" class="secondary" id="printButton">印刷</button><button type="button" class="secondary" id="resetButton">入力を消去</button></div><p id="copyStatus" role="status"></p><details><summary>記録用テキストを表示</summary><label for="record" class="note">コピーできない場合は、以下を選択してコピーしてください。</label><textarea id="record" readonly></textarea></details></div></aside></div>
+<footer>医知創造ラボ ｜ 医療従事者の判断を支援する参考ツール ｜ v1.0・2026-10-22</footer></div>
+<script>
+// 全処理を端末内で実行。未入力・技術的未確認は陰性と扱わない。
+var CONFOUNDERS=[
+ {id:'drugClear',label:'鎮静・鎮痛薬と筋弛緩薬の残存作用',help:'投与期間、最終投与、肝腎機能、活性代謝物を確認'},
+ {id:'tempClear',label:'低体温・体温管理の影響',help:'正常体温への復帰を確認'},
+ {id:'metabolicClear',label:'代謝・呼吸性の異常',help:'低血糖、電解質、酸塩基、肝性・尿毒症性脳症など'},
+ {id:'systemicClear',label:'循環不全・低酸素血症・重症感染症の影響',help:'神経所見に影響する全身状態を確認'},
+ {id:'seizureClear',label:'持続発作など、評価を妨げる別の要因',help:'治療可能な意識障害の原因と発作後状態も確認'}
+];
+var QUALITY='<option value="">未確認・評価不能</option><option value="yes">確認済み・条件を満たす</option><option value="no">条件を満たさない</option>';
+function el(id){return document.getElementById(id)}
+function esc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+function numberOrNull(v){if(v===undefined||v===null||String(v).trim()==='')return null;var n=Number(v);return isFinite(n)&&n>=0?n:null}
+function readAnswers(){var a={};var fields=el('clinicalForm').querySelectorAll('input,select');for(var i=0;i<fields.length;i++)a[fields[i].id]=fields[i].value;return a}
+// ERCの各予測因子を一つのグループとして扱い、同じ検査の重複加算を防ぐ。
+function evaluate(a){
+ var r={status:'pending',title:'評価の前提を確認してください',description:'評価時期と交絡因子が確認できるまで、予後の結論は保留します。',barriers:[],bad:[],good:[],excluded:[],cautions:[],groups:[],count:0};
+ var current=numberOrNull(a.rosc),rewarm=numberOrNull(a.rewarm),sedstop=numberOrNull(a.sedstop),cautious=a.timing!=='erc';
+ function add(group,text){if(r.groups.indexOf(group)<0){r.groups.push(group);r.bad.push(text)}}
+ function validTime(key,min,max,label,strict){var t=numberOrNull(a[key]);if(t===null){r.excluded.push(label+'：検査時点が未入力');return false}if(current!==null&&t>current){r.excluded.push(label+'：評価時点より後の時刻');r.barriers.push(label+'の時刻が評価時点より後です。入力を確認してください。');return false}if((strict?t<=min:t<min)||(max!==null&&t>max)){r.excluded.push(label+'：採用する時間範囲外');return false}return true}
+ function quality(key,label){if(a[key]!=='yes'){r.excluded.push(label+'：技術的条件・交絡因子が未確認または不適合');return false}return true}
+ if(a.scope!=='adult')r.barriers.push(a.scope==='outside'?'対象範囲外です。成人・非外傷性心停止後の評価に限定します。':'成人・非外傷性心停止後か未確認です。');
+ if(!a.motor)r.barriers.push('現在の運動反応が未確認・評価不能です。');
+ if(current===null||current<72)r.barriers.push('ROSC後72時間以上の経過を確認してください。');
+ if(!a.cooling)r.barriers.push('低体温管理の有無が未確認です。');
+ if(a.cooling==='yes'){
+  if(rewarm===null)r.barriers.push('復温完了が未確認です。');
+  else if(current!==null&&rewarm>current)r.barriers.push('復温後の時間がROSC後の時間を超えています。');
+  else if(cautious&&rewarm<72)r.barriers.push('慎重な待機設定：復温完了から72時間未満です。');
+ }
+ if(!a.sedation)r.barriers.push('鎮静薬の投与歴が未確認です。');
+ if(a.sedation==='yes'){
+  if(sedstop===null)r.barriers.push('鎮静薬の中止時点が未確認、または投与中です。');
+  else if(current!==null&&sedstop>current)r.barriers.push('鎮静中止後の時間がROSC後の時間を超えています。');
+  else if(cautious&&sedstop<72)r.barriers.push('慎重な待機設定：鎮静薬中止から72時間未満です。');
+ }
+ for(var i=0;i<CONFOUNDERS.length;i++){var c=CONFOUNDERS[i];if(a[c.id]!=='clear')r.barriers.push(c.label+'：'+(a[c.id]==='present'?'影響あり':'除外を未確認'));}
+ if(a.pupils==='absent'&&a.corneal==='absent'){
+  if(validTime('reflexTime',72,null,'脳幹反射',false)&&quality('reflexQuality','脳幹反射'))add('reflex','72時間以降の両側対光反射・角膜反射消失');
+ }else if(!a.pupils||!a.corneal)r.excluded.push('脳幹反射：両反射の評価がそろっていません');
+ else if(a.pupils==='absent'||a.corneal==='absent')r.cautions.push('一方の脳幹反射のみ消失：ERCの複合項目には加算せず、個別に専門家が評価してください。');
+ if(a.ssep==='absent'&&validTime('ssepTime',24,null,'SSEP',false)&&quality('ssepQuality','SSEP')){
+  add('ssep','24時間以降の両側N20消失');if(numberOrNull(a.ssepTime)<48)r.cautions.push('SSEPはERCの時間条件を満たしますが、AHA/NCSは48時間以降を採用します。再検を検討してください。');
+ }else if(!a.ssep)r.excluded.push('SSEP：未実施・判定不能');
+ if(a.eeg==='suppression'||a.eeg==='burst'){
+  if(validTime('eegTime',24,null,'EEG',true)&&quality('eegQuality','EEG')){
+   add('eeg','24時間を超えた時点の高度悪性EEG背景');
+   var et=numberOrNull(a.eegTime),sinceRewarmAtEEG=(current!==null&&rewarm!==null)?et-(current-rewarm):et;
+   if(et<72||(a.cooling==='yes'&&sinceRewarmAtEEG<72))r.cautions.push('EEGはERCの時間条件を満たしますが、AHAは72時間以降、NCSはROSC／復温後72時間以降の評価を重視します。');
+  }
+ }else if(a.eeg==='continuous'&&validTime('eegTime',0,72,'良好EEG',false)&&quality('eegQuality','良好EEG'))r.good.push('72時間以内の連続した正常電位背景・放電なし');
+ else if(!a.eeg)r.excluded.push('EEG：未実施・判定不能');
+ var nseHit=false,nseLow=false;var slots=[48,72];
+ for(i=0;i<slots.length;i++){var slot=slots[i],v=numberOrNull(a['nse'+slot]);if(v===null)continue;if(current!==null&&slot>current){r.barriers.push(slot+'時間NSEが評価時点より後です。');r.excluded.push(slot+'時間NSE：評価時点より後');continue}if(a['nse'+slot+'Quality']!=='yes'){r.excluded.push(slot+'時間NSE：溶血・測定条件が未確認または不適合');continue}if(v>60)nseHit=true;if(v<=17)nseLow=true;}
+ if(nseHit){add('nse','48時間または72時間NSE >60 µg/L');r.cautions.push('NSEの60 µg/LはERCの目安です。測定法・溶血・脳外由来を確認し、万能な閾値と扱わないでください。');}
+ if(nseLow){r.good.push('48時間または72時間NSE ≤17 µg/L（ERCの良好転帰支持所見）');r.cautions.push('低いNSE値も回復を保証しません。測定系、時点、推移と脳以外の臓器障害を確認してください。');}
+ if(numberOrNull(a.nse48)===null&&numberOrNull(a.nse72)===null)r.excluded.push('NSE：48・72時間の測定値なし');
+ if(a.nfl==='high')r.cautions.push('NfL高値は補助情報です。このERC集約では加算せず、測定法・時点・施設基準を専門家が確認します。');
+ if(a.myoclonus==='status'&&validTime('myoTime',0,72,'持続性ミオクローヌス',false)&&quality('myoQuality','持続性ミオクローヌス')){add('myoclonus','72時間以内の全身性・30分以上連続するミオクローヌス');r.cautions.push('ミオクローヌスの外観だけで断定しないでください。EEG背景、覚醒の経過、電気臨床的な分類を再確認します。');}
+ else if(a.myoclonus==='other')r.cautions.push('定義を満たさないミオクローヌスは不良項目に加算しません。EEGとの関係を確認します。');
+ else if(!a.myoclonus)r.excluded.push('ミオクローヌス：未確認');
+ if(a.ct==='diffuse'&&validTime('ctTime',0,null,'CT',false)&&quality('ctQuality','CT')){add('imaging','CTまたはMRIのびまん性・広範な低酸素性虚血性傷害');if(numberOrNull(a.ctTime)<48)r.cautions.push('早期CT：ERCの項目には含まれますが、NCSは48時間以降のびまん性変化を重視します。経時変化と再検を確認してください。');}
+ else if(!a.ct)r.excluded.push('CT：未実施・判定不能');
+ if(a.mri==='diffuse'&&validTime('mriTime',48,168,'MRI',false)&&quality('mriQuality','MRI'))add('imaging','CTまたはMRIのびまん性・広範な低酸素性虚血性傷害');
+ else if(a.mri==='normal'&&validTime('mriTime',48,168,'MRI',false)&&quality('mriQuality','MRI'))r.good.push('2〜7日のMRIで拡散制限なし');
+ else if(!a.mri)r.excluded.push('MRI：未実施・判定不能');
+ if(a.motor==='4'||a.motor==='5'){if(a.drugClear==='clear')r.good.push('逃避反応または疼痛部位への定位（M4/M5）');else r.cautions.push('M4/M5は記録されていますが、薬剤等の影響を除いた診察か確認してください。');}
+ r.count=r.groups.length;
+ if(a.scope==='outside'){r.status='outside';r.title='このツールの対象範囲外です';r.description='小児・外傷性心停止・心停止を伴わない脳症は、各病態に対応した評価を行ってください。';}
+ else if(a.scope==='adult'&&a.motor==='6'){r.status='recovery';r.title='指示に従う反応があります';r.description='昏睡患者の不良予後予測アルゴリズムの対象から外れます。認知・身体・心理面の評価と回復支援につなげてください。';if(r.count)r.cautions.unshift('指示に従う反応と不良所見が食い違っています。入力と検査結果を再確認してください。');}
+ else if(r.barriers.length){r.status='pending';r.title='いまは結論を保留してください';}
+ else if(r.good.length&&r.count){r.status='discordant';r.title='所見が食い違っています：再評価';r.description='不良所見と回復を支持する情報が混在しています。予後の結論を保留し、専門家による再判読・再検・経時評価を行ってください。';}
+ else if(r.count>=2){r.status='multi';r.title='複数の不良所見がそろっています';r.description='ERC/ESICM 2025の「予後不良の可能性が高い」組み合わせに該当します。各所見の独立性・信頼性と全体像を専門チームで確認してください。確定判定ではありません。';}
+ else if(r.good.length){r.status='recovery';r.title='回復を支持する情報があります';r.description='良好な転帰を支持する情報がありますが、回復の程度や時期は確定できません。経時的な診察と複数検査による評価を続けてください。';}
+ else {r.status='uncertain';r.title='現時点では予後を絞れません';r.description='複数の不良所見はそろっていません。これは良好予後の証明ではありません。観察を継続し、不足する検査と経時変化を確認してください。';}
+ return r;
+}
+function listHtml(title,arr){if(!arr.length)return '';var h='<h3>'+esc(title)+'</h3><ul>';for(var i=0;i<arr.length;i++)h+='<li>'+esc(arr[i])+'</li>';return h+'</ul>'}
+function makeRecord(a,r){var lines=['蘇生後の神経学的予後評価・所見整理','参照：ERC/ESICM 2025、AHA 2025、NCS 2023（根拠確認2026-10-22）','時期待機：'+(a.timing==='erc'?'ERCの時間軸':'慎重な待機設定'),'評価：ROSC後 '+(a.rosc||'未確認')+' 時間 / GCS-M '+(a.motor||'未確認'),'低体温管理：'+(a.cooling==='yes'?'あり／復温後 '+(a.rewarm||'未確認')+' 時間':a.cooling==='no'?'なし':'未確認'),'鎮静薬：'+(a.sedation==='yes'?'あり／中止後 '+(a.sedstop||'未確認')+' 時間':a.sedation==='no'?'投与なし':'未確認'),'整理結果：'+r.title,r.description,'ERCの不良所見グループ：'+r.count+' / 6（予測確率・重症度点数ではない）'];var sections=[['保留理由',r.barriers],['採用した不良所見',r.bad],['回復を支持する情報',r.good],['未確認・採用しなかった所見',r.excluded],['解釈上の確認点',r.cautions]];for(var i=0;i<sections.length;i++){lines.push('\n'+sections[i][0]+'：');lines=lines.concat(sections[i][1].length?sections[i][1]:['なし']);}lines.push('\n検査時点（ROSC後時間）：反射 '+(a.reflexTime||'未入力')+' / SSEP '+(a.ssepTime||'未入力')+' / EEG '+(a.eegTime||'未入力')+' / CT '+(a.ctTime||'未入力')+' / MRI '+(a.mriTime||'未入力'));lines.push('NSE：48h '+(a.nse48||'未入力')+' / 72h '+(a.nse72||'未入力')+' µg/L');lines.push('\n治療中止・脳死の判定には用いない。専門チームで全身状態と本人の価値観を含め協議する。');return lines.join('\n')}
+function render(){var a=readAnswers(),r=evaluate(a);el('rewarm').disabled=a.cooling==='no';el('sedstop').disabled=a.sedation==='no';el('result').className='result '+r.status;el('resultTitle').textContent=r.title;var html='<p>'+esc(r.description)+'</p><p class="countline">ERCの不良所見グループ：'+r.count+' / 6<br><small>予測確率・重症度点数ではありません</small></p>';if(r.barriers.length&&r.status==='pending')html+='<p class="notice">以下の所見は整理のみです。評価の前提が整うまで、組み合わせから予後を結論づけません。</p>';html+=listHtml('保留理由・入力の確認',r.barriers)+listHtml('採用した不良所見',r.bad)+listHtml('回復を支持する情報',r.good)+listHtml('未確認・採用しなかった所見',r.excluded)+listHtml('解釈上の確認点',r.cautions);el('resultDetails').innerHTML=html;el('record').value=makeRecord(a,r);el('copyStatus').textContent='';}
+var ch='';for(var i=0;i<CONFOUNDERS.length;i++){var cf=CONFOUNDERS[i];ch+='<div class="checkrow"><label for="'+cf.id+'">'+cf.label+'<small>'+cf.help+'</small></label><select id="'+cf.id+'"><option value="">未確認</option><option value="clear">影響を除外済み</option><option value="present">影響あり</option></select></div>'}el('confounders').innerHTML=ch;
+var qs=document.querySelectorAll('.quality');for(i=0;i<qs.length;i++)qs[i].innerHTML=QUALITY;
+el('clinicalForm').addEventListener('input',render);el('clinicalForm').addEventListener('change',render);el('clinicalForm').addEventListener('submit',function(e){e.preventDefault()});
+el('copyButton').addEventListener('click',function(){var value=el('record').value;if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(value).then(function(){el('copyStatus').textContent='記録をコピーしました。'},function(){el('copyStatus').textContent='記録用テキストを開いて選択・コピーしてください。';el('record').parentNode.open=true;el('record').focus();el('record').select();})}else{el('record').parentNode.open=true;el('record').focus();el('record').select();try{el('copyStatus').textContent=document.execCommand('copy')?'記録をコピーしました。':'選択したテキストをコピーしてください。'}catch(e){el('copyStatus').textContent='選択したテキストをコピーしてください。'}}});
+el('printButton').addEventListener('click',function(){el('record').parentNode.open=true;window.print()});
+window.addEventListener('beforeprint',function(){el('record').parentNode.open=true;});
+el('resetButton').addEventListener('click',function(){if(window.confirm('入力内容をすべて消去しますか？')){el('clinicalForm').reset();render();el('scope').focus();}});
+window.addEventListener('pageshow',function(e){if(e.persisted){el('clinicalForm').reset();render();}});
+render();
+</script>
+</body>
+</html>

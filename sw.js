@@ -4,6 +4,7 @@ const ASSETS = [
   './infographics/aseptic-meningitis-treatment/infographic.png',
   './infographics/mg-crisis/index.html',
   './infographics/mg-crisis/infographic.png',
+  './post_cardiac_arrest_prognosis.html',
   './infographics/af-treatment-20y/index.html',
   './infographics/af-treatment-20y/infographic.png',
   './infographics/asm-lab-monitoring/index.html',
