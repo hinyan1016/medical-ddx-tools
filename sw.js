@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v258';
+const CACHE_NAME = 'ddx-tools-v259';
 const ASSETS = [
   './infographics/post-cardiac-arrest-prognosis/index.html',
   './infographics/post-cardiac-arrest-prognosis/infographic.png',
