@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v264';
+const CACHE_NAME = 'ddx-tools-v265';
 const ASSETS = [
   './infographics/alzheimers-treatment-20y-reference-repair-20261022/index.html',
   './infographics/anti-mag-neuropathy-reference-repair-20261022/index.html',
