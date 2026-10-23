@@ -1,5 +1,7 @@
-const CACHE_NAME = 'ddx-tools-v265';
+const CACHE_NAME = 'ddx-tools-v266';
 const ASSETS = [
+  './infographics/eeg-birds/index.html',
+  './infographics/eeg-birds/infographic.png',
   './infographics/alzheimers-treatment-20y-reference-repair-20261022/index.html',
   './infographics/anti-mag-neuropathy-reference-repair-20261022/index.html',
   './infographics/asm-approval-japan-reference-repair-20261023/index.html',
