@@ -1,5 +1,16 @@
-const CACHE_NAME = 'ddx-tools-v262';
+const CACHE_NAME = 'ddx-tools-v263';
 const ASSETS = [
+  './infographics/alzheimers-treatment-20y-reference-repair-20261022/index.html',
+  './infographics/anti-mag-neuropathy-reference-repair-20261022/index.html',
+  './infographics/asm-approval-japan-reference-repair-20261023/index.html',
+  './infographics/brivaracetam-overview-reference-repair-20261023/index.html',
+  './infographics/dementia-aspiration-nutrition-reference-repair-20261023/index.html',
+  './infographics/drug-resistant-epilepsy-20y-reference-repair-20261023/index.html',
+  './infographics/long-covid-neuro-reference-repair-20261023/index.html',
+  './infographics/parkinson-ips-cell-therapy-reference-repair-20261023/index.html',
+  './infographics/stroke-care-20y-reference-repair-20261022/index.html',
+  './infographics/movicol-supply-alternatives/index.html',
+  './infographics/movicol-supply-alternatives/infographic.png',
   './infographics/abducens-palsy/index.html',
   './infographics/abducens-palsy/infographic.png',
   './infographics/acute-neck-pain/index.html',
