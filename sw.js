@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v270';
+const CACHE_NAME = 'ddx-tools-v271';
 const ASSETS = [
   './infographics/amygdala-enlargement-tle/mri-lv2014-fig1.jpg',
   './infographics/amygdala-enlargement-tle/mri-urbach2026-fig3.jpg',
