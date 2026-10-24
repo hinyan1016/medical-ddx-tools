@@ -1,5 +1,16 @@
-const CACHE_NAME = 'ddx-tools-v268';
+const CACHE_NAME = 'ddx-tools-v269';
 const ASSETS = [
+  './handouts/parkinson-non-motor-symptoms/index.html',
+  './infographics/acyclovir-encephalopathy/index.html',
+  './infographics/adult-epilepsy-sleep-reference-repair-20261024/index.html',
+  './infographics/comt-inhibitors/index.html',
+  './infographics/parkinson-non-motor-symptoms/index.html',
+  './infographics/return-to-work-check/index.html',
+  './infographics/seizure-differential-diagnosis-reference-repair-20261024/index.html',
+  './infographics/tic-vs-seizure-adult-reference-repair-20261024/index.html',
+
+  './infographics/amygdala-enlargement-tle/index.html',
+  './infographics/amygdala-enlargement-tle/infographic.png',
   './driving_fitness_evaluation.html',
   './infographics/stroke-dementia-driving-evaluation/index.html',
   './infographics/eeg-birds/index.html',
