@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v266';
+const CACHE_NAME = 'ddx-tools-v267';
 const ASSETS = [
   './infographics/eeg-birds/index.html',
   './infographics/eeg-birds/infographic.png',
@@ -240,6 +240,7 @@ const ASSETS = [
   './bfcrs_calculator.html',
   './glim_nutrition.html',
   './hoken_byomei_checker.html',
+  './shojo_shoki_helper.html',
   './refeeding_risk.html',
   './infographics/refeeding-syndrome/index.html',
   './infographics/refeeding-syndrome/infographic.png',

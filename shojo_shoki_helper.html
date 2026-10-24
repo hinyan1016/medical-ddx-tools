@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A5276">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>症状詳記 作成補助ツール（脳神経内科版）</title>
+<meta name="description" content="脳梗塞・てんかん重積・誤嚥性肺炎の入院で、SCU・救命救急入院料・早期リハビリなどが高額の理由になったときの症状詳記を、定型文を選んで組み立て、テキストファイルで保存できます。よく使う文は自分で登録し、ファイルに書き出して次回読み込めます。入力内容は送信しません。">
+<meta property="og:title" content="症状詳記 作成補助ツール（脳神経内科版）">
+<meta property="og:description" content="脳梗塞・てんかん重積・誤嚥性肺炎の入院で、SCU・救命救急入院料・早期リハビリなどが高額の理由になったときの症状詳記を、定型文を選んで組み立て、テキストファイルで保存できます。よく使う文は自分で登録し、ファイルに書き出して次回読み込めます。入力内容は送信しません。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tools.ichisouzo-lab.com/shojo_shoki_helper.html">
+<meta property="og:image" content="https://tools.ichisouzo-lab.com/assets/og-tools.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="医知創造ラボ">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root {
+    --dark: #1A5276;
+    --primary: #2E86C1;
+    --accent: #C0392B;
+    --light: #EAF2F8;
+    --paper: #FFFFFF;
+    --ink: #1F2D3A;
+    --muted: #5B6B7A;
+    --line: #D5DFE8;
+    --mine: #117864;
+    --mine-light: #E8F6F3;
+    --shadow: 0 2px 12px rgba(26,82,118,0.12);
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Hiragino Kaku Gothic ProN", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #EAF2F8 0%, #F5F7FA 100%);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 0 0 60px;
+    line-height: 1.7;
+  }
+  header {
+    background: linear-gradient(135deg, var(--dark), var(--primary));
+    color: #fff;
+    padding: 26px 20px 22px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(26,82,118,0.2);
+  }
+  header h1 { font-size: 1.5em; font-weight: 700; letter-spacing: 0.02em; }
+  header p { font-size: 0.9em; margin-top: 6px; opacity: 0.92; }
+  header .back { display:inline-block; margin-top:12px; font-size:0.82em; color:#d6e9f6; text-decoration:none; }
+
+  .layout { max-width: 1240px; margin: 0 auto; padding: 22px 16px; display: flex; gap: 20px; align-items: flex-start; }
+  .col-input { flex: 1 1 56%; min-width: 0; }
+  .col-output { flex: 1 1 44%; min-width: 0; position: sticky; top: 12px; }
+
+  .panel {
+    background: var(--paper);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 18px 18px 8px;
+    margin-bottom: 18px;
+  }
+  .panel h2 {
+    font-size: 1.05em; color: var(--dark); margin-bottom: 10px;
+    padding-bottom: 6px; border-bottom: 2px solid var(--light);
+  }
+  .panel .sub { font-size: 0.82em; color: var(--muted); margin: -4px 0 12px; }
+
+  .field { margin-bottom: 14px; }
+  .field > label, .field .label { display:block; font-size:0.86em; font-weight:700; color:var(--dark); margin-bottom:6px; }
+  .hint { font-weight: 400; color: var(--muted); font-size: 0.92em; }
+  input[type=text], input[type=number], input[type=date], select, textarea {
+    width: 100%;
+    padding: 9px 11px;
+    border: 2px solid var(--line);
+    border-radius: 9px;
+    font-size: 0.95em;
+    font-family: inherit;
+    color: var(--ink);
+    background: #fff;
+    outline: none;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--primary); }
+  textarea { resize: vertical; min-height: 64px; line-height: 1.6; }
+  .row { display:flex; gap:12px; flex-wrap:wrap; }
+  .row > .field { flex:1; min-width: 140px; }
+
+  /* 選択肢（チップ型） */
+  .chips { display:flex; flex-wrap:wrap; gap:7px; }
+  .chip { position: relative; }
+  .chip input { position:absolute; opacity:0; width:1px; height:1px; }
+  .chip span {
+    display:inline-block; padding:7px 12px; border-radius:20px;
+    border:2px solid var(--line); background:#fff; color:var(--ink);
+    font-size:0.88em; cursor:pointer; user-select:none; line-height:1.4;
+  }
+  .chip input:checked + span { background: var(--primary); border-color: var(--primary); color:#fff; font-weight:700; }
+  .chip input:focus-visible + span { outline: 3px solid #F5B041; outline-offset: 1px; }
+  .chips.stack { flex-direction: column; gap:6px; }
+  .chips.stack .chip span { border-radius:9px; display:block; }
+  .dz-chips .chip span { font-size: 1em; padding: 10px 16px; }
+
+  /* 自分で登録した定型文 */
+  .my { background: var(--mine-light); border: 1px dashed #A3D9CC; border-radius: 10px; padding: 10px 10px 8px; margin: 4px 0 14px; }
+  .my-title { font-size: 0.8em; font-weight: 700; color: var(--mine); margin-bottom: 6px; }
+  .my-empty { font-size: 0.8em; color: var(--muted); margin-bottom: 6px; }
+  .mychip { display:flex; align-items:stretch; gap:4px; }
+  .mychip .chip { flex:1; min-width:0; }
+  .mychip .chip span { border-color:#A3D9CC; }
+  .mychip .chip input:checked + span { background: var(--mine); border-color: var(--mine); }
+  .mychip .scope { font-size: 0.72em; color: var(--mine); white-space: nowrap; align-self:center; }
+  .del {
+    border:none; background:#fff; color:#922B21; border-radius:8px; cursor:pointer;
+    font-size:0.85em; padding:0 9px; border:1px solid #E6B0AA; font-family:inherit;
+  }
+  .myadd { display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-top:8px; }
+  .myadd input[type=text] { flex: 1 1 220px; padding:7px 10px; font-size:0.88em; }
+  .myadd .scope-check { font-size:0.8em; color:var(--mine); display:flex; align-items:center; gap:4px; }
+  .btn-mine { background: var(--mine); color:#fff; padding:7px 12px; font-size:0.85em; }
+
+  /* 高額になった項目 */
+  .charge { border:1px solid var(--line); border-radius:10px; padding:9px 10px; margin-bottom:9px; background:#FBFCFE; }
+  .charge-head { display:flex; align-items:center; gap:8px; }
+  .charge-head .chip { flex:1; min-width:0; }
+  .charge-head .chip span { display:block; border-radius:9px; font-weight:700; }
+  .charge-body { display:none; padding:10px 2px 0; }
+  .charge.on .charge-body { display:block; }
+  .charge.on { border-color: var(--primary); background:#fff; }
+  .charge .reason-label { font-size:0.8em; font-weight:700; color:var(--dark); margin:4px 0 6px; }
+  .tag-mine { font-size:0.72em; color:var(--mine); font-weight:700; }
+
+  .dzbox { display:none; }
+  .dzbox.show { display:block; }
+  .note { font-size:0.8em; color:var(--muted); margin:-4px 0 12px; }
+
+  .privacy-note {
+    font-size:0.82em; color:#154360; background:#EAF2F8;
+    border:1px solid #BBD6EA; border-radius:9px; padding:10px 13px; margin-bottom:16px; line-height:1.6;
+  }
+
+  /* 出力 */
+  .out-head { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+  .out-head h2 { border:none; margin:0; padding:0; flex:1 1 100%; }
+  .btn {
+    display:inline-flex; align-items:center; justify-content:center; gap:6px;
+    border:none; border-radius:9px; cursor:pointer;
+    font-family:inherit; font-size:0.92em; font-weight:700;
+    padding:10px 16px; -webkit-tap-highlight-color:transparent;
+  }
+  .btn-primary { background: var(--primary); color:#fff; }
+  .btn-primary:hover { background: var(--dark); }
+  .btn-ghost { background: var(--light); color: var(--dark); }
+  .btn-ghost:hover { background: #D6E6F2; }
+  #msg { font-size:0.85em; color:#1E8449; font-weight:700; min-height:1.2em; }
+  #note {
+    width:100%; min-height: 520px; max-height: 72vh;
+    font-family: "MS Gothic", "Osaka-Mono", monospace; font-size: 13px; line-height: 1.65;
+    background:#FCFDFE; border:2px solid var(--line); border-radius:9px; padding:12px; resize: vertical;
+  }
+  #note.manual { border-color:#E67E22; background:#FFFDF8; }
+  .count { font-size:0.8em; color:var(--muted); text-align:right; margin-top:4px; }
+  .warn { font-size:0.84em; color:#922B21; background:#FDEDEC; border-radius:8px; padding:8px 11px; margin-bottom:10px; display:none; }
+  .warn.show { display:block; }
+  .manual-bar { display:none; font-size:0.84em; color:#7E5109; background:#FEF5E7; border:1px solid #F5CBA7; border-radius:8px; padding:8px 11px; margin-bottom:10px; }
+  .manual-bar.show { display:block; }
+  .manual-bar button { margin-top:6px; }
+
+  .disclaimer, .refs {
+    font-size:0.8em; color:var(--muted); background:#FBFCFD;
+    border:1px solid var(--line); border-radius:9px; padding:12px 14px; margin-bottom:12px; line-height:1.65;
+  }
+  .refs ol { padding-left: 1.4em; }
+  .refs li { margin-bottom: 4px; }
+  .refs a { color: var(--primary); }
+  .tools-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+  #selftest { display:none; margin: 12px 16px 0; padding: 12px 14px; border-radius: 9px; font-size: 0.9em; }
+
+  footer { text-align:center; margin-top:24px; font-size:0.8em; color:#99A3AD; padding:0 16px; }
+
+  @media (max-width: 900px) {
+    .layout { flex-direction: column; }
+    .col-input, .col-output { flex: 1 1 auto; width: 100%; }
+    .col-output { position: static; }
+    #note { min-height: 360px; max-height: none; }
+  }
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.22em; }
+    .layout { padding: 14px 10px; }
+    .panel { padding: 14px 12px 4px; }
+  }
+</style>
+</head>
+<body>
+<nav id="ics-globalnav" style="background:#15324E;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
+<div style="max-width:1040px;margin:0 auto;padding:8px 12px;display:flex;align-items:center;gap:2px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;">
+<a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;padding-right:8px;">医知創造ラボ</a>
+<a href="https://ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ホーム</a>
+<a href="https://blog.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ブログ</a>
+<a href="https://tools.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ツール</a>
+<a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">YouTube</a>
+</div>
+</nav>
+
+<header>
+  <h1>🧾 症状詳記 作成補助ツール</h1>
+  <p>定型文を選んで症状詳記を組み立て、テキストファイルで保存します（脳神経内科版）</p>
+  <a class="back" href="index.html">← ツール一覧へ戻る</a>
+</header>
+
+<div id="selftest"></div>
+
+<div class="layout">
+<form class="col-input" id="form" autocomplete="off" onsubmit="return false;">
+
+  <div class="privacy-note">🔒 患者さんについて入力した内容は、保存も送信もしません。氏名・ID・生年月日は入れないでください。<br>自分で登録した定型文も、ページを閉じると消えます。下の「定型文の書き出し」でファイルに保存し、次回「読み込む」で戻してください。</div>
+
+  <!-- 1. 疾患 -->
+  <div class="panel">
+    <h2>1. 疾患のひな型</h2>
+    <div class="field"><div class="chips dz-chips" id="dzChips"></div></div>
+    <p class="note">ひな型を選ぶと、入院時の状態・経過・高額になった項目の選択肢が、その疾患に合わせて入れ替わります。切り替えても入力は消えません。</p>
+  </div>
+
+  <!-- 2. 基本情報 -->
+  <div class="panel">
+    <h2>2. 基本情報</h2>
+    <div class="row">
+      <div class="field"><label for="age">年齢</label><input type="number" id="age" min="0" max="120" inputmode="numeric" placeholder="例：78"></div>
+      <div class="field"><label for="sex">性別</label>
+        <select id="sex"><option value="">（指定しない）</option><option>男性</option><option>女性</option></select></div>
+    </div>
+    <div class="row">
+      <div class="field"><label for="admit">入院日</label><input type="date" id="admit"></div>
+      <div class="field"><label for="discharge">退院日 <span class="hint">（入院中は空欄）</span></label><input type="date" id="discharge"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label for="dispo">転帰</label>
+        <select id="dispo">
+          <option value="">（指定しない）</option>
+          <option value="home">自宅へ退院</option>
+          <option value="kaifuku">回復期リハビリテーション病院へ転院</option>
+          <option value="transfer">他院へ転院</option>
+          <option value="facility">施設へ退院</option>
+          <option value="stay">入院を継続</option>
+          <option value="death">死亡退院</option>
+        </select></div>
+      <div class="field"><label for="points">請求点数 <span class="hint">（任意）</span></label><input type="number" id="points" min="0" inputmode="numeric" placeholder="例：92345"></div>
+    </div>
+    <div class="field">
+      <label for="dx">傷病名 <span class="hint" id="dxAuto"></span></label>
+      <input type="text" id="dx" placeholder="空欄なら選んだ内容から自動で入ります">
+    </div>
+    <div class="field">
+      <label for="comorb">主な併存疾患 <span class="hint">（任意）</span></label>
+      <input type="text" id="comorb" placeholder="例：高血圧、糖尿病、慢性腎臓病">
+    </div>
+  </div>
+
+  <!-- 3. 入院時の状態 -->
+  <div class="panel">
+    <h2>3. 入院時の状態</h2>
+    <div id="admBoxes"></div>
+    <div class="my" data-sec="admission"></div>
+    <div class="field">
+      <label for="admFree">補足 <span class="hint">（任意・そのまま本文に入ります）</span></label>
+      <textarea id="admFree" rows="2"></textarea>
+    </div>
+  </div>
+
+  <!-- 4. 入院後の経過 -->
+  <div class="panel">
+    <h2>4. 入院後の経過と治療</h2>
+    <div id="courseBoxes"></div>
+    <div class="my" data-sec="course"></div>
+    <div class="field">
+      <label for="courseFree">補足 <span class="hint">（任意）</span></label>
+      <textarea id="courseFree" rows="2"></textarea>
+    </div>
+  </div>
+
+  <!-- 5. 高額になった項目 -->
+  <div class="panel">
+    <h2>5. 高額になった項目と、その必要性</h2>
+    <p class="sub">点数が高くなった原因の項目を選ぶと、必要だった理由の定型文が出ます。理由は、実際にあてはまるものだけを選んでください。</p>
+    <div id="charges"></div>
+    <div class="my" style="margin-top:10px;">
+      <div class="my-title">＋ 項目を自分で追加する</div>
+      <div class="myadd">
+        <input type="text" id="newCharge" placeholder="例：超急性期脳卒中加算、輸血">
+        <button type="button" class="btn btn-mine" id="btnAddCharge">項目を追加</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. 転帰 -->
+  <div class="panel">
+    <h2>6. 転帰</h2>
+    <p class="sub">2. で選んだ転帰の一文は、自動で最後に入ります。</p>
+    <div id="outBoxes"></div>
+    <div class="my" data-sec="outcome"></div>
+    <div class="field">
+      <label for="outFree">補足 <span class="hint">（任意）</span></label>
+      <textarea id="outFree" rows="2"></textarea>
+    </div>
+  </div>
+
+  <!-- 7. 結び -->
+  <div class="panel">
+    <h2>7. 結びの文</h2>
+    <div class="field"><div class="chips stack" id="closing"></div></div>
+    <div class="my" data-sec="closing"></div>
+  </div>
+
+  <!-- 定型文の管理 -->
+  <div class="panel">
+    <h2>定型文の書き出しと読み込み</h2>
+    <p class="sub">自分で登録した定型文と追加した項目を、ファイル（.json）にまとめて保存します。次回このファイルを読み込むと、同じ定型文が使えます。院内の共有フォルダに置けば、同じ科の先生とも共有できます。</p>
+    <div class="tools-row">
+      <button type="button" class="btn btn-mine" id="btnExport">⬇ 定型文を書き出す</button>
+      <button type="button" class="btn btn-ghost" id="btnImport">⬆ 定型文を読み込む</button>
+      <input type="file" id="importFile" accept=".json,application/json" style="display:none;">
+    </div>
+    <div class="note" id="myStat" style="margin:0 0 10px;"></div>
+  </div>
+
+  <div class="disclaimer">
+    症状詳記には、実際に行った診療と、その時点での判断だけを書いてください。定型文は書き出しの補助です。選んだ文が診療録の記載と合っているかを、必ず確かめてから提出してください。<br>
+    算定の要件や算定できる日数の上限は、最新の診療報酬点数表と、審査支払機関の取り扱いで確認してください。このツールは算定の可否を判断しません。
+  </div>
+
+  <div class="refs">
+    <b>定型文の根拠とした資料</b>
+    <ol>
+      <li>Trinka E, et al. A definition and classification of status epilepticus--Report of the ILAE Task Force on Classification of Status Epilepticus. Epilepsia. 2015. 56(10):1515-23. <a href="https://pubmed.ncbi.nlm.nih.gov/26336950/" target="_blank" rel="noopener">PubMed</a>（てんかん重積状態の時間の目安）</li>
+      <li>Shindo Y, et al. Comparison of severity scoring systems A-DROP and CURB-65 for community-acquired pneumonia. Respirology. 2008. 13(5):731-5. <a href="https://pubmed.ncbi.nlm.nih.gov/18713094/" target="_blank" rel="noopener">PubMed</a>（A-DROPの各項目）</li>
+    </ol>
+  </div>
+</form>
+
+<div class="col-output">
+  <div class="panel">
+    <div class="out-head">
+      <h2>症状詳記（下書き）</h2>
+      <button type="button" class="btn btn-primary" id="btnSave">💾 テキストファイルで保存</button>
+      <button type="button" class="btn btn-ghost" id="btnCopy">📋 コピー</button>
+      <button type="button" class="btn btn-ghost" id="btnReset">クリア</button>
+    </div>
+    <div class="warn" id="warn"></div>
+    <div class="manual-bar" id="manualBar">下書きを手で直しています。直した内容を守るため、左の選択を変えても下書きは書き換わりません。
+      <br><button type="button" class="btn btn-ghost" id="btnRebuild">選択内容から作り直す（手直しは消えます）</button></div>
+    <div id="msg"></div>
+    <textarea id="note" spellcheck="false" aria-label="症状詳記の下書き"></textarea>
+    <div class="count" id="count"></div>
+    <p class="note" style="margin:8px 0 10px;">選択を変えると、その場で文章が書き換わります。下書きは直接直すこともできます。</p>
+  </div>
+</div>
+</div>
+
+<footer>医知創造ラボ ｜ 症状詳記 作成補助ツール</footer>
+
+<script>
+(function () {
+  function $(id) { return document.getElementById(id); }
+
+  /* ================= 定型文データ ================= */
+
+  var DZ = [
+    { id: 'stroke', label: '🧠 脳梗塞' },
+    { id: 'se', label: '⚡ てんかん重積' },
+    { id: 'asp', label: '🫁 誤嚥性肺炎' },
+    { id: 'generic', label: '📄 その他（汎用）' }
+  ];
+
+  /*
+    入力欄の型
+      radio : 1つ選ぶ（items[].text があれば本文へ、dx は傷病名に使う）
+      phr   : 複数選ぶ定型文（items[].text を順に本文へ）
+      list  : 複数選ぶ語句（「、」でつないで tpl の {v} に入れる）
+      input : 自由入力（tpl の {v} に入れる）
+      select: 選択肢（傷病名などに使う。本文には入れない）
+      adrop : A-DROP の5項目
+  */
+  var ADM = {
+    stroke: [
+      { t: 'radio', k: 'stype', label: '病型', items: [
+        { id: 'athero', label: 'アテローム血栓性脳梗塞', dx: 'アテローム血栓性脳梗塞' },
+        { id: 'ce', label: '心原性脳塞栓症', dx: '心原性脳塞栓症' },
+        { id: 'lacunar', label: 'ラクナ梗塞', dx: 'ラクナ梗塞' },
+        { id: 'bad', label: '分枝粥腫型梗塞（BAD）', dx: '分枝粥腫型梗塞' },
+        { id: 'other', label: 'その他・病型は精査中', dx: '脳梗塞' } ] },
+      { t: 'select', k: 'side', label: '左右', options: ['', '右', '左', '両側'], half: true },
+      { t: 'input', k: 'region', label: '部位・血管領域', ph: '例：中大脳動脈領域', half: true },
+      { t: 'input', k: 'onset', label: '発症から来院まで', ph: '例：2時間', tpl: '発症から{v}で来院した。', half: true },
+      { t: 'input', k: 'nihss', label: '来院時のNIHSS', num: true, tpl: '来院時のNIHSSは{v}点であった。', half: true },
+      { t: 'input', k: 'jcs', label: '意識レベル（JCS）', ph: '例：II-10', tpl: '意識レベルはJCS {v}であった。', half: true },
+      { t: 'list', k: 'sym', label: '神経症状', tpl: '神経症状として{v}を認めた。',
+        items: ['片麻痺', '感覚障害', '構音障害', '失語', '半側空間無視', '嚥下障害', '意識障害', '視野障害', '失調'] },
+      { t: 'phr', k: 'find', label: '検査所見', items: [
+        { id: 'dwi', label: 'MRIで急性期梗塞', text: '頭部MRI拡散強調画像では、急性期の梗塞巣がみられた。' },
+        { id: 'lvo', label: '主幹動脈の閉塞', text: '血管画像で主幹動脈が閉塞していた。' },
+        { id: 'af', label: '心房細動', text: '心電図は心房細動であった。' },
+        { id: 'stenosis', label: '高度の動脈狭窄', text: '頸動脈または頭蓋内の動脈に高度の狭窄があった。' } ] },
+      { t: 'input', k: 'img', label: '画像所見の補足', ph: '例：左放線冠に長径15mmの梗塞巣を認めた', tpl: '{v}。' }
+    ],
+    se: [
+      { t: 'radio', k: 'sztype', label: '発作のかたち', items: [
+        { id: 'gtc', label: '全身性強直間代発作', text: '全身性強直間代発作が続いた状態で搬送された。' },
+        { id: 'focal', label: '焦点運動発作', text: '焦点運動発作が続いた状態で搬送された。' },
+        { id: 'ncse', label: '非けいれん性てんかん重積（NCSE）', text: '意識障害が続き、脳波で非けいれん性てんかん重積状態と診断した。' } ] },
+      { t: 'input', k: 'dur', label: '来院までの発作の持続時間', ph: '例：30分以上', tpl: '来院までの発作の持続時間は{v}であった。', half: true },
+      { t: 'input', k: 'jcs', label: '意識レベル（JCS）', ph: '例：III-200', tpl: '意識レベルはJCS {v}であった。', half: true },
+      { t: 'phr', k: 'state', label: '来院時の状態', items: [
+        { id: 'over5', label: '5分以上持続', text: '発作は5分以上持続していた。' },
+        { id: 'repeat', label: '発作の間に意識が戻らない', text: '発作を繰り返し、発作の間に意識が回復しなかった。' },
+        { id: 'bzdfail', label: 'BZD投与後も持続', text: '救急隊または前医でベンゾジアゼピン系薬を投与されたが、発作は止まらなかった。' },
+        { id: 'hypox', label: '低酸素血症', text: '舌根沈下と低酸素血症を認めた。' } ] },
+      { t: 'radio', k: 'hx', label: 'てんかんの既往', items: [
+        { id: 'known', label: '既知のてんかん', text: 'てんかんの既往があり、抗てんかん薬を内服していた。' },
+        { id: 'first', label: '初めての発作', text: 'これまでにてんかんの既往はなかった。' } ] },
+      { t: 'list', k: 'cause', label: '考えられる原因・誘因', tpl: '原因・誘因として{v}が考えられた。',
+        items: ['抗てんかん薬の怠薬・自己中断', '脳卒中後てんかん', '脳炎・脳症', '電解質異常・低血糖', '飲酒・アルコール離脱', '頭部外傷', '脳腫瘍'] }
+    ],
+    asp: [
+      { t: 'list', k: 'bg', label: '背景（嚥下機能が低下した原因）', tpl: '背景に{v}があり、嚥下機能が低下していた。',
+        items: ['脳梗塞の後遺症', '脳出血の後遺症', '認知症', 'パーキンソン病', '神経筋疾患', '加齢による嚥下機能の低下'] },
+      { t: 'phr', k: 'life', label: '生活の状況', items: [
+        { id: 'tube', label: '経管栄養中', text: '経管栄養を行っていた。' },
+        { id: 'bed', label: '日常生活は全介助', text: '日常生活は全介助であった。' },
+        { id: 'facility', label: '施設に入所中', text: '施設に入所していた。' },
+        { id: 'recur', label: '誤嚥性肺炎を繰り返している', text: 'これまでにも誤嚥性肺炎を繰り返していた。' } ] },
+      { t: 'list', k: 'sx', label: '来院時の症状', tpl: '{v}を認めた。',
+        items: ['発熱', '呼吸困難', '湿性咳嗽', '喀痰の増加', '意識レベルの低下', '食事量の低下'] },
+      { t: 'adrop', k: 'adrop', label: 'A-DROP' },
+      { t: 'input', k: 'o2', label: '酸素化', ph: '例：室内気でSpO2 86%と低酸素血症を認めた', tpl: '{v}。' },
+      { t: 'input', k: 'img', label: '画像所見', ph: '例：胸部CTで両側下葉の背側に浸潤影を認めた', tpl: '{v}。' },
+      { t: 'input', k: 'lab', label: '血液検査', ph: '例：白血球 15,800/μL、CRP 18.2 mg/dL', tpl: '血液検査では{v}であった。' }
+    ],
+    generic: [
+      { t: 'input', k: 'state', label: '入院時の状態', area: true, ph: '自由記載（よく使う文は下で定型文として登録できます）', tpl: '{v}' }
+    ]
+  };
+
+  var ADROP = [
+    { id: 'A', label: 'A 年齢（男性70歳以上・女性75歳以上）', word: '年齢' },
+    { id: 'D', label: 'D 脱水（BUN 21 mg/dL以上）', word: '脱水' },
+    { id: 'R', label: 'R 呼吸（SpO2 90%以下、またはPaO2 60 Torr以下）', word: '呼吸' },
+    { id: 'O', label: 'O 意識障害', word: '意識障害' },
+    { id: 'P', label: 'P 血圧（収縮期90 mmHg以下）', word: '血圧' }
+  ];
+
+  var COURSE = {
+    stroke: [
+      { t: 'phr', k: 'tx', label: '行った治療と経過', items: [
+        { id: 'tpa', label: '静注血栓溶解療法', text: '来院後ただちに静注血栓溶解療法を行った。' },
+        { id: 'evt', label: '経皮的脳血栓回収術', text: '主幹動脈の閉塞に対して経皮的脳血栓回収術を行った。' },
+        { id: 'recan', label: '再開通を得た', text: '閉塞していた血管の再開通を得た。' },
+        { id: 'dapt', label: '抗血小板薬2剤併用', text: '抗血小板薬2剤併用療法を開始した。' },
+        { id: 'sapt', label: '抗血小板薬', text: '抗血小板薬を開始した。' },
+        { id: 'arga', label: 'アルガトロバン', text: 'アルガトロバンの持続静注を行った。' },
+        { id: 'ozag', label: 'オザグレルナトリウム', text: 'オザグレルナトリウムの点滴静注を行った。' },
+        { id: 'edara', label: 'エダラボン', text: '脳保護薬としてエダラボンの点滴静注を行った。' },
+        { id: 'doac', label: '抗凝固薬', text: '出血性変化がないことを確かめたうえで、抗凝固薬を開始した。' },
+        { id: 'edema', label: '脳浮腫の治療', text: '脳浮腫に対して高張グリセロールを投与した。' },
+        { id: 'progress', label: '神経症状の増悪', text: '入院後に神経症状の増悪を認め、治療を強化した。' },
+        { id: 'hi', label: '出血性梗塞を合併', text: '経過中に出血性梗塞を認め、抗血栓療法を調整した。' },
+        { id: 'pneu', label: '誤嚥性肺炎を合併', text: '経過中に誤嚥性肺炎を合併し、抗菌薬による治療を要した。' },
+        { id: 'tube', label: '経鼻胃管で栄養', text: '嚥下障害のため、経鼻胃管による経腸栄養を行った。' },
+        { id: 'workup', label: '病型診断の検査', text: '心エコー、ホルター心電図、頸動脈エコーなどで病型の診断を進めた。' } ] }
+    ],
+    se: [
+      { t: 'phr', k: 'tx', label: '行った治療と経過', items: [
+        { id: 'dzp', label: 'ジアゼパム静注', text: 'ジアゼパムを静注した。' },
+        { id: 'mdz', label: 'ミダゾラム静注', text: 'ミダゾラムを静注した。' },
+        { id: 'fos', label: 'ホスフェニトイン', text: 'ホスフェニトインを静注した。' },
+        { id: 'lev', label: 'レベチラセタム', text: 'レベチラセタムを静注した。' },
+        { id: 'lcm', label: 'ラコサミド', text: 'ラコサミドを静注した。' },
+        { id: 'pb', label: 'フェノバルビタール', text: 'フェノバルビタールを静注した。' },
+        { id: 'refr', label: '難治性：ミダゾラム持続', text: '第二段階の治療でも発作が止まらず、難治性てんかん重積状態としてミダゾラムの持続静注を行った。' },
+        { id: 'prop', label: 'プロポフォール持続', text: 'プロポフォールの持続静注による全身麻酔で発作を抑えた。' },
+        { id: 'intub', label: '気管挿管・人工呼吸', text: '気道を確保するため気管挿管を行い、人工呼吸管理とした。' },
+        { id: 'ceeg', label: '持続脳波モニタリング', text: '非けいれん性の発作が続いていないかを確かめるため、持続脳波モニタリングを行った。' },
+        { id: 'workup', label: '原因の検索', text: '頭部MRI、髄液検査、血液検査で原因を調べた。' },
+        { id: 'acv', label: 'アシクロビル', text: 'ヘルペス脳炎を否定できず、アシクロビルの投与を開始した。' },
+        { id: 'oral', label: '経口薬へ切り替え', text: '発作が止まったことを確かめ、経口の抗てんかん薬へ切り替えた。' },
+        { id: 'pneu', label: '誤嚥性肺炎を合併', text: '経過中に誤嚥性肺炎を合併し、抗菌薬による治療を要した。' },
+        { id: 'rhabdo', label: '横紋筋融解症を合併', text: '横紋筋融解症を合併し、補液を行った。' } ] }
+    ],
+    asp: [
+      { t: 'phr', k: 'tx', label: '行った治療と経過', items: [
+        { id: 'abx', label: '抗菌薬を開始', text: '絶食とし、抗菌薬による治療を開始した。' },
+        { id: 'broad', label: '広域の抗菌薬へ変更', text: '初期治療で改善が乏しく、抗菌薬を広域のものへ変更した。' },
+        { id: 'culture', label: '培養結果で変更', text: '喀痰培養の結果に基づいて抗菌薬を変更した。' },
+        { id: 'o2', label: '酸素投与', text: '酸素投与を行った。' },
+        { id: 'hfnc', label: '高流量鼻カニュラ', text: '高流量鼻カニュラ酸素療法を行った。' },
+        { id: 'nppv', label: 'NPPV', text: '非侵襲的陽圧換気を行った。' },
+        { id: 'intub', label: '気管挿管・人工呼吸', text: '呼吸不全が進行し、気管挿管のうえ人工呼吸管理を行った。' },
+        { id: 'suction', label: '頻回の喀痰吸引', text: '頻回の喀痰吸引を要した。' },
+        { id: 'shock', label: '敗血症性ショック', text: '敗血症性ショックを合併し、昇圧薬による循環管理を要した。' },
+        { id: 'swal', label: '嚥下機能の評価', text: '嚥下内視鏡検査または嚥下造影検査で嚥下機能を評価した。' },
+        { id: 'tube', label: '経鼻胃管で栄養', text: '経口摂取が難しく、経鼻胃管による経腸栄養を開始した。' },
+        { id: 'tpn', label: '中心静脈栄養', text: '経腸栄養が難しく、中心静脈栄養を行った。' },
+        { id: 'relapse', label: '肺炎の再燃', text: '経過中に肺炎の再燃を認め、抗菌薬による治療を再開した。' },
+        { id: 'peg', label: '栄養方法の話し合い', text: '今後の栄養方法について、胃瘻造設の是非を含めて家族と話し合った。' } ] }
+    ],
+    generic: []
+  };
+
+  var OUT_COMMON = { t: 'phr', k: 'gen', label: '経過のまとめ', items: [
+    { id: 'improve', label: '症状は改善', text: '症状は改善した。' },
+    { id: 'stable', label: '全身状態は安定', text: '全身状態は安定した。' },
+    { id: 'residual', label: '後遺症が残った', text: '後遺症が残った。' } ] };
+
+  var OUT = {
+    stroke: [ OUT_COMMON,
+      { t: 'input', k: 'mrs', label: '退院時のmRS', ph: '例：3', tpl: '退院時のmRSは{v}であった。', half: true },
+      { t: 'input', k: 'nihss2', label: '退院時のNIHSS', num: true, tpl: '退院時のNIHSSは{v}点であった。', half: true } ],
+    se: [ OUT_COMMON,
+      { t: 'phr', k: 'se', label: 'てんかん重積のその後', items: [
+        { id: 'nofit', label: '発作の再発なし', text: 'その後、発作の再発はなかった。' },
+        { id: 'adjust', label: '抗てんかん薬を調整', text: '抗てんかん薬を調整した。' } ] } ],
+    asp: [ OUT_COMMON,
+      { t: 'phr', k: 'asp', label: '食事と栄養', items: [
+        { id: 'eat', label: '経口摂取を再開', text: '食形態を調整して経口摂取を再開した。' },
+        { id: 'tube', label: '経管栄養を継続', text: '経口摂取の再開は難しく、経管栄養を続けた。' } ] } ],
+    generic: [ OUT_COMMON ]
+  };
+
+  var DISPO = {
+    home: { label: '自宅へ退院', text: '自宅へ退院した。' },
+    kaifuku: { label: '回復期リハビリテーション病院へ転院', text: '回復期リハビリテーション病院へ転院した。' },
+    transfer: { label: '他院へ転院', text: '他院へ転院した。' },
+    facility: { label: '施設へ退院', text: '施設へ退院した。' },
+    stay: { label: '入院を継続', text: '現在も入院による治療を続けている。' },
+    death: { label: '死亡退院', text: '死亡退院となった。' }
+  };
+
+  /* 高額になった項目。f は表示する疾患（all はすべて）。理由の f も同じ */
+  var CHARGES = [
+    { id: 'scu', name: '脳卒中ケアユニット入院医療管理料', f: ['stroke'], reasons: [
+      { id: 'end', f: ['all'], text: '発症早期で神経症状が増悪するおそれが高く、NIHSSや意識レベルなどの神経所見を頻回に評価する必要があった。' },
+      { id: 'tpa', f: ['all'], text: '静注血栓溶解療法の後で、症候性頭蓋内出血を早く見つけるため、厳格な血圧管理と頻回の神経診察を行った。' },
+      { id: 'evt', f: ['all'], text: '血栓回収療法の後で、再閉塞、出血性変化、穿刺部の合併症に注意して観察した。' },
+      { id: 'bad', f: ['all'], text: '分枝粥腫型梗塞（BAD）で運動麻痺が進行しやすく、症状の推移を続けて観察する必要があった。' },
+      { id: 'large', f: ['all'], text: '梗塞が大きく、出血性梗塞と脳浮腫が進むおそれがあった。' },
+      { id: 'ecg', f: ['all'], text: '心房細動などの不整脈を見つけるため、持続心電図モニタリングを行った。' },
+      { id: 'dysph', f: ['all'], text: '嚥下障害と意識障害があり、誤嚥と呼吸状態の悪化に備えた監視を要した。' },
+      { id: 'bp', f: ['all'], text: '血圧と血糖の変動が大きく、急性期の全身管理を要した。' },
+      { id: 'team', f: ['all'], text: '医師、看護師、リハビリテーションの担当者が連携し、急性期から集中的に管理した。' } ] },
+    { id: 'kyumei', name: '救命救急入院料', f: ['all'], reasons: [
+      { id: 'coma', f: ['all'], text: '来院時に重い意識障害があり、気道の確保と呼吸・循環の管理を要した。' },
+      { id: 'se1', f: ['se'], text: 'てんかん重積状態で、静注抗てんかん薬や鎮静薬による呼吸抑制と循環の変動が起こるおそれがあり、続けて監視する必要があった。' },
+      { id: 'se2', f: ['se'], text: '発作が再び起きたときに、すぐ対応できる体制が必要であった。' },
+      { id: 'st1', f: ['stroke'], text: '重症の脳卒中で、意識障害と呼吸状態の悪化に備えた集中管理を要した。' },
+      { id: 'as1', f: ['asp'], text: '重症肺炎による呼吸不全があり、呼吸管理と全身状態の監視を続けて行う必要があった。' },
+      { id: 'as2', f: ['asp'], text: '敗血症性ショックを伴い、昇圧薬による循環管理を要した。' },
+      { id: 'vent', f: ['all'], text: '人工呼吸管理を要した。' } ] },
+    { id: 'icu', name: '特定集中治療室管理料', f: ['all'], reasons: [
+      { id: 'coma', f: ['all'], text: '重い意識障害があり、気道の確保と呼吸・循環の管理を要した。' },
+      { id: 'se1', f: ['se'], text: '難治性てんかん重積状態で、麻酔薬の持続静注と人工呼吸による集中管理を要した。' },
+      { id: 'st1', f: ['stroke'], text: '重症の脳卒中で、意識障害と呼吸状態の悪化に備えた集中管理を要した。' },
+      { id: 'as1', f: ['asp'], text: '重症肺炎による呼吸不全と循環不全があり、集中治療を要した。' },
+      { id: 'vent', f: ['all'], text: '人工呼吸管理を要した。' } ] },
+    { id: 'hcu', name: 'ハイケアユニット入院医療管理料', f: ['all'], reasons: [
+      { id: 'freq', f: ['all'], text: '一般病棟では対応が難しい、頻回の観察と処置を要した。' },
+      { id: 'step', f: ['all'], text: '集中治療を終えた後も状態が不安定で、続けて厳重な管理を要した。' },
+      { id: 'se1', f: ['se'], text: '発作の再発と、薬剤による呼吸抑制に備えた監視を要した。' },
+      { id: 'as1', f: ['asp'], text: '酸素需要が高く、呼吸状態の悪化に備えた監視を要した。' } ] },
+    { id: 'tpa', name: '静注血栓溶解療法', f: ['stroke'], reasons: [
+      { id: 'ind', f: ['all'], text: '発症からの時間と画像所見が適応基準を満たし、静注血栓溶解療法を行った。' },
+      { id: 'mon', f: ['all'], text: '投与後は症候性頭蓋内出血に備え、決められた間隔で神経診察と血圧測定を行った。' },
+      { id: 'imp', f: ['all'], text: '投与後に神経症状の改善を認めた。' } ] },
+    { id: 'evt', name: '経皮的脳血栓回収術', f: ['stroke'], reasons: [
+      { id: 'ind', f: ['all'], text: '画像検査で主幹動脈の閉塞を認め、適応基準を満たしたため経皮的脳血栓回収術を行った。' },
+      { id: 'bridge', f: ['all'], text: '静注血栓溶解療法に続けて行った。' },
+      { id: 'recan', f: ['all'], text: '閉塞していた血管の再開通を得た。' } ] },
+    { id: 'vent', name: '人工呼吸管理', f: ['all'], reasons: [
+      { id: 'coma', f: ['all'], text: '意識障害と呼吸抑制のため、気道の確保と人工呼吸管理を要した。' },
+      { id: 'se1', f: ['se'], text: '難治性てんかん重積状態に対して持続鎮静を行うため、人工呼吸管理を要した。' },
+      { id: 'as1', f: ['asp'], text: '呼吸不全が進行し、酸素療法や非侵襲的陽圧換気では十分な酸素化を保てなかった。' },
+      { id: 'wean', f: ['all'], text: '全身状態の改善を確かめて抜管した。' } ] },
+    { id: 'hfnc', name: '高流量鼻カニュラ酸素療法・非侵襲的陽圧換気', f: ['asp', 'se'], reasons: [
+      { id: 'hf', f: ['all'], text: '通常の酸素投与では十分な酸素化を保てず、高流量鼻カニュラ酸素療法を要した。' },
+      { id: 'nppv', f: ['all'], text: '二酸化炭素の貯留を伴う呼吸不全に対し、非侵襲的陽圧換気を行った。' } ] },
+    { id: 'eeg', name: '持続脳波モニタリング', f: ['se', 'stroke'], reasons: [
+      { id: 'ncse', f: ['all'], text: 'けいれんが止まった後も意識障害が続き、非けいれん性てんかん重積状態を否定する必要があった。' },
+      { id: 'titr', f: ['all'], text: '持続鎮静中は症状から発作を判断できないため、脳波で発作が抑えられていることを確かめながら薬剤の量を調整した。' } ] },
+    { id: 'ivasm', name: '静注抗てんかん薬・麻酔薬', f: ['se'], reasons: [
+      { id: 'second', f: ['all'], text: 'ベンゾジアゼピン系薬で発作が止まらず、第二段階の静注抗てんかん薬を要した。' },
+      { id: 'third', f: ['all'], text: '第二段階の薬剤でも発作が止まらず、麻酔薬の持続静注を要した。' },
+      { id: 'npo', f: ['all'], text: '経口摂取ができない間、静注製剤で抗てんかん薬を続けた。' } ] },
+    { id: 'abx', name: '抗菌薬（広域・長期）', f: ['asp', 'se', 'stroke'], reasons: [
+      { id: 'fail', f: ['all'], text: '初期治療で臨床的な改善が乏しく、広域の抗菌薬へ変更した。' },
+      { id: 'mdr', f: ['all'], text: '最近の抗菌薬の使用や入院歴、経管栄養などの耐性菌のリスクがあり、広域の抗菌薬を選んだ。' },
+      { id: 'cult', f: ['all'], text: '喀痰培養の結果に基づいて抗菌薬を選んだ。' },
+      { id: 'relapse', f: ['all'], text: '肺炎が再燃し、抗菌薬による治療を再開した。' },
+      { id: 'abscess', f: ['all'], text: '膿胸または肺膿瘍を合併し、長期の抗菌薬治療を要した。' } ] },
+    { id: 'drug', name: '高額な薬剤', f: ['all'], reasons: [
+      { id: 'edara', f: ['stroke'], text: '急性期の神経症候の改善を目的に、エダラボンを添付文書の用法・用量の範囲で投与した。' },
+      { id: 'arga', f: ['stroke'], text: 'アテローム血栓性脳梗塞の急性期で、アルガトロバンを添付文書の用法・用量の範囲で投与した。' },
+      { id: 'acv', f: ['se'], text: 'ヘルペス脳炎を否定できず、検査結果がそろうまでアシクロビルを投与した。' },
+      { id: 'iv', f: ['all'], text: '経口投与ができない間、静注製剤を用いた。' } ] },
+    { id: 'nutri', name: '栄養管理（経腸栄養・中心静脈栄養）', f: ['all'], reasons: [
+      { id: 'tube', f: ['all'], text: '嚥下障害のため経口摂取ができず、経鼻胃管による経腸栄養を行った。' },
+      { id: 'tpn', f: ['all'], text: '経腸栄養だけでは必要量を満たせず、中心静脈栄養を併用した。' },
+      { id: 'rd', f: ['all'], text: '低栄養が進まないよう、管理栄養士と連携して栄養量を調整した。' } ] },
+    { id: 'swallow', name: '嚥下機能検査（嚥下内視鏡・嚥下造影）', f: ['all'], reasons: [
+      { id: 'eval', f: ['all'], text: '経口摂取を再開するにあたり、誤嚥の有無と安全な食形態を確かめるため嚥下機能検査を行った。' },
+      { id: 'reeval', f: ['all'], text: '訓練の効果を確かめ、食形態を見直すため、検査を再度行った。' } ] },
+    { id: 'rehab', name: '疾患別リハビリテーション料（早期リハビリテーション加算・初期加算）', f: ['all'], reasons: [
+      { id: 'disuse', f: ['all'], text: '筋力低下、関節拘縮、深部静脈血栓症、肺炎などの廃用症候群を防ぐため、全身状態を確かめながら早期にリハビリテーションを始めた。' },
+      { id: 'ptot', f: ['stroke'], text: '片麻痺と高次脳機能障害に対し、発症早期から理学療法と作業療法を行った。' },
+      { id: 'st', f: ['stroke'], text: '失語と構音障害に対し、言語聴覚療法を行った。' },
+      { id: 'swal', f: ['all'], text: '嚥下障害に対し、言語聴覚士による摂食嚥下訓練を行い、経口摂取の再開をめざした。' },
+      { id: 'aspmob', f: ['asp'], text: '肺炎の治療と並行して、安静臥床による筋力低下を防ぐため、早期から離床を進めた。' },
+      { id: 'resp', f: ['asp'], text: '排痰を促す呼吸リハビリテーションを行った。' },
+      { id: 'semob', f: ['se'], text: '重積後の意識障害と筋力低下に対し、全身状態が落ち着いたことを確かめて早期から離床を進めた。' },
+      { id: 'adl', f: ['all'], text: '在宅復帰をめざし、日常生活動作の改善を目標に続けて行った。' } ] },
+    { id: 'long', name: '入院期間の長期化', f: ['all'], reasons: [
+      { id: 'comp', f: ['all'], text: '経過中に合併症を生じ、その治療のため入院期間が延びた。' },
+      { id: 'unstable', f: ['all'], text: '全身状態が安定せず、転院や退院ができる状態になるまで時間を要した。' },
+      { id: 'place', f: ['all'], text: '後遺症のため自宅への退院が難しく、転院先や施設の調整に時間を要した。' },
+      { id: 'nutri', f: ['all'], text: '栄養方法の方針を、胃瘻造設を含めて決めるまでに時間を要した。' } ] }
+  ];
+
+  var CLOSING = [
+    { id: 'c1', label: '以上の経過により、上記の診療を要しました。ご高配のほど…', text: '以上の経過により、上記の診療を要しました。ご高配のほど、よろしくお願い申し上げます。' },
+    { id: 'c2', label: '以上の理由により、上記の治療と管理が必要でした。ご理解のほど…', text: '以上の理由により、上記の治療と管理が必要でした。ご理解のほど、よろしくお願い申し上げます。' },
+    { id: 'none', label: '記載しない', text: '' }
+  ];
+
+  var DEFAULT_CHARGES = { stroke: ['scu', 'rehab'], se: ['kyumei', 'ivasm'], asp: ['abx', 'rehab'], generic: [] };
+
+  /* 自分で登録した定型文と項目（このページを開いている間だけ持つ） */
+  var MY = { phrases: [], charges: [] };
+  var seq = 0;
+  var dirty = false;
+  var manual = false;
+
+  /* ================= 小さな道具 ================= */
+
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function trim(s) { return (s || '').replace(/^[\s　]+|[\s　]+$/g, ''); }
+  function val(id) { var el = $(id); return el ? trim(el.value) : ''; }
+  function checkedValues(name) {
+    var els = document.getElementsByName(name), out = [];
+    for (var i = 0; i < els.length; i++) { if (els[i].checked) out.push(els[i].value); }
+    return out;
+  }
+  function radioValue(name) { var v = checkedValues(name); return v.length ? v[0] : ''; }
+  function setChecked(name, ids) {
+    var els = document.getElementsByName(name);
+    for (var i = 0; i < els.length; i++) { els[i].checked = ids.indexOf(els[i].value) >= 0; }
+  }
+  function findById(items, id) {
+    for (var i = 0; i < items.length; i++) { if (items[i].id === id) return items[i]; }
+    return null;
+  }
+  function inFor(f, dz) { return dz === 'generic' || f.indexOf('all') >= 0 || f.indexOf(dz) >= 0; }
+  /* 句点で終わっていない文に「。」を足す */
+  function sentence(s) {
+    s = trim(s);
+    if (!s) return '';
+    return /[。．.！？!?）)」]$/.test(s) ? s : s + '。';
+  }
+  function stripPeriod(s) { return trim(s).replace(/[。．]+$/, ''); }
+  function fill(tpl, v) { return tpl.replace('{v}', stripPeriod(v)); }
+  function chipHtml(type, name, value, label, checked) {
+    return '<label class="chip"><input type="' + type + '" name="' + esc(name) + '" value="' + esc(value) + '"' +
+      (checked ? ' checked' : '') + '><span>' + label + '</span></label>';
+  }
+  function currentDz() { return radioValue('dz') || 'stroke'; }
+
+  /* ================= 画面の組み立て ================= */
+
+  function fieldName(dz, sec, k) { return dz + '_' + sec + '_' + k; }
+
+  function fieldHtml(dz, sec, f) {
+    var name = fieldName(dz, sec, f.k), h = '', i;
+    if (f.t === 'radio' || f.t === 'phr' || f.t === 'list') {
+      var type = f.t === 'radio' ? 'radio' : 'checkbox';
+      var stack = f.t === 'phr' ? ' stack' : '';
+      h += '<div class="field"><span class="label">' + f.label + '</span><div class="chips' + stack + '">';
+      for (i = 0; i < f.items.length; i++) {
+        var it = f.items[i];
+        if (typeof it === 'string') h += chipHtml(type, name, it, esc(it), false);
+        else h += chipHtml(type, name, it.id, esc(it.label), false);
+      }
+      h += '</div></div>';
+    } else if (f.t === 'input') {
+      h += '<div class="field"><label for="' + name + '">' + f.label + ' <span class="hint">（任意）</span></label>';
+      if (f.area) h += '<textarea id="' + name + '" rows="3" placeholder="' + esc(f.ph || '') + '"></textarea>';
+      else h += '<input type="' + (f.num ? 'number' : 'text') + '" id="' + name + '"' + (f.num ? ' inputmode="numeric" min="0"' : '') +
+        ' placeholder="' + esc(f.ph || '') + '">';
+      h += '</div>';
+    } else if (f.t === 'select') {
+      h += '<div class="field"><label for="' + name + '">' + f.label + '</label><select id="' + name + '">';
+      for (i = 0; i < f.options.length; i++) {
+        h += '<option value="' + esc(f.options[i]) + '">' + (f.options[i] ? esc(f.options[i]) : '（指定しない）') + '</option>';
+      }
+      h += '</select></div>';
+    } else if (f.t === 'adrop') {
+      h += '<div class="field"><span class="label">A-DROP <span class="hint">（あてはまる項目を選ぶと点数が入ります。年齢と性別を入れると A は自動で選ばれます）</span></span><div class="chips stack">';
+      for (i = 0; i < ADROP.length; i++) h += chipHtml('checkbox', name, ADROP[i].id, esc(ADROP[i].label), false);
+      h += '</div></div>';
+    }
+    return h;
+  }
+
+  /* half が続く欄は横に並べる */
+  function fieldsHtml(dz, sec, fields) {
+    var h = '', i = 0;
+    while (i < fields.length) {
+      if (fields[i].half) {
+        h += '<div class="row">';
+        while (i < fields.length && fields[i].half) { h += fieldHtml(dz, sec, fields[i]); i++; }
+        h += '</div>';
+      } else { h += fieldHtml(dz, sec, fields[i]); i++; }
+    }
+    return h;
+  }
+
+  function buildDzBoxes(containerId, sec, table) {
+    var h = '';
+    for (var i = 0; i < DZ.length; i++) {
+      var dz = DZ[i].id, fields = table[dz] || [];
+      h += '<div class="dzbox" data-dz="' + dz + '">' + fieldsHtml(dz, sec, fields) + '</div>';
+    }
+    $(containerId).innerHTML = h;
+  }
+
+  function myBoxHtml(sec, title) {
+    return '<div class="my-title">' + (title || '＋ 自分の定型文') + '</div>' +
+      '<div id="mylist_' + esc(sec) + '"></div>' +
+      '<div class="myadd" data-sec="' + esc(sec) + '">' +
+      '<input type="text" class="my-input" placeholder="よく使う文を入れて「登録」">' +
+      '<label class="scope-check"><input type="checkbox" class="my-all"> すべての疾患で使う</label>' +
+      '<button type="button" class="btn btn-mine my-add">登録</button></div>';
+  }
+
+  function initMyBoxes(root) {
+    var boxes = (root || document).querySelectorAll('.my[data-sec]');
+    for (var i = 0; i < boxes.length; i++) {
+      if (boxes[i].getAttribute('data-ready')) continue;
+      boxes[i].innerHTML = myBoxHtml(boxes[i].getAttribute('data-sec'));
+      boxes[i].setAttribute('data-ready', '1');
+      renderMy(boxes[i].getAttribute('data-sec'));
+    }
+  }
+
+  function renderMy(sec, extraChecked) {
+    var box = $('mylist_' + sec);
+    if (!box) return;
+    var name = 'my_' + sec;
+    var keep = checkedValues(name);
+    if (extraChecked) keep.push(extraChecked);
+    var dz = currentDz(), h = '', shown = 0;
+    for (var i = 0; i < MY.phrases.length; i++) {
+      var p = MY.phrases[i];
+      if (p.sec !== sec) continue;
+      var vis = p.dz === 'all' || p.dz === dz;
+      if (vis) shown++;
+      h += '<div class="mychip" style="margin-bottom:5px;' + (vis ? '' : 'display:none;') + '">' +
+        chipHtml('checkbox', name, p.id, esc(p.text), keep.indexOf(p.id) >= 0 && vis) +
+        '<span class="scope">' + (p.dz === 'all' ? '全疾患' : dzLabel(p.dz)) + '</span>' +
+        '<button type="button" class="del" data-del="' + p.id + '" title="この定型文を削除">×</button></div>';
+    }
+    if (!shown) h = '<div class="my-empty">まだありません。下の欄に入れて登録すると、ここに選択肢として並びます。</div>' + h;
+    box.innerHTML = h;
+  }
+
+  function renderAllMy() {
+    var lists = document.querySelectorAll('[id^="mylist_"]');
+    for (var i = 0; i < lists.length; i++) renderMy(lists[i].id.substring(7));
+    updateMyStat();
+  }
+
+  function dzLabel(dz) {
+    var d = findById(DZ, dz);
+    return d ? d.label.replace(/^\S+\s/, '') : dz;
+  }
+
+  function chargePanelHtml(ch, custom) {
+    var h = '<div class="charge-head">' + chipHtml('checkbox', 'charge', ch.id, esc(ch.name) + (custom ? ' <span class="tag-mine">（自分で追加）</span>' : ''), false);
+    if (custom) h += '<button type="button" class="del" data-delcharge="' + ch.id + '" title="この項目を削除">×</button>';
+    h += '</div><div class="charge-body">' +
+      '<div class="field"><label for="chd_' + ch.id + '">期間・回数 <span class="hint">（任意・項目名のあとに括弧で入ります）</span></label>' +
+      '<input type="text" id="chd_' + ch.id + '" placeholder="例：10月1日から10月10日まで10日間"></div>';
+    if (ch.reasons && ch.reasons.length) {
+      h += '<div class="reason-label">必要だった理由</div><div class="chips stack">';
+      for (var i = 0; i < ch.reasons.length; i++) {
+        var r = ch.reasons[i];
+        h += '<span class="reason" data-f="' + r.f.join(' ') + '">' + chipHtml('checkbox', 'rs_' + ch.id, r.id, esc(r.text), false) + '</span>';
+      }
+      h += '</div>';
+    }
+    h += '<div class="my" data-sec="charge:' + ch.id + '" style="margin-top:10px;"></div>' +
+      '<div class="field"><label for="chf_' + ch.id + '">補足 <span class="hint">（任意）</span></label>' +
+      '<input type="text" id="chf_' + ch.id + '" placeholder="自由記載"></div></div>';
+    return h;
+  }
+
+  function addChargePanel(ch, custom) {
+    var div = document.createElement('div');
+    div.className = 'charge';
+    div.id = 'ch_' + ch.id;
+    div.setAttribute('data-f', custom ? 'all' : ch.f.join(' '));
+    div.innerHTML = chargePanelHtml(ch, custom);
+    $('charges').appendChild(div);
+    initMyBoxes(div);
+    return div;
+  }
+
+  function buildCharges() {
+    $('charges').innerHTML = '';
+    for (var i = 0; i < CHARGES.length; i++) addChargePanel(CHARGES[i], false);
+  }
+
+  function allCharges() { return CHARGES.concat(MY.charges); }
+
+  (function buildStatic() {
+    var h = '';
+    for (var i = 0; i < DZ.length; i++) h += chipHtml('radio', 'dz', DZ[i].id, DZ[i].label, i === 0);
+    $('dzChips').innerHTML = h;
+    buildDzBoxes('admBoxes', 'adm', ADM);
+    buildDzBoxes('courseBoxes', 'course', COURSE);
+    buildDzBoxes('outBoxes', 'out', OUT);
+    h = '';
+    for (i = 0; i < CLOSING.length; i++) h += chipHtml('radio', 'closing', CLOSING[i].id, esc(CLOSING[i].label), i === 0);
+    $('closing').innerHTML = h;
+    buildCharges();
+    initMyBoxes(document);
+  })();
+
+  /* ================= 疾患の切り替え ================= */
+
+  function applyDz() {
+    var dz = currentDz(), i;
+    var boxes = document.querySelectorAll('.dzbox');
+    for (i = 0; i < boxes.length; i++) boxes[i].className = 'dzbox' + (boxes[i].getAttribute('data-dz') === dz ? ' show' : '');
+    var panels = document.querySelectorAll('.charge');
+    for (i = 0; i < panels.length; i++) {
+      var f = panels[i].getAttribute('data-f').split(' ');
+      panels[i].style.display = inFor(f, dz) ? '' : 'none';
+    }
+    var rs = document.querySelectorAll('.reason');
+    for (i = 0; i < rs.length; i++) rs[i].style.display = inFor(rs[i].getAttribute('data-f').split(' '), dz) ? '' : 'none';
+    renderAllMy();
+  }
+
+  function onDzChange() {
+    var dz = currentDz();
+    if (!checkedValues('charge').length) setChecked('charge', DEFAULT_CHARGES[dz] || []);
+    applyDz();
+    syncChargeOpen();
+  }
+
+  function syncChargeOpen() {
+    var panels = document.querySelectorAll('.charge');
+    var on = checkedValues('charge');
+    for (var i = 0; i < panels.length; i++) {
+      var id = panels[i].id.substring(3);
+      panels[i].className = 'charge' + (on.indexOf(id) >= 0 ? ' on' : '');
+    }
+  }
+
+  /* 年齢と性別から A-DROP の A を決める（男性70歳以上・女性75歳以上） */
+  function syncAdropAge() {
+    var age = parseInt(val('age'), 10), sex = val('sex');
+    if (isNaN(age) || !sex) return;
+    var hit = (sex === '男性' && age >= 70) || (sex === '女性' && age >= 75);
+    var els = document.getElementsByName(fieldName('asp', 'adm', 'adrop'));
+    for (var i = 0; i < els.length; i++) { if (els[i].value === 'A') els[i].checked = hit; }
+  }
+
+  /* ================= 文章の組み立て ================= */
+
+  function fieldText(dz, sec, f) {
+    var name = fieldName(dz, sec, f.k), i, v;
+    if (f.t === 'radio' || f.t === 'phr') {
+      var ids = checkedValues(name), out = [];
+      for (i = 0; i < f.items.length; i++) {
+        if (ids.indexOf(f.items[i].id) >= 0 && f.items[i].text) out.push(f.items[i].text);
+      }
+      return out.join('');
+    }
+    if (f.t === 'list') {
+      var words = [], sel = checkedValues(name);
+      for (i = 0; i < f.items.length; i++) { if (sel.indexOf(f.items[i]) >= 0) words.push(f.items[i]); }
+      return words.length ? fill(f.tpl, words.join('、')) : '';
+    }
+    if (f.t === 'input') {
+      v = val(name);
+      /* tpl のない欄（部位など）は傷病名にだけ使い、本文には入れない */
+      if (!v || !f.tpl) return '';
+      return f.area ? sentence(v) : sentence(fill(f.tpl, v));
+    }
+    if (f.t === 'adrop') {
+      var on = checkedValues(name), w = [];
+      for (i = 0; i < ADROP.length; i++) { if (on.indexOf(ADROP[i].id) >= 0) w.push(ADROP[i].word); }
+      if (!w.length) return '';
+      return 'A-DROPは' + w.length + '点（' + w.join('、') + '）であった。';
+    }
+    return '';
+  }
+
+  function sectionText(sec, table) {
+    var dz = currentDz(), fields = table[dz] || [], out = '';
+    for (var i = 0; i < fields.length; i++) out += fieldText(dz, sec, fields[i]);
+    return out;
+  }
+
+  function myText(sec) {
+    var ids = checkedValues('my_' + sec), out = '', dz = currentDz();
+    for (var i = 0; i < MY.phrases.length; i++) {
+      var p = MY.phrases[i];
+      if (p.sec === sec && ids.indexOf(p.id) >= 0 && (p.dz === 'all' || p.dz === dz)) out += sentence(p.text);
+    }
+    return out;
+  }
+
+  function freeText(id) {
+    var v = trim($(id).value);
+    return v ? sentence(v) : '';
+  }
+
+  function formatDate(iso) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
+    if (!m) return '';
+    return m[1] + '年' + parseInt(m[2], 10) + '月' + parseInt(m[3], 10) + '日';
+  }
+  function dayCount(a, b) {
+    var ma = /^(\d{4})-(\d{2})-(\d{2})$/.exec(a || ''), mb = /^(\d{4})-(\d{2})-(\d{2})$/.exec(b || '');
+    if (!ma || !mb) return 0;
+    var da = Date.UTC(+ma[1], +ma[2] - 1, +ma[3]), db = Date.UTC(+mb[1], +mb[2] - 1, +mb[3]);
+    return Math.round((db - da) / 86400000) + 1;
+  }
+  function commaNum(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+
+  function autoDx() {
+    var dz = currentDz();
+    if (dz === 'stroke') {
+      var st = findById(ADM.stroke[0].items, radioValue(fieldName('stroke', 'adm', 'stype')));
+      var name = st ? st.dx : '脳梗塞';
+      var side = val(fieldName('stroke', 'adm', 'side')), region = val(fieldName('stroke', 'adm', 'region'));
+      var loc = (side === '両側' && region ? '両側の' : side) + region;
+      return loc ? name + '（' + loc + '）' : name;
+    }
+    if (dz === 'se') return 'てんかん重積状態';
+    if (dz === 'asp') return '誤嚥性肺炎';
+    return '';
+  }
+
+  function buildNote() {
+    var dz = currentDz(), parts = [], head = ['【症状詳記】'];
+    var dx = val('dx') || autoDx();
+    if (dx) head.push('傷病名：' + dx);
+    var who = [];
+    if (val('age')) who.push(val('age') + '歳');
+    if (val('sex')) who.push(val('sex'));
+    if (who.length) head.push('年齢・性別：' + who.join('　'));
+    var a = val('admit'), b = val('discharge');
+    if (a) {
+      var period = formatDate(a) + 'から';
+      if (b) {
+        var n = dayCount(a, b);
+        period += formatDate(b) + 'まで' + (n > 0 ? '（' + n + '日間）' : '');
+      } else period += '入院中';
+      head.push('入院期間：' + period);
+    }
+    var dp = DISPO[val('dispo')];
+    if (dp) head.push('転帰：' + dp.label);
+    if (val('points')) head.push('請求点数：' + commaNum(val('points')) + '点');
+    parts.push(head.join('\n'));
+
+    /* 入院時の状態 */
+    var adm = '';
+    if (val('comorb')) adm += sentence('併存疾患として' + stripPeriod(val('comorb')) + 'がある');
+    adm += sectionText('adm', ADM) + myText('admission') + freeText('admFree');
+    if (adm) parts.push('■入院時の状態\n' + adm);
+
+    /* 経過 */
+    var course = sectionText('course', COURSE) + myText('course') + freeText('courseFree');
+    if (course) parts.push('■入院後の経過と治療\n' + course);
+
+    /* 高額になった項目 */
+    var on = checkedValues('charge'), list = allCharges(), cl = [], no = 0;
+    for (var i = 0; i < list.length; i++) {
+      var ch = list[i];
+      if (on.indexOf(ch.id) < 0) continue;
+      var custom = !ch.reasons;
+      if (!custom && !inFor(ch.f, dz)) continue;
+      no++;
+      var title = '（' + no + '）' + ch.name + (val('chd_' + ch.id) ? '（' + stripPeriod(val('chd_' + ch.id)) + '）' : '');
+      var body = '';
+      if (!custom) {
+        var rids = checkedValues('rs_' + ch.id);
+        for (var j = 0; j < ch.reasons.length; j++) {
+          var r = ch.reasons[j];
+          if (rids.indexOf(r.id) >= 0 && inFor(r.f, dz)) body += r.text;
+        }
+      }
+      body += myText('charge:' + ch.id);
+      if (val('chf_' + ch.id)) body += sentence(val('chf_' + ch.id));
+      cl.push(title + (body ? '\n' + body : ''));
+    }
+    if (cl.length) parts.push('■高額な診療を要した理由\n' + cl.join('\n'));
+
+    /* 転帰 */
+    var out = sectionText('out', OUT) + myText('outcome') + freeText('outFree');
+    if (dp) out += dp.text;
+    if (out) parts.push('■転帰\n' + out);
+
+    /* 結び */
+    var c = findById(CLOSING, radioValue('closing'));
+    var closing = (c && c.text ? c.text : '') + myText('closing');
+    if (closing) parts.push(closing);
+
+    return sanitize(parts.join('\n\n'));
+  }
+
+  /* 文字化け対策：波ダッシュ・全角チルダを半角ハイフンへ */
+  function sanitize(text) { return text.replace(/[～〜]/g, '-'); }
+
+  /* ================= 画面の更新 ================= */
+
+  function render() {
+    $('dxAuto').textContent = autoDx() ? '（自動：' + autoDx() + '）' : '';
+    var warn = [];
+    if (!checkedValues('charge').length) warn.push('高額になった項目がまだ選ばれていません。');
+    var on = checkedValues('charge'), list = allCharges();
+    for (var i = 0; i < list.length; i++) {
+      var ch = list[i];
+      if (on.indexOf(ch.id) < 0 || !ch.reasons || !inFor(ch.f, currentDz())) continue;
+      if (!checkedValues('rs_' + ch.id).length && !checkedValues('my_charge:' + ch.id).length && !val('chf_' + ch.id)) {
+        warn.push('「' + ch.name + '」の理由がまだありません。');
+      }
+    }
+    $('warn').innerHTML = warn.map(esc).join('<br>');
+    $('warn').className = 'warn' + (warn.length ? ' show' : '');
+    if (!manual) $('note').value = buildNote();
+    updateCount();
+    $('manualBar').className = 'manual-bar' + (manual ? ' show' : '');
+    $('note').className = manual ? 'manual' : '';
+  }
+
+  function updateCount() {
+    var t = $('note').value.replace(/\n/g, '');
+    $('count').textContent = '本文 ' + t.length + ' 字（改行を除く）';
+  }
+
+  function updateMyStat() {
+    $('myStat').textContent = '登録中の定型文 ' + MY.phrases.length + ' 件、追加した項目 ' + MY.charges.length + ' 件' +
+      (dirty ? '（まだ書き出していない変更があります）' : '');
+  }
+
+  function flash(text) {
+    $('msg').textContent = text;
+    setTimeout(function () { if ($('msg').textContent === text) $('msg').textContent = ''; }, 3500);
+  }
+
+  /* ================= 定型文の登録・削除 ================= */
+
+  function addPhrase(sec, text, dz) {
+    text = trim(text);
+    if (!text) return null;
+    for (var i = 0; i < MY.phrases.length; i++) {
+      var p = MY.phrases[i];
+      if (p.sec === sec && p.text === text && p.dz === dz) return p;
+    }
+    var np = { id: 'm' + (++seq), sec: sec, text: text, dz: dz };
+    MY.phrases.push(np);
+    return np;
+  }
+
+  function onAddClick(wrap) {
+    var sec = wrap.getAttribute('data-sec');
+    var input = wrap.querySelector('.my-input');
+    var dz = wrap.querySelector('.my-all').checked ? 'all' : currentDz();
+    var p = addPhrase(sec, input.value, dz);
+    if (!p) { input.focus(); return; }
+    input.value = '';
+    dirty = true;
+    renderMy(sec, p.id);
+    updateMyStat();
+    render();
+    flash('定型文を登録しました。次回も使うときは「定型文を書き出す」で保存してください。');
+  }
+
+  function deletePhrase(id) {
+    for (var i = 0; i < MY.phrases.length; i++) {
+      if (MY.phrases[i].id === id) {
+        if (!window.confirm('この定型文を削除します。\n\n' + MY.phrases[i].text)) return;
+        var sec = MY.phrases[i].sec;
+        MY.phrases.splice(i, 1);
+        dirty = true;
+        renderMy(sec);
+        updateMyStat();
+        render();
+        return;
+      }
+    }
+  }
+
+  function addCharge(name, id) {
+    name = trim(name);
+    if (!name) return null;
+    for (var i = 0; i < allCharges().length; i++) { if (allCharges()[i].name === name) return allCharges()[i]; }
+    var ch = { id: id || ('c' + (++seq)), name: name };
+    MY.charges.push(ch);
+    addChargePanel(ch, true);
+    return ch;
+  }
+
+  function deleteCharge(id) {
+    for (var i = 0; i < MY.charges.length; i++) {
+      if (MY.charges[i].id !== id) continue;
+      if (!window.confirm('項目「' + MY.charges[i].name + '」と、その項目に登録した定型文を削除します。')) return;
+      MY.charges.splice(i, 1);
+      var sec = 'charge:' + id;
+      MY.phrases = MY.phrases.filter(function (p) { return p.sec !== sec; });
+      var el = $('ch_' + id);
+      if (el) el.parentNode.removeChild(el);
+      dirty = true;
+      updateMyStat();
+      render();
+      return;
+    }
+  }
+
+  /* ================= 書き出し・読み込み ================= */
+
+  function todayStamp() {
+    var n = new Date();
+    function p(x) { return (x < 10 ? '0' : '') + x; }
+    return n.getFullYear() + p(n.getMonth() + 1) + p(n.getDate());
+  }
+
+  function downloadFile(filename, text, mime) {
+    var blob = new Blob([text], { type: mime });
+    if (window.navigator && window.navigator.msSaveOrOpenBlob) { window.navigator.msSaveOrOpenBlob(blob, filename); return; }
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1500);
+  }
+
+  /* Windows のメモ帳や電子カルテでも開けるよう、BOM付きUTF-8・CRLF改行で保存する */
+  function toTxt(text) { return '﻿' + sanitize(text).replace(/\r?\n/g, '\r\n'); }
+
+  function txtFileName() {
+    var dx = (val('dx') || autoDx() || '症状詳記').replace(/[\\\/:*?"<>|（）()\s]/g, '');
+    return '症状詳記_' + dx.substring(0, 20) + '_' + todayStamp() + '.txt';
+  }
+
+  function saveTxt() {
+    downloadFile(txtFileName(), toTxt($('note').value), 'text/plain;charset=utf-8');
+    flash('テキストファイルを保存しました（' + txtFileName() + '）。');
+  }
+
+  function exportMy() {
+    if (!MY.phrases.length && !MY.charges.length) { flash('書き出す定型文がまだありません。'); return; }
+    var data = { app: 'shojo-shoki-helper', version: 1, exported: todayStamp(), charges: [], phrases: [] };
+    for (var i = 0; i < MY.charges.length; i++) data.charges.push({ id: MY.charges[i].id, name: MY.charges[i].name });
+    for (i = 0; i < MY.phrases.length; i++) data.phrases.push({ sec: MY.phrases[i].sec, text: MY.phrases[i].text, dz: MY.phrases[i].dz });
+    downloadFile('症状詳記_定型文_' + todayStamp() + '.json', JSON.stringify(data, null, 2), 'application/json;charset=utf-8');
+    dirty = false;
+    updateMyStat();
+    flash('定型文を書き出しました。次回は「定型文を読み込む」でこのファイルを選んでください。');
+  }
+
+  function importMy(text) {
+    var data;
+    try { data = JSON.parse(String(text).replace(/^﻿/, '')); } catch (e) { data = null; }
+    if (!data || data.app !== 'shojo-shoki-helper' || !data.phrases) { window.alert('このツールで書き出した定型文のファイルではないようです。'); return; }
+    var map = {}, addedC = 0, addedP = 0, i, before;
+    var charges = data.charges || [];
+    for (i = 0; i < charges.length; i++) {
+      before = MY.charges.length;
+      var ch = addCharge(charges[i].name);
+      if (!ch) continue;
+      if (MY.charges.length > before) addedC++;
+      map['charge:' + charges[i].id] = 'charge:' + ch.id;
+    }
+    for (i = 0; i < data.phrases.length; i++) {
+      var p = data.phrases[i];
+      if (!p || !p.sec || !p.text) continue;
+      var sec = map[p.sec] || p.sec;
+      if (sec.indexOf('charge:') === 0 && !findById(allCharges(), sec.substring(7))) continue;
+      var dz = (p.dz === 'all' || findById(DZ, p.dz)) ? p.dz : 'all';
+      before = MY.phrases.length;
+      addPhrase(sec, p.text, dz);
+      if (MY.phrases.length > before) addedP++;
+    }
+    initMyBoxes(document);
+    applyDz();
+    syncChargeOpen();
+    render();
+    flash('定型文 ' + addedP + ' 件、項目 ' + addedC + ' 件を読み込みました（重複は除きました）。');
+  }
+
+  /* ================= コピー（2段フォールバック） ================= */
+
+  function copyNote() {
+    var ta = $('note');
+    var text = sanitize(ta.value);
+    function done(ok) { flash(ok ? 'コピーしました。' : '全選択しました。Ctrl+C でコピーしてください。'); }
+    function fallback() {
+      ta.focus(); ta.select(); ta.setSelectionRange(0, text.length);
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+      done(ok);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { done(true); })['catch'](fallback);
+    } else {
+      fallback();
+    }
+  }
+
+  /* 患者さんの入力だけを消す（登録した定型文と追加した項目は残す） */
+  function resetAll() {
+    var keepDz = currentDz();
+    $('form').reset();
+    setChecked('dz', [keepDz]);
+    setChecked('closing', ['c1']);
+    setChecked('charge', []);
+    manual = false;
+    renderAllMy();
+    onDzChange();
+    render();
+  }
+
+  /* ================= イベント ================= */
+
+  $('form').addEventListener('change', function (e) {
+    var t = e.target;
+    if (t.classList && (t.classList.contains('my-input') || t.classList.contains('my-all'))) return;
+    if (t.id === 'importFile') return;
+    if (t.name === 'dz') onDzChange();
+    if (t.name === 'charge') syncChargeOpen();
+    if (t.id === 'age' || t.id === 'sex') syncAdropAge();
+    render();
+  });
+  $('form').addEventListener('input', function (e) {
+    if (e.target.classList && e.target.classList.contains('my-input')) return;
+    if (e.target.id === 'age') syncAdropAge();
+    render();
+  });
+  $('form').addEventListener('click', function (e) {
+    var t = e.target;
+    if (t.getAttribute('data-del')) { deletePhrase(t.getAttribute('data-del')); return; }
+    if (t.getAttribute('data-delcharge')) { deleteCharge(t.getAttribute('data-delcharge')); return; }
+    if (t.classList.contains('my-add')) onAddClick(t.parentNode);
+  });
+  $('form').addEventListener('keydown', function (e) {
+    var t = e.target;
+    if ((e.key === 'Enter' || e.keyCode === 13) && t.classList) {
+      if (t.classList.contains('my-input')) { e.preventDefault(); onAddClick(t.parentNode); }
+      else if (t.id === 'newCharge') { e.preventDefault(); $('btnAddCharge').click(); }
+    }
+  });
+  $('btnAddCharge').addEventListener('click', function () {
+    var name = val('newCharge');
+    if (!name) { $('newCharge').focus(); return; }
+    var before = MY.charges.length;
+    var ch = addCharge(name);
+    $('newCharge').value = '';
+    if (MY.charges.length > before) dirty = true;
+    var els = document.getElementsByName('charge');
+    for (var i = 0; i < els.length; i++) { if (els[i].value === ch.id) els[i].checked = true; }
+    syncChargeOpen();
+    updateMyStat();
+    render();
+  });
+  $('note').addEventListener('input', function () {
+    if (!manual) { manual = true; render(); }
+    updateCount();
+  });
+  $('btnRebuild').addEventListener('click', function () {
+    if (!window.confirm('手で直した内容を消して、選択内容から作り直します。よろしいですか？')) return;
+    manual = false;
+    render();
+  });
+  $('btnSave').addEventListener('click', saveTxt);
+  $('btnCopy').addEventListener('click', copyNote);
+  $('btnReset').addEventListener('click', function () {
+    if (window.confirm('患者さんについての入力をすべて消します。登録した定型文は残ります。よろしいですか？')) resetAll();
+  });
+  $('btnExport').addEventListener('click', exportMy);
+  $('btnImport').addEventListener('click', function () { $('importFile').click(); });
+  $('importFile').addEventListener('change', function () {
+    var file = this.files && this.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () { importMy(reader.result); $('importFile').value = ''; };
+    reader.readAsText(file, 'utf-8');
+  });
+  window.addEventListener('beforeunload', function (e) {
+    if (!dirty) return undefined;
+    var m = '書き出していない定型文があります。ページを閉じると消えます。';
+    (e || window.event).returnValue = m;
+    return m;
+  });
+
+  onDzChange();
+  render();
+
+  /* ================= セルフテスト（?selftest で実行） ================= */
+
+  function selfTest() {
+    var fails = [];
+    function check(cond, label) { if (!cond) fails.push(label); }
+    function txt() { render(); return $('note').value; }
+    function pick(name, ids) { setChecked(name, ids); }
+    var i, t;
+
+    /* 疾患ごとに、全部の選択肢を選んで文章が崩れないか */
+    for (i = 0; i < DZ.length; i++) {
+      resetAll();
+      setChecked('dz', [DZ[i].id]); onDzChange();
+      var dz = DZ[i].id;
+      var tables = [['adm', ADM], ['course', COURSE], ['out', OUT]];
+      for (var s = 0; s < tables.length; s++) {
+        var fields = tables[s][1][dz] || [];
+        for (var k = 0; k < fields.length; k++) {
+          var f = fields[k], name = fieldName(dz, tables[s][0], f.k);
+          if (f.t === 'phr' || f.t === 'list') {
+            var all = []; for (var q = 0; q < f.items.length; q++) all.push(typeof f.items[q] === 'string' ? f.items[q] : f.items[q].id);
+            pick(name, all);
+          } else if (f.t === 'radio') pick(name, [f.items[0].id]);
+          else if (f.t === 'adrop') pick(name, ['A', 'R', 'O']);
+          else if (f.t === 'input') $(name).value = f.num ? '12' : 'テスト入力〜';
+          else if (f.t === 'select') $(name).value = f.options[2];
+        }
+      }
+      var on = [];
+      for (var c = 0; c < CHARGES.length; c++) {
+        if (!inFor(CHARGES[c].f, dz)) continue;
+        on.push(CHARGES[c].id);
+        var rids = []; for (var r = 0; r < CHARGES[c].reasons.length; r++) rids.push(CHARGES[c].reasons[r].id);
+        pick('rs_' + CHARGES[c].id, rids);
+      }
+      pick('charge', on); syncChargeOpen();
+      $('age').value = '80'; $('sex').value = '男性';
+      $('admit').value = '2026-10-01'; $('discharge').value = '2026-10-20'; $('dispo').value = 'kaifuku'; $('points').value = '92345';
+      t = txt();
+      check(t.indexOf('undefined') < 0 && t.indexOf('null') < 0, dz + '：undefined/null が混入');
+      check(!/[～〜]/.test(t), dz + '：波ダッシュが残る');
+      check(t.indexOf('。。') < 0, dz + '：句点が重なる');
+      check(t.indexOf('（20日間）') >= 0, dz + '：入院日数が出ない');
+      check(t.indexOf('請求点数：92,345点') >= 0, dz + '：請求点数の書式');
+      check(t.indexOf('回復期リハビリテーション病院へ転院した。') >= 0, dz + '：転帰の文が出ない');
+      check(t.indexOf('■高額な診療を要した理由') >= 0 || dz === 'generic', dz + '：高額の節が出ない');
+      check(t.indexOf('ご高配のほど') >= 0, dz + '：結びが出ない');
+      if (dz === 'stroke') {
+        check(t.indexOf('傷病名：アテローム血栓性脳梗塞（左テスト入力-）') >= 0, 'stroke：傷病名の自動入力');
+        check(t.indexOf('（1）脳卒中ケアユニット入院医療管理料') >= 0, 'stroke：SCU が出ない');
+        check(t.indexOf('てんかん重積状態で、静注') < 0, 'stroke：重積の理由が混入');
+      }
+      if (dz === 'se') {
+        check(t.indexOf('傷病名：てんかん重積状態') >= 0, 'se：傷病名');
+        check(t.indexOf('脳卒中ケアユニット') < 0, 'se：SCU が出ている');
+        check(t.indexOf('てんかん重積状態で、静注抗てんかん薬') >= 0, 'se：救命救急の理由が出ない');
+      }
+      if (dz === 'asp') {
+        check(t.indexOf('A-DROPは3点（年齢、呼吸、意識障害）であった。') >= 0, 'asp：A-DROP の文');
+        check(t.indexOf('背景に脳梗塞の後遺症、') >= 0, 'asp：背景の文');
+      }
+    }
+
+    /* A-DROP の A を年齢・性別から自動で決める */
+    resetAll(); setChecked('dz', ['asp']); onDzChange();
+    $('age').value = '72'; $('sex').value = '女性'; syncAdropAge();
+    check(checkedValues(fieldName('asp', 'adm', 'adrop')).indexOf('A') < 0, 'A-DROP：女性72歳で A が付く');
+    $('sex').value = '男性'; syncAdropAge();
+    check(checkedValues(fieldName('asp', 'adm', 'adrop')).indexOf('A') >= 0, 'A-DROP：男性72歳で A が付かない');
+
+    /* 自分の定型文：登録・疾患での絞り込み・書き出し形式・読み込み */
+    resetAll(); setChecked('dz', ['stroke']); onDzChange();
+    var saved = MY; MY = { phrases: [], charges: [] };
+    var p1 = addPhrase('course', '自作の経過文', 'stroke');
+    var p2 = addPhrase('course', '全疾患の経過文', 'all');
+    var cc = addCharge('テスト項目');
+    var p3 = addPhrase('charge:' + cc.id, 'テスト項目の理由', 'all');
+    renderAllMy();
+    setChecked('my_course', [p1.id, p2.id]);
+    setChecked('charge', [cc.id]); setChecked('my_charge:' + cc.id, [p3.id]); syncChargeOpen();
+    t = txt();
+    check(t.indexOf('自作の経過文。全疾患の経過文。') >= 0, '自作：経過に入らない');
+    check(t.indexOf('テスト項目\nテスト項目の理由。') >= 0, '自作：追加項目の理由が入らない');
+    setChecked('dz', ['se']); onDzChange();
+    t = txt();
+    check(t.indexOf('自作の経過文') < 0 && t.indexOf('全疾患の経過文') >= 0, '自作：疾患の絞り込みが効かない');
+    var exported = JSON.stringify({ app: 'shojo-shoki-helper', version: 1, charges: [{ id: cc.id, name: cc.name }],
+      phrases: [{ sec: 'course', text: '自作の経過文', dz: 'stroke' }, { sec: 'charge:' + cc.id, text: 'テスト項目の理由', dz: 'all' }, { sec: 'course', text: '読み込んだ文', dz: 'all' }] });
+    var before = MY.phrases.length;
+    var oldAlert = window.alert; window.alert = function () {};
+    importMy(exported);
+    window.alert = oldAlert;
+    check(MY.phrases.length === before + 1, '読み込み：重複の除外か追加が正しくない（' + (MY.phrases.length - before) + '件増）');
+    check(MY.charges.length === 1, '読み込み：項目が重複した');
+    var cnt = MY.phrases.length;
+    importMy('{"app":"other"}');
+    check(MY.phrases.length === cnt, '読み込み：別形式のファイルを受け付けた');
+
+    /* テキストファイルの形式 */
+    var tx = toTxt('一行目\n二行目〜');
+    check(tx.charCodeAt(0) === 0xFEFF && tx.indexOf('一行目\r\n二行目-') === 1, 'txt：BOM・CRLF・波ダッシュ置換');
+    check(/^症状詳記_.+_\d{8}\.txt$/.test(txtFileName()), 'txt：ファイル名の形式');
+
+    /* 手で直した下書きを上書きしない */
+    resetAll();
+    $('note').value = '手で直した文'; manual = true; render();
+    check($('note').value === '手で直した文', '手直しが上書きされた');
+    manual = false;
+
+    /* 後片付け：自作データを元に戻す */
+    var chEl = $('ch_' + cc.id); if (chEl) chEl.parentNode.removeChild(chEl);
+    MY = saved; dirty = false;
+    resetAll();
+
+    var box = $('selftest');
+    box.style.display = 'block';
+    if (fails.length) {
+      box.style.background = '#FDEDEC'; box.style.color = '#922B21';
+      box.innerHTML = '<b>セルフテスト不合格（' + fails.length + '件）</b><br>' + fails.map(esc).join('<br>');
+    } else {
+      box.style.background = '#E9F7EF'; box.style.color = '#1E8449';
+      box.innerHTML = '<b>セルフテスト合格</b>';
+    }
+    window.__selftest = { pass: fails.length === 0, fails: fails };
+  }
+  if (/[?&]selftest\b/.test(location.search)) selfTest();
+})();
+</script>
+</body>
+</html>
