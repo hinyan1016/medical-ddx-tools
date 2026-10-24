@@ -1,0 +1,1020 @@
+@font-face{font-family:LabNoto;src:local('Noto Sans JP'),local('BIZ UDPGothic'),local('Yu Gothic');font-weight:100 900;font-display:swap}
+html,body{margin:0;background:#dce3ed;font-family:"Noto Sans JP",LabNoto,"BIZ UDPGothic","Yu Gothic",sans-serif}*{box-sizing:border-box}.slide{break-after:page}.slide:last-child{break-after:auto}@page{size:1920px 1080px;margin:0}@media print{.slide{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+/* ===== family-a : RC5 案F（淡い青の下地＋白い角丸カード・青 #1a6fd6） ===== */
+.family-a{--accent:#1a6fd6;--deep:#0d4fb8;--bright:#2b83e6;--grad:linear-gradient(90deg,#2b83e6 0%,#0d4fb8 100%);--page:#eef5fc;--card:#ffffff;--tint:#e8f1fb;--line:#cfdff5;--ink:#333333;--muted:#5b6b80;--pale:#dfe6ef;--bar:#9fc3ef;--danger:#d64545;--danger-face:#fdecec;--bubble:#8a94a6;--navy:#1a6fd6;--paper:#ffffff;--soft:#e8f1fb;--amber:#e8f1fb;--title:72px;--body:52px;--small:44px}
+.family-a *{box-sizing:border-box}
+.family-a{margin:0;padding:0;font-family:"Noto Sans JP",LabNoto,"BIZ UDPGothic","Yu Gothic",sans-serif;background:var(--page);color:var(--ink)}
+.family-a h1,.family-a h2,.family-a h3,.family-a p{margin:0}
+
+/* --- 共通フレーム：下地＋白い角丸カード --- */
+.family-a .slide,.family-a.slide{width:1920px;height:1080px;position:relative;overflow:hidden;background:var(--page);padding:190px 156px 96px;break-after:page;display:flex;flex-direction:column}
+.family-a .slide:last-child,.family-a.slide:last-child{break-after:auto}
+.family-a .slide:before,.family-a.slide:before{content:'';position:absolute;inset:60px;background:var(--card);border-radius:32px;z-index:0}
+.family-a .slide>*,.family-a.slide>*{position:relative;z-index:1}
+/* 角のブランド標（輪郭四角＋社名） */
+.family-a .slide:after,.family-a.slide:after{content:'医知創造ラボ';position:absolute;right:132px;top:104px;z-index:1;font-size:36px;font-weight:800;line-height:40px;color:var(--accent);padding-left:54px;background:linear-gradient(#fff,#fff) 6px center/22px 22px no-repeat,linear-gradient(var(--accent),var(--accent)) 0 center/34px 34px no-repeat}
+
+/* --- 章ラベル：太い縦棒＋主色 --- */
+.family-a .topic,.family-a.topic{position:absolute;left:132px;top:100px;margin:0;display:flex;align-items:center;gap:22px;font-size:44px;font-weight:700;color:var(--accent);line-height:1.4;z-index:1}
+.family-a .topic:before,.family-a.topic:before{content:'';width:20px;height:60px;border-radius:3px;background:linear-gradient(180deg,#2b83e6,#0d4fb8);flex:none}
+
+/* --- 見出し：中央揃え・濃灰 --- */
+.family-a h2{text-align:center;font-size:var(--title);line-height:1.3;font-weight:700;letter-spacing:.02em;color:var(--ink);font-feature-settings:"palt" 1;text-wrap:balance}
+.family-a h3{font-size:52px;line-height:1.4;font-weight:700;color:var(--accent)}
+.family-a .content,.family-a.content{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;padding-bottom:58px;margin-top:32px;font-size:var(--body);line-height:1.5}
+.family-a .small,.family-a.small{font-size:44px;line-height:1.5}
+.family-a .note,.family-a.note{font-size:40px;line-height:1.55;color:var(--muted)}
+.family-a .muted,.family-a.muted{color:var(--muted)}
+.family-a .nowrap,.family-a.nowrap{white-space:nowrap}
+.family-a .strong,.family-a.strong{font-weight:800}
+.family-a .rule,.family-a.rule{height:8px;width:152px;border-radius:4px;background:var(--accent);margin:32px 0}
+
+/* --- 脚注 --- */
+.family-a .foot,.family-a.foot{position:absolute;left:132px;right:132px;bottom:88px;display:flex;justify-content:space-between;align-items:baseline;gap:32px;font-size:26px;line-height:1.4;color:var(--muted);z-index:1}
+.family-a .source,.family-a.source{max-width:1400px}
+.family-a .page,.family-a.page{white-space:nowrap;font-variant-numeric:tabular-nums}
+.family-a .brand,.family-a.brand{font-weight:800;color:var(--accent)}
+
+/* --- 囲み（ピル見出しは .callout h3 があるときだけ浮かせる） --- */
+.family-a .callout,.family-a.callout{position:relative;background:var(--tint);border:0;border-radius:24px;padding:30px 56px;text-align:center;font-size:44px;line-height:1.55;color:var(--ink)}
+.family-a .callout.soft,.family-a.callout.soft{background:var(--tint)}
+.family-a .callout.danger,.family-a.callout.danger{background:var(--danger-face)}
+.family-a .callout h3,.family-a.callout h3{position:absolute;left:50%;top:-30px;transform:translateX(-50%);padding:8px 56px;border-radius:999px;background:var(--grad);color:#fff;font-size:32px;font-weight:700;line-height:1.4;white-space:nowrap}
+.family-a .callout.danger h3,.family-a.callout.danger h3{background:var(--danger)}
+.family-a .callout:has(h3),.family-a.callout:has(h3){margin-top:64px}
+
+/* ===== section.chapter ===== */
+.family-a .chapter,.family-a.chapter{background:var(--accent);color:#fff;padding:190px 156px 96px}
+.family-a .chapter:before,.family-a.chapter:before{background:transparent;border:3px solid rgba(255,255,255,.45);border-radius:24px}
+.family-a .chapter:after,.family-a.chapter:after{display:none}
+.family-a .chapter .topic,.family-a.chapter .topic{color:rgba(255,255,255,.85)}
+.family-a .chapter .topic:before,.family-a.chapter .topic:before{background:rgba(255,255,255,.8)}
+.family-a .chapter h2,.family-a.chapter h2{font-size:96px;font-weight:800;color:#fff;line-height:1.3;letter-spacing:.01em}
+.family-a .chapter .content,.family-a.chapter .content{margin-top:52px}
+.family-a .chapter .chapterpair,.family-a.chapter .chapterpair{display:grid;grid-template-columns:1fr 1fr;gap:64px;margin-top:0}
+.family-a .chapter .chapterpair>div,.family-a.chapter .chapterpair>div{border:3px solid rgba(255,255,255,.55);border-radius:24px;padding:30px 44px}
+.family-a .chapter .chapterpair .tag,.family-a.chapter .chapterpair .tag{display:inline-block;background:#fff;color:var(--accent);border-radius:999px;padding:6px 32px;font-size:30px;font-weight:700;line-height:1.4;margin-bottom:20px}
+.family-a .chapter .chapterpair p,.family-a.chapter .chapterpair p{font-size:48px;line-height:1.55;color:#fff}
+.family-a .chapter .note,.family-a.chapter .note{color:rgba(255,255,255,.85);text-align:center}
+.family-a .chapter .foot,.family-a.chapter .foot{color:rgba(255,255,255,.8)}
+.family-a .chapter .brand,.family-a.chapter .brand{color:#fff}
+
+/* ===== explain.concept ===== */
+.family-a .concept,.family-a.concept{display:grid;grid-template-columns:1fr 1fr;gap:34px 60px;margin-top:8px}
+.family-a .concept>div,.family-a.concept>div{display:grid;grid-template-columns:minmax(210px,max-content) 1fr;align-items:center;gap:28px;background:var(--tint);border:0;border-radius:24px;padding:28px 40px}
+.family-a .concept .word,.family-a.concept .word{font-size:54px;font-weight:800;line-height:1.3;color:var(--accent);white-space:pre-line;word-break:keep-all}
+.family-a .concept p,.family-a.concept p{font-size:44px;line-height:1.55;color:var(--ink)}
+
+/* ===== 表（compare） ===== */
+.family-a .compare,.family-a.compare{width:100%;border-collapse:collapse;table-layout:fixed;font-size:48px;line-height:1.45}
+.family-a .compare th,.family-a.compare th{background:var(--deep);color:#fff;font-size:40px;padding:22px 28px;text-align:left;font-weight:700}
+.family-a .compare th:first-child,.family-a.compare th:first-child{border-radius:16px 0 0 0}
+.family-a .compare th:last-child,.family-a.compare th:last-child{border-radius:0 16px 0 0}
+.family-a .compare td,.family-a.compare td{padding:22px 28px;border-bottom:2px solid var(--line);vertical-align:middle}
+.family-a .compare td:first-child,.family-a.compare td:first-child{font-weight:700;color:var(--accent)}
+.family-a .compare th:nth-child(1),.family-a.compare th:nth-child(1){width:31%}
+.family-a .compare th:nth-child(2),.family-a.compare th:nth-child(2){width:33%}
+.family-a .compare tr:nth-child(even) td,.family-a.compare tr:nth-child(even) td{background:var(--tint)}
+.family-a .compare .amount,.family-a.compare .amount{font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
+.family-a .compare~.note,.family-a.compare~.note{margin-top:24px}
+.family-a .compare~.callout,.family-a.compare~.callout{margin-top:24px}
+
+/* ===== decision.binary ===== */
+.family-a .decision .scope,.family-a.decision .scope{font-size:38px;color:var(--muted);text-align:center;margin-bottom:22px}
+.family-a .decision .question,.family-a.decision .question{width:940px;margin:0 auto;padding:16px 48px;border-radius:999px;background:var(--grad);color:#fff;text-align:center;font-size:50px;font-weight:700;line-height:1.4}
+.family-a .branch-lines,.family-a.branch-lines{display:block;width:100%;height:80px}
+.family-a .decision .branches,.family-a.decision .branches{display:grid;grid-template-columns:1fr 1fr;gap:72px}
+.family-a .branch,.family-a.branch{background:var(--tint);border:0;border-radius:24px;padding:28px 40px;min-height:0}
+.family-a .branch.urgent,.family-a.branch.urgent{background:#fff;border:4px solid var(--accent)}
+.family-a .branch .condition,.family-a.branch .condition{font-size:40px;line-height:1.4;margin-bottom:18px;color:var(--muted)}
+.family-a .branch .action,.family-a.branch .action{font-weight:800;font-size:58px;color:var(--ink);line-height:1.35}
+.family-a .branch.urgent .action,.family-a.branch.urgent .action{color:var(--accent)}
+.family-a .decision .note,.family-a.decision .note{margin-top:26px;text-align:center}
+
+/* ===== sequence.steps-three ===== */
+.family-a .timeline,.family-a.timeline{display:grid;grid-template-columns:1fr 1fr 1fr;gap:44px;position:relative;margin-top:4px}
+.family-a .timeline:before,.family-a.timeline:before{display:none}
+.family-a .time-step,.family-a.time-step{position:relative;background:var(--tint);border-radius:24px;padding:28px 34px}
+.family-a .stepnum,.family-a.stepnum{height:88px;width:88px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:800;border-radius:50%;margin-bottom:16px}
+.family-a .time-step:last-child .stepnum,.family-a.time-step:last-child .stepnum{background:var(--deep);color:#fff}
+.family-a .time-step h3,.family-a.time-step h3{font-size:48px;line-height:1.35;margin-bottom:12px}
+.family-a .time-step .action,.family-a.time-step .action{font-size:58px;font-weight:800;color:var(--ink);line-height:1.35;margin-bottom:12px}
+.family-a .time-step .detail,.family-a.time-step .detail{font-size:42px;line-height:1.5;color:var(--muted)}
+.family-a .timeline+.callout,.family-a.timeline+.callout{margin-top:30px}
+
+/* ===== evidence.study ===== */
+.family-a .evidence-grid,.family-a.evidence-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;margin-top:4px}
+.family-a .study,.family-a.study{background:var(--tint);border:0;border-radius:24px;padding:26px 44px}
+.family-a .study h3,.family-a.study h3{font-size:50px;line-height:1.35;margin-bottom:16px}
+.family-a .study dl,.family-a.study dl{margin:0}
+.family-a .study dt,.family-a.study dt{font-size:30px;font-weight:700;color:var(--muted);margin-bottom:8px}
+.family-a .study dd,.family-a.study dd{font-size:44px;line-height:1.5;margin:0 0 14px}
+.family-a .study dd:last-child,.family-a.study dd:last-child{margin-bottom:0}
+.family-a .study dd.result,.family-a.study dd.result{font-size:48px;font-weight:700;color:var(--accent)}
+.family-a .evidence-grid+.callout,.family-a.evidence-grid+.callout{margin-top:24px}
+
+/* ===== quantitative.hero ===== */
+.family-a .dose .scope,.family-a.dose .scope{font-size:40px;line-height:1.5;color:var(--ink);text-align:center;margin:0 auto 26px;max-width:1500px}
+.family-a .dose .scope .pill,.family-a.dose .scope .pill{display:inline-block;max-width:100%;border:4px solid var(--accent);background:var(--tint);color:var(--accent);border-radius:999px;padding:6px 44px;font-size:36px;font-weight:700;line-height:1.4;margin-bottom:16px}
+.family-a .dose-row,.family-a.dose-row{display:grid;grid-template-columns:1.45fr 1fr;gap:56px;align-items:stretch}
+.family-a .dose .hero-value,.family-a.dose .hero-value{background:var(--tint);border-radius:24px;padding:26px 48px;justify-content:center}
+.family-a .dose .big,.family-a.dose .big{font-size:156px;line-height:1.12;font-weight:800;letter-spacing:-.02em;color:var(--accent);white-space:nowrap;font-variant-numeric:tabular-nums}
+.family-a .dose .unit,.family-a.dose .unit{font-size:54px;font-weight:700;color:var(--accent)}
+.family-a[data-layout="quantitative.hero"] .hero-value{display:flex;align-items:baseline;gap:12px;white-space:nowrap}
+.family-a[data-layout="quantitative.hero"] .hero-value .unit{margin:0;font-size:72px;line-height:1.12}
+.family-a .dose .frequency,.family-a.dose .frequency{background:var(--tint);border:0;border-radius:24px;padding:26px 44px;display:flex;flex-direction:column;justify-content:center}
+.family-a .dose .frequency strong,.family-a.dose .frequency strong{font-size:68px;line-height:1.25;color:var(--accent);font-variant-numeric:tabular-nums}
+.family-a .dose .frequency p,.family-a.dose .frequency p{font-size:44px;line-height:1.45;margin-top:14px;color:var(--ink)}
+.family-a .dose .callout,.family-a.dose .callout{margin-top:32px}
+
+/* ===== anatomy.annotated-figure ===== */
+.family-a .annotated,.family-a.annotated{display:grid;grid-template-columns:900px 1fr;gap:52px;align-items:center;margin-top:4px}
+.family-a .figure,.family-a.figure{position:relative;line-height:0;border:0;border-radius:20px;overflow:hidden}
+.family-a .figure img,.family-a.figure img{width:100%;height:auto;display:block}
+.family-a .pin,.family-a.pin{position:absolute;border:6px solid #fff;border-radius:50%;background:var(--accent);color:#fff;font-size:32px;font-weight:800;width:64px;height:64px;display:flex;align-items:center;justify-content:center;line-height:1}
+.family-a .pin:before,.family-a.pin:before{content:'';position:absolute;left:50%;top:-34px;width:3px;height:28px;background:var(--accent)}
+.family-a .pin.one,.family-a.pin.one{left:16%;top:72%}
+.family-a .pin.two,.family-a.pin.two{left:54%;top:72%}
+.family-a .pin.three,.family-a.pin.three{left:84%;top:72%}
+.family-a .annotations,.family-a.annotations{list-style:none;padding:0;margin:0;display:grid;gap:16px}
+.family-a .annotations li,.family-a.annotations li{background:var(--tint);border:0;border-radius:24px;padding:18px 30px;font-size:42px;line-height:1.45;color:var(--muted)}
+.family-a .annotations strong,.family-a.annotations strong{font-size:48px;color:var(--accent)}
+.family-a .annotated+.note,.family-a.annotated+.note{margin-top:20px;text-align:center}
+
+/* ===== case.context-question ===== */
+.family-a .case-grid,.family-a.case-grid{display:grid;grid-template-columns:640px 1fr;gap:56px;align-items:stretch;margin-top:38px}
+.family-a .case-context,.family-a.case-context{background:var(--tint);border:0;border-radius:24px;padding:36px 44px}
+.family-a .case-context p,.family-a.case-context p{font-size:60px;font-weight:700;line-height:1.5;color:var(--ink)}
+.family-a .case-context .note,.family-a.case-context .note{font-size:36px;font-weight:400;margin-top:26px;color:var(--muted)}
+.family-a .case-question,.family-a.case-question{position:relative;background:#fff;border:4px solid var(--accent);border-radius:24px;padding:52px 44px 36px;margin-top:0}
+.family-a .case-question .label,.family-a.case-question .label{position:absolute;left:44px;top:-26px;padding:6px 44px;border-radius:999px;background:var(--grad);color:#fff;font-size:32px;font-weight:700;line-height:1.4;margin:0;white-space:nowrap}
+.family-a .case-question p,.family-a.case-question p{font-size:64px;font-weight:700;color:var(--accent);line-height:1.45}
+.family-a .case-question .answerhint,.family-a.case-question .answerhint{font-size:36px;font-weight:400;color:var(--muted);margin-top:28px}
+.family-a .case-grid+.note,.family-a.case-grid+.note{margin-top:28px;text-align:center}
+
+/* ===== caution.parallel ===== */
+.family-a .parallel-intro,.family-a.parallel-intro{font-size:42px;color:var(--muted);text-align:center;margin-bottom:28px}
+.family-a .parallel-lane,.family-a.parallel-lane{display:grid;grid-template-columns:470px 1fr;gap:48px;align-items:center;background:var(--tint);border:0;border-radius:24px;padding:26px 40px;margin-bottom:24px}
+.family-a .parallel-lane .label,.family-a.parallel-lane .label{display:block;text-align:center;background:var(--grad);color:#fff;border-radius:999px;padding:10px 24px;font-size:54px;font-weight:800;line-height:1.4}
+.family-a .parallel-lane .act,.family-a.parallel-lane .act{font-size:54px;font-weight:700;line-height:1.4;border:0;padding:0;color:var(--ink)}
+.family-a .parallel-lane~.callout,.family-a.parallel-lane~.callout{margin-top:32px}
+
+/* ===== summary.takeaways ===== */
+.family-a .summary-flow,.family-a.summary-flow{display:grid;grid-template-columns:1fr 1fr 1.12fr;gap:48px;margin-top:8px}
+.family-a .summary-step,.family-a.summary-step{background:var(--tint);border:0;border-radius:24px;padding:30px 40px}
+.family-a .summary-step:last-child,.family-a.summary-step:last-child{background:#fff;border:4px solid var(--accent)}
+.family-a .summary-step h3,.family-a.summary-step h3{font-size:64px;line-height:1.3;margin-bottom:22px;color:var(--accent)}
+.family-a .summary-step p,.family-a.summary-step p{font-size:46px;line-height:1.55;color:var(--ink)}
+.family-a .summary-flow+.callout,.family-a.summary-flow+.callout{margin-top:36px}
+/* ===== family-b / RC5 案F（淡い青の下地＋白い角丸カード・青 #1a6fd6） ===== */
+.family-b{--accent:#1a6fd6;--deep:#0d4fb8;--bright:#2b83e6;--grad:linear-gradient(90deg,#2b83e6 0%,#0d4fb8 100%);--page:#eef5fc;--card:#ffffff;--tint:#e8f1fb;--line:#cfdff5;--ink:#333333;--muted:#5b6b80;--pale:#dfe6ef;--bar:#9fc3ef;--danger:#d64545;--danger-face:#fdecec;--bubble:#8a94a6}
+.family-b *{box-sizing:border-box}
+.family-b{margin:0;font-family:"Noto Sans JP",LabNoto,"BIZ UDPGothic","Yu Gothic",sans-serif;color:var(--ink)}
+.family-b h1,.family-b h2,.family-b h3,.family-b p,.family-b figure,.family-b blockquote{margin:0}
+.family-b h2,.family-b h3{font-feature-settings:"palt" 1;text-wrap:balance}
+.family-b p{word-break:auto-phrase}
+.family-b ul,.family-b ol{margin:0;padding:0;list-style:none}
+
+/* --- 共通フレーム --- */
+.family-b.slide{width:1920px;height:1080px;position:relative;overflow:hidden;background:var(--page);padding:190px 156px 96px;break-after:page}
+.family-b.slide:last-child{break-after:auto}
+.family-b.slide::before{content:'';position:absolute;inset:60px;background:var(--card);border-radius:32px;z-index:0}
+.family-b.slide>*{position:relative;z-index:1}
+/* ブランド標（輪郭四角＋医知創造ラボ） */
+.family-b.slide::after{content:'医知創造ラボ';position:absolute;right:132px;top:104px;z-index:1;font-size:36px;font-weight:800;color:var(--accent);line-height:34px;padding-left:48px;background:url("data:image/svg+xml;charset=utf8,<svg xmlns='http://www.w3.org/2000/svg' width='34' height='34'><rect x='2.5' y='2.5' width='29' height='29' rx='6' fill='none' stroke='%231a6fd6' stroke-width='5'/></svg>") left center/34px 34px no-repeat}
+/* 章ラベル */
+.family-b .topic{position:absolute;left:132px;top:100px;margin:0;display:flex;align-items:center;gap:22px;font-size:44px;font-weight:700;color:var(--accent);line-height:1.4}
+.family-b .topic::before{content:'';width:20px;height:60px;border-radius:3px;background:linear-gradient(180deg,#2b83e6,#0d4fb8);flex:none}
+/* 見出し */
+.family-b h2{text-align:center;font-size:72px;line-height:1.3;font-weight:700;letter-spacing:.02em;color:var(--ink)}
+/* 脚注 */
+.family-b .foot{position:absolute;left:132px;right:132px;bottom:88px;display:flex;justify-content:space-between;align-items:baseline;gap:32px;font-size:26px;line-height:1.4;color:var(--muted)}
+.family-b .foot .source{max-width:1280px}
+.family-b .foot .page{white-space:nowrap;font-variant-numeric:tabular-nums}
+
+/* --- 共通部品 --- */
+.family-b .content{margin-top:36px;font-size:50px;line-height:1.6}
+.family-b .lead{font-size:54px;line-height:1.7;font-weight:700;text-align:center;max-width:1560px;margin:0 auto}
+.family-b .small{font-size:40px;line-height:1.5;color:var(--muted)}
+.family-b .label{font-size:34px;line-height:1.5;font-weight:700;color:var(--muted);margin-bottom:18px}
+/* 囲み（淡色面）＋ 浮かせたピル見出し */
+.family-b .callout{position:relative;background:var(--tint);border-radius:24px;border:0;padding:36px 56px;text-align:center;font-size:44px;line-height:1.6;color:var(--ink);margin-top:44px}
+.family-b .callout.soft{background:var(--tint)}
+.family-b .callout.danger{background:var(--danger-face)}
+.family-b .callout:has(h3){margin-top:64px;padding-top:44px}
+.family-b .callout h3{position:absolute;left:50%;top:-30px;transform:translateX(-50%);margin:0;padding:8px 56px;border-radius:999px;background:var(--grad);color:#fff;font-size:32px;font-weight:700;white-space:nowrap}
+.family-b .callout.danger h3{background:var(--danger)}
+/* 面（淡色カード） */
+.family-b .pane,.family-b .myth-box,.family-b .option,.family-b .answer,.family-b .statement,.family-b .quote-box,.family-b .qa-row,.family-b .summary-step{background:var(--tint);border-radius:24px;border:0}
+/* ピル（塗り） */
+.family-b .answer .label,.family-b .quote-box .label,.family-b .correct-label{display:inline-block;margin:0;padding:8px 44px;border-radius:999px;background:var(--grad);color:#fff;font-size:32px;font-weight:700;white-space:nowrap}
+
+/* --- 目次（白カードなし・白い行カード・輪郭数字） --- */
+.family-b.agenda{padding:190px 140px 96px}
+.family-b.agenda::before{display:none}
+.family-b .agenda-list{display:grid;gap:26px}
+.family-b .agenda-list li{display:grid;grid-template-columns:300px 1fr;align-items:center;background:var(--card);border-radius:24px;padding:22px 60px;min-height:176px}
+.family-b .agenda-num{display:block;text-align:center;font-size:100px;font-weight:800;line-height:1;color:transparent;-webkit-text-stroke:5px var(--accent)}
+.family-b .agenda-title{font-size:58px;font-weight:700;line-height:1.35;color:var(--accent)}
+.family-b .agenda-list .small{font-size:34px;margin-top:8px}
+
+/* --- 本文1カラム --- */
+.family-b.prose .content{display:flex;flex-direction:column;justify-content:center}
+.family-b.prose .callout{width:1560px;margin-left:auto;margin-right:auto}
+
+/* --- 問い→答え --- */
+.family-b.lead-answer .question{font-size:64px;line-height:1.55;font-weight:700;text-align:center;color:var(--ink);max-width:1560px;margin:0 auto}
+.family-b .answer{position:relative;margin:70px auto 0;width:1560px;padding:40px 56px 36px;text-align:center}
+.family-b .answer .label{position:absolute;left:50%;top:-30px;transform:translateX(-50%)}
+.family-b .answer p:last-child{font-size:56px;line-height:1.55}
+
+/* --- 本文＋図版 --- */
+.family-b.text-image .columns{display:grid;grid-template-columns:720px 1fr;gap:64px;align-items:center}
+.family-b.text-image .lead{font-size:48px;line-height:1.6;text-align:left;max-width:none;margin:0}
+.family-b .point-list{margin-top:26px;display:grid;gap:14px;font-size:42px}
+.family-b .point-list li{background:var(--tint);border-radius:16px;padding:14px 26px 14px 52px;line-height:1.45;position:relative}
+.family-b .point-list li::before{content:'';position:absolute;left:22px;top:.72em;width:14px;height:14px;border-radius:50%;background:var(--accent)}
+.family-b .image-frame img{width:100%;height:auto;border:0;border-radius:20px;display:block}
+.family-b .image-frame figcaption{font-size:32px;line-height:1.45;margin-top:16px;color:var(--muted);text-align:center}
+
+/* --- 表 --- */
+.family-b .comparison{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed;font-size:44px;line-height:1.4}
+.family-b .comparison th{background:var(--deep);color:#fff;font-size:38px;font-weight:700;text-align:left;padding:18px 24px}
+.family-b .comparison th:first-child{border-radius:16px 0 0 0;width:27%}
+.family-b .comparison th:last-child{border-radius:0 16px 0 0;border-left:2px solid rgba(255,255,255,.3)}
+.family-b .comparison th:nth-child(2){width:36%}
+.family-b .comparison td{padding:16px 24px;border-bottom:2px solid var(--line);vertical-align:middle;background:var(--card)}
+.family-b .comparison td:first-child{font-weight:700;color:var(--accent)}
+.family-b .comparison tbody tr:nth-child(even) td{background:var(--tint)}
+.family-b .comparison td[rowspan]{background:#f4f8fd;border-left:3px solid var(--accent)}
+.family-b.table-flex .small{margin-top:24px}
+
+/* --- 免責 --- */
+.family-b.disclaimer .content{display:flex;flex-direction:column;justify-content:center}
+.family-b .statement{padding:44px 64px;text-align:center}
+.family-b .statement p{font-size:58px;line-height:1.7;font-weight:700}
+.family-b.disclaimer .small{margin-top:40px;text-align:center}
+
+/* --- エンディング --- */
+.family-b.ending h2{font-size:88px}
+.family-b.ending .content{text-align:center;margin-top:40px}
+.family-b .end-line{width:152px;height:8px;border-radius:4px;background:var(--accent);margin:0 auto 36px}
+.family-b .end-pair{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;text-align:left;margin-top:40px}
+.family-b .end-pair>div{background:var(--tint);border-radius:24px;padding:32px 40px}
+.family-b .end-pair h3{font-size:44px;line-height:1.35;color:var(--accent);margin-bottom:16px}
+.family-b .end-pair p{font-size:42px;line-height:1.55}
+.family-b.ending .small{margin-top:32px}
+/* --- Q&A --- */
+.family-b.qa .content{display:flex;flex-direction:column;justify-content:center;gap:34px}
+.family-b .qa-row{display:grid;grid-template-columns:120px 1fr;gap:34px;align-items:start;padding:32px 44px}
+.family-b .qa-mark{width:100px;height:100px;border-radius:999px;background:var(--grad);color:#fff;font-size:54px;font-weight:800;line-height:100px;text-align:center}
+.family-b .qa-row p{font-size:52px;line-height:1.6}
+.family-b .qa-row.answer-row{background:#fff;border:4px solid var(--accent)}
+
+/* --- 誤解と事実 --- */
+.family-b .myth-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px}
+.family-b .myth-box{padding:30px 40px 34px}
+.family-b .myth-box.correct{background:#fff;border:4px solid var(--accent)}
+.family-b .myth-box h3{display:inline-block;padding:8px 40px;border-radius:999px;background:var(--grad);color:#fff;font-size:32px;font-weight:700;margin-bottom:24px}
+.family-b .myth-box p{font-size:50px;line-height:1.6}
+
+/* --- チェックリスト --- */
+.family-b .check-list{display:grid;gap:16px}
+.family-b .check-list li{display:flex;align-items:center;gap:28px;font-size:48px;line-height:1.4;background:var(--tint);border-radius:20px;padding:14px 36px}
+.family-b .check-square{display:flex;width:56px;height:56px;align-items:center;justify-content:center;border:4px solid var(--accent);border-radius:12px;color:var(--accent);font-size:34px;font-weight:800;flex:none;background:#fff}
+.family-b .check-list .done .check-square{background:var(--accent);color:#fff}
+.family-b.checklist .callout{margin-top:30px;padding:32px 56px}
+
+/* --- 引用 --- */
+.family-b.quote .content{display:flex;flex-direction:column;justify-content:center}
+.family-b .quote-box{position:relative;margin-top:30px;padding:44px 56px 38px;text-align:center}
+.family-b .quote-box .label{position:absolute;left:50%;top:-30px;transform:translateX(-50%)}
+.family-b .quote-box blockquote{font-size:58px;font-weight:700;line-height:1.55;color:var(--ink)}
+.family-b .quote-box cite{display:block;font-size:34px;font-style:normal;margin-top:22px;color:var(--muted)}
+.family-b.quote .interpretation{font-size:46px;line-height:1.55;margin-top:36px;text-align:center}
+.family-b.quote .interpretation strong{color:var(--accent)}
+
+/* --- 修正前後 --- */
+.family-b .before-grid{display:grid;grid-template-columns:1fr 96px 1fr;gap:24px;align-items:stretch}
+.family-b .before-grid .pane{padding:28px 36px 32px}
+.family-b .before-grid .pane.after{background:#fff;border:4px solid var(--accent)}
+.family-b .pane h3{display:inline-block;padding:8px 36px;border-radius:999px;background:var(--grad);color:#fff;font-size:32px;font-weight:700;margin-bottom:22px}
+.family-b .pane p{font-size:50px;line-height:1.6}
+.family-b .change-arrow{display:flex;align-items:center;justify-content:center;font-size:72px;color:var(--accent)}
+
+/* --- タイムライン --- */
+.family-b .timeline-grid{display:grid;gap:24px;grid-template-columns:repeat(var(--count),1fr);margin-top:24px;position:relative}
+.family-b .timeline-grid::before{content:'';height:6px;border-radius:3px;background:var(--line);position:absolute;top:114px;left:0;right:0}
+.family-b .event{position:relative}
+.family-b .when{display:inline-block;font-size:40px;font-weight:700;color:var(--accent);line-height:1.3;padding:8px 26px;border:4px solid var(--accent);border-radius:999px;background:var(--tint);margin-bottom:18px}
+.family-b .node{width:44px;height:44px;border:6px solid #fff;border-radius:50%;background:var(--accent);position:relative;margin-bottom:26px;box-sizing:border-box}
+.family-b .event:last-child .node{background:var(--deep)}
+.family-b .event h3{font-size:42px;line-height:1.4;color:var(--accent);margin-bottom:14px}
+.family-b .event .detail{font-size:38px;line-height:1.5}
+.family-b.timeline .callout{margin-top:36px}
+
+/* --- レッドフラグ --- */
+.family-b .flags{display:grid;grid-template-columns:1fr 1fr;gap:20px 36px}
+.family-b .flag{background:var(--tint);border-radius:24px;padding:24px 32px 26px}
+.family-b .flag h3{font-size:44px;line-height:1.35;color:var(--accent);margin-bottom:12px;padding-left:30px;position:relative}
+.family-b .flag h3::before{content:'';position:absolute;left:0;top:.5em;width:14px;height:14px;border-radius:50%;background:var(--danger)}
+.family-b .flag p{font-size:40px;line-height:1.5}
+.family-b.red-flags .callout{margin-top:32px}
+
+/* --- 用語 --- */
+.family-b.term .content{display:flex;flex-direction:column;justify-content:center}
+.family-b .term-word{display:block;text-align:center;margin-bottom:18px}
+.family-b .term-word strong{font-size:86px;line-height:1.15;color:var(--accent);display:block}
+.family-b .term-word span{font-size:38px;color:var(--muted)}
+.family-b.term .definition{font-size:52px;line-height:1.55;font-weight:700;text-align:center;max-width:1560px;margin:0 auto}
+.family-b.term .callout{width:1560px;margin-left:auto;margin-right:auto;margin-top:56px;padding:36px 56px 32px;line-height:1.5}
+
+/* --- クイズ --- */
+.family-b .quiz-prompt{font-size:54px;line-height:1.5;font-weight:700;text-align:center;color:var(--ink);margin-bottom:34px}
+.family-b .options{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;align-items:stretch}
+.family-b .option{position:relative;padding:26px 30px 28px;min-height:230px}
+.family-b .option .letter{display:inline-block;width:72px;height:72px;border-radius:999px;background:var(--grad);color:#fff;font-size:40px;font-weight:800;line-height:72px;text-align:center;margin-bottom:18px}
+.family-b .option p{font-size:46px;line-height:1.45}
+.family-b .option.correct{background:#fff;border:4px solid var(--accent)}
+.family-b .correct-label{position:absolute;right:22px;top:26px;padding:6px 28px;font-size:26px}
+.family-b.quiz-answer .callout{font-size:40px;margin-top:32px}
+.family-b.quiz-question .small{margin-top:30px;text-align:center}
+
+/* --- 参考文献 --- */
+.family-b .reference-list{display:grid;gap:16px}
+.family-b .reference-list li{display:grid;grid-template-columns:auto 1fr;gap:26px;align-items:start;background:var(--tint);border-radius:20px;padding:20px 32px}
+.family-b .reference-no{display:inline-block;min-width:76px;padding:4px 20px;border-radius:999px;background:var(--grad);color:#fff;font-size:32px;font-weight:700;text-align:center;line-height:1.5}
+.family-b .reference-title{font-size:42px;line-height:1.4;font-weight:700}
+.family-b .reference-meta{font-size:32px;line-height:1.4;color:var(--muted);margin-top:8px}
+.family-b.references .small{margin-top:26px}
+
+/* --- 用語（並列）：関連のない2語を左右に並べる --- */
+.family-b.term-pair .content{display:flex;flex-direction:column;justify-content:center}
+.family-b .term-pair-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:stretch}
+.family-b .term-card{display:flex;flex-direction:column;background:var(--tint);border-radius:24px;padding:44px 40px 40px;text-align:center}
+.family-b .term-card .term-word{margin-bottom:22px}
+.family-b .term-card .term-word strong{font-size:72px;white-space:nowrap}
+.family-b .term-card .definition{font-size:40px;line-height:1.6;font-weight:700;text-align:center}
+/* RC5 family-c（案F）: 数値5型・図版3型・cause-map・triage-three */
+.family-c{--accent:#1a6fd6;--deep:#0d4fb8;--bright:#2b83e6;--grad:linear-gradient(90deg,#2b83e6 0%,#0d4fb8 100%);--page:#eef5fc;--card:#ffffff;--tint:#e8f1fb;--line:#cfdff5;--ink:#333333;--muted:#5b6b80;--pale:#dfe6ef;--bar:#9fc3ef;--danger:#d64545;--danger-tint:#fdecec;--bubble:#8a94a6}
+.family-c *{box-sizing:border-box}
+.family-c{font-family:"Noto Sans JP",LabNoto,"BIZ UDPGothic","Yu Gothic",sans-serif;color:var(--ink)}
+.family-c h1,.family-c h2,.family-c h3,.family-c p,.family-c figure,.family-c blockquote{margin:0}
+.family-c ul,.family-c ol{margin:0;padding:0;list-style:none}
+/* --- 共通フレーム（§2） --- */
+.family-c.slide,.family-c .slide{width:1920px;height:1080px;position:relative;overflow:hidden;background:var(--page);padding:190px 156px 96px;break-after:page}
+.family-c.slide:last-child,.family-c .slide:last-child{break-after:auto}
+.family-c.slide::before,.family-c .slide::before{content:'';position:absolute;inset:60px;background:var(--card);border-radius:32px;z-index:0}
+.family-c.slide>*,.family-c .slide>*{position:relative;z-index:1}
+.family-c.slide::after,.family-c .slide::after{content:'医知創造ラボ';position:absolute;right:132px;top:104px;z-index:1;font-size:36px;font-weight:800;color:var(--accent);line-height:34px;padding-left:48px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='34'%3E%3Crect x='2.5' y='2.5' width='29' height='29' rx='6' fill='none' stroke='%231a6fd6' stroke-width='5'/%3E%3C/svg%3E") left center/34px 34px no-repeat}
+.family-c .topic{position:absolute;left:132px;top:100px;margin:0;display:flex;align-items:center;gap:22px;font-size:44px;font-weight:700;color:var(--accent);line-height:1.4;z-index:1}
+.family-c .topic::before{content:'';width:20px;height:60px;border-radius:3px;background:linear-gradient(180deg,#2b83e6,#0d4fb8);flex:none}
+.family-c h2{margin:0;text-align:center;font-size:72px;line-height:1.3;font-weight:700;letter-spacing:.02em;color:var(--ink);font-feature-settings:"palt" 1;text-wrap:balance}
+.family-c .foot{position:absolute;left:132px;right:132px;bottom:88px;z-index:1;display:flex;justify-content:space-between;align-items:baseline;gap:32px;font-size:26px;line-height:1.4;color:var(--muted)}
+.family-c .foot span:last-child{white-space:nowrap;font-variant-numeric:tabular-nums}
+.family-c .content{margin-top:24px}
+/* --- 図・グラフ（§3・§4） --- */
+/* 描画枠 1608×530 に viewBox 1696×580 を等比縮小（倍率 0.914）。
+   文字は RC4 の見た目（38/46/32/96px）を保つため user unit を 1.094 倍してある。 */
+.family-c .graphic{display:block;width:100%;height:530px;margin:0 auto;overflow:visible}
+.family-c .graphic text{font-family:"Noto Sans JP",LabNoto,"BIZ UDPGothic","Yu Gothic",sans-serif;fill:var(--ink);font-size:42px}
+.family-c .graphic .major{font-size:51px;font-weight:700;fill:var(--accent)}
+.family-c .graphic .hero{font-size:106px;font-weight:800;fill:var(--accent)}
+.family-c .graphic .fine{font-size:35px;fill:var(--muted)}
+/* 枠つきの淡色面（cause-map の中心箱・mechanism-pair の2面）は §3 の角丸にそろえる */
+.family-c .graphic rect[stroke]{rx:18px;ry:18px}
+.family-c .graphic a{text-decoration:none}
+.family-c .note{margin-top:16px;padding:16px 44px;border:0;border-radius:24px;background:var(--tint);text-align:center;font-size:34px;line-height:1.45;color:var(--ink)}
+.family-c .credit{font-size:28px;color:var(--muted);line-height:1.5;margin-top:12px}
+/* --- decision.triage-three（§4） --- */
+.family-c .triage{display:grid;gap:14px}
+.family-c .triage-row{position:relative;display:grid;grid-template-columns:330px 1fr 1fr;gap:38px;align-items:start;padding:12px 32px 12px 56px;border:0;border-radius:24px;background:var(--tint)}
+.family-c .triage-row::before{content:'';position:absolute;left:22px;top:12px;bottom:12px;width:12px;border-radius:6px;background:var(--accent)}
+.family-c .triage-row:first-child::before{background:var(--danger)}
+.family-c .triage-row:nth-child(3)::before{background:var(--deep)}
+.family-c .triage-row h3{font-size:42px;line-height:1.3;font-weight:700;color:var(--accent)}
+.family-c .triage-row p{font-size:40px;line-height:1.28}
+.family-c .triage-row strong{display:block;font-size:28px;line-height:1.2;font-weight:700;color:var(--muted)}
+.family-c .triage+.note{margin-top:12px}
+/* ===== family-cover : RC5 案F（青のグラデ下地＋白い角丸カード） ===== */
+.family-cover{--accent:#1a6fd6;--deep:#0d4fb8;--bright:#2b83e6;--grad:linear-gradient(90deg,#2b83e6 0%,#0d4fb8 100%);--card:#ffffff;--tint:#e8f1fb;--line:#cfdff5;--ink:#333333;--muted:#5b6b80;--navy:#1a6fd6;--paper:#ffffff;--orange:#1a6fd6}
+.family-cover *{box-sizing:border-box}
+.family-cover{margin:0;font-family:"Noto Sans JP",LabNoto,"BIZ UDPGothic","Yu Gothic",sans-serif;color:var(--ink)}
+.family-cover p,.family-cover h1,.family-cover figure{margin:0}
+
+.family-cover .slide,.family-cover.slide{width:1920px;height:1080px;position:relative;overflow:hidden;padding:190px 156px 96px;break-after:page;background:
+  radial-gradient(circle at 6% 4%,rgba(255,255,255,0) 0 350px,rgba(255,255,255,.10) 350px 440px,rgba(255,255,255,0) 440px),
+  radial-gradient(circle at 95% 97%,rgba(255,255,255,0) 0 350px,rgba(255,255,255,.10) 350px 440px,rgba(255,255,255,0) 440px),
+  linear-gradient(135deg,#2b83e6 0%,#0d4fb8 60%,#0d4fb8 100%)}
+.family-cover .slide:last-child,.family-cover.slide:last-child{break-after:auto}
+.family-cover .slide:before,.family-cover.slide:before{content:'';position:absolute;inset:60px;background:var(--card);border-radius:32px;z-index:0}
+.family-cover .slide:after,.family-cover.slide:after{content:none;display:none}
+.family-cover .slide>*,.family-cover.slide>*{position:relative;z-index:1}
+
+/* --- ヘッダー：シリーズ名（上下罫つきボックス・中央）＋ブランド標（カード右上） --- */
+.family-cover header{display:block;margin:0;text-align:center;font-size:44px;font-weight:700;color:var(--ink);line-height:1.4}
+.family-cover header p:first-child{display:inline-block;border-top:3px solid var(--ink);border-bottom:3px solid var(--ink);padding:24px 56px;font-size:44px;font-weight:700;color:var(--ink);line-height:1.4}
+.family-cover .brand,.family-cover.brand{position:absolute;top:-86px;right:-24px;font-size:36px;font-weight:800;line-height:40px;color:var(--accent);padding-left:54px;background:linear-gradient(#fff,#fff) 6px center/22px 22px no-repeat,linear-gradient(var(--accent),var(--accent)) 0 center/34px 34px no-repeat}
+
+/* --- 見出し（t003 は上に濃灰、t004 はキーワード面） --- */
+.family-cover h1{color:var(--ink);font-size:64px;font-weight:700;line-height:1.45;letter-spacing:.01em;font-feature-settings:"palt" 1}
+.family-cover .key,.family-cover.key{display:inline-block;margin-top:16px;background:var(--grad);color:#fff;padding:14px 54px;font-size:116px;font-weight:800;letter-spacing:.02em;line-height:1.25;font-feature-settings:"palt" 1}
+.family-cover .accent,.family-cover.accent{display:none}
+.family-cover .subtitle,.family-cover.subtitle{font-size:52px;font-weight:700;color:var(--ink);line-height:1.5}
+.family-cover .byline,.family-cover.byline{font-size:36px;color:var(--ink);line-height:1.5}
+
+/* --- 脚注 --- */
+.family-cover footer,.family-cover .foot{position:absolute;left:132px;right:132px;bottom:88px;display:flex;justify-content:space-between;align-items:baseline;gap:32px;font-size:26px;line-height:1.4;color:var(--muted);z-index:1}
+
+/* ===== cover.centered ===== */
+.family-cover .center-copy,.family-cover.center-copy{text-align:center;margin-top:90px}
+.family-cover .centered h1,.family-cover.centered h1{font-size:64px;line-height:1.45}
+.family-cover .centered .key,.family-cover.centered .key{font-size:116px}
+.family-cover .centered .subtitle,.family-cover.centered .subtitle{margin-top:56px}
+.family-cover .centered .byline,.family-cover.centered .byline{margin-top:36px}
+
+/* ===== cover.illustrated ===== */
+.family-cover .split,.family-cover.split{display:grid;grid-template-columns:960px 1fr;gap:64px;align-items:center;margin-top:48px}
+.family-cover .copy,.family-cover.copy{align-self:center}
+.family-cover .illustrated .key,.family-cover.illustrated .key{font-size:98px;line-height:1.25}
+.family-cover .illustrated .subtitle,.family-cover.illustrated .subtitle{margin-top:44px}
+.family-cover .illustrated>.byline,.family-cover.illustrated>.byline{position:absolute;left:156px;right:156px;bottom:162px;margin:0}
+.family-cover figure{padding-left:0;border-left:0}
+.family-cover figcaption{font-size:36px;font-weight:700;color:var(--accent);margin-bottom:26px;line-height:1.4}
+.family-cover .diagram,.family-cover.diagram{position:relative;display:grid;gap:22px}
+.family-cover .diagram:before,.family-cover.diagram:before{content:none;display:none}
+.family-cover .aspect,.family-cover.aspect{display:flex;gap:32px;align-items:center;position:relative}
+.family-cover .circle,.family-cover.circle{width:150px;height:150px;border-radius:50%;border:0;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:54px;font-weight:800;color:#fff;flex-shrink:0}
+.family-cover .aspect:last-child .circle,.family-cover.aspect:last-child .circle{background:var(--deep)}
+.family-cover .aspect p,.family-cover.aspect p{font-size:38px;line-height:1.5;color:var(--ink);white-space:nowrap}
+/* ===== RC6 試作：RC5 の文法（白カード・角丸・ピル・単色青）はそのまま、Canva 見本の未実装要素を取り込む ===== */
+/* 文字の大きさ・太さは RC5 と同等以上。色は RC5 のトークンのみ＋灰の見出し帯 #7a8599（白文字 3.7:1）と灰の面 #f1f3f7 */
+
+/* --- G1 ブランド標：輪郭四角（チェック欄に見える）→ 塗りの角丸タイル＋白十字 --- */
+.family-a.slide:after,.family-b.slide::after,.family-c.slide::after{
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%232b83e6'/%3E%3Cstop offset='1' stop-color='%230d4fb8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='36' height='36' rx='10' fill='url(%23g)'/%3E%3Cpath d='M18 10v16M10 18h16' stroke='%23fff' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E") left center/36px 36px no-repeat;
+  padding-left:52px;line-height:40px}
+
+/* --- 1 章扉：Canva の大きな輪郭数字（01/02/03）。番号は assemble が「第N章」から data-chapter に写す --- */
+.family-a.chapter[data-chapter]{padding-top:258px}
+.family-a.chapter[data-chapter]::after{content:attr(data-chapter);display:block;position:absolute;left:118px;right:auto;top:70px;z-index:1;
+  padding:0;background:none;font-size:210px;font-weight:800;line-height:1;letter-spacing:.01em;color:transparent;
+  -webkit-text-stroke:4px rgba(255,255,255,.95);font-variant-numeric:tabular-nums}
+.family-a.chapter[data-chapter] .topic{left:400px;top:150px;color:#fff}
+.family-a.chapter[data-chapter] .topic:before{background:#fff}
+.family-a.chapter h2{font-size:96px;line-height:1.22}
+.family-a.chapter .content{margin-top:36px;padding-bottom:64px}
+.family-a.chapter .chapterpair>div{border:0;background:rgba(255,255,255,.14);border-radius:24px;padding:24px 44px}
+.family-a.chapter .chapterpair .tag{margin-bottom:12px}
+.family-a.chapter .chapterpair p{line-height:1.42}
+.family-a.chapter .note{color:#fff;opacity:.92}
+
+/* --- 2 数値ヒーロー：先生が選んだ F_Hero のドーナツを復元。弧は単位が % のときだけ（--pct）、それ以外は輪のみ --- */
+.family-a[data-layout="quantitative.hero"] .content{display:grid;grid-template-columns:1fr 540px;grid-template-rows:auto auto auto;
+  column-gap:64px;row-gap:26px;align-content:center;padding-bottom:40px;margin-top:24px}
+.family-a[data-layout="quantitative.hero"] .dose-row{display:contents}
+.family-a[data-layout="quantitative.hero"] .scope{grid-column:1;grid-row:1;text-align:left;margin:0;max-width:none;font-size:44px;font-weight:700}
+.family-a[data-layout="quantitative.hero"] .scope .pill{margin-bottom:14px}
+.family-a[data-layout="quantitative.hero"] .hero-value{grid-column:2;grid-row:1 / span 3;align-self:center;width:540px;height:540px;padding:0;border-radius:50%;
+  display:flex;flex-wrap:wrap;align-content:center;align-items:baseline;justify-content:center;gap:6px;
+  background:radial-gradient(closest-side,#fff calc(100% - 86px),transparent calc(100% - 85px)),
+             conic-gradient(var(--accent) calc(var(--pct,0) * 1%),var(--pale) 0)}
+/* 数字が長いとドーナツの穴（直径368px）からはみ出すため、decorate_rc6 が --big を付けて縮める（RC6.1）。単位は数字の 80/176 */
+.family-a[data-layout="quantitative.hero"] .hero-value .big{font-size:var(--big,176px);line-height:1}
+.family-a[data-layout="quantitative.hero"] .hero-value .unit{font-size:calc(var(--big,176px) * 5 / 11);line-height:1}
+.family-a[data-layout="quantitative.hero"] .frequency{grid-column:1;grid-row:2;justify-self:end;position:relative;
+  background:#7a8599;border-radius:24px 0 0 24px;padding:22px 84px 22px 48px;color:#fff;text-align:center;
+  clip-path:polygon(0 0,calc(100% - 38px) 0,100% 50%,calc(100% - 38px) 100%,0 100%)}
+.family-a[data-layout="quantitative.hero"] .frequency strong{color:#fff}
+.family-a[data-layout="quantitative.hero"] .frequency p{color:#fff;margin-top:6px}
+.family-a[data-layout="quantitative.hero"] .callout{grid-column:1;grid-row:3;margin-top:0;text-align:left}
+
+/* --- 3 比較（修正前後・誤解と訂正）：Canva「理想と現実」の見出し帯。旧＝灰の帯と面、新＝青の帯と面 --- */
+.family-b .before-grid{grid-template-columns:1fr 128px 1fr;gap:0}
+.family-b .before-grid .pane,.family-b .myth-box{display:flex;flex-direction:column;padding:0 0 36px;overflow:hidden;background:#f1f3f7;border:0}
+.family-b .before-grid .pane.after,.family-b .myth-box.correct{background:var(--tint);border:0}
+.family-b .before-grid .pane h3,.family-b .myth-box h3{display:block;margin:0 0 30px;padding:16px 40px;border-radius:0;background:#7a8599;
+  color:#fff;font-size:38px;line-height:1.4;text-align:center;letter-spacing:.04em}
+.family-b .before-grid .pane.after h3,.family-b .myth-box.correct h3{background:var(--grad)}
+.family-b .before-grid .pane p,.family-b .myth-box p{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 44px}
+.family-b .before-grid .pane.after p,.family-b .myth-box.correct p{font-weight:700}
+.family-b .change-arrow{align-self:center;justify-self:center;width:104px;height:104px;border-radius:50%;background:var(--grad);color:#fff;
+  font-size:60px;font-weight:800;line-height:1;padding-bottom:8px}
+
+/* --- 4 手順3段：Canva の矢羽（STEP）見出し。番号は白丸、奥に進むほど濃くなる --- */
+.family-a .timeline{gap:22px}
+.family-a .time-step{display:grid;grid-template-columns:auto 1fr;grid-template-rows:124px auto 1fr;column-gap:20px;align-items:center;
+  background:none;border-radius:0;padding:0}
+.family-a .time-step:not(:last-child){margin-right:-40px}
+.family-a .time-step:before{content:'';position:absolute;left:0;right:0;top:0;height:124px;z-index:0;background:var(--c,#1a6fd6);
+  clip-path:polygon(0 0,calc(100% - 44px) 0,100% 50%,calc(100% - 44px) 100%,0 100%,44px 50%)}
+.family-a .time-step:first-child:before{clip-path:polygon(0 0,calc(100% - 44px) 0,100% 50%,calc(100% - 44px) 100%,0 100%);border-radius:24px 0 0 24px}
+.family-a .time-step:after{content:'';position:absolute;left:0;right:40px;top:146px;bottom:0;z-index:-1;background:var(--tint);border-radius:24px}
+.family-a .time-step:nth-child(1){--c:#4a95e8}
+.family-a .time-step:nth-child(2){--c:#1a6fd6}
+.family-a .time-step:nth-child(3){--c:#0d4fb8}
+.family-a .time-step>*{position:relative;z-index:1}
+.family-a .stepnum,.family-a .time-step:last-child .stepnum{grid-row:1;grid-column:1;margin:0 0 0 58px;width:80px;height:80px;background:#fff;color:var(--c);font-size:46px}
+.family-a .time-step:first-child .stepnum{margin-left:36px}
+.family-a .time-step h3{grid-row:1;grid-column:2;margin:0;color:#fff;font-size:48px;white-space:nowrap}
+.family-a .time-step .action{grid-row:2;grid-column:1 / -1;margin:48px 0 10px;padding:0 40px}
+.family-a .time-step .detail{grid-row:3;grid-column:1 / -1;align-self:start;padding:0 40px 30px;color:var(--ink)}
+.family-a .time-step:not(:last-child) .action,.family-a .time-step:not(:last-child) .detail{padding-right:80px}
+.family-a .time-step:last-child:after{right:0}
+
+/* --- 5 タイムライン（4・5時点）：細い線と点 → Canva の矢羽フロー。日付を矢羽に載せる --- */
+.family-b.timeline .content{display:flex;flex-direction:column;justify-content:center;height:calc(100% - 130px)}
+.family-b .timeline-grid{gap:0;margin-top:0}
+.family-b .timeline-grid::before{display:none}
+.family-b .event .node{display:none}
+.family-b .event{--c:#1a6fd6}
+.family-b .event:not(:last-child){margin-right:-26px}
+.family-b .when{display:flex;align-items:center;justify-content:center;width:100%;height:112px;margin:0 0 34px;padding:0 44px 0 58px;
+  border:0;border-radius:0;background:var(--c);color:#fff;font-size:42px;letter-spacing:.02em;white-space:nowrap;
+  clip-path:polygon(0 0,calc(100% - 42px) 0,100% 50%,calc(100% - 42px) 100%,0 100%,42px 50%)}
+.family-b .event:first-child .when{padding-left:30px;border-radius:20px 0 0 20px;clip-path:polygon(0 0,calc(100% - 42px) 0,100% 50%,calc(100% - 42px) 100%,0 100%)}
+.family-b .timeline-grid[style*="--count:5"] .event:nth-child(1){--c:#4a95e8}
+.family-b .timeline-grid[style*="--count:5"] .event:nth-child(2){--c:#2b83e6}
+.family-b .timeline-grid[style*="--count:5"] .event:nth-child(3){--c:#1a6fd6}
+.family-b .timeline-grid[style*="--count:5"] .event:nth-child(4){--c:#1360c8}
+.family-b .timeline-grid[style*="--count:5"] .event:nth-child(5){--c:#0d4fb8}
+.family-b .timeline-grid[style*="--count:4"] .event:nth-child(1){--c:#4a95e8}
+.family-b .timeline-grid[style*="--count:4"] .event:nth-child(2){--c:#1f78dc}
+.family-b .timeline-grid[style*="--count:4"] .event:nth-child(3){--c:#1463c9}
+.family-b .timeline-grid[style*="--count:4"] .event:nth-child(4){--c:#0d4fb8}
+.family-b .event h3{font-size:46px;text-align:center;padding-right:26px;color:var(--c)}
+.family-b .event .detail{font-size:38px;text-align:center;padding-right:26px}
+.family-b .event:last-child h3,.family-b .event:last-child .detail{padding-right:0}
+.family-b.timeline .callout{margin-top:52px}
+
+/* --- 6 まとめ3点：見出し語を帯に（比較と同じ語彙）。3つ目＝強調は濃い帯 --- */
+.family-a .summary-step{padding:0 0 34px;overflow:hidden;background:var(--tint)}
+.family-a .summary-step:last-child{background:var(--tint);border:0}
+.family-a .summary-step h3{margin:0 0 26px;padding:14px 40px;background:var(--grad);color:#fff;text-align:center}
+.family-a .summary-step:last-child h3{background:linear-gradient(90deg,#0d4fb8,#0b3f96)}
+.family-a .summary-step p{padding:0 40px}
+/* ===== RC6「ラボ」：白地＋左上のドット格子＋意味づけした多色 ===== */
+/* 生成元: theme-src/60-lab.css.tpl → build_theme.py → base/theme-parts/60-lab.css（直接編集しない）
+   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='234' height='78' viewBox='0 0 234 78'%3E%3Cdefs%3E%3Cpattern id='d' width='26' height='26' patternUnits='userSpaceOnUse'%3E%3Ccircle cx='13' cy='13' r='4' fill='%23b3bed0'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='234' height='78' fill='url%28%23d%29'/%3E%3C/svg%3E" "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='14' fill='none' stroke='%231f3a68' stroke-width='4'/%3E%3Cpath d='M20 1.5v9M20 29.5v9M1.5 20h9M29.5 20h9' stroke='%232563c9' stroke-width='4' stroke-linecap='round'/%3E%3Ccircle cx='20' cy='20' r='5' fill='%230e7f76'/%3E%3C/svg%3E" は theme-src/*.svg の data URI に置き換わる。
+   文字の大きさは RC5 と同等以上、太さは同等以上（見出し 700→800）。
+   隅の4分の1の円（レンズ）は 2026-09-24 先生指示で全廃。章扉も他と同じ白地。 */
+
+/* --- 配色：構造＝紺、主＝青、良い・正しい＝ティール、並列の3色目＝紫、注意＝琥珀、危険＝珊瑚赤 --- */
+.family-a,.family-b,.family-c,.family-cover{
+  --ink:#141a26;--muted:#5d6779;--navy:#1f3a68;--blue:#2563c9;--teal:#0e7f76;--violet:#6a4fc0;
+  --amber:#b86e00;--amber-fill:#e9a321;--coral:#c93c34;--coral-fill:#d9483f;--slate:#6b7689;
+  --t-blue:#edf3fc;--t-teal:#e6f4f2;--t-violet:#f1edfb;--t-amber:#fdf4e1;--t-coral:#fdeeec;--t-slate:#f2f4f8;
+  --accent:#2563c9;--deep:#1f3a68;--bright:#3a78dc;--grad:linear-gradient(90deg,#2563c9,#1f4fa8);
+  --page:#ffffff;--card:#ffffff;--tint:#edf3fc;--line:#d8dfea;--pale:#e4e9f1;--bar:#a9c0e6;
+  --danger:#c93c34;--danger-face:#fdeeec;--bubble:#1f3a68}
+
+/* --- 共通フレーム：白地。左上にドット格子だけ。白カードは廃止（本文幅は RC5 と同じ） --- */
+.family-a.slide,.family-b.slide,.family-c.slide{
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='234' height='78' viewBox='0 0 234 78'%3E%3Cdefs%3E%3Cpattern id='d' width='26' height='26' patternUnits='userSpaceOnUse'%3E%3Ccircle cx='13' cy='13' r='4' fill='%23b3bed0'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='234' height='78' fill='url%28%23d%29'/%3E%3C/svg%3E") left 20px top 10px/234px 78px no-repeat,#ffffff}
+.family-a.slide:before,.family-b.slide::before,.family-c.slide::before{display:none}
+/* ブランド標：レンズの印＋紺 */
+.family-a.slide:after,.family-b.slide::after,.family-c.slide::after{
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='14' fill='none' stroke='%231f3a68' stroke-width='4'/%3E%3Cpath d='M20 1.5v9M20 29.5v9M1.5 20h9M29.5 20h9' stroke='%232563c9' stroke-width='4' stroke-linecap='round'/%3E%3Ccircle cx='20' cy='20' r='5' fill='%230e7f76'/%3E%3C/svg%3E") left center/40px 40px no-repeat;padding-left:54px;line-height:44px;top:102px;color:var(--navy)}
+/* 章ラベル：細い紺の縦棒＋紺 */
+.family-a .topic,.family-b .topic,.family-c .topic{color:var(--navy)}
+.family-a .topic:before,.family-b .topic::before,.family-c .topic::before{width:12px;height:58px;border-radius:2px;background:var(--navy)}
+/* 見出し：濃い墨・800 */
+.family-a h2,.family-b h2,.family-c h2{color:var(--ink);font-weight:800;letter-spacing:.03em}
+/* 囲み：青の淡色面。ピルは青 */
+.family-a .callout,.family-b .callout{background:var(--t-blue)}
+.family-a .callout.danger,.family-b .callout.danger{background:var(--t-coral)}
+.family-a .callout.danger h3,.family-b .callout.danger h3{background:var(--coral-fill)}
+.family-c .note{background:var(--t-slate)}
+
+/* ===== 表紙（A案・2026-09-24 先生選択）：白地＋下部に青→ティールの帯（発表者の情報を載せる帯）。
+   装飾の図形は置かない。主題 t003 を最大に、t004 は色付きの副題として添える ===== */
+.family-cover.slide{background:linear-gradient(90deg,#2563c9 0%,#1a76a4 55%,#0e7f76 100%) 0 740px/100% 340px no-repeat,#ffffff}
+.family-cover.illustrated{background:linear-gradient(90deg,#2563c9 0%,#1a76a4 55%,#0e7f76 100%) 0 820px/100% 260px no-repeat,#ffffff}
+.family-cover.slide:before{display:none}
+.family-cover.slide>header{position:absolute;left:0;right:0;top:0;height:0;margin:0}
+.family-cover header p:first-child{position:absolute;left:132px;top:98px;display:block;border:0;padding:0;font-size:46px;font-weight:800;color:var(--ink);letter-spacing:.02em}
+.family-cover header:before{content:'';position:absolute;left:92px;top:0;width:12px;height:212px;background:var(--navy)}
+.family-cover .brand{position:absolute;top:100px;right:132px;left:auto;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='14' fill='none' stroke='%231f3a68' stroke-width='4'/%3E%3Cpath d='M20 1.5v9M20 29.5v9M1.5 20h9M29.5 20h9' stroke='%232563c9' stroke-width='4' stroke-linecap='round'/%3E%3Ccircle cx='20' cy='20' r='5' fill='%230e7f76'/%3E%3C/svg%3E") left center/40px 40px no-repeat;padding-left:54px;line-height:44px;color:var(--navy)}
+.family-cover h1 br{display:none}
+.family-cover h1{font-size:124px;font-weight:900;line-height:1.22;color:var(--ink);letter-spacing:.04em;text-wrap:balance;word-break:auto-phrase}
+.family-cover .key,.family-cover.centered .key,.family-cover.illustrated .key{display:flex;align-items:center;justify-content:center;gap:28px;margin-top:34px;
+  background:none;padding:0;font-size:60px;font-weight:800;line-height:1.3;letter-spacing:.12em;color:var(--blue)}
+.family-cover .key::before,.family-cover .key::after{content:'';flex:none;width:64px;height:5px;border-radius:3px;background:linear-gradient(90deg,var(--blue),var(--teal))}
+.family-cover .accent{display:none}
+.family-cover footer,.family-cover .foot{color:rgba(255,255,255,.88)}
+/* 図なし：題は帯の上の白地で上下中央（3行まで収まる）、キャッチ・発表者は帯の中 */
+.family-cover.slide>.center-copy{position:absolute;left:120px;right:120px;top:180px;height:560px;margin:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.family-cover.centered h1{font-size:112px;line-height:1.2;letter-spacing:.02em}
+.family-cover.centered .subtitle{position:absolute;left:0;right:0;top:592px;margin:0;text-align:center;color:#ffffff;font-size:52px;font-weight:800;line-height:1.5}
+.family-cover.centered .byline{position:absolute;left:0;right:0;top:688px;margin:0;text-align:center;color:rgba(255,255,255,.94);font-size:36px;line-height:1.5}
+/* 図あり：左に題、右に3つの視点（青・ティール・紫）。発表者は帯の中 */
+.family-cover .split{grid-template-columns:1fr 560px;gap:64px;margin-top:64px}
+.family-cover.illustrated h1{font-size:88px;line-height:1.22;text-align:left}
+.family-cover.illustrated .key{justify-content:flex-start;font-size:56px;letter-spacing:.06em;margin-top:28px}
+.family-cover.illustrated .key::after{display:none}
+.family-cover.illustrated .subtitle{margin-top:36px;font-size:52px;font-weight:700;color:var(--ink)}
+.family-cover figcaption{color:var(--navy);font-size:38px;font-weight:800;margin-bottom:22px}
+.family-cover .diagram{gap:20px}
+.family-cover .circle,.family-cover .aspect:last-child .circle{width:136px;height:136px;background:var(--c)}
+.family-cover .aspect:nth-child(1){--c:var(--blue)}
+.family-cover .aspect:nth-child(2){--c:var(--teal)}
+.family-cover .aspect:nth-child(3){--c:var(--violet)}
+.family-cover .aspect p{font-size:40px;font-weight:700;color:var(--ink)}
+.family-cover.illustrated>.byline{bottom:auto;top:866px;color:#ffffff;text-align:left;font-size:36px}
+
+/* ===== 目次：色分けした番号＋左の色帯 ===== */
+.family-b .agenda-list li{position:relative;overflow:hidden;background:var(--t);grid-template-columns:200px 1fr;padding:20px 60px 20px 44px;min-height:170px}
+.family-b .agenda-list li::before{content:'';position:absolute;left:0;top:0;bottom:0;width:14px;background:var(--c)}
+.family-b .agenda-list li:nth-child(1){--c:var(--blue);--t:var(--t-blue)}
+.family-b .agenda-list li:nth-child(2){--c:var(--teal);--t:var(--t-teal)}
+.family-b .agenda-list li:nth-child(3){--c:var(--violet);--t:var(--t-violet)}
+.family-b .agenda-list li:nth-child(4){--c:var(--amber);--t:var(--t-amber)}
+.family-b .agenda-num{color:var(--c);-webkit-text-stroke:0;font-size:108px;font-weight:800}
+.family-b .agenda-title{color:var(--ink);font-weight:800}
+.family-b .agenda-list .small{color:var(--muted)}
+
+/* ===== 章扉：他のスライドと同じ白地（2026-09-24 先生指示）。大きな輪郭数字は青
+   （assemble が「第N章」から data-chapter を付ける）。2枚の面は青・ティールの淡色 ===== */
+.family-a.chapter{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='234' height='78' viewBox='0 0 234 78'%3E%3Cdefs%3E%3Cpattern id='d' width='26' height='26' patternUnits='userSpaceOnUse'%3E%3Ccircle cx='13' cy='13' r='4' fill='%23b3bed0'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='234' height='78' fill='url%28%23d%29'/%3E%3C/svg%3E") left 20px top 10px/234px 78px no-repeat,#ffffff;color:var(--ink)}
+.family-a.chapter[data-chapter]::after{-webkit-text-stroke-color:var(--blue)}
+.family-a.chapter .topic,.family-a.chapter[data-chapter] .topic{color:var(--navy)}
+.family-a.chapter .topic:before,.family-a.chapter[data-chapter] .topic:before{background:var(--navy)}
+.family-a.chapter h2{color:var(--ink)}
+.family-a.chapter .chapterpair>div{border:0}
+.family-a.chapter .chapterpair>div:nth-child(1){background:var(--t-blue)}
+.family-a.chapter .chapterpair>div:nth-child(2){background:var(--t-teal)}
+.family-a.chapter .chapterpair>div:nth-child(1) .tag{background:var(--blue);color:#ffffff}
+.family-a.chapter .chapterpair>div:nth-child(2) .tag{background:var(--teal);color:#ffffff}
+.family-a.chapter .chapterpair p{color:var(--ink)}
+.family-a.chapter .note{color:var(--muted);opacity:1}
+.family-a.chapter .foot{color:var(--muted)}
+
+/* ===== 数値ヒーロー：弧は青、吹き出し札は紺 ===== */
+.family-a[data-layout="quantitative.hero"] .hero-value{background:radial-gradient(closest-side,#fff calc(100% - 86px),transparent calc(100% - 85px)),
+             conic-gradient(var(--blue) calc(var(--pct,0) * 1%),var(--pale) 0)}
+.family-a[data-layout="quantitative.hero"] .frequency{background:var(--navy)}
+.family-a .dose .scope .pill{background:var(--t-blue);border-color:var(--blue);color:var(--blue)}
+
+/* ===== 手順3段：青→ティールへ移る矢羽、本文は灰の面 ===== */
+.family-a .time-step:nth-child(1){--c:#2563c9}
+.family-a .time-step:nth-child(2){--c:#1a76a4}
+.family-a .time-step:nth-child(3){--c:#0e7f76}
+.family-a .time-step:after{background:var(--t-slate)}
+.family-a .time-step .action{color:var(--ink)}
+
+/* ===== タイムライン：青→ティールの矢羽 ===== */
+.family-b .timeline-grid[style*="--count:5"] .event:nth-child(1){--c:#2563c9}
+.family-b .timeline-grid[style*="--count:5"] .event:nth-child(2){--c:#206db7}
+.family-b .timeline-grid[style*="--count:5"] .event:nth-child(3){--c:#1a76a4}
+.family-b .timeline-grid[style*="--count:5"] .event:nth-child(4){--c:#148092}
+.family-b .timeline-grid[style*="--count:5"] .event:nth-child(5){--c:#0e7f76}
+.family-b .timeline-grid[style*="--count:4"] .event:nth-child(1){--c:#2563c9}
+.family-b .timeline-grid[style*="--count:4"] .event:nth-child(2){--c:#1d6cad}
+.family-b .timeline-grid[style*="--count:4"] .event:nth-child(3){--c:#167692}
+.family-b .timeline-grid[style*="--count:4"] .event:nth-child(4){--c:#0e7f76}
+
+/* ===== 比較：誤解＝珊瑚赤、訂正＝ティール／修正前＝灰、修正後＝青 ===== */
+.family-b .myth-box h3{background:var(--coral-fill)}
+.family-b .myth-box{background:var(--t-coral)}
+.family-b .myth-box.correct h3{background:var(--teal)}
+.family-b .myth-box.correct{background:var(--t-teal)}
+.family-b .before-grid .pane h3{background:var(--slate)}
+.family-b .before-grid .pane{background:var(--t-slate)}
+.family-b .before-grid .pane.after h3{background:var(--blue)}
+.family-b .before-grid .pane.after{background:var(--t-blue)}
+
+/* ===== 3段階判断：危険＝珊瑚赤、早め＝琥珀、通常＝ティール ===== */
+.family-c .triage-row{background:var(--t)}
+.family-c .triage-row h3{color:var(--c)}
+.family-c .triage-row:nth-child(1){--c:var(--coral);--b:var(--coral-fill);--t:var(--t-coral)}
+.family-c .triage-row:nth-child(2){--c:var(--amber);--b:var(--amber-fill);--t:var(--t-amber)}
+.family-c .triage-row:nth-child(3){--c:var(--teal);--b:var(--teal);--t:var(--t-teal)}
+.family-c .triage-row:nth-child(n)::before{background:var(--b)}
+
+/* ===== 表：紺の見出し、1列目は青、偶数行は灰 ===== */
+.family-b .comparison tbody tr:nth-child(even) td{background:var(--t-slate)}
+.family-b .comparison td[rowspan]{background:var(--t-blue);border-left-color:var(--blue)}
+
+/* ===== まとめ3点：青・ティール・紫の帯 ===== */
+.family-a .summary-step:nth-child(1){--c:var(--blue);--t:var(--t-blue)}
+.family-a .summary-step:nth-child(2){--c:var(--teal);--t:var(--t-teal)}
+.family-a .summary-step:nth-child(3){--c:var(--violet);--t:var(--t-violet)}
+.family-a .summary-step:nth-child(n){background:var(--t)}
+.family-a .summary-step:nth-child(n) h3{background:var(--c)}
+
+/* ===== 情報の整理（4観点）：目次・まとめと同じ色分け（青・ティール・紫・琥珀）と左の色帯 ===== */
+.family-a .concept>div{position:relative;overflow:hidden;background:var(--t);padding-left:52px}
+.family-a .concept>div::before{content:'';position:absolute;left:0;top:0;bottom:0;width:12px;background:var(--c)}
+.family-a .concept>div:nth-child(1){--c:var(--blue);--t:var(--t-blue)}
+.family-a .concept>div:nth-child(2){--c:var(--teal);--t:var(--t-teal)}
+.family-a .concept>div:nth-child(3){--c:var(--violet);--t:var(--t-violet)}
+.family-a .concept>div:nth-child(4){--c:var(--amber);--t:var(--t-amber)}
+.family-a .concept .word{color:var(--c)}
+
+/* ===== チェックリスト：確認済みの印はティール（正しい・済み） ===== */
+.family-b .check-square{border-color:var(--teal);color:var(--teal)}
+.family-b .check-list .done .check-square{background:var(--teal);color:#fff}
+
+/* ===== 危険サイン：面は灰、見出しと点だけ珊瑚赤 ===== */
+.family-b .flag{background:var(--t-slate)}
+.family-b .flag h3{color:var(--coral)}
+.family-b .flag h3::before{background:var(--coral-fill)}
+
+/* ===== エンディング：青→ティールの罫、3枚は色分け ===== */
+.family-b .end-line{width:200px;background:linear-gradient(90deg,var(--blue),var(--teal))}
+.family-b .end-pair>div{position:relative;overflow:hidden;background:var(--t);padding-top:40px}
+.family-b .end-pair>div::before{content:'';position:absolute;left:0;right:0;top:0;height:10px;background:var(--c)}
+.family-b .end-pair>div:nth-child(1){--c:var(--blue);--t:var(--t-blue)}
+.family-b .end-pair>div:nth-child(2){--c:var(--teal);--t:var(--t-teal)}
+.family-b .end-pair>div:nth-child(3){--c:var(--violet);--t:var(--t-violet)}
+.family-b .end-pair h3{color:var(--c)}
+
+/* ===== クイズ・Q&A：A/B/C と Q/A を色分け。正解・答えはティール ===== */
+.family-b .option:nth-child(1) .letter{background:var(--blue)}
+.family-b .option:nth-child(2) .letter{background:var(--teal)}
+.family-b .option:nth-child(3) .letter{background:var(--violet)}
+.family-b .option.correct{border-color:var(--teal);background:var(--t-teal)}
+.family-b .correct-label{background:var(--teal)}
+.family-b .qa-row:not(.answer-row) .qa-mark{background:var(--blue)}
+.family-b .qa-row.answer-row{border-color:var(--teal);background:var(--t-teal)}
+.family-b .qa-row.answer-row .qa-mark{background:var(--teal)}
+
+/* ===== 用語（並列）：左は青、右はティールで、別々の語だと分かるようにする ===== */
+.family-b .term-card{position:relative;overflow:hidden;background:var(--t);padding-top:52px}
+.family-b .term-card::before{content:'';position:absolute;left:0;right:0;top:0;height:12px;background:var(--c)}
+.family-b .term-card:nth-child(1){--c:var(--blue);--t:var(--t-blue)}
+.family-b .term-card:nth-child(2){--c:var(--teal);--t:var(--t-teal)}
+.family-b .term-card .term-word strong{color:var(--c)}
+/* ===== RC7「カラーブロック」（2026-10-20 先生選択・Design キャンバスの B 案）===== */
+/* 生成元: theme-src/70-block.css.tpl → build_theme.py → base/theme-parts/70-block.css（直接編集しない）
+   波括弧2つで囲んだ名前は theme-src/<名前>.svg の data URI に置き換わる。RC6「ラボ」（00〜60）の上に重ねて上書きする。
+   方針: 白地。章ラベルは紺の塗りピル、見出しは左揃え。中身は「意味のある色の面（塗りの見出し帯＋同系の淡い面）」で
+   画面を大きな塊に分け、下まで埋める。文字は細く・小さくしない。意味のない図形・ドット格子・左の色帯は置かない。
+   色の意味は RC6 と同じ（構造＝紺、主＝青、正しい・済み＝ティール、並列3色目＝紫、注意＝琥珀、危険＝珊瑚赤）。 */
+
+.family-a,.family-b,.family-c,.family-cover{--r:28px;--t-soft:#f7f9fc;--hair:#e4e9f1}
+
+/* ---------- 共通フレーム ---------- */
+.family-a.slide,.family-b.slide,.family-c.slide{background:#ffffff;padding:178px 112px 120px;display:flex;flex-direction:column}
+.family-a.slide:after,.family-b.slide::after,.family-c.slide::after{top:92px;right:112px;font-size:34px;font-weight:800;line-height:44px;
+  color:var(--navy);background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Crect x='3.5' y='3.5' width='25' height='25' rx='6' fill='none' stroke='%232563c9' stroke-width='7'/%3E%3C/svg%3E") left center/32px 32px no-repeat;padding-left:48px}
+.family-a .topic,.family-b .topic,.family-c .topic{left:112px;top:88px;gap:0;padding:8px 32px;border-radius:999px;background:var(--navy);
+  color:#ffffff;font-size:34px;font-weight:700;line-height:1.4;white-space:nowrap}
+.family-a .topic:before,.family-b .topic::before,.family-c .topic::before{display:none}
+.family-a h2,.family-b h2,.family-c h2{text-align:left;font-size:72px;font-weight:800;line-height:1.3;letter-spacing:.02em;text-wrap:pretty}
+.family-a .foot,.family-b .foot,.family-c .foot{left:112px;right:112px;bottom:60px}
+.family-a .content,.family-b .content{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:center;margin-top:28px;padding-bottom:0}
+.family-c .content{margin-top:28px}
+
+/* ---------- 囲み：要点は紺の帯（矢印）、見出し付きは青の淡い面、危険は珊瑚赤の淡い面（警告） ---------- */
+.family-a .callout,.family-a .callout.soft,.family-b .callout,.family-b .callout.soft{position:relative;margin-top:28px;background:var(--navy);color:#ffffff;border-radius:24px;
+  padding:22px 44px 22px 108px;text-align:left;font-size:44px;font-weight:700;line-height:1.5}
+.family-a .callout::before,.family-b .callout::before{content:'';position:absolute;left:40px;top:50%;width:46px;height:46px;margin-top:-23px;
+  background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E") center/contain no-repeat}
+.family-a .callout.danger,.family-b .callout.danger{background:var(--t-coral);color:var(--ink)}
+.family-a .callout.danger::before,.family-b .callout.danger::before{background:var(--coral);-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3.5l9.5 16.5h-19z'/%3E%3Cpath d='M12 10v4.6M12 17.4v.2'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3.5l9.5 16.5h-19z'/%3E%3Cpath d='M12 10v4.6M12 17.4v.2'/%3E%3C/svg%3E")}
+.family-a .callout:has(h3),.family-a .callout.soft:has(h3),.family-b .callout:has(h3),.family-b .callout.soft:has(h3){margin-top:32px;padding:28px 48px 30px;background:var(--t-blue);color:var(--ink);font-weight:500}
+.family-a .callout:has(h3)::before,.family-b .callout:has(h3)::before{display:none}
+.family-a .callout h3,.family-b .callout h3{position:static;transform:none;display:inline-block;margin:0 0 14px;padding:6px 32px;border-radius:999px;
+  background:var(--blue);color:#ffffff;font-size:32px;font-weight:800;line-height:1.4}
+.family-a .callout:has(h3) p,.family-b .callout:has(h3) p{font-size:44px;line-height:1.5}
+
+/* ---------- 表紙（図なし）：左に主題、右に紺の面（キャッチ） ---------- */
+.family-cover.slide,.family-cover.illustrated{background:linear-gradient(var(--navy),var(--navy)) right top/680px 100% no-repeat,#ffffff}
+.family-cover.slide>header{position:absolute;left:0;right:0;top:0;height:0;margin:0}
+.family-cover header:before{display:none}
+.family-cover header p:first-child{position:absolute;left:112px;top:96px;display:inline-block;max-width:1040px;border:0;padding:12px 34px;border-radius:999px;
+  background:var(--t-blue);color:var(--navy);font-size:36px;font-weight:700;line-height:1.4}
+.family-cover .brand{position:absolute;top:100px;right:112px;left:auto;color:#ffffff;font-size:34px;font-weight:800;line-height:44px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Crect x='3.5' y='3.5' width='25' height='25' rx='6' fill='none' stroke='%23ffffff' stroke-width='7'/%3E%3C/svg%3E") left center/32px 32px no-repeat;padding-left:48px}
+.family-cover.centered .center-copy{position:static;margin:0}
+.family-cover.centered h1{position:absolute;left:112px;top:200px;width:1040px;height:600px;display:flex;flex-direction:column;justify-content:center;
+  align-items:flex-start;text-align:left;font-size:116px;font-weight:900;line-height:1.18;letter-spacing:.01em;text-wrap:balance;word-break:auto-phrase}
+.family-cover .key,.family-cover.centered .key,.family-cover.illustrated .key{display:block;margin-top:36px;background:none;padding:0;
+  font-size:56px;font-weight:800;line-height:1.35;letter-spacing:.02em;color:var(--blue);text-align:left}
+.family-cover .key::before,.family-cover .key::after{display:none}
+.family-cover.centered .subtitle{position:absolute;left:1312px;right:112px;top:50%;transform:translateY(-50%);margin:0;text-align:left;
+  color:#ffffff;font-size:56px;font-weight:800;line-height:1.45;word-break:auto-phrase}
+.family-cover.centered .subtitle::before{content:'';display:block;width:120px;height:8px;border-radius:4px;background:#5fc4b8;margin-bottom:36px}
+.family-cover.centered .byline{position:absolute;left:112px;right:auto;top:auto;bottom:140px;width:1040px;margin:0;text-align:left;
+  color:var(--ink);font-size:36px;font-weight:700;line-height:1.5}
+.family-cover footer,.family-cover .foot{left:112px;right:112px;bottom:60px;color:var(--muted);font-size:28px}
+.family-cover .foot span:last-child{color:rgba(255,255,255,.72)}
+
+/* ---------- 表紙（図あり）：左に主題、右の紺の面に3つの視点 ---------- */
+.family-cover .split{position:absolute;left:112px;right:112px;top:180px;bottom:190px;margin:0;display:grid;grid-template-columns:1040px 1fr;gap:128px;align-items:center}
+.family-cover.illustrated h1{font-size:100px;font-weight:900;line-height:1.2;text-align:left;text-wrap:balance;word-break:auto-phrase}
+.family-cover.illustrated .key{margin-top:30px;font-size:52px}
+.family-cover.illustrated .subtitle{margin-top:40px;font-size:46px;font-weight:700;color:var(--ink)}
+.family-cover figcaption{color:#c3cfe3;font-size:32px;font-weight:700;letter-spacing:.06em;margin-bottom:12px}
+.family-cover .diagram{gap:0}
+.family-cover .aspect{gap:28px;padding:22px 0;border-top:2px solid rgba(255,255,255,.2)}
+.family-cover .aspect:last-child{border-bottom:2px solid rgba(255,255,255,.2)}
+.family-cover .circle,.family-cover .aspect:last-child .circle{width:112px;height:112px;font-size:44px;background:var(--c)}
+.family-cover .aspect p{font-size:40px;font-weight:800;color:#ffffff}
+.family-cover.illustrated>.byline{left:112px;right:auto;top:auto;bottom:140px;width:1040px;color:var(--ink);font-size:36px;font-weight:700;text-align:left}
+
+/* ---------- 目次：番号は塗りの角丸タイル、行は同系の淡い面 ---------- */
+.family-b.agenda{padding:178px 112px 120px}
+.family-b .agenda-list{gap:22px}
+.family-b .agenda-list li{grid-template-columns:150px 1fr;gap:36px;padding:22px 44px 22px 30px;min-height:0;border-radius:var(--r)}
+.family-b .agenda-list li::before{display:none}
+.family-b .agenda-num{display:flex;align-items:center;justify-content:center;width:120px;height:120px;border-radius:28px;background:var(--c);
+  color:#ffffff;-webkit-text-stroke:0;font-size:64px;font-weight:900}
+.family-b .agenda-title{font-size:58px;font-weight:800}
+.family-b .agenda-list .small{font-size:38px;margin-top:6px}
+
+/* ---------- 章扉：「第N章」があるときは左に青い塗りの大きな番号、右に題と2枚の面 ---------- */
+.family-a.chapter[data-chapter]{padding:178px 112px 120px 732px;justify-content:center}
+.family-a.chapter[data-chapter] .content{flex:0 0 auto}
+.family-a.chapter[data-chapter]::after{content:attr(data-chapter);position:absolute;left:112px;top:270px;right:auto;width:540px;height:540px;
+  box-sizing:border-box;padding:0 0 44px 52px;display:flex;align-items:flex-end;border-radius:44px;background:var(--blue);
+  color:#ffffff;-webkit-text-stroke:0;font-size:300px;font-weight:900;line-height:.85;letter-spacing:-.02em}
+.family-a.chapter .topic,.family-a.chapter[data-chapter] .topic{left:112px;top:88px;color:#ffffff}
+.family-a.chapter h2{font-size:88px;font-weight:900;line-height:1.22;text-wrap:balance}
+.family-a.chapter .content{margin-top:40px;justify-content:center}
+.family-a.chapter .chapterpair{gap:32px}
+.family-a.chapter .chapterpair>div{padding:0 0 28px;overflow:hidden;border-radius:var(--r)}
+.family-a.chapter .chapterpair .tag{display:block;margin:0 0 20px;padding:14px 32px;border-radius:0;font-size:34px;font-weight:800}
+.family-a.chapter .chapterpair p{padding:0 32px;font-size:44px;line-height:1.5}
+.family-a.chapter .note{text-align:left;margin-top:36px !important;font-size:38px}
+
+/* ---------- 情報の整理（4観点）：語を塗りの見出しにし、左の色帯はやめる ---------- */
+.family-a .concept{gap:28px 32px}
+.family-a .concept>div{grid-template-columns:240px 1fr;gap:0;padding:0;align-items:stretch;border-radius:var(--r);min-height:200px}
+.family-a .concept>div::before{display:none}
+.family-a .concept .word{display:flex;align-items:center;justify-content:center;padding:20px 24px;background:var(--c);color:#ffffff;
+  font-size:52px;text-align:center}
+.family-a .concept p{align-self:center;padding:20px 36px;font-size:44px;line-height:1.5}
+
+/* ---------- 数値ヒーロー：右に青い塗りの面、白いドーナツと白い数字 ---------- */
+.family-a[data-layout="quantitative.hero"] .content{grid-template-columns:1fr 600px;column-gap:56px;margin-top:28px;padding-bottom:0}
+.family-a[data-layout="quantitative.hero"] .hero-value{width:600px;height:600px;border-radius:44px;
+  background:radial-gradient(closest-side,var(--blue) calc(100% - 116px),transparent calc(100% - 115px)),
+             radial-gradient(closest-side,transparent calc(100% - 40px),var(--blue) calc(100% - 39px)),
+             conic-gradient(#ffffff calc(var(--pct,0) * 1%),rgba(255,255,255,.26) 0),var(--blue)}
+.family-a[data-layout="quantitative.hero"] .hero-value .big,.family-a[data-layout="quantitative.hero"] .hero-value .unit{color:#ffffff}
+.family-a[data-layout="quantitative.hero"] .scope{font-size:46px}
+.family-a.dose .scope .pill{border:0;background:var(--t-blue);color:var(--navy);font-weight:800}
+
+/* ---------- 判断（2分岐）：問いは紺のピル、条件は塗りの見出し帯 ---------- */
+.family-a.decision .scope{text-align:left;margin-bottom:20px}
+.family-a.decision .question{background:var(--navy);width:fit-content;max-width:1300px;margin:0 auto;padding:18px 56px}
+.family-a.decision .branches{gap:48px}
+.family-a .branch{padding:0 0 30px;overflow:hidden;border-radius:var(--r);background:var(--t-blue)}
+.family-a .branch .condition{margin:0 0 22px;padding:16px 36px;background:var(--blue);color:#ffffff;font-size:38px;font-weight:700}
+.family-a .branch .action{padding:0 36px}
+.family-a .branch.urgent{border:0;background:var(--t-coral)}
+.family-a .branch.urgent .condition{background:var(--coral-fill)}
+.family-a .branch.urgent .action{color:var(--coral)}
+.family-a.decision .note{text-align:left}
+
+/* ---------- 手順3段：矢羽をやめ、塗りの見出し帯＋同系の淡い面のカード。間に矢印 ---------- */
+.family-a .timeline{gap:80px;flex:1 1 auto;max-height:600px}
+.family-a .time-step,.family-a .time-step:not(:last-child){margin-right:0}
+.family-a .time-step:before,.family-a .time-step:first-child:before{clip-path:none;border-radius:var(--r) var(--r) 0 0;height:124px}
+.family-a .time-step:after,.family-a .time-step:last-child:after{left:0;right:0;top:124px;border-radius:0 0 var(--r) var(--r);background:var(--t)}
+.family-a .time-step:nth-child(1){--c:#2563c9;--t:#edf3fc}
+.family-a .time-step:nth-child(2){--c:#1f5fa8;--t:#e9eff8}
+.family-a .time-step:nth-child(3){--c:#0e7f76;--t:#e6f4f2}
+.family-a .stepnum,.family-a .time-step:last-child .stepnum,.family-a .time-step:first-child .stepnum{margin-left:32px}
+.family-a .time-step .action,.family-a .time-step:not(:last-child) .action{margin:36px 0 8px;padding:0 36px}
+.family-a .time-step .detail,.family-a .time-step:not(:last-child) .detail{padding:0 36px 32px}
+/* 矢印は .timeline の背景に描く（要素の外へはみ出さない）。列幅は本文幅 1696px・間隔 80px で固定 */
+.family-a .timeline{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231f3a68' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E") 530px calc(50% + 40px)/44px 44px no-repeat,url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231f3a68' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E") 1122px calc(50% + 40px)/44px 44px no-repeat}
+
+/* ---------- 研究の比較：見出しを塗りの帯（1つ目＝青、2つ目＝ティール） ---------- */
+.family-a .evidence-grid{gap:40px}
+.family-a .study{padding:0 0 26px;overflow:hidden;border-radius:var(--r);background:var(--t-blue)}
+.family-a .study:nth-child(2){background:var(--t-teal)}
+.family-a .study h3{margin:0 0 18px;padding:16px 36px;background:var(--blue);color:#ffffff;font-size:44px;font-weight:800}
+.family-a .study:nth-child(2) h3{background:var(--teal)}
+.family-a .study dl{padding:0 36px}
+.family-a .study:nth-child(2) dd.result{color:var(--teal)}
+
+/* ---------- まとめ3点：塗りの見出し帯（青・ティール・紫）、画面の下まで伸ばす ---------- */
+.family-a .summary-flow{gap:32px;flex:1 1 auto;max-height:520px}
+.family-a .summary-step{display:flex;flex-direction:column;border-radius:var(--r)}
+.family-a .summary-step:nth-child(n) h3{text-align:left;padding:16px 36px;font-size:52px}
+.family-a .summary-step p{margin:auto 0;padding:0 36px;font-size:46px}
+
+/* ---------- 症例・問い ---------- */
+.family-a .case-grid{gap:44px;margin-top:40px}
+.family-a .case-context{background:var(--t-slate);border-radius:var(--r)}
+.family-a .case-question{border-color:var(--blue);border-radius:var(--r)}
+.family-a .case-question .label{background:var(--navy)}
+.family-a .case-question p{color:var(--blue)}
+
+/* ---------- 並行して確認：ラベルは塗りの角丸タイル ---------- */
+.family-a .parallel-intro{text-align:left}
+.family-a .parallel-lane{border-radius:var(--r);padding:22px 30px}
+.family-a .parallel-lane .label{border-radius:20px;background:var(--blue)}
+.family-a .parallel-lane+.parallel-lane .label{background:var(--teal)}
+.family-a .parallel-lane+.parallel-lane{background:var(--t-teal)}
+
+/* ---------- 図版の読み方 ---------- */
+.family-a .annotations li{border-radius:24px;background:var(--t-blue)}
+.family-a .figure{border-radius:24px}
+
+/* ---------- 問い→答え・本文1カラム ---------- */
+.family-b.lead-answer .question{text-align:left;max-width:none;margin:0;font-size:64px}
+.family-b .answer{width:auto;margin:40px 0 0;padding:30px 48px 34px;text-align:left;border-radius:var(--r)}
+.family-b .answer .label{position:static;transform:none;margin:0 0 14px;background:var(--blue)}
+.family-b .lead{text-align:left;max-width:none;margin:0}
+.family-b.prose .callout,.family-b.term .callout{width:auto;margin-left:0;margin-right:0}
+
+/* ---------- 本文＋図版 ---------- */
+.family-b .point-list li{border-radius:16px;background:var(--t-blue)}
+.family-b .point-list li::before{border-radius:4px;background:var(--blue)}
+
+/* ---------- 表：紺の見出し行、1列目は青の淡い面に紺の太字、偶数行はごく淡い灰 ---------- */
+.family-b .comparison th{background:var(--navy);font-size:36px;padding:18px 28px}
+.family-b .comparison th:first-child{border-radius:20px 0 0 0}
+.family-b .comparison th:last-child{border-radius:0 20px 0 0}
+.family-b .comparison td{padding:24px 28px;border-bottom:2px solid var(--hair)}
+.family-b .comparison td:first-child{background:var(--t-blue);color:var(--navy);font-weight:800}
+.family-b .comparison tbody tr:nth-child(even) td{background:var(--t-soft)}
+.family-b .comparison tbody tr:nth-child(even) td:first-child{background:var(--t-blue)}
+.family-b .comparison td[rowspan]{background:var(--t-blue);border-left:4px solid var(--blue);font-weight:700;color:var(--navy)}
+
+/* ---------- 免責 ---------- */
+.family-b .statement{border-radius:var(--r);background:var(--t-blue);padding:48px 64px}
+.family-b .statement strong{color:var(--navy)}
+
+/* ---------- エンディング：3枚は塗りの見出し帯（青・ティール・紫） ---------- */
+.family-b.ending h2{text-align:center}
+.family-b .end-line{width:160px;background:var(--blue)}
+.family-b .end-pair{gap:32px}
+.family-b .end-pair>div{padding:0 0 30px;border-radius:var(--r)}
+.family-b .end-pair>div::before{display:none}
+.family-b .end-pair h3{margin:0 0 18px;padding:14px 32px;background:var(--c);color:#ffffff;font-size:40px;font-weight:800}
+.family-b .end-pair p{padding:0 32px}
+
+/* ---------- Q&A：Q と A は塗りの角丸タイル ---------- */
+.family-b .qa-row{border-radius:var(--r);padding:32px 44px}
+.family-b .qa-mark{border-radius:26px}
+.family-b .qa-row:not(.answer-row){background:var(--t-blue)}
+
+/* ---------- 誤解と事実／修正前後：見出し帯は左揃え。誤解に ✕、事実に ✓ ---------- */
+.family-b .myth-grid,.family-b .before-grid{flex:1 1 auto;max-height:520px}
+.family-b .myth-box,.family-b .before-grid .pane{border-radius:var(--r)}
+.family-b .myth-box h3,.family-b .before-grid .pane h3{position:relative;text-align:left;padding:18px 40px 18px 100px;font-size:40px;font-weight:800}
+.family-b .before-grid .pane h3{padding-left:40px}
+.family-b .myth-box h3::before{content:'';position:absolute;left:40px;top:50%;width:40px;height:40px;margin-top:-20px;background:#ffffff;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M6.5 6.5l11 11M17.5 6.5l-11 11'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M6.5 6.5l11 11M17.5 6.5l-11 11'/%3E%3C/svg%3E") center/contain no-repeat}
+.family-b .myth-box.correct h3::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E")}
+.family-b .myth-box p,.family-b .before-grid .pane p{justify-content:flex-start;text-align:left;padding:0 48px}
+.family-b .change-arrow{background:var(--navy)}
+
+/* ---------- チェックリスト：印は塗りのティールのタイル ---------- */
+.family-b .check-list{gap:18px}
+.family-b .check-list li{border-radius:22px;background:var(--t-slate);padding:16px 36px;font-size:48px}
+.family-b .check-square{width:64px;height:64px;border-radius:18px;border:0;font-size:36px}
+
+/* ---------- 引用 ---------- */
+.family-b .quote-box{border-radius:var(--r);text-align:left;padding:36px 56px 34px;background:var(--t-blue)}
+.family-b .quote-box .label{position:static;transform:none;margin:0 0 18px;background:var(--navy)}
+.family-b.quote .interpretation{text-align:left}
+.family-b.quote .interpretation strong{color:var(--blue)}
+
+/* ---------- タイムライン（4・5時点）：矢羽は RC6 のまま、中身を太く ---------- */
+.family-b.timeline .content{height:auto}
+.family-b .event h3{font-size:48px;font-weight:800}
+
+/* ---------- 危険サイン：珊瑚赤の淡い面に警告の印 ---------- */
+.family-b .flags{gap:22px 32px}
+.family-b .flag{border-radius:var(--r);background:var(--t-coral);padding:24px 36px 26px}
+.family-b .flag h3{padding-left:60px;font-weight:800}
+.family-b .flag h3::before{left:0;top:50%;width:44px;height:44px;margin-top:-22px;border-radius:0;background:var(--coral);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3.5l9.5 16.5h-19z'/%3E%3Cpath d='M12 10v4.6M12 17.4v.2'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3.5l9.5 16.5h-19z'/%3E%3Cpath d='M12 10v4.6M12 17.4v.2'/%3E%3C/svg%3E") center/contain no-repeat}
+
+/* ---------- 用語：単独は中央の大きな語。並列は語を塗りの見出し帯に ---------- */
+.family-b .term-card{padding:0 0 36px;border-radius:var(--r)}
+.family-b .term-card::before{display:none}
+.family-b .term-card .term-word{margin:0 0 28px;padding:26px 32px 22px;background:var(--c)}
+.family-b .term-card .term-word strong{color:#ffffff;font-size:68px}
+.family-b .term-card .term-word span{color:rgba(255,255,255,.88);font-size:34px}
+.family-b .term-card .definition{margin:auto 0;padding:0 40px}
+
+/* ---------- クイズ：A/B/C は塗りの角丸タイル ---------- */
+.family-b .option{border-radius:var(--r);padding:28px 32px}
+.family-b .option .letter{border-radius:20px}
+.family-b .options{gap:28px}
+
+/* ---------- 参考文献 ---------- */
+.family-b .reference-list li{border-radius:22px;background:var(--t-slate)}
+.family-b .reference-no{background:var(--navy);border-radius:16px}
+
+/* ---------- 3段階判断：見出しは塗りの列（危険＝珊瑚赤、早め＝琥珀、通常＝ティール） ---------- */
+.family-c .triage{gap:16px}
+.family-c .triage-row{grid-template-columns:330px 1fr 1fr;gap:36px;padding:0 32px 0 0;overflow:hidden;align-items:stretch;border-radius:var(--r)}
+.family-c .triage-row::before,.family-c .triage-row:nth-child(n)::before{display:none}
+.family-c .triage-row h3{display:flex;align-items:center;padding:16px 32px;background:var(--b);color:#ffffff;font-size:42px;font-weight:800}
+.family-c .triage-row:nth-child(2){--b:var(--amber)}
+.family-c .triage-row p{padding:12px 0}
+
+/* ---------- 図・グラフ（family-c）：数値は太く大きく、棒は角を丸める ---------- */
+.family-c .graphic .major{font-size:56px;font-weight:800}
+.family-c .graphic .hero{font-weight:900}
+.family-c .graphic .bar{rx:10px;ry:10px}
+.family-c .note{border-radius:22px;background:var(--t-slate)}
