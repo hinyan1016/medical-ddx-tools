@@ -1,5 +1,7 @@
-const CACHE_NAME = 'ddx-tools-v269';
+const CACHE_NAME = 'ddx-tools-v270';
 const ASSETS = [
+  './infographics/amygdala-enlargement-tle/mri-lv2014-fig1.jpg',
+  './infographics/amygdala-enlargement-tle/mri-urbach2026-fig3.jpg',
   './handouts/parkinson-non-motor-symptoms/index.html',
   './infographics/acyclovir-encephalopathy/index.html',
   './infographics/adult-epilepsy-sleep-reference-repair-20261024/index.html',
