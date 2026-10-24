@@ -1,5 +1,7 @@
-const CACHE_NAME = 'ddx-tools-v267';
+const CACHE_NAME = 'ddx-tools-v268';
 const ASSETS = [
+  './driving_fitness_evaluation.html',
+  './infographics/stroke-dementia-driving-evaluation/index.html',
   './infographics/eeg-birds/index.html',
   './infographics/eeg-birds/infographic.png',
   './infographics/alzheimers-treatment-20y-reference-repair-20261022/index.html',

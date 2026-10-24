@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update().catch(function(){})})}).catch(function(){});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A5276">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>脳卒中・認知症 自動車運転評価・診断書記載 支援ツール｜医知創造ラボ</title>
+<meta name="description" content="脳梗塞（脳卒中）後や認知機能低下・MCIの患者に対する自動車運転の医学的評価と公安委員会指定診断書の記載を整理する医療従事者向け支援ツール。警察庁運用基準・日本高次脳機能学会の3指針・日本脳卒中学会マニュアルに準拠。">
+<meta property="og:title" content="脳卒中・認知症 自動車運転評価・診断書記載 支援ツール｜医知創造ラボ">
+<meta property="og:description" content="脳梗塞（脳卒中）後や認知機能低下・MCIの患者に対する自動車運転の医学的評価と公安委員会指定診断書の記載を整理する医療従事者向け支援ツール。警察庁運用基準・日本高次脳機能学会の3指針に準拠。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tools.ichisouzo-lab.com/driving_fitness_evaluation.html">
+<meta property="og:image" content="https://tools.ichisouzo-lab.com/assets/og-tools.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="医知創造ラボ">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+:root {
+  --navy: #18354C;
+  --primary: #1A5276;
+  --blue: #2877A7;
+  --teal: #1E7E6C;
+  --amber: #B45309;
+  --red: #B91C1C;
+  --ink: #1E293B;
+  --muted: #526477;
+  --line: #CBD5E1;
+  --paper: #F1F5F9;
+  --card: #FFFFFF;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 18px; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "BIZ UDPGothic", "Yu Gothic", "游ゴシック", Meiryo, sans-serif;
+  font-size: 15.5px;
+  line-height: 1.75;
+}
+a { color: var(--blue); text-underline-offset: 3px; }
+button, input, select, textarea { font: inherit; }
+button, a, input, select, summary, textarea { touch-action: manipulation; }
+button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible, summary:focus-visible, textarea:focus-visible {
+  outline: 3px solid #D97706;
+  outline-offset: 3px;
+}
+.skip { position: absolute; left: -9999px; }
+.skip:focus { position: static; background: #fff; padding: 10px; display: inline-block; }
+
+header {
+  background: linear-gradient(135deg, var(--navy), var(--primary));
+  color: #fff;
+  padding: 22px 20px 28px;
+}
+.wrap { max-width: 1260px; margin: 0 auto; padding: 0 20px; }
+header a { color: #D8ECF8; font-size: 0.86rem; text-decoration: none; }
+header a:hover { text-decoration: underline; }
+.eyebrow { font-size: 0.78rem; letter-spacing: 0.08em; margin: 14px 0 4px; color: #BAE6FD; font-weight: 700; }
+h1 { font-size: clamp(1.45rem, 2.8vw, 2.1rem); line-height: 1.45; margin: 0 0 8px; }
+header p { max-width: 880px; margin: 0; color: #E2F1FA; font-size: 0.92rem; }
+.badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+.badge { border: 1px solid #7DD3FC; background: rgba(255,255,255,0.08); border-radius: 6px; font-size: 0.76rem; padding: 3px 10px; }
+
+.main-wrap { max-width: 1260px; margin: 0 auto; padding: 20px 20px 52px; }
+.intro-banner {
+  background: #FFFFFF;
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--blue);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 18px;
+  box-shadow: 0 2px 8px rgba(24,53,76,0.05);
+}
+.intro-banner strong { color: var(--navy); }
+.intro-banner p { margin: 0 0 6px; font-size: 0.92rem; }
+.intro-banner small { display: block; color: var(--muted); font-size: 0.82rem; }
+
+.quick-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.quick-nav a {
+  font-size: 0.84rem;
+  font-weight: 700;
+  text-decoration: none;
+  background: #fff;
+  color: var(--navy);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 7px 13px;
+}
+.quick-nav a:hover { background: #EFF6FF; border-color: var(--blue); }
+
+.preset-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  background: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  border-radius: 9px;
+  padding: 10px 14px;
+  margin-bottom: 18px;
+  font-size: 0.84rem;
+}
+.preset-bar span { font-weight: 700; color: var(--navy); margin-right: 4px; }
+.preset-btn {
+  background: #fff;
+  color: var(--primary);
+  border: 1px solid #93C5FD;
+  border-radius: 6px;
+  padding: 5px 11px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.preset-btn:hover { background: var(--primary); color: #fff; }
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 410px;
+  gap: 22px;
+  align-items: start;
+}
+.maincol { min-width: 0; }
+
+.section {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 22px;
+  margin-bottom: 18px;
+  box-shadow: 0 2px 10px rgba(24,53,76,0.04);
+}
+.section h2 {
+  font-size: 1.2rem;
+  color: var(--navy);
+  margin: 0 0 6px;
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.step-num {
+  display: inline-block;
+  background: var(--navy);
+  color: #fff;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+}
+.sub { font-size: 0.86rem; color: var(--muted); margin: 0 0 16px; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.full { grid-column: 1 / -1; }
+.field { min-width: 0; }
+.field label {
+  display: block;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--navy);
+  margin: 0 0 5px;
+}
+.field small {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.55;
+  margin-top: 5px;
+}
+select, input[type="number"], input[type="text"], textarea {
+  width: 100%;
+  min-height: 44px;
+  border: 1.5px solid #94A3B8;
+  border-radius: 7px;
+  background: #fff;
+  color: var(--ink);
+  padding: 8px 10px;
+  font-size: 0.92rem;
+}
+select:focus, input:focus, textarea:focus { border-color: var(--blue); }
+.aphasia-box {
+  background: #F8FAFC;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 9px;
+  padding: 14px 16px;
+  margin-top: 14px;
+}
+.aphasia-box.fc1 { border-left: 5px solid var(--blue); }
+.aphasia-box.fc2 { border-left: 5px solid var(--amber); background: #FFFBEB; }
+.aphasia-box h3 { font-size: 1rem; color: var(--navy); margin: 0 0 8px; }
+
+.callout {
+  background: #F8FAFC;
+  border-left: 4px solid var(--teal);
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 0.83rem;
+  color: var(--ink);
+  margin-top: 12px;
+}
+.callout.warn {
+  background: #FEF2F2;
+  border-left-color: var(--red);
+  color: #7F1D1D;
+}
+
+/* Sticky Result Panel */
+.result {
+  position: sticky;
+  top: 16px;
+  border: 1.5px solid #94A3B8;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(24,53,76,0.1);
+}
+.resulttop {
+  padding: 18px 20px;
+  background: #E2E8F0;
+  border-top: 6px solid var(--navy);
+}
+.resulttop .status-eyebrow {
+  margin: 0;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+.result h2 {
+  font-size: 1.18rem;
+  line-height: 1.45;
+  margin: 5px 0 0;
+  color: var(--navy);
+}
+.result.stop .resulttop { border-color: var(--red); background: #FEE2E2; }
+.result.stop h2 { color: #991B1B; }
+.result.hold6m .resulttop { border-color: var(--amber); background: #FEF3C7; }
+.result.hold6m h2 { color: #92400E; }
+.result.roadtest .resulttop { border-color: #D97706; background: #FFFBEB; }
+.result.roadtest h2 { color: #92400E; }
+.result.pass .resulttop { border-color: var(--teal); background: #DCFCE7; }
+.result.pass h2 { color: #14532D; }
+.result.pending .resulttop { border-color: var(--blue); background: #E0F2FE; }
+.result.pending h2 { color: var(--navy); }
+
+.resultbody { padding: 16px 20px 20px; }
+.resultbody p { margin: 0 0 11px; font-size: 0.87rem; }
+.resultbody h3 {
+  font-size: 0.9rem;
+  color: var(--navy);
+  margin: 15px 0 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #E2E8F0;
+}
+.resultbody ul { margin: 4px 0 12px; padding-left: 19px; font-size: 0.82rem; }
+.resultbody li { margin: 5px 0; }
+.cert-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: #F1F5F9;
+  color: var(--navy);
+  border: 1px solid #CBD5E1;
+  margin-bottom: 8px;
+}
+.buttons { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+.btn {
+  border: 1px solid var(--primary);
+  border-radius: 6px;
+  background: var(--primary);
+  color: #fff;
+  padding: 8px 13px;
+  cursor: pointer;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+.btn.secondary { background: #fff; color: var(--primary); }
+.btn:hover { opacity: 0.92; }
+#copyStatus { font-size: 0.8rem; color: var(--teal); font-weight: 700; min-height: 1.4em; margin: 4px 0; }
+#record {
+  width: 100%;
+  min-height: 220px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 0.79rem;
+  color: var(--ink);
+  background: #F8FAFC;
+  line-height: 1.65;
+  resize: vertical;
+}
+
+details {
+  margin-top: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 14px;
+  background: #F8FAFC;
+}
+summary { cursor: pointer; color: var(--navy); font-size: 0.88rem; font-weight: 700; }
+details p, details li { font-size: 0.83rem; }
+.table-wrap { overflow-x: auto; margin-top: 10px; }
+table { width: 100%; border-collapse: collapse; font-size: 0.82rem; min-width: 560px; }
+th, td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; }
+th { background: var(--navy); color: #fff; }
+.source-list { padding-left: 20px; overflow-wrap: anywhere; }
+.source-list li { margin: 10px 0; font-size: 0.83rem; }
+footer { font-size: 0.78rem; text-align: center; color: var(--muted); padding: 18px 0; }
+
+@media (max-width: 980px) {
+  .layout { grid-template-columns: 1fr; }
+  .result { position: static; }
+  .resultbody { max-height: none; }
+}
+@media (max-width: 600px) {
+  .main-wrap { padding: 14px 12px 40px; }
+  .section { padding: 16px 14px; }
+  .grid { grid-template-columns: 1fr; }
+  .full { grid-column: auto; }
+  .buttons .btn { flex: 1; }
+}
+@media print {
+  body { background: #fff; font-size: 10.5pt; }
+  #ics-globalnav, .quick-nav, .preset-bar, .buttons, #copyStatus, .skip { display: none !important; }
+  .layout { display: block; }
+  .result { position: static; break-inside: avoid; margin-top: 16px; box-shadow: none; }
+  .resultbody { max-height: none; }
+  .section { break-inside: avoid; box-shadow: none; }
+  header { background: #fff; color: #000; border-bottom: 2px solid #000; }
+  header p, header a, .eyebrow { color: #333; }
+  .badge { color: #333; border-color: #666; }
+  details > * { display: block !important; }
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#step1">入力欄へ移動</a>
+<nav id="ics-globalnav" style="background:#15324E;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
+<div style="max-width:1260px;margin:0 auto;padding:8px 20px;display:flex;align-items:center;gap:2px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;">
+<a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;padding-right:8px;">医知創造ラボ</a>
+<a href="https://ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ホーム</a>
+<a href="https://blog.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ブログ</a>
+<a href="https://tools.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ツール</a>
+<a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">YouTube</a>
+</div>
+</nav>
+
+<header>
+  <div class="wrap">
+    <a href="index.html">← 診療ツール一覧</a>
+    <p class="eyebrow">医知創造ラボ / 医療従事者向け 判定補助・診断書記載支援</p>
+    <h1>脳卒中・認知症 自動車運転評価・診断書記載 支援ツール</h1>
+    <p>警察庁運用基準・日本高次脳機能学会の3指針・日本脳卒中学会マニュアルに基づき、外来での5段階評価、机上検査（フローチャートI/II）の解釈、公安委員会指定診断書の記載要点を一画面で整理します。</p>
+    <div class="badges">
+      <span class="badge">警察庁 一定の病気等運用基準（令和8年1月施行版）</span>
+      <span class="badge">日本高次脳機能学会 3指針（2022年12月・10月・J-SDSA）</span>
+      <span class="badge">脳卒中相談窓口マニュアル Ver 5.1</span>
+      <span class="badge">根拠確認：2026年10月23日</span>
+    </div>
+  </div>
+</header>
+
+<div class="main-wrap">
+  <div class="intro-banner">
+    <p><strong>【重要】医師は運転を「法的に許可」するのではなく、医学的評価と診断書作成・安全指導を担います。</strong><br>
+    道路交通法（第90条・第103条等）に基づき、運転免許の拒否・保留・取消し・効力停止を決定する法的権限は<strong>都道府県公安委員会（運転免許センター等）</strong>にあります。本ツールは医師の医学的判断と診断書記載を支援する参考情報であり、未確認・未実施の項目は「問題なし」とみなさず保留します。</p>
+    <small>入力内容はすべてお使いの端末（ブラウザ内）でのみ処理され、サーバーへの送信や保存は一切行われません。患者氏名などの個人情報は入力しないでください。解説記事：<a href="https://blog.ichisouzo-lab.com/entry/2026/10/23/193352" target="_blank" rel="noopener noreferrer">脳梗塞・認知症で運転能力が落ちてきたら？警察の検査、診断書対応、脳神経内科での評価手順 ↗</a></small>
+  </div>
+
+  <nav class="quick-nav" aria-label="ページ内移動">
+    <a href="#step1">01 対象・診断書要件</a>
+    <a href="#step2">02 認知症・半側空間無視・発作</a>
+    <a href="#step3">03 麻痺・同名半盲・SAS</a>
+    <a href="#step4">04 神経心理検査（高次脳機能学会）</a>
+    <a href="#step5">05 実車評価・家族情報</a>
+    <a href="#result">判定結果・記録コピー</a>
+    <a href="#sources">基準早見表・出典</a>
+  </nav>
+
+  <div class="preset-bar" aria-label="典型例のプリセット読込">
+    <span>典型シナリオを試す：</span>
+    <button type="button" class="preset-btn" data-preset="stroke_ok">① 脳梗塞後・軽症（基準内）</button>
+    <button type="button" class="preset-btn" data-preset="stroke_border">② 脳梗塞後・同名半盲／TMT境界（実車評価へ）</button>
+    <button type="button" class="preset-btn" data-preset="mci_continue">③ 75歳以上36点未満→MCI（6か月〜1年再評価）</button>
+    <button type="button" class="preset-btn" data-preset="dementia_stop">④ アルツハイマー型認知症／半側空間無視（運転中止）</button>
+  </div>
+
+  <div class="layout">
+    <main class="maincol">
+      <form id="drivingForm" autocomplete="off">
+
+        <!-- STEP 1 -->
+        <section class="section" id="step1">
+          <h2><span class="step-num">STEP 01</span>評価の背景と公安委員会指定診断書の要件を確認する</h2>
+          <p class="sub">病院独自の一般診断書ではなく、公安委員会の指定様式と「作成できる医師の要件（認知症用か脳卒中用か）」を最初に確認します。</p>
+          <div class="grid">
+            <div class="field">
+              <label for="scenario">主な評価対象・受診のきっかけ</label>
+              <select id="scenario">
+                <option value="stroke">脳卒中（脳梗塞・脳出血・くも膜下出血・TIA）・脳外傷後の評価</option>
+                <option value="mci_aging">加齢・認知機能低下・MCI（75歳以上検査36点未満・物忘れ外来等）</option>
+                <option value="both">脳卒中既往＋加齢による認知機能低下の両方</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="certType">求められている公安委員会指定診断書の種類</label>
+              <select id="certType">
+                <option value="stroke_cert">「脳卒中」に関する診断書（公安委員会指定様式）</option>
+                <option value="dementia_cert">「認知症」に関する診断書（公安委員会指定様式・36点未満等）</option>
+                <option value="epilepsy_cert">「てんかん」に関する診断書（公安委員会指定様式）</option>
+                <option value="pre_consult">診断書提出命令前（退院時・外来での運転再開相談・#8080案内）</option>
+                <option value="wrong_general">【注意】病院独自の一般診断書のみ持参（指定様式なし）</option>
+              </select>
+              <small>指定様式がない場合は、運転免許センターまたは安全運転相談窓口（#8080）で指定用紙を確認するよう案内します。</small>
+            </div>
+            <div class="field">
+              <label for="docQual">診断書を作成できる医師の要件確認（通達別表1・別表2）</label>
+              <select id="docQual">
+                <option value="qualified">要件を満たす（脳卒中：脳神経内科/脳神経外科専門医、認知症：専門医または継続主治医）</option>
+                <option value="need_referral">自院では要件を満たさない（脳神経内科・脳神経外科・認知症専門医へ紹介が必要）</option>
+                <option value="unknown">要件を未確認（通知書同封の案内・都道府県警察の基準を確認）</option>
+              </select>
+              <small>警察庁基準では、脳卒中診断書は専門医・主治医とも「神経内科（脳神経内科）専門医又は脳神経外科専門医」が基準です。</small>
+            </div>
+            <div class="field">
+              <label for="acuteClear">意識障害・せん妄・急性期薬物影響の除外</label>
+              <select id="acuteClear">
+                <option value="clear">除外済み（意識清明・全身状態安定・注意を損なう急性薬物影響なし）</option>
+                <option value="present">意識障害・せん妄・急性期体調不良・強い鎮静薬影響あり（評価不適）</option>
+                <option value="unknown">未確認</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 2 -->
+        <section class="section" id="step2">
+          <h2><span class="step-num">STEP 02</span>絶対的運転中止要因（認知症・半側空間無視・発作）の確認</h2>
+          <p class="sub">机上検査や病歴から確実に「運転を控えるべき」と判断される要因（レッドフラッグ）と、6か月以内の回復・無発作見込みを確認します。</p>
+          <div class="grid">
+            <div class="field">
+              <label for="dementiaStatus">認知症・MCIの診断区分（警察庁運用基準・高次脳機能学会指針）</label>
+              <select id="dementiaStatus">
+                <option value="">未確認・評価中</option>
+                <option value="none">認知症ではない（認知機能低下なし）</option>
+                <option value="mci">軽度認知障害（MCI）・境界状態（日常生活は自立、今後認知症のおそれ）</option>
+                <option value="reversible_6m">回復見込みのある「その他の認知症」（慢性硬膜下血腫・NPH・甲状腺機能低下症等で6か月以内に回復見込み）</option>
+                <option value="dementia_fixed">4大認知症（AD・血管性・FTD・DLB）または回復見込みのない認知症と確定</option>
+              </select>
+              <small>4大認知症と確定診断された場合は道路交通法上、免許の拒否または取消しの対象となります。</small>
+            </div>
+            <div class="field">
+              <label for="antiDementiaDrug">アルツハイマー型認知症治療薬の処方・使用状況</label>
+              <select id="antiDementiaDrug">
+                <option value="no">使用していない</option>
+                <option value="yes">使用中（ドネペジル・ガランタミン・リバスチグミン・メマンチン・抗Aβ抗体等）</option>
+                <option value="unknown">お薬手帳未確認</option>
+              </select>
+              <small>高次脳機能学会指針（2022年10月版）：AD治療薬を使用している場合は基本的に認知症と診断していることとなり、運転を控えるべきとされています。</small>
+            </div>
+            <div class="field">
+              <label for="wayfinding">「行先忘れ」「道に迷う」「駐車場所がわからなくなる」症状</label>
+              <select id="wayfinding">
+                <option value="no">なし（目的地や駐車場所の記憶・把握は保たれている）</option>
+                <option value="yes">明らかな「行先忘れ」「道迷い」「駐車場所忘れ」がある</option>
+                <option value="unknown">未確認（家族からの聴取が必要）</option>
+              </select>
+              <small>MCIであっても行先忘れ・道迷い・駐車場所忘れが明らかなケースは、同乗者なしでは運転を控えるべきと明記されています。</small>
+            </div>
+            <div class="field">
+              <label for="usn">半側空間無視・視覚消去現象（BIT通常検査・抹消試験・対座法）</label>
+              <select id="usn">
+                <option value="">未確認・未実施</option>
+                <option value="none">半側空間無視なし・抹消所要時間基準内・視覚消去現象なし</option>
+                <option value="positive">半側空間無視あり（BITカットオフ以下／抹消時間超過／視覚消去現象あり）</option>
+              </select>
+              <small>抹消試験の所要時間基準：線分抹消1分、文字抹消2分40秒、星印抹消1分40秒以内。これを超える場合や視覚消去現象ありは「運転を控えるべき」。</small>
+            </div>
+            <div class="field full">
+              <label for="epilepsy">脳卒中後てんかん（症候性てんかん）・発作のおそれ・病変リスク</label>
+              <select id="epilepsy">
+                <option value="">未確認</option>
+                <option value="no_sz_small">てんかん発作歴なし・再発予防管理良好（皮質大病変や開頭手術歴なし）</option>
+                <option value="no_sz_large">てんかん発作歴はないが、「皮質を含む大きな病変」または「手術を要した脳卒中」に該当</option>
+                <option value="sz_controlled_2y">てんかん発作歴あり：過去2年間以上無発作（または1年観察後の意識・運動障害なき単純部分発作のみ／2年観察後の睡眠中発作のみ）で今後のおそれなし</option>
+                <option value="sz_wait_6m">てんかん発作または脳卒中発作：今後6か月以内に「運転を控えるべきとはいえない」と診断できる見込み（6か月以内の保留・停止対象）</option>
+                <option value="sz_uncontrolled">過去2年以内に発作あり（例外非該当）、または同じ障害を伴う発作が繰り返し生じている</option>
+              </select>
+              <small>日本脳卒中学会マニュアル：症候性てんかんは最低2年間の無発作確認のうえで判断。未発作でも皮質を含む大病変や手術例は運転再開時期を慎重に検討。</small>
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 3 -->
+        <section class="section" id="step3">
+          <h2><span class="step-num">STEP 03</span>身体機能・視野障害（同名半盲等）・睡眠時無呼吸／低血糖の評価</h2>
+          <p class="sub">中心視力が保たれていても同名半盲では交差点での見落としリスクが高くなります。運動麻痺は運転補助装置や条件変更の要否を確認します。</p>
+          <div class="grid">
+            <div class="field">
+              <label for="motor">運動麻痺・深部感覚障害（ペダル踏み換え）・小脳失調・パーキンソニズム</label>
+              <select id="motor">
+                <option value="">未確認</option>
+                <option value="normal">通常の車両操作に支障となる運動・感覚・失調障害なし</option>
+                <option value="adaptable">片麻痺等の身体障害あり：旋回ノブ・左足アクセル等の運転補助装置または条件変更で操作可能見込み</option>
+                <option value="recover_6m">現時点では操作困難だが、リハビリにより6か月以内に回復見込みあり</option>
+                <option value="severe">補助装置を用いても安全なハンドル・ペダル操作が困難</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="vision">視力・視野障害（同名半盲・四分盲）・複視</label>
+              <select id="vision">
+                <option value="">未確認</option>
+                <option value="normal">法定視力基準を満たし、同名半盲・四分盲・複視なし</option>
+                <option value="hemianopia">法定視力基準は満たすが、同名半盲・四分盲等の視野欠損あり（要注意）</option>
+                <option value="unfit">法定視力・視野基準を満たさない、または補正不能な複視等で安全運転困難</option>
+              </select>
+              <small>同名半盲は法定視力基準（両眼0.7以上かつ各眼0.3以上等）を満たす場合がありますが、見えない側からの飛び出し見落としリスクが高いため眼科評価・実車確認が重要です。</small>
+            </div>
+            <div class="field full">
+              <label for="sasHypo">睡眠時無呼吸症候群（SAS）・無自覚性低血糖・薬剤性眠気／ふらつき</label>
+              <select id="sasHypo">
+                <option value="">未確認</option>
+                <option value="clear">重度の眠気（未治療SAS等）・無自覚性低血糖・再発性失神・強い薬剤性眠気なし（CPAP等で管理良好を含む）</option>
+                <option value="present">未治療の重度眠気（SAS等）、無自覚性低血糖、原因未解決の失神、または強い薬剤性ふらつきあり</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 4 -->
+        <section class="section" id="step4">
+          <h2><span class="step-num">STEP 04</span>神経心理学的検査（日本高次脳機能学会フローチャートI・II）</h2>
+          <p class="sub">失語症の有無によって使用する検査バッテリーを切り替えます。70〜80代でもTMT-Jは「60代の判定表」を使用します。</p>
+          <div class="grid">
+            <div class="field full">
+              <label for="aphasia">失語症の有無（フローチャートI / II の選択）</label>
+              <select id="aphasia">
+                <option value="no">失語症なし → フローチャートI（純粋失構音・軽度の音韻性錯語のみの場合を含む）</option>
+                <option value="yes">失語症あり → フローチャートII（喚語困難や言語理解障害により言語性検査が不利になる場合）</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Flowchart I (No aphasia) -->
+          <div id="fc1Box" class="aphasia-box fc1">
+            <h3>フローチャートI（失語症がない場合）の検査所見</h3>
+            <div class="grid">
+              <div class="field">
+                <label for="fc1General">① 全般的知能・記憶（MMSE / HDS-R / S-PA・WMS-R・RBMT）</label>
+                <select id="fc1General">
+                  <option value="">未実施・未確認</option>
+                  <option value="ok">MMSE 24点以上・HDS-R 21点以上目安（記憶検査も問題なし）</option>
+                  <option value="mem_mild">軽度の低下または記憶障害あり（ただし日常生活自立・行先忘れなし）</option>
+                  <option value="mem_wayfinding">記憶障害が確実（S-PA全項目0点、RBMT標準プロフィール15点以下等）かつ「行先忘れ」あり</option>
+                  <option value="dementia_level">高度低下＋日常生活自立度低下（認知症レベル）</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="fc1Attention">② 注意と処理速度（TMT-J Part A/B・WAIS-III/IV「符号」）</label>
+                <select id="fc1Attention">
+                  <option value="">未実施・未確認</option>
+                  <option value="tmt_normal">TMT-J（60代基準表）総合判定「正常」→ 判定基準内</option>
+                  <option value="tmt_border_safe">70代以上でTMT-J「境界」だが、事故・違反がほぼなく家族同乗で概ね安全運転 → 条件付き判定基準内</option>
+                  <option value="wais_ge7">TMT-J異常（再検でも基準外）→ WAIS「符号」評価点7以上（-1SD以内：健常者同等）</option>
+                  <option value="wais_4to6">TMT-J異常 → WAIS「符号」評価点4〜6（-2SD以内：判定基準内だが境界域）</option>
+                  <option value="wais_lt4">TMT-J Part B異常 かつ WAIS「符号」評価点4未満（-2SD未満）→ 運転を控えるべき</option>
+                </select>
+                <small>2022年12月改訂によりSDMTに代わりTMT-JとWAIS「符号」が使用されます。</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Flowchart II (With aphasia) -->
+          <div id="fc2Box" class="aphasia-box fc2" hidden>
+            <h3>フローチャートII（失語症がある場合）の検査所見</h3>
+            <div class="grid">
+              <div class="field">
+                <label for="fc2General">① 非言語性知能・視覚性記憶（RCPM ＋ ROCF 3分後再生）</label>
+                <select id="fc2General">
+                  <option value="">未実施・未確認</option>
+                  <option value="ok">RCPM・ROCF 3分後再生の少なくとも一方が年齢平均 -2SD 以上（認知症レベルではない）</option>
+                  <option value="both_low_dementia">RCPMとROCF 3分後再生がともに -2SD 未満 かつ 日常生活自立度低下（認知症を疑う）</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="fc2Attention">② 注意と処理速度（TMT-A ＋ WAIS「符号」± CAT-R図形抹消・CPT2）</label>
+                <select id="fc2Attention">
+                  <option value="">未実施・未確認</option>
+                  <option value="both_ok">TMT-A・WAIS「符号」とも基準内 → 判定基準内</option>
+                  <option value="cat_cpt_ok">TMT-AまたはWAIS「符号」異常 → CAT-R（図形抹消2課題）・CPT2を追加し概ね基準内（実車評価等と合わせ総合判断）</option>
+                  <option value="severe_low">WAIS「符号」評価点4未満（-2SD未満）またはCAT-R・CPT2でも著明低下 → 運転を控えるべき</option>
+                </select>
+                <small>失語症例ではひらがなを使うTMT-Bやかな拾いテストは言語障害の影響を受けるため必須とされません。</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid" style="margin-top:14px;">
+            <div class="field">
+              <label for="rocfExec">③ 構成・視空間認知・遂行機能・失行（ROCF模写・FAB・WCST・BADS等）</label>
+              <select id="rocfExec">
+                <option value="">未実施・未確認</option>
+                <option value="ok">ROCF模写 34点以上目安、遂行機能・失行に重大な問題なし</option>
+                <option value="border">ROCF模写 34点未満、または遂行機能低下・重度の観念運動失行／観念失行あり（要・実車等で操作確認）</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="jsdsa">④ J-SDSA（脳卒中ドライバーのスクリーニング評価日本語版）［任意・補助］</label>
+              <select id="jsdsa">
+                <option value="not_done">未実施（必須ではありません）</option>
+                <option value="all3_pass">方向31点以上 かつ コンパス16点以上 かつ 道路標識9点以上（3つすべて達成：路上適性可能性80%以上）</option>
+                <option value="mixed">一部のみ達成／予測式で境界域（J-SDSA単独では決定せず実車評価等を推奨）</option>
+                <option value="all3_fail">方向31点未満 かつ コンパス16点未満 かつ 道路標識9点未満（3つすべて未達：再開困難の目安）</option>
+              </select>
+              <small>J-SDSAの路上評価との予測一致精度は約70%のため、単独で可否決定は行いません。再検査は学習効果を避けるため3〜4か月空けます。</small>
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 5 -->
+        <section class="section" id="step5">
+          <h2><span class="step-num">STEP 05</span>シミュレーター・実車評価と家族聴取・自由メモ</h2>
+          <p class="sub">高齢ドライバーや高次脳機能障害では本人の自己評価と実際の運転状況に乖離が生じやすいため、家族からの聴取と実車評価を重視します。</p>
+          <div class="grid">
+            <div class="field">
+              <label for="roadTest">ドライビングシミュレーター（DS）・実車評価（教習所・リハビリ施設）</label>
+              <select id="roadTest">
+                <option value="none">未実施（机上検査等から必要性を判断）</option>
+                <option value="pass">実施済み：十分な安全確認と安定した運転操作を確認</option>
+                <option value="conditional">実施済み：条件付き（昼間・近隣限定、同乗者、運転補助装置等）で安全運転可能</option>
+                <option value="fail">実施済み：重大な見落とし・危険操作があり安全な運転は困難</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="familyReport">家族から見た日常生活と運転状況（ヒヤリハット・こすり傷・服薬管理等）</label>
+              <select id="familyReport">
+                <option value="">未確認（本人受診のみ・家族聴取未実施）</option>
+                <option value="safe">家族から見て事故・違反・ヒヤリハットなく日常生活も自立</option>
+                <option value="caution">軽微な不安あり（長距離・夜間・悪天候・不慣れな道は控えたい等）</option>
+                <option value="danger">最近の自損・こすり傷、信号・一時停止見落とし、逆走、道迷い等の危険エピソードあり</option>
+              </select>
+            </div>
+            <div class="field full">
+              <label for="clinicalNotes">検査数値・画像所見・特記事項メモ（カルテ・診断書ドラフトに反映・任意）</label>
+              <textarea id="clinicalNotes" rows="3" maxlength="800" placeholder="例：MMSE 27/30、HDS-R 26/30、TMT-J Part A 42秒・Part B 98秒（60代基準で正常域）、ROCF模写 35/36点。左放線冠ラクナ梗塞後、麻痺・視野欠損なし。家族同乗で近隣の買い物のみ希望。"></textarea>
+              <small>※患者氏名・生年月日・免許証番号などの個人情報は入力しないでください。</small>
+            </div>
+          </div>
+        </section>
+
+      </form>
+
+      <!-- Quick Reference & Sources -->
+      <section class="section" id="sources">
+        <h2><span class="step-num">REF</span>基準早見表・出典と本ツールの限界</h2>
+        <details open>
+          <summary>公安委員会指定診断書・運用基準と学会指針の要点早見表</summary>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>区分・項目</th>
+                  <th>警察庁運用基準（道路交通法上の扱い）</th>
+                  <th>日本高次脳機能学会・脳卒中学会の主な評価基準</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>認知症</strong><br>（4大認知症・その他の認知症）</td>
+                  <td>・4大認知症（AD・血管性・FTD・DLB）：<strong>免許の拒否または取消し</strong><br>・回復見込みのある「その他の認知症」（慢性硬膜下血腫・NPH・甲状腺機能低下症等）：6か月以内に回復見込みがあれば<strong>6か月以内の保留・停止</strong></td>
+                  <td>・机上検査で確実に「運転を控えるべき」と判断できる病態の一つ<br>・<strong>アルツハイマー型認知症治療薬を使用中</strong>は基本的に認知症と診断していることとなり運転を控えるべき<br>・カルテや介護保険主治医意見書との診断名矛盾に注意</td>
+                </tr>
+                <tr>
+                  <td><strong>軽度認知障害（MCI）・境界状態</strong></td>
+                  <td>・直ちに取消しとはならない<br>・原則<strong>6か月後</strong>（医師の診断結果を踏まえ<strong>最長1年</strong>）に臨時適性検査または診断書提出命令（再評価）</td>
+                  <td>・記憶障害が確実で<strong>「行先忘れ」「道迷い」「駐車場所忘れ」</strong>が明らかなMCIは同乗者なしでは運転を控えるべき<br>・継続時も夜間・悪天候・長距離回避を指導し、最長でも1年に1回は定期再評価</td>
+                </tr>
+                <tr>
+                  <td><strong>脳卒中後の高次脳機能障害・身体障害</strong></td>
+                  <td>・慢性化した高次脳機能障害は「認知症」規定、麻痺・視覚・聴覚障害は「身体の障害」規定に従う<br>・診断書作成医は原則<strong>「脳神経内科専門医又は脳神経外科専門医」</strong></td>
+                  <td>・<strong>半側空間無視</strong>（BITカットオフ以下、抹消時間超過、視覚消去現象あり）は机上検査で確実に「運転を控えるべき」<br>・注意・処理速度は<strong>TMT-J（60代基準表）＋WAIS「符号」</strong>（評価点4未満は控えるべき）<br>・<strong>同名半盲</strong>は法定視力を満たしても見落としリスクが高く実車・DS確認が重要</td>
+                </tr>
+                <tr>
+                  <td><strong>脳卒中後の発作のおそれ・合併症</strong></td>
+                  <td>・「発作のおそれの観点から、運転を控えるべきとはいえない」と診断されれば拒否等は行わない（6か月以内に見込まれれば保留・停止）</td>
+                  <td>・<strong>症候性てんかん</strong>は原則<strong>最低2年間の無発作確認</strong>のうえで判断（未発作でも皮質を含む大病変・手術例は慎重検討）<br>・睡眠時無呼吸症候群（重度の眠気）、無自覚性低血糖も必ず確認</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <ol class="source-list">
+          <li id="ref1">警察庁通達（福島県警察公表例規）．<a href="https://www.police.pref.fukushima.jp/03.tetuduki/-jyouhoukoukai/reiki_int/reiki_honbun/u244RG00003397.html" target="_blank" rel="noopener noreferrer">一定の病気等に係る運転免許関係事務に関する運用上の留意事項について（依命通達）</a>．令和7年12月25日達（運免）第624号（令和8年1月1日施行）．別表1・別表2（診断書作成医師要件）、第3（医師からの任意届出・道交法第101条の6）、別添「一定の病気に係る免許の可否等の運用基準」。</li>
+          <li id="ref2">日本脳卒中学会．<a href="https://www.jsts.gr.jp/img/consultation_manual_ver5.1.pdf" target="_blank" rel="noopener noreferrer">脳卒中相談窓口マニュアル Version 5.1</a>．2026年5月公開．p.25–26「一定の病気に係る免許の可否等の運用基準」「免許取消しとなる可能性のある疾患とそのポイント」。</li>
+          <li id="ref3">日本高次脳機能学会 BFT委員会 運転に関する神経心理学的評価法検討小委員会．<a href="https://www.higherbrain.or.jp/wp/wp-content/uploads/2023/10/5a2f3a7873f997be6f1f39c6053a4af0.pdf" target="_blank" rel="noopener noreferrer">脳卒中，脳外傷等により高次脳機能障害が疑われる場合の自動車運転に関する神経心理学的検査法の適応と判断</a>．2022年12月1日版．</li>
+          <li id="ref4">日本高次脳機能学会 BFT委員会 運転に関する神経心理学的評価法検討小委員会．<a href="https://www.higherbrain.or.jp/wp/wp-content/uploads/2023/10/sdsaapply20201026.pdf" target="_blank" rel="noopener noreferrer">脳卒中ドライバーのスクリーニング評価日本語版（J-SDSA）の適応と判断</a>．2020年12月25日掲載．</li>
+          <li id="ref5">日本高次脳機能学会 BFT委員会 運転に関する神経心理学的評価法検討小委員会．<a href="https://www.higherbrain.or.jp/wp/wp-content/uploads/2023/10/9fcc42a5fe8bd48dd1a9a0af2e000b98-1.pdf" target="_blank" rel="noopener noreferrer">加齢等により認知機能低下が疑われる場合の自動車運転に関する神経心理学的検査法の適応と判断</a>．2022年10月1日版．</li>
+          <li id="ref6">加藤徳明．<a href="https://www.jstage.jst.go.jp/article/hbfr/40/3/40_297/_pdf/-char/ja" target="_blank" rel="noopener noreferrer">脳疾患・脳外傷における自動車運転再開・中止の手順</a>．高次脳機能研究．2020;40(3):297–303．</li>
+          <li id="ref7">医知創造ラボ 解説記事：<a href="https://blog.ichisouzo-lab.com/entry/2026/10/23/193352" target="_blank" rel="noopener noreferrer">脳梗塞・認知症で運転能力が落ちてきたら？警察の検査、診断書を求められたときの対応、脳神経内科での評価手順</a>（図解拡大ページ：<a href="https://tools.ichisouzo-lab.com/infographics/stroke-dementia-driving-evaluation/" target="_blank" rel="noopener noreferrer">インフォグラフィック・フローチャート一覧</a>）。</li>
+        </ol>
+      </section>
+    </main>
+
+    <!-- Sticky Assessment & Draft Output -->
+    <aside class="result pending" id="result" aria-labelledby="resultTitle">
+      <div class="resulttop" aria-live="polite" aria-atomic="true">
+        <p class="status-eyebrow" id="statusEyebrow">入力に基づく医学的評価の整理</p>
+        <h2 id="resultTitle">未確認の必須項目があります</h2>
+      </div>
+      <div class="resultbody">
+        <div id="certBadgeArea"></div>
+        <div id="resultSummary"></div>
+        <div class="buttons">
+          <button type="button" class="btn" id="copyBtn">カルテ・診断書整理メモをコピー</button>
+          <button type="button" class="btn secondary" id="printBtn">印刷</button>
+          <button type="button" class="btn secondary" id="resetBtn">リセット</button>
+        </div>
+        <p id="copyStatus" role="status" aria-live="polite"></p>
+        <label for="record" style="display:block;font-size:0.8rem;font-weight:700;color:var(--navy);margin:6px 0 4px;">カルテ記載・診断書所見欄ドラフト（編集・コピー可）：</label>
+        <textarea id="record" readonly></textarea>
+      </div>
+    </aside>
+  </div>
+
+  <footer>
+    監修：今村久司（脳神経内科医、脳神経内科・総合内科・てんかんの専門医／指導医）｜医知創造ラボ｜2026年10月23日作成
+  </footer>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  function byId(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  var FIELD_IDS = [
+    'scenario', 'certType', 'docQual', 'acuteClear',
+    'dementiaStatus', 'antiDementiaDrug', 'wayfinding', 'usn', 'epilepsy',
+    'motor', 'vision', 'sasHypo',
+    'aphasia', 'fc1General', 'fc1Attention', 'fc2General', 'fc2Attention',
+    'rocfExec', 'jsdsa', 'roadTest', 'familyReport', 'clinicalNotes'
+  ];
+
+  function readState() {
+    var s = {};
+    for (var i = 0; i < FIELD_IDS.length; i++) {
+      var id = FIELD_IDS[i];
+      var el = byId(id);
+      s[id] = el ? el.value : '';
+    }
+    return s;
+  }
+
+  function syncAphasiaUI() {
+    var ap = byId('aphasia').value;
+    byId('fc1Box').hidden = (ap === 'yes');
+    byId('fc2Box').hidden = (ap !== 'yes');
+  }
+
+  function evaluate(s) {
+    var res = {
+      status: 'pending', // 'stop', 'hold6m', 'roadtest', 'pass', 'pending'
+      eyebrow: '入力に基づく医学的評価の整理',
+      title: '未確認の必須項目があります',
+      certNotice: '',
+      adminOutlook: '',
+      stopReasons: [],
+      hold6mReasons: [],
+      roadTestReasons: [],
+      cautions: [],
+      missing: [],
+      goodPoints: [],
+      nextActions: []
+    };
+
+    // Certificate & Doctor qualification check
+    if (s.certType === 'wrong_general') {
+      res.certNotice = '【要確認】病院独自の一般診断書ではなく、公安委員会指定様式の診断書が必要です（#8080または免許センターで確認）。';
+      res.roadTestReasons.push('病院の一般診断書では公安委員会の手続きができません。指定様式を取り寄せていただくよう案内してください。');
+    } else if (s.certType === 'stroke_cert') {
+      res.certNotice = '対象書類：公安委員会指定「脳卒中」診断書（作成医基準：脳神経内科専門医又は脳神経外科専門医）';
+    } else if (s.certType === 'dementia_cert') {
+      res.certNotice = '対象書類：公安委員会指定「認知症」診断書（作成医基準：認知症専門医または継続診療している主治医）';
+    } else if (s.certType === 'epilepsy_cert') {
+      res.certNotice = '対象書類：公安委員会指定「てんかん」診断書';
+    } else {
+      res.certNotice = '場面：診断書提出前の運転再開・継続評価（必要に応じて安全運転相談窓口 #8080 へ案内）';
+    }
+
+    if (s.docQual === 'need_referral') {
+      res.roadTestReasons.push('診断書作成医師の専門医要件を満たさないため、脳神経内科・脳神経外科専門医または認知症専門医（認知症疾患医療センター等）への紹介が必要です。');
+    } else if (s.docQual === 'unknown') {
+      res.missing.push('診断書を作成できる医師の要件（専門医・指定医要件）の確認');
+    }
+
+    if (s.acuteClear === 'present') {
+      res.stopReasons.push('意識障害・せん妄・急性期体調不良または強い鎮静薬の影響があるため、現時点での運転および適性評価は不適です。');
+    } else if (s.acuteClear === 'unknown') {
+      res.missing.push('意識障害・せん妄・急性期薬物影響の除外確認');
+    }
+
+    // Step 2: Dementia, Anti-dementia drug, Wayfinding, USN, Epilepsy
+    if (!s.dementiaStatus) {
+      res.missing.push('認知症・MCIの診断区分');
+    } else if (s.dementiaStatus === 'dementia_fixed') {
+      res.stopReasons.push('4大認知症（アルツハイマー型・血管性・前頭側頭型・レビー小体型）または回復見込みのない認知症と診断（道路交通法上、原則として免許の拒否または取消し対象）');
+    } else if (s.dementiaStatus === 'reversible_6m') {
+      res.hold6mReasons.push('回復見込みのある「その他の認知症」（慢性硬膜下血腫・正常圧水頭症・甲状腺機能低下症等）で6か月以内の回復見込み（6か月以内の免許保留・停止対象）');
+    } else if (s.dementiaStatus === 'mci') {
+      res.goodPoints.push('認知症ではなく「軽度認知障害（MCI）・境界状態」に該当（直ちに取消しとはならず、原則6か月〜最長1年後の再評価対象）');
+    } else if (s.dementiaStatus === 'none') {
+      res.goodPoints.push('認知症に該当しない');
+    }
+
+    if (s.antiDementiaDrug === 'yes') {
+      res.stopReasons.push('アルツハイマー型認知症治療薬を使用中（高次脳機能学会指針上、基本的に認知症と診断していることとなり「運転を控えるべき」。カルテ・介護保険主治医意見書との整合性に注意）');
+    } else if (s.antiDementiaDrug === 'unknown') {
+      res.missing.push('抗認知症薬等の処方・お薬手帳の確認');
+    }
+
+    if (s.wayfinding === 'yes') {
+      res.stopReasons.push('「行先忘れ」「道に迷う」「駐車場所がわからなくなる」症状が明らか（高次脳機能学会指針上、MCIであっても同乗者なしでの運転は控えるべき）');
+    } else if (s.wayfinding === 'unknown') {
+      res.missing.push('行先忘れ・道迷い・駐車場所忘れの有無（家族聴取）');
+    }
+
+    if (!s.usn) {
+      res.missing.push('半側空間無視・視覚消去現象の有無');
+    } else if (s.usn === 'positive') {
+      res.stopReasons.push('半側空間無視または視覚消去現象あり（BIT通常検査カットオフ以下／抹消試験の時間超過／視覚消去現象あり：高次脳機能学会指針で確実に「運転を控えるべき」）');
+    } else if (s.usn === 'none') {
+      res.goodPoints.push('半側空間無視・視覚消去現象なし');
+    }
+
+    if (!s.epilepsy) {
+      res.missing.push('症候性てんかん・発作のおそれの評価');
+    } else if (s.epilepsy === 'sz_uncontrolled') {
+      res.stopReasons.push('過去2年以内のてんかん発作（例外規定非該当）または繰り返す発作のおそれあり（最低2年間の無発作確認が必要）');
+    } else if (s.epilepsy === 'sz_wait_6m') {
+      res.hold6mReasons.push('発作のおそれに関して、6か月以内に「運転を控えるべきとはいえない」と診断できる見込み（6か月以内の免許保留・停止対象）');
+    } else if (s.epilepsy === 'no_sz_large') {
+      res.roadTestReasons.push('未発作ですが「皮質を含む大きな病変」または「手術を要した脳卒中」に該当するため、症候性てんかんのリスクを踏まえ運転再開時期を慎重に検討してください（脳卒中相談窓口マニュアル）。');
+    } else if (s.epilepsy === 'sz_controlled_2y') {
+      res.goodPoints.push('症候性てんかん：2年間以上の無発作（または例外規定）を満たし、発作のおそれの観点から運転を控えるべきとはいえない');
+    } else if (s.epilepsy === 'no_sz_small') {
+      res.goodPoints.push('てんかん発作歴なし・再発予防管理良好');
+    }
+
+    // Step 3: Motor, Vision, SAS/Hypoglycemia
+    if (!s.motor) {
+      res.missing.push('運動麻痺・深部感覚・小脳失調の評価');
+    } else if (s.motor === 'severe') {
+      res.stopReasons.push('運動麻痺・感覚障害・失調等により、運転補助装置を用いても安全な車両操作が困難');
+    } else if (s.motor === 'recover_6m') {
+      res.hold6mReasons.push('身体機能障害があるが、6か月以内に回復・運転可能となる見込み');
+    } else if (s.motor === 'adaptable') {
+      res.roadTestReasons.push('身体障害（片麻痺等）に対し、運転補助装置（旋回ノブ・左足アクセル等）または免許の条件変更について免許センター（#8080）での適性相談と実車確認が必要です。');
+    } else if (s.motor === 'normal') {
+      res.goodPoints.push('車両操作に支障となる運動・感覚・失調障害なし');
+    }
+
+    if (!s.vision) {
+      res.missing.push('視力・視野障害（同名半盲等）・複視の評価');
+    } else if (s.vision === 'unfit') {
+      res.stopReasons.push('法定視力・視野基準を満たさない、または補正不能な複視等により安全運転困難');
+    } else if (s.vision === 'hemianopia') {
+      res.roadTestReasons.push('同名半盲・四分盲等の視野欠損あり：法定の中心視力基準を満たす場合でも、交差点での飛び出しや車線変更時の見落としリスクが高いため、眼科的評価・半側空間無視の合併除外・シミュレーターや実車評価での慎重な確認が必要です。');
+    } else if (s.vision === 'normal') {
+      res.goodPoints.push('視力・視野・眼球運動に問題なし');
+    }
+
+    if (!s.sasHypo) {
+      res.missing.push('睡眠時無呼吸症候群（重度の眠気）・無自覚性低血糖・薬剤性眠気の確認');
+    } else if (s.sasHypo === 'present') {
+      res.stopReasons.push('未治療の重度眠気（睡眠時無呼吸症候群等）、無自覚性低血糖、原因未解決の失神、または強い薬剤性ふらつきあり（治療・解消が確認されるまで運転を控えるべき）');
+    } else if (s.sasHypo === 'clear') {
+      res.goodPoints.push('重度の眠気（SAS等）・無自覚性低血糖・失神リスクなし');
+    }
+
+    // Step 4: Neuropsychological tests (Flowchart I vs II)
+    if (s.aphasia === 'no') {
+      if (!s.fc1General) {
+        res.missing.push('フローチャートI：全般的知能・記憶（MMSE/HDS-R等）');
+      } else if (s.fc1General === 'dementia_level') {
+        res.stopReasons.push('MMSE/HDS-R等の高度低下および日常生活自立度低下（認知症レベル）');
+      } else if (s.fc1General === 'mem_wayfinding') {
+        res.stopReasons.push('記憶検査で記憶障害が確実（S-PA全項目0点、RBMT標準プロフィール点15点以下等）かつ「行先忘れ」あり（同乗者なしでの運転は控えるべき）');
+      } else if (s.fc1General === 'mem_mild') {
+        res.cautions.push('記憶・認知機能に軽度低下（MCI・境界域）があるため、家族からの運転状況聴取と定期的再評価（原則6か月〜最長1年）が必要です。');
+      } else if (s.fc1General === 'ok') {
+        res.goodPoints.push('全般的知能・記憶検査（MMSE/HDS-R等）は基準内');
+      }
+
+      if (!s.fc1Attention) {
+        res.missing.push('フローチャートI：注意・処理速度（TMT-J・WAIS「符号」）');
+      } else if (s.fc1Attention === 'wais_lt4') {
+        res.stopReasons.push('TMT-J Part B異常 かつ WAIS-III/IV「符号」評価点4未満（-2SD未満）：高次脳機能学会指針上「運転を控えるべき」');
+      } else if (s.fc1Attention === 'wais_4to6') {
+        res.roadTestReasons.push('TMT-J異常・WAIS「符号」評価点4〜6（-2SD以内）：判定基準内ですが境界域のため、他検査やシミュレーター・実車評価と合わせて総合判断してください。');
+      } else if (s.fc1Attention === 'tmt_border_safe') {
+        res.cautions.push('TMT-J境界域（70代以上・家族同乗で安全運転確認）：夜間・悪天候・長距離・不慣れな道を避ける条件付きで「判定基準内」とし、定期再評価を行ってください。');
+      } else if (s.fc1Attention === 'tmt_normal' || s.fc1Attention === 'wais_ge7') {
+        res.goodPoints.push('注意・処理速度（TMT-J／WAIS「符号」）は判定基準内');
+      }
+    } else {
+      // Flowchart II (With aphasia)
+      if (!s.fc2General) {
+        res.missing.push('フローチャートII（失語症あり）：RCPM＋ROCF 3分後再生');
+      } else if (s.fc2General === 'both_low_dementia') {
+        res.stopReasons.push('失語症例でRCPMとROCF 3分後再生がともに年齢平均 -2SD 未満 かつ 日常生活自立度低下（認知症を疑う所見）');
+      } else if (s.fc2General === 'ok') {
+        res.goodPoints.push('非言語性知能・視覚性記憶（RCPM・ROCF再生）で認知症は否定');
+      }
+
+      if (!s.fc2Attention) {
+        res.missing.push('フローチャートII（失語症あり）：TMT-A＋WAIS「符号」（±CAT-R・CPT2）');
+      } else if (s.fc2Attention === 'severe_low') {
+        res.stopReasons.push('失語症例でWAIS「符号」評価点4未満（-2SD未満）またはCAT-R/CPT2でも注意・処理速度が著明低下（「運転を控えるべき」）');
+      } else if (s.fc2Attention === 'cat_cpt_ok') {
+        res.roadTestReasons.push('失語症例でTMT-A/WAIS「符号」に一部低下がありCAT-R・CPT2を追加：実車評価やシミュレーターと合わせて総合判断してください。');
+      } else if (s.fc2Attention === 'both_ok') {
+        res.goodPoints.push('注意・処理速度（TMT-A・WAIS「符号」）は判定基準内');
+      }
+    }
+
+    if (!s.rocfExec) {
+      res.missing.push('構成・視空間認知・遂行機能・失行（ROCF模写等）');
+    } else if (s.rocfExec === 'border') {
+      res.roadTestReasons.push('ROCF模写34点未満、または遂行機能低下・観念運動失行／観念失行あり：ドライビングシミュレーターや実車評価で実際の運転操作への影響を確認してください。');
+    } else if (s.rocfExec === 'ok') {
+      res.goodPoints.push('構成・遂行機能（ROCF模写34点以上目安等）に重大な問題なし');
+    }
+
+    if (s.jsdsa === 'all3_fail') {
+      res.roadTestReasons.push('J-SDSAの3課題（方向31点・コンパス16点・道路標識9点）すべてを下回っており、路上での運転再開が難しい可能性が高い所見です（再検は3〜4か月空ける）。');
+    } else if (s.jsdsa === 'mixed') {
+      res.roadTestReasons.push('J-SDSAが境界域です（予測一致精度は約70%のため単独決定はせず、実車評価等を推奨）。');
+    } else if (s.jsdsa === 'all3_pass') {
+      res.goodPoints.push('J-SDSA補助評価：方向31点以上・コンパス16点以上・道路標識9点以上の3条件すべて達成');
+    }
+
+    // Step 5: Road test & Family report
+    if (s.roadTest === 'fail') {
+      res.stopReasons.push('実車評価またはドライビングシミュレーターにおいて重大な見落とし・危険操作が認められ、安全運転困難と判断');
+    } else if (s.roadTest === 'conditional') {
+      res.cautions.push('実車評価／シミュレーターにて条件付き（昼間・近隣限定、同乗者、運転補助装置使用等）で安全運転可能と確認されています。');
+    } else if (s.roadTest === 'pass') {
+      res.goodPoints.push('実車評価／ドライビングシミュレーターで安定した安全運転を確認済み');
+    }
+
+    if (!s.familyReport) {
+      res.missing.push('家族から見た日常生活・運転状況の聴取');
+    } else if (s.familyReport === 'danger') {
+      res.roadTestReasons.push('【重要】ご家族から最近のこすり傷・事故・信号見落とし・逆走・道迷い等の危険エピソードが報告されています。机上検査の数値が保たれていても運転中止または厳重な実車評価が必要です。');
+    } else if (s.familyReport === 'caution') {
+      res.cautions.push('ご家族から運転範囲や時間帯に関する不安が聴取されています（夜間・悪天候・長距離の回避等を指導）。');
+    } else if (s.familyReport === 'safe') {
+      res.goodPoints.push('ご家族から見て日常生活および運転に危険エピソードなし');
+    }
+
+    // Merge roadTestReasons into cautions for display list
+    for (var rIdx = 0; rIdx < res.roadTestReasons.length; rIdx++) {
+      res.cautions.unshift(res.roadTestReasons[rIdx]);
+    }
+
+    // Overall Status Determination
+    if (res.stopReasons.length > 0) {
+      res.status = 'stop';
+      res.eyebrow = '医学的評価：運転中止勧告レベル（レッドフラッグあり）';
+      res.title = '現時点では「運転を控えるべき」と判断される所見があります';
+      res.adminOutlook = '公安委員会の運用基準上、4大認知症や回復見込みのない高次脳機能障害、コントロール不良の発作等は免許の拒否・取消し（または自主返納）の対象となります。';
+      res.nextActions.push('客観的な検査結果を示し、ご本人のプライドに配慮しながら「これまでの無事故の誇りを守るため、安全なうちに運転卒業・休止を考えましょう」と説明します。');
+      res.nextActions.push('運転経歴証明書の取得、介護保険サービス、自治体の移動支援（タクシー券・デマンド交通等）について医療ソーシャルワーカー・脳卒中相談窓口・地域包括支援センターと連携します。');
+      res.nextActions.push('【医師の任意届出制度（道路交通法第101条の6）】説明・指導を行ってもなお危険な運転が継続されるおそれが高い場合、医師は診察結果を公安委員会に任意で届け出ることができます（刑法等の秘密漏示罪［守秘義務違反］にはなりません）。');
+    } else if (res.hold6mReasons.length > 0) {
+      res.status = 'hold6m';
+      res.eyebrow = '医学的評価：6か月以内の回復・無発作待機見込み';
+      res.title = '現時点では運転を控え、6か月以内の再評価（保留・停止見込み）が妥当です';
+      res.adminOutlook = '警察庁の運用基準上、「6か月以内に回復する見込みがある」または「6か月以内に発作のおそれの観点から運転を控えるべきとはいえないと診断できる見込みがある」場合は、6か月以内の免許保留または効力停止の対象となります。';
+      res.nextActions.push('治療・リハビリテーションまたは無発作観察期間中は運転を控えるよう指導し、再評価予定時期を明記します。');
+      res.nextActions.push('運転免許センター・安全運転相談窓口（#8080）で手続きと診断書提出時期を確認するよう案内します。');
+    } else if (res.missing.length > 0) {
+      res.status = 'pending';
+      res.eyebrow = '医学的評価：未確認項目あり（結論保留）';
+      res.title = '判定に必要な確認項目が ' + res.missing.length + ' 件残っています';
+      res.adminOutlook = '未確認・未実施の項目を「問題なし」と推測して診断書を記載することは避け、必要な検査・家族聴取を完了してから判断してください。';
+      res.nextActions.push('左記の「未確認項目」について神経心理学的検査、視野・運動機能評価、またはご家族からの聴取を実施してください。');
+    } else if (res.roadTestReasons.length > 0 && s.roadTest === 'none') {
+      res.status = 'roadtest';
+      res.eyebrow = '医学的評価：境界域・要注意所見あり';
+      res.title = '机上評価のみでの判断は慎重に：実車評価・シミュレーター・専門連携を推奨します';
+      res.adminOutlook = '机上検査の境界域、同名半盲、失行・遂行機能低下、身体障害（補助装置検討）、大病変、または家族からの懸念がある場合、ドライビングシミュレーターや実車評価（教習所・リハビリ施設）、および警察の安全運転相談窓口（#8080）での確認を組み合わせることが推奨されます。';
+      res.nextActions.push('リハビリテーション施設や提携自動車教習所での実車評価・ドライビングシミュレーター評価を検討してください。');
+      res.nextActions.push('身体麻痺や車両改造・条件変更が関わる場合は、運転免許センターの安全運転相談窓口（#8080）へ事前相談するよう案内してください。');
+      res.nextActions.push('MCI・高齢ドライバーで継続とする場合も、原則6か月後（最長1年）の定期的な再評価を設定してください。');
+    } else {
+      res.status = 'pass';
+      res.eyebrow = '医学的評価：判定基準内（レッドフラッグなし）';
+      if (s.dementiaStatus === 'mci' || s.scenario === 'mci_aging' || s.scenario === 'both' || s.roadTest === 'conditional' || res.cautions.length > 0) {
+        res.title = '判定基準内（安全条件の設定と6か月〜1年後の定期再評価を推奨）';
+        res.adminOutlook = '公安委員会の運用基準上、MCI（軽度の認知機能の低下・境界状態）は直ちに取消しとはならず、原則6か月後（医師の診断結果を踏まえ最長1年）に臨時適性検査または診断書提出命令による再評価となります。脳卒中後も「運転を控えるべきとはいえない」と診断されれば拒否等は行われません。';
+      } else {
+        res.title = '判定基準内（「運転を控えるべきとはいえない」に相当）';
+        res.adminOutlook = '公安委員会の運用基準上、慢性化した症状および発作のおそれの観点から「運転を控えるべきとはいえない」と診断された場合、免許の拒否・取消しは行われません（最終判断は公安委員会が行います）。';
+      }
+      res.nextActions.push('公安委員会指定診断書の選択肢と所見欄（検査数値・神経学的所見）が矛盾しないよう記載します。');
+      res.nextActions.push('夜間・悪天候・長距離・不慣れな道を避ける等の安全運転指導を行い、加齢や認知機能変化を踏まえ最長でも1年に1回（MCIは原則6か月〜1年）の再評価を計画します。');
+    }
+
+    return res;
+  }
+
+  function buildList(title, items, color) {
+    if (!items || !items.length) return '';
+    var style = color ? ' style="color:' + color + ';"' : '';
+    var h = '<h3' + style + '>' + esc(title) + '（' + items.length + '件）</h3><ul>';
+    for (var i = 0; i < items.length; i++) {
+      h += '<li>' + esc(items[i]) + '</li>';
+    }
+    h += '</ul>';
+    return h;
+  }
+
+  function buildRecordText(s, res) {
+    var lines = [];
+    lines.push('【自動車運転に関する医学的評価・診断書記載整理メモ】');
+    lines.push('※医師は医学的評価・診断書作成を担い、運転免許の最終的な行政判断は都道府県公安委員会が行います。');
+    lines.push('');
+    lines.push('■ 評価結論：' + res.title);
+    lines.push('■ 対象書類・場面：' + res.certNotice);
+    lines.push('■ 行政運用上の見通し：' + res.adminOutlook);
+    lines.push('');
+
+    if (res.stopReasons.length) {
+      lines.push('【運転を控えるべきと判断される理由（レッドフラッグ）】');
+      for (var i = 0; i < res.stopReasons.length; i++) lines.push('・' + res.stopReasons[i]);
+      lines.push('');
+    }
+    if (res.hold6mReasons.length) {
+      lines.push('【6か月以内の回復・無発作見込み（保留・停止相当）】');
+      for (var j = 0; j < res.hold6mReasons.length; j++) lines.push('・' + res.hold6mReasons[j]);
+      lines.push('');
+    }
+    if (res.cautions.length) {
+      lines.push('【注意事項・境界所見・条件付与の検討】');
+      for (var k = 0; k < res.cautions.length; k++) lines.push('・' + res.cautions[k]);
+      lines.push('');
+    }
+    if (res.missing.length) {
+      lines.push('【未確認・追加確認が必要な項目】');
+      for (var m = 0; m < res.missing.length; m++) lines.push('・' + res.missing[m]);
+      lines.push('');
+    }
+    if (res.goodPoints.length) {
+      lines.push('【確認済みの基準内・安定所見】');
+      for (var g = 0; g < res.goodPoints.length; g++) lines.push('・' + res.goodPoints[g]);
+      lines.push('');
+    }
+
+    var notes = s.clinicalNotes ? s.clinicalNotes.trim() : '';
+    if (notes) {
+      lines.push('【検査数値・臨床所見メモ】');
+      lines.push(notes);
+      lines.push('');
+    }
+
+    if (res.nextActions.length) {
+      lines.push('【今後の方針・患者および家族への指導】');
+      for (var a = 0; a < res.nextActions.length; a++) lines.push('・' + res.nextActions[a]);
+      lines.push('');
+    }
+
+    lines.push('参照基準：警察庁「一定の病気等に係る運転免許関係事務に関する運用上の留意事項について」、日本高次脳機能学会「自動車運転に関する神経心理学的検査法の適応と判断」（2022年12月版・2022年10月版・J-SDSA）、日本脳卒中学会「脳卒中相談窓口マニュアル Ver 5.1」');
+    return lines.join('\n');
+  }
+
+  function render() {
+    syncAphasiaUI();
+    var s = readState();
+    var res = evaluate(s);
+
+    var panel = byId('result');
+    panel.className = 'result ' + res.status;
+    byId('statusEyebrow').textContent = res.eyebrow;
+    byId('resultTitle').textContent = res.title;
+    byId('certBadgeArea').innerHTML = '<span class="cert-badge">' + esc(res.certNotice) + '</span>';
+
+    var html = '';
+    html += '<p>' + esc(res.adminOutlook) + '</p>';
+    html += buildList('運転を控えるべき所見（レッドフラッグ）', res.stopReasons, '#991B1B');
+    html += buildList('6か月以内の回復・無発作待機項目', res.hold6mReasons, '#92400E');
+    html += buildList('未確認の必須項目', res.missing, '#1E40AF');
+    html += buildList('注意事項・実車評価／条件検討ポイント', res.cautions, '#92400E');
+    html += buildList('確認済みの基準内所見', res.goodPoints, '#14532D');
+    html += buildList('推奨される次の一手・指導', res.nextActions, '#18354C');
+
+    byId('resultSummary').innerHTML = html;
+    byId('record').value = buildRecordText(s, res);
+  }
+
+  function applyPreset(name) {
+    var presets = {
+      stroke_ok: {
+        scenario: 'stroke', certType: 'stroke_cert', docQual: 'qualified', acuteClear: 'clear',
+        dementiaStatus: 'none', antiDementiaDrug: 'no', wayfinding: 'no', usn: 'none', epilepsy: 'no_sz_small',
+        motor: 'normal', vision: 'normal', sasHypo: 'clear',
+        aphasia: 'no', fc1General: 'ok', fc1Attention: 'tmt_normal', fc2General: '', fc2Attention: '',
+        rocfExec: 'ok', jsdsa: 'all3_pass', roadTest: 'pass', familyReport: 'safe',
+        clinicalNotes: '左放線冠ラクナ梗塞後。MMSE 29/30、HDS-R 28/30、BIT通常検査 142/146（無視なし）、TMT-J Part A・Bとも60代基準で正常域、ROCF模写 36/36点。麻痺・同名半盲・てんかん発作なし。'
+      },
+      stroke_border: {
+        scenario: 'stroke', certType: 'stroke_cert', docQual: 'qualified', acuteClear: 'clear',
+        dementiaStatus: 'none', antiDementiaDrug: 'no', wayfinding: 'no', usn: 'none', epilepsy: 'no_sz_large',
+        motor: 'adaptable', vision: 'hemianopia', sasHypo: 'clear',
+        aphasia: 'no', fc1General: 'ok', fc1Attention: 'wais_4to6', fc2General: '', fc2Attention: '',
+        rocfExec: 'border', jsdsa: 'mixed', roadTest: 'none', familyReport: 'caution',
+        clinicalNotes: '右後大脳動脈〜中大脳動脈境界領域梗塞後。MMSE 26/30、BITで半側空間無視は認めないが左同名半盲あり。TMT-J Part B延長あり、WAIS-IV「符号」評価点5（-2SD以内）。実車評価・DSおよび#8080での適性相談を予定。'
+      },
+      mci_continue: {
+        scenario: 'mci_aging', certType: 'dementia_cert', docQual: 'qualified', acuteClear: 'clear',
+        dementiaStatus: 'mci', antiDementiaDrug: 'no', wayfinding: 'no', usn: 'none', epilepsy: 'no_sz_small',
+        motor: 'normal', vision: 'normal', sasHypo: 'clear',
+        aphasia: 'no', fc1General: 'mem_mild', fc1Attention: 'tmt_border_safe', fc2General: '', fc2Attention: '',
+        rocfExec: 'ok', jsdsa: 'not_done', roadTest: 'none', familyReport: 'safe',
+        clinicalNotes: '75歳以上免許更新時の認知機能検査で36点未満となり受診。MMSE 25/30、HDS-R 23/30、CDR 0.5。日常生活・金銭・服薬管理は自立しており行先忘れ・道迷いなし。TMT-J境界域だが無事故・無違反で家族同乗時も安全運転を確認。MCIとして6か月後の再評価を設定。'
+      },
+      dementia_stop: {
+        scenario: 'mci_aging', certType: 'dementia_cert', docQual: 'qualified', acuteClear: 'clear',
+        dementiaStatus: 'dementia_fixed', antiDementiaDrug: 'yes', wayfinding: 'yes', usn: 'none', epilepsy: 'no_sz_small',
+        motor: 'normal', vision: 'normal', sasHypo: 'clear',
+        aphasia: 'no', fc1General: 'dementia_level', fc1Attention: 'wais_lt4', fc2General: '', fc2Attention: '',
+        rocfExec: 'border', jsdsa: 'not_done', roadTest: 'none', familyReport: 'danger',
+        clinicalNotes: 'アルツハイマー型認知症としてドネペジル内服中。最近スーパーの駐車場で自車位置がわからなくなるエピソードやバンパーのこすり傷あり。TMT-J Part B完遂困難、WAIS「符号」評価点3。家族同席のもと運転卒業と運転経歴証明書・移動支援サービスを案内。'
+      }
+    };
+    var p = presets[name];
+    if (!p) return;
+    for (var i = 0; i < FIELD_IDS.length; i++) {
+      var id = FIELD_IDS[i];
+      if (byId(id) && p[id] !== undefined) {
+        byId(id).value = p[id];
+      }
+    }
+    byId('copyStatus').textContent = '典型シナリオを読み込みました。右側の評価結果をご確認ください。';
+    render();
+  }
+
+  var form = byId('drivingForm');
+  form.addEventListener('change', function() {
+    byId('copyStatus').textContent = '';
+    render();
+  });
+  form.addEventListener('input', function() {
+    byId('copyStatus').textContent = '';
+    render();
+  });
+
+  var presetBtns = document.querySelectorAll('.preset-btn');
+  for (var i = 0; i < presetBtns.length; i++) {
+    presetBtns[i].addEventListener('click', function() {
+      applyPreset(this.getAttribute('data-preset'));
+    });
+  }
+
+  byId('copyBtn').addEventListener('click', function() {
+    var text = byId('record').value;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function() {
+        byId('copyStatus').textContent = 'カルテ・診断書整理メモをクリップボードにコピーしました。';
+      }, function() {
+        byId('record').focus();
+        byId('record').select();
+        document.execCommand('copy');
+        byId('copyStatus').textContent = 'コピーしました。';
+      });
+    } else {
+      byId('record').focus();
+      byId('record').select();
+      document.execCommand('copy');
+      byId('copyStatus').textContent = 'コピーしました。';
+    }
+  });
+
+  byId('printBtn').addEventListener('click', function() {
+    window.print();
+  });
+
+  byId('resetBtn').addEventListener('click', function() {
+    form.reset();
+    byId('copyStatus').textContent = '入力をリセットしました。';
+    render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
