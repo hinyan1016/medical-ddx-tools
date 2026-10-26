@@ -1,5 +1,8 @@
-const CACHE_NAME = 'ddx-tools-v277';
+const CACHE_NAME = 'ddx-tools-v278';
 const ASSETS = [
+  './abcd2_calculator.html',
+  './infographics/abcd2-tia-risk-score/index.html',
+  './infographics/moca-j-v81/index.html',
   './fazekas_calculator.html',
   './infographics/af-stroke-anticoagulation-reference-repair-20261026/index.html',
   './infographics/cgrp-antibodies-comparison-reference-repair-20261026/index.html',
