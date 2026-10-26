@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v275';
+const CACHE_NAME = 'ddx-tools-v276';
 const ASSETS = [
   './infographics/radiation-leukoencephalopathy/index.html',
   './infographics/radiation-leukoencephalopathy/infographic.png',
