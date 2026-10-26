@@ -1,5 +1,7 @@
-const CACHE_NAME = 'ddx-tools-v278';
+const CACHE_NAME = 'ddx-tools-v282';
 const ASSETS = [
+  './cave_score.html',
+  './select_score.html',
   './abcd2_calculator.html',
   './infographics/abcd2-tia-risk-score/index.html',
   './infographics/moca-j-v81/index.html',

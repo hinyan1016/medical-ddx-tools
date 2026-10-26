@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#26315F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>SeLECTスコア 計算ツール（脳梗塞後てんかんの予測・SeLECT 2.0）</title>
+<meta name="description" content="脳梗塞後の遅発発作（発症7日より後の誘因のない発作）のリスクを、脳卒中の重症度・大血管アテローム硬化・早期発作・皮質病変・中大脳動脈領域の5項目で見積もるSeLECT 2.0スコアの計算と解説。原著の点数別リスク（1年・5年）、旧SeLECTとの違い、派生スコアと限界をまとめています。">
+<meta property="og:title" content="SeLECTスコア 計算ツール（脳梗塞後てんかんの予測・SeLECT 2.0）">
+<meta property="og:description" content="重症度・大血管アテローム硬化・早期発作・皮質病変・中大脳動脈領域の5項目で、脳梗塞後の遅発発作リスクを見積もるSeLECT 2.0スコアの計算と解説。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tools.ichisouzo-lab.com/select_score.html">
+<meta property="og:image" content="https://tools.ichisouzo-lab.com/assets/og-tools.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="医知創造ラボ">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root {
+    --dark: #26315F;
+    --primary: #34468A;
+    --mid: #5266B0;
+    --light: #EAEDF7;
+    --accent: #D9822B;
+    --red: #C0392B;
+    --orange: #E08600;
+    --green: #2E7D32;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(38,49,95,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #EAEDF7 0%, #F4F6F8 100%);
+    color: #222; min-height: 100vh; padding: 0 0 40px; line-height: 1.6;
+  }
+  header {
+    background: linear-gradient(135deg, var(--dark), var(--mid));
+    color: var(--white); padding: 14px 20px 18px; text-align: center;
+    box-shadow: 0 4px 16px rgba(38,49,95,0.18);
+  }
+  .back-bar { display: flex; align-items: center; margin-bottom: 8px; }
+  .back-bar a {
+    color: rgba(255,255,255,0.85); text-decoration: none; font-size: 0.85em;
+    display: flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 6px;
+  }
+  .back-bar a:active { background: rgba(255,255,255,0.15); }
+  header h1 { font-size: 1.4em; font-weight: 700; letter-spacing: 0.02em; }
+  header p { font-size: 0.85em; margin-top: 6px; opacity: 0.9; }
+  .container { max-width: 820px; margin: 0 auto; padding: 20px 14px; }
+
+  .card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 16px; overflow: hidden; }
+  .card-header { padding: 12px 16px; background: var(--light); border-bottom: 2px solid var(--primary); font-weight: 700; font-size: 1em; color: var(--primary); }
+  .card-body { padding: 16px; }
+  .card-body p { font-size: 0.92em; margin-bottom: 10px; }
+  .card-body p:last-child { margin-bottom: 0; }
+
+  .alert-disclaimer {
+    background: #fff8e1; border-left: 4px solid var(--orange);
+    padding: 10px 14px; margin-bottom: 16px; border-radius: 6px;
+    font-size: 0.85em; color: #5d4400;
+  }
+
+  /* 入力（5項目） */
+  .param { padding: 14px 0; border-bottom: 1px solid #eceff6; }
+  .param:last-child { border-bottom: none; }
+  .param-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+  .field-label { font-weight: 700; font-size: 0.98em; color: var(--primary); }
+  .field-label .letter {
+    display: inline-block; width: 1.7em; height: 1.7em; line-height: 1.7em; text-align: center;
+    border-radius: 6px; background: var(--primary); color: var(--white); font-weight: 800; margin-right: 6px;
+  }
+  .field-label .en { font-weight: 600; font-size: 0.82em; color: var(--gray); }
+  .param-score-badge {
+    flex-shrink: 0; min-width: 64px; text-align: center; font-weight: 800;
+    font-size: 0.85em; padding: 3px 8px; border-radius: 999px; color: var(--white);
+    font-variant-numeric: tabular-nums;
+  }
+  .scnull { background: #A9B0BC; } .sc0 { background: var(--green); } .sc1 { background: var(--accent); } .sc2 { background: var(--red); }
+
+  .seg { display: flex; flex-wrap: wrap; gap: 6px; }
+  .seg button {
+    border: 2px solid #CDD3E6; background: var(--white); color: var(--primary);
+    padding: 9px 12px; border-radius: 8px; font-family: inherit; font-size: 0.88em;
+    font-weight: 600; cursor: pointer; transition: all 0.12s; text-align: left; flex: 1 1 200px; min-width: 0;
+  }
+  .seg button .pt { display: inline-block; font-weight: 800; min-width: 16px; }
+  .seg button:hover { border-color: var(--mid); }
+  .seg button.active.s0 { background: var(--green); border-color: var(--green); color: var(--white); }
+  .seg button.active.s1 { background: var(--accent); border-color: var(--accent); color: var(--white); }
+  .seg button.active.s2 { background: var(--red); border-color: var(--red); color: var(--white); }
+  .hint { font-size: 0.8em; color: var(--gray); margin-top: 6px; }
+
+  /* 結果 */
+  .result-hero {
+    background: linear-gradient(135deg, var(--dark), var(--mid));
+    color: var(--white); padding: 22px 20px; text-align: center;
+    border-radius: var(--radius); margin-bottom: 14px;
+  }
+  .result-hero .label { font-size: 0.88em; opacity: 0.9; margin-bottom: 2px; }
+  .result-hero .value { font-size: 3.0em; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .result-hero .value small { font-size: 0.35em; font-weight: 600; opacity: 0.85; }
+  .result-hero .sub { font-size: 0.82em; opacity: 0.85; margin-top: 2px; }
+  .risk-pill {
+    display: inline-block; margin-top: 8px; padding: 5px 16px; border-radius: 999px;
+    font-weight: 800; font-size: 1.0em; background: rgba(255,255,255,0.18);
+  }
+
+  .risk-table { width: 100%; border-collapse: collapse; font-size: 0.9em; margin-bottom: 12px; }
+  .risk-table th { background: var(--primary); color: var(--white); padding: 7px 8px; text-align: left; font-weight: 700; }
+  .risk-table td { padding: 6px 8px; border-bottom: 1px solid #E3E7F2; vertical-align: middle; }
+  .risk-table td.num { font-variant-numeric: tabular-nums; font-weight: 700; white-space: nowrap; }
+  .risk-table td.num .ci { display: block; font-weight: 500; font-size: 0.82em; color: var(--gray); }
+  .risk-table tr.current td { background: #FFF1DF; }
+  .risk-table tr.current td:first-child { box-shadow: inset 4px 0 0 var(--accent); }
+  .bar { height: 12px; background: #E3E7F2; border-radius: 6px; overflow: hidden; min-width: 60px; }
+  .bar span { display: block; height: 100%; background: var(--mid); }
+  .risk-table tr.current .bar span { background: var(--accent); }
+
+  .warning-box { padding: 12px 14px; margin-bottom: 10px; border-radius: 6px; font-size: 0.9em; }
+  .warning-box .head { font-weight: 700; margin-bottom: 4px; }
+  .warning-box.caution { background: #fff8e1; border-left: 4px solid var(--orange); color: #5d4400; }
+  .warning-box.caution .head { color: var(--orange); }
+  .warning-box.info { background: #ECEFF9; border-left: 4px solid var(--mid); color: #1E2752; }
+  .warning-box.info .head { color: var(--primary); }
+  .warning-box.high { background: #fdecea; border-left: 4px solid var(--red); color: #6a1a1a; }
+  .warning-box.high .head { color: var(--red); }
+
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+  .copy-btn, .reset-btn {
+    color: var(--white); border: none; padding: 9px 16px;
+    border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 0.88em; font-weight: 600;
+  }
+  .copy-btn { background: var(--primary); }
+  .copy-btn:hover { background: var(--dark); }
+  .copy-btn.copied { background: var(--green); }
+  .reset-btn { background: var(--gray); }
+  .reset-btn:hover { background: #555; }
+
+  .template-box {
+    background: #1B2242; color: #E4E8F5; padding: 14px 16px; border-radius: 8px;
+    font-family: "Consolas", "Courier New", monospace; font-size: 0.82em; line-height: 1.7;
+    white-space: pre-wrap; word-wrap: break-word; margin-bottom: 8px; max-height: 300px; overflow-y: auto;
+  }
+
+  /* 解説 */
+  .explain h3 { font-size: 0.98em; color: var(--primary); margin: 16px 0 6px; padding-left: 8px; border-left: 4px solid var(--mid); }
+  .explain h3:first-child { margin-top: 0; }
+  .explain ul { font-size: 0.92em; padding-left: 20px; margin-bottom: 10px; }
+  .explain li { margin-bottom: 4px; }
+  .def-table { width: 100%; border-collapse: collapse; font-size: 0.88em; margin-bottom: 10px; }
+  .def-table th { background: var(--primary); color: var(--white); padding: 7px 8px; text-align: left; }
+  .def-table td { padding: 7px 8px; border-bottom: 1px solid #E3E7F2; vertical-align: top; }
+  .def-table td:first-child { font-weight: 800; color: var(--primary); white-space: nowrap; }
+  .def-table th:first-child { white-space: nowrap; }
+  .table-wrap { overflow-x: auto; }
+  .compare-table { min-width: 560px; }
+  .compare-table td:nth-child(2) { width: 38%; }
+  /* 比較表が枠からはみ出す幅（スマートフォン）でだけ横スクロールの案内を出す */
+  .scroll-hint { display: none; margin: 0 0 4px; }
+  @media (max-width: 619px) { .scroll-hint { display: block; } }
+  sup a { color: var(--mid); text-decoration: none; font-weight: 700; }
+
+  .ref-list { font-size: 0.82em; color: var(--gray); line-height: 1.7; padding-left: 18px; }
+  .ref-list li { margin-bottom: 4px; }
+  .ref-list a { color: var(--mid); text-decoration: none; }
+  .ref-list a:hover { text-decoration: underline; }
+
+  footer { max-width: 820px; margin: 30px auto 0; padding: 14px; text-align: center; color: var(--gray); font-size: 0.78em; line-height: 1.6; }
+  footer a { color: var(--mid); text-decoration: none; }
+</style>
+</head>
+<body>
+<nav id="ics-globalnav" style="background:#15324E;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
+<div style="max-width:1040px;margin:0 auto;padding:8px 12px;display:flex;align-items:center;gap:2px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;">
+<a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;padding-right:8px;">医知創造ラボ</a>
+<a href="https://ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ホーム</a>
+<a href="https://blog.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ブログ</a>
+<a href="https://tools.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ツール</a>
+<a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">YouTube</a>
+</div>
+</nav>
+<header>
+  <div class="back-bar"><a href="index.html">← ツール一覧へ</a></div>
+  <h1>SeLECTスコア 計算ツール</h1>
+  <p>脳梗塞後の遅発発作（脳卒中後てんかん）のリスクを5項目で見積もります（SeLECT 2.0）</p>
+</header>
+
+<div class="container">
+
+  <div class="alert-disclaimer">
+    <strong>⚠ 使用上の注意</strong>：医療従事者向けの<strong>教育・参考用</strong>の計算機です。表示するリスクは、原著の多施設コホート（欧州を中心とする脳梗塞患者4,552人）から作られた予測値で、目の前の患者さんの発作の起こりやすさをそのまま表すものではありません<sup><a href="#ref2">2</a></sup>。SeLECT 2.0は施設をまたいだ内部検証のみで、別の集団での外部検証はまだ報告されていません<sup><a href="#ref2">2</a></sup>。
+  </div>
+
+  <!-- 入力 -->
+  <div class="card">
+    <div class="card-header">📝 5項目を入力（SeLECT 2.0・合計0〜13点）</div>
+    <div class="card-body" id="itemBody">
+      <!-- 項目は JS で生成 -->
+    </div>
+  </div>
+
+  <!-- 結果 -->
+  <div class="card">
+    <div class="card-header">🧮 スコアと原著の遅発発作リスク</div>
+    <div class="card-body">
+      <div class="result-hero">
+        <div class="label">SeLECT 2.0 スコア</div>
+        <div class="value"><span id="totalScore">—</span><small> / 13 点</small></div>
+        <div class="sub" id="origScore">旧SeLECT（0〜9点）に換算した値も表示します</div>
+        <div class="risk-pill" id="riskPill">5項目すべてを選ぶと表示します</div>
+      </div>
+      <div class="table-wrap">
+        <table class="risk-table" id="riskTable">
+          <thead><tr><th style="background:#34468A;color:#fff;">スコア</th><th style="background:#34468A;color:#fff;">1年以内</th><th style="background:#34468A;color:#fff;">5年以内</th><th style="background:#34468A;color:#fff;width:34%;">5年リスクの大きさ</th></tr></thead>
+          <tbody id="riskBody"></tbody>
+        </table>
+      </div>
+      <p class="hint" style="margin-bottom:12px;">発症7日より後に起こる誘因のない発作（遅発発作）のリスクで、かっこ内は95%信頼区間です。値はSinkaら（2023）の図2に示されたSeLECT 2.0の予測値を写したものです<sup><a href="#ref2">2</a></sup>。</p>
+      <div id="warningArea"></div>
+    </div>
+  </div>
+
+  <!-- コピー -->
+  <div class="card">
+    <div class="card-header">📋 記録用サマリ（コピー可）</div>
+    <div class="card-body">
+      <div class="template-box" id="summaryBox"></div>
+      <div class="btn-row">
+        <button class="copy-btn" id="copyBtn" type="button">📋 クリップボードにコピー</button>
+        <button class="reset-btn" id="resetBtn" type="button">↺ リセット（未入力に戻す）</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 解説 -->
+  <div class="card explain">
+    <div class="card-header">📖 解説：SeLECTスコアとは</div>
+    <div class="card-body">
+      <h3>どんなスコアか</h3>
+      <p>SeLECTスコアは、脳梗塞のあとに起こる<strong>遅発発作</strong>、つまり発症から7日より後に起こる誘因のない発作のリスクを見積もるためにつくられました。2018年にスイスなどの研究グループが発表し、名前は5つの項目の頭文字に由来します<sup><a href="#ref1">1</a></sup>。脳梗塞のあとに遅発発作が1回でも起これば、その後10年以内に再び発作が起こるリスクが60%を超えるため、1回の遅発発作で脳卒中後てんかんと診断されます<sup><a href="#ref2">2</a></sup>。</p>
+      <p>2023年に、早期発作が<strong>てんかん重積状態</strong>だったかどうかを区別した改訂版<strong>SeLECT 2.0</strong>が発表されました<sup><a href="#ref2">2</a></sup>。このツールはSeLECT 2.0で計算し、旧SeLECTに換算した点数もあわせて表示します。</p>
+
+      <h3>5つの項目</h3>
+      <div class="table-wrap">
+        <table class="def-table">
+          <thead><tr><th style="background:#34468A;color:#fff;">頭文字</th><th style="background:#34468A;color:#fff;">項目と配点（SeLECT 2.0）</th><th style="background:#34468A;color:#fff;">ここでの補足</th></tr></thead>
+          <tbody>
+            <tr><td>S</td><td>脳卒中の重症度（severity）：入院時NIHSS 3以下＝0点、4〜10＝1点、11以上＝2点</td><td>原著は入院時のNIHSSを使っています<sup><a href="#ref2">2</a></sup>。</td></tr>
+            <tr><td>L</td><td>大血管アテローム硬化（large-artery atherosclerosis）による脳梗塞＝1点</td><td>脳梗塞の病型（原因）で判定します。</td></tr>
+            <tr><td>E</td><td>早期発作（early seizure）：短い発作＝3点、てんかん重積状態＝7点</td><td>発症7日以内の急性症候性発作です。重積状態はILAEの改訂定義で判定し、非けいれん性の重積は臨床症状があり、脳波でSalzburg基準を満たすものに限っています<sup><a href="#ref2">2</a></sup>。</td></tr>
+            <tr><td>C</td><td>皮質病変（cortical involvement）＝2点</td><td>梗塞が大脳皮質に及んでいるかを画像で判定します。</td></tr>
+            <tr><td>T</td><td>中大脳動脈領域（territory of MCA involvement）＝1点</td><td>梗塞が中大脳動脈（MCA）の灌流域を含むかで判定します。</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>旧SeLECTとSeLECT 2.0で違うのは早期発作の配点だけです。旧SeLECTは早期発作があれば種類を問わず3点で、合計0〜9点でした。SeLECT 2.0では重積状態に4点を上乗せして7点とし、合計0〜13点になりました<sup><a href="#ref2">2</a></sup>。</p>
+
+      <h3>原著の対象と成績</h3>
+      <p><strong>旧SeLECT</strong>は、スイスの脳梗塞患者1,200人でつくられ、オーストリア・ドイツ・イタリアの3つのコホート（1,169人）で外部検証されました。遅発発作のリスクは全体で発症1年が4%、5年が8%でした。0点では1年0.7%・5年1.3%、9点では1年63%・5年83%で、検証コホートでのc統計量は0.77（0.71〜0.82）でした<sup><a href="#ref1">1</a></sup>。</p>
+      <p><strong>SeLECT 2.0</strong>は、9施設の脳梗塞患者4,552人の登録データでつくられました。早期発作は226人（5%）に起こり、そのうち重積状態は8人（0.2%）でした。脳卒中後てんかんの10年リスクは、重積状態だった人で81%、短い発作だった人で40%、早期発作がなかった人で13%でした。重積状態を起こした別の39人の再現コホートでも、10年リスクは88%でした<sup><a href="#ref2">2</a></sup>。</p>
+      <p>楽観補正後のc統計量は、SeLECT 2.0と旧SeLECTがどちらも0.77で、全体の識別能は変わりません。重積状態がまれなためで、改訂の狙いはごく高リスクの人を取りこぼさないことにあります。原著によると、8点以上では10年以内の遅発発作のリスクが60%を超えます<sup><a href="#ref2">2</a></sup>。</p>
+      <p>原著には次の計算例が載っています。65歳の男性で、心原性脳塞栓症による後大脳動脈領域の梗塞が皮質に及び、入院時NIHSSは6点、入院初日に重積状態を起こしました。旧SeLECTでは6点で5年リスク29%（24〜33%）ですが、SeLECT 2.0では10点で86%（73〜93%）になります<sup><a href="#ref2">2</a></sup>。</p>
+
+      <h3>派生スコア</h3>
+      <p>SeLECTをもとに項目を入れ替えたり足したりしたスコアがいくつか提案されています。主なものを下の表にまとめました。</p>
+      <p class="hint scroll-hint">表は横にスクロールできます ⇆</p>
+      <div class="table-wrap">
+        <table class="def-table compare-table">
+          <thead><tr><th style="background:#34468A;color:#fff;">スコア</th><th style="background:#34468A;color:#fff;">SeLECTとの違い・項目</th><th style="background:#34468A;color:#fff;">対象と成績</th></tr></thead>
+          <tbody>
+            <tr><td>旧SeLECT<sup><a href="#ref1">1</a></sup></td><td>5項目。早期発作は種類を問わず3点で、合計0〜9点です。</td><td>スイスの1,200人で導出し、3か国の1,169人で外部検証。検証でのc統計量は0.77でした。</td></tr>
+            <tr><td>SeLECT 2.0<sup><a href="#ref2">2</a></sup></td><td>早期発作が重積状態なら7点。ほかは旧SeLECTと同じで、合計0〜13点です。</td><td>9施設の4,552人。楽観補正後のc統計量は0.77で、外部検証はまだ報告されていません。</td></tr>
+            <tr><td>改変SeLECT 2.0<sup><a href="#ref3">3</a></sup></td><td>入院時NIHSSの代わりに、治療後72時間のNIHSSを使います。</td><td>イタリアの単施設で、静注血栓溶解療法や血管内治療を受けた1,094人の後ろ向き研究（遅発発作は65人＝5.9%）。36〜60か月時点の予測で、元のSeLECT 2.0より識別能が高く、再分類指標も改善しました。</td></tr>
+            <tr><td>SeLECT-EEG<sup><a href="#ref4">4</a></sup></td><td>早期発作の項目を外し、発症7日以内の脳波所見を加えたもの。局在性徐波とてんかん様活動が各1点で、合計0〜8点です。</td><td>早期発作がなく、7日以内に脳波を記録した脳梗塞の人が対象です。c統計量は0.75で、SeLECT 2.0の0.71を上回りました。</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>2025年の系統的レビューは、11か国・1万人を超える患者を扱った15研究を集めています。中国ではIL-1β、トルコでは糖尿病の重症度と白質病変、日本では皮質表在性ヘモジデリン沈着をSeLECTに加える試みがあり、SeLECT-ASySという改変版も報告されています。研究どうしの違いが大きく、メタ解析はできませんでした<sup><a href="#ref5">5</a></sup>。</p>
+
+      <h3>使いどころと限界</h3>
+      <ul>
+        <li><strong>説明と経過観察の目安に使う</strong>：遅発発作が起こりうることを本人・家族に伝えるときや、どのくらいの頻度・方法で経過をみるかを考えるときの材料になります。著者らは、抗てんかん発作薬を続けるかどうかを考える参考にもなりうると述べています<sup><a href="#ref2">2</a></sup>。ただし原著は観察研究で、スコアに従って薬を始めたりやめたりした効果を確かめたものではありません。</li>
+        <li><strong>重積状態の人は全員が早期から治療を受けていた</strong>：原著で重積状態を起こした人は全員、早くから抗てんかん発作薬を使っていました。治療を受けていない集団では、リスクがさらに高い可能性があると著者らは述べています<sup><a href="#ref2">2</a></sup>。</li>
+        <li><strong>発作の診断は主に臨床判断</strong>：全員に脳波を記録したわけではなく、非けいれん性の重積は少なく見積もられた可能性があります。臨床症状のない脳波上だけの重積状態には当てはまりません<sup><a href="#ref2">2</a></sup>。</li>
+        <li><strong>再灌流療法の有無は項目にない</strong>：欧州8施設の多施設研究では、静注血栓溶解療法や血栓回収療法と脳卒中後てんかんとの関連はみられませんでした<sup><a href="#ref6">6</a></sup>。治療後の重症度を使う改変版も提案されています<sup><a href="#ref3">3</a></sup>。</li>
+        <li><strong>対象は脳梗塞</strong>：一過性脳虚血発作、脳出血、発作の既往がある人、脳腫瘍や脳静脈血栓症などてんかんの原因になりうる病気がある人は、原著の対象から外れています<sup><a href="#ref2">2</a></sup>。脳出血後の遅発発作には、別にCAVEスコアがあります。</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 参考文献 -->
+  <div class="card">
+    <div class="card-header">📚 参考文献</div>
+    <div class="card-body">
+      <ol class="ref-list">
+        <li id="ref1">Galovic M, et al. Prediction of late seizures after ischaemic stroke with a novel prognostic model (the SeLECT score): a multivariable prediction model development and validation study. Lancet Neurol. 2018;17(2):143-152. <a href="https://pubmed.ncbi.nlm.nih.gov/29413315/" target="_blank" rel="noopener">PubMed</a> ｜ <a href="https://doi.org/10.1016/S1474-4422(17)30404-0" target="_blank" rel="noopener">DOI</a></li>
+        <li id="ref2">Sinka L, et al. Association of Mortality and Risk of Epilepsy With Type of Acute Symptomatic Seizure After Ischemic Stroke and an Updated Prognostic Model. JAMA Neurol. 2023;80(6):605-613. <a href="https://pubmed.ncbi.nlm.nih.gov/37036702/" target="_blank" rel="noopener">PubMed</a> ｜ <a href="https://doi.org/10.1001/jamaneurol.2023.0611" target="_blank" rel="noopener">DOI</a></li>
+        <li id="ref3">Meletti S, et al. Prediction of epilepsy after stroke: Proposal of a modified SeLECT 2.0 score based on posttreatment stroke outcome. Epilepsia. 2024;65(11):3234-3243. <a href="https://pubmed.ncbi.nlm.nih.gov/39235830/" target="_blank" rel="noopener">PubMed</a> ｜ <a href="https://doi.org/10.1111/epi.18114" target="_blank" rel="noopener">DOI</a></li>
+        <li id="ref4">Schubert KM, et al. The Role of Electroencephalography in Predicting Post-Stroke Seizures and an Updated Prognostic Model (SeLECT-EEG). Ann Neurol. 2025;98(4):814-825. <a href="https://pubmed.ncbi.nlm.nih.gov/40568812/" target="_blank" rel="noopener">PubMed</a> ｜ <a href="https://doi.org/10.1002/ana.27301" target="_blank" rel="noopener">DOI</a></li>
+        <li id="ref5">Ayaz A, et al. To select or not to select: evaluating the effectiveness of SeLECT score in predicting the risk of post-stroke seizures: a systematic review. Epilepsy Behav. 2025;173:110794. <a href="https://pubmed.ncbi.nlm.nih.gov/41192047/" target="_blank" rel="noopener">PubMed</a> ｜ <a href="https://doi.org/10.1016/j.yebeh.2025.110794" target="_blank" rel="noopener">DOI</a></li>
+        <li id="ref6">Ferreira-Atuesta C, et al. Seizures after Ischemic Stroke: A Matched Multicenter Study. Ann Neurol. 2021;90(5):808-820. <a href="https://pubmed.ncbi.nlm.nih.gov/34505305/" target="_blank" rel="noopener">PubMed</a> ｜ <a href="https://doi.org/10.1002/ana.26212" target="_blank" rel="noopener">DOI</a></li>
+      </ol>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>本ツールは医療従事者向けの教育・参考情報です。診断の代替ではありません。最終的な判断は最新ガイドライン・施設プロトコル・個別症例の臨床状況に基づき医師が行ってください。</p>
+  <p style="margin-top:6px;">© 医知創造ラボ ｜ <a href="index.html">DDxツール一覧</a></p>
+</footer>
+
+<script>
+(function(){
+  // ---- 5項目の定義（Sinka 2023 Table 3 の SeLECT 2.0 配点） ----
+  // orig：旧SeLECT（Galovic 2018）に換算したときの点数
+  var ITEMS = [
+    { key:'S', ja:'脳卒中の重症度', en:'Severity (NIHSS on admission)',
+      opts:[ {pt:0, orig:0, label:'NIHSS 3以下'}, {pt:1, orig:1, label:'NIHSS 4〜10'}, {pt:2, orig:2, label:'NIHSS 11以上'} ],
+      hint:'入院時のNIHSSで選びます。' },
+    { key:'L', ja:'大血管アテローム硬化', en:'Large-artery atherosclerosis',
+      opts:[ {pt:0, orig:0, label:'それ以外の病型'}, {pt:1, orig:1, label:'大血管アテローム硬化による脳梗塞'} ],
+      hint:'脳梗塞の病型（原因）で判定します。' },
+    { key:'E', ja:'早期発作', en:'Early seizure ≤7 days',
+      opts:[ {pt:0, orig:0, label:'なし'}, {pt:3, orig:3, label:'短い発作（重積状態ではない）'}, {pt:7, orig:3, label:'てんかん重積状態'} ],
+      hint:'脳梗塞の発症から7日以内の発作です。重積状態に当たるかはILAEの定義で判定します。' },
+    { key:'C', ja:'皮質病変', en:'Cortical involvement',
+      opts:[ {pt:0, orig:0, label:'皮質に及ばない'}, {pt:2, orig:2, label:'梗塞が皮質に及ぶ'} ],
+      hint:'画像で梗塞が大脳皮質に及んでいるかを判定します。' },
+    { key:'T', ja:'中大脳動脈領域', en:'Territory of MCA involvement',
+      opts:[ {pt:0, orig:0, label:'含まない'}, {pt:1, orig:1, label:'MCA領域を含む'} ],
+      hint:'梗塞が中大脳動脈の灌流域を含むかで判定します。' }
+  ];
+
+  // ---- SeLECT 2.0 の点数別リスク（Sinka 2023 図2B・C：値と95%信頼区間） ----
+  var RISK1 = [['0.6','0.4–0.8'],['1','1–1'],['2','1–2'],['2','2–3'],['4','3–4'],['6','5–7'],['9','8–11'],
+               ['14','12–17'],['22','17–26'],['32','24–40'],['46','34–56'],['62','45–74'],['79','58–89'],['91','72–97']];
+  var RISK5 = [['2','1–3'],['3','2–4'],['5','4–6'],['8','6–9'],['12','10–14'],['18','15–21'],['27','23–31'],
+               ['39','32–46'],['55','44–63'],['72','58–81'],['86','73–93'],['96','85–99'],['99','94–100'],['100','98–100']];
+  var MAX = 13;
+
+  var state = [null, null, null, null, null]; // 未入力は null、入力済みは opts の添字
+  var itemBody = document.getElementById('itemBody');
+
+  // 配点の大きさでボタン・バッジの色を分ける（0点＝緑、1〜3点＝橙、7点＝赤）
+  function tone(pt){ return pt === 0 ? 0 : (pt >= 7 ? 2 : 1); }
+
+  function buildItems(){
+    var html = '';
+    for (var i = 0; i < ITEMS.length; i++){
+      var it = ITEMS[i];
+      html += '<div class="param">';
+      html += '<div class="param-top">';
+      html += '<div class="field-label"><span class="letter">' + it.key + '</span>' + it.ja + ' <span class="en">' + it.en + '</span></div>';
+      html += '<span class="param-score-badge scnull" id="b_' + i + '">未入力</span>';
+      html += '</div>';
+      html += '<div class="seg" data-idx="' + i + '">';
+      for (var j = 0; j < it.opts.length; j++){
+        html += '<button type="button" data-opt="' + j + '"><span class="pt">' + it.opts[j].pt + '</span> ' + it.opts[j].label + '</button>';
+      }
+      html += '</div>';
+      html += '<div class="hint">' + it.hint + '</div>';
+      html += '</div>';
+    }
+    itemBody.innerHTML = html;
+  }
+
+  function setItem(idx, opt){
+    state[idx] = opt;
+    var seg = itemBody.querySelector('.seg[data-idx="' + idx + '"]');
+    var btns = seg.querySelectorAll('button');
+    for (var j = 0; j < btns.length; j++){
+      var o = parseInt(btns[j].getAttribute('data-opt'), 10);
+      btns[j].className = (opt !== null && o === opt) ? ('active s' + tone(ITEMS[idx].opts[o].pt)) : '';
+    }
+    var badge = document.getElementById('b_' + idx);
+    if (opt === null){
+      badge.className = 'param-score-badge scnull'; badge.textContent = '未入力';
+    } else {
+      var pt = ITEMS[idx].opts[opt].pt;
+      badge.className = 'param-score-badge sc' + tone(pt); badge.textContent = pt + ' 点';
+    }
+  }
+
+  function buildRiskTable(total){
+    var html = '';
+    for (var s = 0; s <= MAX; s++){
+      var w = parseFloat(RISK5[s][0]);
+      html += '<tr' + (s === total ? ' class="current"' : '') + '>';
+      html += '<td class="num">' + s + ' 点' + (s === total ? '（現在）' : '') + '</td>';
+      html += '<td class="num">' + RISK1[s][0] + '%<span class="ci">(' + RISK1[s][1] + ')</span></td>';
+      html += '<td class="num">' + RISK5[s][0] + '%<span class="ci">(' + RISK5[s][1] + ')</span></td>';
+      html += '<td><div class="bar"><span style="width:' + w + '%;"></span></div></td>';
+      html += '</tr>';
+    }
+    document.getElementById('riskBody').innerHTML = html;
+  }
+
+  function buildWarnings(total, missing, isSE){
+    var w = [];
+    if (missing > 0){
+      w.push({ level:'caution', head:'未入力の項目があります（残り' + missing + '項目）',
+        body:'5項目すべてを選ぶと、スコアと原著のリスクを表示します。分からない項目を0点として扱うと、リスクを低く見積もるおそれがあります。' });
+      return w;
+    }
+    if (total >= 8){
+      w.push({ level:'high', head:'8点以上（' + total + '点：5年以内の遅発発作リスク ' + RISK5[total][0] + '%）',
+        body:'原著では、SeLECT 2.0が8点以上なら10年以内の遅発発作のリスクが60%を超えるとされています<sup><a href="#ref2">2</a></sup>。発作が起こりうることを本人・家族に具体的に伝え、発作時の対応や受診の目安、運転など生活上の注意を共有しておくと役立ちます。' });
+    } else {
+      w.push({ level:'info', head:total + '点：遅発発作リスク 1年 ' + RISK1[total][0] + '%・5年 ' + RISK5[total][0] + '%',
+        body:'原著のコホートから作られた予測値です。低い値でもゼロではないので、発作を疑う症状があれば受診するよう伝えておきます。' });
+    }
+    if (isSE){
+      w.push({ level:'high', head:'早期発作がてんかん重積状態だった場合',
+        body:'原著では、重積状態を起こした人の脳卒中後てんかんの10年リスクは81%、別の再現コホートでは88%でした。重積状態の人は全員が早期から抗てんかん発作薬を使っていた点にも注意が必要です<sup><a href="#ref2">2</a></sup>。' });
+    }
+    return w;
+  }
+
+  function renderWarnings(ws){
+    var html = '';
+    for (var i = 0; i < ws.length; i++){
+      html += '<div class="warning-box ' + ws[i].level + '"><div class="head">' + ws[i].head + '</div>' + ws[i].body + '</div>';
+    }
+    document.getElementById('warningArea').innerHTML = html;
+  }
+
+  function buildSummary(total, orig, missing){
+    var L = [];
+    L.push('【SeLECT 2.0スコア（脳梗塞後の遅発発作リスク）】');
+    for (var i = 0; i < ITEMS.length; i++){
+      var it = ITEMS[i];
+      var o = state[i];
+      L.push(it.key + '：' + it.ja + '（' + it.en + '）：' + (o === null ? '未入力' : (it.opts[o].label + '＝' + it.opts[o].pt + '点')));
+    }
+    L.push('────────────');
+    if (missing > 0){
+      L.push('合計：未確定（未入力' + missing + '項目）');
+    } else {
+      L.push('合計：' + total + ' / 13 点（旧SeLECT換算 ' + orig + ' / 9 点）');
+      L.push('原著の遅発発作リスク：1年 ' + RISK1[total][0] + '%（' + RISK1[total][1] + '）・5年 ' + RISK5[total][0] + '%（' + RISK5[total][1] + '）');
+      L.push('出典：Sinka 2023（JAMA Neurol）図2・SeLECT 2.0の予測値');
+    }
+    return L.join('\n');
+  }
+
+  function update(){
+    var total = 0, orig = 0, missing = 0, isSE = false;
+    for (var i = 0; i < state.length; i++){
+      if (state[i] === null){ missing++; continue; }
+      var op = ITEMS[i].opts[state[i]];
+      total += op.pt; orig += op.orig;
+      if (ITEMS[i].key === 'E' && op.pt === 7) isSE = true;
+    }
+    var complete = missing === 0;
+    document.getElementById('totalScore').textContent = complete ? total : '—';
+    document.getElementById('origScore').textContent = complete
+      ? ('旧SeLECTに換算すると ' + orig + ' / 9 点')
+      : '旧SeLECT（0〜9点）に換算した値も表示します';
+    document.getElementById('riskPill').textContent = complete
+      ? ('5年以内の遅発発作リスク ' + RISK5[total][0] + '%（1年 ' + RISK1[total][0] + '%）')
+      : ('あと' + missing + '項目を選ぶと表示します');
+    buildRiskTable(complete ? total : -1);
+    renderWarnings(buildWarnings(total, missing, isSE));
+    var box = document.getElementById('summaryBox');
+    box.textContent = buildSummary(total, orig, missing);
+    box.dataset.plain = box.textContent;
+  }
+
+  // ---- イベント ----
+  buildItems();
+  update();
+
+  itemBody.addEventListener('click', function(e){
+    var t = e.target;
+    while (t && t !== itemBody && t.tagName !== 'BUTTON') t = t.parentElement;
+    if (!t || t === itemBody || !t.parentElement || !t.parentElement.classList.contains('seg')) return;
+    var idx = parseInt(t.parentElement.getAttribute('data-idx'), 10);
+    var opt = parseInt(t.getAttribute('data-opt'), 10);
+    setItem(idx, opt);
+    update();
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', function(){
+    for (var i = 0; i < state.length; i++) setItem(i, null);
+    update();
+  });
+
+  document.getElementById('copyBtn').addEventListener('click', function(){
+    var btn = this;
+    var box = document.getElementById('summaryBox');
+    var text = box.dataset.plain || box.textContent;
+    text = text.replace(/[～〜–]/g, '-');
+    function done(){
+      btn.textContent = '✓ コピー完了'; btn.classList.add('copied');
+      setTimeout(function(){ btn.textContent = '📋 クリップボードにコピー'; btn.classList.remove('copied'); }, 1800);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done, function(){ done(); });
+    } else {
+      var ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta);
+      ta.select(); try { document.execCommand('copy'); } catch(err){} document.body.removeChild(ta); done();
+    }
+  });
+})();
+</script>
+</body>
+</html>
