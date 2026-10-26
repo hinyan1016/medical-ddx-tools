@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v272';
+const CACHE_NAME = 'ddx-tools-v273';
 const ASSETS = [
   './infographics/olfactory-dysfunction/index.html',
   './infographics/olfactory-dysfunction/infographic.png',
