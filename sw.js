@@ -1,5 +1,7 @@
-const CACHE_NAME = 'ddx-tools-v273';
+const CACHE_NAME = 'ddx-tools-v274';
 const ASSETS = [
+  './infographics/radiation-leukoencephalopathy/index.html',
+  './infographics/radiation-leukoencephalopathy/infographic.png',
   './infographics/olfactory-dysfunction/index.html',
   './infographics/olfactory-dysfunction/infographic.png',
   './infographics/amygdala-enlargement-tle/mri-lv2014-fig1.jpg',
