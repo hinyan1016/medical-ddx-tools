@@ -1,5 +1,16 @@
-const CACHE_NAME = 'ddx-tools-v276';
+const CACHE_NAME = 'ddx-tools-v277';
 const ASSETS = [
+  './fazekas_calculator.html',
+  './infographics/af-stroke-anticoagulation-reference-repair-20261026/index.html',
+  './infographics/cgrp-antibodies-comparison-reference-repair-20261026/index.html',
+  './infographics/glp1-sglt2-multifaceted-benefits-reference-repair-20261026/index.html',
+  './infographics/jsh2019-first-line-combination-reference-repair-20261026/index.html',
+  './infographics/levodopa-3omd/index.html',
+  './infographics/migraine-treatment-overview-reference-repair-20261026/index.html',
+  './infographics/minor-stroke-antithrombotics-reference-repair-20261026/index.html',
+  './infographics/rimegepant-nurtec-reference-repair-20261026/index.html',
+  './infographics/stroke-acute-glycemic-control-reference-repair-20261026/index.html',
+  './infographics/t2dm-20y-advances-insurance-reference-repair-20261026/index.html',
   './infographics/radiation-leukoencephalopathy/index.html',
   './infographics/radiation-leukoencephalopathy/infographic.png',
   './infographics/olfactory-dysfunction/index.html',

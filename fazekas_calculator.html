@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A5276">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>Fazekasスコア（大脳白質病変）計算・照射前リスク評価ツール｜医知創造ラボ</title>
+<meta name="description" content="頭部MRI（FLAIR/T2）の脳室周囲高信号（PVH Grade 0〜3）と深部皮質下白質高信号（DWMH Grade 0〜3）を模式図つきで評価し、Fazekas合計スコア（0〜6点）、脳小血管病の重症度（LADIS研究）、頭部放射線治療（全脳照射WBRT・SRS）前の認知機能低下リスク（Chan 2020）を自動判定。カルテ・読影記録のコピーに対応します。">
+<meta property="og:title" content="Fazekasスコア（大脳白質病変）計算・照射前リスク評価ツール｜医知創造ラボ">
+<meta property="og:description" content="頭部MRI（FLAIR/T2）の脳室周囲高信号（PVH Grade 0〜3）と深部皮質下白質高信号（DWMH Grade 0〜3）を模式図つきで評価し、Fazekas合計スコア（0〜6点）、脳小血管病の重症度（LADIS研究）、頭部放射線治療（全脳照射WBRT・SRS）前の認知機能低下リスク（Chan 2020）を自動判定。カルテ・読影記録のコピーに対応します。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tools.ichisouzo-lab.com/fazekas_calculator.html">
+<meta property="og:image" content="https://tools.ichisouzo-lab.com/assets/og-tools.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="医知創造ラボ">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root {
+    --dark: #15324E;
+    --primary: #1A5276;
+    --mid: #2877A7;
+    --light: #EDF6FA;
+    --accent: #D97706;
+    --red: #B91C1C;
+    --orange: #C25E00;
+    --green: #1E7E5A;
+    --yellow-bg: #FFFBEB;
+    --gray: #526477;
+    --light-gray: #F1F5F9;
+    --line: #CBD5E1;
+    --white: #FFFFFF;
+    --shadow: 0 2px 10px rgba(21,50,78,0.08);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "BIZ UDPGothic", "游ゴシック", "Yu Gothic", "Segoe UI", Meiryo, sans-serif;
+    background: linear-gradient(135deg, #EDF6FA 0%, #F1F5F9 100%);
+    color: #1E293B;
+    min-height: 100vh;
+    padding: 0 0 48px;
+    line-height: 1.65;
+    font-size: 15px;
+  }
+  a { color: var(--mid); text-underline-offset: 3px; }
+  button, input, select { font-family: inherit; }
+  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible {
+    outline: 3px solid #D97706;
+    outline-offset: 2px;
+  }
+  header {
+    background: linear-gradient(135deg, var(--dark), var(--primary));
+    color: var(--white);
+    padding: 16px 20px 22px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(21,50,78,0.18);
+  }
+  .back-bar {
+    max-width: 980px;
+    margin: 0 auto 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .back-bar a {
+    color: rgba(255,255,255,0.9);
+    text-decoration: none;
+    font-size: 0.85em;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.1);
+  }
+  .back-bar a:hover { background: rgba(255,255,255,0.2); }
+  header h1 { font-size: clamp(1.28rem, 2.6vw, 1.68rem); font-weight: 700; letter-spacing: 0.02em; line-height: 1.4; }
+  header p { font-size: 0.88em; margin-top: 6px; color: #E2F1FA; max-width: 820px; margin-left: auto; margin-right: auto; }
+  .badge-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+  .h-badge {
+    font-size: 0.75em;
+    background: rgba(255,255,255,0.14);
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 2px 10px;
+    border-radius: 999px;
+    color: #fff;
+  }
+
+  .container { max-width: 980px; margin: 0 auto; padding: 18px 14px; }
+
+  .alert-disclaimer {
+    background: #FFFBEB;
+    border: 1px solid #FDE68A;
+    border-left: 5px solid var(--accent);
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    border-radius: 8px;
+    font-size: 0.86em;
+    color: #5D4000;
+  }
+  .alert-disclaimer strong { color: #78350F; }
+
+  .preset-bar {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    box-shadow: var(--shadow);
+  }
+  .preset-label { font-size: 0.85em; font-weight: 700; color: var(--dark); margin-right: 4px; }
+  .preset-btn {
+    border: 1px solid #93C5FD;
+    background: #EFF6FF;
+    color: var(--primary);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.82em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .preset-btn:hover { background: var(--primary); color: var(--white); border-color: var(--primary); }
+
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid #E2E8F0;
+    margin-bottom: 18px;
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 13px 18px;
+    background: var(--light);
+    border-bottom: 2px solid var(--primary);
+    font-weight: 700;
+    font-size: 1.02em;
+    color: var(--dark);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .card-body { padding: 18px; }
+
+  .score-chip {
+    display: inline-block;
+    min-width: 72px;
+    text-align: center;
+    font-weight: 800;
+    font-size: 0.88em;
+    padding: 4px 12px;
+    border-radius: 999px;
+    color: var(--white);
+    font-variant-numeric: tabular-nums;
+  }
+  .sc0 { background: var(--green); }
+  .sc1 { background: #2B7A78; }
+  .sc2 { background: var(--orange); }
+  .sc3 { background: var(--red); }
+
+  .sub-note {
+    font-size: 0.86em;
+    color: var(--gray);
+    margin-bottom: 14px;
+    background: #F8FAFC;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border-left: 3px solid var(--mid);
+  }
+
+  .grade-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+  }
+  @media (max-width: 840px) {
+    .grade-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 480px) {
+    .grade-grid { grid-template-columns: 1fr; }
+  }
+
+  .grade-btn {
+    border: 2px solid var(--line);
+    background: var(--white);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.14s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    color: #1E293B;
+    position: relative;
+  }
+  .grade-btn:hover {
+    border-color: var(--mid);
+    background: #F8FBFE;
+  }
+  .grade-btn.active {
+    border-color: var(--primary);
+    background: #EFF6FF;
+    box-shadow: 0 0 0 2px rgba(26,82,118,0.18);
+  }
+  .grade-btn.active.g0 { border-color: var(--green); background: #ECFDF5; }
+  .grade-btn.active.g1 { border-color: #0D9488; background: #F0FDFA; }
+  .grade-btn.active.g2 { border-color: var(--orange); background: #FFF7ED; }
+  .grade-btn.active.g3 { border-color: var(--red); background: #FEF2F2; }
+
+  .grade-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .grade-num {
+    font-weight: 800;
+    font-size: 0.95em;
+    color: var(--dark);
+  }
+  .grade-pt {
+    font-size: 0.76em;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #E2E8F0;
+    color: #334155;
+  }
+  .grade-btn.active.g0 .grade-pt { background: var(--green); color: #fff; }
+  .grade-btn.active.g1 .grade-pt { background: #0D9488; color: #fff; }
+  .grade-btn.active.g2 .grade-pt { background: var(--orange); color: #fff; }
+  .grade-btn.active.g3 .grade-pt { background: var(--red); color: #fff; }
+
+  .mri-svg-wrap {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 4px 0 10px;
+    background: #0F172A;
+    border-radius: 8px;
+    padding: 8px;
+    border: 1px solid #1E293B;
+  }
+  .mri-svg-wrap svg {
+    width: 108px;
+    height: 120px;
+    display: block;
+  }
+  .grade-title {
+    font-weight: 700;
+    font-size: 0.93em;
+    color: var(--dark);
+    margin-bottom: 4px;
+    line-height: 1.4;
+  }
+  .grade-en {
+    font-size: 0.76em;
+    color: var(--gray);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .grade-desc {
+    font-size: 0.8em;
+    color: #334155;
+    line-height: 1.5;
+  }
+  .grade-path {
+    font-size: 0.74em;
+    color: var(--gray);
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px dashed #CBD5E1;
+    line-height: 1.45;
+  }
+
+  /* 臨床背景オプション */
+  .context-row {
+    padding: 12px 0;
+    border-bottom: 1px solid #E2E8F0;
+  }
+  .context-row:last-child { border-bottom: none; }
+  .context-label {
+    display: block;
+    font-weight: 700;
+    font-size: 0.92em;
+    color: var(--dark);
+    margin-bottom: 8px;
+  }
+  .seg { display: flex; flex-wrap: wrap; gap: 8px; }
+  .seg button {
+    border: 1.5px solid var(--line);
+    background: var(--white);
+    color: var(--dark);
+    padding: 8px 13px;
+    border-radius: 8px;
+    font-size: 0.86em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .seg button:hover { border-color: var(--mid); }
+  .seg button.active {
+    background: var(--primary);
+    color: var(--white);
+    border-color: var(--primary);
+  }
+  .chk-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  @media (max-width: 640px) {
+    .chk-grid { grid-template-columns: 1fr; }
+  }
+  .chk-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 9px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #F8FAFC;
+    cursor: pointer;
+    font-size: 0.85em;
+  }
+  .chk-item input { margin-top: 3px; cursor: pointer; }
+  .chk-item strong { color: var(--dark); }
+
+  .followup-box {
+    margin-top: 12px;
+    padding: 12px 14px;
+    background: #F0F9FF;
+    border: 1px solid #BAE6FD;
+    border-radius: 8px;
+  }
+  .followup-selects {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 8px;
+    align-items: center;
+  }
+  .followup-selects label {
+    font-size: 0.86em;
+    font-weight: 700;
+    color: var(--dark);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .followup-selects select {
+    padding: 6px 10px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--white);
+    font-weight: 700;
+  }
+
+  /* 結果表示 */
+  .result-hero {
+    background: linear-gradient(135deg, var(--dark), var(--mid));
+    color: var(--white);
+    padding: 22px 20px;
+    text-align: center;
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+  }
+  .result-hero.hero-high { background: linear-gradient(135deg, #7C2D12, #C2410C); }
+  .result-hero.hero-critical { background: linear-gradient(135deg, #7F1D1D, #B91C1C); }
+  .result-hero .label { font-size: 0.9em; opacity: 0.92; margin-bottom: 4px; }
+  .result-hero .value {
+    font-size: 3.1em;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.15;
+  }
+  .result-hero .value small { font-size: 0.36em; font-weight: 600; opacity: 0.9; }
+  .result-hero .sub-formula {
+    font-size: 0.92em;
+    margin-top: 6px;
+    opacity: 0.95;
+    font-weight: 600;
+  }
+  .pill-row {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .risk-pill {
+    display: inline-block;
+    padding: 5px 15px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.88em;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.35);
+  }
+
+  .metric-row { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .metric {
+    flex: 1 1 200px;
+    background: #F8FAFC;
+    border-radius: var(--radius);
+    padding: 14px 14px;
+    border: 1px solid var(--line);
+  }
+  .metric .m-label { font-size: 0.78em; color: var(--gray); font-weight: 700; margin-bottom: 4px; }
+  .metric .m-value { font-size: 1.25em; font-weight: 800; color: var(--dark); font-variant-numeric: tabular-nums; }
+  .metric .m-sub { font-size: 0.78em; color: #334155; margin-top: 4px; line-height: 1.45; }
+
+  .warning-box { padding: 13px 16px; margin-bottom: 12px; border-radius: 8px; font-size: 0.9em; line-height: 1.65; }
+  .warning-box .head { font-weight: 700; margin-bottom: 4px; font-size: 0.98em; }
+  .warning-box.red { background: #FEF2F2; border: 1px solid #FECACA; border-left: 5px solid var(--red); color: #7F1D1D; }
+  .warning-box.red .head { color: var(--red); }
+  .warning-box.caution { background: #FFFBEB; border: 1px solid #FDE68A; border-left: 5px solid var(--orange); color: #78350F; }
+  .warning-box.caution .head { color: var(--orange); }
+  .warning-box.info { background: #F0F9FF; border: 1px solid #BAE6FD; border-left: 5px solid var(--mid); color: #0C4A6E; }
+  .warning-box.info .head { color: var(--primary); }
+  .warning-box.green { background: #ECFDF5; border: 1px solid #A7F3D0; border-left: 5px solid var(--green); color: #064E3B; }
+  .warning-box.green .head { color: var(--green); }
+
+  .lookup-table { width: 100%; border-collapse: collapse; font-size: 0.85em; margin-top: 6px; }
+  .lookup-table th, .lookup-table td { border: 1px solid var(--line); padding: 9px 10px; text-align: left; vertical-align: top; }
+  .lookup-table th { background: var(--primary); color: var(--white); font-weight: 700; }
+  .lookup-table tr.current td { background: #FEF9C3; font-weight: 700; color: var(--dark); }
+
+  .template-box {
+    background: #0F172A;
+    color: #E2E8F0;
+    padding: 14px 16px;
+    border-radius: 8px;
+    font-family: "Consolas", "BIZ UDPGothic", monospace;
+    font-size: 0.85em;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin-bottom: 10px;
+  }
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .copy-btn, .reset-btn, .print-btn {
+    color: var(--white);
+    border: none;
+    padding: 9px 16px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 0.88em;
+    font-weight: 700;
+  }
+  .copy-btn { background: var(--primary); }
+  .copy-btn:hover { background: var(--dark); }
+  .copy-btn.copied { background: var(--green); }
+  .print-btn { background: var(--mid); }
+  .print-btn:hover { background: var(--primary); }
+  .reset-btn { background: var(--gray); }
+  .reset-btn:hover { background: #334155; }
+
+  /* 折りたたみ（BLOG_STYLE規約準拠） */
+  details.fold-box {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #F8FAFC;
+    margin-top: 12px;
+    overflow: hidden;
+  }
+  details.fold-box summary {
+    padding: 11px 14px;
+    background: #EFF6FF;
+    color: var(--dark);
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 0.9em;
+  }
+  details.fold-box summary .fold-hint {
+    display: block;
+    font-size: 0.78em;
+    color: var(--mid);
+    font-weight: 600;
+    margin-top: 2px;
+  }
+  details.fold-box .fold-content {
+    padding: 14px;
+    background: var(--white);
+    font-size: 0.86em;
+    border-top: 1px solid var(--line);
+  }
+
+  .ref-list { font-size: 0.82em; color: var(--gray); line-height: 1.75; padding-left: 20px; margin-top: 10px; }
+  .ref-list li { margin-bottom: 5px; }
+  footer { max-width: 980px; margin: 28px auto 0; padding: 14px; text-align: center; color: var(--gray); font-size: 0.78em; line-height: 1.65; }
+
+  @media print {
+    #ics-globalnav, .preset-bar, .btn-row, .back-bar { display: none !important; }
+    body { background: #fff; padding: 0; }
+    .card { box-shadow: none; break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<nav id="ics-globalnav" style="background:#15324E;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
+<div style="max-width:1040px;margin:0 auto;padding:8px 12px;display:flex;align-items:center;gap:2px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;">
+<a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;padding-right:8px;">医知創造ラボ</a>
+<a href="https://ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ホーム</a>
+<a href="https://blog.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ブログ</a>
+<a href="https://tools.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ツール</a>
+<a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">YouTube</a>
+</div>
+</nav>
+
+<header>
+  <div class="back-bar">
+    <a href="index.html">← 診療ツール一覧へ</a>
+    <a href="https://blog.ichisouzo-lab.com/entry/2026/10/26/191856" target="_blank" rel="noopener noreferrer">📝 解説記事：放射線白質脳症とFazekasスコア →</a>
+  </div>
+  <h1>Fazekasスコア（大脳白質病変）計算・照射前リスク評価ツール</h1>
+  <p>頭部MRI（T2強調／FLAIR画像）の脳室周囲高信号（PVH 0〜3）＋深部皮質下白質高信号（DWMH 0〜3）から、脳小血管病の重症度と頭部放射線治療（WBRT・SRS）前の認知機能低下リスクを評価します</p>
+  <div class="badge-row">
+    <span class="h-badge">Fazekas 1987 / 1993 原典準拠</span>
+    <span class="h-badge">LADIS研究（BMJ 2009）重症度区分</span>
+    <span class="h-badge">WBRT照射前リスク評価（Chan 2020）</span>
+    <span class="h-badge">FLAIR模式図つき・カルテ記録コピー対応</span>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="alert-disclaimer">
+    <strong>⚠ 使用上の注意（医療従事者向け）</strong>：本ツールは Fazekas et al.（AJR 1987 / Neurology 1993）、LADIS研究（BMJ 2009）、および頭部放射線治療前の白質病変リスク解析（Chan et al. Radiat Oncol 2020）に基づく臨床評価・教育支援ツールです。脳腫瘍・脳転移症例では<strong>腫瘍周囲の非対称な血管原性浮腫を除外し、対側半球など非腫瘍領域のFLAIR画像</strong>で評価してください。治療方針の決定は年齢・全身状態・腫瘍制御を含め総合的に判断してください。
+  </div>
+
+  <!-- プリセット -->
+  <div class="preset-bar" aria-label="症例プリセット">
+    <span class="preset-label">⚡ 代表パターンを試す：</span>
+    <button type="button" class="preset-btn" data-pvh="0" data-dwmh="0" data-scene="general" data-age="under60">正常（PVH 0 + DWMH 0 = 0/6）</button>
+    <button type="button" class="preset-btn" data-pvh="1" data-dwmh="1" data-scene="general" data-age="60to70">軽度・加齢変化（PVH 1 + DWMH 1 = 2/6）</button>
+    <button type="button" class="preset-btn" data-pvh="2" data-dwmh="2" data-scene="pre_rt" data-age="60to70">照射前・中等度白質病変（PVH 2 + DWMH 2 = 4/6）</button>
+    <button type="button" class="preset-btn" data-pvh="3" data-dwmh="3" data-scene="pre_rt" data-age="over70">照射前・高度融合性（PVH 3 + DWMH 3 = 6/6）</button>
+  </div>
+
+  <!-- ① PVH -->
+  <div class="card">
+    <div class="card-header">
+      <span>① 脳室周囲高信号（PVH: Periventricular Hyperintensity）</span>
+      <span class="score-chip sc0" id="badgePvh">Grade 0（0点）</span>
+    </div>
+    <div class="card-body">
+      <div class="sub-note">
+        <strong>評価基準（Fazekas 1987）</strong>：頭部MRI（FLAIR／T2強調画像）で<strong>側脳室壁に連続している</strong>白質高信号を0〜3点で採点します。FLAIR画像で正常でもみられるごく薄い脳室縁の線状信号（Grade 0）と、異常な鉛筆様線状高信号・前角/後角cap（Grade 1）の区別に注意します。
+      </div>
+      <div class="grade-grid" id="gridPvh" role="radiogroup" aria-label="脳室周囲高信号（PVH）グレード選択"></div>
+    </div>
+  </div>
+
+  <!-- ② DWMH -->
+  <div class="card">
+    <div class="card-header">
+      <span>② 深部皮質下白質高信号（DWMH: Deep White Matter Hyperintensity）</span>
+      <span class="score-chip sc0" id="badgeDwmh">Grade 0（0点）</span>
+    </div>
+    <div class="card-body">
+      <div class="sub-note">
+        <strong>評価基準（Fazekas 1987）</strong>：<strong>側脳室から離れた深部・皮質下白質</strong>（半卵円中心・放線冠など）の高信号病変を0〜3点で採点します。脳転移・脳腫瘍症例では腫瘍周囲浮腫を除外し、対側半球などの加齢性・微小血管性変化で判定します（Chan 2020）。
+      </div>
+      <div class="grade-grid" id="gridDwmh" role="radiogroup" aria-label="深部皮質下白質高信号（DWMH）グレード選択"></div>
+    </div>
+  </div>
+
+  <!-- ③ 臨床背景・照射前オプション -->
+  <div class="card">
+    <div class="card-header">
+      <span>③ 評価場面・頭部放射線治療（WBRT / SRS / 局所照射）リスク因子（任意）</span>
+    </div>
+    <div class="card-body">
+      <div class="context-row">
+        <span class="context-label">評価場面・目的</span>
+        <div class="seg" id="segScene">
+          <button type="button" data-val="pre_rt" class="active">照射前リスク評価（WBRT / SRS / 局所照射）</button>
+          <button type="button" data-val="followup_rt">照射後フォローアップ（放射線白質脳症・経時変化）</button>
+          <button type="button" data-val="general">一般診療・脳小血管病／認知機能評価</button>
+        </div>
+      </div>
+
+      <div class="context-row">
+        <span class="context-label">患者年齢区分</span>
+        <div class="seg" id="segAge">
+          <button type="button" data-val="under60" class="active">60歳未満</button>
+          <button type="button" data-val="60to70">60〜70歳（照射後RIL・認知低下リスク上昇）</button>
+          <button type="button" data-val="over70">70歳超（Chan 2020でWBRT後全例MoCA低下）</button>
+        </div>
+      </div>
+
+      <div class="context-row">
+        <span class="context-label">併存リスク・照射計画の特徴（該当するものを選択）</span>
+        <div class="chk-grid">
+          <label class="chk-item">
+            <input type="checkbox" id="chkWbrt">
+            <span><strong>全脳照射（WBRT）の予定または既往</strong><br><small style="color:var(--gray)">WBRT＋SRS併用はSRS単独より全時点で白質脳症が有意に高率（Liu 2023, p&lt;0.001）</small></span>
+          </label>
+          <label class="chk-item">
+            <input type="checkbox" id="chkMultiSrs">
+            <span><strong>複数回SRS・高積分線量・総腫瘍体積28 cm³以上</strong><br><small style="color:var(--gray)">複数回SRS後の白質脳症累積発生率は1年29%・2年38%・3年53%（Trifiletti 2015）</small></span>
+          </label>
+          <label class="chk-item">
+            <input type="checkbox" id="chkSmoking">
+            <span><strong>喫煙歴あり</strong><br><small style="color:var(--gray)">局所照射後の白質脳症累積発生率が有意に高率（3年67% vs 38%, p=0.02, Terziev 2021）</small></span>
+          </label>
+          <label class="chk-item">
+            <input type="checkbox" id="chkVascular">
+            <span><strong>高血圧・糖尿病・脂質異常症・心房細動などの血管リスク</strong><br><small style="color:var(--gray)">脳小血管病の進行抑制・機能維持のため厳格な内科的管理を推奨（LADIS 2009）</small></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="followup-box" id="followupBox" style="display:none;">
+        <strong style="color:var(--dark);font-size:0.9em;">📊 治療前（ベースライン）MRIとの経時比較（照射後フォローアップ用）</strong>
+        <p style="font-size:0.8em;color:var(--gray);margin-top:4px;">Joo et al.（2026）ではWBRT 6ヶ月後のT2 FLAIRで脳室周囲（PVH）Fazekasスコアがベースラインから1点以上上昇した症例を放射線白質脳症と定義（33例中10例［30.3%］に発生）。Mayinger et al.（2020）でも照射前後のFazekasスコア変化で白質障害を評価しています。</p>
+        <div class="followup-selects">
+          <label for="basePvh">治療前 PVH：
+            <select id="basePvh">
+              <option value="none">未入力（比較しない）</option>
+              <option value="0">Grade 0</option>
+              <option value="1">Grade 1</option>
+              <option value="2">Grade 2</option>
+              <option value="3">Grade 3</option>
+            </select>
+          </label>
+          <label for="baseDwmh">治療前 DWMH：
+            <select id="baseDwmh">
+              <option value="none">未入力（比較しない）</option>
+              <option value="0">Grade 0</option>
+              <option value="1">Grade 1</option>
+              <option value="2">Grade 2</option>
+              <option value="3">Grade 3</option>
+            </select>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ 判定結果 -->
+  <div class="card">
+    <div class="card-header">
+      <span>🧮 Fazekasスコア算出結果・臨床的解釈</span>
+    </div>
+    <div class="card-body">
+      <div class="result-hero" id="resultHero">
+        <div class="label">Fazekas 合計スコア（PVH + DWMH）</div>
+        <div class="value"><span id="totalScore">0</span><small> / 6 点</small></div>
+        <div class="sub-formula" id="subFormula">PVH Grade 0（0点）＋ DWMH Grade 0（0点）</div>
+        <div class="pill-row">
+          <span class="risk-pill" id="ladisPill">白質病変重症度：異常なし</span>
+          <span class="risk-pill" id="rtRiskPill">照射前評価：0〜2点区分（低〜境界域）</span>
+        </div>
+      </div>
+
+      <div class="metric-row">
+        <div class="metric">
+          <div class="m-label">脳小血管病・全般重症度（修正Fazekas / LADIS基準）</div>
+          <div class="m-value" id="metricLadisVal">異常なし（Grade 0）</div>
+          <div class="m-sub" id="metricLadisSub">明らかな白質高信号なし</div>
+        </div>
+        <div class="metric">
+          <div class="m-label">WBRT照射後の認知低下リスク区分（Chan 2020）</div>
+          <div class="m-value" id="metricRtVal">合計 0〜2 点区分</div>
+          <div class="m-sub" id="metricRtSub">MoCA低下 50%（13/26例）・変化中央値 0.0点（平均 −1.7点）</div>
+        </div>
+        <div class="metric">
+          <div class="m-label">推定される主な組織学的背景（Fazekas 1993）</div>
+          <div class="m-value" id="metricPathVal">正常白質</div>
+          <div class="m-sub" id="metricPathSub">虚血性変化・上衣下グリオーシスなし</div>
+        </div>
+      </div>
+
+      <div id="alertArea"></div>
+    </div>
+  </div>
+
+  <!-- ⑤ カルテ・読影記録コピー -->
+  <div class="card">
+    <div class="card-header">
+      <span>📋 カルテ・画像読影レポート・IC記録用サマリ（コピー・印刷可）</span>
+    </div>
+    <div class="card-body">
+      <div class="template-box" id="summaryBox"></div>
+      <div class="btn-row">
+        <button type="button" class="copy-btn" id="copyBtn">📋 クリップボードにコピー</button>
+        <button type="button" class="print-btn" id="printBtn">🖨 この画面を印刷 / PDF保存</button>
+        <button type="button" class="reset-btn" id="resetBtn">↺ リセット（初期状態に戻す）</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑥ 早見表と読影時のピットフォール -->
+  <div class="card">
+    <div class="card-header">
+      <span>🔎 Fazekas分類 早見表と読影・臨床判断のポイント</span>
+    </div>
+    <div class="card-body">
+      <div style="overflow-x:auto;">
+        <table class="lookup-table" id="refTable">
+          <thead>
+            <tr>
+              <th>区分</th>
+              <th>Grade 0（0点）</th>
+              <th>Grade 1（1点）</th>
+              <th>Grade 2（2点）</th>
+              <th>Grade 3（3点）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>PVH</strong><br><small>脳室周囲高信号（側脳室に連続）</small></td>
+              <td id="cell_pvh_0"><strong>なし</strong><br>（Absent）</td>
+              <td id="cell_pvh_1"><strong>Cap / Pencil-thin lining</strong><br>前角・後角の帽子状、または鉛筆の芯様の薄い線状高信号</td>
+              <td id="cell_pvh_2"><strong>Smooth halo</strong><br>側脳室周囲を取り囲む滑らかな光輪状・帯状高信号</td>
+              <td id="cell_pvh_3"><strong>Irregular PVH</strong><br>深部白質へ不規則に進展・連続する脳室周囲高信号</td>
+            </tr>
+            <tr>
+              <td><strong>DWMH</strong><br><small>深部皮質下白質高信号（側脳室と非連続）</small></td>
+              <td id="cell_dwmh_0"><strong>なし</strong><br>（Absent）</td>
+              <td id="cell_dwmh_1"><strong>Punctate foci</strong><br>孤立性の小さな点状高信号病変</td>
+              <td id="cell_dwmh_2"><strong>Beginning confluence</strong><br>点状病変が一部融合し始める状態（癒合傾向）</td>
+              <td id="cell_dwmh_3"><strong>Large confluent areas</strong><br>広範囲に融合した大きな高信号域</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <details class="fold-box">
+        <summary>
+          読影時のピットフォールと頭部放射線治療（WBRT/SRS）における臨床的意義
+          <span class="fold-hint">クリック／タップで開閉</span>
+        </summary>
+        <div class="fold-content">
+          <ul style="padding-left:20px;line-height:1.75;">
+            <li><strong>腫瘍周囲浮腫の除外（Chan 2020）</strong>：脳転移や原発性脳腫瘍では腫瘍周囲の非対称な血管原性浮腫が半自動体積測定を交絡させますが、視覚的なFazekasスケールでは検者が腫瘍周囲浮腫を除外し、対側半球の加齢性白質病変を迅速に評価できます（セグメンテーション体積とも強い相関：PVH eta=0.91、DWMH eta=0.91、総体積 eta=0.79、p&lt;0.0001）。</li>
+            <li><strong>評価者間で迷いやすい境界（Chan 2020）</strong>：2名の神経放射線科医の独立採点では46例中PVH 6例・DWMH 8例で1点の差が生じ、その大半は<strong>Grade 1 vs Grade 2</strong>（PVH 4/6例、DWMH 5/8例）でした。またFLAIRの信号強度設定やスライス厚（3〜5 mm）により正常な脳室壁（PVH 0）と薄い線状高信号（PVH 1）の区別が難しい場合があるため、Chanらは合計スコア<strong>0〜2点を「白質病変なし〜画像上疑わしい区分」</strong>、<strong>3〜6点を「画像上確実な白質病変区分」</strong>として2群化し、後者で照射後MoCA低下リスクが有意に高いこと（単変量OR 6.4、p=0.007）を示しました。</li>
+            <li><strong>海馬回避（HA）照射時の白質線量への注意（Mayinger 2020）</strong>：海馬回避全脳照射（HA-WBRT / HA-PCI）では海馬線量を下げる一方、海馬以外の深部白質の最大線量（Dmax）や高線量体積が増えると、照射後のFazekasスコア上昇が通常照射より顕著になる場合があるため、白質全体の線量制約も重要です。</li>
+            <li><strong>放射線白質脳症（RIL）発症後の三徴とNPHとの鑑別（Bompaire 2018 / Terziev 2021 / Thiessen 1998）</strong>：照射後数ヶ月〜数年で進行する放射線白質脳症では、①前頭葉皮質下型の認知機能低下（遂行機能・注意・処理速度低下、中央値33ヶ月）→②歩行障害（開脚・小刻み歩行、中央値44ヶ月）→③尿失禁（中央値66ヶ月）の順に出現します。白質萎縮に伴う二次性脳室拡大により正常圧水頭症（NPH）に酷似しますが、髄液初圧やタップテストはVPシャント術の効果を予測しない点に注意が必要です。</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <!-- ⑦ 関連リンク・参考文献 -->
+  <div class="card">
+    <div class="card-header">
+      <span>📚 解説記事・関連ツール・参考文献</span>
+    </div>
+    <div class="card-body">
+      <p style="font-size:0.9em;line-height:1.85;margin-bottom:10px;">
+        📝 <strong>ブログ解説記事</strong>：<a href="https://blog.ichisouzo-lab.com/entry/2026/10/26/191856" target="_blank" rel="noopener noreferrer">放射線白質脳症とは？三徴の出現順序・頭部MRIとDTI-ALPS・再発や正常圧水頭症との鑑別・予防と対応を解説【医師向け】</a><br>
+        📊 <strong>スライド資料（14枚・PDF）</strong>：<a href="https://tools.ichisouzo-lab.com/slides/radiation-leukoencephalopathy/" target="_blank" rel="noopener noreferrer">放射線白質脳症 スライドビューアー＆PDFダウンロード</a><br>
+        🖼 <strong>インフォグラフィック</strong>：<a href="https://tools.ichisouzo-lab.com/infographics/radiation-leukoencephalopathy/" target="_blank" rel="noopener noreferrer">放射線白質脳症の全体像（原寸拡大ビューアー）</a><br>
+        🩺 <strong>関連する診療ツール</strong>：
+        <a href="gait_ataxia.html">歩行障害・運動失調 鑑別診断ツール</a> ／
+        <a href="driving_fitness_evaluation.html">脳卒中・認知症 自動車運転評価・診断書記載支援</a> ／
+        <a href="daily_living_independence.html">日常生活自立度 判定支援ツール</a>
+      </p>
+      <ol class="ref-list">
+        <li>Fazekas F, Chawluk JB, Alavi A, Hurtig HI, Zimmerman RA. MR signal abnormalities at 1.5 T in Alzheimer's dementia and normal aging. <em>AJR Am J Roentgenol</em>. 1987;149(2):351-356. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/3496763/" target="_blank" rel="noopener noreferrer">3496763</a>. DOI: <a href="https://doi.org/10.2214/ajr.149.2.351" target="_blank" rel="noopener noreferrer">10.2214/ajr.149.2.351</a>.</li>
+        <li>Fazekas F, Kleinert R, Offenbacher H, et al. Pathologic correlates of incidental MRI white matter signal hyperintensities. <em>Neurology</em>. 1993;43(9):1683-1689. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/8414012/" target="_blank" rel="noopener noreferrer">8414012</a>. DOI: <a href="https://doi.org/10.1212/wnl.43.9.1683" target="_blank" rel="noopener noreferrer">10.1212/wnl.43.9.1683</a>.</li>
+        <li>Inzitari D, Pracucci G, Poggesi A, et al. Changes in white matter as determinant of global functional decline in older independent outpatients: three year follow-up of LADIS (leukoaraiosis and disability) study cohort. <em>BMJ</em>. 2009;339:b2477. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/19581317/" target="_blank" rel="noopener noreferrer">19581317</a>. DOI: <a href="https://doi.org/10.1136/bmj.b2477" target="_blank" rel="noopener noreferrer">10.1136/bmj.b2477</a>.</li>
+        <li>Chan M, Ferguson D, Ni Mhurchu E, et al. Patients with pretreatment leukoencephalopathy and older patients have more cognitive decline after whole brain radiotherapy. <em>Radiat Oncol</em>. 2020;15(1):271. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/33239056/" target="_blank" rel="noopener noreferrer">33239056</a>. DOI: <a href="https://doi.org/10.1186/s13014-020-01717-x" target="_blank" rel="noopener noreferrer">10.1186/s13014-020-01717-x</a>.</li>
+        <li>Terziev R, Psimaras D, Marie Y, et al. Cumulative incidence and risk factors for radiation induced leukoencephalopathy in high grade glioma long term survivors. <em>Sci Rep</em>. 2021;11(1):10176. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/33986314/" target="_blank" rel="noopener noreferrer">33986314</a>. DOI: <a href="https://doi.org/10.1038/s41598-021-89216-1" target="_blank" rel="noopener noreferrer">10.1038/s41598-021-89216-1</a>.</li>
+        <li>Mayinger M, Kraft J, Lohaus N, et al. Leukoencephalopathy after prophylactic whole-brain irradiation with or without hippocampal sparing: a longitudinal magnetic resonance imaging analysis. <em>Eur J Cancer</em>. 2020;124:194-203. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/31812935/" target="_blank" rel="noopener noreferrer">31812935</a>. DOI: <a href="https://doi.org/10.1016/j.ejca.2019.11.008" target="_blank" rel="noopener noreferrer">10.1016/j.ejca.2019.11.008</a>.</li>
+        <li>Joo B, Park M, Ahn SJ, et al. Impairment of Cerebral Interstitial Fluid Dynamics after Whole-Brain Radiotherapy and Its Association with Leukoencephalopathy Development. <em>Yonsei Med J</em>. 2026;67(2):145-153. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/41560386/" target="_blank" rel="noopener noreferrer">41560386</a>. DOI: <a href="https://doi.org/10.3349/ymj.2025.0110" target="_blank" rel="noopener noreferrer">10.3349/ymj.2025.0110</a>.</li>
+      </ol>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>監修：今村久司（脳神経内科専門医・指導医／総合内科専門医・指導医／てんかん専門医・指導医）</p>
+  <p style="margin-top:4px;">本ツールは医療従事者向けの教育・臨床判断補助情報であり、確定診断や治療適応の決定を代替するものではありません。</p>
+  <p style="margin-top:6px;">© 医知創造ラボ ｜ <a href="index.html">診療ツール一覧</a></p>
+</footer>
+
+<script>
+(function(){
+  // 頭部MRI（FLAIR軸位断）模式図SVGを生成するヘルパー
+  // 解剖学的に大脳半球輪郭・大脳縦裂・左右側脳室（前角・体部・三角部/後角）を正しく配置し、
+  // PVH（側脳室壁に連続する高信号）とDWMH（側脳室から離れた深部白質の高信号）を描き分ける
+  function makeBrainSvg(kind, grade) {
+    var base = '<svg viewBox="0 0 110 124" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
+      + '<ellipse cx="55" cy="62" rx="46" ry="54" fill="#1E293B" stroke="#64748B" stroke-width="2"/>'
+      + '<ellipse cx="55" cy="62" rx="41" ry="49" fill="#334155"/>'
+      + '<line x1="55" y1="8" x2="55" y2="36" stroke="#0F172A" stroke-width="2"/>'
+      + '<line x1="55" y1="88" x2="55" y2="116" stroke="#0F172A" stroke-width="2"/>';
+
+    var lesions = '';
+    if (kind === 'pvh') {
+      if (grade === 1) {
+        // 前角・後角のcapと鉛筆の芯様の薄い線状高信号
+        lesions = ''
+          + '<path d="M 38 38 Q 44 33 49 40" fill="none" stroke="#FEF08A" stroke-width="3.2" stroke-linecap="round"/>'
+          + '<path d="M 72 38 Q 66 33 61 40" fill="none" stroke="#FEF08A" stroke-width="3.2" stroke-linecap="round"/>'
+          + '<path d="M 36 84 Q 43 89 48 82" fill="none" stroke="#FEF08A" stroke-width="3" stroke-linecap="round"/>'
+          + '<path d="M 74 84 Q 67 89 62 82" fill="none" stroke="#FEF08A" stroke-width="3" stroke-linecap="round"/>'
+          + '<path d="M 41 44 Q 38 62 40 78" fill="none" stroke="#FEF08A" stroke-width="1.6"/>'
+          + '<path d="M 69 44 Q 72 62 70 78" fill="none" stroke="#FEF08A" stroke-width="1.6"/>';
+      } else if (grade === 2) {
+        // 側脳室を取り囲む滑らかな光輪状（smooth halo）
+        lesions = ''
+          + '<path d="M 48 39 C 39 36, 35 48, 37 62 C 35 76, 39 87, 48 83 C 51 74, 51 50, 48 39 Z" fill="none" stroke="#FDE047" stroke-width="5.5" stroke-linejoin="round" opacity="0.92"/>'
+          + '<path d="M 62 39 C 71 36, 75 48, 73 62 C 75 76, 71 87, 62 83 C 59 74, 59 50, 62 39 Z" fill="none" stroke="#FDE047" stroke-width="5.5" stroke-linejoin="round" opacity="0.92"/>';
+      } else if (grade === 3) {
+        // 深部白質へ不規則に進展するPVH（irregular PVH extending into deep WM）
+        lesions = ''
+          + '<path d="M 49 34 C 36 28, 25 38, 28 50 C 23 58, 25 69, 30 75 C 25 84, 35 94, 48 87 Z" fill="#FACC15" opacity="0.9"/>'
+          + '<path d="M 61 34 C 74 28, 85 38, 82 50 C 87 58, 85 69, 80 75 C 85 84, 75 94, 62 87 Z" fill="#FACC15" opacity="0.9"/>'
+          + '<circle cx="26" cy="45" r="4" fill="#FEF08A"/>'
+          + '<circle cx="84" cy="46" r="4" fill="#FEF08A"/>'
+          + '<circle cx="25" cy="78" r="4.5" fill="#FEF08A"/>'
+          + '<circle cx="85" cy="77" r="4.5" fill="#FEF08A"/>';
+      }
+    } else if (kind === 'dwmh') {
+      if (grade === 1) {
+        // 側脳室から離れた孤立性の点状病変（punctate foci）
+        lesions = ''
+          + '<circle cx="27" cy="42" r="2.3" fill="#FEF08A"/>'
+          + '<circle cx="31" cy="56" r="2.1" fill="#FEF08A"/>'
+          + '<circle cx="26" cy="70" r="2.4" fill="#FEF08A"/>'
+          + '<circle cx="33" cy="83" r="2.0" fill="#FEF08A"/>'
+          + '<circle cx="82" cy="40" r="2.3" fill="#FEF08A"/>'
+          + '<circle cx="84" cy="58" r="2.4" fill="#FEF08A"/>'
+          + '<circle cx="79" cy="73" r="2.1" fill="#FEF08A"/>'
+          + '<circle cx="76" cy="85" r="2.2" fill="#FEF08A"/>';
+      } else if (grade === 2) {
+        // 癒合傾向（beginning confluence of foci）
+        lesions = ''
+          + '<ellipse cx="28" cy="46" rx="5.5" ry="4" transform="rotate(-15 28 46)" fill="#FDE047"/>'
+          + '<ellipse cx="31" cy="51" rx="4.5" ry="3.5" fill="#FEF08A"/>'
+          + '<ellipse cx="27" cy="72" rx="6" ry="4.2" transform="rotate(12 27 72)" fill="#FDE047"/>'
+          + '<circle cx="32" cy="64" r="2.5" fill="#FEF08A"/>'
+          + '<ellipse cx="81" cy="47" rx="5.8" ry="4.2" transform="rotate(15 81 47)" fill="#FDE047"/>'
+          + '<ellipse cx="79" cy="53" rx="4.5" ry="3.5" fill="#FEF08A"/>'
+          + '<ellipse cx="82" cy="73" rx="6" ry="4.2" transform="rotate(-12 82 73)" fill="#FDE047"/>'
+          + '<circle cx="77" cy="63" r="2.5" fill="#FEF08A"/>';
+      } else if (grade === 3) {
+        // 広範な融合性病変（large confluent areas）
+        lesions = ''
+          + '<path d="M 24 34 C 19 44, 19 78, 25 89 C 31 93, 36 84, 34 62 C 36 42, 31 31, 24 34 Z" fill="#FACC15" opacity="0.92"/>'
+          + '<path d="M 86 34 C 91 44, 91 78, 85 89 C 79 93, 74 84, 76 62 C 74 42, 79 31, 86 34 Z" fill="#FACC15" opacity="0.92"/>'
+          + '<ellipse cx="28" cy="60" rx="5" ry="18" fill="#FEF08A" opacity="0.85"/>'
+          + '<ellipse cx="82" cy="60" rx="5" ry="18" fill="#FEF08A" opacity="0.85"/>';
+      }
+    }
+
+    // 左右の側脳室（CSF＝黒〜濃紺）を最前面に描画
+    var ventricles = ''
+      + '<path d="M 48 40 C 41 38, 38 48, 40 62 C 38 75, 41 85, 48 82 C 51 74, 51 49, 48 40 Z" fill="#090D16" stroke="#475569" stroke-width="1"/>'
+      + '<path d="M 62 40 C 69 38, 72 48, 70 62 C 72 75, 69 85, 62 82 C 59 74, 59 49, 62 40 Z" fill="#090D16" stroke="#475569" stroke-width="1"/>';
+
+    return base + lesions + ventricles + '</svg>';
+  }
+
+  var PVH_ITEMS = [
+    {
+      grade: 0,
+      title: 'なし（異常高信号なし）',
+      en: 'Absent',
+      desc: '側脳室周囲に異常な高信号を認めない（正常範囲）。',
+      path: '病理背景：虚血性変化・上衣下グリオーシスなし'
+    },
+    {
+      grade: 1,
+      title: '前角・後角の帽子状（cap）または鉛筆様の薄い線状',
+      en: '"Caps" or pencil-thin lining',
+      desc: '側脳室前角・後角先端に限局するcap、または脳室壁に沿う薄い線状高信号。',
+      path: '病理背景（Fazekas 1993）：主に非虚血性（上衣層の不連続・上衣下グリオーシス・髄鞘希薄化）'
+    },
+    {
+      grade: 2,
+      title: '滑らかな光輪状・帯状高信号（smooth halo）',
+      en: 'Smooth "halo"',
+      desc: '側脳室周囲を連続的かつ滑らかに取り囲む帯状（halo）の高信号。',
+      path: '病理背景（Fazekas 1993）：上衣下グリオーシスと髄鞘希薄化（進行例では微小血管変化を伴う）'
+    },
+    {
+      grade: 3,
+      title: '深部白質へ進展する不規則な脳室周囲高信号',
+      en: 'Irregular PVH extending into deep WM',
+      desc: '辺縁が不規則な脳室周囲高信号が深部白質へ連続・進展している状態。',
+      path: '病理背景（Fazekas 1993）：虚血性組織障害（細小動脈硬化・微小嚢胞性梗塞・斑状脱髄）'
+    }
+  ];
+
+  var DWMH_ITEMS = [
+    {
+      grade: 0,
+      title: 'なし（深部白質病変なし）',
+      en: 'Absent',
+      desc: '側脳室から離れた深部・皮質下白質に高信号病変を認めない。',
+      path: '病理背景：虚血性変化なし'
+    },
+    {
+      grade: 1,
+      title: '点状病変（孤立性の小斑状高信号）',
+      en: 'Punctate foci',
+      desc: '深部白質に散在する孤立性の小さな点状高信号（融合なし）。',
+      path: '病理背景（Fazekas 1993）：軽度の血管周囲腔拡大・血管周囲組織変化（軽度虚血）'
+    },
+    {
+      grade: 2,
+      title: '癒合傾向（点状病変の初期融合）',
+      en: 'Beginning confluence of foci',
+      desc: '複数の点状高信号が一部つながり始め、初期の融合斑を形成している状態。',
+      path: '病理背景（Fazekas 1993）：中等度の虚血性組織障害・髄鞘希薄化・細小血管硬化'
+    },
+    {
+      grade: 3,
+      title: '広範な融合性病変（大きな融合高信号域）',
+      en: 'Large confluent areas',
+      desc: '深部白質の広範囲にわたって融合した大きな高信号領域。',
+      path: '病理背景（Fazekas 1993）：高度の虚血性組織障害（神経線維脱落・微小空洞化・著明な細小動脈硬化）'
+    }
+  ];
+
+  var state = {
+    pvh: 0,
+    dwmh: 0,
+    scene: 'pre_rt',
+    age: 'under60',
+    wbrt: false,
+    multiSrs: false,
+    smoking: false,
+    vascular: false,
+    basePvh: 'none',
+    baseDwmh: 'none'
+  };
+
+  function renderGradeCards() {
+    var pvhHtml = '';
+    var i, it, activeCls;
+    for (i = 0; i < PVH_ITEMS.length; i++) {
+      it = PVH_ITEMS[i];
+      activeCls = (state.pvh === it.grade) ? (' active g' + it.grade) : '';
+      pvhHtml += '<button type="button" class="grade-btn' + activeCls + '" data-kind="pvh" data-grade="' + it.grade + '" aria-pressed="' + (state.pvh === it.grade ? 'true' : 'false') + '">'
+        + '<div class="grade-top"><span class="grade-num">PVH Grade ' + it.grade + '</span><span class="grade-pt">' + it.grade + ' 点</span></div>'
+        + '<div class="mri-svg-wrap">' + makeBrainSvg('pvh', it.grade) + '</div>'
+        + '<div class="grade-title">' + it.title + '</div>'
+        + '<div class="grade-en">' + it.en + '</div>'
+        + '<div class="grade-desc">' + it.desc + '</div>'
+        + '<div class="grade-path">' + it.path + '</div>'
+        + '</button>';
+    }
+    document.getElementById('gridPvh').innerHTML = pvhHtml;
+
+    var dwmhHtml = '';
+    for (i = 0; i < DWMH_ITEMS.length; i++) {
+      it = DWMH_ITEMS[i];
+      activeCls = (state.dwmh === it.grade) ? (' active g' + it.grade) : '';
+      dwmhHtml += '<button type="button" class="grade-btn' + activeCls + '" data-kind="dwmh" data-grade="' + it.grade + '" aria-pressed="' + (state.dwmh === it.grade ? 'true' : 'false') + '">'
+        + '<div class="grade-top"><span class="grade-num">DWMH Grade ' + it.grade + '</span><span class="grade-pt">' + it.grade + ' 点</span></div>'
+        + '<div class="mri-svg-wrap">' + makeBrainSvg('dwmh', it.grade) + '</div>'
+        + '<div class="grade-title">' + it.title + '</div>'
+        + '<div class="grade-en">' + it.en + '</div>'
+        + '<div class="grade-desc">' + it.desc + '</div>'
+        + '<div class="grade-path">' + it.path + '</div>'
+        + '</button>';
+    }
+    document.getElementById('gridDwmh').innerHTML = dwmhHtml;
+
+    var btns = document.querySelectorAll('.grade-btn');
+    for (i = 0; i < btns.length; i++) {
+      btns[i].addEventListener('click', function() {
+        var k = this.getAttribute('data-kind');
+        var g = parseInt(this.getAttribute('data-grade'), 10);
+        if (k === 'pvh') state.pvh = g;
+        if (k === 'dwmh') state.dwmh = g;
+        updateAll();
+      });
+    }
+  }
+
+  function getLadisInfo(pvh, dwmh) {
+    var maxG = Math.max(pvh, dwmh);
+    if (maxG === 0) {
+      return {
+        level: '異常なし（Grade 0）',
+        shortLabel: '異常なし',
+        sub: '明らかな大脳白質高信号を認めません。'
+      };
+    }
+    if (dwmh === 3 || pvh === 3) {
+      return {
+        level: '高度（Severe / Grade 3相当）',
+        shortLabel: '高度（Severe）',
+        sub: 'LADIS研究（自立高齢者639例・3年追跡）：IADL障害移行または死亡の年間発生率 29.5%（軽度群に対する調整HR 2.36［95%CI 1.65-3.81］）。歩行・遂行機能・排尿障害に注意。'
+      };
+    }
+    if (dwmh === 2 || pvh === 2) {
+      return {
+        level: '中等度（Moderate / Grade 2相当）',
+        shortLabel: '中等度（Moderate）',
+        sub: 'LADIS研究（自立高齢者639例・3年追跡）：IADL障害移行または死亡の年間発生率 15.1%。血管リスク管理と認知・歩行の経過観察を推奨。'
+      };
+    }
+    return {
+      level: '軽度（Mild / Grade 1相当）',
+      shortLabel: '軽度（Mild）',
+      sub: 'LADIS研究（自立高齢者639例・3年追跡）：IADL障害移行または死亡の年間発生率 10.5%。加齢変化としてもしばしばみられます。'
+    };
+  }
+
+  function getPathSummary(pvh, dwmh) {
+    if (pvh === 0 && dwmh === 0) {
+      return {
+        val: '正常白質',
+        sub: 'MRI上の白質高信号なし（Fazekas 1993）'
+      };
+    }
+    if (pvh === 3 || dwmh === 3) {
+      return {
+        val: '高度の虚血性細小血管障害・脱髄',
+        sub: '細小動脈硬化・神経線維脱落・微小嚢胞性梗塞・斑状髄鞘希薄化を反映（Fazekas 1993）'
+      };
+    }
+    if (dwmh === 2) {
+      return {
+        val: '中等度の虚血性白質変化',
+        sub: '血管周囲組織変化から進行する虚血性髄鞘希薄化・細小血管硬化を反映（Fazekas 1993）'
+      };
+    }
+    if (pvh >= 1 && dwmh === 0) {
+      return {
+        val: '上衣下グリオーシス・非虚血性変化主体',
+        sub: 'PVH Grade 1-2（cap/smooth halo）は上衣層の不連続と上衣下グリオーシスに伴う髄鞘希薄化が主体（Fazekas 1993）'
+      };
+    }
+    return {
+      val: '軽度血管周囲変化＋上衣下変化',
+      sub: '点状DWMHは軽度の血管周囲変化、PVH 1-2は上衣下グリオーシスを主に反映（Fazekas 1993）'
+    };
+  }
+
+  function updateAll() {
+    renderGradeCards();
+
+    var pvh = state.pvh;
+    var dwmh = state.dwmh;
+    var total = pvh + dwmh;
+
+    // バッジ更新
+    var bPvh = document.getElementById('badgePvh');
+    bPvh.textContent = 'Grade ' + pvh + '（' + pvh + '点）';
+    bPvh.className = 'score-chip sc' + pvh;
+
+    var bDwmh = document.getElementById('badgeDwmh');
+    bDwmh.textContent = 'Grade ' + dwmh + '（' + dwmh + '点）';
+    bDwmh.className = 'score-chip sc' + dwmh;
+
+    // 早見表のハイライト更新
+    var g;
+    for (g = 0; g <= 3; g++) {
+      var cp = document.getElementById('cell_pvh_' + g);
+      var cd = document.getElementById('cell_dwmh_' + g);
+      if (cp) cp.style.background = (g === pvh) ? '#FEF9C3' : '';
+      if (cd) cd.style.background = (g === dwmh) ? '#FEF9C3' : '';
+    }
+
+    // フォローアップボックス表示切替
+    var fBox = document.getElementById('followupBox');
+    fBox.style.display = (state.scene === 'followup_rt') ? 'block' : 'none';
+
+    // Hero更新
+    document.getElementById('totalScore').textContent = String(total);
+    document.getElementById('subFormula').textContent = 'PVH Grade ' + pvh + '（' + pvh + '点：' + PVH_ITEMS[pvh].en + '）＋ DWMH Grade ' + dwmh + '（' + dwmh + '点：' + DWMH_ITEMS[dwmh].en + '）';
+
+    var ladis = getLadisInfo(pvh, dwmh);
+    var pathInfo = getPathSummary(pvh, dwmh);
+
+    document.getElementById('ladisPill').textContent = '脳小血管病重症度：' + ladis.shortLabel;
+    document.getElementById('metricLadisVal').textContent = ladis.level;
+    document.getElementById('metricLadisSub').textContent = ladis.sub;
+    document.getElementById('metricPathVal').textContent = pathInfo.val;
+    document.getElementById('metricPathSub').textContent = pathInfo.sub;
+
+    var hero = document.getElementById('resultHero');
+    var rtPill = document.getElementById('rtRiskPill');
+    var mRtVal = document.getElementById('metricRtVal');
+    var mRtSub = document.getElementById('metricRtSub');
+
+    if (total === 6) {
+      hero.className = 'result-hero hero-critical';
+      rtPill.textContent = '照射前評価：6/6点（重度認知毒性の最高リスク・WBRT相対的禁忌水準）';
+      mRtVal.textContent = '合計 6/6 点（最高リスク）';
+      mRtSub.textContent = 'Chan 2020で該当3例全員（100%）がWBRT後にCTCAE Grade 3の重度認知毒性。WBRTの相対的禁忌と提言。';
+    } else if (total >= 3) {
+      hero.className = 'result-hero hero-high';
+      rtPill.textContent = '照射前評価：3〜6点区分（画像上確実な白質病変・高リスク）';
+      mRtVal.textContent = '合計 3〜6 点区分（高リスク）';
+      mRtSub.textContent = '単変量でWBRT後MoCA低下の OR 6.4（95%CI 1.7-24.7, p=0.007）。MoCA低下 80%（16/20例）、変化中央値 -3.0点。';
+    } else {
+      hero.className = 'result-hero';
+      rtPill.textContent = '照射前評価：0〜2点区分（白質病変なし〜疑わしいレベル）';
+      mRtVal.textContent = '合計 0〜2 点区分';
+      mRtSub.textContent = 'Chan 2020（SRS+WBRT）：MoCA低下 50%（13/26例）、照射後MoCA変化中央値 0.0点（平均 -1.7点）。';
+    }
+
+    // アラート・推奨ボックス構築
+    var alerts = '';
+
+    if (total === 6) {
+      alerts += '<div class="warning-box red">'
+        + '<div class="head">🚨 治療前 Fazekas 6/6点（PVH 3 + DWMH 3）：WBRT後の重度認知毒性（CTCAE Grade 3）最高リスク</div>'
+        + 'Chan et al.（Radiat Oncol 2020; PMID: 33239056）の脳転移46例（SRS＋WBRT）解析では、<strong>治療前Fazekasスコア 6/6 であった3例全員（100%）が照射後にCTCAE Grade 3の重度認知毒性に陥りました</strong>（1例は常時在宅看護を要し18ヶ月生存、1例は2ヶ月後に混乱でナーシングホーム入所し28ヶ月生存、1例は1日23時間傾眠の過眠症候群でホスピス入所し6ヶ月生存）。著者らは<strong>「治療前Fazekasスコア6は全脳照射（WBRT）の相対的禁忌（relative contraindication）とみなし、手術・定位放射線照射（SRS）・全身薬物療法・経過観察などの代替案を強く検討すべき」</strong>と提言しています。'
+        + '</div>';
+    } else if (total >= 3) {
+      alerts += '<div class="warning-box caution">'
+        + '<div class="head">⚠ 治療前 Fazekas 3〜6点区分（現在 ' + total + '/6点）：照射後の認知機能低下リスクが有意に高い群</div>'
+        + 'Chan et al.（2020）において、治療前Fazekasスコア 3〜6点（「画像上確実な白質病変あり」区分）は 0〜2点群と比較して、単変量解析で<strong>照射後MoCAスコア低下のオッズ比が 6.4（95%CI 1.7–24.7、p=0.007）</strong>であり、<strong>80%（16/20例）でMoCA低下</strong>（変化中央値 −3.0点 vs 0〜2点群 0.0点）を認めました（※年齢との2変数モデルでは年齢との共線性により年齢［OR 1.09, p=0.02］のみ有意）。<br>'
+        + '<strong>検討したい予防戦略</strong>：①適応例（脳転移1〜4個摘出後など）では救済SRSによるWBRT回避（JCOG0504：Grade 2〜4認知障害 7.7% vs WBRT 16.4%, P=0.048）、②WBRTが不可欠な場合は海馬回避WBRT＋メマンチン併用（NRG CC001：調整HR 0.74, P=0.020 ※メマンチンは国内適応外）および海馬外の白質線量（Dmax・高線量体積）抑制（Mayinger 2020）。'
+        + '</div>';
+    } else {
+      alerts += '<div class="warning-box green">'
+        + '<div class="head">✓ 治療前 Fazekas 0〜2点区分（現在 ' + total + '/6点）：白質病変なし〜軽微</div>'
+        + 'Chan et al.（2020）の分類では「白質病変なし〜画像上疑わしい（no to radiologically questionable WMH）」区分に該当し、照射後のMoCA変化中央値は 0.0点（認知低下 50%［13/26例］）でした。ただし年齢（60歳以上・70歳超）や喫煙、WBRT併用・複数回SRSがある場合は白質脳症リスクが上昇するため、定期的な認知・歩行フォローを継続してください。'
+        + '</div>';
+    }
+
+    if (state.age === 'over70') {
+      alerts += '<div class="warning-box red">'
+        + '<div class="head">⚠ 年齢リスク（70歳超）：WBRT後の認知機能低下に極めて高リスク</div>'
+        + 'Chan et al.（2020）では、<strong>70歳超の患者10例全員（100%）でWBRT後にMoCAスコア低下</strong>が生じ、多変量解析でも年齢（OR 1.12/年、p=0.003）が独立した予測因子でした。またLiu et al.（2023）の脳転移993例解析でも<strong>77歳超（p=0.025）</strong>が白質脳症発生と有意に関連しています。Fazekasスコアが低値であってもWBRTの適応は慎重に判断してください。'
+        + '</div>';
+    } else if (state.age === '60to70') {
+      alerts += '<div class="warning-box caution">'
+        + '<div class="head">⚠ 年齢リスク（60〜70歳）：局所照射・全脳照射後の白質脳症発生率が上昇</div>'
+        + 'Terziev et al.（Sci Rep 2021; PMID: 33986314）の高悪性度神経膠腫・局所照射後長期生存81例の解析では、<strong>照射時60歳以上</strong>で放射線白質脳症の累積発生率が有意に高率でした（12ヶ月時点 54% vs 15%、36ヶ月時点 54% vs 40%、60ヶ月時点 54% vs 46%、p=0.032）。NRG CC001試験でも61歳超は認知機能低下リスクが高いことが示されています。'
+        + '</div>';
+    }
+
+    if (state.wbrt || state.multiSrs || state.smoking || state.vascular) {
+      var rItems = [];
+      if (state.wbrt) {
+        rItems.push('<li><strong>全脳照射（WBRT）</strong>：脳転移993例の比較（Liu 2023）で、WBRT＋SRS併用群はSRS単独群より全評価時点で白質脳症発生率が有意に高率（p&lt;0.001）。回避可能な症例ではSRS単独・救済SRSを検討。</li>');
+      }
+      if (state.multiSrs) {
+        rItems.push('<li><strong>複数回SRS・高積分線量・大腫瘍体積</strong>：2回以上のSRS施行103例（Trifiletti 2015）では白質脳症累積発生率が1年29%・2年38%・3年53%に達し、頭蓋への高SRS積分線量（P=0.036）・治療転移総数（P=0.003）・WBRT併用（P=0.019）が関連。総腫瘍体積28 cm³以上も危険因子（Liu 2023, p=0.028）。</li>');
+      }
+      if (state.smoking) {
+        rItems.push('<li><strong>喫煙歴</strong>：局所照射後長期生存者（Terziev 2021）において喫煙者は白質脳症累積発生率が有意に高率（12ヶ月42% vs 15%、36ヶ月67% vs 38%、60ヶ月67% vs 47%、p=0.02）。禁煙指導を強く推奨。</li>');
+      }
+      if (state.vascular) {
+        rItems.push('<li><strong>血管リスク因子（高血圧・糖尿病・脂質異常症・心房細動）</strong>：微小血管内皮障害と血液脳関門破綻が白質病変と相乗的に作用するため、厳格な血圧・代謝管理を並行。</li>');
+      }
+      alerts += '<div class="warning-box info">'
+        + '<div class="head">📌 選択された臨床リスク因子と対策</div>'
+        + '<ul style="padding-left:20px;margin-top:4px;">' + rItems.join('') + '</ul>'
+        + '</div>';
+    }
+
+    // フォローアップ経時比較
+    var deltaText = '';
+    if (state.scene === 'followup_rt' && state.basePvh !== 'none' && state.baseDwmh !== 'none') {
+      var bp = parseInt(state.basePvh, 10);
+      var bd = parseInt(state.baseDwmh, 10);
+      var bTotal = bp + bd;
+      var dPvh = pvh - bp;
+      var dDwmh = dwmh - bd;
+      var dTotal = total - bTotal;
+      var signP = dPvh > 0 ? ('+' + dPvh) : String(dPvh);
+      var signD = dDwmh > 0 ? ('+' + dDwmh) : String(dDwmh);
+      var signT = dTotal > 0 ? ('+' + dTotal) : String(dTotal);
+
+      deltaText = '【治療前（ベースライン）からの経時変化】\n'
+        + '・治療前 Fazekas 合計: ' + bTotal + ' / 6 点（PVH Grade ' + bp + ' + DWMH Grade ' + bd + '）\n'
+        + '・今回変化量: 合計 ' + signT + ' 点（ΔPVH ' + signP + ', ΔDWMH ' + signD + '）\n';
+
+      if (dPvh > 0 || dTotal > 0) {
+        alerts += '<div class="warning-box caution">'
+          + '<div class="head">📈 ベースラインからのFazekasスコア上昇（合計 ' + bTotal + '点 → ' + total + '点［' + signT + '点］／PVH Grade ' + bp + ' → ' + pvh + '）</div>'
+          + 'Joo et al.（2026）では照射後T2 FLAIRにおける<strong>PVH Fazekasスコアのベースラインからの上昇</strong>を放射線白質脳症（RIL）の発症と定義しています。放射線白質脳症では<strong>①前頭葉皮質下型の認知機能低下（遂行機能・注意・処理速度低下）→②歩行障害（開脚・小刻み歩行、歩行失行）→③尿失禁</strong>の順に症状が出現するため、MoCA-Jや歩行・排尿の評価、および腫瘍再発・局所放射線壊死・特発性正常圧水頭症（iNPH）との鑑別を行ってください。'
+          + '</div>';
+      } else {
+        alerts += '<div class="warning-box info">'
+          + '<div class="head">📊 ベースラインとの比較（合計 ' + bTotal + '点 → ' + total + '点［変化 ' + signT + '点］）</div>'
+          + '治療前と比べてFazekasスコアの上昇は認めません。放射線白質脳症は照射後中央値14.9ヶ月（範囲1.2〜180.6ヶ月、Terziev 2021）と長期にわたり出現し得るため、引き続き定期フォローを継続してください。'
+          + '</div>';
+      }
+    }
+
+    document.getElementById('alertArea').innerHTML = alerts;
+
+    // カルテ記録用サマリ生成
+    var sceneName = state.scene === 'pre_rt' ? '頭部放射線治療前ベースライン評価'
+                  : state.scene === 'followup_rt' ? '頭部放射線治療後フォローアップ評価'
+                  : '一般診療・大脳白質病変（脳小血管病）評価';
+    var ageName = state.age === 'under60' ? '60歳未満'
+                : state.age === '60to70' ? '60-70歳'
+                : '70歳超';
+
+    var riskFlags = [];
+    if (state.wbrt) riskFlags.push('全脳照射(WBRT)予定/既往');
+    if (state.multiSrs) riskFlags.push('複数回SRS/高積分線量/総腫瘍体積28cm3以上');
+    if (state.smoking) riskFlags.push('喫煙歴あり');
+    if (state.vascular) riskFlags.push('血管リスク因子(高血圧/糖尿病/脂質異常症/心房細動等)');
+
+    var rtInterp = '';
+    if (total === 6) {
+      rtInterp = '合計 6/6点（Chan 2020でWBRT後に3/3例全例がCTCAE Grade 3重度認知毒性。WBRTの相対的禁忌水準であり、手術・SRS・薬物療法・経過観察など代替手段を強く検討）';
+    } else if (total >= 3) {
+      rtInterp = '合計 3-6点区分（画像上確実な白質病変あり：Chan 2020単変量でWBRT後MoCA低下 OR 6.4 [95%CI 1.7-24.7, p=0.007]、MoCA低下80%、変化中央値 -3.0点。SRS選択やHA-WBRT+メマンチン※国内適応外・白質線量低減を検討）';
+    } else {
+      rtInterp = '合計 0-2点区分（白質病変なし-画像上疑わしい区分：Chan 2020でMoCA変化中央値 0.0点）';
+    }
+
+    var summary = '【頭部MRI Fazekasスコア（大脳白質病変）評価】\n'
+      + '・評価目的: ' + sceneName + '\n'
+      + '・脳室周囲高信号（PVH）: Grade ' + pvh + ' / 3（' + PVH_ITEMS[pvh].title + ' / ' + PVH_ITEMS[pvh].en + '）\n'
+      + '・深部皮質下白質高信号（DWMH）: Grade ' + dwmh + ' / 3（' + DWMH_ITEMS[dwmh].title + ' / ' + DWMH_ITEMS[dwmh].en + '）\n'
+      + '・Fazekas 合計スコア: ' + total + ' / 6 点（PVH ' + pvh + ' + DWMH ' + dwmh + '）\n'
+      + '・脳小血管病 全般重症度（LADIS基準）: ' + ladis.level + '\n'
+      + '・組織学的背景（Fazekas 1993）: ' + pathInfo.val + '\n'
+      + '・照射前認知低下リスク評価（Chan 2020）: ' + rtInterp + '\n'
+      + '・年齢区分: ' + ageName + '\n'
+      + '・関連リスク因子: ' + (riskFlags.length ? riskFlags.join('、') : '特記なし') + '\n'
+      + deltaText
+      + '・備考: 腫瘍周囲浮腫を除外した非腫瘍部FLAIR画像にて評価。遂行機能・注意（MoCA-J等）、歩行（開脚・小刻み歩行）、排尿症状の推移をフォロー。';
+
+    summary = summary.replace(/[～〜]/g, '-');
+    document.getElementById('summaryBox').textContent = summary;
+  }
+
+  // セグメントボタン初期化
+  function bindSeg(id, key) {
+    var container = document.getElementById(id);
+    var buttons = container.querySelectorAll('button');
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].addEventListener('click', function() {
+        var val = this.getAttribute('data-val');
+        state[key] = val;
+        var all = container.querySelectorAll('button');
+        for (var j = 0; j < all.length; j++) {
+          all[j].className = (all[j].getAttribute('data-val') === val) ? 'active' : '';
+        }
+        updateAll();
+      });
+    }
+  }
+
+  bindSeg('segScene', 'scene');
+  bindSeg('segAge', 'age');
+
+  // チェックボックス＆セレクト初期化
+  function bindChk(id, key) {
+    var el = document.getElementById(id);
+    el.addEventListener('change', function() {
+      state[key] = !!this.checked;
+      updateAll();
+    });
+  }
+  bindChk('chkWbrt', 'wbrt');
+  bindChk('chkMultiSrs', 'multiSrs');
+  bindChk('chkSmoking', 'smoking');
+  bindChk('chkVascular', 'vascular');
+
+  document.getElementById('basePvh').addEventListener('change', function() {
+    state.basePvh = this.value;
+    updateAll();
+  });
+  document.getElementById('baseDwmh').addEventListener('change', function() {
+    state.baseDwmh = this.value;
+    updateAll();
+  });
+
+  // プリセットボタン
+  var presetBtns = document.querySelectorAll('.preset-btn');
+  for (var p = 0; p < presetBtns.length; p++) {
+    presetBtns[p].addEventListener('click', function() {
+      state.pvh = parseInt(this.getAttribute('data-pvh'), 10);
+      state.dwmh = parseInt(this.getAttribute('data-dwmh'), 10);
+      state.scene = this.getAttribute('data-scene');
+      state.age = this.getAttribute('data-age');
+
+      var sBtns = document.getElementById('segScene').querySelectorAll('button');
+      for (var i = 0; i < sBtns.length; i++) {
+        sBtns[i].className = (sBtns[i].getAttribute('data-val') === state.scene) ? 'active' : '';
+      }
+      var aBtns = document.getElementById('segAge').querySelectorAll('button');
+      for (var j = 0; j < aBtns.length; j++) {
+        aBtns[j].className = (aBtns[j].getAttribute('data-val') === state.age) ? 'active' : '';
+      }
+      updateAll();
+    });
+  }
+
+  // コピー処理（TOOL_AUTHORING_GUIDE準拠：波ダッシュ・全角チルダを半角ハイフンへ置換）
+  document.getElementById('copyBtn').addEventListener('click', function() {
+    var btn = this;
+    var text = document.getElementById('summaryBox').textContent || '';
+    text = text.replace(/[～〜]/g, '-');
+
+    function showCopied() {
+      var orig = btn.textContent;
+      btn.textContent = '✓ コピーしました';
+      btn.className = 'copy-btn copied';
+      setTimeout(function() {
+        btn.textContent = orig;
+        btn.className = 'copy-btn';
+      }, 2000);
+    }
+
+    function fallbackCopy(str) {
+      var ta = document.createElement('textarea');
+      ta.value = str;
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showCopied();
+      } catch (e) {}
+      document.body.removeChild(ta);
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(showCopied, function() {
+        fallbackCopy(text);
+      });
+    } else {
+      fallbackCopy(text);
+    }
+  });
+
+  // 印刷ボタン
+  document.getElementById('printBtn').addEventListener('click', function() {
+    window.print();
+  });
+
+  // リセットボタン
+  document.getElementById('resetBtn').addEventListener('click', function() {
+    state.pvh = 0;
+    state.dwmh = 0;
+    state.scene = 'pre_rt';
+    state.age = 'under60';
+    state.wbrt = false;
+    state.multiSrs = false;
+    state.smoking = false;
+    state.vascular = false;
+    state.basePvh = 'none';
+    state.baseDwmh = 'none';
+
+    document.getElementById('chkWbrt').checked = false;
+    document.getElementById('chkMultiSrs').checked = false;
+    document.getElementById('chkSmoking').checked = false;
+    document.getElementById('chkVascular').checked = false;
+    document.getElementById('basePvh').value = 'none';
+    document.getElementById('baseDwmh').value = 'none';
+
+    var sBtns = document.getElementById('segScene').querySelectorAll('button');
+    for (var i = 0; i < sBtns.length; i++) {
+      sBtns[i].className = (sBtns[i].getAttribute('data-val') === 'pre_rt') ? 'active' : '';
+    }
+    var aBtns = document.getElementById('segAge').querySelectorAll('button');
+    for (var j = 0; j < aBtns.length; j++) {
+      aBtns[j].className = (aBtns[j].getAttribute('data-val') === 'under60') ? 'active' : '';
+    }
+    updateAll();
+  });
+
+  updateAll();
+})();
+</script>
+</body>
+</html>
