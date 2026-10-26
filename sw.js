@@ -1,5 +1,7 @@
-const CACHE_NAME = 'ddx-tools-v271';
+const CACHE_NAME = 'ddx-tools-v272';
 const ASSETS = [
+  './infographics/olfactory-dysfunction/index.html',
+  './infographics/olfactory-dysfunction/infographic.png',
   './infographics/amygdala-enlargement-tle/mri-lv2014-fig1.jpg',
   './infographics/amygdala-enlargement-tle/mri-urbach2026-fig3.jpg',
   './handouts/parkinson-non-motor-symptoms/index.html',
