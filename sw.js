@@ -1,5 +1,8 @@
-const CACHE_NAME = 'ddx-tools-v282';
+const CACHE_NAME = 'ddx-tools-v283';
 const ASSETS = [
+  './slides/vitamin-b-supply/index.html',
+  './infographics/vitamin-b-supply/index.html',
+  './infographics/vitamin-b-supply/infographic.png',
   './cave_score.html',
   './select_score.html',
   './abcd2_calculator.html',
