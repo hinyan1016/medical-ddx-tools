@@ -1,5 +1,7 @@
-const CACHE_NAME = 'ddx-tools-v283';
+const CACHE_NAME = 'ddx-tools-v284';
 const ASSETS = [
+  './infographics/fshd-overview-reference-repair-20261027/index.html',
+  './infographics/grapefruit-drug-interactions/index.html',
   './slides/vitamin-b-supply/index.html',
   './infographics/vitamin-b-supply/index.html',
   './infographics/vitamin-b-supply/infographic.png',
