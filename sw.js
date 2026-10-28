@@ -1,5 +1,6 @@
-const CACHE_NAME = 'ddx-tools-v286';
+const CACHE_NAME = 'ddx-tools-v287';
 const ASSETS = [
+  './seizure_lateralization.html',
   './infographics/fshd-overview-reference-repair-20261027/index.html',
   './infographics/grapefruit-drug-interactions/index.html',
   './slides/vitamin-b-supply/index.html',

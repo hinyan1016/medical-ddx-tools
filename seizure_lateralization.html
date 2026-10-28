@@ -1,0 +1,1782 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A5276">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>焦点てんかん 側方徴候（発作起始半球）整理・予測支援ツール｜医知創造ラボ</title>
+<meta name="description" content="成人の焦点てんかんにおいて、発作中・発作後の側方徴候（強制旋回、発作時ジストニア、一側上肢自動症、フェンシング肢位M2e、4の字徴候、一側間代、非対称な間代終了、Todd麻痺、発作後の鼻こすり、言語・自律神経徴候）から発作起始半球を整理する医療従事者向け支援ツール。病型・言語優位半球・発作間欠期棘波の分布による注意点と文献報告値（PPV等）を表示し、カルテ・ビデオ脳波記録のコピーに対応します。">
+<meta property="og:title" content="焦点てんかん 側方徴候（発作起始半球）整理・予測支援ツール｜医知創造ラボ">
+<meta property="og:description" content="発作中・発作後の側方徴候（セミオロジー）から左右の発作起始半球を整理。病型や出現時期のピットフォール、脳波・画像との照合、文献ごとの陽性的中率（PPV）を一覧化し、記録のコピーに対応します。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tools.ichisouzo-lab.com/seizure_lateralization.html">
+<meta property="og:image" content="https://tools.ichisouzo-lab.com/assets/og-tools.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="医知創造ラボ">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root {
+    --dark: #15324E;
+    --primary: #1A5276;
+    --mid: #2877A7;
+    --light: #EDF4F8;
+    --left-hemi: #1E5AA8;
+    --left-bg: #EFF6FF;
+    --right-hemi: #0F766E;
+    --right-bg: #F0FDFA;
+    --accent: #D97706;
+    --red: #B91C1C;
+    --orange: #C25E00;
+    --green: #1E7E5A;
+    --gray: #526477;
+    --light-gray: #F4F7FA;
+    --line: #CBD5E1;
+    --white: #FFFFFF;
+    --shadow: 0 2px 10px rgba(21,50,78,0.08);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "BIZ UDPGothic", "游ゴシック", "Yu Gothic", "Segoe UI", Meiryo, sans-serif;
+    background: linear-gradient(135deg, #EDF4F8 0%, #F4F7FA 100%);
+    color: #1E293B;
+    min-height: 100vh;
+    padding: 0 0 48px;
+    line-height: 1.65;
+    font-size: 15px;
+  }
+  a { color: var(--mid); text-underline-offset: 3px; }
+  button, input, select { font-family: inherit; }
+  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible {
+    outline: 3px solid #D97706;
+    outline-offset: 2px;
+  }
+  header {
+    background: linear-gradient(135deg, var(--dark), var(--primary));
+    color: var(--white);
+    padding: 16px 20px 22px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(21,50,78,0.18);
+  }
+  .back-bar {
+    max-width: 1040px;
+    margin: 0 auto 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .back-bar a {
+    color: rgba(255,255,255,0.92);
+    text-decoration: none;
+    font-size: 0.85em;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.12);
+  }
+  .back-bar a:hover { background: rgba(255,255,255,0.22); }
+  header h1 { font-size: clamp(1.25rem, 2.6vw, 1.65rem); font-weight: 700; letter-spacing: 0.02em; line-height: 1.4; }
+  header p { font-size: 0.88em; margin-top: 6px; color: #E2F1FA; max-width: 840px; margin-left: auto; margin-right: auto; }
+  .badge-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+  .h-badge {
+    font-size: 0.75em;
+    background: rgba(255,255,255,0.14);
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 2px 10px;
+    border-radius: 999px;
+    color: #fff;
+  }
+  .container { max-width: 1040px; margin: 0 auto; padding: 18px 14px; }
+  .alert-disclaimer {
+    background: #FFFBEB;
+    border: 1px solid #FDE68A;
+    border-left: 5px solid var(--accent);
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    border-radius: 8px;
+    font-size: 0.86em;
+    color: #5D4000;
+  }
+  .alert-disclaimer strong { color: #78350F; }
+  .preset-bar {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    box-shadow: var(--shadow);
+  }
+  .preset-label { font-size: 0.85em; font-weight: 700; color: var(--dark); margin-right: 4px; }
+  .preset-btn {
+    border: 1px solid #93C5FD;
+    background: #EFF6FF;
+    color: var(--primary);
+    padding: 6px 11px;
+    border-radius: 6px;
+    font-size: 0.81em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .preset-btn:hover { background: var(--primary); color: var(--white); border-color: var(--primary); }
+  .preset-btn.clear-btn {
+    border-color: #CBD5E1;
+    background: #F8FAFC;
+    color: var(--gray);
+    margin-left: auto;
+  }
+  .preset-btn.clear-btn:hover { background: #64748B; color: #fff; border-color: #64748B; }
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid #E2E8F0;
+    margin-bottom: 18px;
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 12px 18px;
+    background: var(--light);
+    border-bottom: 2px solid var(--primary);
+    font-weight: 700;
+    font-size: 1.0em;
+    color: var(--dark);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .card-body { padding: 16px 18px; }
+  .context-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+  @media (max-width: 820px) { .context-grid { grid-template-columns: 1fr; } }
+  .ctx-box {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 12px;
+  }
+  .ctx-box label {
+    display: block;
+    font-weight: 700;
+    font-size: 0.88em;
+    color: var(--dark);
+    margin-bottom: 6px;
+  }
+  .ctx-box select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #94A3B8;
+    border-radius: 6px;
+    background: #fff;
+    color: #1E293B;
+    font-size: 0.9em;
+    font-weight: 600;
+  }
+  .ctx-hint {
+    font-size: 0.78em;
+    color: var(--gray);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+  .group-title {
+    font-size: 0.94em;
+    font-weight: 700;
+    color: var(--primary);
+    background: #F1F5F9;
+    padding: 8px 12px;
+    border-left: 4px solid var(--mid);
+    border-radius: 0 6px 6px 0;
+    margin: 16px 0 10px;
+  }
+  .group-title:first-child { margin-top: 0; }
+  .sign-row {
+    padding: 13px 0;
+    border-bottom: 1px solid #E2E8F0;
+  }
+  .sign-row:last-child { border-bottom: none; }
+  .sign-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+  }
+  .sign-name {
+    font-weight: 700;
+    font-size: 0.96em;
+    color: #0F172A;
+  }
+  .sign-name .en {
+    font-weight: 600;
+    font-size: 0.82em;
+    color: var(--gray);
+    margin-left: 4px;
+  }
+  .rule-tag {
+    display: inline-block;
+    font-size: 0.75em;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .rule-contra { background: #E0F2FE; color: #0369A1; border: 1px solid #BAE6FD; }
+  .rule-ipsi { background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; }
+  .rule-dom { background: #F3E8FF; color: #6B21A8; border: 1px solid #E9D5FF; }
+  .rule-nondom { background: #FCE7F3; color: #9D174D; border: 1px solid #FBCFE8; }
+  .rule-cond { background: #F1F5F9; color: #475569; border: 1px solid #CBD5E1; }
+  .sign-badge {
+    flex-shrink: 0;
+    font-size: 0.8em;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 999px;
+    color: #fff;
+  }
+  .b-null { background: #94A3B8; }
+  .b-left { background: var(--left-hemi); }
+  .b-right { background: var(--right-hemi); }
+  .b-warn { background: var(--orange); }
+  .b-info { background: #6B21A8; }
+  .sign-desc {
+    font-size: 0.82em;
+    color: var(--gray);
+    margin-bottom: 8px;
+    line-height: 1.55;
+  }
+  .seg {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .seg button {
+    border: 2px solid #CBD5E1;
+    background: var(--white);
+    color: #1E293B;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.86em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.12s;
+    text-align: left;
+    flex: 1 1 180px;
+    min-width: 0;
+  }
+  .seg button:hover { border-color: var(--mid); background: #F8FAFC; }
+  .seg button.active.opt-none {
+    background: #64748B;
+    border-color: #64748B;
+    color: #fff;
+  }
+  .seg button.active.opt-pos {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+  }
+  .seg button.active.opt-pit {
+    background: var(--orange);
+    border-color: var(--orange);
+    color: #fff;
+  }
+  .sign-feedback {
+    margin-top: 8px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.83em;
+    line-height: 1.55;
+  }
+  .fb-left { background: var(--left-bg); border-left: 4px solid var(--left-hemi); color: #1E3A8A; }
+  .fb-right { background: var(--right-bg); border-left: 4px solid var(--right-hemi); color: #134E4A; }
+  .fb-warn { background: #FFFBEB; border-left: 4px solid var(--orange); color: #78350F; }
+  .fb-info { background: #F5F3FF; border-left: 4px solid #6D28D9; color: #4C1D95; }
+
+  /* 結果表示パネル */
+  .result-hero {
+    background: linear-gradient(135deg, var(--dark), var(--primary));
+    color: var(--white);
+    padding: 20px;
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  .result-hero .hero-sub { font-size: 0.84em; color: #CFE0EE; margin-bottom: 4px; }
+  .result-hero .hero-main { font-size: clamp(1.2rem, 2.5vw, 1.65rem); font-weight: 800; line-height: 1.4; }
+  .result-hero .hero-pill {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 4px 14px;
+    border-radius: 999px;
+    font-size: 0.85em;
+    font-weight: 700;
+    background: rgba(255,255,255,0.16);
+  }
+  .hemi-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+  @media (max-width: 680px) { .hemi-grid { grid-template-columns: 1fr; } }
+  .hemi-box {
+    border: 2px solid #E2E8F0;
+    border-radius: 10px;
+    padding: 14px;
+    background: #FAFCFF;
+  }
+  .hemi-box.left-box { border-top: 5px solid var(--left-hemi); }
+  .hemi-box.right-box { border-top: 5px solid var(--right-hemi); }
+  .hemi-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #E2E8F0;
+  }
+  .hemi-title { font-weight: 800; font-size: 1.02em; }
+  .left-box .hemi-title { color: var(--left-hemi); }
+  .right-box .hemi-title { color: var(--right-hemi); }
+  .hemi-count { font-weight: 800; font-size: 1.2em; font-variant-numeric: tabular-nums; }
+  .hemi-list {
+    list-style: none;
+    padding: 0;
+    font-size: 0.85em;
+  }
+  .hemi-list li {
+    padding: 5px 0;
+    border-bottom: 1px dashed #E2E8F0;
+  }
+  .hemi-list li:last-child { border-bottom: none; }
+  .tier-badge {
+    display: inline-block;
+    font-size: 0.74em;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 4px;
+    margin-right: 5px;
+  }
+  .t-high { background: #DCFCE7; color: #166534; }
+  .t-mod { background: #FEF3C7; color: #92400E; }
+  .t-low { background: #F1F5F9; color: #475569; }
+
+  .warning-box {
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    font-size: 0.88em;
+    line-height: 1.6;
+  }
+  .warning-box .head { font-weight: 700; margin-bottom: 4px; }
+  .warning-box.high { background: #FEF2F2; border-left: 4px solid var(--red); color: #7F1D1D; }
+  .warning-box.high .head { color: var(--red); }
+  .warning-box.caution { background: #FFFBEB; border-left: 4px solid var(--orange); color: #78350F; }
+  .warning-box.caution .head { color: var(--orange); }
+  .warning-box.good { background: #ECFDF5; border-left: 4px solid var(--green); color: #065F46; }
+  .warning-box.good .head { color: var(--green); }
+  .warning-box.info { background: #EFF6FF; border-left: 4px solid var(--mid); color: #1E3A8A; }
+  .warning-box.info .head { color: var(--primary); }
+
+  .template-box {
+    background: #152538;
+    color: #E2E8F0;
+    padding: 14px 16px;
+    border-radius: 8px;
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 0.82em;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin-bottom: 10px;
+    max-height: 340px;
+    overflow-y: auto;
+  }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .copy-btn, .reset-btn {
+    color: var(--white);
+    border: none;
+    padding: 9px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.88em;
+    font-weight: 700;
+  }
+  .copy-btn { background: var(--primary); }
+  .copy-btn:hover { background: var(--dark); }
+  .copy-btn.copied { background: var(--green); }
+  .reset-btn { background: var(--gray); }
+  .reset-btn:hover { background: #334155; }
+
+  /* 折りたたみ（2026-10-26 規則準拠：枠・淡い背景・太字・標準マーカー維持・「クリック／タップで開閉」別行案内） */
+  details.fold {
+    margin: 14px 0;
+    border: 1px solid #BFD2E2;
+    border-radius: 8px;
+    background: #FFFFFF;
+  }
+  details.fold > summary {
+    cursor: pointer;
+    padding: 11px 14px;
+    font-weight: 700;
+    font-size: 0.94em;
+    color: var(--dark);
+    background: #EDF4F8;
+    border-radius: 8px;
+    line-height: 1.55;
+  }
+  details.fold[open] > summary {
+    border-bottom: 1px solid #BFD2E2;
+    border-radius: 8px 8px 0 0;
+  }
+  details.fold > summary .tap-guide {
+    display: block;
+    font-weight: 600;
+    font-size: 0.82em;
+    color: var(--mid);
+    margin-top: 2px;
+  }
+  .fold-body { padding: 14px 16px; font-size: 0.9em; }
+
+  .explain h3 {
+    font-size: 0.98em;
+    color: var(--primary);
+    margin: 18px 0 8px;
+    padding-left: 8px;
+    border-left: 4px solid var(--mid);
+  }
+  .explain h3:first-child { margin-top: 0; }
+  .explain p { font-size: 0.9em; margin-bottom: 10px; }
+  .explain ul { font-size: 0.9em; padding-left: 20px; margin-bottom: 10px; }
+  .explain li { margin-bottom: 5px; }
+  .table-wrap { overflow-x: auto; margin: 10px 0 14px; border: 1px solid #CBD5E1; border-radius: 8px; }
+  .def-table { width: 100%; min-width: 680px; border-collapse: collapse; font-size: 0.85em; line-height: 1.65; }
+  .def-table td { padding: 9px 11px; border-bottom: 1px solid #E2E8F0; vertical-align: top; }
+  .def-table td:first-child { font-weight: 700; color: var(--dark); }
+  .scroll-hint { display: none; font-size: 0.78em; color: var(--gray); margin-bottom: 4px; }
+  @media (max-width: 720px) { .scroll-hint { display: block; } }
+  sup a { color: var(--mid); text-decoration: none; font-weight: 700; }
+  .ref-list { font-size: 0.81em; color: var(--gray); line-height: 1.75; padding-left: 20px; overflow-wrap: anywhere; }
+  .ref-list li { margin-bottom: 5px; }
+  footer { max-width: 1040px; margin: 28px auto 0; padding: 14px; text-align: center; color: var(--gray); font-size: 0.78em; line-height: 1.65; }
+</style>
+</head>
+<body>
+<nav id="ics-globalnav" style="background:#15324E;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
+<div style="max-width:1040px;margin:0 auto;padding:8px 12px;display:flex;align-items:center;gap:2px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;">
+<a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;padding-right:8px;">医知創造ラボ</a>
+<a href="https://ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ホーム</a>
+<a href="https://blog.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ブログ</a>
+<a href="https://tools.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ツール</a>
+<a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">YouTube</a>
+</div>
+</nav>
+<header>
+  <div class="back-bar">
+    <a href="index.html">← 診療ツール一覧へ</a>
+    <a href="https://blog.ichisouzo-lab.com/entry/2025/03/26/222516" target="_blank" rel="noopener">📖 解説ブログ記事（成人焦点てんかんの側方徴候）↗</a>
+  </div>
+  <h1>焦点てんかん 側方徴候（発作起始半球）整理・予測支援ツール</h1>
+  <p>発作中・発作後の症候（セミオロジー）から、左右どちらの大脳半球で発作が始まったかを文献報告値と照らして整理します</p>
+  <div class="badge-row">
+    <span class="h-badge">医療従事者向け</span>
+    <span class="h-badge">19徴候・病型/脳波補正対応</span>
+    <span class="h-badge">PubMed文献36編照合済み</span>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="alert-disclaimer">
+    <strong>⚠ 使用上の注意と基本原則</strong>：本ツールは医療従事者向けの臨床整理・教育用ツールです。<strong>側方徴候（lateralizing signs）が示すのは「左右どちらの半球か」であり、「半球内のどこ（葉・焦点）か」までは示しません</strong>（多くは発作活動が広がった先の症状発現域を反映します）<sup><a href="#ref1">1</a>,<a href="#ref2">2</a></sup>。また、国際的に確立された単一の合算点数スコアは存在しないため、独自の点数化や確率算出は行わず、各徴候が示す半球・原著の陽性的中率（PPV）・出現時期や病型による例外・脳波や画像との一致／不一致を整理します。
+  </div>
+
+  <!-- プリセット -->
+  <div class="preset-bar">
+    <span class="preset-label">💡 臨床プリセット例：</span>
+    <button type="button" class="preset-btn" data-preset="mtle_left">① 左内側側頭葉てんかん典型例</button>
+    <button type="button" class="preset-btn" data-preset="fbtcs_left">② 二次性全般化・運動シーケンス一致例</button>
+    <button type="button" class="preset-btn" data-preset="pitfall_head">③ 頭部回旋の時期・性状ピットフォール例</button>
+    <button type="button" class="preset-btn" data-preset="bitemporal">④ 両側側頭葉棘波・慎重評価例</button>
+    <button type="button" class="preset-btn clear-btn" id="topResetBtn">↺ すべてクリア</button>
+  </div>
+
+  <!-- Step 1: 前提条件 -->
+  <div class="card">
+    <div class="card-header">
+      <span>Step 1. 解釈の前提条件（病型・言語優位半球・脳波・画像）</span>
+      <span style="font-size:0.8em;font-weight:600;color:var(--gray);">未特定のままでも評価できます</span>
+    </div>
+    <div class="card-body">
+      <div class="context-grid">
+        <div class="ctx-box">
+          <label for="ctxLobe">① 想定されるてんかん病型・焦点領域</label>
+          <select id="ctxLobe">
+            <option value="unspecified">未特定・全般的に評価（既定）</option>
+            <option value="mtle">内側側頭葉てんかん（MTLE）疑い</option>
+            <option value="ntle">外側（新皮質）側頭葉てんかん（NTLE）疑い</option>
+            <option value="fle">前頭葉てんかん（FLE）疑い</option>
+            <option value="ole">後頭葉てんかん（OLE）疑い</option>
+          </select>
+          <div class="ctx-hint">病型により、強制性のない頭部回旋や自動症・ジストニア・鼻こすりの側方価値が変わります<sup><a href="#ref6">6</a>,<a href="#ref16">16</a>,<a href="#ref17">17</a></sup>。</div>
+        </div>
+        <div class="ctx-box">
+          <label for="ctxDom">② 言語優位半球の想定（言語・自律神経徴候の換算）</label>
+          <select id="ctxDom">
+            <option value="left">左半球優位と仮定（右利きの多数など・既定）</option>
+            <option value="right">右半球優位（検査等で確認済み）</option>
+            <option value="unknown">未確定・仮定しない（左利き・両利き等）</option>
+          </select>
+          <div class="ctx-hint">発作後失語（優位半球）や発作中発語（非優位半球）などを左右半球へ換算するかを切り替えます<sup><a href="#ref12">12</a>,<a href="#ref27">27</a></sup>。</div>
+        </div>
+        <div class="ctx-box">
+          <label for="ctxSpikes">③ 発作間欠期脳波（EEG）の棘波分布</label>
+          <select id="ctxSpikes">
+            <option value="unknown">未確認・該当なし</option>
+            <option value="uni">一側のみ（片側側頭葉棘波など）</option>
+            <option value="bi">両側独立（両側側頭葉棘波など）</option>
+          </select>
+          <div class="ctx-hint">MTLEで両側に棘波がある場合、強制旋回・発作後麻痺・早期嘔吐以外の徴候は誤った側を示すことがあります<sup><a href="#ref35">35</a></sup>。</div>
+        </div>
+      </div>
+
+      <div class="context-grid" style="margin-top:12px;">
+        <div class="ctx-box">
+          <label for="ctxIctalEeg">④ 発作時脳波（Ictal EEG）の起始側（照合用・任意）</label>
+          <select id="ctxIctalEeg">
+            <option value="none">未入力・未実施</option>
+            <option value="L">左半球起始</option>
+            <option value="R">右半球起始</option>
+            <option value="unclear">両側同時・判読困難</option>
+          </select>
+        </div>
+        <div class="ctx-box">
+          <label for="ctxMri">⑤ 頭部MRIの責任病変側（海馬硬化・FCD等・任意）</label>
+          <select id="ctxMri">
+            <option value="none">未入力・病変なし（MRI陰性）</option>
+            <option value="L">左半球病変</option>
+            <option value="R">右半球病変</option>
+            <option value="bi">両側病変</option>
+          </select>
+        </div>
+        <div class="ctx-box">
+          <label for="ctxFunc">⑥ 核医学・機能画像（SPECT / PET）の焦点側（任意）</label>
+          <select id="ctxFunc">
+            <option value="none">未入力・未実施</option>
+            <option value="L">左半球を示唆</option>
+            <option value="R">右半球を示唆</option>
+            <option value="unclear">非特異的・両側</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2 & 3: 側方徴候の入力 -->
+  <div class="card">
+    <div class="card-header">
+      <span>Step 2. 観察された側方徴候を選択（観察された身体の側・向きを入力）</span>
+      <span style="font-size:0.8em;font-weight:600;color:var(--gray);">「右向き」「右上肢」など<strong>患者本人の左右</strong>で選択</span>
+    </div>
+    <div class="card-body" id="signsContainer">
+      <!-- JSで生成 -->
+    </div>
+  </div>
+
+  <!-- Step 3: 結果と統合整理 -->
+  <div class="card" id="resultCard">
+    <div class="card-header">
+      <span>📊 側方徴候の統合整理・起始半球の推定結果</span>
+      <span style="font-size:0.8em;font-weight:600;color:var(--gray);" id="selectedCountBadge">選択徴候：0項目</span>
+    </div>
+    <div class="card-body">
+      <div class="result-hero" id="heroBox">
+        <div class="hero-sub">観察された症候からの推定サマリ</div>
+        <div class="hero-main" id="heroMain">側方徴候を選択すると、左右半球の支持所見を整理します</div>
+        <div class="hero-pill" id="heroPill">複数の徴候と脳波・画像を組み合わせて評価してください</div>
+      </div>
+
+      <div class="hemi-grid">
+        <div class="hemi-box left-box">
+          <div class="hemi-head">
+            <span class="hemi-title">◀ 左半球（Left）起始を支持</span>
+            <span class="hemi-count" id="leftCount">0 項目</span>
+          </div>
+          <ul class="hemi-list" id="leftList">
+            <li style="color:var(--gray);">該当する所見はありません</li>
+          </ul>
+        </div>
+        <div class="hemi-box right-box">
+          <div class="hemi-head">
+            <span class="hemi-title">右半球（Right）起始を支持 ▶</span>
+            <span class="hemi-count" id="rightCount">0 項目</span>
+          </div>
+          <ul class="hemi-list" id="rightList">
+            <li style="color:var(--gray);">該当する所見はありません</li>
+          </ul>
+        </div>
+      </div>
+
+      <div id="alertsArea"></div>
+    </div>
+  </div>
+
+  <!-- カルテ・レポート用サマリ -->
+  <div class="card">
+    <div class="card-header">📋 カルテ・ビデオ脳波モニタリング記録用サマリ（コピー可）</div>
+    <div class="card-body">
+      <div class="template-box" id="summaryBox"></div>
+      <div class="btn-row">
+        <button type="button" class="copy-btn" id="copyBtn">📋 クリップボードにコピー</button>
+        <button type="button" class="reset-btn" id="resetBtn">↺ リセット（初期状態に戻す）</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 解説・比較表・参考文献 -->
+  <div class="card explain">
+    <div class="card-header">📖 解説：側方徴候の信頼性・病型別の注意点・神経解剖</div>
+    <div class="card-body">
+      <h3>主な側方徴候と文献報告値の比較表</h3>
+      <p>成人の焦点てんかんで報告されている主な側方徴候について、示す側と報告値をまとめます。研究ごとに対象（側頭葉・前頭葉など）、徴候の定義、評価方法が異なるため、数値をそのまま横並びで比べることはできません。臨床判断の目安として参照してください<sup><a href="#ref1">1</a>,<a href="#ref2">2</a></sup>。</p>
+      <p class="scroll-hint">表は横にスクロールできます ⇆</p>
+      <div class="table-wrap">
+        <table class="def-table">
+          <thead>
+            <tr>
+              <th style="background:#1B3A5C;color:#fff;padding:9px 11px;text-align:left;">徴候</th>
+              <th style="background:#1B3A5C;color:#fff;padding:9px 11px;text-align:left;">示す側</th>
+              <th style="background:#1B3A5C;color:#fff;padding:9px 11px;text-align:left;">報告例（出現頻度・陽性的中率など）</th>
+              <th style="background:#1B3A5C;color:#fff;padding:9px 11px;text-align:left;">注意点・病型による例外</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>強制旋回（version）</td>
+              <td>反対側</td>
+              <td>出現45%・陽性的中率94%<sup><a href="#ref12">12</a></sup>／全般化まで続く偏向・全般化直前10秒以内の偏向は90%以上が反対側<sup><a href="#ref5">5</a></sup>／メタ解析で反対側（確実性：高）<sup><a href="#ref6">6</a></sup></td>
+              <td>発作開始から10秒以内の偏向は判定に役立たず、全般化前に終わる偏向は90%以上が同側<sup><a href="#ref5">5</a></sup>。全般化強直間代相の終盤に同側への強制偏向が起こることがある（27回中12回）<sup><a href="#ref7">7</a></sup>。</td>
+            </tr>
+            <tr>
+              <td>強制性のない頭部回旋</td>
+              <td>病型で異なる</td>
+              <td>メタ解析：側頭葉てんかんでは同側（確実性：高）、後頭葉てんかんでは反対側（確実性：中）<sup><a href="#ref6">6</a></sup>／後頭葉25例で反対側13例・同側3例<sup><a href="#ref10">10</a></sup></td>
+              <td>前頭葉てんかんでは向きが一定しない<sup><a href="#ref6">6</a>,<a href="#ref17">17</a></sup>。側頭葉40例で側方価値なしとする報告もある<sup><a href="#ref8">8</a></sup>。単独では判断しない。</td>
+            </tr>
+            <tr>
+              <td>発作時ジストニア</td>
+              <td>反対側</td>
+              <td>出現37%・陽性的中率93%<sup><a href="#ref12">12</a></sup>／側頭葉で陽性的中率92%<sup><a href="#ref13">13</a></sup>／内側側頭葉てんかんで96%が正しい側<sup><a href="#ref14">14</a></sup></td>
+              <td>強直肢位の陽性的中率は40%にとどまる報告あり<sup><a href="#ref13">13</a></sup>。外側（新皮質）側頭葉てんかんでは同側にみられた報告がある<sup><a href="#ref16">16</a></sup>。</td>
+            </tr>
+            <tr>
+              <td>一側の間代</td>
+              <td>反対側</td>
+              <td>側頭葉で全例が反対側<sup><a href="#ref9">9</a></sup>／前頭葉てんかんで患者単位の陽性的中率81%<sup><a href="#ref17">17</a></sup></td>
+              <td>二次性全般化発作の運動シーケンスでも陽性的中率80%超<sup><a href="#ref19">19</a></sup>。</td>
+            </tr>
+            <tr>
+              <td>一側上肢の自動症</td>
+              <td>同側</td>
+              <td>出現21%・陽性的中率100%<sup><a href="#ref12">12</a></sup>／80%が同側<sup><a href="#ref9">9</a></sup></td>
+              <td>同側自動症＋反対側ジストニアは内側側頭葉てんかんの特徴で、外側側頭葉てんかんでは自動症が反対側に出た報告あり<sup><a href="#ref16">16</a></sup>。前頭葉てんかんでは意味が確かめられていない<sup><a href="#ref17">17</a></sup>。</td>
+            </tr>
+            <tr>
+              <td>フェンシング肢位（M2e）</td>
+              <td>挙上した上肢の反対側</td>
+              <td>陽性的中率80%超<sup><a href="#ref19">19</a></sup></td>
+              <td>4の字徴候とは別の徴候<sup><a href="#ref1">1</a>,<a href="#ref19">19</a></sup>。</td>
+            </tr>
+            <tr>
+              <td>4の字徴候</td>
+              <td>伸展した上肢の反対側</td>
+              <td>二次性全般化強直間代発作39例中35例で伸展肘の反対側<sup><a href="#ref18">18</a></sup></td>
+              <td>盲検解析での陽性的中率は比較的低い<sup><a href="#ref19">19</a></sup>。前頭葉てんかんでは役立たない<sup><a href="#ref17">17</a></sup>。</td>
+            </tr>
+            <tr>
+              <td>非対称な間代の終わり方</td>
+              <td>最後まで残る側の同側</td>
+              <td>内側側頭葉てんかんの43%に出現し83%が同側<sup><a href="#ref20">20</a></sup>／側頭葉の65.7%に出現し79.3〜80%が同側<sup><a href="#ref21">21</a></sup></td>
+              <td>二次性全般化発作でのみ評価できる。前頭葉てんかんでも同側を示した<sup><a href="#ref17">17</a></sup>。</td>
+            </tr>
+            <tr>
+              <td>発作後麻痺（Todd麻痺）</td>
+              <td>反対側</td>
+              <td>328例中44例（13.4%）に出現し常に反対側（持続中央値173.5秒、11秒〜22分）<sup><a href="#ref22">22</a></sup>／29例中27例（93%）が反対側<sup><a href="#ref23">23</a></sup></td>
+              <td>半球内の局在には役立たない<sup><a href="#ref1">1</a></sup>。前頭葉てんかんで起こりやすい<sup><a href="#ref24">24</a></sup>。新たな麻痺は脳卒中などの鑑別が必要。</td>
+            </tr>
+            <tr>
+              <td>発作後の鼻こすり</td>
+              <td>使った手の同側</td>
+              <td>側頭葉てんかんの51.3%に出現し患者単位97.3%・発作単位86.5%で同側<sup><a href="#ref25">25</a></sup>／約90%で同側<sup><a href="#ref26">26</a></sup>／系統的レビューで82.1%<sup><a href="#ref24">24</a></sup></td>
+              <td>前頭葉てんかんでは10%にとどまり、側方を示す意味は確かめられていない<sup><a href="#ref17">17</a>,<a href="#ref26">26</a></sup>。言語優位半球とは別の指標。</td>
+            </tr>
+            <tr>
+              <td>発作後の言語障害（失語・呼称障害）</td>
+              <td>言語優位半球</td>
+              <td>発作後失語の92%が優位側頭葉<sup><a href="#ref27">27</a></sup>／呼称障害の陽性的中率100%<sup><a href="#ref12">12</a></sup>／音読回復時間で26例全例を側方化<sup><a href="#ref28">28</a></sup></td>
+              <td>患者が協力的（理解・発語しようとしている）な状態で評価する<sup><a href="#ref1">1</a></sup>。左側頭葉てんかんとの結びつきが強い<sup><a href="#ref24">24</a></sup>。</td>
+            </tr>
+            <tr>
+              <td>発作中の発語</td>
+              <td>言語非優位半球</td>
+              <td>意味の分かる発語の83%が非優位側<sup><a href="#ref27">27</a></sup>／陽性的中率83%<sup><a href="#ref12">12</a></sup></td>
+              <td>意味のない単純な発声（pure vocalization）には側方を示す意味はない<sup><a href="#ref1">1</a>,<a href="#ref17">17</a></sup>。</td>
+            </tr>
+            <tr>
+              <td>発作時の唾吐き（ictal spitting）</td>
+              <td>非優位半球の報告が多い</td>
+              <td>約4,000例中12例（0.3%）のうち9例が非優位半球<sup><a href="#ref29">29</a></sup>／焦点てんかん全体で1%・内側側頭葉で1.6%<sup><a href="#ref30">30</a></sup></td>
+              <td>まれな徴候。側方の意味はないとする総説もあり<sup><a href="#ref1">1</a></sup>、単独では判断しない。</td>
+            </tr>
+            <tr>
+              <td>発作時の嘔吐（ictus emeticus）</td>
+              <td>右（非優位）側の報告が多い</td>
+              <td>9例すべて右半球の側頭葉関連<sup><a href="#ref31">31</a></sup>／内側側頭葉で早期の嘔吐・えずきは海馬硬化側と一致<sup><a href="#ref35">35</a></sup></td>
+              <td>左優位半球患者の左側頭葉発作での症例報告や前部島皮質関与の報告があり<sup><a href="#ref1">1</a>,<a href="#ref32">32</a>,<a href="#ref33">33</a></sup>、単独では判断しない。</td>
+            </tr>
+            <tr>
+              <td>その他の徴候（口角偏位・瞬目・意識保たれた自動症・尿意）</td>
+              <td>各徴候による</td>
+              <td>一側口角の偏りは反対側（陽性的中率92%）<sup><a href="#ref12">12</a></sup>／一側瞬目は同側<sup><a href="#ref1">1</a></sup>／意識が保たれた自動運動発作はほぼ非優位側の内側側頭葉<sup><a href="#ref1">1</a></sup>／発作時尿意は非優位半球<sup><a href="#ref34">34</a></sup></td>
+              <td>前頭葉てんかんでは一側瞬目の側方価値は確かめられていない<sup><a href="#ref17">17</a></sup>。まれな徴候は他所見と合わせて判断する。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <details class="fold">
+        <summary>
+          発作間欠期の棘波が一側か両側かによる信頼性の違い（Serles et al. 1998）と複数の運動徴候の組み合わせ（Marashly et al. 2016）
+          <span class="tap-guide">クリック／タップで開閉</span>
+        </summary>
+        <div class="fold-body">
+          <ul>
+            <li><strong>一側棘波 vs 両側独立棘波（Serles et al. 1998<sup><a href="#ref35">35</a></sup>）</strong>：海馬萎縮・硬化が一側にある内側側頭葉てんかんにおいて、発作間欠期の棘波が一側だけの患者と両側に出る患者を比較した研究では、徴候の正確さが3群に分かれました。
+              <ul>
+                <li><strong>第1群（強制旋回、発作後麻痺、発作早期の嘔吐・えずき）</strong>：一側棘波群・両側棘波群のどちらでも100%の患者で海馬萎縮・硬化と同じ側を示しました。</li>
+                <li><strong>第2群（発作時ジストニア、口角の偏り、発作後の呼称障害・失語、発作中の発語）</strong>：一側棘波群では100%正しかった一方、両側棘波群では誤りがありました。</li>
+                <li><strong>第3群（強制性のない早期の頭部回旋、一側上肢の自動症）</strong>：どちらの群でも誤った側を示すことがありました。</li>
+              </ul>
+            </li>
+            <li><strong>信頼性の高い運動徴候が複数一致したとき（Marashly et al. 2016<sup><a href="#ref19">19</a></sup>）</strong>：二次性全般化運動発作に至る焦点てんかん47発作の盲検解析では、陽性的中率が80%を超えた6つの運動徴候（強制旋回、一側の強直肢位、フェンシング肢位［M2e］、一側の間代、非対称な間代の終わり方、Todd麻痺）のうち2つ以上が同じ側を示した38例すべて（陽性的中率100%）で発作起始域の側方が正しく判定できました。ただし、運動徴候の順序からは側頭葉てんかんと側頭葉外てんかんの区別はできませんでした。</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="fold">
+        <summary>
+          徴候の背景にある神経解剖（発作起始域と症状発現域の違い）とよくある質問（FAQ）
+          <span class="tap-guide">クリック／タップで開閉</span>
+        </summary>
+        <div class="fold-body">
+          <p><strong>神経解剖の要点</strong>：側方徴候の多くは発作活動が広がった先（症状発現域：symptomatogenic zone）を反映しており、発作起始域（epileptogenic zone）そのものとは限りません<sup><a href="#ref1">1</a></sup>。</p>
+          <ul>
+            <li><strong>強制旋回</strong>：前頭眼野が症状発現域と考えられています<sup><a href="#ref1">1</a></sup>。</li>
+            <li><strong>発作時ジストニア</strong>：発作起始側の基底核（尾状核・被殻）と視床への発作活動の広がりが関わります（差分SPECTで尾状核80.0%対0%、被殻93.3%対47.0%、視床80.0%対41.2%の血流増加）<sup><a href="#ref8">8</a>,<a href="#ref11">11</a>,<a href="#ref15">15</a></sup>。</li>
+            <li><strong>発作時の嘔吐</strong>：島皮質、とくに前部島皮質の関与が報告されています<sup><a href="#ref1">1</a>,<a href="#ref33">33</a></sup>。</li>
+            <li><strong>発作時の唾吐き・流涎過多</strong>：唾吐きは側頭葉てんかんで多いものの症状発現域は側頭葉外にある可能性があり<sup><a href="#ref29">29</a></sup>、流涎過多（側頭葉の約11%、島・弁蓋部の約23%）は島中部と中心弁蓋部が症状発現域として挙げられています<sup><a href="#ref30">30</a></sup>。</li>
+          </ul>
+          <p style="margin-top:10px;"><strong>よくある質問（FAQ）</strong></p>
+          <ul>
+            <li><strong>Q1. 発作中に頭が向いた側は、病巣の反対側と考えてよいですか？</strong><br>強制的で持続する頭部・眼球の偏向（強制旋回）は反対側を示すことが多く、全般化まで続く偏向や全般化直前10秒以内の偏向は特に信頼できます<sup><a href="#ref4">4</a>,<a href="#ref5">5</a>,<a href="#ref6">6</a></sup>。一方、強制性のない頭部回旋は側頭葉てんかんでは同側に向くことが多く、発作開始直後の偏向や全般化前に終わる偏向、全般化終盤の偏向で判断すると左右を誤るおそれがあります<sup><a href="#ref5">5</a>,<a href="#ref6">6</a>,<a href="#ref7">7</a></sup>。</li>
+            <li><strong>Q2. 4の字徴候とフェンシング肢位は同じものですか？</strong><br>別の徴候です。フェンシング肢位（M2e）は一側上肢を挙上する姿勢で、挙上した上肢の反対側の半球を示します。4の字徴候は一側の肘が伸び、もう一側が曲がる非対称な強直肢位で、伸展した上肢の反対側を示しますが、陽性的中率は比較的低いと報告されています<sup><a href="#ref1">1</a>,<a href="#ref18">18</a>,<a href="#ref19">19</a></sup>。</li>
+            <li><strong>Q3. 発作後に鼻をこする手は、どちらの半球を示しますか？</strong><br>側頭葉てんかんでは、発作起始と同じ側の手で鼻をこすることが多いと報告されています<sup><a href="#ref25">25</a>,<a href="#ref26">26</a></sup>。ただし前頭葉てんかんでは側方を示す意味が確かめられていないため、ほかの徴候や脳波所見と合わせて判断します<sup><a href="#ref17">17</a></sup>。</li>
+          </ul>
+        </div>
+      </details>
+
+      <h3>📚 参考文献（全36編・PubMed照合済み）</h3>
+      <ol class="ref-list">
+        <li id="ref1">Tufenkjian K, Lüders HO. Seizure semiology: its value and limitations in localizing the epileptogenic zone. <em>J Clin Neurol</em>. 2012;8(4):243-50. <a href="https://doi.org/10.3988/jcn.2012.8.4.243" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/23323131/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref2">Loddenkemper T, Kotagal P. Lateralizing signs during seizures in focal epilepsy. <em>Epilepsy Behav</em>. 2005;7(1):1-17. <a href="https://doi.org/10.1016/j.yebeh.2005.04.004" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/15975856/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref3">Beniczky S, Tatum WO, Blumenfeld H, et al. Seizure semiology: ILAE glossary of terms and their significance. <em>Epileptic Disord</em>. 2022;24(3):447-495. <a href="https://doi.org/10.1684/epd.2022.1430" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/35770761/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref4">Wyllie E, Lüders H, Morris HH, et al. The lateralizing significance of versive head and eye movements during epileptic seizures. <em>Neurology</em>. 1986;36(5):606-11. <a href="https://doi.org/10.1212/wnl.36.5.606" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/3703259/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref5">Kernan JC, Devinsky O, Luciano DJ, et al. Lateralizing significance of head and eye deviation in secondary generalized tonic-clonic seizures. <em>Neurology</em>. 1993;43(7):1308-10. <a href="https://doi.org/10.1212/wnl.43.7.1308" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/8327129/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref6">Cacic Hribljan M, Zimmermann G, Beniczky S. Lateralizing value of ictal head turning: A systematic review and meta-analysis. <em>Epileptic Disord</em>. 2025;27(4):568-578. <a href="https://doi.org/10.1002/epd2.70046" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/40407688/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref7">Wyllie E, Lüders H, Morris HH, et al. Ipsilateral forced head and eye turning at the end of the generalized tonic-clonic phase of versive seizures. <em>Neurology</em>. 1986;36(9):1212-7. <a href="https://doi.org/10.1212/wnl.36.9.1212" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/3748388/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref8">Newton MR, Berkovic SF, Austin MC, et al. Dystonia, clinical lateralization, and regional blood flow changes in temporal lobe seizures. <em>Neurology</em>. 1992;42(2):371-7. <a href="https://doi.org/10.1212/wnl.42.2.371" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/1736168/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref9">Marks WJ Jr, Laxer KD. Semiology of temporal lobe seizures: value in lateralizing the seizure focus. <em>Epilepsia</em>. 1998;39(7):721-6. <a href="https://doi.org/10.1111/j.1528-1157.1998.tb01157.x" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/9670900/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref10">Williamson PD, Thadani VM, Darcey TM, et al. Occipital lobe epilepsy: clinical characteristics, seizure spread patterns, and results of surgery. <em>Ann Neurol</em>. 1992;31(1):3-13. <a href="https://doi.org/10.1002/ana.410310103" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/1543348/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref11">Kotagal P, Lüders H, Morris HH, et al. Dystonic posturing in complex partial seizures of temporal lobe onset: a new lateralizing sign. <em>Neurology</em>. 1989;39(2 Pt 1):196-201. <a href="https://doi.org/10.1212/wnl.39.2.196" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/2915789/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref12">Chee MW, Kotagal P, Van Ness PC, et al. Lateralizing signs in intractable partial epilepsy: blinded multiple-observer analysis. <em>Neurology</em>. 1993;43(12):2519-25. <a href="https://doi.org/10.1212/wnl.43.12.2519" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/8255450/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref13">Bleasel A, Kotagal P, Kankirawatana P, et al. Lateralizing value and semiology of ictal limb posturing and version in temporal lobe and extratemporal epilepsy. <em>Epilepsia</em>. 1997;38(2):168-74. <a href="https://doi.org/10.1111/j.1528-1157.1997.tb01093.x" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/9048668/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref14">Dupont S, Samson Y, Nguyen-Michel VH, et al. Lateralizing value of semiology in medial temporal lobe epilepsy. <em>Acta Neurol Scand</em>. 2015;132(6):401-9. <a href="https://doi.org/10.1111/ane.12409" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/25855246/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref15">Joo EY, Hong SB, Lee EK, et al. Regional cerebral hyperperfusion with ictal dystonic posturing: ictal-interictal SPECT subtraction. <em>Epilepsia</em>. 2004;45(6):686-9. <a href="https://doi.org/10.1111/j.0013-9580.2004.35003.x" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/15144436/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref16">Dupont S, Semah F, Boon P, et al. Association of ipsilateral motor automatisms and contralateral dystonic posturing: a clinical feature differentiating medial from neocortical temporal lobe epilepsy. <em>Arch Neurol</em>. 1999;56(8):927-32. <a href="https://doi.org/10.1001/archneur.56.8.927" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/10448797/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref17">Bonelli SB, Lurger S, Zimprich F, et al. Clinical seizure lateralization in frontal lobe epilepsy. <em>Epilepsia</em>. 2007;48(3):517-23. <a href="https://doi.org/10.1111/j.1528-1167.2006.00943.x" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/17346249/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref18">Kotagal P, Bleasel A, Geller E, et al. Lateralizing value of asymmetric tonic limb posturing observed in secondarily generalized tonic-clonic seizures. <em>Epilepsia</em>. 2000;41(4):457-62. <a href="https://doi.org/10.1111/j.1528-1157.2000.tb00189.x" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/10756413/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref19">Marashly A, Ewida A, Agarwal R, et al. Ictal motor sequences: Lateralization and localization values. <em>Epilepsia</em>. 2016;57(3):369-75. <a href="https://doi.org/10.1111/epi.13322" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/26864781/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref20">Leutmezer F, Wöginger S, Antoni E, et al. Asymmetric ending of secondarily generalized seizures: a lateralizing sign in TLE. <em>Neurology</em>. 2002;59(8):1252-4. <a href="https://doi.org/10.1212/01.wnl.0000027189.12839.dc" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/12391358/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref21">Trinka E, Walser G, Unterberger I, et al. Asymmetric termination of secondarily generalized tonic-clonic seizures in temporal lobe epilepsy. <em>Neurology</em>. 2002;59(8):1254-6. <a href="https://doi.org/10.1212/01.wnl.0000032105.00984.77" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/12391359/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref22">Gallmetzer P, Leutmezer F, Serles W, et al. Postictal paresis in focal epilepsies--incidence, duration, and causes: a video-EEG monitoring study. <em>Neurology</em>. 2004;62(12):2160-4. <a href="https://doi.org/10.1212/wnl.62.12.2160" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/15210875/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref23">Kellinghaus C, Kotagal P. Lateralizing value of Todd's palsy in patients with epilepsy. <em>Neurology</em>. 2004;62(2):289-91. <a href="https://doi.org/10.1212/01.wnl.0000103287.50054.85" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/14745071/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref24">Parikh P, Khweileh M, Zimmerman G, et al. Lateralizing and localizing value of postictal signs: A systematic review. <em>Epileptic Disord</em>. 2026;28(4):1033-1046. <a href="https://doi.org/10.1002/epd2.70248" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/42011051/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref25">Leutmezer F, Serles W, Lehrner J, et al. Postictal nose wiping: a lateralizing sign in temporal lobe complex partial seizures. <em>Neurology</em>. 1998;51(4):1175-7. <a href="https://doi.org/10.1212/wnl.51.4.1175" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/9781551/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref26">Geyer JD, Payne TA, Faught E, et al. Postictal nose-rubbing in the diagnosis, lateralization, and localization of seizures. <em>Neurology</em>. 1999;52(4):743-5. <a href="https://doi.org/10.1212/wnl.52.4.743" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/10078720/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref27">Gabr M, Lüders H, Dinner D, et al. Speech manifestations in lateralization of temporal lobe seizures. <em>Ann Neurol</em>. 1989;25(1):82-7. <a href="https://doi.org/10.1002/ana.410250113" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/2913932/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref28">Privitera MD, Morris GL, Gilliam F. Postictal language assessment and lateralization of complex partial seizures. <em>Ann Neurol</em>. 1991;30(3):391-6. <a href="https://doi.org/10.1002/ana.410300311" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/1952827/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref29">Kellinghaus C, Loddenkemper T, Kotagal P. Ictal spitting: clinical and electroencephalographic features. <em>Epilepsia</em>. 2003;44(8):1064-9. <a href="https://doi.org/10.1046/j.1528-1157.2003.67302.x" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/12887437/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref30">Dimova PS, Milenova Y, Stoyanova D, et al. Localizing value of ictal hypersalivation/sialorrhea and ictal spitting: A systematic review. <em>Epileptic Disord</em>. 2025;27(4):550-567. <a href="https://doi.org/10.1002/epd2.70030" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/40332457/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref31">Kramer RE, Lüders H, Goldstick LP, et al. Ictus emeticus: an electroclinical analysis. <em>Neurology</em>. 1988;38(7):1048-52. <a href="https://doi.org/10.1212/wnl.38.7.1048" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/3386821/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref32">Schäuble B, Britton JW, Mullan BP, et al. Ictal vomiting in association with left temporal lobe seizures in a left hemisphere language-dominant patient. <em>Epilepsia</em>. 2002;43(11):1432-5. <a href="https://doi.org/10.1046/j.1528-1157.2002.40701.x" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/12423396/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref33">Catenoix H, Isnard J, Guénot M, et al. The role of the anterior insular cortex in ictal vomiting: a stereotactic electroencephalography study. <em>Epilepsy Behav</em>. 2008;13(3):560-3. <a href="https://doi.org/10.1016/j.yebeh.2008.06.019" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/18627792/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref34">Baumgartner C, Lurger S, Leutmezer F. Autonomic symptoms during epileptic seizures. <em>Epileptic Disord</em>. 2001;3(3):103-16. <a href="https://pubmed.ncbi.nlm.nih.gov/11679301/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref35">Serles W, Pataraia E, Bacher J, et al. Clinical seizure lateralization in mesial temporal lobe epilepsy: differences between patients with unitemporal and bitemporal interictal spikes. <em>Neurology</em>. 1998;50(3):742-7. <a href="https://doi.org/10.1212/wnl.50.3.742" target="_blank" rel="noopener">DOI</a> ｜ <a href="https://pubmed.ncbi.nlm.nih.gov/9521267/" target="_blank" rel="noopener">PubMed</a></li>
+        <li id="ref36">Leutmezer F, Baumgartner C. Postictal signs of lateralizing and localizing significance. <em>Epileptic Disord</em>. 2002;4(1):43-8. <a href="https://pubmed.ncbi.nlm.nih.gov/11967179/" target="_blank" rel="noopener">PubMed</a></li>
+      </ol>
+      <p style="font-size:0.8em;color:var(--gray);margin-top:8px;">監修：今村久司（京都大学医学部卒・医学博士、滋賀県の脳神経内科医、脳神経内科専門医・指導医、総合内科専門医・指導医、てんかん専門医・指導医）｜根拠確認日：2026年10月23日</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>本ツールは医療従事者向けの教育・臨床整理用情報であり、確定診断の代替ではありません。個々の患者の診療方針は脳波・画像・臨床経過を総合して主治医が判断してください。</p>
+  <p style="margin-top:6px;">© 医知創造ラボ ｜ <a href="index.html">DDxツール一覧</a> ｜ <a href="https://blog.ichisouzo-lab.com/entry/2025/03/26/222516" target="_blank" rel="noopener">解説ブログ記事</a></p>
+</footer>
+<script>
+(function(){
+  var GROUPS = [
+    { id: 'head', title: 'A. 発作中（Ictal）：頭部・眼球・顔面の徴候' },
+    { id: 'limb', title: 'B. 発作中（Ictal）：上肢・四肢の姿勢・運動・自動症' },
+    { id: 'post', title: 'C. 発作後（Postictal）：麻痺・鼻こすり' },
+    { id: 'lang', title: 'D. 発作中・発作後：言語症状・自律神経・その他の徴候' }
+  ];
+
+  var SIGNS = [
+    {
+      id: 'version', group: 'head',
+      name: '強制旋回（全般化へ続く／全般化直前10秒以内の強い偏向）', en: 'Version',
+      ruleText: '反対側（対側）', ruleClass: 'rule-contra',
+      desc: '本人の意思と関係なく頭部と両眼が強く一側へ向き、頸部伸展を伴う持続的な姿勢。症状発現域は前頭眼野と考えられています [1,4,5,6]。',
+      marashly: true, serlesCat: 1,
+      opts: [
+        { val: 'none', label: 'なし・未確認', kind: 'opt-none' },
+        { val: 'R', label: '右へ強制旋回', kind: 'opt-pos' },
+        { val: 'L', label: '左へ強制旋回', kind: 'opt-pos' },
+        { val: 'early_end', label: '全般化前に終了した偏向（注意）', kind: 'opt-pit' },
+        { val: 'late_gtcs', label: '全般化（GTCS）終盤の強制偏向（注意）', kind: 'opt-pit' }
+      ]
+    },
+    {
+      id: 'nonversive', group: 'head',
+      name: '強制性のない頭部回旋（自然な向きの変化）', en: 'Nonversive head turning',
+      ruleText: '病型で向きが変わる', ruleClass: 'rule-cond',
+      desc: '強いねじれや頸部収縮を伴わず自然に向きを変える動き。側頭葉てんかんでは同側が多く、後頭葉てんかんでは反対側が多い一方、前頭葉てんかんでは一定しません [6,8,10,17]。',
+      marashly: false, serlesCat: 3,
+      opts: [
+        { val: 'none', label: 'なし・未確認', kind: 'opt-none' },
+        { val: 'R', label: '右向き', kind: 'opt-pos' },
+        { val: 'L', label: '左向き', kind: 'opt-pos' }
+      ]
+    },
+    {
+      id: 'mouth', group: 'head',
+      name: '一側の口角の偏り・顔面しかめ', en: 'Unilateral mouth deviation / grimacing',
+      ruleText: '反対側（対側）', ruleClass: 'rule-contra',
+      desc: '一側への口角の牽引（陽性的中率92% [12]）や前頭葉てんかんにおける一側の顔面しかめ（陽性的中率100% [17]）は反対側の半球を示します。',
+      marashly: false, serlesCat: 2,
+      opts: [
+        { val: 'none', label: 'なし・未確認', kind: 'opt-none' },
+        { val: 'R', label: '右側へ偏位', kind: 'opt-pos' },
+        { val: 'L', label: '左側へ偏位', kind: 'opt-pos' }
+      ]
+    },
+    {
+      id: 'blinking', group: 'head',
+      name: '一側の瞬目', en: 'Unilateral eye blinking',
+      ruleText: '同側（まれ・参考）', ruleClass: 'rule-ipsi',
+      desc: 'まれな徴候ですが同側を示すとされます [1]。前頭葉てんかんでは側方を示す意味は確かめられていません [17]。',
+      marashly: false, serlesCat: 0,
+      opts: [
+        { val: 'none', label: 'なし・未確認', kind: 'opt-none' },
+        { val: 'R', label: '右眼の瞬目', kind: 'opt-pos' },
+        { val: 'L', label: '左眼の瞬目', kind: 'opt-pos' }
+      ]
+    },
+    {
+      id: 'dystonia', group: 'limb',
+      name: '発作時ジストニア（一側上肢のねじれを伴う固まり）', en: 'Ictal dystonic posturing',
+      ruleText: '反対側（対側）', ruleClass: 'rule-contra',
+      desc: '一側上肢が回旋・ねじれを伴う不自然な姿勢で一定時間（目安10秒超）固まる所見。基底核・視床への発作波及を反映し、反対側を示します（PPV 92〜96%）[1,11,12,13,14,15]。',
+      marashly: false, serlesCat: 2,
+      opts: [
+        { val: 'none', label: 'なし・未確認', kind: 'opt-none' },
+        { val: 'R', label: '右上肢のジストニア', kind: 'opt-pos' },
+        { val: 'L', label: '左上肢のジストニア', kind: 'opt-pos' }
+      ]
+    },
+    {
+      id: 'automatism', group: 'limb',
+      name: '一側上肢の自動症（片手で衣服をまさぐる等の反復動作）', en: 'Unilateral limb automatisms',
+      ruleText: '同側（側頭葉）', ruleClass: 'rule-ipsi',
+      desc: '発作起始と同じ側の上肢に出やすい徴候です（対側上肢がジストニアで妨げられやすいため）[1,9,11,12]。前頭葉てんかんでは側方価値は確かめられていません [17]。',
+      marashly: false, serlesCat: 3,
+      opts: [
+        { val: 'none', label: 'なし・未確認', kind: 'opt-none' },
+        { val: 'R', label: '右上肢の自動症', kind: 'opt-pos' },
+        { val: 'L', label: '左上肢の自動症', kind: 'opt-pos' }
+      ]
+    },
+    {
+      id: 'm2e', group: 'limb',
+      name: 'フェンシング肢位（M2e：一側上肢の挙上）', en: 'Fencing posture (M2e)',
+      ruleText: '挙上した上肢の反対側', ruleClass: 'rule-contra',
+      desc: '一側上肢の肩外転・挙上と肘の半屈曲をとる姿勢。挙上した上肢の反対側を示し、陽性的中率は80%超と報告されています（4の字徴候とは別の徴候です）[1,19]。',
+      marashly: true, serlesCat: 0,
+      opts: [
+        { val: 'none', label: 'なし・未確認', kind: 'opt-none' },
+        { val: 'R', label: '右上肢を挙上', kind: 'opt-pos' },
+        { val: 'L', label: '左上肢を挙上', kind: 'opt-pos' }
+      ]
+    },
+    {
+      id: 'tonic', group: 'limb',
+      name: '一側の強直肢位（明確に片側優位の強直）', en: 'Unilateral tonic posturing',
+      ruleText: '反対側（対側）', ruleClass: 'rule-contra',
+      desc: '二次性全般化発作の運動シーケンスではPPV 80%超 [19]、前頭葉てんかんでPPV 79〜80% [17] と報告される一方、ジストニアと区別しない評価ではPPV 40%にとどまる報告 [13] があります。',
+      marashly: true, serlesCat: 0,
+      opts: [
+        { val: 'none', label: 'なし・未確認', kind: 'opt-none' },
+        { val: 'R', label: '右側優位の強直', kind: 'opt-pos' },
+        { val: 'L', label: '左側優位の強直', kind: 'opt-pos' }
+      ]
+    },
+    {
+      id: 'fig4', group: 'limb',
+      name: '4の字徴候（一側の肘が伸展・対側の肘が屈曲）', en: 'Figure-of-4 sign',
+      ruleText: '伸展した上肢の反対側', ruleClass: 'rule-contra',
+      desc: '二次性全般化時に一側の肘が伸び、反対側が曲がる非対称な強直姿勢。伸展肘の反対側（39例中35例 [18]）を示しますが、盲検解析ではPPVが比較的低く [19]、前頭葉てんかんでは役立ちませんでした [17]。',
+      marashly: false, serlesCat: 0,
+      opts: [
+        { val: 'none', label: 'なし・未確認', kind: 'opt-none' },
+        { val: 'R', label: '右上肢が伸展（左上肢が屈曲）', kind: 'opt-pos' },
+        { val: 'L', label: '左上肢が伸展（右上肢が屈曲）', kind: 'opt-pos' }
+      ]
+    },
+    {
+      id: 'clonic', group: 'limb',
+      name: '一側の間代（片側の規則的な反復収縮）', en: 'Unilateral clonic seizure',
+      ruleText: '反対側（対側）', ruleClass: 'rule-contra',
+      desc: '一次運動野への活動波及を反映し、反対側の半球を示す信頼性の高い徴候です（側頭葉で全例対側 [9]、前頭葉でPPV 81% [17]、運動シーケンスでPPV 80%超 [19]）。',
+      marashly: true, serlesCat: 0,
+      opts: [
+        { val: 'none', label: 'なし・未確認', kind: 'opt-none' },
+        { val: 'R', label: '右側の間代', kind: 'opt-pos' },
+        { val: 'L', label: '左側の間代', kind: 'opt-pos' }
+      ]
+    },
+    {
+      id: 'asym_clonic', group: 'limb',
+      name: '非対称な間代の終わり方（二次性全般化の最後に片側だけ残る間代）', en: 'Asymmetric clonic ending',
+      ruleText: '最後まで残る側と同側', ruleClass: 'rule-ipsi',
+      desc: '二次性全般化発作の終わりに、間代が左右同時に止まらず片側だけ残る所見。発作起始半球が先に疲弊するため、最後まで間代が残る側は発作起始と同側（約80〜83%）を示します [1,17,19,20,21]。',
+      marashly: true, serlesCat: 0,
+      opts: [
+        { val: 'none', label: 'なし・未確認（または全般化なし）', kind: 'opt-none' },
+        { val: 'R', label: '右側が最後まで残存', kind: 'opt-pos' },
+        { val: 'L', label: '左側が最後まで残存', kind: 'opt-pos' }
+      ]
+    },
+    {
+      id: 'todd', group: 'post',
+      name: '発作後麻痺（Todd麻痺：発作後の一過性の片側筋力低下）', en: 'Postictal paresis (Todd paralysis)',
+      ruleText: '反対側（対側）', ruleClass: 'rule-contra',
+      desc: '半球内の局在には役立ちませんが、側方判定では極めて信頼性の高い徴候です（328例中44例で常に反対側・持続中央値173.5秒 [22]、29例中27例で反対側 [23]、系統的レビューでも常に反対側 [24]）。',
+      marashly: true, serlesCat: 1,
+      opts: [
+        { val: 'none', label: 'なし・未確認', kind: 'opt-none' },
+        { val: 'R', label: '右側（右上肢等）の麻痺', kind: 'opt-pos' },
+        { val: 'L', label: '左側（左上肢等）の麻痺', kind: 'opt-pos' }
+      ]
+    },
+    {
+      id: 'nosewipe', group: 'post',
+      name: '発作後の鼻こすり（片手で鼻をぬぐう・こする動作）', en: 'Postictal nose-wiping',
+      ruleText: '使った手と同側（側頭葉）', ruleClass: 'rule-ipsi',
+      desc: '側頭葉てんかんで発作起始と同じ側の手で行われることが多い徴候です（患者単位97.3% [25]、約90% [26]、系統的レビュー82.1% [24]）。前頭葉てんかんでは意味が確かめられていません [17]。',
+      marashly: false, serlesCat: 0,
+      opts: [
+        { val: 'none', label: 'なし・未確認', kind: 'opt-none' },
+        { val: 'R', label: '右手で鼻をこする', kind: 'opt-pos' },
+        { val: 'L', label: '左手で鼻をこする', kind: 'opt-pos' }
+      ]
+    },
+    {
+      id: 'aphasia', group: 'lang',
+      name: '発作後の言語障害（失語・呼称障害・音読遅延）', en: 'Postictal aphasia / dysnomia',
+      ruleText: '言語優位半球', ruleClass: 'rule-dom',
+      desc: '患者が協力的（理解・発語しようとしている）な状態で評価します [1]。発作後失語の92% [27]、呼称障害の100% [12] が優位半球起始を示し、左側頭葉てんかんとの結びつきが強い所見です [24,28]。',
+      marashly: false, serlesCat: 2,
+      opts: [
+        { val: 'none', label: 'なし・未確認（または意識混濁で評価不能）', kind: 'opt-none' },
+        { val: 'present', label: 'あり（発作後の失語・呼称障害を確認）', kind: 'opt-pos' }
+      ]
+    },
+    {
+      id: 'speech', group: 'lang',
+      name: '発作中の意味の分かる発語', en: 'Ictal speech',
+      ruleText: '言語非優位半球', ruleClass: 'rule-nondom',
+      desc: '反応低下や自動症がある発作中に、明瞭で意味の通る言葉を話す所見（83%が非優位半球 [12,27]）。意味のない単純な声出し（pure vocalization）には側方価値はありません [1,17]。',
+      marashly: false, serlesCat: 2,
+      opts: [
+        { val: 'none', label: 'なし・未確認', kind: 'opt-none' },
+        { val: 'present', label: 'あり（意味の分かる発語）', kind: 'opt-pos' },
+        { val: 'vocal_only', label: '意味のない単純発声のみ（側方価値なし）', kind: 'opt-pit' }
+      ]
+    },
+    {
+      id: 'preserved_auto', group: 'lang',
+      name: '意識が保たれた自動運動発作', en: 'Automotor seizure with preserved consciousness',
+      ruleText: '非優位半球（内側側頭葉）', ruleClass: 'rule-nondom',
+      desc: '自動運動発作の95%は意識減損を伴いますが、意識と記憶が保たれたまま遠位自動症が生じる例は、ほぼ非優位半球の内側側頭葉てんかんに限られると報告されています [1]。',
+      marashly: false, serlesCat: 0,
+      opts: [
+        { val: 'none', label: 'なし・未確認', kind: 'opt-none' },
+        { val: 'present', label: 'あり（自動症中に意識・応答が保持）', kind: 'opt-pos' }
+      ]
+    },
+    {
+      id: 'spitting', group: 'lang',
+      name: '発作時の唾吐き', en: 'Ictal spitting',
+      ruleText: '非優位半球の報告が多い（まれ）', ruleClass: 'rule-cond',
+      desc: 'まれな徴候（約0.3〜1.6%）で、12例中9例が非優位半球 [29]、系統的レビューでも非優位側内側側頭葉と関連 [30] とされる一方、側方の意味はないとする総説もあり [1]、単独では判断しません。',
+      marashly: false, serlesCat: 0,
+      opts: [
+        { val: 'none', label: 'なし・未確認', kind: 'opt-none' },
+        { val: 'present', label: 'あり', kind: 'opt-pos' }
+      ]
+    },
+    {
+      id: 'vomiting', group: 'lang',
+      name: '発作時の嘔吐・えずき', en: 'Ictus emeticus',
+      ruleText: '右（非優位）側の報告が多い（例外あり）', ruleClass: 'rule-cond',
+      desc: '9例すべて右半球の報告 [31] や内側側頭葉での早期嘔吐 [35] がある一方、左優位半球患者の左側頭葉発作例 [32] や前部島皮質関与の報告 [1,33] があり、単独では判断しません。',
+      marashly: false, serlesCat: 1,
+      opts: [
+        { val: 'none', label: 'なし・未確認', kind: 'opt-none' },
+        { val: 'present', label: 'あり', kind: 'opt-pos' }
+      ]
+    },
+    {
+      id: 'urinary', group: 'lang',
+      name: '発作時の尿意', en: 'Ictal urinary urge',
+      ruleText: '非優位半球の報告（まれ）', ruleClass: 'rule-cond',
+      desc: '自律神経症状の総説で非優位半球の徴候として挙げられています [34]。まれな徴候であり他所見と合わせて判断します。',
+      marashly: false, serlesCat: 0,
+      opts: [
+        { val: 'none', label: 'なし・未確認', kind: 'opt-none' },
+        { val: 'present', label: 'あり', kind: 'opt-pos' }
+      ]
+    }
+  ];
+
+  var state = {};
+  for (var i = 0; i < SIGNS.length; i++) {
+    state[SIGNS[i].id] = 'none';
+  }
+
+  var container = document.getElementById('signsContainer');
+
+  function oppSide(s) { return s === 'R' ? 'L' : 'R'; }
+  function sideJa(s) { return s === 'L' ? '左半球' : (s === 'R' ? '右半球' : '未確定'); }
+  function obsJa(s) { return s === 'R' ? '右側（右向き）' : '左側（左向き）'; }
+
+  function buildUI() {
+    var html = '';
+    for (var g = 0; g < GROUPS.length; g++) {
+      var grp = GROUPS[g];
+      html += '<div class="group-title">' + grp.title + '</div>';
+      for (var i = 0; i < SIGNS.length; i++) {
+        var sg = SIGNS[i];
+        if (sg.group !== grp.id) continue;
+        html += '<div class="sign-row" id="row_' + sg.id + '">';
+        html += '<div class="sign-top">';
+        html += '<div class="sign-name">' + sg.name + '<span class="en">(' + sg.en + ')</span><span class="rule-tag ' + sg.ruleClass + '">原則：' + sg.ruleText + '</span></div>';
+        html += '<span class="sign-badge b-null" id="badge_' + sg.id + '">未選択</span>';
+        html += '</div>';
+        html += '<div class="sign-desc">' + sg.desc + '</div>';
+        html += '<div class="seg" data-id="' + sg.id + '">';
+        for (var k = 0; k < sg.opts.length; k++) {
+          var op = sg.opts[k];
+          var act = (state[sg.id] === op.val) ? ('active ' + op.kind) : op.kind;
+          html += '<button type="button" data-val="' + op.val + '" data-kind="' + op.kind + '" class="' + act + '">' + op.label + '</button>';
+        }
+        html += '</div>';
+        html += '<div id="fb_' + sg.id + '"></div>';
+        html += '</div>';
+      }
+    }
+    container.innerHTML = html;
+  }
+
+  // 各徴候の現在の設定における評価を計算
+  function evaluateSign(sg, val, ctx) {
+    if (!val || val === 'none') return null;
+
+    var res = {
+      id: sg.id,
+      name: sg.name,
+      obsLabel: '',
+      hemi: null, // 'L', 'R', or null (保留/換算せず)
+      tier: 'mod', // 'high', 'mod', 'low'
+      tierLabel: '中〜高信頼度',
+      marashlyReliable: false,
+      reason: '',
+      caution: ''
+    };
+
+    for (var k = 0; k < sg.opts.length; k++) {
+      if (sg.opts[k].val === val) { res.obsLabel = sg.opts[k].label; break; }
+    }
+
+    var domHemi = ctx.dom === 'left' ? 'L' : (ctx.dom === 'right' ? 'R' : null);
+    var nonDomHemi = ctx.dom === 'left' ? 'R' : (ctx.dom === 'right' ? 'L' : null);
+
+    if (sg.id === 'version') {
+      if (val === 'early_end') {
+        res.hemi = null;
+        res.tier = 'low';
+        res.tierLabel = 'ピットフォール（採用せず）';
+        res.reason = '二次性全般化の前に終わる頭部偏向は90%以上が「同側」を向き、発作開始から10秒以内の偏向は側方判定に役立たないと報告されています（Kernan 1993 [5]）。反対側を示す強制旋回としては採用しません。';
+        return res;
+      }
+      if (val === 'late_gtcs') {
+        res.hemi = null;
+        res.tier = 'low';
+        res.tierLabel = 'ピットフォール（採用せず）';
+        res.reason = '全般化強直間代相（GTCS）の終盤には、発作起始と「同じ側（同側）」への強制的な頭部・眼球偏向が起こることがあります（27回中12回、Wyllie 1986 [7]）。反対側と誤認しないよう除外します。';
+        return res;
+      }
+      res.hemi = oppSide(val);
+      res.tier = 'high';
+      res.tierLabel = '高信頼度（PPV 94%・メタ解析高確実性）';
+      res.marashlyReliable = true;
+      res.reason = obsJa(val) + 'への強制旋回 → 反対側である' + sideJa(res.hemi) + '起始を強く支持します（Wyllie 1986 [4]、Kernan 1993 [5]、Chee 1993 PPV 94% [12]、Cacic Hribljan 2025 メタ解析 [6]、前頭葉でもPPV 94% [17]）。';
+      return res;
+    }
+
+    if (sg.id === 'nonversive') {
+      if (ctx.lobe === 'mtle') {
+        res.hemi = val;
+        res.tier = 'mod';
+        res.tierLabel = '条件付き（側頭葉では同側が多い）';
+        res.reason = '側頭葉てんかんが想定されているため、' + obsJa(val) + 'への強制性のない頭部回旋は同側（' + sideJa(res.hemi) + '）起始を示唆します（2025年メタ解析 OR 9.5・確実性：高 [6]）。ただし側頭葉40例で側方価値なしとする報告 [8] やSerles 1998 [35] での誤りもあり、単独では決めません。';
+      } else if (ctx.lobe === 'ole') {
+        res.hemi = oppSide(val);
+        res.tier = 'mod';
+        res.tierLabel = '条件付き（後頭葉では反対側が多い）';
+        res.reason = '後頭葉てんかんが想定されているため、' + obsJa(val) + 'への非強制的回旋・眼球偏倚は反対側（' + sideJa(res.hemi) + '）起始を示唆します（2025年メタ解析 OR 16.0・確実性：中 [6]、Williamson 1992で対側13例・同側3例 [10]）。';
+      } else if (ctx.lobe === 'fle') {
+        res.hemi = null;
+        res.tier = 'low';
+        res.tierLabel = '判定保留（前頭葉では一定せず）';
+        res.reason = '前頭葉てんかんでは強制性のない頭部回旋の向きが一定せず、側方判定に有意ではないと報告されています（Bonelli 2007 [17]、Cacic Hribljan 2025 [6]）。左右の集計には含めません。';
+      } else {
+        res.hemi = null;
+        res.tier = 'low';
+        res.tierLabel = '病型未特定のため保留';
+        res.reason = '強制性のない頭部回旋は、側頭葉てんかんでは同側、後頭葉てんかんでは反対側に向くことが多く、前頭葉てんかんでは一定しません [6]。Step 1で病型が未特定のため、向きだけでは左右を決めず保留します。';
+      }
+      return res;
+    }
+
+    if (sg.id === 'mouth') {
+      res.hemi = oppSide(val);
+      res.tier = (ctx.spikes === 'bi') ? 'mod' : 'high';
+      res.tierLabel = (ctx.spikes === 'bi') ? '中信頼度（両側棘波で注意）' : '高信頼度（PPV 92〜100%）';
+      res.reason = obsJa(val) + 'の口角偏位・顔面しかめ → 反対側である' + sideJa(res.hemi) + '起始を支持します（Chee 1993 口角偏位 PPV 92% [12]、Bonelli 2007 前頭葉での一側しかめ PPV 100% [17]）。';
+      if (ctx.spikes === 'bi') {
+        res.caution = '発作間欠期棘波が両側にある患者では、口角偏位（Serles 第2群）が誤った側を示すことがあります [35]。';
+      }
+      return res;
+    }
+
+    if (sg.id === 'blinking') {
+      if (ctx.lobe === 'fle') {
+        res.hemi = null;
+        res.tier = 'low';
+        res.tierLabel = '前頭葉では側方価値なし';
+        res.reason = '前頭葉てんかんでは一側の瞬目に側方を示す意味は確かめられていません（Bonelli 2007 [17]）。';
+        return res;
+      }
+      res.hemi = val;
+      res.tier = 'low';
+      res.tierLabel = '参考所見（まれ）';
+      res.reason = obsJa(val) + 'の瞬目 → 同側である' + sideJa(res.hemi) + '起始を示唆するまれな所見です [1]。他所見と合わせて評価します。';
+      return res;
+    }
+
+    if (sg.id === 'dystonia') {
+      if (ctx.lobe === 'ntle') {
+        res.hemi = null;
+        res.tier = 'low';
+        res.tierLabel = '外側側頭葉疑いのため保留';
+        res.reason = '発作時ジストニアは内側側頭葉てんかんでは96%で反対側を示しますが [14]、外側（新皮質）側頭葉てんかんではジストニアが「同側」にみられたと報告されています（Dupont 1999 [16]）。外側側頭葉が想定されているため、単純に対側として集計せず保留します。';
+        return res;
+      }
+      res.hemi = oppSide(val);
+      res.tier = (ctx.spikes === 'bi') ? 'mod' : 'high';
+      res.tierLabel = (ctx.spikes === 'bi') ? '中信頼度（両側棘波で注意）' : '高信頼度（PPV 92〜96%）';
+      res.reason = obsJa(val) + '上肢の発作時ジストニア → 反対側である' + sideJa(res.hemi) + '起始を強く支持します（Chee 1993 PPV 93% [12]、Bleasel 1997 PPV 92% [13]、Dupont 2015 MTLEで96%正確 [14]）。';
+      if (ctx.spikes === 'bi') {
+        res.caution = '両側に発作間欠期棘波があるMTLEでは、ジストニア（Serles 第2群）が誤った側を示すことがあります [35]。';
+      }
+      return res;
+    }
+
+    if (sg.id === 'automatism') {
+      if (ctx.lobe === 'fle') {
+        res.hemi = null;
+        res.tier = 'low';
+        res.tierLabel = '前頭葉では側方価値なし';
+        res.reason = '前頭葉てんかんでは一側の手の自動症に側方を示す意味は確かめられていません（Bonelli 2007 [17]）。左右の集計には含めません。';
+        return res;
+      }
+      if (ctx.lobe === 'ntle') {
+        res.hemi = null;
+        res.tier = 'low';
+        res.tierLabel = '外側側頭葉疑いのため保留';
+        res.reason = '外側（新皮質）側頭葉てんかんでは、一側上肢の自動症が「反対側」にみられたと報告されています（Dupont 1999 [16]）。同側として集計せず保留します。';
+        return res;
+      }
+      res.hemi = val;
+      res.tier = 'mod';
+      res.tierLabel = '中〜高信頼度（PPV 80〜100%・例外注意）';
+      res.reason = obsJa(val) + '上肢の自動症 → 同側である' + sideJa(res.hemi) + '起始を支持します（Chee 1993 PPV 100% [12]、Marks 1998 80%同側 [9]）。';
+      if (ctx.spikes === 'bi' || ctx.spikes === 'uni') {
+        res.caution = 'Serles 1998 [35] では、一側上肢の自動症（第3群）は一側棘波群・両側棘波群のどちらでも誤った側を示すことがあり、対側ジストニア等の他所見との組み合わせが重要です。';
+      }
+      return res;
+    }
+
+    if (sg.id === 'm2e') {
+      res.hemi = oppSide(val);
+      res.tier = 'high';
+      res.tierLabel = '高信頼度（PPV 80%超）';
+      res.marashlyReliable = true;
+      res.reason = obsJa(val) + '上肢を挙上するフェンシング肢位（M2e） → 反対側である' + sideJa(res.hemi) + '起始を支持します（Marashly 2016 PPV 80%超 [19]、Tufenkjian 2012 [1]）。';
+      return res;
+    }
+
+    if (sg.id === 'tonic') {
+      res.hemi = oppSide(val);
+      res.tier = 'mod';
+      res.tierLabel = '中〜高信頼度（運動シーケンスPPV 80%超・単独注意）';
+      res.marashlyReliable = true;
+      res.reason = obsJa(val) + '優位の強直肢位 → 反対側である' + sideJa(res.hemi) + '起始を支持します（Marashly 2016でPPV 80%超 [19]、前頭葉てんかんでPPV 79〜80% [17]）。ただし側頭葉てんかん等でジストニアと区別しない場合、強直肢位のPPVは40%にとどまった報告 [13] があるため単独解釈には注意します。';
+      return res;
+    }
+
+    if (sg.id === 'fig4') {
+      if (ctx.lobe === 'fle') {
+        res.hemi = null;
+        res.tier = 'low';
+        res.tierLabel = '前頭葉では側方価値なし';
+        res.reason = '前頭葉てんかん31例の検討では、4の字徴候は側方判定に役立ちませんでした（Bonelli 2007 [17]）。';
+        return res;
+      }
+      res.hemi = oppSide(val);
+      res.tier = 'low';
+      res.tierLabel = '補助・参考（盲検解析でPPV低め）';
+      res.reason = obsJa(val) + 'の肘が伸展する4の字徴候 → 伸展上肢の反対側である' + sideJa(res.hemi) + '起始を示唆します（Kotagal 2000で39例中35例 [18]）。ただしMarashly 2016の盲検解析ではPPVが比較的低く [19]、他の高信頼度徴候と合わせて判断します。';
+      return res;
+    }
+
+    if (sg.id === 'clonic') {
+      res.hemi = oppSide(val);
+      res.tier = 'high';
+      res.tierLabel = '高信頼度（全例対側〜PPV 81%超）';
+      res.marashlyReliable = true;
+      res.reason = obsJa(val) + 'の一側間代 → 反対側である' + sideJa(res.hemi) + '起始を強く支持します（Marks 1998 全例対側 [9]、Bonelli 2007 前頭葉PPV 81% [17]、Marashly 2016 PPV 80%超 [19]）。';
+      return res;
+    }
+
+    if (sg.id === 'asym_clonic') {
+      res.hemi = val;
+      res.tier = 'high';
+      res.tierLabel = '高信頼度（同側 79.3〜83%・PPV 80%超）';
+      res.marashlyReliable = true;
+      res.reason = '二次性全般化の終わりに' + obsJa(val) + 'の間代が最後まで残存 → 同側である' + sideJa(res.hemi) + '起始を支持します（Leutmezer 2002 83%同側 [20]、Trinka 2002 79.3〜80%同側 [21]、Bonelli 2007 [17]、Marashly 2016 PPV 80%超 [19]）。';
+      return res;
+    }
+
+    if (sg.id === 'todd') {
+      res.hemi = oppSide(val);
+      res.tier = 'high';
+      res.tierLabel = '高信頼度（93〜100%対側）';
+      res.marashlyReliable = true;
+      res.reason = obsJa(val) + 'の発作後麻痺（Todd麻痺） → 反対側である' + sideJa(res.hemi) + '起始を強く支持します（Gallmetzer 2004 常に対側・持続中央値173.5秒 [22]、Kellinghaus 2004 93%対側 [23]、Parikh 2026 常に対側 [24]、両側棘波例でも100%正確 [35]）。';
+      res.caution = '初発または非典型的な麻痺では、脳卒中などの器質的疾患を必ず鑑別してください。';
+      return res;
+    }
+
+    if (sg.id === 'nosewipe') {
+      if (ctx.lobe === 'fle') {
+        res.hemi = null;
+        res.tier = 'low';
+        res.tierLabel = '前頭葉では側方価値なし';
+        res.reason = '前頭葉てんかんでは発作後の鼻こすりは10%にとどまり、側方を示す意味は確かめられていません（Bonelli 2007 [17]、Geyer 1999 [26]）。';
+        return res;
+      }
+      res.hemi = val;
+      res.tier = 'high';
+      res.tierLabel = '高信頼度（側頭葉で患者単位97.3%・約90%同側）';
+      res.reason = obsJa(val) + 'の手による発作後の鼻こすり → 同側である' + sideJa(res.hemi) + '起始を支持します（Leutmezer 1998 患者単位97.3%・発作単位86.5% [25]、Geyer 1999 約90% [26]、Parikh 2026 82.1% [24]）。※言語優位半球とは別の指標です。';
+      return res;
+    }
+
+    if (sg.id === 'aphasia') {
+      if (!domHemi) {
+        res.hemi = null;
+        res.tier = 'mod';
+        res.tierLabel = '言語優位半球を示唆（左右未換算）';
+        res.reason = '発作後の失語・呼称障害は「言語優位半球」起始を強く支持します（Gabr 1989 92% [27]、Chee 1993 呼称障害PPV 100% [12]）。Step 1で言語優位半球が「未確定」のため、左右半球への自動換算は保留しています。';
+        return res;
+      }
+      res.hemi = domHemi;
+      res.tier = (ctx.spikes === 'bi') ? 'mod' : 'high';
+      res.tierLabel = (ctx.spikes === 'bi') ? '中信頼度（優位半球・両側棘波注意）' : '高信頼度（言語優位半球：PPV 92〜100%）';
+      res.reason = '発作後の失語・呼称障害 → 言語優位半球（設定：' + sideJa(res.hemi) + '）起始を強く支持します（Gabr 1989 92% [27]、Chee 1993 呼称障害PPV 100% [12]、Privitera 1991 [28]、Parikh 2026 [24]）。';
+      if (ctx.spikes === 'bi') {
+        res.caution = '両側に発作間欠期棘波がある患者では、発作後の言語障害（Serles 第2群）が誤った側を示すことがあります [35]。';
+      }
+      return res;
+    }
+
+    if (sg.id === 'speech') {
+      if (val === 'vocal_only') {
+        res.hemi = null;
+        res.tier = 'low';
+        res.tierLabel = 'ピットフォール（側方価値なし）';
+        res.reason = '意味をなさない単純な発声（pure ictal vocalization）には、個々の患者で側方を示す意味はないと報告されています（Tufenkjian 2012 [1]、Bonelli 2007 [17]）。';
+        return res;
+      }
+      if (!nonDomHemi) {
+        res.hemi = null;
+        res.tier = 'mod';
+        res.tierLabel = '言語非優位半球を示唆（左右未換算）';
+        res.reason = '発作中の意味の分かる発語は「言語非優位半球」起始を支持します（83%・PPV 83% [12,27]）。Step 1で言語優位半球が「未確定」のため、左右半球への自動換算は保留しています。';
+        return res;
+      }
+      res.hemi = nonDomHemi;
+      res.tier = 'mod';
+      res.tierLabel = '中信頼度（非優位半球：PPV 83%）';
+      res.reason = '発作中の意味の分かる発語 → 言語非優位半球（設定：' + sideJa(res.hemi) + '）起始を支持します（Gabr 1989 83% [27]、Chee 1993 PPV 83% [12]）。ただし例外も少なくなく、両側棘波例（Serles 第2群 [35]）では注意が必要です [1]。';
+      return res;
+    }
+
+    if (sg.id === 'preserved_auto') {
+      if (!nonDomHemi) {
+        res.hemi = null;
+        res.tier = 'mod';
+        res.tierLabel = '非優位側内側側頭葉を示唆（左右未換算）';
+        res.reason = '意識が保たれた自動運動発作は、ほぼ非優位半球の内側側頭葉起始に限られると報告されています [1]。言語優位半球が未確定のため左右換算は保留します。';
+        return res;
+      }
+      res.hemi = nonDomHemi;
+      res.tier = 'mod';
+      res.tierLabel = '中信頼度（非優位側の内側側頭葉）';
+      res.reason = '意識が保たれた自動運動発作 → 言語非優位半球（設定：' + sideJa(res.hemi) + '）の内側側頭葉起始を支持します（Tufenkjian 2012 [1]）。';
+      return res;
+    }
+
+    if (sg.id === 'spitting') {
+      res.hemi = nonDomHemi;
+      res.tier = 'low';
+      res.tierLabel = '参考所見（非優位側の報告が多いが議論あり）';
+      res.reason = '発作時の唾吐きは12例中9例が非優位半球 [29]、2025年系統的レビューでも非優位側内側側頭葉と関連 [30] とされる一方、側方の意味はないとする総説 [1] もあり、単独では判断しません。';
+      return res;
+    }
+
+    if (sg.id === 'vomiting') {
+      res.hemi = 'R';
+      res.tier = 'low';
+      res.tierLabel = '参考所見（右側の報告が多いが左側の例あり）';
+      res.reason = '発作時の嘔吐・えずきは右半球（非優位側）の報告が多い（Kramer 1988で9例すべて右 [31]、Baumgartner 2001 [34]）ものの、左優位半球患者の左側頭葉発作例 [32] や前部島皮質関与の報告 [1,33] があるため、参考所見にとどめ単独では判断しません。';
+      return res;
+    }
+
+    if (sg.id === 'urinary') {
+      res.hemi = nonDomHemi;
+      res.tier = 'low';
+      res.tierLabel = '参考所見（非優位半球の報告）';
+      res.reason = '発作時の尿意は非優位半球の徴候として報告されています [34]。まれな徴候であり他所見と合わせて判断します。';
+      return res;
+    }
+
+    return res;
+  }
+
+  function getContext() {
+    return {
+      lobe: document.getElementById('ctxLobe').value,
+      dom: document.getElementById('ctxDom').value,
+      spikes: document.getElementById('ctxSpikes').value,
+      ictalEeg: document.getElementById('ctxIctalEeg').value,
+      mri: document.getElementById('ctxMri').value,
+      func: document.getElementById('ctxFunc').value
+    };
+  }
+
+  function update() {
+    var ctx = getContext();
+    var leftItems = [];
+    var rightItems = [];
+    var neutralItems = [];
+    var activeCount = 0;
+
+    for (var i = 0; i < SIGNS.length; i++) {
+      var sg = SIGNS[i];
+      var val = state[sg.id];
+      var badge = document.getElementById('badge_' + sg.id);
+      var fb = document.getElementById('fb_' + sg.id);
+      var seg = container.querySelector('.seg[data-id="' + sg.id + '"]');
+      var btns = seg.querySelectorAll('button');
+      for (var b = 0; b < btns.length; b++) {
+        var bv = btns[b].getAttribute('data-val');
+        var bk = btns[b].getAttribute('data-kind');
+        btns[b].className = (bv === val) ? ('active ' + bk) : bk;
+      }
+
+      var ev = evaluateSign(sg, val, ctx);
+      if (!ev) {
+        badge.className = 'sign-badge b-null';
+        badge.textContent = '未選択';
+        fb.innerHTML = '';
+        continue;
+      }
+
+      activeCount++;
+      if (ev.hemi === 'L') {
+        leftItems.push(ev);
+        badge.className = 'sign-badge b-left';
+        badge.textContent = '◀ 左半球を示唆';
+        fb.innerHTML = '<div class="sign-feedback fb-left"><strong>◀ 左半球起始を支持（' + ev.tierLabel + '）</strong>：' + ev.reason + (ev.caution ? '<br><strong>⚠ 注意：</strong>' + ev.caution : '') + '</div>';
+      } else if (ev.hemi === 'R') {
+        rightItems.push(ev);
+        badge.className = 'sign-badge b-right';
+        badge.textContent = '右半球を示唆 ▶';
+        fb.innerHTML = '<div class="sign-feedback fb-right"><strong>右半球起始を支持 ▶（' + ev.tierLabel + '）</strong>：' + ev.reason + (ev.caution ? '<br><strong>⚠ 注意：</strong>' + ev.caution : '') + '</div>';
+      } else {
+        neutralItems.push(ev);
+        badge.className = 'sign-badge b-warn';
+        badge.textContent = '保留・注意';
+        fb.innerHTML = '<div class="sign-feedback fb-warn"><strong>⚠ ' + ev.tierLabel + '</strong>：' + ev.reason + '</div>';
+      }
+    }
+
+    document.getElementById('selectedCountBadge').textContent = '選択徴候：' + activeCount + '項目';
+    document.getElementById('leftCount').textContent = leftItems.length + ' 項目';
+    document.getElementById('rightCount').textContent = rightItems.length + ' 項目';
+
+    function renderHemiList(items) {
+      if (!items.length) return '<li style="color:var(--gray);">該当する所見はありません</li>';
+      var h = '';
+      for (var j = 0; j < items.length; j++) {
+        var it = items[j];
+        var tClass = it.tier === 'high' ? 't-high' : (it.tier === 'mod' ? 't-mod' : 't-low');
+        var tShort = it.tier === 'high' ? '高信頼度' : (it.tier === 'mod' ? '中〜条件付き' : '参考');
+        h += '<li><span class="tier-badge ' + tClass + '">' + tShort + '</span><strong>' + it.name + '</strong>（' + it.obsLabel + '）</li>';
+      }
+      return h;
+    }
+
+    document.getElementById('leftList').innerHTML = renderHemiList(leftItems);
+    document.getElementById('rightList').innerHTML = renderHemiList(rightItems);
+
+    var lHigh = 0, rHigh = 0, lMarashly = 0, rMarashly = 0, lStrong = 0, rStrong = 0;
+    for (var li = 0; li < leftItems.length; li++) {
+      if (leftItems[li].tier === 'high') lHigh++;
+      if (leftItems[li].tier !== 'low') lStrong++;
+      if (leftItems[li].marashlyReliable) lMarashly++;
+    }
+    for (var ri = 0; ri < rightItems.length; ri++) {
+      if (rightItems[ri].tier === 'high') rHigh++;
+      if (rightItems[ri].tier !== 'low') rStrong++;
+      if (rightItems[ri].marashlyReliable) rMarashly++;
+    }
+
+    var heroMain = document.getElementById('heroMain');
+    var heroPill = document.getElementById('heroPill');
+    var alerts = [];
+
+    if (activeCount === 0) {
+      heroMain.textContent = '側方徴候を選択すると、左右半球の支持所見を整理します';
+      heroPill.textContent = '複数の徴候と脳波・画像を組み合わせて評価してください';
+    } else if (leftItems.length > 0 && rightItems.length === 0) {
+      heroMain.textContent = '◀ 左大脳半球（Left hemisphere）起始で所見が一致しています';
+      heroPill.textContent = '左半球支持：' + leftItems.length + '項目（うち高信頼度 ' + lHigh + '項目）／ 右半球支持：0項目';
+    } else if (rightItems.length > 0 && leftItems.length === 0) {
+      heroMain.textContent = '右大脳半球（Right hemisphere）起始で所見が一致しています ▶';
+      heroPill.textContent = '右半球支持：' + rightItems.length + '項目（うち高信頼度 ' + rHigh + '項目）／ 左半球支持：0項目';
+    } else if (leftItems.length > 0 && rightItems.length > 0) {
+      heroMain.textContent = '⚠ 左右両方の半球を示唆する所見が混在しています（不一致）';
+      heroPill.textContent = '左半球支持：' + leftItems.length + '項目（高信頼度 ' + lHigh + '） vs 右半球支持：' + rightItems.length + '項目（高信頼度 ' + rHigh + '）';
+      alerts.push({
+        level: 'high',
+        head: '⚠ 左右の側方徴候が食い違っています（Discordant signs）',
+        body: '1つの発作の中で左右の徴候が食い違う場合、①発作活動の対側半球への急速な伝播（出現時期の前後関係を確認）、②早期の非強制的頭部回旋と全般化直前の強制旋回の混同、③外側側頭葉てんかんや前頭葉てんかんなど病型による例外、④両側側頭葉棘波を伴う症例での偽側方化（Serles 1998 [35]）などを確認し、各徴候の出現順序と陽性的中率の高さから慎重に評価します [1,6]。'
+      });
+    } else {
+      heroMain.textContent = '選択された徴候は単独での左右判定を保留しています';
+      heroPill.textContent = '病型や言語優位半球の設定、または他の信頼性の高い側方徴候を確認してください';
+    }
+
+    // Marashly 2016 高信頼度運動徴候2項目以上一致
+    if (lMarashly >= 2 && rightItems.length === 0) {
+      alerts.push({
+        level: 'good',
+        head: '✓ 高信頼度の運動徴候が左半球起始で' + lMarashly + '項目一致しています（Marashly et al. 2016）',
+        body: '二次性全般化に至る焦点てんかんにおいて、陽性的中率80%超の運動徴候（強制旋回、一側強直、フェンシング肢位［M2e］、一側間代、非対称な間代終了、Todd麻痺）が2つ以上同じ半球を示した場合、発作起始域の側方判定の陽性的中率は100%（38例全例）と報告されています [19]。ただし側頭葉と側頭葉外の区別はできません。'
+      });
+    } else if (rMarashly >= 2 && leftItems.length === 0) {
+      alerts.push({
+        level: 'good',
+        head: '✓ 高信頼度の運動徴候が右半球起始で' + rMarashly + '項目一致しています（Marashly et al. 2016）',
+        body: '二次性全般化に至る焦点てんかんにおいて、陽性的中率80%超の運動徴候（強制旋回、一側強直、フェンシング肢位［M2e］、一側間代、非対称な間代終了、Todd麻痺）が2つ以上同じ半球を示した場合、発作起始域の側方判定の陽性的中率は100%（38例全例）と報告されています [19]。ただし側頭葉と側頭葉外の区別はできません。'
+      });
+    }
+
+    // 同側自動症＋対側ジストニア（MTLEの典型コンビネーション）
+    if (state.dystonia !== 'none' && state.automatism !== 'none') {
+      if (state.dystonia !== state.automatism) {
+        var mtleSide = state.automatism === 'L' ? '左半球' : '右半球';
+        alerts.push({
+          level: 'good',
+          head: '💡 「同側の上肢自動症＋反対側の発作時ジストニア」の組み合わせ（' + mtleSide + '起始）',
+          body: '発作起始と同じ側の上肢自動症と、反対側の上肢ジストニアの組み合わせは、内側側頭葉てんかん（MTLE）に特徴的な所見です（Kotagal 1989で41発作中39発作 [11]、Dupont 1999でMTLE 14例にみられ外側側頭葉てんかんではみられず [16]）。'
+        });
+      } else {
+        alerts.push({
+          level: 'caution',
+          head: '⚠ 同じ側の上肢でジストニアと自動症が両方選択されています',
+          body: '通常は一側の上肢にジストニアが出現して動きが妨げられ、その反対側（発作起始と同側）の上肢に自動症が出現します [1,11]。同じ上肢で時期を違えて観察されたのか、左右の入力が正しいかを確認してください。'
+        });
+      }
+    }
+
+    // Serles 1998 両側棘波の注意
+    if (ctx.spikes === 'bi' && activeCount > 0) {
+      alerts.push({
+        level: 'caution',
+        head: '⚠ 発作間欠期棘波が両側に出る症例での注意（Serles et al. 1998）',
+        body: '一側海馬硬化を伴う内側側頭葉てんかんでも、発作間欠期棘波が両側に出る患者では、第1群（強制旋回・発作後麻痺・発作早期の嘔吐/えずき）は100%正しかった一方、第2群（ジストニア・口角偏位・発作後言語障害・発作中発語）や第3群（非強制的早期頭部回旋・一側上肢自動症）では誤った側を示すことがありました [35]。'
+      });
+    }
+
+    // 保留項目（ピットフォール等）の表示
+    for (var ni = 0; ni < neutralItems.length; ni++) {
+      alerts.push({
+        level: 'caution',
+        head: '📌 ' + neutralItems[ni].name + '（' + neutralItems[ni].obsLabel + '）',
+        body: neutralItems[ni].reason
+      });
+    }
+
+    // 脳波・画像との照合
+    var semiHemi = null;
+    if (leftItems.length > 0 && rightItems.length === 0) semiHemi = 'L';
+    else if (rightItems.length > 0 && leftItems.length === 0) semiHemi = 'R';
+
+    var examSides = [];
+    if (ctx.ictalEeg === 'L' || ctx.ictalEeg === 'R') examSides.push({ name: '発作時脳波', side: ctx.ictalEeg });
+    if (ctx.mri === 'L' || ctx.mri === 'R') examSides.push({ name: '頭部MRI病変', side: ctx.mri });
+    if (ctx.func === 'L' || ctx.func === 'R') examSides.push({ name: '機能画像（SPECT/PET）', side: ctx.func });
+
+    if (semiHemi && examSides.length > 0) {
+      var mismatch = [];
+      var matchNames = [];
+      for (var ei = 0; ei < examSides.length; ei++) {
+        if (examSides[ei].side === semiHemi) matchNames.push(examSides[ei].name + '（' + sideJa(examSides[ei].side) + '）');
+        else mismatch.push(examSides[ei].name + '（' + sideJa(examSides[ei].side) + '）');
+      }
+      if (mismatch.length > 0) {
+        alerts.push({
+          level: 'high',
+          head: '🚨 臨床徴候（' + sideJa(semiHemi) + '）と検査所見（' + mismatch.join('・') + '）が食い違っています',
+          body: '症候が示す半球と脳波・画像所見が一致しない場合、発作活動の対側伝播、両側性のてんかん原性、またはMRI陰性の真の起始域が別にある可能性を含め、頭蓋内脳波などの追加評価を慎重に検討します [1,35]。'
+        });
+      } else if (matchNames.length > 0) {
+        alerts.push({
+          level: 'good',
+          head: '✓ 臨床徴候（' + sideJa(semiHemi) + '）と検査所見（' + matchNames.join('・') + '）が一致しています',
+          body: '側方徴候が示す半球と脳波・画像所見が一致しており、発作起始半球の推定の確かさが高まります [1,35]。'
+        });
+      }
+    }
+
+    var alertsHtml = '';
+    for (var ai = 0; ai < alerts.length; ai++) {
+      alertsHtml += '<div class="warning-box ' + alerts[ai].level + '"><div class="head">' + alerts[ai].head + '</div><div>' + alerts[ai].body + '</div></div>';
+    }
+    document.getElementById('alertsArea').innerHTML = alertsHtml;
+
+    // カルテ・レポート用テキスト生成
+    var lines = [];
+    lines.push('【焦点てんかん 側方徴候（セミオロジー）整理サマリ】');
+    var lobeMap = { unspecified: '未特定', mtle: '内側側頭葉てんかん（MTLE）疑い', ntle: '外側（新皮質）側頭葉てんかん（NTLE）疑い', fle: '前頭葉てんかん（FLE）疑い', ole: '後頭葉てんかん（OLE）疑い' };
+    var domMap = { left: '左半球優位と仮定', right: '右半球優位', unknown: '未確定（仮定しない）' };
+    var spkMap = { unknown: '未確認', uni: '一側のみ', bi: '両側独立' };
+    lines.push('・前提設定：病型＝' + lobeMap[ctx.lobe] + ' ／ 言語優位＝' + domMap[ctx.dom] + ' ／ 間欠期棘波＝' + spkMap[ctx.spikes]);
+    if (ctx.ictalEeg !== 'none' || ctx.mri !== 'none' || ctx.func !== 'none') {
+      lines.push('・検査所見：発作時EEG＝' + (ctx.ictalEeg === 'none' ? '未入力' : sideJa(ctx.ictalEeg)) + ' ／ MRI＝' + (ctx.mri === 'none' ? '未入力' : sideJa(ctx.mri)) + ' ／ SPECT・PET＝' + (ctx.func === 'none' ? '未入力' : sideJa(ctx.func)));
+    }
+    lines.push('────────────────────');
+    if (activeCount === 0) {
+      lines.push('・選択された側方徴候：なし');
+    } else {
+      lines.push('■ 左半球起始を支持する所見（' + leftItems.length + '項目）：');
+      if (leftItems.length === 0) lines.push('  なし');
+      for (var l = 0; l < leftItems.length; l++) {
+        lines.push('  - ' + leftItems[l].name + '：' + leftItems[l].obsLabel + ' [' + leftItems[l].tierLabel + ']');
+      }
+      lines.push('■ 右半球起始を支持する所見（' + rightItems.length + '項目）：');
+      if (rightItems.length === 0) lines.push('  なし');
+      for (var r = 0; r < rightItems.length; r++) {
+        lines.push('  - ' + rightItems[r].name + '：' + rightItems[r].obsLabel + ' [' + rightItems[r].tierLabel + ']');
+      }
+      if (neutralItems.length > 0) {
+        lines.push('■ 判定保留・ピットフォール確認項目（' + neutralItems.length + '項目）：');
+        for (var n = 0; n < neutralItems.length; n++) {
+          lines.push('  - ' + neutralItems[n].name + '：' + neutralItems[n].obsLabel + '（' + neutralItems[n].tierLabel + '）');
+        }
+      }
+    }
+    lines.push('────────────────────');
+    lines.push('【総合整理】' + heroMain.textContent);
+    if (alerts.length > 0) {
+      for (var a = 0; a < alerts.length; a++) {
+        lines.push('・' + alerts[a].head);
+      }
+    }
+    lines.push('※側方徴候は発作起始半球（または伝播経路・症状発現域）の手がかりであり、1つの徴候のみで確定せず脳波・画像と統合して判断する。');
+
+    var sBox = document.getElementById('summaryBox');
+    sBox.textContent = lines.join('\n');
+    sBox.dataset.plain = sBox.textContent;
+  }
+
+  function resetAll() {
+    for (var i = 0; i < SIGNS.length; i++) state[SIGNS[i].id] = 'none';
+    document.getElementById('ctxLobe').value = 'unspecified';
+    document.getElementById('ctxDom').value = 'left';
+    document.getElementById('ctxSpikes').value = 'unknown';
+    document.getElementById('ctxIctalEeg').value = 'none';
+    document.getElementById('ctxMri').value = 'none';
+    document.getElementById('ctxFunc').value = 'none';
+    update();
+  }
+
+  function applyPreset(name) {
+    resetAll();
+    if (name === 'mtle_left') {
+      document.getElementById('ctxLobe').value = 'mtle';
+      document.getElementById('ctxDom').value = 'left';
+      document.getElementById('ctxSpikes').value = 'uni';
+      document.getElementById('ctxMri').value = 'L';
+      state.dystonia = 'R';
+      state.automatism = 'L';
+      state.nosewipe = 'L';
+      state.aphasia = 'present';
+    } else if (name === 'fbtcs_left') {
+      document.getElementById('ctxLobe').value = 'unspecified';
+      document.getElementById('ctxIctalEeg').value = 'L';
+      state.version = 'R';
+      state.m2e = 'R';
+      state.asym_clonic = 'L';
+      state.todd = 'R';
+    } else if (name === 'pitfall_head') {
+      document.getElementById('ctxLobe').value = 'mtle';
+      state.nonversive = 'L';
+      state.version = 'R';
+      state.dystonia = 'R';
+    } else if (name === 'bitemporal') {
+      document.getElementById('ctxLobe').value = 'mtle';
+      document.getElementById('ctxSpikes').value = 'bi';
+      document.getElementById('ctxMri').value = 'L';
+      state.version = 'R';
+      state.todd = 'R';
+      state.dystonia = 'R';
+      state.automatism = 'R';
+    }
+    update();
+  }
+
+  buildUI();
+  update();
+
+  container.addEventListener('click', function(e) {
+    var t = e.target;
+    while (t && t !== container && t.tagName !== 'BUTTON') t = t.parentElement;
+    if (!t || t === container || !t.parentElement || !t.parentElement.classList.contains('seg')) return;
+    var id = t.parentElement.getAttribute('data-id');
+    var val = t.getAttribute('data-val');
+    state[id] = val;
+    update();
+  });
+
+  var ctxIds = ['ctxLobe', 'ctxDom', 'ctxSpikes', 'ctxIctalEeg', 'ctxMri', 'ctxFunc'];
+  for (var c = 0; c < ctxIds.length; c++) {
+    document.getElementById(ctxIds[c]).addEventListener('change', update);
+  }
+
+  var pBtns = document.querySelectorAll('.preset-btn[data-preset]');
+  for (var p = 0; p < pBtns.length; p++) {
+    pBtns[p].addEventListener('click', function() {
+      applyPreset(this.getAttribute('data-preset'));
+    });
+  }
+
+  document.getElementById('resetBtn').addEventListener('click', resetAll);
+  document.getElementById('topResetBtn').addEventListener('click', resetAll);
+
+  document.getElementById('copyBtn').addEventListener('click', function() {
+    var btn = this;
+    var box = document.getElementById('summaryBox');
+    var text = box.dataset.plain || box.textContent;
+    function done() {
+      btn.textContent = '✓ コピー完了';
+      btn.classList.add('copied');
+      setTimeout(function() {
+        btn.textContent = '📋 クリップボードにコピー';
+        btn.classList.remove('copied');
+      }, 1800);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, function() { done(); });
+    } else {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch (err) {}
+      document.body.removeChild(ta);
+      done();
+    }
+  });
+})();
+</script>
+</body>
+</html>
