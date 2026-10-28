@@ -1,5 +1,34 @@
-const CACHE_NAME = 'ddx-tools-v287';
+const CACHE_NAME = 'ddx-tools-v288';
 const ASSETS = [
+  './infographics/ad-delirium-pharmacotherapy-reference-repair-20261027/index.html',
+  './infographics/aria-apoe-japan-reference-repair-20261027/index.html',
+  './infographics/aseptic-meningitis-overview-reference-repair-20261027/index.html',
+  './infographics/autoimmune-encephalitis-diagnosis-treatment-reference-repair-20261027/index.html',
+  './infographics/autoimmune-encephalitis-epilepsy-withdrawal-reference-repair-20261027/index.html',
+  './infographics/autoimmune-nodopathy-reference-repair-20261028/index.html',
+  './infographics/cenobamate-focal-epilepsy-reference-repair-20261027/index.html',
+  './infographics/ed-seizure-management-reference-repair-20261028/index.html',
+  './infographics/elderly-ncse-iic-reference-repair-20261028/index.html',
+  './infographics/fenfluramine-fintepla-reference-repair-20261027/index.html',
+  './infographics/levetiracetam-overview-reference-repair-20261027/index.html',
+  './infographics/mg-antibody-therapies-reference-repair-20261028/index.html',
+  './infographics/mg-treatment-20y-reference-repair-20261028/index.html',
+  './infographics/norse-review-reference-repair-20261028/index.html',
+  './infographics/reflux-sleep-position-20261028/index.html',
+  './infographics/telemetry-appropriate-use/index.html',
+
+
+  './infographics/gad-primary-care-reference-repair-20261029/index.html',
+  './infographics/gad-primary-care-reference-repair-20261029/infographic.png',
+  './infographics/adult-adhd-guide-reference-repair-20261029/assessment.html',
+  './infographics/adult-adhd-guide-reference-repair-20261029/assessment.png',
+  './infographics/adult-adhd-guide-reference-repair-20261029/index.html',
+  './infographics/adult-adhd-guide-reference-repair-20261029/infographic.png',
+  './infographics/adult-adhd-guide-reference-repair-20261029/treatment.html',
+  './infographics/adult-adhd-guide-reference-repair-20261029/treatment.png',
+  './infographics/adult-nightmares-reference-repair-20261029/index.html',
+  './infographics/adult-nightmares-reference-repair-20261029/infographic.png',
+
   './seizure_lateralization.html',
   './infographics/fshd-overview-reference-repair-20261027/index.html',
   './infographics/grapefruit-drug-interactions/index.html',
