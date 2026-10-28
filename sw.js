@@ -1,5 +1,7 @@
-const CACHE_NAME = 'ddx-tools-v288';
+const CACHE_NAME = 'ddx-tools-v289';
 const ASSETS = [
+  './infographics/drug-eruption/index.html',
+  './infographics/drug-eruption/infographic.png',
   './infographics/ad-delirium-pharmacotherapy-reference-repair-20261027/index.html',
   './infographics/aria-apoe-japan-reference-repair-20261027/index.html',
   './infographics/aseptic-meningitis-overview-reference-repair-20261027/index.html',
