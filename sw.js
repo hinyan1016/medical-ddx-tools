@@ -1,5 +1,6 @@
-const CACHE_NAME = 'ddx-tools-v301';
+const CACHE_NAME = 'ddx-tools-v302';
 const ASSETS = [
+  './calorie_protein_calculator.html',
   './drug_eruption_assessment.html',
   './infographics/acne-vulgaris-guide-reference-repair-20261029/index.html',
   './infographics/acne-vulgaris-guide-reference-repair-20261029/infographic.png',

@@ -1,0 +1,2864 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#2C6E49">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="必要エネルギー量（カロリー）・タンパク質・PFCバランス・適切水分量・経口0%（経管栄養）時の追加白湯投与量を一画面で計算する臨床栄養ツール。一般・高齢者フレイル・周術期、ALS（清水の式・換気量REE式・TPPV減量・PEG適応）、パーキンソン病（PD係数・レボドパ競合対策のタンパク質夕重点配分）、脳卒中（急性期〜回復期リハ）、認知症（徘徊BPSD〜嚥下障害）に対応。日本人式（Ganpule）・浮腫乾燥体重補正・発熱補正・CKD/糖尿病/COPD/肝硬変オーバーレイ・段階的増量スケジュール・医薬品経腸栄養剤（イノラス・エンシュアH・イノソリッド・エレンタール等）＆濃厚流動食・栄養補助食品（MA-ラクフィア・ハイネックスイーゲル・ペプタメン・アイソカルサポート・リカバリーK5・PGソフト・リーナレンMP・ブイ・クレスCP10等）の単剤および複数栄養剤の組み合わせ処方計算つき。">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>必要エネルギー・タンパク質・水分量計算ツール（一般・フレイル・ALS・PD・脳卒中・認知症・経管白湯対応）</title>
+<meta property="og:title" content="必要エネルギー・タンパク質・水分量計算ツール（一般・フレイル・ALS・PD・脳卒中・認知症・経管白湯対応）">
+<meta property="og:description" content="必要エネルギー量（カロリー）・タンパク質・PFCバランス・適切水分量・経口0%（経管栄養）時の追加白湯投与量を一画面で計算する臨床栄養ツール。一般・高齢者フレイル・周術期、ALS（清水の式・換気量REE式・TPPV減量・PEG適応）、パーキンソン病（PD係数・レボドパ競合対策のタンパク質夕重点配分）、脳卒中（急性期〜回復期リハ）、認知症（徘徊BPSD〜嚥下障害）に対応。日本人式（Ganpule）・浮腫乾燥体重補正・発熱補正・CKD/糖尿病/COPD/肝硬変オーバーレイ・段階的増量スケジュール・医薬品経腸栄養剤（イノラス・エンシュアH・イノソリッド・エレンタール等）＆濃厚流動食・栄養補助食品（MA-ラクフィア・ハイネックスイーゲル・ペプタメン・アイソカルサポート・リカバリーK5・PGソフト・リーナレンMP・ブイ・クレスCP10等）の単剤および複数栄養剤の組み合わせ処方計算つき。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tools.ichisouzo-lab.com/calorie_protein_calculator.html">
+<meta property="og:image" content="https://tools.ichisouzo-lab.com/assets/og-tools.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="医知創造ラボ">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root {
+    --dark: #1E5235;
+    --primary: #2C6E49;
+    --mid: #4C956C;
+    --light: #E8F3EC;
+    --navy: #1A5276;
+    --accent: #E07000;
+    --red: #C0392B;
+    --orange: #D97706;
+    --green: #2E7D32;
+    --gray: #5C6770;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 10px rgba(30,82,53,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #E8F3EC 0%, #F4F6F8 100%);
+    color: #222; min-height: 100vh; padding: 0 0 44px; line-height: 1.58;
+  }
+  header {
+    background: linear-gradient(135deg, var(--dark), var(--mid));
+    color: var(--white); padding: 14px 20px 18px; text-align: center;
+    box-shadow: 0 4px 16px rgba(30,82,53,0.18);
+  }
+  .back-bar { display: flex; align-items: center; margin-bottom: 8px; max-width: 920px; margin-left: auto; margin-right: auto; }
+  .back-bar a {
+    color: rgba(255,255,255,0.88); text-decoration: none; font-size: 0.85em;
+    display: flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 6px;
+  }
+  .back-bar a:active { background: rgba(255,255,255,0.15); }
+  header h1 { font-size: 1.38em; font-weight: 700; letter-spacing: 0.02em; }
+  header p { font-size: 0.84em; margin-top: 6px; opacity: 0.92; max-width: 820px; margin-left: auto; margin-right: auto; }
+  .container { max-width: 920px; margin: 0 auto; padding: 18px 14px; }
+
+  .alert-disclaimer {
+    background: #fff8e1; border-left: 4px solid var(--orange);
+    padding: 10px 14px; margin-bottom: 16px; border-radius: 6px;
+    font-size: 0.84em; color: #5d4400; line-height: 1.6;
+  }
+
+  .card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 16px; overflow: hidden; }
+  .card-header {
+    padding: 12px 16px; background: var(--light); border-bottom: 2px solid var(--primary);
+    font-weight: 700; font-size: 1em; color: var(--primary);
+    display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;
+  }
+  .card-header .sub-tag { font-size: 0.78em; font-weight: 600; color: var(--dark); background: rgba(44,110,73,0.12); padding: 2px 9px; border-radius: 999px; }
+  .card-body { padding: 16px; }
+
+  .mode-tabs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; }
+  .mode-tab {
+    border: 2px solid #CBD9DC; background: #FAFCFB; color: var(--dark);
+    padding: 10px 9px; border-radius: 9px; cursor: pointer; text-align: left;
+    transition: all 0.14s; font-family: inherit;
+  }
+  .mode-tab:hover { border-color: var(--mid); background: #F2F9F5; }
+  .mode-tab.active { background: var(--primary); color: var(--white); border-color: var(--primary); box-shadow: 0 3px 10px rgba(44,110,73,0.22); }
+  .mode-tab .t-title { display: block; font-size: 0.9em; font-weight: 800; margin-bottom: 3px; line-height: 1.3; }
+  .mode-tab .t-sub { display: block; font-size: 0.72em; opacity: 0.86; line-height: 1.35; }
+
+  .param { padding: 12px 0; border-bottom: 1px solid #eef2f3; }
+  .param:first-child { padding-top: 2px; }
+  .param:last-child { border-bottom: none; padding-bottom: 2px; }
+  .param-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  label.field-label { font-weight: 700; font-size: 0.94em; color: var(--primary); }
+  .param-badge {
+    flex-shrink: 0; font-weight: 800; font-size: 0.78em; padding: 3px 10px;
+    border-radius: 999px; color: var(--white); background: var(--mid);
+  }
+  .bg-warn { background: var(--accent); }
+  .bg-danger { background: var(--red); }
+  .bg-ok { background: var(--green); }
+  .bg-navy { background: var(--navy); }
+
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .input-box { background: #F8FAFB; border: 1px solid #E1E8EB; border-radius: 8px; padding: 10px 12px; }
+  .input-box label { display: block; font-size: 0.8em; font-weight: 700; color: var(--gray); margin-bottom: 5px; }
+  .input-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .input-row input[type="number"] {
+    width: 90px; padding: 8px 10px; font-size: 1.06em; font-weight: 700;
+    border: 2px solid #CBD9DC; border-radius: 7px; color: var(--dark);
+    text-align: right; font-family: inherit; background: var(--white);
+  }
+  .input-row input[type="number"]:focus { outline: none; border-color: var(--primary); }
+  .unit { font-size: 0.85em; color: var(--gray); font-weight: 600; }
+
+  .seg { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+  .seg button {
+    border: 2px solid #CBD9DC; background: var(--white); color: var(--primary);
+    padding: 7px 11px; border-radius: 8px; font-family: inherit; font-size: 0.85em;
+    font-weight: 600; cursor: pointer; transition: all 0.12s; line-height: 1.35;
+  }
+  .seg button:hover { border-color: var(--mid); background: #F4FAF6; }
+  .seg button.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
+  .seg button.active.warn-btn { background: var(--accent); border-color: var(--accent); }
+  .seg button.active.danger-btn { background: var(--red); border-color: var(--red); }
+
+  .check-grid { display: flex; flex-wrap: wrap; gap: 7px; }
+  .check-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    border: 2px solid #CBD9DC; background: var(--white); color: #2b3e50;
+    padding: 7px 12px; border-radius: 8px; font-size: 0.85em; font-weight: 600;
+    cursor: pointer; user-select: none; transition: all 0.12s;
+  }
+  .check-pill:hover { border-color: var(--navy); background: #F4F8FB; }
+  .check-pill input { accent-color: var(--navy); width: 15px; height: 15px; cursor: pointer; }
+  .check-pill.checked { background: #EAF2F8; border-color: var(--navy); color: var(--navy); font-weight: 700; }
+
+  .hint { font-size: 0.8em; color: var(--gray); margin-top: 6px; line-height: 1.55; }
+  .hint b { color: var(--dark); }
+
+  .metrics-strip {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
+    background: var(--light); border-radius: 8px; padding: 10px 12px; margin-top: 10px;
+  }
+  .metric-item { text-align: center; background: var(--white); padding: 8px 6px; border-radius: 6px; border: 1px solid #d5e6dc; }
+  .metric-item .m-lbl { font-size: 0.72em; color: var(--gray); font-weight: 600; }
+  .metric-item .m-val { font-size: 1.04em; font-weight: 800; color: var(--dark); margin-top: 2px; }
+  .metric-item .m-sub { font-size: 0.7em; color: var(--gray); margin-top: 1px; line-height: 1.3; }
+
+  .hero-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 11px; margin-bottom: 14px; }
+  .hero-box {
+    border-radius: var(--radius); padding: 16px 15px; color: var(--white);
+    background: linear-gradient(135deg, var(--dark), var(--mid));
+    box-shadow: 0 3px 12px rgba(30,82,53,0.16);
+  }
+  .hero-box.protein-hero { background: linear-gradient(135deg, #1A5276, #2E86C1); }
+  .hero-box.water-hero { background: linear-gradient(135deg, #0E6251, #148F77); }
+  .hero-box.warn-hero { background: linear-gradient(135deg, #8B1A1A, var(--red)); }
+  .hero-box .h-eyebrow { font-size: 0.79em; opacity: 0.93; font-weight: 600; line-height: 1.35; }
+  .hero-box .h-main { font-size: 1.72em; font-weight: 800; margin: 4px 0; line-height: 1.2; letter-spacing: 0.01em; }
+  .hero-box .h-range { font-size: 0.83em; font-weight: 700; background: rgba(255,255,255,0.18); display: inline-block; padding: 3px 10px; border-radius: 999px; margin-top: 4px; }
+  .hero-box .h-sub { font-size: 0.77em; opacity: 0.94; margin-top: 8px; line-height: 1.45; }
+
+  .water-plan-box {
+    background: #F0F9F7; border: 2px solid #148F77; border-radius: 9px;
+    padding: 14px 15px; margin-bottom: 14px;
+  }
+  .water-plan-head {
+    font-weight: 800; font-size: 0.96em; color: #0E6251; margin-bottom: 8px;
+    display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;
+  }
+  .water-step-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; margin-top: 10px; }
+  .water-step-card {
+    background: var(--white); border: 1px solid #BCE0D8; border-radius: 8px;
+    padding: 10px 10px; text-align: center;
+  }
+  .water-step-card.highlight-sayu { background: #E6F6F2; border: 2px solid #0E6251; }
+  .water-step-card .ws-lbl { font-size: 0.74em; font-weight: 700; color: #0E6251; }
+  .water-step-card .ws-val { font-size: 1.22em; font-weight: 800; color: #0B4A3E; margin: 4px 0 2px; line-height: 1.25; }
+  .water-step-card .ws-sub { font-size: 0.72em; color: var(--gray); line-height: 1.38; }
+  .rounded-rx-bar {
+    margin-top: 10px; background: var(--white); border-left: 4px solid #148F77;
+    padding: 9px 12px; border-radius: 6px; font-size: 0.83em; color: #153c33; line-height: 1.55;
+  }
+
+  .sub-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px; }
+  .sub-metric-card { background: #F8FAFB; border: 1px solid #DCE4E8; border-radius: 8px; padding: 10px; text-align: center; }
+  .sub-metric-card .sm-lbl { font-size: 0.75em; color: var(--gray); font-weight: 700; }
+  .sub-metric-card .sm-val { font-size: 1.12em; font-weight: 800; color: var(--dark); margin-top: 3px; }
+  .sub-metric-card .sm-note { font-size: 0.71em; color: var(--gray); margin-top: 2px; }
+
+  .pfc-box { background: #F8FAFB; border: 1px solid #DCE4E8; border-radius: 9px; padding: 12px 14px; margin-bottom: 14px; }
+  .pfc-bar { display: flex; height: 22px; border-radius: 999px; overflow: hidden; margin: 8px 0; font-size: 0.75em; font-weight: 700; color: #fff; }
+  .pfc-seg-p { background: #1A5276; display: flex; align-items: center; justify-content: center; }
+  .pfc-seg-f { background: #D97706; display: flex; align-items: center; justify-content: center; }
+  .pfc-seg-c { background: #2C6E49; display: flex; align-items: center; justify-content: center; }
+  .pfc-legend { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 0.83em; text-align: center; }
+  .pfc-item { background: #fff; border: 1px solid #E1E8EB; border-radius: 6px; padding: 7px; }
+  .pfc-item b { font-size: 1.06em; }
+
+  .warning-box { padding: 11px 14px; margin-bottom: 10px; border-radius: 6px; font-size: 0.87em; line-height: 1.6; }
+  .warning-box:last-child { margin-bottom: 0; }
+  .warning-box .head { font-weight: 700; margin-bottom: 3px; }
+  .warning-box.red { background: #fdecea; border-left: 4px solid var(--red); color: #6a1a1a; }
+  .warning-box.red .head { color: var(--red); }
+  .warning-box.caution { background: #fff8e1; border-left: 4px solid var(--orange); color: #5d4400; }
+  .warning-box.caution .head { color: #b45309; }
+  .warning-box.info { background: var(--light); border-left: 4px solid var(--mid); color: #173a27; }
+  .warning-box.info .head { color: var(--primary); }
+  .warning-box.blue { background: #EAF2F8; border-left: 4px solid var(--navy); color: #15324E; }
+  .warning-box.blue .head { color: var(--navy); }
+
+  .tbl-wrap { overflow-x: auto; }
+  .lookup-table { width: 100%; border-collapse: collapse; font-size: 0.84em; }
+  .lookup-table th, .lookup-table td { border: 1px solid #D5E0E2; padding: 7px 9px; text-align: center; vertical-align: middle; }
+  .lookup-table th { background: var(--primary); color: var(--white); font-weight: 700; }
+  .lookup-table th.navy-th { background: var(--navy); }
+  .lookup-table td.left, .lookup-table th.left { text-align: left; }
+  .lookup-table tr.active-formula { background: #E8F3EC; font-weight: 700; }
+  .chip { display: inline-block; padding: 2px 8px; border-radius: 6px; color: #fff; font-weight: 700; font-size: 0.81em; }
+
+  .meal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 8px; }
+  .meal-grid.les-4 { grid-template-columns: repeat(4, 1fr); }
+  .meal-card { border: 1px solid #CBD9DC; border-radius: 8px; padding: 10px 11px; background: #FAFCFB; text-align: center; }
+  .meal-card.evening-focus { border-color: #2E86C1; background: #F0F7FC; }
+  .meal-card.les-focus { border-color: var(--orange); background: #FFFBEB; }
+  .meal-card .mc-title { font-size: 0.82em; font-weight: 700; color: var(--navy); }
+  .meal-card .mc-gram { font-size: 1.3em; font-weight: 800; color: var(--dark); margin: 4px 0; }
+  .meal-card .mc-desc { font-size: 0.74em; color: var(--gray); line-height: 1.42; }
+
+  .recipe-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+  .recipe-card { border: 1px solid #C5D9CE; background: #F6FBF8; border-radius: 8px; padding: 12px 13px; }
+  .recipe-card .rc-head { font-weight: 800; font-size: 0.88em; color: var(--dark); margin-bottom: 5px; line-height: 1.35; }
+  .recipe-card .rc-body { font-size: 0.81em; color: #2b3e50; line-height: 1.56; }
+
+  .grp-tag {
+    display: inline-block; font-size: 0.71em; font-weight: 700; padding: 1px 7px;
+    border-radius: 4px; color: #fff; margin-right: 5px; vertical-align: middle;
+  }
+  .grp-pharm { background: #1A5276; }
+  .grp-food { background: #2C6E49; }
+  .grp-supp { background: #7D3C98; }
+  .grp-ref { background: #6C7A86; }
+  .tube-grp-lbl { font-size: 0.76em; font-weight: 700; color: #154c40; margin: 6px 0 4px; }
+  .lookup-table tr.clickable-row { cursor: pointer; }
+  .lookup-table tr.clickable-row:hover { background: #F2FAF6; }
+
+  .combo-box {
+    background: #F7F5FB; border: 2px solid #6C4B9E; border-radius: 9px;
+    padding: 14px 15px; margin-bottom: 16px;
+  }
+  .combo-head {
+    font-weight: 800; font-size: 0.96em; color: #4A2E7A; margin-bottom: 6px;
+    display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;
+  }
+  .combo-presets { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 10px; }
+  .combo-presets button {
+    border: 1.5px solid #9B82C4; background: #fff; color: #4A2E7A;
+    padding: 5px 10px; border-radius: 7px; font-family: inherit; font-size: 0.79em;
+    font-weight: 700; cursor: pointer; transition: all 0.12s; line-height: 1.35;
+  }
+  .combo-presets button:hover { background: #EFEAF8; border-color: #6C4B9E; }
+  .combo-row {
+    background: #fff; border: 1px solid #D9D0EA; border-radius: 8px;
+    padding: 10px 11px; margin-bottom: 8px;
+  }
+  .combo-row-top {
+    display: grid; grid-template-columns: 118px minmax(0, 1fr); gap: 8px; align-items: center;
+  }
+  .combo-role {
+    font-size: 0.8em; font-weight: 800; color: #4A2E7A; background: #EFEAF8;
+    padding: 4px 8px; border-radius: 6px; text-align: center;
+  }
+  .combo-sel {
+    width: 100%; max-width: 100%; padding: 7px 9px; font-size: 0.86em; font-weight: 700;
+    border: 2px solid #CBD9DC; border-radius: 7px; color: #222; font-family: inherit; background: #fff;
+  }
+  .combo-sel:focus { outline: none; border-color: #6C4B9E; }
+  .combo-ctrl-bar {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+    gap: 8px; margin-top: 8px; padding-top: 7px; border-top: 1px dashed #E5DFF0;
+  }
+  .combo-stepper { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
+  .step-btn {
+    border: 1.5px solid #B8A7D9; background: #FAF8FD; color: #4A2E7A;
+    padding: 4px 9px; border-radius: 6px; font-family: inherit; font-size: 0.82em;
+    font-weight: 800; cursor: pointer;
+  }
+  .step-btn:hover { background: #E9E1F7; }
+  .combo-qty {
+    width: 68px; padding: 5px 7px; font-size: 0.96em; font-weight: 800;
+    border: 2px solid #B8A7D9; border-radius: 6px; text-align: right; color: #222; font-family: inherit;
+  }
+  .combo-unit { font-size: 0.82em; font-weight: 700; color: var(--gray); min-width: 34px; }
+  .auto-fill-btn {
+    border: 1.5px solid #6C4B9E; background: #6C4B9E; color: #fff;
+    padding: 4px 9px; border-radius: 6px; font-family: inherit; font-size: 0.77em;
+    font-weight: 700; cursor: pointer;
+  }
+  .auto-fill-btn:hover { background: #4A2E7A; }
+  .combo-sub { font-size: 0.81em; font-weight: 700; color: #2c3e50; }
+  .combo-rem-bar {
+    background: #EFEAF8; border-left: 4px solid #6C4B9E; border-radius: 5px;
+    padding: 6px 10px; margin: -2px 0 8px; font-size: 0.8em; color: #36205D; line-height: 1.48;
+  }
+  .combo-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
+  .combo-kpi {
+    background: #fff; border: 1px solid #D3C6E8; border-radius: 8px; padding: 9px 9px; text-align: center;
+  }
+  .combo-kpi.sayu-kpi { background: #E6F6F2; border: 2px solid #0E6251; }
+  .combo-kpi .ck-lbl { font-size: 0.73em; font-weight: 700; color: #4A2E7A; }
+  .combo-kpi.sayu-kpi .ck-lbl { color: #0E6251; }
+  .combo-kpi .ck-val { font-size: 1.18em; font-weight: 800; color: #2A1847; margin: 3px 0 2px; line-height: 1.25; }
+  .combo-kpi.sayu-kpi .ck-val { color: #0B4A3E; }
+  .combo-kpi .ck-sub { font-size: 0.72em; color: var(--gray); line-height: 1.36; }
+
+  details.fold-panel { border: 1px solid #B9CDD2; border-radius: 8px; background: #FAFCFB; margin-top: 12px; }
+  details.fold-panel summary {
+    padding: 10px 14px; font-weight: 700; font-size: 0.92em; color: var(--navy);
+    cursor: pointer; background: #EEF4F8; border-radius: 8px; line-height: 1.45;
+  }
+  details.fold-panel summary:hover { background: #E2ECF3; }
+  details.fold-panel summary:focus-visible { outline: 3px solid rgba(26,82,118,0.35); outline-offset: 2px; }
+  details.fold-panel summary .fold-title { overflow-wrap: anywhere; }
+  details.fold-panel summary .fold-hint { display: block; font-size: 0.8em; font-weight: 600; color: var(--gray); margin-top: 2px; padding-left: 1.1em; }
+  details.fold-panel[open] summary { border-bottom: 1px solid #B9CDD2; border-radius: 8px 8px 0 0; }
+  details.fold-panel .fold-body { padding: 12px 14px; }
+  details.fold-panel .fold-body > .param:first-child { padding-top: 0; }
+
+  /* 画面上部に固定する結果の要約 */
+  .sticky-result {
+    position: sticky; top: 0; z-index: 30; display: grid; grid-template-columns: repeat(3, 1fr);
+    max-width: 920px; margin: 0 auto; gap: 6px; padding: 7px 14px;
+    background: rgba(255,255,255,0.96); border-bottom: 1px solid #D5E0E2; box-shadow: 0 3px 10px rgba(30,82,53,0.10);
+  }
+  .sr-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; border-radius: 7px; padding: 4px 6px; color: #fff; }
+  .sr-energy { background: var(--primary); }
+  .sr-protein { background: var(--navy); }
+  .sr-water { background: #0E6251; }
+  .sr-lbl { font-size: 0.72em; font-weight: 600; opacity: 0.92; }
+  .sr-val { font-size: 1.02em; font-weight: 800; line-height: 1.3; white-space: nowrap; }
+
+  .step-no {
+    display: inline-flex; align-items: center; justify-content: center; width: 1.6em; height: 1.6em;
+    border-radius: 50%; background: var(--primary); color: #fff; font-size: 0.9em; margin-right: 7px;
+  }
+  .basic-row { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: center; }
+  .seg-sex { flex-direction: column; }
+  .mode-panel { margin-top: 6px; border-bottom: 1px solid #eef2f3; }
+  .param-comorb { padding-top: 14px; }
+  .mini-label { font-size: 0.81em; font-weight: 700; color: var(--gray); margin-bottom: 5px; }
+  .mini-label.teal { color: #0E6251; }
+  .mini-label.purple { color: #4A2E7A; }
+  .bg-teal { background: #0E6251; }
+  .bg-purple { background: #4A2E7A; }
+  .section-label { font-weight: 700; font-size: 0.93em; color: var(--navy); margin-bottom: 4px; }
+  #mealPlanSection { margin-top: 14px; }
+  .pfc-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 6px; }
+  .pfc-title { font-weight: 700; font-size: 0.9em; color: var(--navy); }
+  .pfc-note { font-size: 0.78em; color: var(--gray); }
+  .card-result { border: 2px solid var(--primary); }
+  .combo-link-row { margin-top: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .related-box { font-size: 0.88em; line-height: 1.75; background: #F8FAFB; padding: 12px 14px; border-radius: 8px; border: 1px solid #E1E8EB; }
+  .related-box a { color: var(--navy); font-weight: 700; }
+
+  .template-box {
+    background: #14301f; color: #e4efe8; padding: 14px 16px; border-radius: 8px;
+    font-family: "Consolas", "MS Gothic", monospace; font-size: 0.83em; line-height: 1.68;
+    white-space: pre-wrap; word-wrap: break-word; margin-bottom: 10px;
+  }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .copy-btn {
+    background: var(--primary); color: var(--white); border: none; padding: 10px 18px;
+    border-radius: 7px; cursor: pointer; font-family: inherit; font-size: 0.9em; font-weight: 700;
+  }
+  .copy-btn:hover { background: var(--dark); }
+  .copy-btn.copied { background: var(--green); }
+  .print-btn {
+    background: var(--white); color: var(--primary); border: 2px solid var(--primary); padding: 8px 16px;
+    border-radius: 7px; cursor: pointer; font-family: inherit; font-size: 0.9em; font-weight: 700;
+  }
+
+  .ref-list { font-size: 0.81em; color: #333; line-height: 1.68; padding-left: 20px; }
+  .ref-list li { margin-bottom: 5px; }
+  .ref-list a { color: var(--mid); text-decoration: none; font-weight: 600; }
+  .ref-list a:hover { text-decoration: underline; }
+
+  footer { max-width: 920px; margin: 28px auto 0; padding: 14px; text-align: center; color: var(--gray); font-size: 0.78em; line-height: 1.6; }
+  footer a { color: var(--mid); text-decoration: none; }
+
+  @media (max-width: 820px) {
+    .mode-tabs { grid-template-columns: repeat(2, 1fr); }
+    .metrics-strip { grid-template-columns: repeat(3, 1fr); }
+    .hero-grid, .recipe-cards { grid-template-columns: 1fr; }
+    .water-step-grid, .combo-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .mode-tabs { grid-template-columns: repeat(2, 1fr); }
+    .basic-row { grid-template-columns: 1fr; }
+    .seg-sex { flex-direction: row; }
+    .sticky-result { padding: 6px 8px; gap: 4px; }
+    .sr-val { font-size: 0.9em; }
+    .grid-4, .grid-3, .metrics-strip, .sub-metrics { grid-template-columns: repeat(2, 1fr); }
+    .hero-grid, .grid-2, .meal-grid, .meal-grid.les-4, .recipe-cards, .pfc-legend, .water-step-grid, .combo-kpi-grid, .combo-row-top { grid-template-columns: 1fr; }
+    header h1 { font-size: 1.18em; }
+    .hero-box .h-main { font-size: 1.55em; }
+  }
+  @media print {
+    #ics-globalnav, .back-bar, .btn-row, .sticky-result { display: none !important; }
+    details.fold-panel summary .fold-hint { display: none; }
+    body { background: #fff; padding: 0; }
+    .card { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<nav id="ics-globalnav" style="background:#15324E;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
+<div style="max-width:1040px;margin:0 auto;padding:8px 12px;display:flex;align-items:center;gap:2px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;">
+<a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;padding-right:8px;">医知創造ラボ</a>
+<a href="https://ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ホーム</a>
+<a href="https://blog.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ブログ</a>
+<a href="https://tools.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ツール</a>
+<a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">YouTube</a>
+</div>
+</nav>
+<header>
+  <div class="back-bar"><a href="index.html">← ツール一覧へ</a></div>
+  <h1>必要エネルギー・タンパク質・水分量 計算ツール</h1>
+  <p>一般・フレイル／ALS／パーキンソン病／脳卒中／認知症に対応。①②を入力すると、すぐ下に1日の目標量が出ます。</p>
+</header>
+
+<!-- 画面上部に固定する結果の要約 -->
+<div class="sticky-result" id="stickyResult" aria-live="polite">
+  <a href="#resultCard" class="sr-item sr-energy"><span class="sr-lbl">エネルギー</span><span class="sr-val" id="sr_energy">—</span></a>
+  <a href="#resultCard" class="sr-item sr-protein"><span class="sr-lbl">タンパク質</span><span class="sr-val" id="sr_protein">—</span></a>
+  <a href="#resultCard" class="sr-item sr-water"><span class="sr-lbl">水分</span><span class="sr-val" id="sr_water">—</span></a>
+</div>
+
+<div class="container">
+
+  <p class="alert-disclaimer">
+    <strong>医療従事者向けの計算支援ツールです。</strong>算出値は初期設計の目安です。実臨床では<strong>体重推移・嚥下機能・血糖・腎機能（BUN/eGFR）・電解質（リフィーディングリスク）</strong>を定期的に追って調整してください。根拠としたガイドラインと計算式はページ末の参考文献にまとめています。
+  </p>
+
+  <!-- ① 患者情報 -->
+  <div class="card">
+    <div class="card-header">
+      <span><span class="step-no">1</span>患者さんの情報</span>
+      <span class="sub-tag" id="ageBmiTargetTag">年齢別目標BMI —</span>
+    </div>
+    <div class="card-body">
+      <div class="basic-row">
+        <div class="seg seg-sex" id="segSex">
+          <button type="button" data-val="male" class="active">男性</button>
+          <button type="button" data-val="female">女性</button>
+        </div>
+        <div class="grid-4">
+          <div class="input-box">
+            <label for="age">年齢</label>
+            <div class="input-row"><input type="number" id="age" value="68" min="18" max="115" step="1" inputmode="numeric"><span class="unit">歳</span></div>
+          </div>
+          <div class="input-box">
+            <label for="height">身長</label>
+            <div class="input-row"><input type="number" id="height" value="165" min="100" max="220" step="0.1" inputmode="decimal"><span class="unit">cm</span></div>
+          </div>
+          <div class="input-box">
+            <label for="weight">現体重</label>
+            <div class="input-row"><input type="number" id="weight" value="55.0" min="20" max="200" step="0.1" inputmode="decimal"><span class="unit">kg</span></div>
+          </div>
+          <div class="input-box">
+            <label for="usualWeight">通常時体重（任意）</label>
+            <div class="input-row"><input type="number" id="usualWeight" placeholder="例: 60" min="20" max="200" step="0.1" inputmode="decimal"><span class="unit">kg</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="metrics-strip">
+        <div class="metric-item">
+          <div class="m-lbl">BMI</div>
+          <div class="m-val" id="m_bmi">—</div>
+          <div class="m-sub" id="m_bmi_sub">kg/m²</div>
+        </div>
+        <div class="metric-item">
+          <div class="m-lbl">目標体重範囲</div>
+          <div class="m-val" id="m_target_wt">—</div>
+          <div class="m-sub" id="m_target_bmi_lbl">食事摂取基準</div>
+        </div>
+        <div class="metric-item">
+          <div class="m-lbl">標準体重</div>
+          <div class="m-val" id="m_ibw">—</div>
+          <div class="m-sub">BMI 22 換算</div>
+        </div>
+        <div class="metric-item">
+          <div class="m-lbl">基礎代謝</div>
+          <div class="m-val" id="m_bee">—</div>
+          <div class="m-sub" id="m_bee_sub">Harris-Benedict</div>
+        </div>
+        <div class="metric-item">
+          <div class="m-lbl">体重変化率</div>
+          <div class="m-val" id="m_wloss">—</div>
+          <div class="m-sub" id="m_wloss_sub">通常時比</div>
+        </div>
+      </div>
+
+      <details class="fold-panel">
+        <summary><span class="fold-title">体重の補正と基礎代謝の式（浮腫・基準体重・推算式）</span><span class="fold-hint">クリック／タップで開閉</span></summary>
+        <div class="fold-body">
+          <div class="param">
+            <div class="param-top">
+              <label class="field-label">浮腫・腹水・胸水による補正（推定乾燥体重）</label>
+              <span class="param-badge" id="b_edema">浮腫なし（実測体重そのまま）</span>
+            </div>
+            <div class="seg" id="segEdema">
+              <button type="button" data-val="0" class="active">なし</button>
+              <button type="button" data-val="5">軽度下腿浮腫 −5%</button>
+              <button type="button" data-val="10" class="warn-btn">中等度浮腫・腹水 −10%</button>
+              <button type="button" data-val="15" class="danger-btn">高度全身浮腫・大量腹水 −15%</button>
+            </div>
+            <p class="hint">心不全・腎不全・肝硬変・低Alb血症で体液がたまっているときは、水分の重さを差し引いた<b>推定乾燥体重</b>で計算すると過大投与を防げます。</p>
+          </div>
+
+          <div class="param">
+            <div class="param-top">
+              <label class="field-label">計算に使う体重（kcal/kg・g/kg の基準）</label>
+              <span class="param-badge" id="b_wtbasis">実体重(乾燥)</span>
+            </div>
+            <div class="seg" id="segWtBasis">
+              <button type="button" data-val="actual" class="active">実体重（乾燥体重）</button>
+              <button type="button" data-val="ibw">標準体重（BMI 22）</button>
+              <button type="button" data-val="adj">調整体重（肥満時）</button>
+            </div>
+            <p class="hint">肥満（BMI≧25）やCKDでは、標準体重か調整体重（<code>IBW＋[実体重−IBW]×0.25</code>）に切り替えると実態に近づきます。</p>
+          </div>
+
+          <div class="param">
+            <div class="param-top">
+              <label class="field-label">基礎代謝量（BEE）の推算式</label>
+              <span class="param-badge bg-navy" id="b_bmr_eq">Harris-Benedict</span>
+            </div>
+            <div class="seg" id="segBmrEq">
+              <button type="button" data-val="hb" class="active">Harris-Benedict（標準）</button>
+              <button type="button" data-val="ganpule">日本人式（Ganpule）</button>
+              <button type="button" data-val="mifflin">Mifflin-St Jeor</button>
+            </div>
+            <p class="hint">日本人の高齢者や女性でHB式が過大（+10〜15%）になるときは<b>日本人式（Ganpule 2007）</b>が合います。ALSの清水の式は、原著の定義どおりHB式のBEEで計算します。</p>
+          </div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <!-- ② 病態 -->
+  <div class="card">
+    <div class="card-header">
+      <span><span class="step-no">2</span>主な病態と併存疾患</span>
+      <span class="sub-tag" id="activeModeTag">現在：一般・高齢者・フレイル／周術期</span>
+    </div>
+    <div class="card-body">
+      <div class="mode-tabs" id="modeTabs" role="group" aria-label="主な病態">
+        <button type="button" class="mode-tab active" data-mode="general">
+          <span class="t-title">一般・フレイル</span>
+          <span class="t-sub">高齢者・周術期・重症</span>
+        </button>
+        <button type="button" class="mode-tab" data-mode="als">
+          <span class="t-title">ALS</span>
+          <span class="t-sub">清水の式・NIV／TPPV</span>
+        </button>
+        <button type="button" class="mode-tab" data-mode="pd">
+          <span class="t-title">パーキンソン病</span>
+          <span class="t-sub">PD係数・L-dopa配慮</span>
+        </button>
+        <button type="button" class="mode-tab" data-mode="stroke">
+          <span class="t-title">脳卒中</span>
+          <span class="t-sub">急性期〜回復期リハ</span>
+        </button>
+        <button type="button" class="mode-tab" data-mode="dementia">
+          <span class="t-title">認知症・嚥下</span>
+          <span class="t-sub">活動量のパターン別</span>
+        </button>
+      </div>
+
+      <!-- 一般・高齢者・周術期 -->
+      <div class="mode-panel" id="cardGeneral">
+        <div class="param">
+          <div class="param-top">
+            <label class="field-label">活動係数</label>
+            <span class="param-badge" id="b_gen_act">活動係数 1.2</span>
+          </div>
+          <div class="seg" id="segGenAct">
+            <button type="button" data-val="1.0">1.0 完全臥床・鎮静</button>
+            <button type="button" data-val="1.1">1.1 寝たきり・ベッド上</button>
+            <button type="button" data-val="1.2" class="active">1.2 室内歩行・一般入院</button>
+            <button type="button" data-val="1.3">1.3 軽労作・回復期リハ</button>
+            <button type="button" data-val="1.5">1.5 中活動・外来フレイル予防</button>
+            <button type="button" data-val="1.7">1.7 高活動</button>
+          </div>
+        </div>
+        <div class="param">
+          <div class="param-top">
+            <label class="field-label">ストレス係数</label>
+            <span class="param-badge" id="b_gen_stress">ストレス係数 1.0</span>
+          </div>
+          <div class="seg" id="segGenStress">
+            <button type="button" data-val="1.0" class="active">1.0 安定期</button>
+            <button type="button" data-val="1.1">1.1 軽度感染・小手術</button>
+            <button type="button" data-val="1.2">1.2 肺炎・骨折・がん</button>
+            <button type="button" data-val="1.3">1.3 大手術・高度褥瘡</button>
+            <button type="button" data-val="1.5" class="warn-btn">1.5 敗血症・多発外傷</button>
+          </div>
+        </div>
+        <div class="param">
+          <div class="param-top">
+            <label class="field-label">比較用の体重あたり換算</label>
+            <span class="param-badge" id="b_gen_kcalkg">25-30 kcal/kg</span>
+          </div>
+          <div class="seg" id="segGenKcalKg">
+            <button type="button" data-val="20-25">20〜25 kcal/kg</button>
+            <button type="button" data-val="25-30" class="active">25〜30 kcal/kg</button>
+            <button type="button" data-val="30-35">30〜35 kcal/kg</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ALS -->
+      <div class="mode-panel" id="cardALS" style="display:none;">
+        <div class="param">
+          <div class="param-top">
+            <label class="field-label">呼吸管理</label>
+            <span class="param-badge" id="b_als_vent">非人工呼吸器（自発呼吸）</span>
+          </div>
+          <div class="seg" id="segAlsVent">
+            <button type="button" data-val="none" class="active">自発呼吸</button>
+            <button type="button" data-val="niv">NIV 併用</button>
+            <button type="button" data-val="tppv" class="danger-btn">TPPV・寝たきり進行期</button>
+          </div>
+          <p class="hint">
+            ・<b>自発呼吸</b>：代謝が亢進しやすく、清水の式か <b>約30 kcal/kg/日</b> が目安です。<br>
+            ・<b>NIV併用</b>：呼吸の仕事量が減るため <b>25〜30 kcal/kg/日</b>（ESPEN 2018）を目安に調整します。<br>
+            ・<b>TPPV管理下</b>：骨格筋の萎縮と自発呼吸の消失で <b>800〜1,000 kcal/日程度</b>（実測平均 934±201 kcal/日, Ichihara 2012）まで減らす必要があります。
+          </p>
+        </div>
+        <div class="param" id="alsActiveParams">
+          <div class="param-top">
+            <label class="field-label">ALSFRS-R（清水の式）と嚥下・呼吸</label>
+            <span class="param-badge" id="b_alsfrsr">ALSFRS-R 38 / 48点</span>
+          </div>
+          <div class="grid-4">
+            <div class="input-box">
+              <label for="alsfrsr">ALSFRS-R 合計 (0-48)</label>
+              <div class="input-row"><input type="number" id="alsfrsr" value="38" min="0" max="48" step="1" inputmode="numeric"><span class="unit">点</span></div>
+            </div>
+            <div class="input-box">
+              <label for="alsSwallow">うち嚥下項目 (0-4)</label>
+              <div class="input-row"><input type="number" id="alsSwallow" value="3" min="0" max="4" step="1" inputmode="numeric"><span class="unit">点</span></div>
+            </div>
+            <div class="input-box">
+              <label for="alsFvc">%FVC</label>
+              <div class="input-row"><input type="number" id="alsFvc" placeholder="例: 65" min="5" max="150" step="1" inputmode="numeric"><span class="unit">%</span></div>
+            </div>
+            <div class="input-box">
+              <label for="alsTv">1回換気量（任意）</label>
+              <div class="input-row"><input type="number" id="alsTv" placeholder="例: 0.45" min="0.1" max="2.0" step="0.01" inputmode="decimal"><span class="unit">L</span></div>
+            </div>
+          </div>
+          <p class="hint">
+            ・<b>清水の式（Shimizu 2017 / ALS GL 2023）</b>：<code>TEE = 1.67 × BEE(HB) + 11.8 × ALSFRS-R − 680</code>（1.68係数の表記は比較表に併記）。<br>
+            ・<b>嚥下項目</b>：4=正常、3=初期の摂食問題、<b>2=食形態の一貫した変更が必要（PEG検討基準）</b>、1=補助的経管栄養、0=全面経管栄養。
+          </p>
+        </div>
+      </div>
+
+      <!-- パーキンソン病 -->
+      <div class="mode-panel" id="cardPD" style="display:none;">
+        <div class="param">
+          <div class="param-top">
+            <label class="field-label">PD係数（筋強剛・振戦・ジスキネジアによる代謝亢進）</label>
+            <span class="param-badge" id="b_pd_factor">PD係数 1.2</span>
+          </div>
+          <div class="seg" id="segPdFactor">
+            <button type="button" data-val="1.1">1.1 安静主体・軽度</button>
+            <button type="button" data-val="1.2" class="active">1.2 標準</button>
+            <button type="button" data-val="1.3" class="warn-btn">1.3 強いジスキネジア・高度な筋強剛</button>
+          </div>
+          <p class="hint">1.1は固縮・振戦が軽度で安静が主体、1.2は中等度の固縮・振戦やオフ症状がある場合の標準です（坪井らの式：BEE×活動×ストレス×PD係数）。</p>
+        </div>
+        <div class="param">
+          <div class="param-top">
+            <label class="field-label">活動係数 × ストレス係数</label>
+            <span class="param-badge" id="b_pd_act">活動 1.3 × ストレス 1.0</span>
+          </div>
+          <div class="grid-2">
+            <div>
+              <div class="mini-label">活動係数（ADL・リハビリ量）</div>
+              <div class="seg" id="segPdAct">
+                <button type="button" data-val="1.2">1.2 臥床がち</button>
+                <button type="button" data-val="1.3" class="active">1.3 外来標準</button>
+                <button type="button" data-val="1.4">1.4 積極的リハ</button>
+                <button type="button" data-val="1.5">1.5 高活動</button>
+              </div>
+            </div>
+            <div>
+              <div class="mini-label">ストレス係数（合併症・侵襲）</div>
+              <div class="seg" id="segPdStress">
+                <button type="button" data-val="1.0" class="active">1.0 安定期</button>
+                <button type="button" data-val="1.1">1.1 軽度感染・褥瘡</button>
+                <button type="button" data-val="1.2" class="warn-btn">1.2 肺炎・骨折・術後</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="param">
+          <div class="param-top"><label class="field-label">レボドパとの吸収競合を考えたタンパク質の配分</label></div>
+          <div class="seg" id="segPdLdopa">
+            <button type="button" data-val="redist" class="active">昼・夕に重点配分</button>
+            <button type="button" data-val="even">3食均等（毎食25-30g目安）</button>
+          </div>
+          <p class="hint">日中のDelayed-onやウェアリングオフがあれば昼・夕重点、薬効の変動が少なければ3食均等にします。</p>
+        </div>
+      </div>
+
+      <!-- 脳卒中 -->
+      <div class="mode-panel" id="cardStroke" style="display:none;">
+        <div class="param">
+          <div class="param-top">
+            <label class="field-label">病期とリハビリの負荷</label>
+            <span class="param-badge" id="b_stroke_phase">回復期リハ強化期</span>
+          </div>
+          <div class="seg" id="segStrokePhase">
+            <button type="button" data-val="acute">急性期（発症1〜7日）</button>
+            <button type="button" data-val="subacute">亜急性期・一般病棟</button>
+            <button type="button" data-val="rehab" class="active">回復期リハ強化期</button>
+          </div>
+          <p class="hint">
+            ・<b>急性期</b>（22.5 kcal/kg目安）：過剰なエネルギーはストレス性高血糖を招き神経予後を悪くするため、20〜25 kcal/kg から始めます。筋崩壊を抑えるため、タンパク質は 1.2〜1.5 g/kg を確保します。<br>
+            ・<b>亜急性期・一般病棟</b>：27.5 kcal/kg（BEE×1.25）。<br>
+            ・<b>回復期リハ</b>（32.5 kcal/kg・BEE×1.45）：1日6〜9単位のリハビリで消費する分を補ってサルコペニアを改善するため、<b>30〜35 kcal/kg/日 ＋ 高タンパク（1.2〜1.5 g/kg/日、リハ直後のBCAA/ホエイ補給）</b>を勧めます。
+          </p>
+        </div>
+      </div>
+
+      <!-- 認知症・嚥下障害 -->
+      <div class="mode-panel" id="cardDementia" style="display:none;">
+        <div class="param">
+          <div class="param-top">
+            <label class="field-label">BPSD・活動量のパターン</label>
+            <span class="param-badge" id="b_dem_type">標準・外来通院期</span>
+          </div>
+          <div class="seg" id="segDemType">
+            <button type="button" data-val="hyper" class="warn-btn">過活動・徘徊・不穏（BEE×1.6）</button>
+            <button type="button" data-val="std" class="active">標準・日中離床あり（BEE×1.3）</button>
+            <button type="button" data-val="hypo">低活動・重度進行期（BEE×1.15）</button>
+          </div>
+          <p class="hint">
+            ・<b>徘徊・過活動型</b>：一日中歩くため消費が大きく増え、体重が急に減ります。高めのカロリー設定と、歩きながらでも食べられる<b>フィンガーフード（おにぎり・サンドイッチ・栄養バー）や少量高濃度のONS</b>が役立ちます。<br>
+            ・<b>重度認知症の終末期</b>：ESPEN認知症GL 2024は、延命や誤嚥性肺炎予防を目的とした安易な経管栄養の導入を推奨していません。経口での支援（Comfort feeding）と意思決定支援を優先します。
+          </p>
+        </div>
+      </div>
+
+      <div class="param param-comorb">
+        <div class="param-top">
+          <label class="field-label">併存疾患（複数選択可・どの病態にも重ねられます）</label>
+        </div>
+        <div class="check-grid" id="comorbGrid">
+          <label class="check-pill"><input type="checkbox" value="ckd">CKD 保存期（G3b〜G5）</label>
+          <label class="check-pill"><input type="checkbox" value="hd">維持透析（HD／PD）</label>
+          <label class="check-pill"><input type="checkbox" value="dm">糖尿病・高血糖</label>
+          <label class="check-pill"><input type="checkbox" value="copd">COPD・高CO2血症</label>
+          <label class="check-pill"><input type="checkbox" value="lc">肝硬変（就寝前補食 LES）</label>
+        </div>
+        <p class="hint">エネルギー計算はそのままで、<b>タンパク質の上限・PFC比率・就寝前補食（LES 200kcal）</b>が自動で調整されます。</p>
+      </div>
+
+      <div class="grid-2 param">
+        <div>
+          <div class="param-top">
+            <label class="field-label">発熱（+13% / ℃）</label>
+            <span class="param-badge" id="b_fever">平熱（×1.00）</span>
+          </div>
+          <div class="seg" id="segFever">
+            <button type="button" data-val="1.00" class="active">平熱</button>
+            <button type="button" data-val="1.06">37.5℃ +6%</button>
+            <button type="button" data-val="1.13" class="warn-btn">38.0℃ +13%</button>
+            <button type="button" data-val="1.19" class="warn-btn">38.5℃ +19%</button>
+            <button type="button" data-val="1.26" class="danger-btn">39.0℃〜 +26%</button>
+          </div>
+        </div>
+        <div>
+          <div class="param-top">
+            <label class="field-label">体重の目標</label>
+            <span class="param-badge" id="b_wtgoal">維持（±0 kcal）</span>
+          </div>
+          <div class="seg" id="segWtGoal">
+            <button type="button" data-val="0" class="active">維持 ±0</button>
+            <button type="button" data-val="200">緩徐増量 +200kcal</button>
+            <button type="button" data-val="350" class="warn-btn">積極増量 +350kcal</button>
+            <button type="button" data-val="-250">減量 −250kcal</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ 目標量の調整 -->
+  <div class="card">
+    <div class="card-header">
+      <span><span class="step-no">3</span>タンパク質・脂質・水分の設定</span>
+      <span class="sub-tag" id="b_prot_target">蛋白 1.2 - 1.5 g/kg/日</span>
+    </div>
+    <div class="card-body">
+      <div class="param">
+        <div class="param-top"><label class="field-label">タンパク質の目標（g/kg/日）</label></div>
+        <div class="seg" id="segProtPreset">
+          <button type="button" data-val="1.2-1.5" class="active">1.2〜1.5 神経疾患・フレイル予防（推奨）</button>
+          <button type="button" data-val="1.0-1.2">1.0〜1.2 高齢者の基本</button>
+          <button type="button" data-val="1.3-1.8">1.3〜1.8 レジスタンス運動併用</button>
+          <button type="button" data-val="1.5-2.0">1.5〜2.0 重症・外傷・褥瘡</button>
+          <button type="button" data-val="0.8-1.0">0.8〜1.0 一般成人／CKD G3a</button>
+          <button type="button" data-val="0.6-0.8" class="warn-btn">0.6〜0.8 CKD G3b〜G5</button>
+          <button type="button" data-val="0.9-1.2">0.9〜1.2 維持透析</button>
+        </div>
+        <p class="hint" id="genderActProtRef"></p>
+      </div>
+
+      <details class="fold-panel">
+        <summary><span class="fold-title">脂質の比率と水分量の基準を変える</span><span class="fold-hint">クリック／タップで開閉</span></summary>
+        <div class="fold-body">
+          <div class="param">
+            <div class="param-top">
+              <label class="field-label">脂質エネルギー比率（%E）</label>
+              <span class="param-badge bg-navy" id="b_fat_pct">脂質 25%E（標準）</span>
+            </div>
+            <div class="seg" id="segFatPct">
+              <button type="button" data-val="25" class="active">25%E 日本人の標準</button>
+              <button type="button" data-val="30">30%E 少量高カロリー化</button>
+              <button type="button" data-val="35">35%E ALS高脂肪食・糖尿病</button>
+              <button type="button" data-val="40">40%E COPD・高CO2血症</button>
+            </div>
+          </div>
+
+          <div class="param">
+            <div class="param-top">
+              <label class="field-label">1日に必要な水分量の基準</label>
+              <span class="param-badge bg-teal" id="b_water_basis">年齢別標準</span>
+            </div>
+            <div class="seg" id="segWaterBasis">
+              <button type="button" data-val="age_std" class="active">年齢別標準</button>
+              <button type="button" data-val="ml30">30 mL/kg</button>
+              <button type="button" data-val="kcal1">1.0 mL/kcal</button>
+              <button type="button" data-val="restrict" class="warn-btn">制限 20 mL/kg</button>
+            </div>
+            <p class="hint">年齢別標準は 55歳未満 33／55〜74歳 30／75歳以上 27.5 mL/kg。30 mL/kg は 25〜35 mL/kg の標準値です。20 mL/kg は心不全・浮腫などの軽度制限の目安です。</p>
+
+            <div class="mini-label" style="margin-top:10px;">発汗・下痢・気管切開などで追加する水分（発熱を選んだ場合は不感蒸泄の加算が自動で入ります）</div>
+            <div class="seg" id="segWaterExtra">
+              <button type="button" data-val="0" class="active">追加なし</button>
+              <button type="button" data-val="200">+200 mL 軽度発汗・軟便</button>
+              <button type="button" data-val="400" class="warn-btn">+400 mL 中等度発汗・下痢</button>
+              <button type="button" data-val="600" class="danger-btn">+600 mL 高度体液喪失</button>
+              <button type="button" data-val="-300">−300 mL やや絞る</button>
+            </div>
+            <p class="hint">代謝水（約250〜300 mL/日）を除いた、<b>外から入れる水分（飲水・白湯＋栄養剤や食事中の水分）</b>の目標を出します。維持透析・重症心不全・SIADHでは、主治医の個別の水分制限（前日尿量＋500 mL など）を優先してください。</p>
+          </div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <!-- 算出結果 -->
+  <div class="card card-result" id="resultCard">
+    <div class="card-header">
+      <span>1日の目標量</span>
+      <span class="sub-tag" id="resultBasisLabel">—</span>
+    </div>
+    <div class="card-body">
+
+      <div class="hero-grid">
+        <div class="hero-box" id="energyHero">
+          <div class="h-eyebrow" id="energyFormulaTitle">推奨エネルギー目標</div>
+          <div class="h-main" id="energyMainVal">— kcal/日</div>
+          <div class="h-range" id="energyRangeVal">目安範囲：— kcal/日</div>
+          <div class="h-sub" id="energySubText">—</div>
+        </div>
+        <div class="hero-box protein-hero">
+          <div class="h-eyebrow" id="proteinTitle">推奨タンパク質目標</div>
+          <div class="h-main" id="proteinMainVal">— g/日</div>
+          <div class="h-range" id="proteinRangeVal">目標範囲：— g/日</div>
+          <div class="h-sub" id="proteinSubText">—</div>
+        </div>
+        <div class="hero-box water-hero" id="waterHero">
+          <div class="h-eyebrow" id="waterTitle">推奨水分摂取目標（外因性総水分）</div>
+          <div class="h-main" id="waterMainVal">— mL/日</div>
+          <div class="h-range" id="waterRangeVal">目安範囲：— mL/日</div>
+          <div class="h-sub" id="waterSubText">—</div>
+        </div>
+      </div>
+
+      <div id="clinicalAlerts"></div>
+
+      <div class="pfc-box">
+        <div class="pfc-head">
+          <span class="pfc-title">3大栄養素（PFC）の1日量と比率</span>
+          <span class="pfc-note" id="pfcNoteLabel">蛋白4 kcal/g・脂質9 kcal/g・炭水化物4 kcal/g 換算</span>
+        </div>
+        <div class="pfc-bar" id="pfcBar"></div>
+        <div class="pfc-legend" id="pfcLegend"></div>
+      </div>
+
+      <div class="sub-metrics">
+        <div class="sub-metric-card">
+          <div class="sm-lbl">非タンパクカロリー</div>
+          <div class="sm-val" id="sm_npc">— kcal</div>
+          <div class="sm-note">脂質＋炭水化物 kcal</div>
+        </div>
+        <div class="sub-metric-card">
+          <div class="sm-lbl">NPC/N比</div>
+          <div class="sm-val" id="sm_npcn">—</div>
+          <div class="sm-note" id="sm_npcn_note">窒素 N = — g/日</div>
+        </div>
+        <div class="sub-metric-card">
+          <div class="sm-lbl">経口0%時の追加白湯</div>
+          <div class="sm-val" id="sm_water">— mL/日</div>
+          <div class="sm-note" id="sm_water_note">選択製剤の水分差引後</div>
+        </div>
+        <div class="sub-metric-card">
+          <div class="sm-lbl">GLIM 低BMI（アジア人）</div>
+          <div class="sm-val" id="sm_glim_bmi">—</div>
+          <div class="sm-note" id="sm_glim_note">70歳区分で判定</div>
+        </div>
+      </div>
+
+      <div id="mealPlanSection">
+        <div class="section-label" id="mealPlanHeader">1日タンパク質の食事配分シミュレーション</div>
+        <p class="hint" id="mealPlanDesc" style="margin-top:0;margin-bottom:8px;"></p>
+        <div class="meal-grid" id="mealGrid"></div>
+      </div>
+
+      <details class="fold-panel" id="rampDetails">
+        <summary><span class="fold-title">栄養開始から目標までの段階的増量スケジュール</span><span class="fold-hint">クリック／タップで開閉</span></summary>
+        <div class="fold-body">
+          <div class="param" style="padding-top:0;">
+            <div class="param-top"><label class="field-label">リフィーディング症候群（RFS）のリスク</label></div>
+            <div class="seg" id="segRampRisk">
+              <button type="button" data-val="low" class="active">通常開始（リスク低）</button>
+              <button type="button" data-val="high" class="warn-btn">RFS高リスク（NICE基準）</button>
+              <button type="button" data-val="extreme" class="danger-btn">極端な低栄養（BMI&lt;14 / 15日以上絶食）</button>
+            </div>
+            <p class="hint">通常開始は目標の50%から3〜4日で達成、RFS高リスクは最大10 kcal/kg/日から4〜7日かけて増量、極端な低栄養は5 kcal/kg/日から慎重に始めます。</p>
+          </div>
+          <div class="tbl-wrap" style="margin-top:8px;">
+            <table class="lookup-table">
+              <thead>
+                <tr>
+                  <th class="left">時期（目安）</th>
+                  <th>1日投与エネルギー</th>
+                  <th>持続経管流速目安 (16h投与)</th>
+                  <th class="left">必須モニタリング・補充事項</th>
+                </tr>
+              </thead>
+              <tbody id="rampTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+
+      <details class="fold-panel">
+        <summary><span class="fold-title">推算式ごとのエネルギー量を比べる</span><span class="fold-hint">クリック／タップで開閉</span></summary>
+        <div class="fold-body">
+          <div class="tbl-wrap">
+            <table class="lookup-table">
+              <thead>
+                <tr>
+                  <th class="left">算出式・ガイドライン基準</th>
+                  <th class="left">計算式・条件（発熱・目標補正前の素値）</th>
+                  <th>算出エネルギー</th>
+                  <th>基準体重あたり</th>
+                </tr>
+              </thead>
+              <tbody id="formulaCompareBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+
+    </div>
+  </div>
+
+  <!-- 経管栄養・栄養補助食品 -->
+  <div class="card">
+    <div class="card-header">
+      <span>経管栄養・栄養補助食品のプラン</span>
+      <span class="sub-tag">医薬品4＋食品9＋参考5製剤</span>
+    </div>
+    <div class="card-body">
+      <div class="param" style="padding-top:0;">
+        <div class="param-top">
+          <label class="field-label">口から食べられている割合</label>
+          <span class="param-badge" id="b_oral_intake">全量（100%）を試算</span>
+        </div>
+        <div class="seg" id="segOralShare">
+          <button type="button" data-val="0" class="active">経口 0%（全量を経管）</button>
+          <button type="button" data-val="50">経口 50%</button>
+          <button type="button" data-val="75">経口 75%</button>
+          <button type="button" data-val="85">経口 85%</button>
+        </div>
+        <p class="hint" id="supplementTargetHint"></p>
+      </div>
+
+      <!-- 経口 0% の白湯プラン -->
+      <div class="water-plan-box" id="tubeWaterSection">
+        <div class="water-plan-head">
+          <span>経口 0%（胃瘻・経鼻胃管など）の白湯プラン</span>
+          <span class="param-badge bg-teal" id="b_tube_sayu_badge">追加白湯 — mL/日</span>
+        </div>
+        <p class="hint" style="margin-top:0;margin-bottom:10px;color:#1b4d42;">
+          栄養剤の<b>液量（mL）は水分量と同じではありません</b>。目標水分量から製剤中の水分を差し引き、<b>チューブ前後のフラッシュ水と内服薬の懸濁水を含めた1日の追加白湯量</b>を出します。
+        </p>
+
+        <div class="mini-label teal">主に使う栄養剤（下の一覧表の行をクリックしても切り替わります）</div>
+        <div id="tubeProdSelectorWrap"></div>
+
+        <div class="grid-2" style="padding-top:10px;">
+          <div>
+            <div class="mini-label teal">1日の投与回数</div>
+            <div class="seg" id="segTubeFreq">
+              <button type="button" data-val="3" class="active">1日3回</button>
+              <button type="button" data-val="2">1日2回</button>
+              <button type="button" data-val="4">1日4回</button>
+              <button type="button" data-val="cont">持続（フラッシュ4回換算）</button>
+            </div>
+          </div>
+          <div>
+            <div class="mini-label teal">内服薬・簡易懸濁に使う白湯（別枠で差し引き）</div>
+            <div class="seg" id="segMedWater">
+              <button type="button" data-val="0">なし</button>
+              <button type="button" data-val="60" class="active">60 mL（20mL×3回）</button>
+              <button type="button" data-val="100">100 mL（30-35mL×3回）</button>
+              <button type="button" data-val="150">150 mL（多剤・PD頻回内服）</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="water-step-grid" id="tubeWaterCards"></div>
+        <div class="rounded-rx-bar" id="tubeRoundedNote"></div>
+        <div id="tubeWaterAlerts" style="margin-top:10px;"></div>
+      </div>
+
+      <!-- 経口摂取あり（50%〜85%）の水分案内 -->
+      <div class="warning-box info" id="oralWaterBanner" style="display:none;margin-bottom:14px;"></div>
+
+      <!-- ちょい足しの具体例（経口摂取ありのときだけ表示） -->
+      <details class="fold-panel" id="choiTashiSection">
+        <summary><span class="fold-title">不足分を補う「ちょい足し」の具体例</span><span class="fold-hint">クリック／タップで開閉</span></summary>
+        <div class="fold-body">
+          <p class="hint" style="margin-top:0;">2026年診療報酬改定により単なる「栄養保持目的の経口医療用栄養剤」は保険給付外となったため、経口補充には<b>食品区分の栄養補助食品（リーナレンMP・アイソカルサポート・リカバリーK5・ブイ・クレスCP10等）＋MCTオイル＋プロテインパウダー</b>の組み合わせが実用的です。</p>
+          <div class="recipe-cards" id="recipeCards"></div>
+        </div>
+      </details>
+
+      <details class="fold-panel">
+        <summary><span class="fold-title">複数の栄養剤を組み合わせる</span><span class="fold-hint">クリック／タップで開閉</span></summary>
+        <div class="fold-body">
+          <div class="combo-box" id="comboSimBox">
+            <div class="combo-head">
+              <span>基本の栄養剤 ＋ 不足分の補助</span>
+              <span class="param-badge bg-purple" id="b_combo_badge">合計 — kcal</span>
+            </div>
+            <p class="hint" style="margin-top:0;color:#36205D;">
+              1種類ではカロリーとタンパク質を両立しにくいときに、<b>①基本の栄養剤（整数パック）＋ ②不足分を補う栄養補助食品 ＋ ③MCTオイルやプロテイン粉末</b>の本数・合計栄養量・追加白湯量を試算します。
+            </p>
+
+            <div class="combo-presets" id="comboPresets">
+              <button type="button" data-preset="main_vcresc">選択中の主製剤（整数）＋ ブイ・クレスCP10</button>
+              <button type="button" data-preset="peptamen_vcresc">ペプタメン プレビオ ＋ ブイ・クレスCP10</button>
+              <button type="button" data-preset="high_prot_blend">主製剤 ＋ ペプタメンAF（高タンパク）</button>
+              <button type="button" data-preset="clear_sub">補助（②・③）をクリア</button>
+            </div>
+
+            <div class="combo-row">
+              <div class="combo-row-top">
+                <div class="combo-role">① 基本（主製剤）</div>
+                <select id="comboId1" class="combo-sel" aria-label="基本となる主製剤"></select>
+              </div>
+              <div class="combo-ctrl-bar">
+                <div class="combo-stepper">
+                  <button type="button" class="step-btn" data-row="1" data-delta="-1">-1</button>
+                  <button type="button" class="step-btn" data-row="1" data-delta="-0.5">-0.5</button>
+                  <input type="number" id="comboQty1" class="combo-qty" value="4" min="0" max="20" step="0.5" aria-label="主製剤の数量">
+                  <span class="combo-unit" id="comboUnit1">パック</span>
+                  <button type="button" class="step-btn" data-row="1" data-delta="0.5">+0.5</button>
+                  <button type="button" class="step-btn" data-row="1" data-delta="1">+1</button>
+                  <button type="button" class="auto-fill-btn" id="autoRow1Btn">目標以下の整数本数</button>
+                </div>
+                <div class="combo-sub" id="comboSub1"></div>
+              </div>
+            </div>
+
+            <div class="combo-rem-bar" id="comboRemAfter1"></div>
+
+            <div class="combo-row">
+              <div class="combo-row-top">
+                <div class="combo-role">② 不足分の補助1</div>
+                <select id="comboId2" class="combo-sel" aria-label="不足分を補う補助製剤1"></select>
+              </div>
+              <div class="combo-ctrl-bar">
+                <div class="combo-stepper">
+                  <button type="button" class="step-btn" data-row="2" data-delta="-1">-1</button>
+                  <button type="button" class="step-btn" data-row="2" data-delta="-0.5">-0.5</button>
+                  <input type="number" id="comboQty2" class="combo-qty" value="1" min="0" max="20" step="0.5" aria-label="補助製剤1の数量">
+                  <span class="combo-unit" id="comboUnit2">本</span>
+                  <button type="button" class="step-btn" data-row="2" data-delta="0.5">+0.5</button>
+                  <button type="button" class="step-btn" data-row="2" data-delta="1">+1</button>
+                  <button type="button" class="auto-fill-btn" id="autoRow2Btn">残り不足分から算出</button>
+                </div>
+                <div class="combo-sub" id="comboSub2"></div>
+              </div>
+              <div class="hint" id="comboHint2" style="margin-top:5px;"></div>
+            </div>
+
+            <div class="combo-row" style="margin-bottom:0;">
+              <div class="combo-row-top">
+                <div class="combo-role">③ 微調整・補助2</div>
+                <select id="comboId3" class="combo-sel" aria-label="微調整用の補助製剤2"></select>
+              </div>
+              <div class="combo-ctrl-bar">
+                <div class="combo-stepper">
+                  <button type="button" class="step-btn" data-row="3" data-delta="-1">-1</button>
+                  <button type="button" class="step-btn" data-row="3" data-delta="-0.5">-0.5</button>
+                  <input type="number" id="comboQty3" class="combo-qty" value="0" min="0" max="20" step="0.5" aria-label="補助製剤2の数量">
+                  <span class="combo-unit" id="comboUnit3">—</span>
+                  <button type="button" class="step-btn" data-row="3" data-delta="0.5">+0.5</button>
+                  <button type="button" class="step-btn" data-row="3" data-delta="1">+1</button>
+                  <button type="button" class="auto-fill-btn" id="autoRow3Btn">残り不足分から算出</button>
+                </div>
+                <div class="combo-sub" id="comboSub3"></div>
+              </div>
+            </div>
+
+            <div class="combo-kpi-grid" id="comboKpiGrid"></div>
+            <div id="comboAlerts" style="margin-top:8px;"></div>
+
+            <div class="combo-link-row">
+              <span class="mini-label purple" style="margin:0;">上の白湯プランに使う栄養剤：</span>
+              <div class="seg" id="segWaterPlanSrc">
+                <button type="button" data-val="single" class="active">単一の製剤</button>
+                <button type="button" data-val="combo">この組み合わせ</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <details class="fold-panel">
+        <summary><span class="fold-title">製剤の一覧表（水分量・白湯量・タンパク質）</span><span class="fold-hint">クリック／タップで開閉</span></summary>
+        <div class="fold-body">
+          <p class="hint" style="margin-top:0;">100kcalあたりの水分は、ハイネックスイーゲル・PGソフトが110mL、MA-ラクフィアが85mL、イノソリッドが76mL、ペプタメン・アイソカルサポート・エンシュアHが51〜52mL、イノラス・リーナレンMPが47mLです。</p>
+          <div class="seg" id="segProdFilter" style="margin-bottom:8px;">
+            <button type="button" data-val="core" class="active">主要13製剤</button>
+            <button type="button" data-val="pharm">医薬品（4＋参考3）</button>
+            <button type="button" data-val="food">食品（9＋参考2）</button>
+            <button type="button" data-val="all">全18製剤</button>
+          </div>
+          <div class="tbl-wrap">
+            <table class="lookup-table">
+              <thead>
+                <tr>
+                  <th class="left navy-th">製剤・食品名（規格・特徴）</th>
+                  <th class="navy-th">補充目安量（総量）</th>
+                  <th class="navy-th">製剤中の水分量</th>
+                  <th class="navy-th" id="thSayuCol">推奨追加白湯量（経口0%時）</th>
+                  <th class="navy-th">含有タンパク（目標差）</th>
+                </tr>
+              </thead>
+              <tbody id="enteralTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <!-- 記録用サマリ -->
+  <div class="card">
+    <div class="card-header">
+      <span>カルテ・NST・栄養指導用のサマリ</span>
+    </div>
+    <div class="card-body">
+      <div class="template-box" id="summaryBox"></div>
+      <div class="btn-row">
+        <button type="button" class="copy-btn" id="copyBtn">📋 クリップボードにコピー</button>
+        <button type="button" class="print-btn" id="printBtn">🖨️ この画面を印刷 / PDF保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 関連情報・参考文献 -->
+  <div class="card">
+    <div class="card-header">関連記事・関連ツール・参考文献</div>
+    <div class="card-body">
+      <div class="related-box">
+        <b>解説記事（医知創造ラボ）</b><br>
+        ・<a href="https://blog.ichisouzo-lab.com/entry/2025/10/05/201316" target="_blank" rel="noopener">筋萎縮性側索硬化症（ALS）における高エネルギー栄養療法と胃ろう早期導入のエビデンスレビュー</a><br>
+        ・<a href="https://blog.ichisouzo-lab.com/entry/2025/10/08/160652" target="_blank" rel="noopener">神経変性疾患における慢性期栄養管理ガイド（PD, ALSを中心に）</a><br>
+        <b>関連ツール</b>：
+        <a href="glim_nutrition.html">GLIM基準 低栄養診断ツール</a> ／
+        <a href="refeeding_risk.html">リフィーディング症候群 リスク判定ツール</a> ／
+        <a href="levodopa_equivalent_calculator.html">抗パーキンソン病薬 LEDD換算ツール</a> ／
+        <a href="hypernatremia.html">高ナトリウム血症 鑑別ツール</a> ／
+        <a href="highbun.html">高BUN血症 鑑別ツール</a>
+      </div>
+      <details class="fold-panel">
+        <summary><span class="fold-title">参考文献（11件）</span><span class="fold-hint">クリック／タップで開閉</span></summary>
+        <div class="fold-body">
+          <ol class="ref-list">
+            <li>日本神経学会 監修. 筋萎縮性側索硬化症（ALS）診療ガイドライン2023. 南江堂; 2023. <a href="https://www.neurology-jp.org/guidelinem/als_2023.html" target="_blank" rel="noopener">日本神経学会</a></li>
+            <li>Shimizu T, et al. The measurement and estimation of total energy expenditure in Japanese patients with ALS: a doubly labelled water method study. Amyotroph Lateral Scler Frontotemporal Degener. 2017;18(1-2):37-45. <a href="https://doi.org/10.1080/21678421.2016.1245756" target="_blank" rel="noopener">doi:10.1080/21678421.2016.1245756</a> (PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/27892703/" target="_blank" rel="noopener">27892703</a>)</li>
+            <li>Ichihara N, et al. Energy requirement assessed by doubly-labeled water method in patients with advanced amyotrophic lateral sclerosis managed by tracheotomy positive pressure ventilation. Amyotroph Lateral Scler. 2012;13(6):544-9. <a href="https://doi.org/10.3109/17482968.2012.699968" target="_blank" rel="noopener">doi:10.3109/17482968.2012.699968</a> (PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/22889175/" target="_blank" rel="noopener">22889175</a>)</li>
+            <li>Burgos R, et al. ESPEN guideline clinical nutrition in neurology. Clin Nutr. 2018;37(1):354-396. <a href="https://doi.org/10.1016/j.clnu.2017.09.003" target="_blank" rel="noopener">doi:10.1016/j.clnu.2017.09.003</a> (PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/29274834/" target="_blank" rel="noopener">29274834</a>)</li>
+            <li>Kasarskis EJ, et al. Estimating daily energy expenditure in individuals with amyotrophic lateral sclerosis. Am J Clin Nutr. 2014;99(4):792-803. <a href="https://doi.org/10.3945/ajcn.113.069997" target="_blank" rel="noopener">doi:10.3945/ajcn.113.069997</a> (PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/24522445/" target="_blank" rel="noopener">24522445</a>)</li>
+            <li>Ganpule AA, et al. Interindividual variability in sleeping metabolic rate in Japanese subjects. Eur J Clin Nutr. 2007;61(11):1256-61. <a href="https://doi.org/10.1038/sj.ejcn.1602645" target="_blank" rel="noopener">doi:10.1038/sj.ejcn.1602645</a> (PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/17299487/" target="_blank" rel="noopener">17299487</a>)</li>
+            <li>Mifflin MD, et al. A new predictive equation for resting energy expenditure in healthy individuals. Am J Clin Nutr. 1990;51(2):241-7. <a href="https://doi.org/10.1093/ajcn/51.2.241" target="_blank" rel="noopener">doi:10.1093/ajcn/51.2.241</a> (PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/2305711/" target="_blank" rel="noopener">2305711</a>)</li>
+            <li>Bauer J, et al. Evidence-based recommendations for optimal dietary protein intake in older people: a position paper from the PROT-AGE Study Group. J Am Med Dir Assoc. 2013;14(8):542-59. <a href="https://doi.org/10.1016/j.jamda.2013.05.021" target="_blank" rel="noopener">doi:10.1016/j.jamda.2013.05.021</a> (PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/23867520/" target="_blank" rel="noopener">23867520</a>)</li>
+            <li>Volkert D, et al. ESPEN practical guideline: Clinical nutrition and hydration in geriatrics. Clin Nutr. 2022;41(4):958-989. <a href="https://doi.org/10.1016/j.clnu.2022.01.024" target="_blank" rel="noopener">doi:10.1016/j.clnu.2022.01.024</a> (PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/35306388/" target="_blank" rel="noopener">35306388</a>)</li>
+            <li>Volkert D, et al. ESPEN guideline on nutrition and hydration in dementia - Update 2024. Clin Nutr. 2024;43(6):1599-1626. <a href="https://doi.org/10.1016/j.clnu.2024.04.039" target="_blank" rel="noopener">doi:10.1016/j.clnu.2024.04.039</a> (PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/38772068/" target="_blank" rel="noopener">38772068</a>)</li>
+            <li>坪井義夫 ほか. パーキンソン病患者における栄養管理と代謝亢進. 日本静脈経腸栄養学会雑誌 / 厚生労働省「日本人の食事摂取基準」策定検討会報告書.</li>
+          </ol>
+        </div>
+      </details>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>本ツールは医療従事者向けの参考情報です。最終的な栄養処方・治療方針は最新ガイドライン・施設プロトコル・個別症例の臨床状況に基づき主治医・管理栄養士が判断してください。</p>
+  <p style="margin-top:6px;">© 医知創造ラボ ｜ <a href="index.html">診療ツール一覧</a></p>
+</footer>
+
+<script>
+(function(){
+  var st = {
+    mode: 'general',
+    sex: 'male',
+    edemaPct: 0,
+    wtBasis: 'actual',
+    bmrEq: 'hb',
+    alsVent: 'none',
+    pdFactor: 1.2,
+    pdAct: 1.3,
+    pdStress: 1.0,
+    pdLdopa: 'redist',
+    strokePhase: 'rehab',
+    demType: 'std',
+    genAct: 1.2,
+    genStress: 1.0,
+    genKcalKg: '25-30',
+    feverFactor: 1.00,
+    wtGoalDelta: 0,
+    protPreset: '1.2-1.5',
+    fatPct: 25,
+    waterBasis: 'age_std',
+    waterExtra: 0,
+    rampRisk: 'low',
+    oralShare: 0,
+    tubeProdId: 'ma_lacfia',
+    tubeFreq: '3',
+    medWater: 60,
+    prodFilter: 'core',
+    waterPlanSrc: 'single',
+    combo: { id1: 'peptamen_prebio', qty1: 4, id2: 'vcresc_cp10', qty2: 1, id3: 'none', qty3: 0 },
+    comorb: { ckd: false, hd: false, dm: false, copd: false, lc: false }
+  };
+  var lastTargets = { neededKcal: 1426, neededProt: 74.3 };
+
+  var ageEl = document.getElementById('age');
+  var heightEl = document.getElementById('height');
+  var weightEl = document.getElementById('weight');
+  var usualWeightEl = document.getElementById('usualWeight');
+  var alsfrsrEl = document.getElementById('alsfrsr');
+  var alsSwallowEl = document.getElementById('alsSwallow');
+  var alsFvcEl = document.getElementById('alsFvc');
+  var alsTvEl = document.getElementById('alsTv');
+
+  var ENTERAL_PRODUCTS = [
+    // --- 医薬品区分（4品目） ---
+    { id: 'inoras', isCore: true, group: 'pharm', grpCls: 'grp-pharm', grpLbl: '医薬品', shortBtn: 'イノラス (187.5mL/300kcal)', name: 'イノラス配合経腸用液', spec: '187.5mL / 300kcal (1.6kcal/mL) ・ 水分141mL (75%)', note: '少量高濃度・微量元素配慮', unitVol: 187.5, volUnit: 'mL', unitKcal: 300, unitProt: 12.0, unitWater: 140.6, unitLabel: '袋', tubeOk: true, isSuppOnly: false },
+    { id: 'ensure_h', isCore: true, group: 'pharm', grpCls: 'grp-pharm', grpLbl: '医薬品', shortBtn: 'エンシュア・H (250mL/375kcal)', name: 'エンシュア・H', spec: '250mL / 375kcal (1.5kcal/mL) ・ 水分194mL (77.6%)', note: '医療用高濃度標準液剤', unitVol: 250, volUnit: 'mL', unitKcal: 375, unitProt: 13.2, unitWater: 194.0, unitLabel: '缶', tubeOk: true, isSuppOnly: false },
+    { id: 'inosolid', isCore: true, group: 'pharm', grpCls: 'grp-pharm', grpLbl: '医薬品［半固形］', shortBtn: 'イノソリッド (300g/300kcal)', name: 'イノソリッド配合経腸用半固形剤', spec: '300g / 300kcal (1.0kcal/g) ・ 水分228mL (76%)', note: '医療用半固形・高蛋白(4.5g/100kcal)・短時間注入', unitVol: 300, volUnit: 'g', unitKcal: 300, unitProt: 13.5, unitWater: 228.0, unitLabel: '袋', tubeOk: true, isSuppOnly: false },
+    { id: 'elental', isCore: true, group: 'pharm', grpCls: 'grp-pharm', grpLbl: '医薬品［成分栄養］', shortBtn: 'エレンタール (80g→300mL溶解)', name: 'エレンタール配合内用剤', spec: '1包80g［標準溶解300mL］ / 300kcal ・ 溶解水約250mL', note: '成分栄養(アミノ酸総量14.1g［遊離13.1g］・超低脂肪0.5g)', unitVol: 300, volUnit: 'mL(溶解後)', unitKcal: 300, unitProt: 13.1, unitWater: 250.0, unitLabel: '包(80g)', tubeOk: true, isSuppOnly: false },
+
+    // --- 食品区分：濃厚流動食・半固形・栄養補助（9品目） ---
+    { id: 'ma_lacfia', isCore: true, group: 'food', grpCls: 'grp-food', grpLbl: '食品・流動食', shortBtn: 'MA-ラクフィア (400mL/400kcal)', name: 'MA-ラクフィア 1.0', spec: '400mL / 400kcal (1.0kcal/mL) ・ 水分339mL (84.8%)', note: '半消化態・食物繊維3種＋シールド乳酸菌配合', unitVol: 400, volUnit: 'mL', unitKcal: 400, unitProt: 16.0, unitWater: 339.0, unitLabel: 'パック', tubeOk: true, isSuppOnly: false },
+    { id: 'hinex_egel', isCore: true, group: 'food', grpCls: 'grp-food', grpLbl: '食品・胃内ゲル化', shortBtn: 'ハイネックスイーゲル (500mL/400kcal)', name: 'ハイネックスイーゲル', spec: '500mL / 400kcal (0.8kcal/mL) ・ 水分440mL (88%)', note: '消化態(ペプチド)・胃酸pHでゲル化・水分多め(110mL/100kcal)', unitVol: 500, volUnit: 'mL', unitKcal: 400, unitProt: 16.0, unitWater: 440.0, unitLabel: 'バッグ', tubeOk: true, isSuppOnly: false },
+    { id: 'peptamen_prebio', isCore: true, group: 'food', grpCls: 'grp-food', grpLbl: '食品・消化態', shortBtn: 'ペプタメン プレビオ (200mL/300kcal)', name: 'ペプタメン プレビオ', spec: '200mL / 300kcal (1.5kcal/mL) ・ 水分153mL (76.5%)', note: '乳清(ホエイ)ペプチド＋プレバイオ食物繊維4.2g・MCT配合', unitVol: 200, volUnit: 'mL', unitKcal: 300, unitProt: 11.4, unitWater: 153.0, unitLabel: 'パック', tubeOk: true, isSuppOnly: false },
+    { id: 'peptamen_af', isCore: true, group: 'food', grpCls: 'grp-food', grpLbl: '食品・高蛋白消化態', shortBtn: 'ペプタメン AF［高蛋白］ (200mL/300kcal)', name: 'ペプタメン AF', spec: '200mL / 300kcal (1.5kcal/mL) ・ 水分155mL (77.5%)', note: '超高蛋白(19.0g/パック＝6.3g/100kcal)・乳清ペプチド・EPA/DHA', unitVol: 200, volUnit: 'mL', unitKcal: 300, unitProt: 19.0, unitWater: 155.0, unitLabel: 'パック', tubeOk: true, isSuppOnly: false },
+    { id: 'isocal_support', isCore: true, group: 'food', grpCls: 'grp-food', grpLbl: '食品・高濃度', shortBtn: 'アイソカルサポート (200mL/300kcal)', name: 'アイソカル サポート 1.5', spec: '200mL / 300kcal (1.5kcal/mL) ・ 水分153mL (76.5%)', note: 'グアーガム分解物(PHGG 4.4g)配合・下痢/便通管理配慮', unitVol: 200, volUnit: 'mL', unitKcal: 300, unitProt: 11.4, unitWater: 153.0, unitLabel: 'パック', tubeOk: true, isSuppOnly: false },
+    { id: 'recovery_k5', isCore: true, group: 'food', grpCls: 'grp-food', grpLbl: '食品・高蛋白', shortBtn: 'リカバリーK5［高蛋白］ (330mL/400kcal)', name: 'リカバリーK5', spec: '330mL / 400kcal (1.21kcal/mL) ・ 水分264mL (80%)', note: '高蛋白(20.0g/本＝5.0g/100kcal)・経口/経管デュアル容器・食物繊維8g', unitVol: 330, volUnit: 'mL', unitKcal: 400, unitProt: 20.0, unitWater: 264.0, unitLabel: '本', tubeOk: true, isSuppOnly: false },
+    { id: 'pg_soft', isCore: true, group: 'food', grpCls: 'grp-food', grpLbl: '食品［半固形］', shortBtn: 'PGソフト (503mL/400kcal)', name: 'PGソフト（ウォーターリッチ/エース）', spec: '503mL［533g］ / 400kcal (0.75kcal/g) ・ 水分440mL', note: '水分多め半固形(110mL/100kcal)・追加白湯を減らしやすい設計', unitVol: 503, volUnit: 'mL(533g)', unitKcal: 400, unitProt: 16.0, unitWater: 440.0, unitLabel: 'パック', tubeOk: true, isSuppOnly: false },
+    { id: 'renalen_mp', isCore: true, group: 'food', grpCls: 'grp-food', grpLbl: '食品・腎不全配慮', shortBtn: 'リーナレンMP［腎配慮］ (125mL/200kcal)', name: 'リーナレンMP', spec: '125mL / 200kcal (1.6kcal/mL) ・ 水分94.4mL (75.5%)', note: '保存期CKD向け蛋白調整(3.5g/100kcal)・低P/低K/低Na・経口/経管両用', unitVol: 125, volUnit: 'mL', unitKcal: 200, unitProt: 7.0, unitWater: 94.4, unitLabel: '本', tubeOk: true, isSuppOnly: false },
+    { id: 'vcresc_cp10', isCore: true, group: 'food', grpCls: 'grp-supp', grpLbl: '食品・蛋白/微量元素補助', shortBtn: '', name: 'ブイ・クレス CP10（ドリンク / ゼリー）', spec: 'ドリンク125mL: 80kcal・蛋白12.0g・水分110mL （ゼリー80g: 110kcal・蛋白12.0g・水分53mL）', note: 'コラーゲンペプチド10g＋亜鉛12mg＋鉄5mg＋セレン50μg＋VC500mg（褥瘡・創傷・蛋白補助に1日1本目安）', unitVol: 125, volUnit: 'mL', unitKcal: 80, unitProt: 12.0, unitWater: 110.0, unitLabel: '本', tubeOk: false, isSuppOnly: true },
+
+    // --- その他の汎用参考製剤（5品目：フィルタ切替で表示） ---
+    { id: 'ensure_liq', isCore: false, group: 'pharm', grpCls: 'grp-ref', grpLbl: '参考・医薬品', shortBtn: 'エンシュア・リキッド (250mL/250kcal)', name: 'エンシュア・リキッド', spec: '250mL / 250kcal (1.0kcal/mL) ・ 水分213mL (85%)', note: '汎用1.0kcal/mL標準液剤', unitVol: 250, volUnit: 'mL', unitKcal: 250, unitProt: 8.8, unitWater: 213.0, unitLabel: '缶', tubeOk: true, isSuppOnly: false },
+    { id: 'racol_liq', isCore: false, group: 'pharm', grpCls: 'grp-ref', grpLbl: '参考・医薬品', shortBtn: 'ラコールNF液 (200mL/200kcal)', name: 'ラコールNF配合経腸用液', spec: '200mL / 200kcal (1.0kcal/mL) ・ 水分170mL (85%)', note: '汎用1.0kcal/mL標準液剤（ω3系脂肪酸配合）', unitVol: 200, volUnit: 'mL', unitKcal: 200, unitProt: 8.76, unitWater: 170.0, unitLabel: '袋', tubeOk: true, isSuppOnly: false },
+    { id: 'enevo', isCore: false, group: 'pharm', grpCls: 'grp-ref', grpLbl: '参考・医薬品', shortBtn: 'エネーボ (250mL/300kcal)', name: 'エネーボ配合経腸用液', spec: '250mL / 300kcal (1.2kcal/mL) ・ 水分203mL (81.2%)', note: '1.2kcal/mL・セレン/カルニチン配合', unitVol: 250, volUnit: 'mL', unitKcal: 300, unitProt: 13.5, unitWater: 203.0, unitLabel: '缶', tubeOk: true, isSuppOnly: false },
+    { id: 'meibalance', isCore: false, group: 'food', grpCls: 'grp-ref', grpLbl: '参考・市販ONS', shortBtn: '', name: 'メイバランスMiniカップ', spec: '125mL / 200kcal (1.6kcal/mL) ・ 水分94mL (約75%)', note: '市販汎用カップONS', unitVol: 125, volUnit: 'mL', unitKcal: 200, unitProt: 7.5, unitWater: 94.0, unitLabel: '本', tubeOk: false, isSuppOnly: false },
+    { id: 'isocal_100', isCore: false, group: 'food', grpCls: 'grp-ref', grpLbl: '参考・市販ONS', shortBtn: '', name: 'アイソカル100', spec: '100mL / 200kcal (2.0kcal/mL) ・ 水分70mL (約70%)', note: '2.0kcal/mL超少量高濃度ONS', unitVol: 100, volUnit: 'mL', unitKcal: 200, unitProt: 8.0, unitWater: 70.0, unitLabel: '本', tubeOk: false, isSuppOnly: false }
+  ];
+
+  function getProdById(id){
+    for (var i = 0; i < ENTERAL_PRODUCTS.length; i++){
+      if (ENTERAL_PRODUCTS[i].id === id) return ENTERAL_PRODUCTS[i];
+    }
+    return ENTERAL_PRODUCTS[0];
+  }
+
+  var COMBO_ITEMS = [
+    { id: 'none', optGrp: '', label: '— なし（使用しない） —', name: 'なし', unitVol: 0, volUnit: '', unitKcal: 0, unitProt: 0, unitWater: 0, unitLabel: '—', maxDaily: null, calcByProt: false, isVcrescDrink: false, isVcrescJelly: false },
+    // 食品区分（濃厚流動食・半固形・栄養補助）
+    { id: 'peptamen_prebio', optGrp: '食品区分（濃厚流動食・半固形・栄養補助）', label: 'ペプタメン プレビオ (200mL: 300kcal・蛋白11.4g・水分153mL)', name: 'ペプタメン プレビオ', unitVol: 200, volUnit: 'mL', unitKcal: 300, unitProt: 11.4, unitWater: 153.0, unitLabel: 'パック', maxDaily: null, calcByProt: false, isVcrescDrink: false, isVcrescJelly: false },
+    { id: 'peptamen_af', optGrp: '食品区分（濃厚流動食・半固形・栄養補助）', label: 'ペプタメン AF［高蛋白］ (200mL: 300kcal・蛋白19.0g・水分155mL)', name: 'ペプタメン AF', unitVol: 200, volUnit: 'mL', unitKcal: 300, unitProt: 19.0, unitWater: 155.0, unitLabel: 'パック', maxDaily: null, calcByProt: false, isVcrescDrink: false, isVcrescJelly: false },
+    { id: 'ma_lacfia', optGrp: '食品区分（濃厚流動食・半固形・栄養補助）', label: 'MA-ラクフィア 1.0 (400mL: 400kcal・蛋白16.0g・水分339mL)', name: 'MA-ラクフィア 1.0', unitVol: 400, volUnit: 'mL', unitKcal: 400, unitProt: 16.0, unitWater: 339.0, unitLabel: 'パック', maxDaily: null, calcByProt: false, isVcrescDrink: false, isVcrescJelly: false },
+    { id: 'hinex_egel', optGrp: '食品区分（濃厚流動食・半固形・栄養補助）', label: 'ハイネックスイーゲル (500mL: 400kcal・蛋白16.0g・水分440mL)', name: 'ハイネックスイーゲル', unitVol: 500, volUnit: 'mL', unitKcal: 400, unitProt: 16.0, unitWater: 440.0, unitLabel: 'バッグ', maxDaily: null, calcByProt: false, isVcrescDrink: false, isVcrescJelly: false },
+    { id: 'isocal_support', optGrp: '食品区分（濃厚流動食・半固形・栄養補助）', label: 'アイソカル サポート 1.5 (200mL: 300kcal・蛋白11.4g・水分153mL)', name: 'アイソカル サポート 1.5', unitVol: 200, volUnit: 'mL', unitKcal: 300, unitProt: 11.4, unitWater: 153.0, unitLabel: 'パック', maxDaily: null, calcByProt: false, isVcrescDrink: false, isVcrescJelly: false },
+    { id: 'recovery_k5', optGrp: '食品区分（濃厚流動食・半固形・栄養補助）', label: 'リカバリーK5［高蛋白］ (330mL: 400kcal・蛋白20.0g・水分264mL)', name: 'リカバリーK5', unitVol: 330, volUnit: 'mL', unitKcal: 400, unitProt: 20.0, unitWater: 264.0, unitLabel: '本', maxDaily: null, calcByProt: false, isVcrescDrink: false, isVcrescJelly: false },
+    { id: 'pg_soft', optGrp: '食品区分（濃厚流動食・半固形・栄養補助）', label: 'PGソフト (503mL［533g］: 400kcal・蛋白16.0g・水分440mL)', name: 'PGソフト', unitVol: 503, volUnit: 'mL', unitKcal: 400, unitProt: 16.0, unitWater: 440.0, unitLabel: 'パック', maxDaily: null, calcByProt: false, isVcrescDrink: false, isVcrescJelly: false },
+    { id: 'renalen_mp', optGrp: '食品区分（濃厚流動食・半固形・栄養補助）', label: 'リーナレンMP［腎配慮］ (125mL: 200kcal・蛋白7.0g・水分94mL)', name: 'リーナレンMP', unitVol: 125, volUnit: 'mL', unitKcal: 200, unitProt: 7.0, unitWater: 94.4, unitLabel: '本', maxDaily: null, calcByProt: false, isVcrescDrink: false, isVcrescJelly: false },
+    { id: 'vcresc_cp10', optGrp: '食品区分（濃厚流動食・半固形・栄養補助）', label: 'ブイ・クレス CP10 ドリンク (125mL: 80kcal・蛋白12g・水分110mL・亜鉛12mg)', name: 'ブイ・クレス CP10 ドリンク', unitVol: 125, volUnit: 'mL', unitKcal: 80, unitProt: 12.0, unitWater: 110.0, unitLabel: '本', maxDaily: 1, calcByProt: false, isVcrescDrink: true, isVcrescJelly: false },
+    { id: 'vcresc_jelly', optGrp: '食品区分（濃厚流動食・半固形・栄養補助）', label: 'ブイ・クレス CP10 ゼリー (80g: 110kcal・蛋白12g・水分53mL・亜鉛12mg)', name: 'ブイ・クレス CP10 ゼリー', unitVol: 80, volUnit: 'g', unitKcal: 110, unitProt: 12.0, unitWater: 53.0, unitLabel: '個', maxDaily: 1, calcByProt: false, isVcrescDrink: false, isVcrescJelly: true },
+    // 医薬品区分
+    { id: 'inoras', optGrp: '医薬品区分', label: 'イノラス配合経腸用液 (187.5mL: 300kcal・蛋白12.0g・水分141mL)', name: 'イノラス配合経腸用液', unitVol: 187.5, volUnit: 'mL', unitKcal: 300, unitProt: 12.0, unitWater: 140.6, unitLabel: '袋', maxDaily: null, calcByProt: false, isVcrescDrink: false, isVcrescJelly: false },
+    { id: 'ensure_h', optGrp: '医薬品区分', label: 'エンシュア・H (250mL: 375kcal・蛋白13.2g・水分194mL)', name: 'エンシュア・H', unitVol: 250, volUnit: 'mL', unitKcal: 375, unitProt: 13.2, unitWater: 194.0, unitLabel: '缶', maxDaily: null, calcByProt: false, isVcrescDrink: false, isVcrescJelly: false },
+    { id: 'inosolid', optGrp: '医薬品区分', label: 'イノソリッド半固形剤 (300g: 300kcal・蛋白13.5g・水分228mL)', name: 'イノソリッド半固形剤', unitVol: 300, volUnit: 'g', unitKcal: 300, unitProt: 13.5, unitWater: 228.0, unitLabel: '袋', maxDaily: null, calcByProt: false, isVcrescDrink: false, isVcrescJelly: false },
+    { id: 'elental', optGrp: '医薬品区分', label: 'エレンタール配合内用剤 (80g→300mL溶解: 300kcal・蛋白13.1g・水分250mL)', name: 'エレンタール配合内用剤', unitVol: 300, volUnit: 'mL(溶解後)', unitKcal: 300, unitProt: 13.1, unitWater: 250.0, unitLabel: '包(80g)', maxDaily: null, calcByProt: false, isVcrescDrink: false, isVcrescJelly: false },
+    // ちょい足し・モジュラー栄養材
+    { id: 'mod_protein', optGrp: 'ちょい足し・モジュラー栄養材', label: 'プロテイン／ペプチド粉末 (1杯約10g: 38kcal・蛋白8.0g・水分0mL)', name: 'プロテイン／ペプチド粉末', unitVol: 10, volUnit: 'g', unitKcal: 38, unitProt: 8.0, unitWater: 0, unitLabel: '杯', maxDaily: null, calcByProt: true, isVcrescDrink: false, isVcrescJelly: false },
+    { id: 'mod_mct_tsp', optGrp: 'ちょい足し・モジュラー栄養材', label: 'MCTオイル 小さじ1 (約4.6g: 43kcal・蛋白0g・水分0mL)', name: 'MCTオイル(小さじ)', unitVol: 4.6, volUnit: 'g', unitKcal: 43, unitProt: 0, unitWater: 0, unitLabel: '杯', maxDaily: null, calcByProt: false, isVcrescDrink: false, isVcrescJelly: false },
+    { id: 'mod_mct_tbsp', optGrp: 'ちょい足し・モジュラー栄養材', label: 'MCTオイル 大さじ1 (約14g: 130kcal・蛋白0g・水分0mL)', name: 'MCTオイル(大さじ)', unitVol: 14, volUnit: 'g', unitKcal: 130, unitProt: 0, unitWater: 0, unitLabel: '杯', maxDaily: null, calcByProt: false, isVcrescDrink: false, isVcrescJelly: false },
+    // 参考製剤
+    { id: 'ensure_liq', optGrp: '参考製剤（その他汎用）', label: 'エンシュア・リキッド (250mL: 250kcal・蛋白8.8g・水分213mL)', name: 'エンシュア・リキッド', unitVol: 250, volUnit: 'mL', unitKcal: 250, unitProt: 8.8, unitWater: 213.0, unitLabel: '缶', maxDaily: null, calcByProt: false, isVcrescDrink: false, isVcrescJelly: false },
+    { id: 'racol_liq', optGrp: '参考製剤（その他汎用）', label: 'ラコールNF配合経腸用液 (200mL: 200kcal・蛋白8.8g・水分170mL)', name: 'ラコールNF配合経腸用液', unitVol: 200, volUnit: 'mL', unitKcal: 200, unitProt: 8.76, unitWater: 170.0, unitLabel: '袋', maxDaily: null, calcByProt: false, isVcrescDrink: false, isVcrescJelly: false },
+    { id: 'enevo', optGrp: '参考製剤（その他汎用）', label: 'エネーボ配合経腸用液 (250mL: 300kcal・蛋白13.5g・水分203mL)', name: 'エネーボ配合経腸用液', unitVol: 250, volUnit: 'mL', unitKcal: 300, unitProt: 13.5, unitWater: 203.0, unitLabel: '缶', maxDaily: null, calcByProt: false, isVcrescDrink: false, isVcrescJelly: false },
+    { id: 'meibalance', optGrp: '参考製剤（その他汎用）', label: 'メイバランスMiniカップ (125mL: 200kcal・蛋白7.5g・水分94mL)', name: 'メイバランスMiniカップ', unitVol: 125, volUnit: 'mL', unitKcal: 200, unitProt: 7.5, unitWater: 94.0, unitLabel: '本', maxDaily: null, calcByProt: false, isVcrescDrink: false, isVcrescJelly: false },
+    { id: 'isocal_100', optGrp: '参考製剤（その他汎用）', label: 'アイソカル100 (100mL: 200kcal・蛋白8.0g・水分70mL)', name: 'アイソカル100', unitVol: 100, volUnit: 'mL', unitKcal: 200, unitProt: 8.0, unitWater: 70.0, unitLabel: '本', maxDaily: null, calcByProt: false, isVcrescDrink: false, isVcrescJelly: false }
+  ];
+
+  function getComboItem(id){
+    for (var i = 0; i < COMBO_ITEMS.length; i++){
+      if (COMBO_ITEMS[i].id === id) return COMBO_ITEMS[i];
+    }
+    return COMBO_ITEMS[0];
+  }
+
+  function populateComboSelects(){
+    var selIds = ['comboId1', 'comboId2', 'comboId3'];
+    for (var s = 0; s < selIds.length; s++){
+      var sel = document.getElementById(selIds[s]);
+      if (!sel) continue;
+      var html = '';
+      var curGrp = null;
+      for (var i = 0; i < COMBO_ITEMS.length; i++){
+        var it = COMBO_ITEMS[i];
+        if (s === 0 && it.id === 'none') continue;
+        if (it.optGrp !== curGrp){
+          if (curGrp) html += '</optgroup>';
+          curGrp = it.optGrp;
+          if (curGrp) html += '<optgroup label="' + curGrp + '">';
+        }
+        html += '<option value="' + it.id + '">' + it.label + '</option>';
+      }
+      if (curGrp) html += '</optgroup>';
+      sel.innerHTML = html;
+    }
+    document.getElementById('comboId1').value = st.combo.id1;
+    document.getElementById('comboId2').value = st.combo.id2;
+    document.getElementById('comboId3').value = st.combo.id3;
+  }
+
+  function calcComboStats(){
+    var rows = [
+      { item: getComboItem(st.combo.id1), qty: Math.max(0, st.combo.qty1 || 0) },
+      { item: getComboItem(st.combo.id2), qty: Math.max(0, st.combo.qty2 || 0) },
+      { item: getComboItem(st.combo.id3), qty: Math.max(0, st.combo.qty3 || 0) }
+    ];
+    var totalKcal = 0, totalProt = 0, totalWater = 0;
+    var vcrescQty = 0, hasVcrescDrink = false, hasVcrescJelly = false;
+    var activeCount = 0;
+    var parts = [];
+    var rowOut = [];
+    for (var i = 0; i < 3; i++){
+      var r = rows[i];
+      var q = (r.item.id === 'none') ? 0 : r.qty;
+      var k = round0(q * r.item.unitKcal);
+      var pr = round1(q * r.item.unitProt);
+      var w = round0(q * r.item.unitWater);
+      var v = round1(q * r.item.unitVol);
+      totalKcal += k;
+      totalProt += q * r.item.unitProt;
+      totalWater += w;
+      if (q > 0 && r.item.id !== 'none'){
+        activeCount++;
+        parts.push(r.item.name + ' ' + q + r.item.unitLabel + '（' + k + 'kcal/蛋白' + pr.toFixed(1) + 'g/水分' + w + 'mL）');
+        if (r.item.isVcrescDrink){ vcrescQty += q; hasVcrescDrink = true; }
+        if (r.item.isVcrescJelly){ vcrescQty += q; hasVcrescJelly = true; }
+      }
+      rowOut.push({ item: r.item, qty: q, kcal: k, prot: pr, water: w, vol: v });
+    }
+    return {
+      rows: rowOut,
+      totalKcal: round0(totalKcal),
+      totalProt: round1(totalProt),
+      totalWater: round0(totalWater),
+      vcrescQty: vcrescQty,
+      hasVcrescDrink: hasVcrescDrink,
+      hasVcrescJelly: hasVcrescJelly,
+      activeCount: activeCount,
+      parts: parts
+    };
+  }
+
+  function num(el){
+    if (!el) return null;
+    var v = parseFloat(el.value);
+    return isNaN(v) ? null : v;
+  }
+  function round1(v){ return Math.round(v * 10) / 10; }
+  function round0(v){ return Math.round(v); }
+  function parseRange(str){
+    var p = str.split('-');
+    return { low: parseFloat(p[0]), high: parseFloat(p[1]), mid: (parseFloat(p[0]) + parseFloat(p[1])) / 2.0 };
+  }
+
+  function ageTargetBmiRange(age){
+    if (age >= 65) return { low: 21.5, high: 24.9, label: '65歳以上: 21.5-24.9' };
+    if (age >= 50) return { low: 20.0, high: 24.9, label: '50-64歳: 20.0-24.9' };
+    return { low: 18.5, high: 24.9, label: '18-49歳: 18.5-24.9' };
+  }
+
+  function calcBodyMetrics(){
+    var age = num(ageEl);
+    var h = num(heightEl);
+    var wRaw = num(weightEl);
+    var uw = num(usualWeightEl);
+    if (age == null || h == null || wRaw == null || h <= 0 || wRaw <= 0 || age <= 0){
+      return null;
+    }
+    var dryW = wRaw * (1.0 - st.edemaPct / 100.0);
+    var hm = h / 100.0;
+    var bmi = dryW / (hm * hm);
+    var ibw = 22.0 * hm * hm;
+    var adj = ibw + (dryW - ibw) * 0.25;
+
+    // 1) Harris-Benedict (using dryW)
+    var beeHb = (st.sex === 'male')
+      ? (66.47 + 13.75 * dryW + 5.00 * h - 6.76 * age)
+      : (655.1 + 9.56 * dryW + 1.85 * h - 4.68 * age);
+
+    // 2) Ganpule 2007 (Japanese National Institute of Health and Nutrition)
+    var beeGanpule = (st.sex === 'male')
+      ? ((0.0481 * dryW + 0.0234 * h - 0.0138 * age - 0.4235) * 1000.0 / 4.186)
+      : ((0.0481 * dryW + 0.0234 * h - 0.0138 * age - 0.9708) * 1000.0 / 4.186);
+
+    // 3) Mifflin-St Jeor 1990
+    var beeMifflin = (st.sex === 'male')
+      ? (10.0 * dryW + 6.25 * h - 5.0 * age + 5.0)
+      : (10.0 * dryW + 6.25 * h - 5.0 * age - 161.0);
+
+    if (beeHb < 400) beeHb = 400;
+    if (beeGanpule < 400) beeGanpule = 400;
+    if (beeMifflin < 400) beeMifflin = 400;
+
+    var selectedBee = beeHb;
+    var eqName = 'Harris-Benedict';
+    if (st.bmrEq === 'ganpule'){
+      selectedBee = beeGanpule;
+      eqName = '日本人式(Ganpule)';
+    } else if (st.bmrEq === 'mifflin'){
+      selectedBee = beeMifflin;
+      eqName = 'Mifflin-St Jeor';
+    }
+
+    var wlossPct = null;
+    if (uw != null && uw > 0){
+      wlossPct = ((uw - dryW) / uw) * 100.0;
+    }
+
+    var calcW = dryW;
+    var basisLabel = (st.edemaPct > 0 ? '乾燥体重 ' : '実体重 ') + dryW.toFixed(1) + ' kg';
+    if (st.wtBasis === 'ibw'){
+      calcW = ibw;
+      basisLabel = '標準体重(IBW) ' + ibw.toFixed(1) + ' kg';
+    } else if (st.wtBasis === 'adj'){
+      calcW = adj;
+      basisLabel = '調整体重(AdjBW) ' + adj.toFixed(1) + ' kg';
+    }
+
+    var tBmi = ageTargetBmiRange(age);
+    var targetWtLow = tBmi.low * hm * hm;
+    var targetWtHigh = tBmi.high * hm * hm;
+    var glimCut = (age >= 70) ? 20.0 : 18.5;
+    var glimHit = (bmi < glimCut);
+
+    return {
+      age: age, h: h, wRaw: wRaw, dryW: dryW, uw: uw,
+      bmi: bmi, ibw: ibw, adj: adj,
+      beeHb: beeHb, beeGanpule: beeGanpule, beeMifflin: beeMifflin,
+      bee: selectedBee, eqName: eqName,
+      wlossPct: wlossPct,
+      calcW: calcW, basisLabel: basisLabel,
+      tBmi: tBmi, targetWtLow: targetWtLow, targetWtHigh: targetWtHigh,
+      glimCut: glimCut, glimHit: glimHit
+    };
+  }
+
+  function calcAllFormulas(m){
+    var alsScore = num(alsfrsrEl);
+    if (alsScore == null) alsScore = 38;
+    if (alsScore < 0) alsScore = 0;
+    if (alsScore > 48) alsScore = 48;
+
+    // ALS Shimizu uses HB-based BEE by original regression definition
+    var teeShimizu167 = Math.max(600, 1.67 * m.beeHb + 11.8 * alsScore - 680.0);
+    var teeShimizu168 = Math.max(600, 1.68 * m.beeHb + 11.8 * alsScore - 680.0);
+
+    var tv = num(alsTvEl);
+    var reeTv = null, teeTv = null;
+    if (tv != null && tv > 0){
+      reeTv = 1.000251 * m.beeHb + 313.3507 * tv - 112.036;
+      teeTv = reeTv * 1.25;
+    }
+
+    var espenNonVentMid = 30.0 * m.calcW;
+    var espenNivLow = 25.0 * m.calcW;
+    var espenNivHigh = 30.0 * m.calcW;
+    var espenNivMid = 27.5 * m.calcW;
+    var tppvIchihara = 0.85 * m.beeHb;
+
+    // PD
+    var pdBase = m.bee * st.pdAct * st.pdStress * st.pdFactor;
+    var pdLow = m.bee * st.pdAct * st.pdStress * Math.max(1.05, st.pdFactor - 0.05);
+    var pdHigh = m.bee * st.pdAct * st.pdStress * (st.pdFactor + 0.05);
+
+    // Stroke
+    var strokeBase = 0, strokeLow = 0, strokeHigh = 0, strokeLabel = '';
+    if (st.strokePhase === 'acute'){
+      strokeBase = 22.5 * m.calcW;
+      strokeLow = 20.0 * m.calcW;
+      strokeHigh = 25.0 * m.calcW;
+      strokeLabel = '急性期（20-25 kcal/kg・高血糖回避）';
+    } else if (st.strokePhase === 'subacute'){
+      strokeBase = 0.5 * (27.5 * m.calcW + m.bee * 1.25);
+      strokeLow = Math.min(25.0 * m.calcW, m.bee * 1.2);
+      strokeHigh = Math.max(30.0 * m.calcW, m.bee * 1.3);
+      strokeLabel = '亜急性期・一般病棟（25-30 kcal/kg）';
+    } else {
+      strokeBase = 0.5 * (32.5 * m.calcW + m.bee * 1.45);
+      strokeLow = Math.min(30.0 * m.calcW, m.bee * 1.35);
+      strokeHigh = Math.max(35.0 * m.calcW, m.bee * 1.55);
+      strokeLabel = '回復期リハ強化期（30-35 kcal/kg・BEE×1.45）';
+    }
+
+    // Dementia
+    var demFactor = (st.demType === 'hyper') ? 1.6 : (st.demType === 'std' ? 1.3 : 1.15);
+    var demBase = m.bee * demFactor;
+    var demLow = m.bee * (demFactor - 0.1);
+    var demHigh = m.bee * (demFactor + 0.1);
+
+    // General
+    var genHb = m.bee * st.genAct * st.genStress;
+    var genKcalRange = parseRange(st.genKcalKg);
+    var genKcalLow = genKcalRange.low * m.calcW;
+    var genKcalHigh = genKcalRange.high * m.calcW;
+
+    return {
+      alsScore: alsScore,
+      teeShimizu167: teeShimizu167, teeShimizu168: teeShimizu168,
+      tv: tv, reeTv: reeTv, teeTv: teeTv,
+      espenNonVentMid: espenNonVentMid, espenNivLow: espenNivLow, espenNivHigh: espenNivHigh, espenNivMid: espenNivMid,
+      tppvIchihara: tppvIchihara,
+      pdBase: pdBase, pdLow: pdLow, pdHigh: pdHigh,
+      strokeBase: strokeBase, strokeLow: strokeLow, strokeHigh: strokeHigh, strokeLabel: strokeLabel,
+      demFactor: demFactor, demBase: demBase, demLow: demLow, demHigh: demHigh,
+      genHb: genHb, genKcalLow: genKcalLow, genKcalHigh: genKcalHigh
+    };
+  }
+
+  function setSegActive(containerId, valStr){
+    var c = document.getElementById(containerId);
+    if (!c) return;
+    var btns = c.querySelectorAll('button');
+    for (var i = 0; i < btns.length; i++){
+      if (btns[i].getAttribute('data-val') === String(valStr)) btns[i].classList.add('active');
+      else btns[i].classList.remove('active');
+    }
+  }
+
+  function update(){
+    var m = calcBodyMetrics();
+    if (!m){
+      document.getElementById('energyMainVal').textContent = '入力を確認';
+      return;
+    }
+
+    // Mode card visibility
+    document.getElementById('cardALS').style.display = (st.mode === 'als') ? 'block' : 'none';
+    document.getElementById('cardPD').style.display = (st.mode === 'pd') ? 'block' : 'none';
+    document.getElementById('cardStroke').style.display = (st.mode === 'stroke') ? 'block' : 'none';
+    document.getElementById('cardDementia').style.display = (st.mode === 'dementia') ? 'block' : 'none';
+    document.getElementById('cardGeneral').style.display = (st.mode === 'general') ? 'block' : 'none';
+
+    var modeNames = {
+      als: '現在：ALS（筋萎縮性側索硬化症）',
+      pd: '現在：パーキンソン病（PD）',
+      stroke: '現在：脳卒中（急性期〜回復期リハ）',
+      dementia: '現在：認知症・摂食嚥下障害',
+      general: '現在：一般・高齢者・フレイル／周術期'
+    };
+    document.getElementById('activeModeTag').textContent = modeNames[st.mode];
+    document.getElementById('ageBmiTargetTag').textContent = '目標BMI（' + m.tBmi.label + '）';
+
+    // Top body metrics
+    document.getElementById('m_bmi').textContent = m.bmi.toFixed(1);
+    var bmiCat = (m.bmi < 18.5) ? 'やせ (<18.5)' : (m.bmi < 25.0 ? '普通 (18.5-24.9)' : '肥満 (≧25)');
+    document.getElementById('m_bmi_sub').textContent = bmiCat + (st.edemaPct > 0 ? ' [乾燥]' : '');
+    document.getElementById('m_target_wt').textContent = m.targetWtLow.toFixed(1) + '-' + m.targetWtHigh.toFixed(1) + ' kg';
+    document.getElementById('m_target_bmi_lbl').textContent = m.tBmi.label;
+    document.getElementById('m_ibw').textContent = m.ibw.toFixed(1) + ' kg';
+    document.getElementById('m_bee').textContent = round0(m.bee) + ' kcal';
+    document.getElementById('m_bee_sub').textContent = m.eqName;
+
+    if (m.wlossPct != null){
+      var sign = m.wlossPct > 0 ? '-' : (m.wlossPct < 0 ? '+' : '±');
+      document.getElementById('m_wloss').textContent = sign + Math.abs(m.wlossPct).toFixed(1) + ' %';
+      document.getElementById('m_wloss_sub').textContent = (m.wlossPct >= 10) ? '⚠ 10%以上減少' : (m.wlossPct >= 5 ? '⚠ 5%以上減少' : '通常時 ' + m.uw + 'kg');
+    } else {
+      document.getElementById('m_wloss').textContent = '未入力';
+      document.getElementById('m_wloss_sub').textContent = '通常時体重で算出';
+    }
+
+    document.getElementById('b_edema').textContent = (st.edemaPct === 0)
+      ? '浮腫なし（実測 ' + m.wRaw.toFixed(1) + ' kg）'
+      : ('-' + st.edemaPct + '%補正 → 乾燥体重 ' + m.dryW.toFixed(1) + ' kg');
+    document.getElementById('b_edema').className = (st.edemaPct >= 10) ? 'param-badge bg-warn' : 'param-badge';
+    document.getElementById('b_wtbasis').textContent = m.basisLabel;
+    document.getElementById('b_bmr_eq').textContent = m.eqName;
+    document.getElementById('resultBasisLabel').textContent = m.basisLabel + ' ／ ' + m.eqName;
+
+    // Gender x Activity protein reference note
+    var isMale = (st.sex === 'male');
+    document.getElementById('genderActProtRef').innerHTML =
+      '・現在の性別（' + (isMale ? '男性' : '女性') + '）における高齢者フレイル予防目安（長寿科学振興財団）：<b>低活動 ' +
+      (isMale ? '1.25〜1.50' : '1.09〜1.40') + ' g/kg/日（' + round1((isMale ? 1.25 : 1.09)*m.calcW) + '〜' + round1((isMale ? 1.50 : 1.40)*m.calcW) + ' g）</b> ／ <b>中活動 ' +
+      (isMale ? '1.30〜1.76' : '1.27〜1.79') + ' g/kg/日（' + round1((isMale ? 1.30 : 1.27)*m.calcW) + '〜' + round1((isMale ? 1.76 : 1.79)*m.calcW) + ' g）</b>。';
+
+    var f = calcAllFormulas(m);
+
+    // Base energy before fever & weight-goal delta
+    var baseKcal = 0, baseLow = 0, baseHigh = 0, energyTitle = '';
+    var heroWarn = false;
+
+    if (st.mode === 'als'){
+      document.getElementById('b_alsfrsr').textContent = 'ALSFRS-R ' + f.alsScore + ' / 48点';
+      if (st.alsVent === 'none'){
+        document.getElementById('b_als_vent').textContent = '非人工呼吸器（自発呼吸）';
+        document.getElementById('b_als_vent').className = 'param-badge';
+        document.getElementById('alsActiveParams').style.display = 'block';
+        baseKcal = f.teeShimizu167;
+        baseLow = Math.min(f.teeShimizu167, f.espenNonVentMid) * 0.95;
+        baseHigh = Math.max(f.teeShimizu168, f.espenNonVentMid) * 1.05;
+        energyTitle = 'ALS 清水の式（非換気）';
+      } else if (st.alsVent === 'niv'){
+        document.getElementById('b_als_vent').textContent = 'NIV併用（25-30 kcal/kg）';
+        document.getElementById('b_als_vent').className = 'param-badge bg-warn';
+        document.getElementById('alsActiveParams').style.display = 'block';
+        baseKcal = f.espenNivMid;
+        baseLow = f.espenNivLow;
+        baseHigh = f.espenNivHigh;
+        energyTitle = 'ALS NIV併用（ESPEN基準）';
+      } else {
+        document.getElementById('b_als_vent').textContent = 'TPPV管理下（代謝低下・制限期）';
+        document.getElementById('b_als_vent').className = 'param-badge bg-danger';
+        document.getElementById('alsActiveParams').style.display = 'none';
+        baseKcal = Math.min(1000, Math.max(800, f.tppvIchihara));
+        baseLow = 800;
+        baseHigh = 1000;
+        energyTitle = 'ALS TPPV管理下（減量設定）';
+        heroWarn = true;
+      }
+    } else if (st.mode === 'pd'){
+      document.getElementById('b_pd_factor').textContent = 'PD係数 ' + st.pdFactor.toFixed(1);
+      document.getElementById('b_pd_act').textContent = '活動 ' + st.pdAct.toFixed(1) + ' × ストレス ' + st.pdStress.toFixed(1);
+      baseKcal = f.pdBase;
+      baseLow = f.pdLow;
+      baseHigh = f.pdHigh;
+      energyTitle = 'PD 坪井らの式（PD係数 ' + st.pdFactor.toFixed(1) + '）';
+    } else if (st.mode === 'stroke'){
+      document.getElementById('b_stroke_phase').textContent = f.strokeLabel;
+      baseKcal = f.strokeBase;
+      baseLow = f.strokeLow;
+      baseHigh = f.strokeHigh;
+      energyTitle = '脳卒中・' + f.strokeLabel;
+    } else if (st.mode === 'dementia'){
+      var dLbl = (st.demType === 'hyper') ? '過活動・徘徊型 (×1.6)' : (st.demType === 'std' ? '標準・日中離床 (×1.3)' : '低活動・進行期 (×1.15)');
+      document.getElementById('b_dem_type').textContent = dLbl;
+      baseKcal = f.demBase;
+      baseLow = f.demLow;
+      baseHigh = f.demHigh;
+      energyTitle = '認知症・' + dLbl;
+    } else {
+      document.getElementById('b_gen_act').textContent = '活動係数 ' + st.genAct.toFixed(1);
+      document.getElementById('b_gen_stress').textContent = 'ストレス係数 ' + st.genStress.toFixed(1);
+      document.getElementById('b_gen_kcalkg').textContent = st.genKcalKg + ' kcal/kg';
+      baseKcal = f.genHb;
+      baseLow = Math.min(f.genHb, f.genKcalLow);
+      baseHigh = Math.max(f.genHb, f.genKcalHigh);
+      energyTitle = m.eqName + ' × 活動 ' + st.genAct.toFixed(1) + ' × ストレス ' + st.genStress.toFixed(1);
+    }
+
+    // Apply fever factor and weight goal delta
+    var targetKcal = round0(baseKcal * st.feverFactor + st.wtGoalDelta);
+    var rangeLow = round0(baseLow * st.feverFactor + st.wtGoalDelta);
+    var rangeHigh = round0(baseHigh * st.feverFactor + st.wtGoalDelta);
+    if (targetKcal < 500) targetKcal = 500;
+    if (rangeLow < 450) rangeLow = 450;
+    if (rangeHigh < targetKcal) rangeHigh = targetKcal;
+
+    document.getElementById('b_fever').textContent = (st.feverFactor === 1.0) ? '平熱（×1.00）' : ('発熱補正 ×' + st.feverFactor.toFixed(2));
+    document.getElementById('b_fever').className = (st.feverFactor > 1.0) ? 'param-badge bg-warn' : 'param-badge';
+    document.getElementById('b_wtgoal').textContent = (st.wtGoalDelta === 0) ? '維持（±0 kcal）' : ((st.wtGoalDelta > 0 ? '+' : '') + st.wtGoalDelta + ' kcal/日');
+
+    var modNotes = [];
+    if (st.feverFactor > 1.0) modNotes.push('発熱×' + st.feverFactor.toFixed(2));
+    if (st.wtGoalDelta !== 0) modNotes.push('目標' + (st.wtGoalDelta > 0 ? '+' : '') + st.wtGoalDelta + 'kcal');
+    var fullEnergyTitle = '推奨エネルギー目標：' + energyTitle + (modNotes.length ? '［' + modNotes.join('・') + '］' : '');
+
+    // Protein calculations
+    var pr = parseRange(st.protPreset);
+    document.getElementById('b_prot_target').textContent = '蛋白 ' + pr.low.toFixed(1) + ' - ' + pr.high.toFixed(1) + ' g/kg/日';
+    var protLow = round1(pr.low * m.calcW);
+    var protHigh = round1(pr.high * m.calcW);
+    var protMid = round1(pr.mid * m.calcW);
+    var protPerMeal = round1(protMid / 3.0);
+
+    // Update Hero
+    document.getElementById('energyHero').className = heroWarn ? 'hero-box warn-hero' : 'hero-box';
+    document.getElementById('energyFormulaTitle').textContent = fullEnergyTitle;
+    document.getElementById('energyMainVal').textContent = targetKcal.toLocaleString() + ' kcal/日';
+    document.getElementById('energyRangeVal').textContent = '目安範囲：' + rangeLow.toLocaleString() + ' - ' + rangeHigh.toLocaleString() + ' kcal/日';
+    var kcalPerCalcKg = targetKcal / m.calcW;
+    var kcalPerDryKg = targetKcal / m.dryW;
+    var beeRatio = targetKcal / m.bee;
+    document.getElementById('energySubText').textContent =
+      '基準体重比 ' + kcalPerCalcKg.toFixed(1) + ' kcal/kg/日（乾燥実体重比 ' + kcalPerDryKg.toFixed(1) + '） ／ 基礎代謝比 ' + beeRatio.toFixed(2) + ' 倍';
+
+    document.getElementById('proteinTitle').textContent = '推奨タンパク質目標（' + pr.low.toFixed(1) + '〜' + pr.high.toFixed(1) + ' g/kg/日）';
+    document.getElementById('proteinMainVal').textContent = protMid.toFixed(1) + ' g/日';
+    document.getElementById('proteinRangeVal').textContent = '目標範囲：' + protLow.toFixed(1) + ' - ' + protHigh.toFixed(1) + ' g/日';
+    document.getElementById('proteinSubText').textContent = '3食均等なら 1食あたり約 ' + protPerMeal.toFixed(1) + ' g（フレイル予防推奨：1食 25〜30 g）';
+
+    // PFC Balance
+    var effectiveFatPct = st.fatPct;
+    var fatReason = '設定値 ' + effectiveFatPct + '%E';
+    if (st.comorb.copd && effectiveFatPct < 38){
+      effectiveFatPct = 40;
+      fatReason = 'COPD・高CO2補正 40%E（低RQ化）';
+    } else if (st.comorb.dm && effectiveFatPct < 30){
+      effectiveFatPct = 32;
+      fatReason = '糖尿病・糖質抑制補正 32%E';
+    }
+    document.getElementById('b_fat_pct').textContent = '脂質 ' + effectiveFatPct + '%E';
+
+    var protKcal = protMid * 4.0;
+    var pPct = Math.min(45.0, (protKcal / targetKcal) * 100.0);
+    var fPct = Math.min(100.0 - pPct - 15.0, effectiveFatPct);
+    var cPct = Math.max(15.0, 100.0 - pPct - fPct);
+    var fatKcal = targetKcal * (fPct / 100.0);
+    var carbKcal = Math.max(0, targetKcal - protKcal - fatKcal);
+    var fatGrams = fatKcal / 9.0;
+    var carbGrams = carbKcal / 4.0;
+
+    document.getElementById('pfcNoteLabel').textContent = fatReason;
+    document.getElementById('pfcBar').innerHTML =
+      '<div class="pfc-seg-p" style="width:' + pPct.toFixed(1) + '%;">P ' + round0(pPct) + '%</div>' +
+      '<div class="pfc-seg-f" style="width:' + fPct.toFixed(1) + '%;">F ' + round0(fPct) + '%</div>' +
+      '<div class="pfc-seg-c" style="width:' + cPct.toFixed(1) + '%;">C ' + round0(cPct) + '%</div>';
+    document.getElementById('pfcLegend').innerHTML =
+      '<div class="pfc-item"><span style="color:#1A5276;font-weight:700;">■ タンパク質 (P)</span><br><b>' + protMid.toFixed(1) + ' g/日</b>（' + pPct.toFixed(1) + '%E / ' + round0(protKcal) + ' kcal）</div>' +
+      '<div class="pfc-item"><span style="color:#D97706;font-weight:700;">■ 脂質 (F)</span><br><b>' + fatGrams.toFixed(1) + ' g/日</b>（' + fPct.toFixed(1) + '%E / ' + round0(fatKcal) + ' kcal）</div>' +
+      '<div class="pfc-item"><span style="color:#2C6E49;font-weight:700;">■ 炭水化物 (C)</span><br><b>' + carbGrams.toFixed(1) + ' g/日</b>（' + cPct.toFixed(1) + '%E / ' + round0(carbKcal) + ' kcal）</div>';
+
+    // Water requirement & Sub-metrics
+    var npc = Math.max(0, targetKcal - protKcal);
+    var nitrogen = protMid / 6.25;
+    var npcn = nitrogen > 0 ? (npc / nitrogen) : 0;
+
+    var baseWaterMid = 0, baseWaterLow = 0, baseWaterHigh = 0, wBasisShort = '', wBasisDetail = '';
+    if (st.waterBasis === 'age_std'){
+      if (m.age < 55){
+        baseWaterMid = m.calcW * 33.0; baseWaterLow = m.calcW * 30.0; baseWaterHigh = m.calcW * 35.0;
+        wBasisShort = '年齢別標準 33mL/kg (<55歳)';
+        wBasisDetail = '30-35 mL/kg';
+      } else if (m.age < 75){
+        baseWaterMid = m.calcW * 30.0; baseWaterLow = m.calcW * 25.0; baseWaterHigh = m.calcW * 32.0;
+        wBasisShort = '年齢別標準 30mL/kg (55-74歳)';
+        wBasisDetail = '25-32 mL/kg';
+      } else {
+        baseWaterMid = m.calcW * 27.5; baseWaterLow = m.calcW * 25.0; baseWaterHigh = m.calcW * 30.0;
+        wBasisShort = '年齢別標準 27.5mL/kg (75歳以上)';
+        wBasisDetail = '25-30 mL/kg';
+      }
+    } else if (st.waterBasis === 'ml30'){
+      baseWaterMid = m.calcW * 30.0; baseWaterLow = m.calcW * 25.0; baseWaterHigh = m.calcW * 35.0;
+      wBasisShort = '標準 30mL/kg';
+      wBasisDetail = '25-35 mL/kg';
+    } else if (st.waterBasis === 'kcal1'){
+      baseWaterMid = targetKcal * 1.0; baseWaterLow = targetKcal * 0.9; baseWaterHigh = targetKcal * 1.2;
+      wBasisShort = 'エネルギー比例 1.0mL/kcal';
+      wBasisDetail = '0.9-1.2 mL/kcal';
+    } else {
+      baseWaterMid = m.calcW * 20.0; baseWaterLow = m.calcW * 15.0; baseWaterHigh = m.calcW * 22.0;
+      wBasisShort = '水分制限配慮 20mL/kg';
+      wBasisDetail = '15-22 mL/kg';
+    }
+
+    var feverWaterAdd = 0;
+    if (!st.comorb.hd){
+      if (st.feverFactor >= 1.25) feverWaterAdd = 450;
+      else if (st.feverFactor >= 1.18) feverWaterAdd = 300;
+      else if (st.feverFactor >= 1.12) feverWaterAdd = 200;
+      else if (st.feverFactor >= 1.05) feverWaterAdd = 100;
+    }
+
+    var waterMid = Math.max(500, round0(baseWaterMid + feverWaterAdd + st.waterExtra));
+    var waterLow = Math.max(400, round0(baseWaterLow + feverWaterAdd + st.waterExtra));
+    var waterHigh = Math.max(waterMid, round0(baseWaterHigh + feverWaterAdd + st.waterExtra));
+
+    var wAddParts = [];
+    if (feverWaterAdd > 0) wAddParts.push('発熱+' + feverWaterAdd + 'mL');
+    if (st.waterExtra !== 0) wAddParts.push((st.waterExtra > 0 ? '+' : '') + st.waterExtra + 'mL補正');
+    document.getElementById('b_water_basis').textContent = wBasisShort + (wAddParts.length ? '［' + wAddParts.join('・') + '］' : '');
+
+    var selTubeProd = getProdById(st.tubeProdId);
+    if (st.prodFilter === 'pharm' && selTubeProd.group !== 'pharm'){
+      st.tubeProdId = 'inoras';
+      selTubeProd = getProdById(st.tubeProdId);
+    } else if (st.prodFilter === 'food' && selTubeProd.group !== 'food'){
+      st.tubeProdId = 'ma_lacfia';
+      selTubeProd = getProdById(st.tubeProdId);
+    } else if (st.prodFilter === 'core' && !selTubeProd.isCore){
+      st.tubeProdId = (selTubeProd.group === 'pharm') ? 'inoras' : 'ma_lacfia';
+      selTubeProd = getProdById(st.tubeProdId);
+    }
+    var comboStats = calcComboStats();
+    var useComboForWater = (st.waterPlanSrc === 'combo' && st.oralShare === 0 && comboStats.totalKcal > 0);
+    var fullTubeWater = useComboForWater
+      ? comboStats.totalWater
+      : round0((targetKcal / selTubeProd.unitKcal) * selTubeProd.unitWater);
+    var previewSayu = Math.max(0, waterMid - fullTubeWater);
+    var waterBasisProdName = useComboForWater ? '組み合わせ処方' : selTubeProd.name;
+    var refCompProd = (selTubeProd.id === 'inoras') ? getProdById('ma_lacfia') : getProdById('inoras');
+    var refCompWater = round0((targetKcal / refCompProd.unitKcal) * refCompProd.unitWater);
+    var previewSayuRef = Math.max(0, waterMid - refCompWater);
+
+    document.getElementById('waterHero').className = st.comorb.hd ? 'hero-box warn-hero' : 'hero-box water-hero';
+    document.getElementById('waterTitle').textContent = st.comorb.hd
+      ? '💧 推奨水分摂取目標（⚠維持透析：個別制限優先）'
+      : ('💧 推奨水分摂取目標（' + wBasisShort + '）');
+    document.getElementById('waterMainVal').textContent = waterMid.toLocaleString() + ' mL/日';
+    document.getElementById('waterRangeVal').textContent = '目安範囲：' + waterLow.toLocaleString() + ' - ' + waterHigh.toLocaleString() + ' mL/日';
+    document.getElementById('waterSubText').textContent = st.comorb.hd
+      ? '⚠透析患者ではドライウエイト・前日尿量＋500mL等の個別制限指示を必ず優先してください'
+      : ('基本 ' + round0(baseWaterMid).toLocaleString() + ' mL (' + wBasisDetail + ')' +
+         (wAddParts.length ? ' ＋ ' + wAddParts.join('・') : '') +
+         ' ／ 経口0%時の追加白湯：約 ' + previewSayu.toLocaleString() + ' mL（' + waterBasisProdName + '基準）');
+
+    document.getElementById('sm_npc').textContent = round0(npc).toLocaleString() + ' kcal';
+    document.getElementById('sm_npcn').textContent = round0(npcn);
+    document.getElementById('sm_npcn_note').textContent = '窒素 N = ' + nitrogen.toFixed(1) + ' g（通常目安 100-150）';
+    document.getElementById('sm_water').textContent = '約 ' + previewSayu.toLocaleString() + ' mL';
+    document.getElementById('sm_water_note').textContent = useComboForWater
+      ? ('組み合わせ処方（水分' + comboStats.totalWater + 'mL）基準')
+      : (selTubeProd.name + '基準（' + (refCompProd.id === 'inoras' ? 'イノラス' : 'MA-ラクフィア') + 'なら約' + previewSayuRef.toLocaleString() + 'mL）');
+    document.getElementById('sm_glim_bmi').textContent = m.glimHit ? '該当（低BMI）' : '非該当';
+    document.getElementById('sm_glim_bmi').style.color = m.glimHit ? 'var(--red)' : 'var(--green)';
+    document.getElementById('sm_glim_note').textContent = (m.age >= 70 ? '70歳以上 <20.0' : '70歳未満 <18.5') + '（現在 ' + m.bmi.toFixed(1) + '）';
+
+    // Clinical alerts
+    var alerts = [];
+    // Japanese BMR comparison alert when HB overestimates in older adults
+    var hbOverPct = ((m.beeHb - m.beeGanpule) / m.beeGanpule) * 100.0;
+    if (st.bmrEq === 'hb' && hbOverPct >= 10.0){
+      alerts.push({
+        cls: 'info',
+        head: '🇯🇵 日本人高齢者・女性における基礎代謝の差（HB式 ' + round0(m.beeHb) + ' vs 日本人Ganpule式 ' + round0(m.beeGanpule) + ' kcal）',
+        body: 'この体格・年齢ではHarris-Benedict式が日本人式（Ganpule 2007）より<b>約 ' + hbOverPct.toFixed(0) + '% 高め</b>に算出されています。一般・脳卒中・認知症・PDモードで過剰投与が懸念される場合は、②の「日本人式（Ganpule）」への切り替えも参考にしてください（※ALS清水の式はHB式を前提に回帰作成されています）。'
+      });
+    }
+
+    if (m.bmi >= 25.0 && st.wtBasis === 'actual'){
+      alerts.push({
+        cls: 'caution',
+        head: '💡 肥満域（BMI ' + m.bmi.toFixed(1) + '）：基準体重の過大評価に注意',
+        body: '実体重（' + m.dryW.toFixed(1) + ' kg）基準では必要量が過大になる場合があります。②の基準体重を<b>標準体重（IBW ' + m.ibw.toFixed(1) + ' kg）</b>または<b>調整体重（AdjBW ' + m.adj.toFixed(1) + ' kg）</b>に切り替えて比較してください（ALSでBMI 25〜35の場合は体重維持目標）。'
+      });
+    }
+
+    if (m.bmi < 18.5 || (m.wlossPct != null && m.wlossPct >= 10.0)){
+      alerts.push({
+        cls: 'red',
+        head: '⚠ るい痩・大幅な体重減少：リフィーディング症候群（RFS）予防と段階的増量を',
+        body: 'BMI 18.5未満または10%以上の体重減少がある場合、初日から目標量（' + targetKcal.toLocaleString() + ' kcal）を全量投与すると低P・低K・低Mg血症やチアミン欠乏（ウェルニッケ脳症・心不全）を起こす危険があります。下の<b>「📈 段階的増量スケジュール」</b>を開いてRFS高リスク設定（10 kcal/kg開始＋ビタミンB1投与）を確認し、<a href="refeeding_risk.html" style="color:#6a1a1a;font-weight:700;text-decoration:underline;">RFSリスク判定ツール</a>も併用してください。'
+      });
+    }
+
+    // Mode-specific alerts
+    if (st.mode === 'als'){
+      if (st.alsVent === 'tppv'){
+        alerts.push({
+          cls: 'red',
+          head: '🚨 TPPV（気管切開下陽圧換気）管理下の過剰投与ピットフォール',
+          body: 'TPPV管理下のALS患者では総エネルギー消費量が<b>800〜1,000 kcal/日（実測平均 934±201 kcal/日, Ichihara 2012）</b>へ著減します。非換気時の清水の式（' + round0(f.teeShimizu167) + ' kcal/日）のまま継続すると高度肥満・脂肪肝・高TG血症を来すため減量調整が必須です。'
+        });
+      } else {
+        var swScore = num(alsSwallowEl);
+        var fvc = num(alsFvcEl);
+        var pegReasons = [];
+        if (m.wlossPct != null && m.wlossPct >= 5.0) pegReasons.push('体重減少 ' + m.wlossPct.toFixed(1) + '%（≧5%）');
+        if (swScore != null && swScore <= 2) pegReasons.push('ALSFRS-R嚥下項目 ' + swScore + '点（≦2点）');
+        if (pegReasons.length > 0){
+          var fvcNote = (fvc == null)
+            ? '<b>%FVC ≧ 50% の安全な時期</b>を逃さない早期評価が推奨されます。'
+            : (fvc >= 50
+              ? '現在 <b>%FVC ' + fvc + '%（≧50%）</b>であり、呼吸合併症リスクが比較的低い<b>早期PEG導入の推奨ウィンドウ内</b>です。'
+              : '⚠ 現在 <b>%FVC ' + fvc + '%（<50%）</b>であり、手技に伴う呼吸不全リスクが高い領域です。NIV併用下での厳重管理・専門チーム連携が必要です。');
+          alerts.push({
+            cls: (fvc != null && fvc < 50) ? 'red' : 'caution',
+            head: '📌 ALS 胃瘻（PEG）導入検討タイミングに該当（' + pegReasons.join(' ／ ') + '）',
+            body: 'ESPEN・日本ALS診療ガイドライン2023・ProGas研究に基づき、体重減少5〜10%到達前・呼吸予備能保持期での意思決定支援が推奨されます。' + fvcNote
+          });
+        }
+      }
+    } else if (st.mode === 'pd'){
+      alerts.push({
+        cls: 'blue',
+        head: '🚶 パーキンソン病：不顕性誤嚥・オン時間帯の食事・微量元素チェック',
+        body: '・PDの嚥下障害はむせを伴わない<b>不顕性誤嚥（静かな誤嚥）</b>が多いため、<b>薬効が効いているオン時間帯に食事を設定</b>し45〜60度半座位を保ちます。<br>・レボドパ長期使用に伴う<b>ビタミンB6・B12・葉酸欠乏（高ホモシステイン血症）</b>、転倒・サルコペニアに関わる<b>ビタミンD・亜鉛不足</b>の定期確認を推奨します。'
+      });
+    } else if (st.mode === 'stroke'){
+      alerts.push({
+        cls: 'blue',
+        head: '🩺 脳卒中栄養管理のポイント（嚥下評価・リハ栄養連携）',
+        body: st.strokePhase === 'acute'
+          ? '発症早期は入室24〜48時間以内の早期経腸栄養開始を検討しつつ、血糖 140〜180 mg/dL 程度を目標にOverfeedingを避けます。ベッドサイド嚥下スクリーニング通過前は経鼻胃管等を一時活用します。'
+          : '回復期では「リハビリ負荷に見合うエネルギー＋タンパク質（1.2〜1.5 g/kg/日）」が不足すると、訓練するほど筋肉が痩せる医原性サルコペニアに陥ります。リハ直後30分以内のBCAA・ホエイタンパク補給が効果的です。'
+      });
+    }
+
+    // Comorbidity overlay alerts
+    if (st.comorb.ckd){
+      alerts.push({
+        cls: 'caution',
+        head: '🫘 併存：保存期CKD（G3b〜G5）オーバーレイ適用中',
+        body: '保存期CKDの標準的な蛋白制限は <b>0.6〜0.8 g/kg標準体重/日（' + round1(0.6*m.ibw) + '〜' + round1(0.8*m.ibw) + ' g/日）</b>ですが、<b>高齢者・サルコペニア・ALS/PD合併例では厳格な制限が筋肉減少と予後悪化を招く</b>ため、BUN・eGFR・アシドーシス・カリウム/リンを監視しながら 0.8〜1.0 g/kg 程度への緩和を腎臓内科と協議してください（現在設定：' + protMid.toFixed(1) + ' g/日、NPC/N比 ' + round0(npcn) + '［異化防止にはNPC/N≧200が理想］）。'
+      });
+    }
+    if (st.comorb.hd){
+      alerts.push({
+        cls: 'caution',
+        head: '💧 併存：維持透析（HD/PD）オーバーレイ適用中',
+        body: '透析セッションごとのアミノ酸・タンパク質喪失を補うため、保存期と異なり<b>タンパク質 0.9〜1.2 g/kg標準体重/日（' + round1(0.9*m.ibw) + '〜' + round1(1.2*m.ibw) + ' g/日）</b>の確保が必要です。水分・カリウム・リン（P/蛋白比 ≦ 15 mg/g目安）の制限に注意し、高濃度・低電解質経腸栄養剤も検討してください。'
+      });
+    }
+    if (st.comorb.dm){
+      alerts.push({
+        cls: 'info',
+        head: '🩸 併存：糖尿病・高血糖オーバーレイ適用中（糖質比率抑制）',
+        body: '炭水化物比率を <b>' + cPct.toFixed(0) + '%E（' + carbGrams.toFixed(0) + ' g/日）</b> に抑え、一価不飽和脂肪酸・食物繊維を活用した脂質 ' + fPct.toFixed(0) + '%E バランスへ調整しました（参考：標準体重IBW×25〜30 kcal = ' + round0(25*m.ibw) + '〜' + round0(30*m.ibw) + ' kcal/日）。経腸栄養では糖質調整流動食（グルセルナ-REX、インスロー等）への変更や持続投与速度の緩和が食後高血糖抑制に有効です。'
+      });
+    }
+    if (st.comorb.copd){
+      alerts.push({
+        cls: 'info',
+        head: '🫁 併存：COPD・高二酸化炭素血症オーバーレイ適用中（脂質 40%E・低RQ設計）',
+        body: '糖質（呼吸商 RQ=1.0）の過剰投与はCO2産生を増やし換気仕事量を増大させるため、脂質（RQ=0.7）を <b>' + fPct.toFixed(0) + '%E（' + fatGrams.toFixed(0) + ' g/日）</b> に高めたバランスに自動調整しました。何より<b>総エネルギーの過剰投与（Overfeeding）自体が最大のCO2増加要因</b>となるため注意してください。'
+      });
+    }
+    if (st.comorb.lc){
+      alerts.push({
+        cls: 'blue',
+        head: '🌙 併存：肝硬変（PEM・サルコペニア）オーバーレイ適用中（就寝前補食 LES 組み込み）',
+        body: '肝硬変ではグリコーゲン貯蔵能が低下し、一晩の絶食だけで健常者の3日絶食に相当する飢餓・筋崩壊が起こります。1日総エネルギー（' + targetKcal.toLocaleString() + ' kcal）の中から<b>約 200 kcal を就寝前軽食（LES：アミノレバンEN等のBCAA経腸栄養剤やおにぎり等）に分割配分</b>しました（下の食事配分表に反映）。'
+      });
+    }
+
+    var alertsHtml = '';
+    for (var i = 0; i < alerts.length; i++){
+      alertsHtml += '<div class="warning-box ' + alerts[i].cls + '"><div class="head">' + alerts[i].head + '</div><div>' + alerts[i].body + '</div></div>';
+    }
+    document.getElementById('clinicalAlerts').innerHTML = alertsHtml;
+
+    // Meal plan cards (supports LES 4-split, PD redistribution, or standard 3-meal)
+    var mealHeader = document.getElementById('mealPlanHeader');
+    var mealDesc = document.getElementById('mealPlanDesc');
+    var mealGrid = document.getElementById('mealGrid');
+
+    if (st.comorb.lc){
+      mealGrid.className = 'meal-grid les-4';
+      var lesProt = 13.5; // e.g., BCAA packet ~13.5g protein / ~210 kcal
+      if (protMid < 40) lesProt = round1(protMid * 0.25);
+      var remProt = Math.max(0, protMid - lesProt);
+      var mBk = (st.mode === 'pd' && st.pdLdopa === 'redist') ? round1(remProt * 0.20) : round1(remProt / 3.0);
+      var mLn = (st.mode === 'pd' && st.pdLdopa === 'redist') ? round1(remProt * 0.35) : round1(remProt / 3.0);
+      var mDn = round1(remProt - mBk - mLn);
+      mealHeader.textContent = '🍽️ 肝硬変 LES（就寝前補食 約200kcal）組み込み 4回配分プラン（計 ' + protMid.toFixed(1) + ' g/日）';
+      mealDesc.innerHTML = '夜間飢餓による骨格筋崩壊（サルコペニア）を防ぐため、就寝前に約200 kcal（BCAA栄養剤1包 等）を割り当て、残りを3食に配分しています。';
+      mealGrid.innerHTML =
+        '<div class="meal-card"><div class="mc-title">🌅 朝食</div><div class="mc-gram">' + mBk.toFixed(1) + ' g</div><div class="mc-desc">朝のエネルギーと分岐鎖アミノ酸補給</div></div>' +
+        '<div class="meal-card"><div class="mc-title">☀️ 昼食</div><div class="mc-gram">' + mLn.toFixed(1) + ' g</div><div class="mc-desc">日中の活動エネルギー確保</div></div>' +
+        '<div class="meal-card"><div class="mc-title">🌆 夕食</div><div class="mc-gram">' + mDn.toFixed(1) + ' g</div><div class="mc-desc">LES分（約200kcal）を差し引いた量に調整</div></div>' +
+        '<div class="meal-card les-focus"><div class="mc-title">🌙 就寝前 LES（約200kcal）</div><div class="mc-gram">' + lesProt.toFixed(1) + ' g</div><div class="mc-desc">BCAA経腸栄養剤1包 等で夜間異化をブロック</div></div>';
+    } else if (st.mode === 'pd' && st.pdLdopa === 'redist'){
+      mealGrid.className = 'meal-grid';
+      var pBk = round1(protMid * 0.15);
+      var pLn = round1(protMid * 0.35);
+      var pDn = round1(protMid - pBk - pLn);
+      mealHeader.textContent = '🍽️ パーキンソン病：L-dopa吸収競合に配慮した「昼・夕重点」タンパク質配分（計 ' + protMid.toFixed(1) + ' g/日）';
+      mealDesc.innerHTML = '日中のL-dopa効果減弱（Delayed-on / No-on）を防ぐため、<b>朝食のタンパク質を控えめ（約15%）にし、昼（約35%）・夕（約50%）に重点配分</b>して総タンパク質量を維持します。';
+      mealGrid.innerHTML =
+        '<div class="meal-card"><div class="mc-title">🌅 朝食（控えめ：約15%）</div><div class="mc-gram">' + pBk.toFixed(1) + ' g</div><div class="mc-desc">日中の薬効立ち上がりを優先し、糖質・MCTオイル等でカロリー確保</div></div>' +
+        '<div class="meal-card"><div class="mc-title">☀️ 昼食（中等量：約35%）</div><div class="mc-gram">' + pLn.toFixed(1) + ' g</div><div class="mc-desc">午後のオフが目立つ場合はさらに夕食側へ寄せる</div></div>' +
+        '<div class="meal-card evening-focus"><div class="mc-title">🌙 夕食（重点配分：約50%）</div><div class="mc-gram">' + pDn.toFixed(1) + ' g</div><div class="mc-desc">魚・肉・大豆・乳製品をしっかり摂りサルコペニアを予防</div></div>';
+    } else {
+      mealGrid.className = 'meal-grid';
+      mealHeader.textContent = '🍽️ 1日タンパク質の3食均等配分シミュレーション（計 ' + protMid.toFixed(1) + ' g/日）';
+      mealDesc.innerHTML = '筋タンパク質合成（MPS）の閾値を毎食超えるため、<b>1食あたり 25〜30 g 目安</b>で3食均等に摂取するモデルです。';
+      mealGrid.innerHTML =
+        '<div class="meal-card"><div class="mc-title">🌅 朝食（約1/3）</div><div class="mc-gram">' + protPerMeal.toFixed(1) + ' g</div><div class="mc-desc">パン・粥のみを避け、卵・納豆・ヨーグルト・牛乳を追加</div></div>' +
+        '<div class="meal-card"><div class="mc-title">☀️ 昼食（約1/3）</div><div class="mc-gram">' + protPerMeal.toFixed(1) + ' g</div><div class="mc-desc">主菜を確保し、リハ実施日はリハ直後にプロテイン/BCAA活用</div></div>' +
+        '<div class="meal-card"><div class="mc-title">🌙 夕食（約1/3）</div><div class="mc-gram">' + protPerMeal.toFixed(1) + ' g</div><div class="mc-desc">主菜（魚・肉・大豆）＋ビタミンD・微量元素を摂取</div></div>';
+    }
+
+    // Ramp-up schedule table
+    var d1Kcal = 0, d3Kcal = 0, d5Kcal = 0, rampMon = '';
+    if (st.rampRisk === 'extreme'){
+      d1Kcal = round0(Math.min(targetKcal * 0.3, 5.0 * m.dryW));
+      d3Kcal = round0(Math.min(targetKcal * 0.55, 10.0 * m.dryW));
+      d5Kcal = round0(targetKcal * 0.80);
+      rampMon = '栄養開始30分前にチアミン(VB1) 200-300mg静注/経口必須＋連日投与。P・K・Mg・血糖を1日1-2回測定し低値なら増量停止・補正。';
+    } else if (st.rampRisk === 'high'){
+      d1Kcal = round0(Math.min(targetKcal * 0.45, 10.0 * m.dryW));
+      d3Kcal = round0(targetKcal * 0.70);
+      d5Kcal = round0(targetKcal * 0.90);
+      rampMon = '開始前にチアミン 200-300mg投与、P・K・Mgを連日確認（ASPEN基準：ベースラインから10-20%以上低下でRFS発症に注意）。';
+    } else {
+      d1Kcal = round0(targetKcal * 0.50);
+      d3Kcal = round0(targetKcal * 0.75);
+      d5Kcal = targetKcal;
+      rampMon = '腹部膨満・下痢・胃内残渣・高血糖がないことを確認しながら3〜4日で最終目標へ到達。';
+    }
+    var rampSteps = [
+      { day: 'Day 1〜2（開始期）', kcal: d1Kcal, rate: round0(d1Kcal / 16.0), note: rampMon },
+      { day: 'Day 3〜4（漸増期）', kcal: d3Kcal, rate: round0(d3Kcal / 16.0), note: '電解質（P・K・Mg）低下・浮腫・心不全徴候・下痢がなければ段階的に増量' },
+      { day: 'Day 5〜7', kcal: d5Kcal, rate: round0(d5Kcal / 16.0), note: (st.rampRisk === 'low' ? '最終目標量（100%）に到達・体重とBUN/Crを再評価' : '7〜10日目にかけて最終目標（' + targetKcal + ' kcal）へ到達') },
+      { day: '維持目標（100%）', kcal: targetKcal, rate: round0(targetKcal / 16.0), note: '目標タンパク質 ' + protMid.toFixed(1) + ' g/日を確保し、週1〜月1回で体重推移を追跡' }
+    ];
+    var rampHtml = '';
+    for (var rs = 0; rs < rampSteps.length; rs++){
+      rampHtml += '<tr><td class="left"><b>' + rampSteps[rs].day + '</b></td>' +
+        '<td><b>' + rampSteps[rs].kcal.toLocaleString() + ' kcal/日</b><br><span style="font-size:0.78em;color:var(--gray);">(' + round0((rampSteps[rs].kcal/targetKcal)*100) + '%)</span></td>' +
+        '<td>約 ' + rampSteps[rs].rate + ' mL/hr<br><span style="font-size:0.76em;color:var(--gray);">(1.0kcal/mL・16h換算)</span></td>' +
+        '<td class="left">' + rampSteps[rs].note + '</td></tr>';
+    }
+    document.getElementById('rampTableBody').innerHTML = rampHtml;
+
+    // Formula comparison table
+    var compRows = [
+      { name: '基礎代謝：Harris-Benedict式', cond: '欧米標準式（' + (st.sex==='male'?'男':'女') + ' ' + m.age + '歳 / 乾燥 ' + m.dryW.toFixed(1) + 'kg）', kcal: round0(m.beeHb) + ' kcal', perKg: (m.beeHb/m.calcW).toFixed(1), active: false },
+      { name: '基礎代謝：日本人式（Ganpule 2007）', cond: '国立健康・栄養研究所の式（日本人データ）', kcal: round0(m.beeGanpule) + ' kcal', perKg: (m.beeGanpule/m.calcW).toFixed(1), active: false },
+      { name: '基礎代謝：Mifflin-St Jeor式（1990）', cond: '国際ガイドライン・肥満例で推奨', kcal: round0(m.beeMifflin) + ' kcal', perKg: (m.beeMifflin/m.calcW).toFixed(1), active: false },
+      { name: '一般・フレイル（BEE × 活動 × ストレス）', cond: m.eqName + ' × 活動(' + st.genAct.toFixed(1) + ') × ストレス(' + st.genStress.toFixed(1) + ')', kcal: round0(f.genHb) + ' kcal', perKg: (f.genHb/m.calcW).toFixed(1), active: (st.mode==='general') },
+      { name: 'ALS 清水の式（Shimizu 2017 原著: 1.67）', cond: '1.67 × BEE(HB) + 11.8 × ALSFRS-R(' + f.alsScore + ') − 680', kcal: round0(f.teeShimizu167) + ' kcal', perKg: (f.teeShimizu167/m.calcW).toFixed(1), active: (st.mode==='als' && st.alsVent==='none') },
+      { name: 'ALS 清水の式（1.68係数表記）', cond: '1.68 × BEE(HB) + 11.8 × ALSFRS-R(' + f.alsScore + ') − 680', kcal: round0(f.teeShimizu168) + ' kcal', perKg: (f.teeShimizu168/m.calcW).toFixed(1), active: false },
+      { name: 'ALS 換気量(TV)式（清水ら）', cond: f.reeTv!=null ? ('TV '+f.tv+'L → REE '+round0(f.reeTv)+' × 1.25') : '1回換気量 TV(L) 入力時に算出', kcal: f.teeTv!=null ? (round0(f.teeTv)+' kcal') : '—', perKg: f.teeTv!=null ? (f.teeTv/m.calcW).toFixed(1) : '—', active: false },
+      { name: 'ALS NIV併用（ESPEN 2018） / TPPV管理下', cond: 'NIV: 25-30 kcal/kg ／ TPPV: 800-1,000 kcal (0.85×BEE=' + round0(f.tppvIchihara) + ')', kcal: 'NIV ' + round0(f.espenNivMid) + ' / TPPV 900 kcal', perKg: '27.5 / ' + (900/m.calcW).toFixed(1), active: (st.mode==='als' && st.alsVent!=='none') },
+      { name: 'パーキンソン病（坪井らの式）', cond: m.eqName + ' × 活動(' + st.pdAct.toFixed(1) + ') × ストレス(' + st.pdStress.toFixed(1) + ') × PD係数(' + st.pdFactor.toFixed(1) + ')', kcal: round0(f.pdBase) + ' kcal', perKg: (f.pdBase/m.calcW).toFixed(1), active: (st.mode==='pd') },
+      { name: '脳卒中（' + f.strokeLabel + '）', cond: '病期別エネルギー基準', kcal: round0(f.strokeBase) + ' kcal', perKg: (f.strokeBase/m.calcW).toFixed(1), active: (st.mode==='stroke') },
+      { name: '認知症（BPSD・活動度別）', cond: m.eqName + ' × 活動係数 ' + f.demFactor.toFixed(2), kcal: round0(f.demBase) + ' kcal', perKg: (f.demBase/m.calcW).toFixed(1), active: (st.mode==='dementia') }
+    ];
+    var compHtml = '';
+    for (var c = 0; c < compRows.length; c++){
+      var cr = compRows[c];
+      compHtml += '<tr class="' + (cr.active ? 'active-formula' : '') + '">' +
+        '<td class="left">' + (cr.active ? '▶ ' : '') + cr.name + '</td>' +
+        '<td class="left">' + cr.cond + '</td>' +
+        '<td>' + cr.kcal + '</td>' +
+        '<td>' + cr.perKg + (cr.perKg === '—' ? '' : ' kcal/kg') + '</td></tr>';
+    }
+    document.getElementById('formulaCompareBody').innerHTML = compHtml;
+
+    // Enteral & Water/Sayu Plan & ONS & Choi-tashi recipes
+    var shareFactor = (100.0 - st.oralShare) / 100.0;
+    var neededKcal = round0(targetKcal * shareFactor);
+    var neededProt = round1(protMid * shareFactor);
+    lastTargets = { neededKcal: neededKcal, neededProt: neededProt };
+
+    document.getElementById('b_oral_intake').textContent =
+      (st.oralShare === 0) ? '経口0%・全量経管（' + neededKcal + ' kcal）' : ('不足分 ' + (100 - st.oralShare) + '%（' + neededKcal + ' kcal / 蛋白 ' + neededProt.toFixed(1) + 'g）');
+    document.getElementById('supplementTargetHint').innerHTML =
+      '補充すべき目標量：<b>エネルギー ' + neededKcal.toLocaleString() + ' kcal/日</b> ／ <b>タンパク質 ' + neededProt.toFixed(1) + ' g/日</b>（1日目標の ' + (100 - st.oralShare) + '% 分） ／ <b>1日目標水分量 ' + waterMid.toLocaleString() + ' mL/日</b>';
+
+    // Render tube product selector buttons grouped by Pharmaceutical vs Food
+    var pharmBtns = '', foodBtns = '';
+    for (var tb = 0; tb < ENTERAL_PRODUCTS.length; tb++){
+      var tp = ENTERAL_PRODUCTS[tb];
+      if (!tp.tubeOk) continue;
+      var showBtn = false;
+      if (st.prodFilter === 'core') showBtn = tp.isCore;
+      else if (st.prodFilter === 'pharm') showBtn = (tp.group === 'pharm');
+      else if (st.prodFilter === 'food') showBtn = (tp.group === 'food');
+      else showBtn = true;
+      if (!showBtn) continue;
+      var bHtml = '<button type="button" data-prod-id="' + tp.id + '" class="' + (tp.id === st.tubeProdId ? 'active' : '') + '">' + tp.shortBtn + '</button>';
+      if (tp.group === 'pharm') pharmBtns += bHtml;
+      else foodBtns += bHtml;
+    }
+    var selWrapHtml = '';
+    if (pharmBtns){
+      selWrapHtml += '<div class="tube-grp-lbl">【医薬品区分】</div><div class="seg">' + pharmBtns + '</div>';
+    }
+    if (foodBtns){
+      selWrapHtml += '<div class="tube-grp-lbl"' + (pharmBtns ? ' style="margin-top:8px;"' : '') + '>【食品区分：濃厚流動食・半固形・病態別】</div><div class="seg">' + foodBtns + '</div>';
+    }
+    document.getElementById('tubeProdSelectorWrap').innerHTML = selWrapHtml;
+
+    // Multi-formula combination simulator (#comboSimBox)
+    var freqCount = (st.tubeFreq === 'cont') ? 4 : parseInt(st.tubeFreq, 10);
+    var freqLabel = (st.tubeFreq === 'cont') ? '持続投与（フラッシュ4回）' : ('1日' + freqCount + '回投与');
+
+    for (var crIdx = 0; crIdx < 3; crIdx++){
+      var cRow = comboStats.rows[crIdx];
+      var cRowNum = crIdx + 1;
+      var cSelEl = document.getElementById('comboId' + cRowNum);
+      var cQtyEl = document.getElementById('comboQty' + cRowNum);
+      var cUnitEl = document.getElementById('comboUnit' + cRowNum);
+      var cSubEl = document.getElementById('comboSub' + cRowNum);
+      if (cSelEl && cSelEl.value !== cRow.item.id){ cSelEl.value = cRow.item.id; }
+      if (cQtyEl){
+        cQtyEl.disabled = (cRow.item.id === 'none');
+        if (document.activeElement !== cQtyEl){ cQtyEl.value = String(cRow.qty); }
+      }
+      if (cUnitEl){ cUnitEl.textContent = cRow.item.unitLabel; }
+      if (cSubEl){
+        if (cRow.item.id === 'none' || cRow.qty <= 0){
+          cSubEl.innerHTML = '<span style="color:var(--gray);">未使用（0 kcal）</span>';
+        } else {
+          cSubEl.innerHTML =
+            '<b>' + cRow.kcal.toLocaleString() + ' kcal</b> ／ 蛋白 <b>' + cRow.prot.toFixed(1) + ' g</b> ／ 水分 <b>' + cRow.water.toLocaleString() + ' mL</b>' +
+            '<span style="color:var(--gray);font-size:0.92em;">（総量 ' + cRow.vol + ' ' + cRow.item.volUnit + '）</span>';
+        }
+      }
+    }
+
+    var r1 = comboStats.rows[0];
+    var r2 = comboStats.rows[1];
+    var remAfter1K = neededKcal - r1.kcal;
+    var remAfter1P = round1(neededProt - r1.prot);
+    document.getElementById('comboRemAfter1').innerHTML =
+      '↳ ①の基本製剤（' + r1.kcal.toLocaleString() + ' kcal / 蛋白 ' + r1.prot.toFixed(1) + ' g）だけでは：' +
+      'エネルギー ' + (remAfter1K > 0 ? ('<b>あと ' + remAfter1K.toLocaleString() + ' kcal 不足</b>') : ('<b style="color:var(--green);">目標達成（+' + Math.abs(remAfter1K).toLocaleString() + ' kcal）</b>')) +
+      ' ／ タンパク質 ' + (remAfter1P > 0 ? ('<b>あと ' + remAfter1P.toFixed(1) + ' g 不足</b>') : ('<b style="color:var(--green);">目標達成（+' + Math.abs(remAfter1P).toFixed(1) + ' g）</b>'));
+
+    var hint2Html = '';
+    if (r2.item.id !== 'none'){
+      if (remAfter1K <= 0 && remAfter1P <= 0){
+        hint2Html = '✓ ①の基本製剤のみで補充目標カロリー・タンパク質とも充足しています。';
+      } else if (r2.item.maxDaily === 1){
+        var theoVc = (Math.max(0, remAfter1K) / r2.item.unitKcal).toFixed(1);
+        hint2Html = '💡 ①の後の不足（' + Math.max(0, remAfter1K).toLocaleString() + ' kcal / 蛋白 ' + Math.max(0, remAfter1P).toFixed(1) + ' g）は単純カロリー換算で約 ' + theoVc + r2.item.unitLabel + ' 分ですが、<b>ブイ・クレスCP10は亜鉛12mg含有のため1日1' + r2.item.unitLabel + '（' + r2.item.unitKcal + 'kcal・蛋白12g）を上限目安</b>とし、さらに残る不足は①の本数調整または③で補ってください。';
+      } else if (r2.item.calcByProt && r2.item.unitProt > 0){
+        var theoProtUnits = Math.max(0, remAfter1P) / r2.item.unitProt;
+        var rndProtUnits = Math.round(theoProtUnits * 2) / 2;
+        hint2Html = '💡 ①の後のタンパク不足（' + Math.max(0, remAfter1P).toFixed(1) + ' g）を『' + r2.item.name + '』で補う理論量：<b>約 ' + theoProtUnits.toFixed(1) + ' ' + r2.item.unitLabel + '</b>（0.5単位丸め：<b>' + rndProtUnits + ' ' + r2.item.unitLabel + '</b>）';
+      } else if (r2.item.unitKcal > 0){
+        var theoKUnits = Math.max(0, remAfter1K) / r2.item.unitKcal;
+        var rndKUnits = Math.round(theoKUnits * 2) / 2;
+        hint2Html = '💡 ①の後のカロリー不足（' + Math.max(0, remAfter1K).toLocaleString() + ' kcal）を『' + r2.item.name + '』で補う理論本数：<b>約 ' + theoKUnits.toFixed(2) + ' ' + r2.item.unitLabel + '</b>（0.5単位丸め：<b>' + rndKUnits + ' ' + r2.item.unitLabel + '</b>）';
+      }
+    }
+    document.getElementById('comboHint2').innerHTML = hint2Html;
+
+    var diffComboK = comboStats.totalKcal - neededKcal;
+    var diffComboP = round1(comboStats.totalProt - neededProt);
+    var comboSayuTotal = Math.max(0, waterMid - comboStats.totalWater);
+    var comboSayuLow = Math.max(0, waterLow - comboStats.totalWater);
+    var comboSayuHigh = Math.max(0, waterHigh - comboStats.totalWater);
+    var comboSayuFeed = Math.max(0, comboSayuTotal - st.medWater);
+    var comboSayuPerDose = Math.round((comboSayuFeed / freqCount) / 5.0) * 5;
+    var comboWaterPer100 = (comboStats.totalKcal > 0) ? round0((comboStats.totalWater / comboStats.totalKcal) * 100.0) : 0;
+
+    document.getElementById('b_combo_badge').textContent =
+      '合計 ' + comboStats.totalKcal.toLocaleString() + ' kcal / 蛋白 ' + comboStats.totalProt.toFixed(1) + 'g';
+
+    var kpiWaterCard = (st.oralShare === 0)
+      ? ('<div class="combo-kpi" style="border-color:#73C6B6;background:#E8F8F5;">' +
+          '<div class="ck-lbl" style="color:#0E6251;">④ 経口0%時の推奨「追加白湯」</div>' +
+          '<div class="ck-val" style="color:#0E6251;">計 ' + comboSayuTotal.toLocaleString() + ' mL/日</div>' +
+          '<div class="ck-sub">各回 <b>約 ' + comboSayuPerDose + ' mL</b> × ' + (st.tubeFreq === 'cont' ? 'フラッシュ4回' : (freqCount + '回')) + ' ＋ 内服水 ' + st.medWater + ' mL</div>' +
+        '</div>')
+      : ('<div class="combo-kpi">' +
+          '<div class="ck-lbl">④ 残りの必要水分（食事＋飲水）</div>' +
+          '<div class="ck-val">' + comboSayuTotal.toLocaleString() + ' mL/日</div>' +
+          '<div class="ck-sub">食事中水分＋飲水・とろみ茶等で確保</div>' +
+        '</div>');
+
+    document.getElementById('comboKpiGrid').innerHTML =
+      '<div class="combo-kpi">' +
+        '<div class="ck-lbl">① 組み合わせ合計エネルギー</div>' +
+        '<div class="ck-val">' + comboStats.totalKcal.toLocaleString() + ' kcal</div>' +
+        '<div class="ck-sub">補充目標 ' + neededKcal.toLocaleString() + ' kcal 比：<b style="color:' + (Math.abs(diffComboK) <= 100 ? 'var(--green)' : (diffComboK < 0 ? 'var(--red)' : 'var(--accent)')) + ';">' + (diffComboK >= 0 ? '+' : '') + diffComboK.toLocaleString() + ' kcal</b></div>' +
+      '</div>' +
+      '<div class="combo-kpi">' +
+        '<div class="ck-lbl">② 組み合わせ合計タンパク質</div>' +
+        '<div class="ck-val">' + comboStats.totalProt.toFixed(1) + ' g</div>' +
+        '<div class="ck-sub">補充目標 ' + neededProt.toFixed(1) + ' g 比：<b style="color:' + (diffComboP >= -3.0 ? ((st.comorb.ckd && diffComboP > 8.0) ? 'var(--red)' : 'var(--green)') : 'var(--red)') + ';">' + (diffComboP >= 0 ? '+' : '') + diffComboP.toFixed(1) + ' g</b></div>' +
+      '</div>' +
+      '<div class="combo-kpi">' +
+        '<div class="ck-lbl">③ 製剤中の合計自由水量</div>' +
+        '<div class="ck-val">' + comboStats.totalWater.toLocaleString() + ' mL</div>' +
+        '<div class="ck-sub">1日目標 ' + waterMid.toLocaleString() + ' mL' + (comboStats.totalKcal > 0 ? ('（' + comboWaterPer100 + ' mL/100kcal）') : '') + '</div>' +
+      '</div>' +
+      kpiWaterCard;
+
+    var cAlertsHtml = '';
+    if (comboStats.vcrescQty > 1){
+      cAlertsHtml += '<div class="warning-box red"><div class="head">🚨 ブイ・クレス CP10 の過量注意（亜鉛 12mg/本・セレン 50μg/本）</div>' +
+        '<div>現在ブイ・クレス CP10 が合計 <b>' + comboStats.vcrescQty + ' 単位/日（亜鉛 ' + round1(comboStats.vcrescQty * 12) + ' mg/日）</b> 設定されています。メーカー摂取目安は<b>1日1本（または1個）</b>であり、連日の複数本投与は<b>亜鉛過剰による銅欠乏性貧血・白血球減少・神経障害</b>の原因となるため、原則1日1単位以内とし残りの不足は主製剤やプロテイン／MCTで調整してください。</div></div>';
+    }
+    if (st.oralShare === 0 && comboStats.hasVcrescDrink){
+      cAlertsHtml += '<div class="warning-box caution"><div class="head">⚠ 経管併用時の注意：ブイ・クレス CP10 ドリンクは「混合せず別投与＋前後白湯フラッシュ」</div>' +
+        '<div>ブイ・クレス CP10 ドリンクは<b>酸性果汁系飲料（pH 約3.3）</b>のため、ペプタメン等の乳蛋白・ペプチド系流動食とバッグやルート内で直接混ぜると<b>タンパク質が酸凝固（カード化）しチューブ閉塞</b>を招きます。経管で併用する際は決して混合せず、<b>主製剤の終了後に白湯（20〜30 mL）でフラッシュしてから単独注入し、終了後も白湯でフラッシュ</b>してください。</div></div>';
+    }
+    if (st.oralShare === 0 && comboStats.hasVcrescJelly){
+      cAlertsHtml += '<div class="warning-box red"><div class="head">⚠ 投与経路の確認：ブイ・クレス CP10 ゼリー（80gカップ）は経口摂取用です</div>' +
+        '<div>現在「経口 0%（全量経管栄養）」が選択されています。経管ルートで併用する場合は「ブイ・クレス CP10 ドリンク（125mL）」または半固形経管栄養剤へ変更してください。</div></div>';
+    }
+    if (st.comorb.ckd && diffComboP > 8.0){
+      cAlertsHtml += '<div class="warning-box caution"><div class="head">⚠ 保存期CKD：組み合わせ処方のタンパク質量超過（+' + diffComboP.toFixed(1) + ' g）</div>' +
+        '<div>保存期CKDの目標タンパク量（' + neededProt.toFixed(1) + ' g/日）を上回っています。リーナレンMP（200kcalあたり蛋白7.0g）やMCTオイルを組み合わせてカロリーを確保しつつタンパク負荷を抑える調整を検討してください。</div></div>';
+    }
+    document.getElementById('comboAlerts').innerHTML = cAlertsHtml;
+
+    // Tube feeding (oralShare === 0) Sayu calculation
+    var tubeUnits = neededKcal / selTubeProd.unitKcal;
+    var tubeVol = tubeUnits * selTubeProd.unitVol;
+    var tubeFormulaWater = round0(tubeUnits * selTubeProd.unitWater);
+    var waterPer100 = round0((selTubeProd.unitWater / selTubeProd.unitKcal) * 100.0);
+    var sayuTotal = Math.max(0, waterMid - tubeFormulaWater);
+    var sayuLow = Math.max(0, waterLow - tubeFormulaWater);
+    var sayuHigh = Math.max(0, waterHigh - tubeFormulaWater);
+    var sayuForFeed = Math.max(0, sayuTotal - st.medWater);
+    var sayuPerDose = Math.round((sayuForFeed / freqCount) / 5.0) * 5;
+
+    // Practical rounded pack prescription (integer cans/bags/packs)
+    var rxUnits = Math.max(1, Math.round(targetKcal / selTubeProd.unitKcal));
+    var rxKcal = rxUnits * selTubeProd.unitKcal;
+    var rxVol = round1(rxUnits * selTubeProd.unitVol);
+    var rxProt = round1(rxUnits * selTubeProd.unitProt);
+    var rxFormulaWater = round0(rxUnits * selTubeProd.unitWater);
+    var rxSayuTotal = Math.max(0, waterMid - rxFormulaWater);
+    var rxSayuFeed = Math.max(0, rxSayuTotal - st.medWater);
+    var rxSayuPerDose = Math.round((rxSayuFeed / freqCount) / 5.0) * 5;
+
+    if (st.oralShare === 0){
+      document.getElementById('tubeWaterSection').style.display = 'block';
+      document.getElementById('oralWaterBanner').style.display = 'none';
+      document.getElementById('thSayuCol').textContent = '推奨追加白湯量（経口0%時）';
+
+      var dispFormulaWater = useComboForWater ? comboStats.totalWater : tubeFormulaWater;
+      var dispSayuTotal = useComboForWater ? comboSayuTotal : sayuTotal;
+      var dispSayuLow = useComboForWater ? comboSayuLow : sayuLow;
+      var dispSayuHigh = useComboForWater ? comboSayuHigh : sayuHigh;
+      var dispSayuFeed = useComboForWater ? comboSayuFeed : sayuForFeed;
+      var dispSayuPerDose = useComboForWater ? comboSayuPerDose : sayuPerDose;
+      var dispWaterPer100 = useComboForWater ? comboWaterPer100 : waterPer100;
+      var dispStep2Sub = useComboForWater
+        ? ('組み合わせ処方（' + comboStats.activeCount + '剤）<br>計 ' + comboStats.totalKcal.toLocaleString() + ' kcal ／ ' + dispWaterPer100 + 'mL/100kcal')
+        : (selTubeProd.name + '<br>約 ' + tubeUnits.toFixed(1) + selTubeProd.unitLabel + '（' + round0(tubeVol) + ' ' + selTubeProd.volUnit + ' ／ ' + waterPer100 + 'mL/100kcal）');
+
+      document.getElementById('b_tube_sayu_badge').textContent =
+        '推奨追加白湯：計 ' + dispSayuTotal.toLocaleString() + ' mL/日（各回 約' + dispSayuPerDose + ' mL）';
+
+      document.getElementById('tubeWaterCards').innerHTML =
+        '<div class="water-step-card">' +
+          '<div class="ws-lbl">① 1日目標水分量</div>' +
+          '<div class="ws-val">' + waterMid.toLocaleString() + ' mL</div>' +
+          '<div class="ws-sub">範囲 ' + waterLow.toLocaleString() + '-' + waterHigh.toLocaleString() + ' mL<br>(' + wBasisShort + ')</div>' +
+        '</div>' +
+        '<div class="water-step-card">' +
+          '<div class="ws-lbl">② 製剤中の自由水量</div>' +
+          '<div class="ws-val">− ' + dispFormulaWater.toLocaleString() + ' mL</div>' +
+          '<div class="ws-sub">' + dispStep2Sub + '</div>' +
+        '</div>' +
+        '<div class="water-step-card highlight-sayu">' +
+          '<div class="ws-lbl">③ 推奨「追加白湯」総量</div>' +
+          '<div class="ws-val">' + dispSayuTotal.toLocaleString() + ' mL/日</div>' +
+          '<div class="ws-sub">目安範囲 ' + dispSayuLow.toLocaleString() + '-' + dispSayuHigh.toLocaleString() + ' mL/日<br>（フラッシュ・内服水を含む総量）</div>' +
+        '</div>' +
+        '<div class="water-step-card highlight-sayu">' +
+          '<div class="ws-lbl">④ 1回あたりの白湯目安</div>' +
+          '<div class="ws-val">約 ' + dispSayuPerDose + ' mL/回</div>' +
+          '<div class="ws-sub">' + freqLabel + '（計 ' + dispSayuFeed + ' mL）<br>＋ 内服懸濁水 ' + st.medWater + ' mL/日</div>' +
+        '</div>';
+
+      if (useComboForWater){
+        document.getElementById('tubeRoundedNote').innerHTML =
+          '📌 <b>組み合わせ処方プラン反映中（' + comboStats.parts.join(' ＋ ') + '）</b>：' +
+          '合計 <b>' + comboStats.totalKcal.toLocaleString() + ' kcal ／ 蛋白 ' + comboStats.totalProt.toFixed(1) + ' g ／ 製剤中水分 ' + comboStats.totalWater.toLocaleString() + ' mL</b> となり、' +
+          '不足分を補う推奨追加白湯は <b>計 ' + comboSayuTotal.toLocaleString() + ' mL/日</b>（内服水 ' + st.medWater + ' mL を差し引くと、栄養投与時は <b>1回あたり 約 ' + comboSayuPerDose + ' mL × ' + (st.tubeFreq === 'cont' ? 'フラッシュ4回' : (freqCount + '回')) + '</b>）です。';
+      } else {
+        document.getElementById('tubeRoundedNote').innerHTML =
+          '📌 <b>実処方で切りのよい単剤「' + selTubeProd.name + ' ' + rxUnits + selTubeProd.unitLabel +
+          '（' + rxKcal.toLocaleString() + ' kcal ／ 蛋白 ' + rxProt.toFixed(1) + ' g ／ 総量 ' + rxVol + ' ' + selTubeProd.volUnit + '）」とする場合</b>：' +
+          '製剤中の自由水は <b>' + rxFormulaWater.toLocaleString() + ' mL</b> となり、不足分を補う推奨追加白湯は <b>計 ' + rxSayuTotal.toLocaleString() + ' mL/日</b>' +
+          '（内服水 ' + st.medWater + ' mL を差し引くと、栄養投与時は <b>1回あたり 約 ' + rxSayuPerDose + ' mL × ' + (st.tubeFreq === 'cont' ? 'フラッシュ4回' : (freqCount + '回')) + '</b>［チューブ前後フラッシュ計20〜40mL/回を含む］）です。';
+      }
+
+      var twAlerts = '';
+      var minFlushNeeded = freqCount * 30 + st.medWater;
+      var activeAlertName = useComboForWater ? '現在の組み合わせ処方' : selTubeProd.name;
+      if (waterMid - dispFormulaWater < minFlushNeeded){
+        twAlerts += '<div class="warning-box caution"><div class="head">⚠ チューブ閉塞予防の最低フラッシュ水量と水分超過のバランスに注意</div>' +
+          '<div>' + activeAlertName + 'に含まれる水分（' + dispFormulaWater.toLocaleString() + ' mL）に、カテーテル閉塞予防の最低フラッシュ水＋内服水（計約 ' + minFlushNeeded + ' mL/日）を加えると目標水分量（' + waterMid.toLocaleString() + ' mL）を上回ります。<b>水分制限を厳守しつつフラッシュ水を確保したい場合は、イノラス（1.6 kcal/mL・水分47mL/100kcal）、リーナレンMP（腎配慮1.6 kcal/mL・水分47mL/100kcal）、ペプタメン プレビオ／アイソカルサポート（1.5 kcal/mL・水分51mL/100kcal）、エンシュア・H（1.5 kcal/mL・水分52mL/100kcal）などの高濃度製剤へ変更</b>すると製剤水分が減り、安全な白湯フラッシュ枠を確保できます。</div></div>';
+      }
+      if (dispSayuPerDose >= 300 && st.tubeFreq !== 'cont'){
+        twAlerts += '<div class="warning-box caution"><div class="head">💡 1回あたりの追加白湯量（約 ' + dispSayuPerDose + ' mL/回）が多めです：逆流・嘔吐予防の工夫</div>' +
+          '<div>栄養剤と同時に大量の白湯を注入すると胃内容量が増大し、胃食道逆流・嘔吐・誤嚥性肺炎や下痢を誘発しやすくなります。<b>①追加白湯の一部を食間（栄養剤投与の1.5〜2時間後）に分割投与する、②1日4回投与へ増やす、または③水分含有量の多いハイネックスイーゲル・PGソフト（110 mL/100kcal）やMA-ラクフィア（85 mL/100kcal）を選択</b>して追加白湯量を減らす方法が有効です。</div></div>';
+      }
+      if (dispWaterPer100 > 0 && dispWaterPer100 <= 78){
+        var std10Water = round0(((useComboForWater ? comboStats.totalKcal : targetKcal) / 400.0) * 339.0);
+        var diffStdWater = Math.max(0, std10Water - dispFormulaWater);
+        twAlerts += '<div class="warning-box red"><div class="head">🚨 高濃度製剤・半固形剤の「かくれ脱水・高Na・高BUN」ピットフォール</div>' +
+          '<div>選択中の <b>' + activeAlertName + '（100 kcalあたり水分 約' + dispWaterPer100 + ' mL）</b>は、標準1.0 kcal/mL流動食（MA-ラクフィア等：同カロリーで水分 約' + std10Water.toLocaleString() + ' mL）と比べて<b>製剤中の水分が1日あたり約 ' + diffStdWater.toLocaleString() + ' mL 少なくなります</b>。従来の1.0 kcal/mL製剤と同じ感覚で少量のフラッシュ水のみにすると脱水・便秘・腎前性高窒素血症・高Na血症を来すため、追加白湯の増量と定期的なBUN/Cr・Na確認を行ってください（参照：<a href="hypernatremia.html" style="color:#6a1a1a;font-weight:700;text-decoration:underline;">高Na血症鑑別</a> ／ <a href="highbun.html" style="color:#6a1a1a;font-weight:700;text-decoration:underline;">高BUN鑑別</a>）。</div></div>';
+      }
+      if (!useComboForWater && selTubeProd.id === 'elental'){
+        twAlerts += '<div class="warning-box blue"><div class="head">🧪 エレンタール配合内用剤（成分栄養剤）の溶解水・浸透圧・必須脂肪酸に関する注意点</div>' +
+          '<div>・標準 <b>1.0 kcal/mL 調製（1包80g ＋ 微温湯約250 mL → 全量300 mL）</b>として水分量を算出しています（濃度を変更する場合は溶解水量を再計算してください）。<br>・アミノ酸主体の高浸透圧製剤（1.0 kcal/mLで約760 mOsm/kg・H2O）のため急速投与で浸透圧性下痢を起こしやすく、<b>ポンプ等での緩徐持続投与・段階的濃度/速度調整</b>が安全です。<br>・<b>超低脂肪（1包あたり脂質0.51g）</b>のため、長期単剤管理では<b>必須脂肪酸欠乏症（脂肪乳剤の定期併用等を検討）およびセレン・銅・亜鉛・カルニチン欠乏</b>の定期モニタリングが必要です。</div></div>';
+      }
+      if (!useComboForWater && selTubeProd.id === 'hinex_egel'){
+        twAlerts += '<div class="warning-box info"><div class="head">🧪 ハイネックスイーゲル（胃内ゲル化流動食）の水分特性と制酸薬併用時の注意</div>' +
+          '<div>・1バッグ（500mL / 400kcal）あたり<b>水分 440 mL（100 kcalあたり 110 mL）</b>と自由水が多く、追加白湯量を少なく抑えやすい設計です。<br>・ペクチンが<b>胃酸（pH 4以下目安）と反応して半固形化</b>する機序のため、<b>PPI（プロトンポンプ阻害薬）・P-CAB（ボノプラザン）併用中や胃切除後・高度萎縮性胃炎</b>では胃内pH上昇によりゲル化が減弱し、液体同様の逆流リスクが残る点に注意してください。</div></div>';
+      }
+      document.getElementById('tubeWaterAlerts').innerHTML = twAlerts;
+    } else {
+      document.getElementById('tubeWaterSection').style.display = 'none';
+      document.getElementById('oralWaterBanner').style.display = 'block';
+      document.getElementById('thSayuCol').textContent = '残りの必要水分（食事＋飲水）';
+      document.getElementById('oralWaterBanner').innerHTML =
+        '<div class="head">💧 経口摂取併用時（経口 ' + st.oralShare + '%）の水分管理目安：1日目標 ' + waterMid.toLocaleString() + ' mL/日（範囲 ' + waterLow.toLocaleString() + ' - ' + waterHigh.toLocaleString() + ' mL）</div>' +
+        '<div>通常の3食（100%摂取時）には食事中水分が約 800〜1,000 mL含まれますが、<b>食事量が減っている場合や嚥下障害で「とろみ水・ゼリー食」へ変更している患者では飲水量が激減しやすく、自由水不足（かくれ脱水・便秘・薬物血中濃度上昇）</b>が頻発します。下の栄養補助食品に含まれる水分量を確認し、残りをこまめな飲水・とろみ茶・水分補給ゼリー等で補ってください（全量経管時の白湯計算を見るには上の「経口 0%」を選択）。</div>';
+    }
+
+    // Choi-tashi & ONS recipes calculation (3 practical plans)
+    var planALabel = '', planAOnsCnt = 1, planAOnsKcal = 200, planAOnsProt = 7.0, planAOnsWater = 94, planAUnit = '本';
+    if (st.comorb.ckd){
+      planALabel = 'リーナレンMP（125mL=200kcal/蛋白7.0g・腎配慮）';
+      planAOnsCnt = Math.max(1, Math.min(3, Math.floor(neededKcal / 200) || 1));
+      planAOnsKcal = 200; planAOnsProt = 7.0; planAOnsWater = 94; planAUnit = '本';
+    } else if (neededKcal >= 300){
+      planALabel = 'アイソカルサポート / ペプタメン プレビオ（200mL=300kcal/蛋白11.4g）';
+      planAOnsCnt = Math.max(1, Math.min(2, Math.floor(neededKcal / 300) || 1));
+      planAOnsKcal = 300; planAOnsProt = 11.4; planAOnsWater = 153; planAUnit = 'パック';
+    } else {
+      planALabel = 'リーナレンMP 等の125mL系ONS（200kcal/蛋白7.0g）';
+      planAOnsCnt = 1;
+      planAOnsKcal = 200; planAOnsProt = 7.0; planAOnsWater = 94; planAUnit = '本';
+    }
+    var remK1 = neededKcal - planAOnsCnt * planAOnsKcal;
+    var remP1 = neededProt - planAOnsCnt * planAOnsProt;
+    var pScoops1 = (!st.comorb.ckd && remP1 > 3.5) ? Math.max(0, Math.round(remP1 / 8.0)) : 0;
+    remK1 = remK1 - pScoops1 * 38;
+    var mctTsp1 = remK1 > 25 ? Math.max(0, Math.round(remK1 / 43.0)) : 0;
+    var totalK1 = planAOnsCnt * planAOnsKcal + pScoops1 * 38 + mctTsp1 * 43;
+    var totalP1 = planAOnsCnt * planAOnsProt + pScoops1 * 8.0;
+    var totalW1 = planAOnsCnt * planAOnsWater;
+
+    // Plan B: V-Cresc CP10 (1 bottle/day fixed: 80kcal, 12.0g protein, 110mL water, Zn 12mg) + ONS/MCT
+    var remKcp = Math.max(0, neededKcal - 80);
+    var cpOnsCnt = (remKcp >= 220) ? Math.min(2, Math.max(1, Math.floor(remKcp / 300) || 1)) : 0;
+    var cpOnsKcal = 300, cpOnsProt = 11.4, cpOnsWater = 153, cpOnsLbl = 'アイソカルサポート（200mL=300kcal）', cpOnsUnit = 'パック';
+    if (cpOnsCnt > 0 && remKcp < 280){
+      cpOnsCnt = 1; cpOnsKcal = 200; cpOnsProt = 7.0; cpOnsWater = 94; cpOnsLbl = 'リーナレンMP（125mL=200kcal）'; cpOnsUnit = '本';
+    }
+    var remKcpAfterOns = remKcp - cpOnsCnt * cpOnsKcal;
+    var cpMctTsp = remKcpAfterOns > 25 ? Math.max(0, Math.round(remKcpAfterOns / 43.0)) : 0;
+    var totalKcp = 80 + cpOnsCnt * cpOnsKcal + cpMctTsp * 43;
+    var totalPcp = 12.0 + cpOnsCnt * cpOnsProt;
+    var totalWcp = 110 + cpOnsCnt * cpOnsWater;
+
+    // Plan C: Zero-bulk MCT + Protein powder
+    var pScoops2 = Math.max(1, Math.round(neededProt / 8.0));
+    var remK2 = Math.max(0, neededKcal - pScoops2 * 38);
+    var mctTbsp2 = Math.max(1, Math.round(remK2 / 130.0));
+    var totalK2 = pScoops2 * 38 + mctTbsp2 * 130;
+    var totalP2 = pScoops2 * 8.0;
+
+    document.getElementById('choiTashiSection').style.display = (st.oralShare > 0) ? 'block' : 'none';
+    document.getElementById('recipeCards').innerHTML =
+      '<div class="recipe-card"><div class="rc-head">🅰 濃厚流動食/ONS＋ちょい足し併用プラン</div><div class="rc-body">' +
+      '・' + planALabel + '：<b>' + planAOnsCnt + ' ' + planAUnit + '</b>（水分 約' + totalW1 + 'mL）<br>' +
+      (pScoops1 > 0 ? '・プロテインパウダー（1杯蛋白8g）：<b>' + pScoops1 + ' 杯</b><br>' : '') +
+      (mctTsp1 > 0 ? '・MCTオイル（小さじ1＝約43kcal）：<b>小さじ ' + mctTsp1 + ' 杯</b>（汁物・粥へ混合）<br>' : '') +
+      '👉 合計補充：<b>約 ' + totalK1 + ' kcal ／ 蛋白 ' + totalP1.toFixed(1) + ' g</b></div></div>' +
+      '<div class="recipe-card" style="border-color:#D2B4DE;background:#FBF7FD;"><div class="rc-head" style="color:#5B2C6F;">🅱 ブイ・クレス CP10 組み込み（蛋白・亜鉛強化）</div><div class="rc-body">' +
+      '・<b>ブイ・クレス CP10：1日 1 本</b>（125mL：80kcal・蛋白12g・水分110mL・亜鉛12mg・VC500mg［ゼリー80gなら110kcal］）<br>' +
+      (cpOnsCnt > 0 ? '・' + cpOnsLbl + '：<b>' + cpOnsCnt + ' ' + cpOnsUnit + '</b><br>' : '') +
+      (cpMctTsp > 0 ? '・MCTオイル：<b>小さじ ' + cpMctTsp + ' 杯</b><br>' : '') +
+      '👉 合計補充：<b>約 ' + totalKcp + ' kcal ／ 蛋白 ' + totalPcp.toFixed(1) + ' g</b>（水分 約' + totalWcp + 'mL）' +
+      (st.comorb.ckd || st.comorb.hd ? '<br><span style="color:var(--red);font-size:0.92em;">※腎障害時は総蛋白・微量元素過多に注意</span>' : '') + '</div></div>' +
+      '<div class="recipe-card"><div class="rc-head">🅲 少量・体積ゼロ濃縮プラン（満腹感・嚥下疲労例）</div><div class="rc-body">' +
+      '・MCTオイル（大さじ1＝約130kcal）：<b>大さじ ' + mctTbsp2 + ' 杯</b>（2〜3食に分割混合）<br>' +
+      '・プロテインパウダーまたはペプチド粉末：<b>' + pScoops2 + ' 杯</b>（ポタージュ・ゼリー等に混合）<br>' +
+      '👉 合計補充：<b>約 ' + totalK2 + ' kcal ／ 蛋白 ' + totalP2.toFixed(1) + ' g</b>（※別途水分補給を確保）</div></div>';
+
+    // Filtered Enteral / ONS Lookup Table
+    var entHtml = '';
+    for (var p = 0; p < ENTERAL_PRODUCTS.length; p++){
+      var prod = ENTERAL_PRODUCTS[p];
+      var isSelTube = (st.oralShare === 0 && prod.id === st.tubeProdId);
+      var passFilter = false;
+      if (st.prodFilter === 'core') passFilter = prod.isCore;
+      else if (st.prodFilter === 'pharm') passFilter = (prod.group === 'pharm');
+      else if (st.prodFilter === 'food') passFilter = (prod.group === 'food');
+      else passFilter = true;
+      if (!passFilter) continue;
+
+      var nameCell = '<td class="left"><span class="grp-tag ' + prod.grpCls + '">' + prod.grpLbl + '</span>' +
+        '<b>' + (isSelTube ? '▶ ' : '') + prod.name + '</b>' +
+        '<br><span style="font-size:0.77em;color:var(--dark);font-weight:600;">' + prod.spec + '</span>' +
+        '<br><span style="font-size:0.74em;color:var(--gray);">' + prod.note + '</span></td>';
+
+      if (prod.isSuppOnly){
+        var vcSayuCell = (st.oralShare === 0)
+          ? '<span style="font-size:0.77em;color:var(--gray);">単独経管対象外<br>（1本併用時は水分110mL差引）</span>'
+          : ('残り <b>' + Math.max(0, waterMid - 110).toLocaleString() + ' mL/日</b><br><span style="font-size:0.75em;color:var(--gray);">（他ONS・食事・飲水で確保）</span>');
+        entHtml += '<tr>' + nameCell +
+          '<td><b style="color:#5B2C6F;">1日 1 本目安（補助用）</b><br><span style="font-size:0.75em;color:#5B2C6F;">ドリンク125mL=80kcal / ゼリー80g=110kcal<br>※亜鉛12mg含有・全量置換不可</span></td>' +
+          '<td><b>110 mL / 本</b><br><span style="font-size:0.75em;color:var(--gray);">(ゼリーは 53 mL/個)</span></td>' +
+          '<td>' + vcSayuCell + '</td>' +
+          '<td><b>12.0 g / 本</b><br><span class="chip" style="background:#7D3C98;margin-top:2px;">蛋白+微量元素補助</span></td></tr>';
+        continue;
+      }
+
+      var unitsNeeded = neededKcal / prod.unitKcal;
+      var totalVol = unitsNeeded * prod.unitVol;
+      var formWater = round0(unitsNeeded * prod.unitWater);
+      var prodWPer100 = round0((prod.unitWater / prod.unitKcal) * 100.0);
+      var remWaterNeeded = Math.max(0, waterMid - formWater);
+      var rowFeedSayu = Math.max(0, remWaterNeeded - st.medWater);
+      var rowPerDose = Math.round((rowFeedSayu / freqCount) / 5.0) * 5;
+
+      var providedProt = unitsNeeded * prod.unitProt;
+      var diffProt = providedProt - neededProt;
+      var diffStr = (diffProt >= 0 ? '+' : '') + diffProt.toFixed(1) + ' g';
+      var badgeColor = (diffProt >= -2.0) ? 'var(--green)' : (diffProt >= -10.0 ? 'var(--accent)' : 'var(--red)');
+      var statusLabel = (diffProt >= -2.0) ? '充足 (' + diffStr + ')' : ('不足 (' + diffStr + ')');
+
+      var sayuCellHtml = '';
+      if (st.oralShare === 0){
+        if (prod.tubeOk){
+          sayuCellHtml = '<b style="color:#0E6251;">計 ' + remWaterNeeded.toLocaleString() + ' mL/日</b><br>' +
+            '<span style="font-size:0.77em;color:var(--gray);">各回 約' + rowPerDose + 'mL×' + (st.tubeFreq === 'cont' ? '4' : freqCount) +
+            (st.medWater > 0 ? (' + 内服' + st.medWater + 'mL') : '') + '</span>';
+        } else {
+          sayuCellHtml = '<span style="font-size:0.77em;color:var(--gray);">経口ONS製品<br>（水分差引参考：残り ' + remWaterNeeded.toLocaleString() + ' mL）</span>';
+        }
+      } else {
+        sayuCellHtml = '残り <b>' + remWaterNeeded.toLocaleString() + ' mL/日</b><br>' +
+          '<span style="font-size:0.76em;color:var(--gray);">（食事水分＋飲水で確保）</span>';
+      }
+
+      var rowCls = [];
+      if (isSelTube) rowCls.push('active-formula');
+      if (st.oralShare === 0 && prod.tubeOk) rowCls.push('clickable-row');
+      var rowAttr = (st.oralShare === 0 && prod.tubeOk)
+        ? (' data-select-tube="' + prod.id + '" title="クリックでこの製剤を白湯計算の基準に選択"')
+        : '';
+
+      entHtml += '<tr class="' + rowCls.join(' ') + '"' + rowAttr + '>' +
+        nameCell +
+        '<td><b>約 ' + unitsNeeded.toFixed(1) + ' ' + prod.unitLabel + '</b><br><span style="font-size:0.77em;color:var(--gray);">(' + round0(totalVol) + ' ' + prod.volUnit + ' / ' + neededKcal + ' kcal)</span></td>' +
+        '<td><b>' + formWater.toLocaleString() + ' mL</b><br><span style="font-size:0.76em;color:var(--gray);">(' + prodWPer100 + ' mL/100kcal)</span></td>' +
+        '<td>' + sayuCellHtml + '</td>' +
+        '<td><b>' + providedProt.toFixed(1) + ' g</b><br><span class="chip" style="background:' + badgeColor + ';margin-top:2px;">' + statusLabel + '</span></td></tr>';
+    }
+    document.getElementById('enteralTableBody').innerHTML = entHtml;
+
+    // Summary text for clipboard
+    var activeComorbs = [];
+    if (st.comorb.ckd) activeComorbs.push('保存期CKD');
+    if (st.comorb.hd) activeComorbs.push('維持透析');
+    if (st.comorb.dm) activeComorbs.push('糖尿病');
+    if (st.comorb.copd) activeComorbs.push('COPD/高CO2');
+    if (st.comorb.lc) activeComorbs.push('肝硬変(LES適応)');
+
+    var L = [];
+    L.push('【必要エネルギー・タンパク質・水分量・白湯算出サマリ】');
+    L.push('主プロファイル：' + modeNames[st.mode].replace('現在：', '') + (activeComorbs.length ? ' ［併存：' + activeComorbs.join('・') + '］' : ''));
+    L.push('患者情報：' + (st.sex === 'male' ? '男性' : '女性') + ' ' + m.age + '歳 / 身長 ' + m.h + ' cm / 実測体重 ' + m.wRaw.toFixed(1) + ' kg' +
+      (st.edemaPct > 0 ? ('（浮腫-' + st.edemaPct + '%補正 → 推定乾燥体重 ' + m.dryW.toFixed(1) + ' kg）') : ''));
+    L.push('体格指標：BMI ' + m.bmi.toFixed(1) + ' kg/m2（年齢別目標BMI ' + m.tBmi.low + '-' + m.tBmi.high + ' → 目標体重 ' + m.targetWtLow.toFixed(1) + '-' + m.targetWtHigh.toFixed(1) + ' kg / 標準体重IBW ' + m.ibw.toFixed(1) + ' kg）');
+    if (m.wlossPct != null){
+      L.push('体重変化：通常時 ' + m.uw.toFixed(1) + ' kg → ' + (m.wlossPct > 0 ? '-' : '+') + Math.abs(m.wlossPct).toFixed(1) + '% / GLIM低BMI基準：' + (m.glimHit ? '該当' : '非該当'));
+    }
+    L.push('基礎代謝量：' + round0(m.bee) + ' kcal/日（' + m.eqName + ' ／ 参考 HB:' + round0(m.beeHb) + ', 日本人Ganpule:' + round0(m.beeGanpule) + ', Mifflin:' + round0(m.beeMifflin) + '）');
+    L.push('計算基準体重：' + m.basisLabel);
+    L.push('────────────────────');
+    L.push('■ 1日目標エネルギー量：' + targetKcal + ' kcal/日（目安範囲 ' + rangeLow + ' - ' + rangeHigh + ' kcal/日）');
+    L.push('  ・算出根拠：' + energyTitle + (modNotes.length ? '（' + modNotes.join(' / ') + '）' : ''));
+    L.push('  ・基準体重比：' + kcalPerCalcKg.toFixed(1) + ' kcal/kg/日（乾燥実体重比 ' + kcalPerDryKg.toFixed(1) + ' kcal/kg/日）');
+    L.push('■ 1日目標タンパク質量：' + protMid.toFixed(1) + ' g/日（範囲 ' + protLow.toFixed(1) + ' - ' + protHigh.toFixed(1) + ' g/日 [' + pr.low.toFixed(1) + '-' + pr.high.toFixed(1) + ' g/kg/日]）');
+    L.push('■ PFCバランス：P ' + protMid.toFixed(1) + 'g (' + pPct.toFixed(1) + '%E) / F ' + fatGrams.toFixed(1) + 'g (' + fPct.toFixed(1) + '%E) / C ' + carbGrams.toFixed(1) + 'g (' + cPct.toFixed(1) + '%E) / NPC/N比 ' + round0(npcn));
+    L.push('■ 1日目標水分量（外因性摂取水分）：' + waterMid + ' mL/日（範囲 ' + waterLow + ' - ' + waterHigh + ' mL/日 [' + wBasisShort + (wAddParts.length ? ' / ' + wAddParts.join('・') : '') + ']）' +
+      (st.comorb.hd ? ' ※維持透析のためドライウエイト・尿量に応じた個別制限指示を優先' : ''));
+    if (st.oralShare === 0){
+      L.push('■ 経口0%（全量経管栄養）時の白湯（自由水）推奨プラン [' + selTubeProd.name + ' 基準]：');
+      L.push('  ・理論目標（' + targetKcal + ' kcal = 約' + tubeUnits.toFixed(1) + selTubeProd.unitLabel + ' / ' + round0(tubeVol) + ' ' + selTubeProd.volUnit + '）：製剤中水分 ' + tubeFormulaWater + ' mL → 推奨追加白湯 計 ' + sayuTotal + ' mL/日（' + freqLabel + 'で各回約 ' + sayuPerDose + ' mL + 内服水 ' + st.medWater + ' mL/日）');
+      L.push('  ・実処方目安（' + rxUnits + selTubeProd.unitLabel + ' = ' + rxKcal + ' kcal / 蛋白 ' + rxProt.toFixed(1) + 'g / ' + rxVol + ' ' + selTubeProd.volUnit + '）：製剤中水分 ' + rxFormulaWater + ' mL → 推奨追加白湯 計 ' + rxSayuTotal + ' mL/日（各回約 ' + rxSayuPerDose + ' mL + 内服水 ' + st.medWater + ' mL/日）');
+    } else {
+      L.push('■ 栄養補充目安（経口 ' + st.oralShare + '%・不足 ' + (100 - st.oralShare) + '%）：追加 ' + neededKcal + ' kcal / 蛋白 ' + neededProt.toFixed(1) + ' g');
+    }
+    if (comboStats.totalKcal > 0){
+      L.push('■ 複数栄養剤の組み合わせ試算：' + comboStats.parts.join(' ＋ '));
+      L.push('  ・組み合わせ合計：' + comboStats.totalKcal + ' kcal（目標比 ' + (diffComboK >= 0 ? '+' : '') + diffComboK + ' kcal） / 蛋白 ' + comboStats.totalProt.toFixed(1) + ' g（目標比 ' + (diffComboP >= 0 ? '+' : '') + diffComboP.toFixed(1) + ' g） / 製剤中水分 ' + comboStats.totalWater + ' mL');
+      if (st.oralShare === 0){
+        L.push('  ・組み合わせ時の推奨追加白湯：計 ' + comboSayuTotal + ' mL/日（' + freqLabel + 'で各回約 ' + comboSayuPerDose + ' mL + 内服水 ' + st.medWater + ' mL/日）');
+      } else {
+        L.push('  ・組み合わせ後の残り必要水分（食事＋飲水）：約 ' + comboSayuTotal + ' mL/日');
+      }
+    }
+    if (st.comorb.lc){
+      L.push('■ 食事配分：肝硬変LES（就寝前約200kcal・BCAA）を含む分割食');
+    } else if (st.mode === 'pd' && st.pdLdopa === 'redist'){
+      L.push('■ タンパク質配分（PD・L-dopa競合対策）：朝 ' + round1(protMid*0.15).toFixed(1) + 'g / 昼 ' + round1(protMid*0.35).toFixed(1) + 'g / 夕 ' + round1(protMid - round1(protMid*0.15) - round1(protMid*0.35)).toFixed(1) + 'g');
+    }
+
+    var sBox = document.getElementById('summaryBox');
+    sBox.textContent = L.join('\n');
+    sBox.dataset.plain = sBox.textContent;
+
+    // 画面上部の要約バー
+    document.getElementById('sr_energy').textContent = document.getElementById('energyMainVal').textContent;
+    document.getElementById('sr_protein').textContent = document.getElementById('proteinMainVal').textContent;
+    document.getElementById('sr_water').textContent = document.getElementById('waterMainVal').textContent;
+  }
+
+  function bindSeg(id, cb){
+    var container = document.getElementById(id);
+    if (!container) return;
+    var btns = container.querySelectorAll('button');
+    for (var i = 0; i < btns.length; i++){
+      btns[i].addEventListener('click', function(){
+        var siblings = this.parentElement.querySelectorAll('button');
+        for (var j = 0; j < siblings.length; j++){ siblings[j].classList.remove('active'); }
+        this.classList.add('active');
+        cb(this.getAttribute('data-val'));
+        update();
+      });
+    }
+  }
+
+  var modeBtns = document.getElementById('modeTabs').querySelectorAll('.mode-tab');
+  for (var mIdx = 0; mIdx < modeBtns.length; mIdx++){
+    modeBtns[mIdx].addEventListener('click', function(){
+      for (var k = 0; k < modeBtns.length; k++){ modeBtns[k].classList.remove('active'); }
+      this.classList.add('active');
+      st.mode = this.getAttribute('data-mode');
+      update();
+    });
+  }
+
+  var comorbInputs = document.getElementById('comorbGrid').querySelectorAll('input[type="checkbox"]');
+  for (var ci = 0; ci < comorbInputs.length; ci++){
+    comorbInputs[ci].addEventListener('change', function(){
+      var key = this.value;
+      st.comorb[key] = this.checked;
+      if (this.checked) this.parentElement.classList.add('checked');
+      else this.parentElement.classList.remove('checked');
+
+      // Mutually exclusive CKD conservative vs HD
+      if (key === 'ckd' && this.checked){
+        st.comorb.hd = false;
+        var hdChk = document.getElementById('comorbGrid').querySelector('input[value="hd"]');
+        if (hdChk){ hdChk.checked = false; hdChk.parentElement.classList.remove('checked'); }
+        st.protPreset = '0.6-0.8';
+        setSegActive('segProtPreset', '0.6-0.8');
+      } else if (key === 'hd' && this.checked){
+        st.comorb.ckd = false;
+        var ckdChk = document.getElementById('comorbGrid').querySelector('input[value="ckd"]');
+        if (ckdChk){ ckdChk.checked = false; ckdChk.parentElement.classList.remove('checked'); }
+        st.protPreset = '0.9-1.2';
+        setSegActive('segProtPreset', '0.9-1.2');
+        st.waterBasis = 'restrict';
+        setSegActive('segWaterBasis', 'restrict');
+      }
+      update();
+    });
+  }
+
+  bindSeg('segSex', function(v){ st.sex = v; });
+  bindSeg('segEdema', function(v){ st.edemaPct = parseInt(v, 10); });
+  bindSeg('segWtBasis', function(v){ st.wtBasis = v; });
+  bindSeg('segBmrEq', function(v){ st.bmrEq = v; });
+  bindSeg('segAlsVent', function(v){ st.alsVent = v; });
+  bindSeg('segPdFactor', function(v){ st.pdFactor = parseFloat(v); });
+  bindSeg('segPdAct', function(v){ st.pdAct = parseFloat(v); });
+  bindSeg('segPdStress', function(v){ st.pdStress = parseFloat(v); });
+  bindSeg('segPdLdopa', function(v){ st.pdLdopa = v; });
+  bindSeg('segStrokePhase', function(v){ st.strokePhase = v; });
+  bindSeg('segDemType', function(v){ st.demType = v; });
+  bindSeg('segGenAct', function(v){ st.genAct = parseFloat(v); });
+  bindSeg('segGenStress', function(v){ st.genStress = parseFloat(v); });
+  bindSeg('segGenKcalKg', function(v){ st.genKcalKg = v; });
+  bindSeg('segFever', function(v){ st.feverFactor = parseFloat(v); });
+  bindSeg('segWtGoal', function(v){ st.wtGoalDelta = parseInt(v, 10); });
+  bindSeg('segProtPreset', function(v){ st.protPreset = v; });
+  bindSeg('segFatPct', function(v){ st.fatPct = parseInt(v, 10); });
+  bindSeg('segWaterBasis', function(v){ st.waterBasis = v; });
+  bindSeg('segWaterExtra', function(v){ st.waterExtra = parseInt(v, 10); });
+  bindSeg('segRampRisk', function(v){ st.rampRisk = v; });
+  bindSeg('segOralShare', function(v){ st.oralShare = parseInt(v, 10); });
+  bindSeg('segTubeFreq', function(v){ st.tubeFreq = v; });
+  bindSeg('segMedWater', function(v){ st.medWater = parseInt(v, 10); });
+  bindSeg('segProdFilter', function(v){ st.prodFilter = v; });
+  bindSeg('segWaterPlanSrc', function(v){ st.waterPlanSrc = v; });
+
+  function bindComboRow(rowNum){
+    var selEl = document.getElementById('comboId' + rowNum);
+    var qtyEl = document.getElementById('comboQty' + rowNum);
+    var idKey = 'id' + rowNum;
+    var qtyKey = 'qty' + rowNum;
+    if (selEl){
+      selEl.addEventListener('change', function(){
+        var val = this.value;
+        st.combo[idKey] = val;
+        if (val === 'none'){
+          st.combo[qtyKey] = 0;
+        } else if ((st.combo[qtyKey] || 0) <= 0){
+          st.combo[qtyKey] = 1;
+        }
+        update();
+      });
+    }
+    if (qtyEl){
+      qtyEl.addEventListener('input', function(){
+        var q = parseFloat(this.value);
+        st.combo[qtyKey] = isNaN(q) ? 0 : Math.max(0, Math.min(30, q));
+        update();
+      });
+    }
+  }
+  bindComboRow(1);
+  bindComboRow(2);
+  bindComboRow(3);
+
+  function calcSubUnits(item, remK, remP){
+    if (!item || item.id === 'none') return 0;
+    if (remK <= 0 && remP <= 0) return 0;
+    var u = 0;
+    if (item.calcByProt && item.unitProt > 0){
+      u = Math.round((Math.max(0, remP) / item.unitProt) * 2) / 2;
+    } else if (item.unitKcal > 0){
+      u = Math.round((Math.max(0, remK) / item.unitKcal) * 2) / 2;
+      if (remK > 0 && u === 0 && item.maxDaily === 1){ u = 1; }
+    }
+    if (item.maxDaily && u > item.maxDaily){ u = item.maxDaily; }
+    return Math.max(0, u);
+  }
+
+  document.getElementById('comboSimBox').addEventListener('click', function(e){
+    var el = e.target;
+    while (el && el !== this){
+      if (el.tagName === 'BUTTON'){
+        if (el.classList.contains('step-btn')){
+          var rNum = parseInt(el.getAttribute('data-row'), 10);
+          var delta = parseFloat(el.getAttribute('data-delta'));
+          var idK = 'id' + rNum;
+          var qtyK = 'qty' + rNum;
+          if (st.combo[idK] !== 'none'){
+            var nextQ = Math.round(((st.combo[qtyK] || 0) + delta) * 10) / 10;
+            st.combo[qtyK] = Math.max(0, Math.min(30, nextQ));
+            update();
+          }
+          return;
+        }
+        if (el.id === 'autoRow1Btn'){
+          var p1 = getComboItem(st.combo.id1);
+          if (p1.unitKcal > 0){
+            if (lastTargets.neededKcal >= p1.unitKcal){
+              st.combo.qty1 = Math.floor(lastTargets.neededKcal / p1.unitKcal);
+            } else {
+              st.combo.qty1 = Math.max(0.5, Math.round((lastTargets.neededKcal / p1.unitKcal) * 2) / 2);
+            }
+            update();
+          }
+          return;
+        }
+        if (el.id === 'autoRow2Btn'){
+          var base1 = getComboItem(st.combo.id1);
+          if (st.combo.id2 === 'none'){ st.combo.id2 = 'vcresc_cp10'; }
+          var sub2 = getComboItem(st.combo.id2);
+          var rK2 = Math.max(0, lastTargets.neededKcal - (st.combo.qty1 || 0) * base1.unitKcal);
+          var rP2 = Math.max(0, lastTargets.neededProt - (st.combo.qty1 || 0) * base1.unitProt);
+          st.combo.qty2 = calcSubUnits(sub2, rK2, rP2);
+          update();
+          return;
+        }
+        if (el.id === 'autoRow3Btn'){
+          var b1 = getComboItem(st.combo.id1);
+          var b2 = getComboItem(st.combo.id2);
+          var usedK = (st.combo.qty1 || 0) * b1.unitKcal + (st.combo.qty2 || 0) * b2.unitKcal;
+          var usedP = (st.combo.qty1 || 0) * b1.unitProt + (st.combo.qty2 || 0) * b2.unitProt;
+          var rK3 = Math.max(0, lastTargets.neededKcal - usedK);
+          var rP3 = Math.max(0, lastTargets.neededProt - usedP);
+          if (st.combo.id3 === 'none'){
+            if (!st.comorb.ckd && rP3 >= 5.0) st.combo.id3 = 'mod_protein';
+            else if (rK3 >= 25) st.combo.id3 = 'mod_mct_tsp';
+          }
+          var sub3 = getComboItem(st.combo.id3);
+          st.combo.qty3 = calcSubUnits(sub3, rK3, rP3);
+          update();
+          return;
+        }
+        var preset = el.getAttribute('data-preset');
+        if (preset){
+          if (preset === 'peptamen_vcresc'){
+            st.combo.id1 = 'peptamen_prebio';
+            st.combo.qty1 = (lastTargets.neededKcal >= 300) ? Math.floor(lastTargets.neededKcal / 300) : 0.5;
+            st.combo.id2 = 'vcresc_cp10';
+            st.combo.qty2 = 1;
+            st.combo.id3 = 'none';
+            st.combo.qty3 = 0;
+          } else if (preset === 'main_vcresc'){
+            var mainId = st.tubeProdId || 'ma_lacfia';
+            var mainIt = getComboItem(mainId);
+            if (mainIt.id === 'none'){ mainId = 'ma_lacfia'; mainIt = getComboItem(mainId); }
+            var qMain = (lastTargets.neededKcal >= mainIt.unitKcal) ? Math.floor(lastTargets.neededKcal / mainIt.unitKcal) : 0.5;
+            st.combo.id1 = mainId;
+            st.combo.qty1 = qMain;
+            st.combo.id2 = 'vcresc_cp10';
+            st.combo.qty2 = 1;
+            var remKm = Math.max(0, lastTargets.neededKcal - (qMain * mainIt.unitKcal + 80));
+            var remPm = Math.max(0, lastTargets.neededProt - (qMain * mainIt.unitProt + 12.0));
+            if (!st.comorb.ckd && remPm >= 6.0){
+              st.combo.id3 = 'mod_protein';
+              st.combo.qty3 = Math.round((remPm / 8.0) * 2) / 2;
+            } else if (remKm >= 40){
+              st.combo.id3 = 'mod_mct_tsp';
+              st.combo.qty3 = Math.round((remKm / 43.0) * 2) / 2;
+            } else {
+              st.combo.id3 = 'none';
+              st.combo.qty3 = 0;
+            }
+          } else if (preset === 'high_prot_blend'){
+            var hpBaseId = (st.tubeProdId === 'peptamen_af') ? 'peptamen_prebio' : (st.tubeProdId || 'peptamen_prebio');
+            var hpBaseIt = getComboItem(hpBaseId);
+            if (hpBaseIt.id === 'none'){ hpBaseId = 'peptamen_prebio'; hpBaseIt = getComboItem(hpBaseId); }
+            var qHp1 = Math.max(1, Math.floor(lastTargets.neededKcal / hpBaseIt.unitKcal) - 1);
+            if (lastTargets.neededKcal < hpBaseIt.unitKcal * 1.5){ qHp1 = 1; }
+            var remHpK = Math.max(0, lastTargets.neededKcal - qHp1 * hpBaseIt.unitKcal);
+            st.combo.id1 = hpBaseId;
+            st.combo.qty1 = qHp1;
+            st.combo.id2 = 'peptamen_af';
+            st.combo.qty2 = Math.max(0.5, Math.round((remHpK / 300.0) * 2) / 2);
+            st.combo.id3 = 'none';
+            st.combo.qty3 = 0;
+          } else if (preset === 'clear_sub'){
+            st.combo.id2 = 'none';
+            st.combo.qty2 = 0;
+            st.combo.id3 = 'none';
+            st.combo.qty3 = 0;
+          }
+          update();
+          return;
+        }
+      }
+      el = el.parentNode;
+    }
+  });
+
+  document.getElementById('tubeProdSelectorWrap').addEventListener('click', function(e){
+    var el = e.target;
+    while (el && el !== this){
+      if (el.tagName === 'BUTTON' && el.getAttribute('data-prod-id')){
+        st.tubeProdId = el.getAttribute('data-prod-id');
+        update();
+        return;
+      }
+      el = el.parentNode;
+    }
+  });
+
+  document.getElementById('enteralTableBody').addEventListener('click', function(e){
+    var el = e.target;
+    while (el && el !== this){
+      if (el.tagName === 'TR' && el.getAttribute('data-select-tube')){
+        st.tubeProdId = el.getAttribute('data-select-tube');
+        update();
+        return;
+      }
+      el = el.parentNode;
+    }
+  });
+
+  var numInputs = [ageEl, heightEl, weightEl, usualWeightEl, alsfrsrEl, alsSwallowEl, alsFvcEl, alsTvEl];
+  for (var n = 0; n < numInputs.length; n++){
+    if (numInputs[n]) numInputs[n].addEventListener('input', update);
+  }
+
+  document.getElementById('copyBtn').addEventListener('click', function(){
+    var btn = this;
+    var text = document.getElementById('summaryBox').dataset.plain || document.getElementById('summaryBox').textContent;
+    text = text.replace(/[～〜]/g, '-');
+    function done(){
+      btn.textContent = '✓ コピー完了';
+      btn.classList.add('copied');
+      setTimeout(function(){
+        btn.textContent = '📋 クリップボードにコピー';
+        btn.classList.remove('copied');
+      }, 1800);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done, function(){ done(); });
+    } else {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+      done();
+    }
+  });
+
+  document.getElementById('printBtn').addEventListener('click', function(){
+    window.print();
+  });
+
+  // 印刷時は折りたたみを開き、終わったら元に戻す
+  window.addEventListener('beforeprint', function(){
+    var ds = document.querySelectorAll('details.fold-panel');
+    for (var i = 0; i < ds.length; i++){
+      if (!ds[i].open){ ds[i].setAttribute('data-print-open', '1'); ds[i].open = true; }
+    }
+  });
+  window.addEventListener('afterprint', function(){
+    var ds = document.querySelectorAll('details[data-print-open]');
+    for (var i = 0; i < ds.length; i++){ ds[i].open = false; ds[i].removeAttribute('data-print-open'); }
+  });
+
+  populateComboSelects();
+  update();
+})();
+</script>
+</body>
+</html>
