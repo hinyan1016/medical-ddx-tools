@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v297';
+const CACHE_NAME = 'ddx-tools-v299';
 const ASSETS = [
   './drug_eruption_assessment.html',
   './infographics/acne-vulgaris-guide-reference-repair-20261029/index.html',
