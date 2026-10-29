@@ -476,6 +476,13 @@ function levetiracetamSE(v, p){
     return unavailable('本日の既投与量を含めると1日最大投与量3000 mgを超えます。投与量を提示しません。');
   }
   time = ceil(dose / (v.weight * rate), 2);
+  var nominalVolume = 100 + dose / 100;
+  var pumpRate = floor(nominalVolume * 60 / time, 2);
+  var pumpMinutes = nominalVolume * 60 / pumpRate;
+  var deliveredRate = dose / (v.weight * pumpMinutes);
+  var pumpExample = dose <= 1500 && isFinite(pumpMinutes) && pumpRate > 0 && deliveredRate >= 2 && deliveredRate <= 5 && deliveredRate <= rate + 1e-10
+    ? '計算上の総量 ' + fmt(nominalVolume) + ' mLを全量投与する場合、ポンプ速度の目安は <strong>' + fmt(pumpRate) + ' mL/時</strong>（小数第2位で切下げ、約 ' + fmtDec(pumpMinutes, 3) + ' 分）。実際の最終総量とポンプ設定により投与時間・mg/kg/分を再確認してください。'
+    : '計算上の総量とポンプ設定の精度では速度を自動提示できません。実際の最終総量と処方速度を確認し、薬剤部・院内手順で設定してください。';
   return {
     status: 'ok',
     html: '<h3>イーケプラ：成人の国内承認 重積用法</h3>' +
@@ -483,7 +490,7 @@ function levetiracetamSE(v, p){
       '<p>原液 ' + fmt(dose / 100) + ' mL（100 mg/mL）、開封 ' + Math.ceil(dose / 500) + ' 瓶（500 mg/5 mL瓶；過量充填のため表示量を計量採取）。</p>' +
       '<p>' + fmt(rate) + ' mg/kg/分では <strong>' + time + ' 分以上</strong>（時間は安全側に切上げ）。本日の合計 ' + fmt(dose + prior) + ' mg / 1日最大3000 mg。</p>' +
       '<p>' + (dose <= 1500
-        ? '調製例（電子添文14.1.1）：生理食塩液、乳酸リンゲル液または5%ブドウ糖注射液100 mLに原液 ' + fmt(dose / 100) + ' mLを加えて希釈（薬液と希釈液の計算上の合計 ' + fmt(100 + dose / 100) + ' mL）。バッグの過量充填等による実総量は院内手順で確認し、上記 ' + time + ' 分以上をかけて投与してください。'
+        ? '調製例（電子添文14.1.1）：生理食塩液、乳酸リンゲル液または5%ブドウ糖注射液100 mLに原液 ' + fmt(dose / 100) + ' mLを加えて希釈（薬液と希釈液の計算上の合計 ' + fmt(100 + dose / 100) + ' mL）。バッグの過量充填等による実総量は院内手順で確認してください。' + pumpExample
         : '1500 mg超の調製は電子添文14.1.1に具体的な希釈液量の記載がありません。必ず希釈してから投与し（7.1）、希釈液の種類・量・最終総量は院内薬剤部の手順を確認してください。') + '</p>' +
       '<p>腎機能・重度肝障害（CrCl過大評価のおそれ）を確認してください。維持療法の腎機能別用量表（7.2注a：てんかん重積状態を除く）を重積初回量へ機械的に適用しないでください。</p>' +
       roundNote()
