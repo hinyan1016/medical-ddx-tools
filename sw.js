@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v299';
+const CACHE_NAME = 'ddx-tools-v300';
 const ASSETS = [
   './drug_eruption_assessment.html',
   './infographics/acne-vulgaris-guide-reference-repair-20261029/index.html',
@@ -329,6 +329,7 @@ const ASSETS = [
   './refeeding_risk.html',
   './infographics/refeeding-syndrome/index.html',
   './infographics/refeeding-syndrome/infographic.png',
+  './status_epilepticus_initial_calculator.html',
   './antiepileptic_load_calculator.html',
   './asm_interaction_checker.html',
   './periop_antithrombotic_consult.html',
