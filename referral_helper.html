@@ -1,0 +1,2461 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#15324e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>紹介状（診療情報提供書）入力補助ツール</title>
+<meta name="description" content="紹介状の返事や回復期リハビリテーション病院への転院紹介、もの忘れ精査の返書などを、よく使う単語・定型文のクリック展開と患者呼称（○○様・○○氏・患者様・患者）の一括切替で素早く組み立てるツールです。未入力の「○○」選択ジャンプ、ADL・再発予防クイック組み立て、テキストファイル入出力に対応。入力内容は外部送信しません。">
+<meta property="og:title" content="紹介状（診療情報提供書）入力補助ツール">
+<meta property="og:description" content="紹介状の返事や回復期リハビリテーション病院への転院紹介、もの忘れ精査の返書などを、よく使う単語・定型文のクリック展開と患者呼称（○○様・○○氏・患者様・患者）の一括切替で素早く組み立てるツールです。未入力の「○○」選択ジャンプ、ADL・再発予防クイック組み立て、テキストファイル入出力に対応。入力内容は外部送信しません。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tools.ichisouzo-lab.com/referral_helper.html">
+<meta property="og:image" content="https://tools.ichisouzo-lab.com/assets/og-tools.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="医知創造ラボ">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+:root {
+  --navy: #15324e;
+  --navy-light: #234b73;
+  --teal: #186f72;
+  --teal-hover: #125659;
+  --teal-pale: #e8f4f5;
+  --amber: #b45b0a;
+  --amber-pale: #fff4e5;
+  --gold: #d97706;
+  --gold-pale: #fef9c3;
+  --ink: #1e2d3d;
+  --muted: #546678;
+  --line: #cbd8e1;
+  --bg: #f2f6f8;
+  --card: #ffffff;
+  --danger: #b91c1c;
+  --danger-pale: #fef2f2;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 15px/1.65 "BIZ UDPGothic", "Yu Gothic", Meiryo, sans-serif;
+}
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; touch-action: manipulation; }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid var(--amber);
+  outline-offset: 2px;
+}
+[hidden] { display: none !important; }
+
+/* Header */
+header {
+  background: linear-gradient(135deg, #15324e, #1e4b75);
+  color: #fff;
+  padding: 16px 24px;
+  border-bottom: 3px solid var(--teal);
+}
+.header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.header-title h1 {
+  font-size: 20px;
+  margin: 0;
+  line-height: 1.3;
+}
+.header-title p {
+  margin: 3px 0 0;
+  font-size: 12px;
+  color: #c9e5eb;
+}
+.header-back {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #d6e9f6;
+  text-decoration: none;
+}
+.header-back:hover { text-decoration: underline; }
+.header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  padding: 7px 13px;
+  font-size: 13px;
+  font-weight: 700;
+  background: var(--teal);
+  color: #fff;
+  transition: background 0.12s, transform 0.05s;
+}
+.btn:hover { background: var(--teal-hover); }
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: 0.45; cursor: default; }
+.btn-secondary {
+  background: #fff;
+  color: var(--navy);
+  border-color: #9db4c5;
+}
+.btn-secondary:hover:not(:disabled) { background: #eef4f8; }
+.btn-amber {
+  background: var(--amber-pale);
+  color: var(--amber);
+  border-color: #f5b878;
+}
+.btn-amber:hover:not(:disabled) { background: #ffedd5; }
+.btn-header {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  border-color: rgba(255,255,255,0.3);
+  font-size: 12px;
+  padding: 6px 11px;
+}
+.btn-header:hover { background: rgba(255,255,255,0.22); }
+.btn-danger {
+  background: var(--danger-pale);
+  color: var(--danger);
+  border-color: #fca5a5;
+}
+.btn-danger:hover { background: #fee2e2; }
+.btn-large {
+  padding: 11px 16px;
+  font-size: 14.5px;
+}
+
+/* Main layout */
+main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 16px 24px 40px;
+}
+
+/* Top Patient Designation Bar */
+.patient-bar {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--teal);
+  border-radius: 10px;
+  padding: 12px 18px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 1px 3px rgba(15, 35, 55, 0.05);
+}
+.patient-bar-left {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.patient-bar-label {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--navy);
+}
+.call-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.call-pill {
+  padding: 6px 13px;
+  border-radius: 999px;
+  border: 1.5px solid #9db4c5;
+  background: #fff;
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 13px;
+  transition: all 0.12s;
+}
+.call-pill:hover {
+  border-color: var(--teal);
+  background: var(--teal-pale);
+}
+.call-pill.active {
+  background: var(--navy);
+  color: #fff;
+  border-color: var(--navy);
+}
+.patient-name-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+.patient-name-box input {
+  width: 130px;
+  padding: 5px 9px;
+  border: 1px solid #9db4c5;
+  border-radius: 6px;
+  font-size: 13px;
+}
+.patient-preview-badge {
+  background: var(--teal-pale);
+  color: var(--teal);
+  border: 1px solid #9bd1d3;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+.patient-bar-right {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+.checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 13px;
+  color: var(--ink);
+}
+.checkbox-label input {
+  width: 16px;
+  height: 16px;
+}
+
+/* Two-column Workspace */
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(380px, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(15, 35, 55, 0.04);
+}
+.card-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid #e3ecf2;
+}
+.card-header h2 {
+  font-size: 15.5px;
+  margin: 0;
+  color: var(--navy);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sub-hint {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* Quick Preset Bar */
+.preset-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+  gap: 8px;
+}
+.preset-btn {
+  background: #f5f9fb;
+  border: 1.5px solid #b8cddb;
+  color: var(--navy);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+  transition: all 0.12s;
+}
+.preset-btn:hover {
+  background: var(--teal-pale);
+  border-color: var(--teal);
+  color: var(--teal-hover);
+}
+.preset-btn small {
+  display: block;
+  font-weight: 400;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* Rehab & ADL Quick Builder */
+.builder-details {
+  border: 1.5px solid #9bd1d3;
+  border-radius: 10px;
+  background: #f6fbfb;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.builder-summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 11px 16px;
+  background: var(--teal-pale);
+  color: var(--navy);
+  font-weight: 700;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.builder-summary::-webkit-details-marker { display: none; }
+.builder-summary-hint {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--teal);
+  background: #fff;
+  padding: 2px 9px;
+  border-radius: 999px;
+  border: 1px solid #9bd1d3;
+}
+.builder-body {
+  padding: 14px 16px;
+}
+.builder-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed #d5e6e8;
+}
+.builder-row:last-of-type {
+  border-bottom: none;
+  margin-bottom: 12px;
+}
+.builder-label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--navy);
+  min-width: 110px;
+}
+.builder-chip {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #9db4c5;
+  background: #fff;
+  color: var(--ink);
+  transition: all 0.1s;
+}
+.builder-chip:hover {
+  border-color: var(--teal);
+  background: #eaf6f6;
+}
+.builder-chip.selected {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+  font-weight: 700;
+}
+.builder-preview-box {
+  background: #fff;
+  border: 1px solid #9db4c5;
+  border-radius: 7px;
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink);
+  margin-bottom: 10px;
+  min-height: 44px;
+}
+
+/* Category Filter Tabs */
+.category-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.cat-tab {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: #f8fafc;
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+.cat-tab:hover {
+  background: #eaf1f6;
+  color: var(--navy);
+}
+.cat-tab.active {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+}
+
+/* Search & Insert Mode Bar */
+.snippet-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  background: #f8fafc;
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px solid #e2ebf0;
+}
+.search-input {
+  flex: 1;
+  min-width: 170px;
+  padding: 6px 10px;
+  border: 1px solid #9db4c5;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+/* Snippet Grid & Sections */
+.cat-section {
+  margin-bottom: 16px;
+}
+.cat-section:last-child {
+  margin-bottom: 0;
+}
+.cat-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  margin: 0 0 8px;
+  padding-left: 8px;
+  border-left: 3px solid var(--teal);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.cat-section.pinned-section .cat-section-title {
+  border-left-color: var(--gold);
+  color: #92400e;
+}
+.snippet-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+}
+.snippet-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1.5px solid #c5d6e2;
+  border-radius: 8px;
+  transition: border-color 0.12s, box-shadow 0.12s, background 0.12s;
+}
+.snippet-item.pinned-item {
+  border-color: #f59e0b;
+  background: #fffef7;
+}
+.snippet-item:hover {
+  border-color: var(--teal);
+  background: #f7fcfc;
+  box-shadow: 0 2px 6px rgba(24, 111, 114, 0.12);
+}
+.snippet-top-row {
+  display: flex;
+  align-items: stretch;
+  flex: 1;
+}
+.snippet-trigger {
+  flex: 1;
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 9px 10px 9px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.pin-btn {
+  background: transparent;
+  border: none;
+  padding: 6px 8px;
+  font-size: 14px;
+  color: #b0bec5;
+  align-self: flex-start;
+  line-height: 1;
+}
+.pin-btn:hover { color: var(--gold); }
+.pin-btn.active { color: var(--gold); }
+
+.snippet-title {
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--navy);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+}
+.snippet-title-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: #eef4f8;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.snippet-preview {
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-all;
+}
+.snippet-edit-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px 5px;
+  border-top: 1px dashed #e1ebf0;
+  background: #fafcfd;
+  border-radius: 0 0 7px 7px;
+}
+.snippet-mini-btn {
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid #cbd8e1;
+  background: #fff;
+  color: var(--ink);
+}
+.snippet-mini-btn:hover { background: #eef4f8; }
+.snippet-mini-btn.del {
+  color: var(--danger);
+  border-color: #fca5a5;
+}
+.snippet-mini-btn.del:hover { background: var(--danger-pale); }
+
+/* Editor Panel (Right Sticky) */
+.editor-panel {
+  position: sticky;
+  top: 14px;
+  border-top: 4px solid var(--teal);
+}
+
+/* Purpose Field Box (Electronic Medical Record 1-line summary) */
+.purpose-box {
+  background: #f5f9fb;
+  border: 1px solid #c5d6e2;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+.purpose-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.purpose-header label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--navy);
+}
+.purpose-select {
+  font-size: 11.5px;
+  padding: 2px 6px;
+  border: 1px solid #9db4c5;
+  border-radius: 5px;
+  background: #fff;
+  color: var(--ink);
+  max-width: 210px;
+}
+.purpose-input-row {
+  display: flex;
+  gap: 6px;
+}
+.purpose-input-row input {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 10px;
+  border: 1px solid #9db4c5;
+  border-radius: 6px;
+  font-size: 13px;
+  background: #fff;
+}
+
+.editor-textarea {
+  width: 100%;
+  min-height: 360px;
+  padding: 13px;
+  border: 1.5px solid #9db4c5;
+  border-radius: 8px;
+  font-size: 14.5px;
+  line-height: 1.72;
+  color: var(--ink);
+  resize: vertical;
+  background: #fcfdfe;
+}
+.editor-textarea:focus {
+  background: #fff;
+  border-color: var(--teal);
+}
+
+/* Placeholder Jumper & Quick Date Bar */
+.editor-helper-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 7px 10px;
+  background: #f8fafc;
+  border: 1px solid #e2ebf0;
+  border-radius: 7px;
+}
+.placeholder-alert-btn {
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-weight: 700;
+}
+.editor-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.editor-actions-primary {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+.editor-actions-sub {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.toast-status {
+  margin-top: 10px;
+  padding: 9px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  background: var(--teal-pale);
+  color: var(--teal-hover);
+  border: 1px solid #9bd1d3;
+}
+.toast-status.warn {
+  background: var(--amber-pale);
+  color: var(--amber);
+  border-color: #f5c993;
+}
+
+/* Registration / Edit Form Drawer */
+.form-box {
+  background: #f8fbfd;
+  border: 1.5px solid #9bd1d3;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 14px;
+}
+.form-box h3 {
+  margin: 0 0 10px;
+  font-size: 14.5px;
+  color: var(--navy);
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.form-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--navy);
+}
+.form-field input, .form-field select, .form-field textarea {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid #9db4c5;
+  border-radius: 6px;
+  background: #fff;
+}
+.form-field.full {
+  grid-column: 1 / -1;
+}
+.token-helper-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+
+/* Dropzone for .txt files */
+.txt-dropzone {
+  border: 2px dashed #9db4c5;
+  border-radius: 8px;
+  padding: 11px 14px;
+  text-align: center;
+  background: #fafcfe;
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 12px;
+  transition: all 0.15s;
+}
+.txt-dropzone.dragover {
+  border-color: var(--teal);
+  background: var(--teal-pale);
+  color: var(--teal-hover);
+}
+
+footer {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px 32px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+@media (max-width: 980px) {
+  .workspace { grid-template-columns: 1fr; }
+  .editor-panel { position: static; }
+}
+@media (max-width: 600px) {
+  header, main { padding-left: 14px; padding-right: 14px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .editor-actions-primary { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<nav id="ics-globalnav" style="background:#15324E;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
+<div style="max-width:1040px;margin:0 auto;padding:8px 12px;display:flex;align-items:center;gap:2px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;">
+<a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;padding-right:8px;">医知創造ラボ</a>
+<a href="https://ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ホーム</a>
+<a href="https://blog.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ブログ</a>
+<a href="https://tools.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ツール</a>
+<a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">YouTube</a>
+</div>
+</nav>
+
+<header>
+  <div class="header-inner">
+    <div class="header-title">
+      <h1>✉️ 紹介状（診療情報提供書）入力補助ツール</h1>
+      <p>単語クリック展開 ／ 患者呼称連動 ／ 回復期リハADL組み立て ／ 「○○」選択ジャンプ ／ オフライン・単一HTML対応</p>
+      <a class="header-back" href="index.html">← ツール一覧へ戻る</a>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn btn-header" id="btn-open-txt-direct" title="パソコン内の.txtファイルを選んでそのまま本文に展開します">📄 .txtを本文に直接展開</button>
+      <button type="button" class="btn btn-header" id="btn-import-txt-snippets" title="パソコン内の.txtファイルを単語ボタンとして一括登録します">📂 .txtを単語登録</button>
+      <button type="button" class="btn btn-header" id="btn-save-standalone-html" title="現在登録している単語・ピン留めを埋め込んだHTMLファイルを保存します（USB移動・スタンドアローンPC用）">💾 登録単語入りHTMLを保存</button>
+      <button type="button" class="btn btn-header" id="btn-export-json" title="単語帳データをJSONファイルに書き出します">書き出し(.json)</button>
+      <button type="button" class="btn btn-header" id="btn-import-json" title="書き出したJSONファイルを読み込みます">読み込み(.json)</button>
+      <input type="file" id="file-direct-txt" accept=".txt,text/plain" multiple hidden>
+      <input type="file" id="file-snippet-txt" accept=".txt,text/plain" multiple hidden>
+      <input type="file" id="file-import-json" accept=".json,application/json" hidden>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- 1. 患者の呼称選択バー -->
+  <section class="patient-bar" aria-label="文面での患者の呼称設定">
+    <div class="patient-bar-left">
+      <div class="patient-bar-label">👤 文面での患者呼称：</div>
+      <div class="call-pills" id="call-pills" role="group" aria-label="患者の呼称を選択">
+        <button type="button" class="call-pill active" data-mode="sama">○○様</button>
+        <button type="button" class="call-pill" data-mode="shi">○○氏</button>
+        <button type="button" class="call-pill" data-mode="kanjasama">患者様</button>
+        <button type="button" class="call-pill" data-mode="kanja">患者</button>
+        <button type="button" class="call-pill" data-mode="san">○○さん</button>
+        <button type="button" class="call-pill" data-mode="custom">自由指定</button>
+      </div>
+      <div class="patient-name-box" id="patient-name-box">
+        <label for="patient-name-input">具体名（任意）：</label>
+        <input type="text" id="patient-name-input" placeholder="未入力時は「○○」" maxlength="30" autocomplete="off">
+      </div>
+      <div class="patient-name-box" id="custom-call-box" hidden>
+        <label for="custom-call-input">自由呼称：</label>
+        <input type="text" id="custom-call-input" placeholder="例：本患者、同氏" value="本患者" maxlength="30" autocomplete="off">
+      </div>
+      <span class="patient-preview-badge" id="current-call-preview">現在の展開語：○○様</span>
+    </div>
+    <div class="patient-bar-right">
+      <label class="checkbox-label" title="ONにすると、上の呼称ボタンを切り替えた際、すでに右側の本文に入力されている呼称も自動で書き換えます">
+        <input type="checkbox" id="chk-auto-replace-body" checked>
+        本文中の呼称も連動して書き換える
+      </label>
+    </div>
+  </section>
+
+  <div class="workspace">
+    <!-- 左カラム：骨格セット・ADLビルダー・単語パネル -->
+    <div>
+      <!-- クイック骨格セット -->
+      <section class="card" aria-labelledby="preset-heading">
+        <div class="card-header">
+          <h2 id="preset-heading">⚡ ワンクリック基本骨格セット</h2>
+          <p class="sub-hint">紹介目的＋挨拶＋導入＋結びをまとめてセットし、中央の経過欄にカーソルを合わせます</p>
+        </div>
+        <div class="preset-list">
+          <button type="button" class="preset-btn" data-preset="reply-return">
+            🌟 返事：紹介元へ継続通院セット
+            <small>挨拶 ＋ 本日受診 ＋ 紹介元通院の結び（ご指定文面）</small>
+          </button>
+          <button type="button" class="preset-btn" data-preset="rehab-transfer">
+            🏃 回復期リハビリ病院への紹介セット
+            <small>挨拶 ＋ 急性期加療終了・回復期リハ依頼 ＋ 結び</small>
+          </button>
+          <button type="button" class="preset-btn" data-preset="dementia-reply">
+            🧠 返事：もの忘れ・認知機能精査セット
+            <small>挨拶 ＋ 認知機能検査・画像結果 ＋ 紹介元継続の結び</small>
+          </button>
+          <button type="button" class="preset-btn" data-preset="reply-exam">
+            🔍 返事：当院で精査中・結果報告セット
+            <small>挨拶 ＋ 検査施行報告 ＋ 精査継続の結び</small>
+          </button>
+          <button type="button" class="preset-btn" data-preset="reply-continue">
+            🏥 返事：当院で加療継続セット
+            <small>挨拶 ＋ 受診報告 ＋ 当院加療継続の結び</small>
+          </button>
+          <button type="button" class="preset-btn" data-preset="new-referral">
+            ✉️ 新規紹介・逆紹介セット
+            <small>挨拶 ＋ 紹介導入 ＋ ご高診依頼の結び</small>
+          </button>
+        </div>
+      </section>
+
+      <!-- 回復期リハ・転院用 ADL・状態クイック組み立てパネル -->
+      <details class="builder-details" id="rehab-builder-details">
+        <summary class="builder-summary">
+          <span>🦿 回復期リハ・転院用「ADL・食事・高次脳・再発予防」クイック組み立てバー</span>
+          <span class="builder-summary-hint">クリック／タップで開閉</span>
+        </summary>
+        <div class="builder-body">
+          <p class="sub-hint" style="margin-bottom:10px;">該当する項目をポチポチ選ぶだけで自然な報告文が組み立てられます（複数選択可・もう一度押すと解除）。</p>
+
+          <div class="builder-row" data-group="motor">
+            <span class="builder-label">① 運動・麻痺：</span>
+            <button type="button" class="builder-chip" data-text="明らかな麻痺なし">麻痺なし</button>
+            <button type="button" class="builder-chip" data-text="右片麻痺（Brs. 上肢○-手指○-下肢○）">右片麻痺(Brs)</button>
+            <button type="button" class="builder-chip" data-text="左片麻痺（Brs. 上肢○-手指○-下肢○）">左片麻痺(Brs)</button>
+            <button type="button" class="builder-chip" data-text="軽度構音障害">軽度構音障害</button>
+            <button type="button" class="builder-chip" data-text="体幹・四肢失調">失調あり</button>
+          </div>
+
+          <div class="builder-row" data-group="adl">
+            <span class="builder-label">② 移動・ADL：</span>
+            <button type="button" class="builder-chip" data-text="独歩可能">独歩</button>
+            <button type="button" class="builder-chip" data-text="杖歩行見守りレベル">杖歩行見守り</button>
+            <button type="button" class="builder-chip" data-text="歩行器歩行レベル">歩行器歩行</button>
+            <button type="button" class="builder-chip" data-text="車椅子移乗見守りレベル">車椅子移乗見守り</button>
+            <button type="button" class="builder-chip" data-text="車椅子移乗軽介助-介助レベル">車椅子移乗介助</button>
+            <button type="button" class="builder-chip" data-text="mRS ○">mRS ○</button>
+          </div>
+
+          <div class="builder-row" data-group="swallow">
+            <span class="builder-label">③ 食事・嚥下：</span>
+            <button type="button" class="builder-chip" data-text="常食をむせなく経口摂取可能">常食（むせなし）</button>
+            <button type="button" class="builder-chip" data-text="軟菜・一口大食を経口摂取中">軟菜・一口大</button>
+            <button type="button" class="builder-chip" data-text="嚥下調整食（とろみ付き）を経口摂取中">嚥下調整食・とろみ</button>
+            <button type="button" class="builder-chip" data-text="嚥下障害のため現在経鼻経管栄養管理中">経鼻経管栄養</button>
+          </div>
+
+          <div class="builder-row" data-group="cognitive">
+            <span class="builder-label">④ 高次脳・認知：</span>
+            <button type="button" class="builder-chip" data-text="明らかな高次脳機能障害は認めず">高次脳障害なし</button>
+            <button type="button" class="builder-chip" data-text="運動性失語あり">運動性失語</button>
+            <button type="button" class="builder-chip" data-text="感覚性失語あり">感覚性失語</button>
+            <button type="button" class="builder-chip" data-text="左半側空間無視あり">左半側空間無視</button>
+            <button type="button" class="builder-chip" data-text="注意障害・遂行機能障害あり">注意・遂行機能障害</button>
+            <button type="button" class="builder-chip" data-text="環境変化による夜間せん妄リスクに留意が必要">せん妄リスク留意</button>
+          </div>
+
+          <div class="builder-row" data-group="prevention">
+            <span class="builder-label">⑤ 再発予防・管理：</span>
+            <button type="button" class="builder-chip" data-text="抗血小板薬単剤（○○）を継続中">抗血小板単剤(SAPT)</button>
+            <button type="button" class="builder-chip" data-text="抗血小板薬2剤併用（DAPT：○○＋○○）を行っており、○月○日頃より○○単剤へ減量予定">DAPT→単剤減量予定</button>
+            <button type="button" class="builder-chip" data-text="心房細動に対し抗凝固薬（○○）を内服中">DOAC/抗凝固薬</button>
+            <button type="button" class="builder-chip" data-text="収縮期血圧 ○○mmHg未満を目標に降圧管理中">目標血圧 ○○mmHg未満</button>
+          </div>
+
+          <div class="builder-preview-box" id="builder-preview">（上の項目をクリックすると、ここに組み立て文章がプレビューされます）</div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+            <button type="button" class="btn" id="btn-insert-builder" disabled>＋ この組み立て文を本文に展開</button>
+            <button type="button" class="btn btn-secondary" id="btn-clear-builder">選択をクリア</button>
+          </div>
+        </div>
+      </details>
+
+      <!-- よく使う単語・定型文パネル -->
+      <section class="card" aria-labelledby="snippets-heading">
+        <div class="card-header">
+          <div>
+            <h2 id="snippets-heading">📌 よく使う単語・定型文（クリックで展開）</h2>
+            <p class="sub-hint">カードの「☆」を押すと最上段にピン留め固定できます</p>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <label class="checkbox-label" style="font-size:12px;">
+              <input type="checkbox" id="chk-edit-mode">
+              編集・並び替え・削除を表示
+            </label>
+            <button type="button" class="btn" id="btn-toggle-add-form">＋ 単語・定型文を登録</button>
+          </div>
+        </div>
+
+        <!-- 単語の新規登録・編集フォーム -->
+        <div class="form-box" id="snippet-form-box" hidden>
+          <h3 id="form-title">新しい単語・定型文を登録</h3>
+          <input type="hidden" id="edit-snippet-id" value="">
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="inp-snippet-title">単語（ボタンの表示名）</label>
+              <input type="text" id="inp-snippet-title" placeholder="例：挨拶（基本）、紹介元継続、MRI異常なし" maxlength="40">
+            </div>
+            <div class="form-field">
+              <label for="inp-snippet-cat">カテゴリ</label>
+              <select id="inp-snippet-cat">
+                <option value="greeting">1. 挨拶</option>
+                <option value="intro">2. 導入・受診報告</option>
+                <option value="body" selected>3. 経過・所見・検査（一般）</option>
+                <option value="neuro">4. 脳神経内科（認知・頭痛・めまい・神経）</option>
+                <option value="rehab">5. 回復期リハビリ・転院紹介</option>
+                <option value="closing">6. 結び（返事・今後の方針）</option>
+                <option value="custom">7. その他・マイ定型文</option>
+              </select>
+            </div>
+            <div class="form-field full">
+              <label for="inp-snippet-text">クリック時に展開されるテキスト</label>
+              <div class="token-helper-bar">
+                <button type="button" class="btn btn-secondary" id="btn-insert-patient-token" style="padding:3px 10px; font-size:12px;">＋「{患者}」を挿入（選択した呼称に自動変換）</button>
+                <button type="button" class="btn btn-secondary" id="btn-insert-maru-token" style="padding:3px 10px; font-size:12px;">＋「○○」を挿入（あとで選択ジャンプ可能）</button>
+              </div>
+              <textarea id="inp-snippet-text" rows="4" placeholder="クリックしたときに展開したい文章を入力してください"></textarea>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div style="display:flex; gap:8px;">
+              <button type="button" class="btn" id="btn-save-snippet">保存して登録</button>
+              <button type="button" class="btn btn-secondary" id="btn-cancel-snippet">閉じる</button>
+            </div>
+            <button type="button" class="btn btn-secondary" id="btn-reset-defaults" style="font-size:12px;">初期プリセットに戻す</button>
+          </div>
+        </div>
+
+        <!-- カテゴリタブ -->
+        <div class="category-tabs" id="category-tabs" role="tablist">
+          <button type="button" class="cat-tab active" data-cat="all">すべて表示</button>
+          <button type="button" class="cat-tab" data-cat="greeting">1. 挨拶</button>
+          <button type="button" class="cat-tab" data-cat="intro">2. 導入</button>
+          <button type="button" class="cat-tab" data-cat="body">3. 所見・検査</button>
+          <button type="button" class="cat-tab" data-cat="neuro">4. 脳神経内科</button>
+          <button type="button" class="cat-tab" data-cat="rehab">5. 回復期リハ</button>
+          <button type="button" class="cat-tab" data-cat="closing">6. 結び</button>
+          <button type="button" class="cat-tab" data-cat="custom">7. その他</button>
+        </div>
+
+        <!-- 検索・挿入位置オプション -->
+        <div class="snippet-toolbar">
+          <input type="search" class="search-input" id="snippet-search" placeholder="🔍 登録単語やキーワードで絞り込み...">
+          <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center;">
+            <label class="checkbox-label" title="クリックで展開するときに自動で改行を入れて見やすく配置します">
+              <input type="checkbox" id="chk-auto-newline" checked>
+              展開時に改行を整える
+            </label>
+            <label style="font-size:12px; color:var(--muted);">
+              挿入先：
+              <select id="sel-insert-pos" style="padding:4px 7px; border-radius:5px; border:1px solid #9db4c5; font-size:12px;">
+                <option value="cursor" selected>カーソル位置（未選択時は末尾）</option>
+                <option value="end">常に末尾へ追記</option>
+                <option value="smart">スマート配置（挨拶は先頭・結びは末尾）</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <!-- 単語一覧コンテナ -->
+        <div id="snippets-container"></div>
+
+        <!-- .txt ドロップゾーン -->
+        <div class="txt-dropzone" id="txt-dropzone">
+          📂 お手元の <strong>.txt ファイル</strong> をここにドラッグ＆ドロップすると、ファイル名を「単語」、中身を「展開テキスト」として即座に登録できます（複数ファイル同時可）
+        </div>
+      </section>
+    </div>
+
+    <!-- 右カラム：紹介目的＋紹介状テキストエディタ -->
+    <aside class="card editor-panel" aria-labelledby="editor-heading">
+      <div class="card-header">
+        <div>
+          <h2 id="editor-heading">📝 紹介状・返書 作成エリア</h2>
+          <p class="sub-hint">カルテの「紹介目的」欄と「本文」欄にそれぞれワンクリックでコピーできます</p>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button type="button" class="btn btn-secondary" id="btn-undo" title="直前の展開・編集を1つ元に戻します" disabled>↩ 1つ戻す</button>
+          <button type="button" class="btn btn-danger" id="btn-clear-editor" title="本文をクリアします">クリア</button>
+        </div>
+      </div>
+
+      <!-- 4. 電子カルテ用「紹介目的（1行要約）」分離コピー枠 -->
+      <div class="purpose-box">
+        <div class="purpose-header">
+          <label for="inp-purpose">📌 紹介目的（1行要約）：</label>
+          <select id="sel-purpose-preset" class="purpose-select" aria-label="紹介目的の定型文を選択">
+            <option value="">▼ 定型から選択...</option>
+            <option value="精査結果のご報告と今後のご加療継続のお願い">返事：精査報告＋貴院継続お願い</option>
+            <option value="診察結果のご報告と今後の経過観察のお願い">返事：診察報告＋経過観察お願い</option>
+            <option value="急性期加療後の回復期リハビリテーション継続のお願い">転院：回復期リハビリ継続のお願い</option>
+            <option value="認知機能精査結果のご報告と今後のご加療のお願い">返事：もの忘れ・認知機能精査報告</option>
+            <option value="精査途中のご報告（当院にて精査継続）">返事：当院にて精査継続のご報告</option>
+            <option value="今後のご加療・処方継続のお願い">逆紹介：今後のご加療・処方継続お願い</option>
+            <option value="精査およびご加療のお願い">新規紹介：精査・ご加療のお願い</option>
+          </select>
+        </div>
+        <div class="purpose-input-row">
+          <input type="text" id="inp-purpose" value="精査結果のご報告と今後のご加療継続のお願い" placeholder="電子カルテの「紹介目的」欄に貼る1行テキスト">
+          <button type="button" class="btn btn-secondary" id="btn-copy-purpose" style="flex-shrink:0; padding:6px 11px;">📋 目的をコピー</button>
+        </div>
+      </div>
+
+      <textarea id="editor-textarea" class="editor-textarea" placeholder="左側の「よく使う単語」や「ワンクリック基本骨格セット」をクリックすると、ここに文章が展開されます。&#10;&#10;文中に「○○」がある場合は、下の「次の『○○』を選択」ボタンで順番にジャンプして入力できます。"></textarea>
+
+      <!-- 1. 「○○」書き換え忘れ防止＆選択ジャンプ＋日付挿入バー -->
+      <div class="editor-helper-bar">
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          <button type="button" class="btn btn-amber placeholder-alert-btn" id="btn-jump-placeholder" disabled>
+            ✓ 未入力の「○○」はありません
+          </button>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          <button type="button" class="btn btn-secondary" id="btn-insert-today" style="padding:4px 9px; font-size:12px;" title="選択位置（またはカーソル位置）に今日の日付（○月○日）を挿入します">📅 今日の日付</button>
+          <button type="button" class="btn btn-secondary" id="btn-Insert-current-call" style="padding:4px 9px; font-size:12px;" title="カーソル位置に現在の患者呼称を挿入します">＋ 患者呼称</button>
+        </div>
+      </div>
+
+      <div class="editor-meta">
+        <span id="char-count">0 文字 ／ 0 行</span>
+        <span id="placeholder-hint" class="sub-hint"></span>
+      </div>
+
+      <div class="editor-actions-primary">
+        <button type="button" class="btn btn-large" id="btn-copy-all">📋 本文をクリップボードにコピー</button>
+        <button type="button" class="btn btn-secondary btn-large" id="btn-download-txt">💾 .txtで保存</button>
+      </div>
+      <div class="editor-actions-sub">
+        <button type="button" class="btn btn-secondary" id="btn-copy-both" style="width:100%; font-size:12.5px; padding:6px 10px;">📋 「【紹介目的】＋本文」をまとめてコピー</button>
+      </div>
+
+      <div id="status-toast" class="toast-status" role="status" aria-live="polite" hidden></div>
+    </aside>
+  </div>
+</main>
+
+<footer>
+  <p>🔒 入力した文章や患者呼称はブラウザー内だけで処理され、外部サーバーへは一切送信されません。登録した単語・ピン留め・並び順はお使いのブラウザー内に保存されるほか、「💾 登録単語入りHTMLを保存」で単一HTMLファイル自体に埋め込んで院内スタンドアローンPC等へ持ち運ぶことができます。</p>
+</footer>
+
+<script id="default-snippets-data" type="application/json">
+[
+  {
+    "id": "greet-1",
+    "cat": "greeting",
+    "title": "挨拶（基本）",
+    "text": "平素より大変お世話になっております。",
+    "pinned": true
+  },
+  {
+    "id": "greet-2",
+    "cat": "greeting",
+    "title": "挨拶＋ご報告導入",
+    "text": "平素より大変お世話になっております。\nご紹介いただきました{患者}につきまして、ご報告申し上げます。"
+  },
+  {
+    "id": "greet-3",
+    "cat": "greeting",
+    "title": "挨拶（新規・逆紹介）",
+    "text": "平素より大変お世話になっております。\n当院通院中の{患者}につきまして、今後のご加療をお願いしたくご紹介申し上げます。"
+  },
+  {
+    "id": "intro-1",
+    "cat": "intro",
+    "title": "本日受診報告",
+    "text": "ご紹介いただきました{患者}は、本日当院を受診されました。",
+    "pinned": true
+  },
+  {
+    "id": "intro-2",
+    "cat": "intro",
+    "title": "検査結果報告",
+    "text": "先日ご紹介いただきました{患者}の精査結果が出ましたので、ご報告申し上げます。"
+  },
+  {
+    "id": "intro-3",
+    "cat": "intro",
+    "title": "受診・診察報告",
+    "text": "{患者}が当院を受診されましたので、診察結果および今後の方針につきましてご報告申し上げます。"
+  },
+  {
+    "id": "body-1",
+    "cat": "body",
+    "title": "神経学的所見（異常なし）",
+    "text": "神経学的には、脳神経系・運動系・感覚系・協調運動ともに明らかな局所神経脱落所見は認めませんでした。"
+  },
+  {
+    "id": "body-2",
+    "cat": "body",
+    "title": "頭部MRI（異常なし）",
+    "text": "頭部MRI・MRAを施行いたしましたところ、明らかな急性期脳梗塞や頭蓋内占拠性病変、主幹動脈の有意狭窄は認めませんでした。",
+    "pinned": true
+  },
+  {
+    "id": "body-3",
+    "cat": "body",
+    "title": "血液検査（異常なし）",
+    "text": "血液検査では、特記すべき異常所見は認めませんでした。"
+  },
+  {
+    "id": "body-4",
+    "cat": "body",
+    "title": "結果説明・ご安心",
+    "text": "{患者}には検査結果をご説明し、ご安心いただいております。"
+  },
+  {
+    "id": "body-5",
+    "cat": "body",
+    "title": "貴院での継続お願い",
+    "text": "今後の経過観察および処方につきましては、引き続き貴院にてお願いできましたら幸いです。"
+  },
+  {
+    "id": "body-6",
+    "cat": "body",
+    "title": "症状変化時の再診案内",
+    "text": "万一、今後症状の増悪や新たな神経症状が出現した際には、いつでも当院へご相談いただくよう{患者}にもお伝えしております。"
+  },
+  {
+    "id": "neuro-1",
+    "cat": "neuro",
+    "title": "認知機能検査（MMSE/MoCA）",
+    "text": "認知機能検査では、MMSE ○○/30点、MoCA-J ○○/30点（CDR ○）でした。"
+  },
+  {
+    "id": "neuro-2",
+    "cat": "neuro",
+    "title": "頭部MRI（もの忘れ精査）",
+    "text": "頭部MRIでは、年齢相応の慢性虚血性変化と軽度の海馬傍回萎縮を認めましたが、慢性硬膜下血腫や正常圧水頭症などの治療可能な二次性認知症を示唆する所見は認めませんでした。"
+  },
+  {
+    "id": "neuro-3",
+    "cat": "neuro",
+    "title": "抗認知症薬の導入・増量依頼",
+    "text": "本日より○○の内服を開始いたしました。消化器症状等の副作用がなければ、○○後に○○への増量およびご継続をお願いできましたら幸いです。"
+  },
+  {
+    "id": "neuro-4",
+    "cat": "neuro",
+    "title": "介護保険・地域包括の案内",
+    "text": "{患者}およびご家族には、介護保険サービスの申請や地域包括支援センターの活用についてご案内いたしました。"
+  },
+  {
+    "id": "neuro-5",
+    "cat": "neuro",
+    "title": "自動車運転に関する説明",
+    "text": "自動車運転につきましては、安全面および道路交通法上の手続き（臨時適性検査・自主返納等）についてご本人・ご家族へご説明いたしました。"
+  },
+  {
+    "id": "neuro-6",
+    "cat": "neuro",
+    "title": "頭痛精査（二次性頭痛否定）",
+    "text": "頭部MRI・MRAにて、くも膜下出血や脳腫瘍、脳静脈洞血栓症などの危険な二次性頭痛を示唆する所見は認めませんでした。"
+  },
+  {
+    "id": "neuro-7",
+    "cat": "neuro",
+    "title": "めまい精査（中枢性否定）",
+    "text": "眼振所見および頭部MRIにて、脳幹・小脳梗塞などの危険な中枢性めまいを示唆する所見は認めませんでした。"
+  },
+  {
+    "id": "neuro-8",
+    "cat": "neuro",
+    "title": "神経伝導検査（NCS）結果",
+    "text": "四肢神経伝導検査（NCS）を施行いたしましたところ、○○の所見でした。"
+  },
+  {
+    "id": "neuro-9",
+    "cat": "neuro",
+    "title": "てんかん（発作抑制・処方継続）",
+    "text": "現在の抗てんかん発作薬（○○）にて発作は良好にコントロールされておりますので、引き続き貴院にて同処方を継続いただけますと幸いです。"
+  },
+  {
+    "id": "neuro-10",
+    "cat": "neuro",
+    "title": "パーキンソン病（薬剤調整報告）",
+    "text": "パーキンソン症状に対しまして、○○の調整を行いました。運動症状の推移や転倒リスクにつきまして、引き続き経過をご高診いただけますと幸いです。"
+  },
+  {
+    "id": "rehab-1",
+    "cat": "rehab",
+    "title": "回復期リハ依頼（導入）",
+    "text": "当院入院中の{患者}につきまして、急性期加療が終了し全身状態が安定いたしましたので、貴院での回復期リハビリテーション継続をお願いしたくご紹介申し上げます。"
+  },
+  {
+    "id": "rehab-2",
+    "cat": "rehab",
+    "title": "脳梗塞・急性期経過",
+    "text": "○月○日に○○症状で発症し、頭部MRIにて急性期脳梗塞と診断し当院へ入院となりました。抗血小板療法および早期リハビリテーションを開始し、神経症状の進行なく経過しております。"
+  },
+  {
+    "id": "rehab-3",
+    "cat": "rehab",
+    "title": "心原性脳塞栓症・急性期経過",
+    "text": "○月○日に発症した心原性脳塞栓症にて当院へ入院となりました。抗凝固療法および早期リハビリテーションを開始し、出血性変化や再発なく経過しております。"
+  },
+  {
+    "id": "rehab-4",
+    "cat": "rehab",
+    "title": "脳出血・急性期経過",
+    "text": "○月○日に発症した○○出血にて当院へ入院となりました。厳格な降圧管理を含む保存的加療と早期リハビリテーションを行い、血腫増大や神経症状の悪化なく経過しております。"
+  },
+  {
+    "id": "rehab-11",
+    "cat": "rehab",
+    "title": "DAPT期間・単剤減量予定",
+    "text": "再発予防として現在抗血小板薬2剤併用（DAPT：○○＋○○）を行っております。○月○日頃までは2剤を継続し、以後は○○単剤（SAPT）へ減量としていただけますようお願い申し上げます。"
+  },
+  {
+    "id": "rehab-5",
+    "cat": "rehab",
+    "title": "現在のADL・リハ進行状況",
+    "text": "現在、バイタルサインは安定しており、理学療法・作業療法・言語聴覚療法を継続中です。離床も進んでおり、さらなるADL向上を目指して集中的なリハビリテーションが望まれる状態です。"
+  },
+  {
+    "id": "rehab-6",
+    "cat": "rehab",
+    "title": "嚥下・食事形態",
+    "text": "嚥下機能につきましては、現在○○食をむせなく経口摂取できております。"
+  },
+  {
+    "id": "rehab-7",
+    "cat": "rehab",
+    "title": "再発予防・内服管理",
+    "text": "再発予防として現在○○を内服中であり、血圧・脂質等のリスク管理を継続しております。処方内容および検査結果の詳細につきましては別紙をご参照ください。"
+  },
+  {
+    "id": "rehab-8",
+    "cat": "rehab",
+    "title": "本人・家族の希望（自宅退院）",
+    "text": "{患者}およびご家族は、リハビリテーション継続のうえでの自宅退院を希望されております。"
+  },
+  {
+    "id": "rehab-9",
+    "cat": "rehab",
+    "title": "結び：回復期リハ依頼（基本）",
+    "text": "ご多忙の折大変恐縮ではございますが、ご高診ならびに回復期リハビリテーションご継続のほど、何卒よろしくお願い申し上げます。何かありましたら、いつでもご連絡ください。"
+  },
+  {
+    "id": "rehab-10",
+    "cat": "rehab",
+    "title": "結び：回復期リハ（退院後当院再診）",
+    "text": "貴院退院後は、当院外来にて経過観察を継続させていただければと存じます。何かありましたら、いつでもご連絡ください。今後ともよろしくお願い申し上げます。"
+  },
+  {
+    "id": "close-1",
+    "cat": "closing",
+    "title": "返事：紹介元へ継続通院（ご指定文）",
+    "text": "大切な患者様をご紹介いただきありがとうございました。何かありましたら、いつでもご連絡ください。今後ともよろしくお願い申し上げます。",
+    "pinned": true
+  },
+  {
+    "id": "close-2",
+    "cat": "closing",
+    "title": "返事：紹介元へ継続通院（呼称連動）",
+    "text": "大切な{患者}をご紹介いただきありがとうございました。何かありましたら、いつでもご連絡ください。今後ともよろしくお願い申し上げます。"
+  },
+  {
+    "id": "close-3",
+    "cat": "closing",
+    "title": "返事：当院で精査継続",
+    "text": "大切な患者様をご紹介いただきありがとうございました。当院にて精査を進め、結果が判明次第あらためてご報告申し上げます。今後ともよろしくお願い申し上げます。"
+  },
+  {
+    "id": "close-4",
+    "cat": "closing",
+    "title": "返事：当院で加療継続",
+    "text": "大切な患者様をご紹介いただきありがとうございました。今後は当院にて加療を継続させていただきます。何かありましたら、いつでもご連絡ください。今後ともよろしくお願い申し上げます。"
+  },
+  {
+    "id": "close-5",
+    "cat": "closing",
+    "title": "結び：新規紹介・逆紹介",
+    "text": "ご多忙の折大変恐縮ではございますが、ご高診・ご加療のほど何卒よろしくお願い申し上げます。"
+  }
+]
+</script>
+
+<script>
+(function () {
+  var STORAGE_KEY = 'referral_helper_snippets_v1';
+
+  var CATEGORIES = [
+    { id: 'greeting', label: '1. 挨拶' },
+    { id: 'intro', label: '2. 導入・受診報告' },
+    { id: 'body', label: '3. 経過・所見・検査（一般）' },
+    { id: 'neuro', label: '4. 脳神経内科（認知・頭痛・めまい・神経）' },
+    { id: 'rehab', label: '5. 回復期リハビリ・転院紹介' },
+    { id: 'closing', label: '6. 結び（返事・今後の方針）' },
+    { id: 'custom', label: '7. その他・マイ定型文' }
+  ];
+
+  var state = {
+    callMode: 'sama',
+    patientName: '',
+    customCall: '本患者',
+    lastResolvedCall: '○○様',
+    activeCat: 'all',
+    searchQuery: '',
+    editMode: false,
+    snippets: [],
+    undoStack: []
+  };
+
+  function el(id) {
+    return document.getElementById(id);
+  }
+
+  function getEmbeddedDefaults() {
+    try {
+      var raw = el('default-snippets-data').textContent;
+      var parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+    } catch (e) {}
+    return [];
+  }
+
+  function loadSnippets() {
+    var embedded = getEmbeddedDefaults();
+    try {
+      var saved = window.localStorage ? localStorage.getItem(STORAGE_KEY) : null;
+      if (saved) {
+        var parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          var existingIds = {};
+          for (var i = 0; i < parsed.length; i++) {
+            existingIds[parsed[i].id] = true;
+          }
+          var addedNew = false;
+          for (var j = 0; j < embedded.length; j++) {
+            if (!existingIds[embedded[j].id]) {
+              parsed.push(embedded[j]);
+              addedNew = true;
+            }
+          }
+          state.snippets = parsed;
+          if (addedNew) saveSnippets();
+          return;
+        }
+      }
+    } catch (e) {}
+    state.snippets = embedded;
+  }
+
+  function saveSnippets() {
+    try {
+      if (window.localStorage) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state.snippets));
+      }
+    } catch (e) {}
+  }
+
+  function resolvePatientCall(mode, name, custom) {
+    var m = mode || state.callMode;
+    var cleanName = (typeof name === 'string' ? name : state.patientName).replace(/^\s+|\s+$/g, '');
+    var baseName = cleanName || '○○';
+    if (m === 'sama') return baseName + '様';
+    if (m === 'shi') return baseName + '氏';
+    if (m === 'san') return baseName + 'さん';
+    if (m === 'kanjasama') return '患者様';
+    if (m === 'kanja') return '患者';
+    if (m === 'custom') {
+      var c = (typeof custom === 'string' ? custom : state.customCall).replace(/^\s+|\s+$/g, '');
+      return c || '患者様';
+    }
+    return baseName + '様';
+  }
+
+  function expandTokens(text) {
+    var callStr = resolvePatientCall();
+    return String(text || '').replace(/\{患者\}/g, callStr);
+  }
+
+  function pushUndo() {
+    var current = el('editor-textarea').value;
+    if (state.undoStack.length === 0 || state.undoStack[state.undoStack.length - 1] !== current) {
+      state.undoStack.push(current);
+      if (state.undoStack.length > 30) state.undoStack.shift();
+    }
+    el('btn-undo').disabled = state.undoStack.length === 0;
+  }
+
+  function showToast(msg, isWarn) {
+    var box = el('status-toast');
+    box.textContent = msg;
+    box.className = 'toast-status' + (isWarn ? ' warn' : '');
+    box.hidden = false;
+    if (showToast._timer) clearTimeout(showToast._timer);
+    showToast._timer = setTimeout(function () {
+      box.hidden = true;
+    }, 3800);
+  }
+
+  function findPlaceholderMatches(text) {
+    var regex = /○+/g;
+    var matches = [];
+    var m;
+    while ((m = regex.exec(text)) !== null) {
+      matches.push({ start: m.index, end: m.index + m[0].length, word: m[0] });
+    }
+    return matches;
+  }
+
+  function updateEditorStats() {
+    var text = el('editor-textarea').value;
+    var chars = text.length;
+    var lines = text === '' ? 0 : text.split(/\r\n|\r|\n/).length;
+    el('char-count').textContent = chars + ' 文字 ／ ' + lines + ' 行';
+
+    var matches = findPlaceholderMatches(text);
+    var jumpBtn = el('btn-jump-placeholder');
+    var hintEl = el('placeholder-hint');
+    if (matches.length > 0) {
+      jumpBtn.disabled = false;
+      jumpBtn.textContent = '⚠️ 次の「○○」を選択して入力（残り ' + matches.length + ' 箇所）';
+      jumpBtn.className = 'btn btn-amber placeholder-alert-btn';
+      hintEl.textContent = 'ボタンを押すと「○○」が選択され、そのまま上書き入力できます';
+    } else {
+      jumpBtn.disabled = true;
+      jumpBtn.textContent = '✓ 未入力の「○○」はありません';
+      jumpBtn.className = 'btn btn-secondary placeholder-alert-btn';
+      hintEl.textContent = '';
+    }
+  }
+
+  function jumpToNextPlaceholder() {
+    var ta = el('editor-textarea');
+    var text = ta.value;
+    var matches = findPlaceholderMatches(text);
+    if (matches.length === 0) return;
+
+    var curPos = typeof ta.selectionEnd === 'number' ? ta.selectionEnd : 0;
+    var chosen = null;
+    for (var i = 0; i < matches.length; i++) {
+      if (matches[i].start >= curPos) {
+        chosen = matches[i];
+        break;
+      }
+    }
+    if (!chosen) {
+      chosen = matches[0];
+    }
+
+    ta.focus();
+    ta.setSelectionRange(chosen.start, chosen.end);
+    showToast('「' + chosen.word + '」を選択しました。そのままキーボード入力で書き換えられます。');
+  }
+
+  function updateCallPreviewAndBody() {
+    var newCall = resolvePatientCall();
+    var oldCall = state.lastResolvedCall;
+
+    var needsName = (state.callMode === 'sama' || state.callMode === 'shi' || state.callMode === 'san');
+    el('patient-name-box').hidden = !needsName;
+    el('custom-call-box').hidden = (state.callMode !== 'custom');
+
+    el('current-call-preview').textContent = '現在の展開語：' + newCall;
+
+    var pills = el('call-pills').querySelectorAll('.call-pill');
+    for (var i = 0; i < pills.length; i++) {
+      var p = pills[i];
+      if (p.getAttribute('data-mode') === state.callMode) {
+        p.classList.add('active');
+      } else {
+        p.classList.remove('active');
+      }
+    }
+
+    if (el('chk-auto-replace-body').checked && oldCall && oldCall !== newCall) {
+      var textarea = el('editor-textarea');
+      var body = textarea.value;
+      if (body && body.indexOf(oldCall) !== -1) {
+        pushUndo();
+        var replaced = replaceCallSafely(body, oldCall, newCall);
+        if (replaced !== body) {
+          textarea.value = replaced;
+          updateEditorStats();
+          showToast('本文中の「' + oldCall + '」を「' + newCall + '」に切り替えました。');
+        }
+      }
+    }
+
+    state.lastResolvedCall = newCall;
+    renderSnippets();
+    updateBuilderPreview();
+  }
+
+  function replaceCallSafely(text, oldCall, newCall) {
+    if (!oldCall || oldCall === newCall) return text;
+    var sentinelMap = [];
+    var working = text;
+
+    var fixedPhrases = ['大切な患者様をご紹介'];
+    for (var f = 0; f < fixedPhrases.length; f++) {
+      var fp = fixedPhrases[f];
+      var fToken = '__PROTECT_FIXED_' + f + '__';
+      sentinelMap.push({ token: fToken, word: fp });
+      working = working.split(fp).join(fToken);
+    }
+
+    if (oldCall === '患者') {
+      var protectWords = ['患者様', '患者さん', '患者氏'];
+      for (var i = 0; i < protectWords.length; i++) {
+        var pw = protectWords[i];
+        var token = '__PROTECT_CALL_' + i + '__';
+        sentinelMap.push({ token: token, word: pw });
+        working = working.split(pw).join(token);
+      }
+    }
+    working = working.split(oldCall).join(newCall);
+    for (var j = sentinelMap.length - 1; j >= 0; j--) {
+      working = working.split(sentinelMap[j].token).join(sentinelMap[j].word);
+    }
+    return working;
+  }
+
+  function insertTextIntoEditor(rawText, cat) {
+    var expanded = expandTokens(rawText);
+    var textarea = el('editor-textarea');
+    var autoNewline = el('chk-auto-newline').checked;
+    var insertMode = el('sel-insert-pos').value;
+
+    pushUndo();
+
+    var currentVal = textarea.value;
+    var start = typeof textarea.selectionStart === 'number' ? textarea.selectionStart : currentVal.length;
+    var end = typeof textarea.selectionEnd === 'number' ? textarea.selectionEnd : currentVal.length;
+
+    if (insertMode === 'end') {
+      start = currentVal.length;
+      end = currentVal.length;
+    } else if (insertMode === 'smart') {
+      if (cat === 'greeting') {
+        start = 0;
+        end = 0;
+      } else if (cat === 'closing') {
+        start = currentVal.length;
+        end = currentVal.length;
+      }
+    }
+
+    var before = currentVal.slice(0, start);
+    var after = currentVal.slice(end);
+
+    var prefix = '';
+    var suffix = '';
+
+    if (autoNewline) {
+      if (before.length > 0 && !/\n$/.test(before)) {
+        prefix = '\n';
+      }
+      if (after.length > 0 && !/^\n/.test(after)) {
+        suffix = '\n';
+      }
+    }
+
+    var inserted = prefix + expanded + suffix;
+    textarea.value = before + inserted + after;
+
+    var newCursor = before.length + inserted.length;
+    textarea.focus();
+    textarea.setSelectionRange(newCursor, newCursor);
+    updateEditorStats();
+  }
+
+  function applyPreset(presetKey) {
+    var call = resolvePatientCall();
+    var text = '';
+    var cursorTarget = '';
+    var purposeText = '';
+
+    if (presetKey === 'reply-return') {
+      purposeText = '精査結果のご報告と今後のご加療継続のお願い';
+      cursorTarget = 'ご紹介いただきました' + call + 'は、本日当院を受診されました。\n';
+      text =
+        '平素より大変お世話になっております。\n\n' +
+        cursorTarget + '\n' +
+        '大切な患者様をご紹介いただきありがとうございました。何かありましたら、いつでもご連絡ください。今後ともよろしくお願い申し上げます。';
+    } else if (presetKey === 'rehab-transfer') {
+      purposeText = '急性期加療後の回復期リハビリテーション継続のお願い';
+      cursorTarget = '当院入院中の' + call + 'につきまして、急性期加療が終了し全身状態が安定いたしましたので、貴院での回復期リハビリテーション継続をお願いしたくご紹介申し上げます。\n';
+      text =
+        '平素より大変お世話になっております。\n\n' +
+        cursorTarget + '\n' +
+        'ご多忙の折大変恐縮ではございますが、ご高診ならびに回復期リハビリテーションご継続のほど、何卒よろしくお願い申し上げます。何かありましたら、いつでもご連絡ください。';
+      el('rehab-builder-details').open = true;
+    } else if (presetKey === 'dementia-reply') {
+      purposeText = '認知機能精査結果のご報告と今後のご加療のお願い';
+      cursorTarget = 'ご紹介いただきました' + call + 'は、本日当院を受診されました。\n認知機能検査では、MMSE ○○/30点、MoCA-J ○○/30点（CDR ○）でした。\n頭部MRIでは、年齢相応の慢性虚血性変化と軽度の海馬傍回萎縮を認めましたが、治療可能な二次性認知症を示唆する所見は認めませんでした。\n';
+      text =
+        '平素より大変お世話になっております。\n\n' +
+        cursorTarget + '\n' +
+        '大切な患者様をご紹介いただきありがとうございました。何かありましたら、いつでもご連絡ください。今後ともよろしくお願い申し上げます。';
+    } else if (presetKey === 'reply-exam') {
+      purposeText = '精査途中のご報告（当院にて精査継続）';
+      cursorTarget = 'ご紹介いただきました' + call + 'は、本日当院を受診されました。\n';
+      text =
+        '平素より大変お世話になっております。\n\n' +
+        cursorTarget + '\n' +
+        '大切な患者様をご紹介いただきありがとうございました。当院にて精査を進め、結果が判明次第あらためてご報告申し上げます。今後ともよろしくお願い申し上げます。';
+    } else if (presetKey === 'reply-continue') {
+      purposeText = '診察結果のご報告（当院にて加療継続）';
+      cursorTarget = 'ご紹介いただきました' + call + 'は、本日当院を受診されました。\n';
+      text =
+        '平素より大変お世話になっております。\n\n' +
+        cursorTarget + '\n' +
+        '大切な患者様をご紹介いただきありがとうございました。今後は当院にて加療を継続させていただきます。何かありましたら、いつでもご連絡ください。今後ともよろしくお願い申し上げます。';
+    } else if (presetKey === 'new-referral') {
+      purposeText = '精査および今後のご加療のお願い';
+      cursorTarget = '当院通院中の' + call + 'につきまして、今後のご加療をお願いしたくご紹介申し上げます。\n';
+      text =
+        '平素より大変お世話になっております。\n\n' +
+        cursorTarget + '\n' +
+        'ご多忙の折大変恐縮ではございますが、ご高診・ご加療のほど何卒よろしくお願い申し上げます。';
+    }
+
+    if (!text) return;
+
+    var textarea = el('editor-textarea');
+    if (textarea.value.replace(/\s+/g, '') !== '') {
+      if (!window.confirm('現在の本文をこの基本骨格セットに置き換えますか？\n（置き換えたあとも「↩ 1つ戻す」で元に戻せます）')) {
+        return;
+      }
+    }
+
+    pushUndo();
+    if (purposeText) el('inp-purpose').value = purposeText;
+    textarea.value = text;
+    var pos = text.indexOf(cursorTarget);
+    var caret = pos !== -1 ? pos + cursorTarget.length : text.length;
+    textarea.focus();
+    textarea.setSelectionRange(caret, caret);
+    updateEditorStats();
+    showToast('基本骨格と紹介目的をセットしました。続けて単語ボタンをクリックするとカーソル位置に挿入されます。');
+  }
+
+  function buildRehabSummaryText() {
+    var groups = ['motor', 'adl', 'swallow', 'cognitive', 'prevention'];
+    var picked = {};
+    var totalCount = 0;
+
+    for (var i = 0; i < groups.length; i++) {
+      var g = groups[i];
+      picked[g] = [];
+      var row = document.querySelector('.builder-row[data-group="' + g + '"]');
+      if (!row) continue;
+      var activeChips = row.querySelectorAll('.builder-chip.selected');
+      for (var j = 0; j < activeChips.length; j++) {
+        picked[g].push(activeChips[j].getAttribute('data-text'));
+        totalCount++;
+      }
+    }
+
+    if (totalCount === 0) return '';
+
+    var sentences = [];
+    if (picked.motor.length > 0) {
+      sentences.push('現在の神経学的所見としては、' + picked.motor.join('、') + 'を認めます。');
+    }
+    var adlSwallowParts = [];
+    if (picked.adl.length > 0) {
+      adlSwallowParts.push('移動・ADLは' + picked.adl.join('・'));
+    }
+    if (picked.swallow.length > 0) {
+      adlSwallowParts.push('食事・嚥下は' + picked.swallow.join('、'));
+    }
+    if (adlSwallowParts.length > 0) {
+      sentences.push(adlSwallowParts.join('、') + 'の状態です。');
+    }
+    if (picked.cognitive.length > 0) {
+      sentences.push('高次脳機能・認知面につきましては、' + picked.cognitive.join('、') + '。');
+    }
+    if (picked.prevention.length > 0) {
+      sentences.push('再発予防・全身管理として、' + picked.prevention.join('、') + 'です。');
+    }
+
+    return sentences.join('');
+  }
+
+  function updateBuilderPreview() {
+    var built = buildRehabSummaryText();
+    var box = el('builder-preview');
+    var btn = el('btn-insert-builder');
+    if (built) {
+      box.textContent = built;
+      btn.disabled = false;
+    } else {
+      box.textContent = '（上の項目をクリックすると、ここに組み立て文章がプレビューされます）';
+      btn.disabled = true;
+    }
+  }
+
+  function togglePinSnippet(id) {
+    for (var i = 0; i < state.snippets.length; i++) {
+      if (state.snippets[i].id === id) {
+        state.snippets[i].pinned = !state.snippets[i].pinned;
+        saveSnippets();
+        renderSnippets();
+        showToast(state.snippets[i].pinned ? '⭐ 最上段にピン留めしました。' : 'ピン留めを解除しました。');
+        return;
+      }
+    }
+  }
+
+  function moveSnippet(id, dir) {
+    var idx = -1;
+    for (var i = 0; i < state.snippets.length; i++) {
+      if (state.snippets[i].id === id) {
+        idx = i;
+        break;
+      }
+    }
+    if (idx === -1) return;
+    var cat = state.snippets[idx].cat;
+    var targetIdx = -1;
+    if (dir < 0) {
+      for (var p = idx - 1; p >= 0; p--) {
+        if (state.snippets[p].cat === cat) { targetIdx = p; break; }
+      }
+    } else {
+      for (var n = idx + 1; n < state.snippets.length; n++) {
+        if (state.snippets[n].cat === cat) { targetIdx = n; break; }
+      }
+    }
+    if (targetIdx !== -1) {
+      var tmp = state.snippets[idx];
+      state.snippets[idx] = state.snippets[targetIdx];
+      state.snippets[targetIdx] = tmp;
+      saveSnippets();
+      renderSnippets();
+    }
+  }
+
+  function renderSnippets() {
+    var container = el('snippets-container');
+    container.innerHTML = '';
+
+    var q = state.searchQuery.toLowerCase();
+    var hasAny = false;
+
+    var pinnedItems = [];
+    for (var p = 0; p < state.snippets.length; p++) {
+      var ps = state.snippets[p];
+      if (!ps.pinned) continue;
+      var pPreview = expandTokens(ps.text);
+      if (q) {
+        if (ps.title.toLowerCase().indexOf(q) === -1 && pPreview.toLowerCase().indexOf(q) === -1) continue;
+      }
+      pinnedItems.push({ raw: ps, preview: pPreview });
+    }
+
+    if (pinnedItems.length > 0 && state.activeCat === 'all') {
+      hasAny = true;
+      var pinSec = document.createElement('div');
+      pinSec.className = 'cat-section pinned-section';
+      var pinH = document.createElement('div');
+      pinH.className = 'cat-section-title';
+      pinH.textContent = '⭐ ピン留め（よく使う最優先単語・' + pinnedItems.length + '件）';
+      pinSec.appendChild(pinH);
+
+      var pinGrid = document.createElement('div');
+      pinGrid.className = 'snippet-grid';
+      for (var k = 0; k < pinnedItems.length; k++) {
+        pinGrid.appendChild(createSnippetCard(pinnedItems[k].raw, pinnedItems[k].preview, true));
+      }
+      pinSec.appendChild(pinGrid);
+      container.appendChild(pinSec);
+    }
+
+    for (var c = 0; c < CATEGORIES.length; c++) {
+      var catObj = CATEGORIES[c];
+      if (state.activeCat !== 'all' && state.activeCat !== catObj.id) continue;
+
+      var items = [];
+      for (var i = 0; i < state.snippets.length; i++) {
+        var s = state.snippets[i];
+        if (s.cat !== catObj.id) continue;
+        var expandedPreview = expandTokens(s.text);
+        if (q) {
+          var matchTitle = s.title.toLowerCase().indexOf(q) !== -1;
+          var matchText = expandedPreview.toLowerCase().indexOf(q) !== -1;
+          if (!matchTitle && !matchText) continue;
+        }
+        items.push({ raw: s, preview: expandedPreview });
+      }
+
+      if (items.length === 0) continue;
+      hasAny = true;
+
+      var sec = document.createElement('div');
+      sec.className = 'cat-section';
+
+      var h = document.createElement('div');
+      h.className = 'cat-section-title';
+      h.textContent = catObj.label + '（' + items.length + '件）';
+      sec.appendChild(h);
+
+      var grid = document.createElement('div');
+      grid.className = 'snippet-grid';
+
+      for (var j = 0; j < items.length; j++) {
+        grid.appendChild(createSnippetCard(items[j].raw, items[j].preview, false));
+      }
+
+      sec.appendChild(grid);
+      container.appendChild(sec);
+    }
+
+    if (!hasAny) {
+      var empty = document.createElement('p');
+      empty.className = 'sub-hint';
+      empty.style.padding = '16px 4px';
+      empty.textContent = '該当する単語・定型文がありません。「＋ 単語・定型文を登録」から追加できます。';
+      container.appendChild(empty);
+    }
+  }
+
+  function createSnippetCard(snippet, previewText, isPinnedClone) {
+    var card = document.createElement('div');
+    card.className = 'snippet-item' + (snippet.pinned ? ' pinned-item' : '');
+
+    var topRow = document.createElement('div');
+    topRow.className = 'snippet-top-row';
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'snippet-trigger';
+    btn.title = 'クリックで展開：\n' + previewText;
+
+    var titleRow = document.createElement('div');
+    titleRow.className = 'snippet-title';
+    var titleSpan = document.createElement('span');
+    titleSpan.textContent = snippet.title;
+    titleRow.appendChild(titleSpan);
+
+    if (snippet.text.indexOf('{患者}') !== -1) {
+      var badge = document.createElement('span');
+      badge.className = 'snippet-title-badge';
+      badge.textContent = '呼称連動';
+      titleRow.appendChild(badge);
+    }
+
+    var prev = document.createElement('div');
+    prev.className = 'snippet-preview';
+    prev.textContent = previewText;
+
+    btn.appendChild(titleRow);
+    btn.appendChild(prev);
+
+    btn.addEventListener('click', function () {
+      insertTextIntoEditor(snippet.text, snippet.cat);
+      showToast('「' + snippet.title + '」を展開しました。');
+    });
+
+    var pinBtn = document.createElement('button');
+    pinBtn.type = 'button';
+    pinBtn.className = 'pin-btn' + (snippet.pinned ? ' active' : '');
+    pinBtn.title = snippet.pinned ? 'ピン留めを解除' : '最上段にピン留め固定';
+    pinBtn.textContent = snippet.pinned ? '★' : '☆';
+    pinBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      togglePinSnippet(snippet.id);
+    });
+
+    topRow.appendChild(btn);
+    topRow.appendChild(pinBtn);
+    card.appendChild(topRow);
+
+    if (state.editMode && !isPinnedClone) {
+      var editBar = document.createElement('div');
+      editBar.className = 'snippet-edit-bar';
+
+      var moveGroup = document.createElement('div');
+      moveGroup.style.display = 'flex';
+      moveGroup.style.gap = '4px';
+
+      var leftBtn = document.createElement('button');
+      leftBtn.type = 'button';
+      leftBtn.className = 'snippet-mini-btn';
+      leftBtn.textContent = '◀';
+      leftBtn.title = '前へ移動';
+      leftBtn.addEventListener('click', function () { moveSnippet(snippet.id, -1); });
+
+      var rightBtn = document.createElement('button');
+      rightBtn.type = 'button';
+      rightBtn.className = 'snippet-mini-btn';
+      rightBtn.textContent = '▶';
+      rightBtn.title = '次へ移動';
+      rightBtn.addEventListener('click', function () { moveSnippet(snippet.id, 1); });
+
+      moveGroup.appendChild(leftBtn);
+      moveGroup.appendChild(rightBtn);
+
+      var actionGroup = document.createElement('div');
+      actionGroup.style.display = 'flex';
+      actionGroup.style.gap = '4px';
+
+      var editBtn = document.createElement('button');
+      editBtn.type = 'button';
+      editBtn.className = 'snippet-mini-btn';
+      editBtn.textContent = '✎ 編集';
+      editBtn.addEventListener('click', function () {
+        openEditSnippetForm(snippet);
+      });
+
+      var delBtn = document.createElement('button');
+      delBtn.type = 'button';
+      delBtn.className = 'snippet-mini-btn del';
+      delBtn.textContent = '× 削除';
+      delBtn.addEventListener('click', function () {
+        deleteSnippet(snippet.id);
+      });
+
+      actionGroup.appendChild(editBtn);
+      actionGroup.appendChild(delBtn);
+
+      editBar.appendChild(moveGroup);
+      editBar.appendChild(actionGroup);
+      card.appendChild(editBar);
+    }
+
+    return card;
+  }
+
+  function openEditSnippetForm(snippet) {
+    var box = el('snippet-form-box');
+    box.hidden = false;
+    if (snippet) {
+      el('form-title').textContent = '単語・定型文を編集';
+      el('edit-snippet-id').value = snippet.id;
+      el('inp-snippet-title').value = snippet.title;
+      el('inp-snippet-cat').value = snippet.cat;
+      el('inp-snippet-text').value = snippet.text;
+    } else {
+      el('form-title').textContent = '新しい単語・定型文を登録';
+      el('edit-snippet-id').value = '';
+      el('inp-snippet-title').value = '';
+      el('inp-snippet-cat').value = state.activeCat !== 'all' ? state.activeCat : 'body';
+      el('inp-snippet-text').value = '';
+    }
+    el('inp-snippet-title').focus();
+  }
+
+  function saveSnippetFromForm() {
+    var id = el('edit-snippet-id').value;
+    var title = el('inp-snippet-title').value.replace(/^\s+|\s+$/g, '');
+    var cat = el('inp-snippet-cat').value;
+    var text = el('inp-snippet-text').value.replace(/^\s+|\s+$/g, '');
+
+    if (!title || !text) {
+      showToast('「単語（ボタンの表示名）」と「展開されるテキスト」の両方を入力してください。', true);
+      return;
+    }
+
+    if (id) {
+      for (var i = 0; i < state.snippets.length; i++) {
+        if (state.snippets[i].id === id) {
+          state.snippets[i].title = title;
+          state.snippets[i].cat = cat;
+          state.snippets[i].text = text;
+          break;
+        }
+      }
+      showToast('「' + title + '」を更新しました。');
+    } else {
+      var newId = 'snip-' + new Date().getTime() + '-' + Math.floor(Math.random() * 1000);
+      state.snippets.push({
+        id: newId,
+        cat: cat,
+        title: title,
+        text: text,
+        pinned: false
+      });
+      showToast('「' + title + '」を登録しました。クリックするとすぐに展開できます。');
+    }
+
+    saveSnippets();
+    el('snippet-form-box').hidden = true;
+    renderSnippets();
+  }
+
+  function deleteSnippet(id) {
+    for (var i = 0; i < state.snippets.length; i++) {
+      if (state.snippets[i].id === id) {
+        var name = state.snippets[i].title;
+        if (!window.confirm('「' + name + '」を削除しますか？')) return;
+        state.snippets.splice(i, 1);
+        saveSnippets();
+        renderSnippets();
+        showToast('「' + name + '」を削除しました。');
+        return;
+      }
+    }
+  }
+
+  function handleTxtFilesToSnippets(fileList) {
+    if (!fileList || fileList.length === 0) return;
+    var count = 0;
+    var total = fileList.length;
+
+    Array.prototype.forEach.call(fileList, function (file) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        var content = String(e.target.result || '').replace(/\r\n/g, '\n').replace(/^\s+|\s+$/g, '');
+        var baseName = file.name.replace(/\.[^/.]+$/, '');
+        if (content) {
+          state.snippets.push({
+            id: 'txt-' + new Date().getTime() + '-' + Math.floor(Math.random() * 10000),
+            cat: state.activeCat !== 'all' ? state.activeCat : 'body',
+            title: baseName,
+            text: content,
+            pinned: false
+          });
+          count++;
+        }
+        total--;
+        if (total === 0) {
+          saveSnippets();
+          renderSnippets();
+          showToast(count + '個のテキストファイルを単語ボタンとして登録しました。');
+        }
+      };
+      reader.readAsText(file, 'UTF-8');
+    });
+  }
+
+  function handleDirectTxtExpand(fileList) {
+    if (!fileList || fileList.length === 0) return;
+    Array.prototype.forEach.call(fileList, function (file) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        var content = String(e.target.result || '').replace(/\r\n/g, '\n').replace(/^\s+|\s+$/g, '');
+        if (content) {
+          insertTextIntoEditor(content, 'body');
+          showToast('ファイル「' + file.name + '」を本文に展開しました。');
+        }
+      };
+      reader.readAsText(file, 'UTF-8');
+    });
+  }
+
+  function exportStandaloneHtml() {
+    var clone = document.documentElement.cloneNode(true);
+    var sc = clone.querySelector('#snippets-container');
+    if (sc) sc.innerHTML = '';
+    var ta = clone.querySelector('#editor-textarea');
+    if (ta) ta.textContent = '';
+    var toast = clone.querySelector('#status-toast');
+    if (toast) toast.setAttribute('hidden', '');
+    var dataScript = clone.querySelector('#default-snippets-data');
+    if (dataScript) {
+      dataScript.textContent = '\n' + JSON.stringify(state.snippets, null, 2) + '\n';
+    }
+    var html = '<!DOCTYPE html>\n' + clone.outerHTML;
+    var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '紹介状入力補助.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    showToast('現在の登録単語・ピン留めを埋め込んだ「紹介状入力補助.html」を保存しました。');
+  }
+
+  function exportJson() {
+    var jsonStr = JSON.stringify(state.snippets, null, 2);
+    var blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '紹介状単語帳データ.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    showToast('単語帳データ(.json)を書き出しました。');
+  }
+
+  function importJson(file) {
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      try {
+        var parsed = JSON.parse(String(e.target.result || ''));
+        if (!Array.isArray(parsed)) throw new Error('Invalid format');
+        state.snippets = parsed;
+        saveSnippets();
+        renderSnippets();
+        showToast('単語帳データ（' + parsed.length + '件）を読み込みました。');
+      } catch (err) {
+        showToast('JSONファイルの形式が正しくありません。', true);
+      }
+    };
+    reader.readAsText(file, 'UTF-8');
+  }
+
+  function copyArbitraryText(text, label, fallbackInputEl) {
+    if (!text) {
+      showToast(label + 'が空です。', true);
+      return;
+    }
+
+    text = text.replace(/[～〜]/g, '-');
+    var matches = findPlaceholderMatches(text);
+    var warnSuffix = matches.length > 0 ? '（※文中に「○○」が ' + matches.length + ' 箇所残っています）' : '';
+
+    function fallbackCopy() {
+      var targetEl = fallbackInputEl || el('editor-textarea');
+      var prevVal = targetEl.value;
+      targetEl.value = text;
+      targetEl.focus();
+      targetEl.select();
+      try {
+        var ok = document.execCommand('copy');
+        targetEl.value = prevVal;
+        if (ok) {
+          showToast('📋 ' + label + 'をコピーしました！' + warnSuffix, matches.length > 0);
+        } else {
+          showToast(label + 'を選択しました。Ctrl+C キーでコピーしてください。', true);
+        }
+      } catch (e) {
+        targetEl.value = prevVal;
+        showToast(label + 'を選択しました。Ctrl+C キーでコピーしてください。', true);
+      }
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        showToast('📋 ' + label + 'をコピーしました！' + warnSuffix, matches.length > 0);
+      }, fallbackCopy);
+    } else {
+      fallbackCopy();
+    }
+  }
+
+  function downloadTxtFile() {
+    var purpose = el('inp-purpose').value.replace(/^\s+|\s+$/g, '');
+    var body = el('editor-textarea').value;
+    if (!body) {
+      showToast('保存する本文が空です。', true);
+      return;
+    }
+    var full = ((purpose ? '【紹介目的】' + purpose + '\n\n' : '') + body).replace(/[～〜]/g, '-');
+    var crlfText = full.replace(/\r?\n/g, '\r\n');
+    var blob = new Blob([crlfText], { type: 'text/plain;charset=utf-8' });
+    var a = document.createElement('a');
+    var now = new Date();
+    function pad(n) { return n < 10 ? '0' + n : String(n); }
+    var ymd = now.getFullYear() + pad(now.getMonth() + 1) + pad(now.getDate());
+    a.href = URL.createObjectURL(blob);
+    a.download = '紹介状文面_' + ymd + '.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    showToast('テキストファイル(.txt)として保存しました。');
+  }
+
+  function init() {
+    loadSnippets();
+    state.lastResolvedCall = resolvePatientCall();
+
+    var pills = el('call-pills').querySelectorAll('.call-pill');
+    for (var i = 0; i < pills.length; i++) {
+      pills[i].addEventListener('click', function () {
+        state.callMode = this.getAttribute('data-mode');
+        updateCallPreviewAndBody();
+      });
+    }
+
+    el('patient-name-input').addEventListener('input', function () {
+      state.patientName = this.value;
+      updateCallPreviewAndBody();
+    });
+
+    el('custom-call-input').addEventListener('input', function () {
+      state.customCall = this.value;
+      updateCallPreviewAndBody();
+    });
+
+    var presetBtns = document.querySelectorAll('.preset-btn');
+    for (var p = 0; p < presetBtns.length; p++) {
+      presetBtns[p].addEventListener('click', function () {
+        applyPreset(this.getAttribute('data-preset'));
+      });
+    }
+
+    var builderChips = document.querySelectorAll('.builder-chip');
+    for (var b = 0; b < builderChips.length; b++) {
+      builderChips[b].addEventListener('click', function () {
+        this.classList.toggle('selected');
+        updateBuilderPreview();
+      });
+    }
+
+    el('btn-insert-builder').addEventListener('click', function () {
+      var text = buildRehabSummaryText();
+      if (!text) return;
+      insertTextIntoEditor(text, 'rehab');
+      showToast('組み立てた状態文を本文に展開しました。');
+    });
+
+    el('btn-clear-builder').addEventListener('click', function () {
+      for (var b = 0; b < builderChips.length; b++) {
+        builderChips[b].classList.remove('selected');
+      }
+      updateBuilderPreview();
+    });
+
+    var catTabs = el('category-tabs').querySelectorAll('.cat-tab');
+    for (var c = 0; c < catTabs.length; c++) {
+      catTabs[c].addEventListener('click', function () {
+        for (var k = 0; k < catTabs.length; k++) catTabs[k].classList.remove('active');
+        this.classList.add('active');
+        state.activeCat = this.getAttribute('data-cat');
+        renderSnippets();
+      });
+    }
+
+    el('snippet-search').addEventListener('input', function () {
+      state.searchQuery = this.value;
+      renderSnippets();
+    });
+
+    el('chk-edit-mode').addEventListener('change', function () {
+      state.editMode = this.checked;
+      renderSnippets();
+    });
+
+    el('btn-toggle-add-form').addEventListener('click', function () {
+      var box = el('snippet-form-box');
+      if (box.hidden) {
+        openEditSnippetForm(null);
+      } else {
+        box.hidden = true;
+      }
+    });
+
+    el('btn-cancel-snippet').addEventListener('click', function () {
+      el('snippet-form-box').hidden = true;
+    });
+
+    el('btn-save-snippet').addEventListener('click', saveSnippetFromForm);
+
+    el('btn-insert-patient-token').addEventListener('click', function () {
+      var ta = el('inp-snippet-text');
+      var s = typeof ta.selectionStart === 'number' ? ta.selectionStart : ta.value.length;
+      var e = typeof ta.selectionEnd === 'number' ? ta.selectionEnd : ta.value.length;
+      ta.value = ta.value.slice(0, s) + '{患者}' + ta.value.slice(e);
+      ta.focus();
+      ta.setSelectionRange(s + 4, s + 4);
+    });
+
+    el('btn-insert-maru-token').addEventListener('click', function () {
+      var ta = el('inp-snippet-text');
+      var s = typeof ta.selectionStart === 'number' ? ta.selectionStart : ta.value.length;
+      var e = typeof ta.selectionEnd === 'number' ? ta.selectionEnd : ta.value.length;
+      ta.value = ta.value.slice(0, s) + '○○' + ta.value.slice(e);
+      ta.focus();
+      ta.setSelectionRange(s + 2, s + 2);
+    });
+
+    el('btn-reset-defaults').addEventListener('click', function () {
+      if (!window.confirm('単語・定型文を初期状態に戻しますか？')) return;
+      try {
+        if (window.localStorage) localStorage.removeItem(STORAGE_KEY);
+      } catch (e) {}
+      state.snippets = JSON.parse(JSON.stringify(getEmbeddedDefaults()));
+      renderSnippets();
+      showToast('初期プリセットに戻しました。');
+    });
+
+    el('sel-purpose-preset').addEventListener('change', function () {
+      if (this.value) {
+        el('inp-purpose').value = this.value;
+        this.value = '';
+      }
+    });
+
+    el('btn-copy-purpose').addEventListener('click', function () {
+      copyArbitraryText(el('inp-purpose').value, '紹介目的', el('inp-purpose'));
+    });
+
+    el('editor-textarea').addEventListener('input', updateEditorStats);
+
+    el('btn-jump-placeholder').addEventListener('click', jumpToNextPlaceholder);
+
+    el('btn-insert-today').addEventListener('click', function () {
+      var now = new Date();
+      var dateStr = (now.getMonth() + 1) + '月' + now.getDate() + '日';
+      var ta = el('editor-textarea');
+      pushUndo();
+      var s = typeof ta.selectionStart === 'number' ? ta.selectionStart : ta.value.length;
+      var e = typeof ta.selectionEnd === 'number' ? ta.selectionEnd : ta.value.length;
+      ta.value = ta.value.slice(0, s) + dateStr + ta.value.slice(e);
+      ta.focus();
+      ta.setSelectionRange(s + dateStr.length, s + dateStr.length);
+      updateEditorStats();
+    });
+
+    el('btn-Insert-current-call').addEventListener('click', function () {
+      var call = resolvePatientCall();
+      var ta = el('editor-textarea');
+      pushUndo();
+      var s = typeof ta.selectionStart === 'number' ? ta.selectionStart : ta.value.length;
+      var e = typeof ta.selectionEnd === 'number' ? ta.selectionEnd : ta.value.length;
+      ta.value = ta.value.slice(0, s) + call + ta.value.slice(e);
+      ta.focus();
+      ta.setSelectionRange(s + call.length, s + call.length);
+      updateEditorStats();
+    });
+
+    el('btn-undo').addEventListener('click', function () {
+      if (state.undoStack.length === 0) return;
+      el('editor-textarea').value = state.undoStack.pop();
+      el('btn-undo').disabled = state.undoStack.length === 0;
+      updateEditorStats();
+      showToast('1つ前の状態に戻しました。');
+    });
+
+    el('btn-clear-editor').addEventListener('click', function () {
+      if (!el('editor-textarea').value) return;
+      if (!window.confirm('作成中の本文をクリアしますか？')) return;
+      pushUndo();
+      el('editor-textarea').value = '';
+      updateEditorStats();
+      showToast('本文をクリアしました。');
+    });
+
+    el('btn-copy-all').addEventListener('click', function () {
+      copyArbitraryText(el('editor-textarea').value, '本文', el('editor-textarea'));
+    });
+
+    el('btn-copy-both').addEventListener('click', function () {
+      var purpose = el('inp-purpose').value.replace(/^\s+|\s+$/g, '');
+      var body = el('editor-textarea').value;
+      if (!body) {
+        showToast('本文が空です。', true);
+        return;
+      }
+      var combined = (purpose ? '【紹介目的】' + purpose + '\n\n' : '') + body;
+      copyArbitraryText(combined, '紹介目的＋本文', el('editor-textarea'));
+    });
+
+    el('btn-download-txt').addEventListener('click', downloadTxtFile);
+
+    el('btn-open-txt-direct').addEventListener('click', function () {
+      el('file-direct-txt').value = '';
+      el('file-direct-txt').click();
+    });
+    el('file-direct-txt').addEventListener('change', function () {
+      handleDirectTxtExpand(this.files);
+    });
+
+    el('btn-import-txt-snippets').addEventListener('click', function () {
+      el('file-snippet-txt').value = '';
+      el('file-snippet-txt').click();
+    });
+    el('file-snippet-txt').addEventListener('change', function () {
+      handleTxtFilesToSnippets(this.files);
+    });
+
+    var dropzone = el('txt-dropzone');
+    dropzone.addEventListener('dragover', function (e) {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+    dropzone.addEventListener('dragleave', function () {
+      dropzone.classList.remove('dragover');
+    });
+    dropzone.addEventListener('drop', function (e) {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      if (e.dataTransfer && e.dataTransfer.files) {
+        handleTxtFilesToSnippets(e.dataTransfer.files);
+      }
+    });
+
+    el('btn-save-standalone-html').addEventListener('click', exportStandaloneHtml);
+    el('btn-export-json').addEventListener('click', exportJson);
+    el('btn-import-json').addEventListener('click', function () {
+      el('file-import-json').value = '';
+      el('file-import-json').click();
+    });
+    el('file-import-json').addEventListener('change', function () {
+      if (this.files && this.files[0]) importJson(this.files[0]);
+    });
+
+    updateCallPreviewAndBody();
+    updateEditorStats();
+  }
+
+  if (typeof document !== 'undefined') {
+    init();
+  }
+}());
+</script>
+</body>
+</html>
