@@ -1,5 +1,6 @@
-const CACHE_NAME = 'ddx-tools-v293';
+const CACHE_NAME = 'ddx-tools-v294';
 const ASSETS = [
+  './drug_eruption_assessment.html',
   './infographics/acne-vulgaris-guide-reference-repair-20261029/index.html',
   './infographics/acne-vulgaris-guide-reference-repair-20261029/infographic.png',
   './infographics/constipation-drugs-adult-reference-repair-20261029/index.html',
