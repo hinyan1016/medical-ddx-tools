@@ -789,19 +789,19 @@ footer {
 <header>
   <div class="header-inner">
     <div class="header-title">
-      <h1>✉️ 紹介状（診療情報提供書）入力補助ツール</h1>
-      <p>単語クリック展開 ／ 患者呼称連動 ／ 回復期リハADL組み立て ／ 「○○」選択ジャンプ ／ オフライン・単一HTML対応</p>
-      <a class="header-back" href="index.html">← ツール一覧へ戻る</a>
+      <h1>紹介状（診療情報提供書）入力補助ツール</h1>
+      <p>単語クリック展開 ／ 患者呼称連動 ／ 回復期リハADL組み立て ／ 「○○」選択ジャンプ ／ オフライン対応</p>
     </div>
     <div class="header-actions">
-      <button type="button" class="btn btn-header" id="btn-open-txt-direct" title="パソコン内の.txtファイルを選んでそのまま本文に展開します">📄 .txtを本文に直接展開</button>
-      <button type="button" class="btn btn-header" id="btn-import-txt-snippets" title="パソコン内の.txtファイルを単語ボタンとして一括登録します">📂 .txtを単語登録</button>
-      <button type="button" class="btn btn-header" id="btn-save-standalone-html" title="現在登録している単語・ピン留めを埋め込んだHTMLファイルを保存します（USB移動・スタンドアローンPC用）">💾 登録単語入りHTMLを保存</button>
+      <button type="button" class="btn btn-header" id="btn-save-folder-js" style="background:#f59e0b;border-color:#fbbf24;color:#1e293b;font-weight:700;" title="HTMLと同じ個人フォルダ内の「紹介状単語データ.js」へ保存します（ローカルPCには保存しません）">💾 同階層の「紹介状単語データ.js」に保存</button>
+      <button type="button" class="btn btn-header" id="btn-open-txt-direct" title="フォルダ内の.txtファイルを選んでそのまま本文に展開します">📄 .txtを本文に直接展開</button>
+      <button type="button" class="btn btn-header" id="btn-import-txt-snippets" title="フォルダ内の.txtファイルを単語ボタンとして一括登録します">📂 .txtを単語登録</button>
+      <button type="button" class="btn btn-header" id="btn-save-standalone-html" title="現在登録している単語・ピン留めを埋め込んだHTMLファイルを同じフォルダへ保存します">💾 登録単語入りHTMLを保存</button>
       <button type="button" class="btn btn-header" id="btn-export-json" title="単語帳データをJSONファイルに書き出します">書き出し(.json)</button>
       <button type="button" class="btn btn-header" id="btn-import-json" title="書き出したJSONファイルを読み込みます">読み込み(.json)</button>
       <input type="file" id="file-direct-txt" accept=".txt,text/plain" multiple hidden>
       <input type="file" id="file-snippet-txt" accept=".txt,text/plain" multiple hidden>
-      <input type="file" id="file-import-json" accept=".json,application/json" hidden>
+      <input type="file" id="file-import-json" accept=".json,.js,application/json,text/javascript" hidden>
     </div>
   </div>
 </header>
@@ -898,7 +898,7 @@ footer {
             <button type="button" class="builder-chip" data-text="杖歩行見守りレベル">杖歩行見守り</button>
             <button type="button" class="builder-chip" data-text="歩行器歩行レベル">歩行器歩行</button>
             <button type="button" class="builder-chip" data-text="車椅子移乗見守りレベル">車椅子移乗見守り</button>
-            <button type="button" class="builder-chip" data-text="車椅子移乗軽介助-介助レベル">車椅子移乗介助</button>
+            <button type="button" class="builder-chip" data-text="車椅子移乗軽介助〜介助レベル">車椅子移乗介助</button>
             <button type="button" class="builder-chip" data-text="mRS ○">mRS ○</button>
           </div>
 
@@ -944,12 +944,22 @@ footer {
             <h2 id="snippets-heading">📌 よく使う単語・定型文（クリックで展開）</h2>
             <p class="sub-hint">カードの「☆」を押すと最上段にピン留め固定できます</p>
           </div>
-          <div style="display:flex; gap:8px; align-items:center;">
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
             <label class="checkbox-label" style="font-size:12px;">
               <input type="checkbox" id="chk-edit-mode">
               編集・並び替え・削除を表示
             </label>
             <button type="button" class="btn" id="btn-toggle-add-form">＋ 単語・定型文を登録</button>
+          </div>
+        </div>
+
+        <!-- 共有フォルダ（同階層）保存ステータスバー（ローカルPC非保存） -->
+        <div id="folder-storage-bar" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; padding:9px 12px; margin-bottom:12px; border-radius:8px; border:1px solid #b8d4e8; background:#eef6fb; font-size:12.5px; color:#15324e;">
+          <div id="folder-storage-status">
+            📂 <strong>保存方式：ローカルPCには保存しません。</strong>HTMLと同じ個人フォルダ内の <code>紹介状単語データ.js</code> から自動読込・保存します。
+          </div>
+          <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+            <button type="button" class="btn" id="btn-save-folder-js-inline" style="padding:5px 11px; font-size:12px;">💾 同階層の「紹介状単語データ.js」に保存</button>
           </div>
         </div>
 
@@ -1101,7 +1111,7 @@ footer {
 </main>
 
 <footer>
-  <p>🔒 入力した文章や患者呼称はブラウザー内だけで処理され、外部サーバーへは一切送信されません。登録した単語・ピン留め・並び順はお使いのブラウザー内に保存されるほか、「💾 登録単語入りHTMLを保存」で単一HTMLファイル自体に埋め込んで院内スタンドアローンPC等へ持ち運ぶことができます。</p>
+  <p>※ 本ツールはインターネット通信を一切行わず、また<strong>ローカルPC（ブラウザー内）への保存も一切行いません</strong>。HTMLと同じ個人フォルダ内の「<code>紹介状単語データ.js</code>」を自動で読み込み・上書き保存する設計のため、共有フォルダ内の個人フォルダで安全に管理できます。</p>
 </footer>
 
 <script id="default-snippets-data" type="application/json">
@@ -1341,10 +1351,11 @@ footer {
 ]
 </script>
 
+<!-- 同階層（個人フォルダ内）に「紹介状単語データ.js」があれば起動時に自動で読み込みます（ローカルPCには一切保存しません） -->
+<script src="./紹介状単語データ.js"></script>
+
 <script>
 (function () {
-  var STORAGE_KEY = 'referral_helper_snippets_v1';
-
   var CATEGORIES = [
     { id: 'greeting', label: '1. 挨拶' },
     { id: 'intro', label: '2. 導入・受診報告' },
@@ -1364,11 +1375,24 @@ footer {
     searchQuery: '',
     editMode: false,
     snippets: [],
-    undoStack: []
+    undoStack: [],
+    lastPlaceholderIdx: -1,
+    jsFileHandle: null,
+    hasUnsavedChanges: false,
+    loadedSourceLabel: 'HTML内蔵プリセット'
   };
 
   function el(id) {
     return document.getElementById(id);
+  }
+
+  function clearAnyLegacyLocalStorage() {
+    try {
+      if (window.localStorage) {
+        localStorage.removeItem('referral_helper_snippets_v1');
+        localStorage.removeItem('referral_helper_snippets_v2');
+      }
+    } catch (e) {}
   }
 
   function getEmbeddedDefaults() {
@@ -1380,39 +1404,139 @@ footer {
     return [];
   }
 
+  function updateStorageStatusBar() {
+    var bar = el('folder-storage-bar');
+    var statusEl = el('folder-storage-status');
+    var inlineBtn = el('btn-save-folder-js-inline');
+    if (!bar || !statusEl) return;
+
+    if (state.hasUnsavedChanges) {
+      bar.style.background = '#fff4e5';
+      bar.style.borderColor = '#f59e0b';
+      bar.style.color = '#92400e';
+      statusEl.innerHTML = '⚠️ <strong>未保存の単語・並び順変更があります</strong>（ローカルPCには保存しません）。右のボタンで同じ個人フォルダの <code>紹介状単語データ.js</code> へ保存してください。';
+      if (inlineBtn) {
+        inlineBtn.style.background = '#d97706';
+        inlineBtn.textContent = '💾 今すぐ「紹介状単語データ.js」に保存';
+      }
+    } else {
+      bar.style.background = '#eef6fb';
+      bar.style.borderColor = '#b8d4e8';
+      bar.style.color = '#15324e';
+      statusEl.innerHTML = '📂 <strong>読込元：' + state.loadedSourceLabel + '</strong> ／ 🔒 ローカルPC保存なし（同階層の <code>紹介状単語データ.js</code> で管理）';
+      if (inlineBtn) {
+        inlineBtn.style.background = '';
+        inlineBtn.textContent = state.jsFileHandle ? '✓ 同階層の「紹介状単語データ.js」と自動同期中' : '💾 同階層の「紹介状単語データ.js」に保存';
+      }
+    }
+  }
+
   function loadSnippets() {
+    clearAnyLegacyLocalStorage();
     var embedded = getEmbeddedDefaults();
     try {
-      var saved = window.localStorage ? localStorage.getItem(STORAGE_KEY) : null;
-      if (saved) {
-        var parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          var existingIds = {};
-          for (var i = 0; i < parsed.length; i++) {
-            existingIds[parsed[i].id] = true;
-          }
-          var addedNew = false;
-          for (var j = 0; j < embedded.length; j++) {
-            if (!existingIds[embedded[j].id]) {
-              parsed.push(embedded[j]);
-              addedNew = true;
-            }
-          }
-          state.snippets = parsed;
-          if (addedNew) saveSnippets();
-          return;
+      if (window.REFERRAL_SAVED_DATA && Array.isArray(window.REFERRAL_SAVED_DATA.snippets) && window.REFERRAL_SAVED_DATA.snippets.length > 0) {
+        var savedList = JSON.parse(JSON.stringify(window.REFERRAL_SAVED_DATA.snippets));
+        var existingIds = {};
+        for (var i = 0; i < savedList.length; i++) {
+          existingIds[savedList[i].id] = true;
         }
+        for (var j = 0; j < embedded.length; j++) {
+          if (!existingIds[embedded[j].id]) {
+            savedList.push(embedded[j]);
+          }
+        }
+        state.snippets = savedList;
+        state.loadedSourceLabel = '同階層の「紹介状単語データ.js」' + (window.REFERRAL_SAVED_DATA.updatedAt ? '（保存日時: ' + window.REFERRAL_SAVED_DATA.updatedAt + '）' : '');
+        state.hasUnsavedChanges = false;
+        updateStorageStatusBar();
+        return;
       }
     } catch (e) {}
     state.snippets = embedded;
+    state.loadedSourceLabel = 'HTML内蔵プリセット';
+    state.hasUnsavedChanges = false;
+    updateStorageStatusBar();
   }
 
-  function saveSnippets() {
-    try {
-      if (window.localStorage) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state.snippets));
-      }
-    } catch (e) {}
+  function buildSameFolderJsContent(snippets) {
+    var now = new Date();
+    function pad(n) { return n < 10 ? '0' + n : String(n); }
+    var stamp = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) + ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes());
+    var payload = {
+      updatedAt: stamp,
+      snippets: snippets
+    };
+    return '/* 紹介状入力補助ツール 登録単語データファイル（紹介状入力補助.html と同じ個人フォルダに置くと自動で読み込まれます） */\r\n' +
+           'window.REFERRAL_SAVED_DATA = ' + JSON.stringify(payload, null, 2).replace(/\r?\n/g, '\r\n') + ';\r\n';
+  }
+
+  function writeToHandle(handle, content, onSuccess) {
+    handle.createWritable().then(function (writable) {
+      return writable.write(content).then(function () {
+        return writable.close();
+      });
+    }).then(function () {
+      if (onSuccess) onSuccess();
+    })['catch'](function () {
+      showToast('ファイルへの書き込みがキャンセルまたは失敗しました。', true);
+    });
+  }
+
+  function saveToSameFolderJs(forcePicker) {
+    var content = buildSameFolderJsContent(state.snippets);
+    var now = new Date();
+    function pad(n) { return n < 10 ? '0' + n : String(n); }
+    var stamp = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate()) + ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes());
+
+    if (state.jsFileHandle && !forcePicker) {
+      writeToHandle(state.jsFileHandle, content, function () {
+        state.hasUnsavedChanges = false;
+        state.loadedSourceLabel = '同階層の「紹介状単語データ.js」（保存日時: ' + stamp + '）';
+        updateStorageStatusBar();
+        showToast('💾 同階層の「紹介状単語データ.js」を自動上書き保存しました（ローカルPCには保存していません）。');
+      });
+      return;
+    }
+
+    if (window.showSaveFilePicker) {
+      window.showSaveFilePicker({
+        suggestedName: '紹介状単語データ.js',
+        types: [{
+          description: '紹介状単語データ (.js)',
+          accept: { 'text/javascript': ['.js'] }
+        }]
+      }).then(function (handle) {
+        state.jsFileHandle = handle;
+        writeToHandle(handle, content, function () {
+          state.hasUnsavedChanges = false;
+          state.loadedSourceLabel = '同階層の「紹介状単語データ.js」（保存日時: ' + stamp + '）';
+          updateStorageStatusBar();
+          showToast('💾 個人フォルダの「紹介状単語データ.js」へ保存しました！以後の変更もこのファイルへ上書きされます。');
+        });
+      })['catch'](function () {
+        updateStorageStatusBar();
+      });
+    } else {
+      var blob = new Blob([content], { type: 'text/javascript;charset=utf-8' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = '紹介状単語データ.js';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      state.hasUnsavedChanges = false;
+      updateStorageStatusBar();
+      showToast('「紹介状単語データ.js」を出力しました。HTMLと同じ個人フォルダに配置してください。');
+    }
+  }
+
+  function saveSnippets(promptSaveNow) {
+    state.hasUnsavedChanges = true;
+    updateStorageStatusBar();
+    if (state.jsFileHandle || promptSaveNow) {
+      saveToSameFolderJs(false);
+    }
   }
 
   function resolvePatientCall(mode, name, custom) {
@@ -1456,6 +1580,7 @@ footer {
     }, 3800);
   }
 
+  // 1. 「○○」未入力箇所の検出とジャンプ機能
   function findPlaceholderMatches(text) {
     var regex = /○+/g;
     var matches = [];
@@ -1699,6 +1824,7 @@ footer {
     showToast('基本骨格と紹介目的をセットしました。続けて単語ボタンをクリックするとカーソル位置に挿入されます。');
   }
 
+  // 2. 回復期リハ ADL・状態クイック組み立てバー
   function buildRehabSummaryText() {
     var groups = ['motor', 'adl', 'swallow', 'cognitive', 'prevention'];
     var picked = {};
@@ -1755,6 +1881,7 @@ footer {
     }
   }
 
+  // 5. ピン留め・並び替え・一覧描画
   function togglePinSnippet(id) {
     for (var i = 0; i < state.snippets.length; i++) {
       if (state.snippets[i].id === id) {
@@ -1803,6 +1930,7 @@ footer {
     var q = state.searchQuery.toLowerCase();
     var hasAny = false;
 
+    // ⭐ ピン留めセクション（「すべて表示」かつ検索なしの時、または常時最上段に表示）
     var pinnedItems = [];
     for (var p = 0; p < state.snippets.length; p++) {
       var ps = state.snippets[p];
@@ -2039,9 +2167,9 @@ footer {
       showToast('「' + title + '」を登録しました。クリックするとすぐに展開できます。');
     }
 
-    saveSnippets();
     el('snippet-form-box').hidden = true;
     renderSnippets();
+    saveSnippets(true);
   }
 
   function deleteSnippet(id) {
@@ -2050,8 +2178,8 @@ footer {
         var name = state.snippets[i].title;
         if (!window.confirm('「' + name + '」を削除しますか？')) return;
         state.snippets.splice(i, 1);
-        saveSnippets();
         renderSnippets();
+        saveSnippets(true);
         showToast('「' + name + '」を削除しました。');
         return;
       }
@@ -2080,9 +2208,9 @@ footer {
         }
         total--;
         if (total === 0) {
-          saveSnippets();
+          saveSnippets(false);
           renderSnippets();
-          showToast(count + '個のテキストファイルを単語ボタンとして登録しました。');
+          showToast(count + '個のテキストファイルを単語ボタンとして登録しました。「💾 同階層の『紹介状単語データ.js』に保存」で共有フォルダへ保存できます。');
         }
       };
       reader.readAsText(file, 'UTF-8');
@@ -2104,6 +2232,33 @@ footer {
     });
   }
 
+  function saveFilePreferPicker(content, suggestedName, mimeType, desc, ext, doneMsg) {
+    if (window.showSaveFilePicker) {
+      var acceptMap = {};
+      acceptMap[mimeType.split(';')[0]] = [ext];
+      window.showSaveFilePicker({
+        suggestedName: suggestedName,
+        types: [{
+          description: desc,
+          accept: acceptMap
+        }]
+      }).then(function (handle) {
+        writeToHandle(handle, content, function () {
+          showToast(doneMsg);
+        });
+      })['catch'](function () {});
+      return;
+    }
+    var blob = new Blob([content], { type: mimeType });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = suggestedName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    showToast(doneMsg);
+  }
+
   function exportStandaloneHtml() {
     var clone = document.documentElement.cloneNode(true);
     var sc = clone.querySelector('#snippets-container');
@@ -2117,26 +2272,26 @@ footer {
       dataScript.textContent = '\n' + JSON.stringify(state.snippets, null, 2) + '\n';
     }
     var html = '<!DOCTYPE html>\n' + clone.outerHTML;
-    var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = '紹介状入力補助.html';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    showToast('現在の登録単語・ピン留めを埋め込んだ「紹介状入力補助.html」を保存しました。');
+    saveFilePreferPicker(
+      html,
+      '紹介状入力補助.html',
+      'text/html;charset=utf-8',
+      'HTMLファイル (.html)',
+      '.html',
+      '現在の登録単語・ピン留めを埋め込んだ「紹介状入力補助.html」を保存しました。'
+    );
   }
 
   function exportJson() {
     var jsonStr = JSON.stringify(state.snippets, null, 2);
-    var blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8' });
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = '紹介状単語帳データ.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    showToast('単語帳データ(.json)を書き出しました。');
+    saveFilePreferPicker(
+      jsonStr,
+      '紹介状単語帳データ.json',
+      'application/json;charset=utf-8',
+      'JSONファイル (.json)',
+      '.json',
+      '単語帳データ(.json)を保存しました。'
+    );
   }
 
   function importJson(file) {
@@ -2144,14 +2299,26 @@ footer {
     var reader = new FileReader();
     reader.onload = function (e) {
       try {
-        var parsed = JSON.parse(String(e.target.result || ''));
+        var raw = String(e.target.result || '').replace(/^\s+|\s+$/g, '');
+        var parsed = null;
+        if (raw.indexOf('window.REFERRAL_SAVED_DATA') !== -1) {
+          var eqIdx = raw.indexOf('=');
+          var jsonPart = raw.slice(eqIdx + 1).replace(/;\s*$/, '');
+          var obj = JSON.parse(jsonPart);
+          parsed = obj && Array.isArray(obj.snippets) ? obj.snippets : null;
+        } else {
+          parsed = JSON.parse(raw);
+          if (parsed && !Array.isArray(parsed) && Array.isArray(parsed.snippets)) {
+            parsed = parsed.snippets;
+          }
+        }
         if (!Array.isArray(parsed)) throw new Error('Invalid format');
         state.snippets = parsed;
-        saveSnippets();
+        saveSnippets(false);
         renderSnippets();
         showToast('単語帳データ（' + parsed.length + '件）を読み込みました。');
       } catch (err) {
-        showToast('JSONファイルの形式が正しくありません。', true);
+        showToast('単語データファイル(.json / .js)の形式が正しくありません。', true);
       }
     };
     reader.readAsText(file, 'UTF-8');
@@ -2205,23 +2372,24 @@ footer {
     }
     var full = ((purpose ? '【紹介目的】' + purpose + '\n\n' : '') + body).replace(/[～〜]/g, '-');
     var crlfText = full.replace(/\r?\n/g, '\r\n');
-    var blob = new Blob([crlfText], { type: 'text/plain;charset=utf-8' });
-    var a = document.createElement('a');
     var now = new Date();
     function pad(n) { return n < 10 ? '0' + n : String(n); }
     var ymd = now.getFullYear() + pad(now.getMonth() + 1) + pad(now.getDate());
-    a.href = URL.createObjectURL(blob);
-    a.download = '紹介状文面_' + ymd + '.txt';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    showToast('テキストファイル(.txt)として保存しました。');
+    saveFilePreferPicker(
+      crlfText,
+      '紹介状文面_' + ymd + '.txt',
+      'text/plain;charset=utf-8',
+      'テキストファイル (.txt)',
+      '.txt',
+      'テキストファイル(.txt)として保存しました。'
+    );
   }
 
   function init() {
     loadSnippets();
     state.lastResolvedCall = resolvePatientCall();
 
+    // 1. 呼称ピルのイベント
     var pills = el('call-pills').querySelectorAll('.call-pill');
     for (var i = 0; i < pills.length; i++) {
       pills[i].addEventListener('click', function () {
@@ -2240,6 +2408,7 @@ footer {
       updateCallPreviewAndBody();
     });
 
+    // 2. クイック骨格セット
     var presetBtns = document.querySelectorAll('.preset-btn');
     for (var p = 0; p < presetBtns.length; p++) {
       presetBtns[p].addEventListener('click', function () {
@@ -2247,6 +2416,7 @@ footer {
       });
     }
 
+    // 3. 回復期リハ ADL組み立てバー
     var builderChips = document.querySelectorAll('.builder-chip');
     for (var b = 0; b < builderChips.length; b++) {
       builderChips[b].addEventListener('click', function () {
@@ -2269,6 +2439,7 @@ footer {
       updateBuilderPreview();
     });
 
+    // 4. カテゴリタブ
     var catTabs = el('category-tabs').querySelectorAll('.cat-tab');
     for (var c = 0; c < catTabs.length; c++) {
       catTabs[c].addEventListener('click', function () {
@@ -2279,6 +2450,7 @@ footer {
       });
     }
 
+    // 5. 検索・編集モード
     el('snippet-search').addEventListener('input', function () {
       state.searchQuery = this.value;
       renderSnippets();
@@ -2289,6 +2461,7 @@ footer {
       renderSnippets();
     });
 
+    // 6. 単語追加・編集フォーム
     el('btn-toggle-add-form').addEventListener('click', function () {
       var box = el('snippet-form-box');
       if (box.hidden) {
@@ -2324,14 +2497,26 @@ footer {
 
     el('btn-reset-defaults').addEventListener('click', function () {
       if (!window.confirm('単語・定型文を初期状態に戻しますか？')) return;
-      try {
-        if (window.localStorage) localStorage.removeItem(STORAGE_KEY);
-      } catch (e) {}
+      clearAnyLegacyLocalStorage();
       state.snippets = JSON.parse(JSON.stringify(getEmbeddedDefaults()));
+      state.hasUnsavedChanges = true;
+      updateStorageStatusBar();
       renderSnippets();
-      showToast('初期プリセットに戻しました。');
+      showToast('初期プリセットに戻しました。必要であれば「💾 同階層の『紹介状単語データ.js』に保存」を押してください。');
     });
 
+    if (el('btn-save-folder-js')) {
+      el('btn-save-folder-js').addEventListener('click', function () {
+        saveToSameFolderJs(false);
+      });
+    }
+    if (el('btn-save-folder-js-inline')) {
+      el('btn-save-folder-js-inline').addEventListener('click', function () {
+        saveToSameFolderJs(false);
+      });
+    }
+
+    // 7. 紹介目的＆エディタ操作
     el('sel-purpose-preset').addEventListener('change', function () {
       if (this.value) {
         el('inp-purpose').value = this.value;
@@ -2406,6 +2591,7 @@ footer {
 
     el('btn-download-txt').addEventListener('click', downloadTxtFile);
 
+    // 8. ファイル入出力
     el('btn-open-txt-direct').addEventListener('click', function () {
       el('file-direct-txt').value = '';
       el('file-direct-txt').click();
