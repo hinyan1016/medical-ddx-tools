@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v303';
+const CACHE_NAME = 'ddx-tools-v304';
 const ASSETS = [
   './calorie_protein_calculator.html',
   './drug_eruption_assessment.html',
@@ -12,6 +12,8 @@ const ASSETS = [
   './neuro_exam_helper.html',
   './infographics/neuro-exam-helper/index.html',
   './infographics/neuro-exam-helper/infographic.png',
+  './infographics/calorie-protein-calculator/index.html',
+  './infographics/calorie-protein-calculator/infographic.png',
   './referral_helper.html',
   './infographics/referral-letter-helper/index.html',
   './infographics/drug-eruption/index.html',
