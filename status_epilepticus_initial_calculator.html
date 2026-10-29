@@ -488,7 +488,7 @@ function levetiracetamSE(v, p){
     html: '<h3>イーケプラ：成人の国内承認 重積用法</h3>' +
       '<p class="output-number">' + fmt(dose) + ' mg</p>' +
       '<p>原液 ' + fmt(dose / 100) + ' mL（100 mg/mL）、開封 ' + Math.ceil(dose / 500) + ' 瓶（500 mg/5 mL瓶；過量充填のため表示量を計量採取）。</p>' +
-      '<p>' + fmt(rate) + ' mg/kg/分では <strong>' + time + ' 分以上</strong>（時間は安全側に切上げ）。本日の合計 ' + fmt(dose + prior) + ' mg / 1日最大3000 mg。</p>' +
+      '<p>選択速度 ' + fmt(rate) + ' mg/kg/分での理論時間は <strong>約 ' + fmtDec(dose / (v.weight * rate), 4) + ' 分</strong>。国内用法の2〜5 mg/kg/分に対応する理論時間は約 ' + fmtDec(dose / (v.weight * 5), 4) + '〜' + fmtDec(dose / (v.weight * 2), 4) + ' 分です（表示は近似値）。実際の総液量・ポンプ設定から投与速度が範囲内か確認してください。本日の合計 ' + fmt(dose + prior) + ' mg / 1日最大3000 mg。</p>' +
       '<p>' + (dose <= 1500
         ? '調製例（電子添文14.1.1）：生理食塩液、乳酸リンゲル液または5%ブドウ糖注射液100 mLに原液 ' + fmt(dose / 100) + ' mLを加えて希釈（薬液と希釈液の計算上の合計 ' + fmt(100 + dose / 100) + ' mL）。バッグの過量充填等による実総量は院内手順で確認してください。' + pumpExample
         : '1500 mg超の調製は電子添文14.1.1に具体的な希釈液量の記載がありません。必ず希釈してから投与し（7.1）、希釈液の種類・量・最終総量は院内薬剤部の手順を確認してください。') + '</p>' +
@@ -1173,7 +1173,7 @@ function calculationBasis(id, v, p){
     } else {
       name = 'イーケプラ：国内成人重積時の選択量';
       var exactMin = num(p.dose) / (num(p.rate) * w);
-      formula = '選択量 ' + fmt(num(p.dose)) + ' mg ÷（速度 ' + fmt(num(p.rate)) + ' mg/kg/分 × 体重 ' + fmt(w) + ' kg）= ' + fmtDec(exactMin, 4) + ' 分 → 切上げ ' + ceil(exactMin, 2) + ' 分以上';
+      formula = '選択量 ' + fmt(num(p.dose)) + ' mg ÷（速度 ' + fmt(num(p.rate)) + ' mg/kg/分 × 体重 ' + fmt(w) + ' kg）= 約 ' + fmtDec(exactMin, 4) + ' 分（理論値の近似）';
     }
   } else if (id === 'fosphenytoin') {
     name = 'ホストイン：国内承認 重積初回量';
