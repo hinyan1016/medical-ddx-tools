@@ -988,7 +988,7 @@
   <div class="card">
     <div class="card-header">
       <span>経管栄養・栄養補助食品のプラン</span>
-      <span class="sub-tag">医薬品4＋食品9＋参考5製剤</span>
+      <span class="sub-tag" id="productCountTag">医薬品4＋食品9＋参考5製剤</span>
     </div>
     <div class="card-body">
       <div class="param" style="padding-top:0;">
@@ -1280,6 +1280,18 @@
   var alsFvcEl = document.getElementById('alsFvc');
   var alsTvEl = document.getElementById('alsTv');
 
+  // ==== 追加の栄養剤（1製剤＝1行） ==========================================
+  // 書いた製剤は、製剤一覧表・白湯プランの選択ボタン・組み合わせ計算の選択肢に自動で出る。
+  // 必須：name（品名）、kubun（'医薬品' か '食品'）、amount と amountUnit（1本の量。例 200, 'mL'）、
+  //       count（数え方。例 'パック'）、kcal、protein（タンパク質 g）、water（水分 mL）
+  // 任意：tube（経管で使えるか。既定 true）、main（主要製剤として初期表示。既定 true）、
+  //       note（特徴の一言）、source（出典と確認日。画面には出さない）
+  // 手で書いてもよいが、add_nutrition_product.py を使うと値の点検と sw.js の更新まで一度にできる。
+  // 手順書：calorie_protein_calculator_PRODUCTS.md
+  var EXTRA_PRODUCTS = [
+    // @@EXTRA_PRODUCTS@@ この行は消さない（スクリプトがこの上に追記する）
+  ];
+
   var ENTERAL_PRODUCTS = [
     // --- 医薬品区分（4品目） ---
     { id: 'inoras', isCore: true, group: 'pharm', grpCls: 'grp-pharm', grpLbl: '医薬品', shortBtn: 'イノラス (187.5mL/300kcal)', name: 'イノラス配合経腸用液', spec: '187.5mL / 300kcal (1.6kcal/mL) ・ 水分141mL (75%)', note: '少量高濃度・微量元素配慮', unitVol: 187.5, volUnit: 'mL', unitKcal: 300, unitProt: 12.0, unitWater: 140.6, unitLabel: '袋', tubeOk: true, isSuppOnly: false },
@@ -1349,6 +1361,74 @@
     }
     return COMBO_ITEMS[0];
   }
+
+  // 追加の栄養剤を一覧表用（ENTERAL_PRODUCTS）と組み合わせ計算用（COMBO_ITEMS）の両方に登録する
+  function registerExtraProducts(){
+    function fmt(v){ return String(Math.round(v * 10) / 10); }
+    function lastIndexWhere(arr, fn){
+      for (var k = arr.length - 1; k >= 0; k--){ if (fn(arr[k])) return k; }
+      return -1;
+    }
+    for (var i = 0; i < EXTRA_PRODUCTS.length; i++){
+      var x = EXTRA_PRODUCTS[i];
+      var ok = x && x.name && (x.kubun === '医薬品' || x.kubun === '食品') &&
+        x.amount > 0 && x.amountUnit && x.count && x.kcal > 0 && x.protein >= 0 && x.water >= 0;
+      if (!ok){ if (window.console) console.warn('追加の栄養剤を読み込めません（必須項目の不足）:', x); continue; }
+      var id = 'extra_' + (i + 1);
+      var isPharm = (x.kubun === '医薬品');
+      var isMain = (x.main !== false);
+      var tubeOk = (x.tube !== false);
+      var dens = x.kcal / x.amount;
+      var waterPct = (x.amountUnit === 'mL') ? ' (' + fmt(x.water / x.amount * 100) + '%)' : '';
+      var ent = {
+        id: id, isCore: isMain, group: isPharm ? 'pharm' : 'food',
+        grpCls: isMain ? (isPharm ? 'grp-pharm' : 'grp-food') : 'grp-ref',
+        grpLbl: (isMain ? '' : '参考・') + x.kubun,
+        shortBtn: x.name + ' (' + fmt(x.amount) + x.amountUnit + '/' + fmt(x.kcal) + 'kcal)',
+        name: x.name,
+        spec: fmt(x.amount) + x.amountUnit + ' / ' + fmt(x.kcal) + 'kcal (' + (Math.round(dens * 100) / 100) + 'kcal/' + x.amountUnit + ') ・ 水分' + fmt(x.water) + 'mL' + waterPct,
+        note: x.note || '',
+        unitVol: x.amount, volUnit: x.amountUnit, unitKcal: x.kcal, unitProt: x.protein, unitWater: x.water,
+        unitLabel: x.count, tubeOk: tubeOk, isSuppOnly: false
+      };
+      // 一覧表：同じ区分・同じ表示区分（主要／参考）の最後に入れる
+      var pos = lastIndexWhere(ENTERAL_PRODUCTS, function(p){ return p.group === ent.group && p.isCore === ent.isCore; });
+      if (pos < 0) pos = lastIndexWhere(ENTERAL_PRODUCTS, function(p){ return p.isCore === ent.isCore; });
+      ENTERAL_PRODUCTS.splice(pos + 1, 0, ent);
+
+      var optGrp = isMain ? (isPharm ? '医薬品区分' : '食品区分（濃厚流動食・半固形・栄養補助）') : '参考製剤（その他汎用）';
+      var cmb = {
+        id: id, optGrp: optGrp,
+        label: x.name + ' (' + fmt(x.amount) + x.amountUnit + ': ' + fmt(x.kcal) + 'kcal・蛋白' + fmt(x.protein) + 'g・水分' + fmt(x.water) + 'mL)',
+        name: x.name, unitVol: x.amount, volUnit: x.amountUnit, unitKcal: x.kcal, unitProt: x.protein, unitWater: x.water,
+        unitLabel: x.count, maxDaily: null, calcByProt: false, isVcrescDrink: false, isVcrescJelly: false
+      };
+      var cpos = lastIndexWhere(COMBO_ITEMS, function(c){ return c.optGrp === optGrp; });
+      if (cpos < 0) COMBO_ITEMS.push(cmb); else COMBO_ITEMS.splice(cpos + 1, 0, cmb);
+    }
+
+    // 製剤数の表示を実際の件数にそろえる
+    var nPharmCore = 0, nPharmRef = 0, nFoodCore = 0, nFoodRef = 0;
+    for (var j = 0; j < ENTERAL_PRODUCTS.length; j++){
+      var p = ENTERAL_PRODUCTS[j];
+      if (p.group === 'pharm'){ if (p.isCore) nPharmCore++; else nPharmRef++; }
+      else { if (p.isCore) nFoodCore++; else nFoodRef++; }
+    }
+    var filterLbl = {
+      core: '主要' + (nPharmCore + nFoodCore) + '製剤',
+      pharm: '医薬品（' + nPharmCore + '＋参考' + nPharmRef + '）',
+      food: '食品（' + nFoodCore + '＋参考' + nFoodRef + '）',
+      all: '全' + ENTERAL_PRODUCTS.length + '製剤'
+    };
+    var fBtns = document.querySelectorAll('#segProdFilter button');
+    for (var b = 0; b < fBtns.length; b++){
+      var key = fBtns[b].getAttribute('data-val');
+      if (filterLbl[key]) fBtns[b].textContent = filterLbl[key];
+    }
+    var countTag = document.getElementById('productCountTag');
+    if (countTag) countTag.textContent = '医薬品' + nPharmCore + '＋食品' + nFoodCore + '＋参考' + (nPharmRef + nFoodRef) + '製剤';
+  }
+  registerExtraProducts();
 
   function populateComboSelects(){
     var selIds = ['comboId1', 'comboId2', 'comboId3'];
