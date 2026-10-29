@@ -807,8 +807,8 @@ footer {
 </header>
 
 <main>
-  <!-- 1. 患者の呼称選択バー -->
-  <section class="patient-bar" aria-label="文面での患者の呼称設定">
+  <!-- 1. 患者の呼称＆頭部画像検査の選択バー -->
+  <section class="patient-bar" aria-label="文面での患者呼称と頭部画像表記の設定">
     <div class="patient-bar-left">
       <div class="patient-bar-label">👤 文面での患者呼称：</div>
       <div class="call-pills" id="call-pills" role="group" aria-label="患者の呼称を選択">
@@ -828,11 +828,20 @@ footer {
         <input type="text" id="custom-call-input" placeholder="例：本患者、同氏" value="本患者" maxlength="30" autocomplete="off">
       </div>
       <span class="patient-preview-badge" id="current-call-preview">現在の展開語：○○様</span>
+
+      <div style="display:flex; align-items:center; flex-wrap:wrap; gap:8px; padding-left:10px; border-left:2px solid #d5e2eb;">
+        <div class="patient-bar-label">🧠 頭部画像表記：</div>
+        <div class="call-pills" id="imaging-pills" role="group" aria-label="頭部画像検査の表記を選択">
+          <button type="button" class="call-pill active" data-img-mode="mri_mra">MRI・MRA</button>
+          <button type="button" class="call-pill" data-img-mode="ct">頭部CT</button>
+          <button type="button" class="call-pill" data-img-mode="mri">MRI（単体）</button>
+        </div>
+      </div>
     </div>
     <div class="patient-bar-right">
-      <label class="checkbox-label" title="ONにすると、上の呼称ボタンを切り替えた際、すでに右側の本文に入力されている呼称も自動で書き換えます">
+      <label class="checkbox-label" title="ONにすると、上の呼称ボタンや頭部画像表記ボタンを切り替えた際、すでに右側の本文に入力されている文面も自動で書き換えます">
         <input type="checkbox" id="chk-auto-replace-body" checked>
-        本文中の呼称も連動して書き換える
+        本文中の呼称・画像表記も連動して書き換える
       </label>
     </div>
   </section>
@@ -1371,6 +1380,7 @@ footer {
     patientName: '',
     customCall: '本患者',
     lastResolvedCall: '○○様',
+    imagingMode: 'mri_mra',
     activeCat: 'all',
     searchQuery: '',
     editMode: false,
@@ -1555,9 +1565,85 @@ footer {
     return baseName + '様';
   }
 
+  var IMAGING_PHRASE_GROUPS = [
+    {
+      mri_mra: '頭部MRI・MRAを施行いたしましたところ、明らかな急性期脳梗塞や頭蓋内占拠性病変、主幹動脈の有意狭窄は認めませんでした。',
+      mri: '頭部MRIを施行いたしましたところ、明らかな急性期脳梗塞や頭蓋内出血、占拠性病変は認めませんでした。',
+      ct: '頭部CTを施行いたしましたところ、明らかな頭蓋内出血や占拠性病変、粗大な脳梗塞巣は認めませんでした。'
+    },
+    {
+      mri_mra: '頭部MRIでは、年齢相応の慢性虚血性変化と軽度の海馬傍回萎縮を認めましたが、慢性硬膜下血腫や正常圧水頭症などの治療可能な二次性認知症を示唆する所見は認めませんでした。',
+      mri: '頭部MRIでは、年齢相応の慢性虚血性変化と軽度の海馬傍回萎縮を認めましたが、慢性硬膜下血腫や正常圧水頭症などの治療可能な二次性認知症を示唆する所見は認めませんでした。',
+      ct: '頭部CTでは、年齢相応の慢性虚血性変化と軽度の側頭葉内側萎縮を認めましたが、慢性硬膜下血腫や正常圧水頭症などの治療可能な二次性認知症を示唆する所見は認めませんでした。'
+    },
+    {
+      mri_mra: '頭部MRIでは、年齢相応の慢性虚血性変化と軽度の海馬傍回萎縮を認めましたが、治療可能な二次性認知症を示唆する所見は認めませんでした。',
+      mri: '頭部MRIでは、年齢相応の慢性虚血性変化と軽度の海馬傍回萎縮を認めましたが、治療可能な二次性認知症を示唆する所見は認めませんでした。',
+      ct: '頭部CTでは、年齢相応の慢性虚血性変化と軽度の側頭葉内側萎縮を認めましたが、治療可能な二次性認知症を示唆する所見は認めませんでした。'
+    },
+    {
+      mri_mra: '頭部MRI・MRAにて、くも膜下出血や脳腫瘍、脳静脈洞血栓症などの危険な二次性頭痛を示唆する所見は認めませんでした。',
+      mri: '頭部MRIにて、くも膜下出血や脳腫瘍、慢性硬膜下血腫などの危険な二次性頭痛を示唆する所見は認めませんでした。',
+      ct: '頭部CTにて、くも膜下出血や頭蓋内出血、脳腫瘍、慢性硬膜下血腫などの危険な二次性頭痛を示唆する所見は認めませんでした。'
+    },
+    {
+      mri_mra: '眼振所見および頭部MRIにて、脳幹・小脳梗塞などの危険な中枢性めまいを示唆する所見は認めませんでした。',
+      mri: '眼振所見および頭部MRIにて、脳幹・小脳梗塞などの危険な中枢性めまいを示唆する所見は認めませんでした。',
+      ct: '眼振所見および頭部CTにて、小脳・脳幹出血や粗大な梗塞などの危険な中枢性めまいを示唆する所見は認めませんでした。'
+    },
+    {
+      mri_mra: '頭部MRIにて急性期脳梗塞と診断し',
+      mri: '頭部MRIにて急性期脳梗塞と診断し',
+      ct: '臨床所見および頭部CTにて急性期脳梗塞と診断し'
+    }
+  ];
+
+  function resolveImagingLabel(mode) {
+    var m = mode || state.imagingMode;
+    if (m === 'ct') return '頭部CT';
+    if (m === 'mri') return '頭部MRI';
+    return '頭部MRI・MRA';
+  }
+
+  function applyImagingModeToText(text, targetMode) {
+    var m = targetMode || state.imagingMode;
+    var out = String(text || '');
+    for (var i = 0; i < IMAGING_PHRASE_GROUPS.length; i++) {
+      var g = IMAGING_PHRASE_GROUPS[i];
+      var targetPhrase = g[m] || g.mri_mra;
+      if (out.indexOf(g.mri_mra) !== -1) out = out.split(g.mri_mra).join(targetPhrase);
+      if (out.indexOf(g.mri) !== -1) out = out.split(g.mri).join(targetPhrase);
+      if (out.indexOf(g.ct) !== -1) out = out.split(g.ct).join(targetPhrase);
+    }
+    var label = resolveImagingLabel(m);
+    out = out.replace(/\{画像\}/g, label);
+    if (m === 'ct') {
+      out = out.replace(/頭部MRI・MRA|頭部MRI\/MRA|頭部MRI／MRA|頭部MRI/g, '頭部CT');
+    } else if (m === 'mri') {
+      out = out.replace(/頭部MRI・MRA|頭部MRI\/MRA|頭部MRI／MRA|頭部CT/g, '頭部MRI');
+    } else if (m === 'mri_mra') {
+      out = out.replace(/頭部CT/g, '頭部MRI・MRA');
+    }
+    return out;
+  }
+
+  function expandImagingTitle(title) {
+    var t = String(title || '');
+    if (state.imagingMode === 'ct') {
+      return t.replace(/頭部MRI・MRA|頭部MRI\/MRA|頭部MRI／MRA|頭部MRI/g, '頭部CT');
+    }
+    return t;
+  }
+
+  function hasImagingToken(text, title) {
+    var combined = String(text || '') + ' ' + String(title || '');
+    return /頭部MRI|MRA|頭部CT|\{画像\}/.test(combined);
+  }
+
   function expandTokens(text) {
     var callStr = resolvePatientCall();
-    return String(text || '').replace(/\{患者\}/g, callStr);
+    var out = String(text || '').replace(/\{患者\}/g, callStr);
+    return applyImagingModeToText(out, state.imagingMode);
   }
 
   function pushUndo() {
@@ -1675,6 +1761,38 @@ footer {
     updateBuilderPreview();
   }
 
+  function updateImagingModeAndBody(newMode) {
+    state.imagingMode = newMode || 'mri_mra';
+    var imgBox = el('imaging-pills');
+    if (imgBox) {
+      var pills = imgBox.querySelectorAll('.call-pill');
+      for (var i = 0; i < pills.length; i++) {
+        var p = pills[i];
+        if (p.getAttribute('data-img-mode') === state.imagingMode) {
+          p.classList.add('active');
+        } else {
+          p.classList.remove('active');
+        }
+      }
+    }
+
+    if (el('chk-auto-replace-body').checked) {
+      var textarea = el('editor-textarea');
+      var body = textarea.value;
+      if (body) {
+        var replaced = applyImagingModeToText(body, state.imagingMode);
+        if (replaced !== body) {
+          pushUndo();
+          textarea.value = replaced;
+          updateEditorStats();
+          showToast('本文中の画像検査表記を「' + resolveImagingLabel(state.imagingMode) + '」に切り替えました。');
+        }
+      }
+    }
+
+    renderSnippets();
+  }
+
   function replaceCallSafely(text, oldCall, newCall) {
     if (!oldCall || oldCall === newCall) return text;
     var sentinelMap = [];
@@ -1776,7 +1894,10 @@ footer {
       el('rehab-builder-details').open = true;
     } else if (presetKey === 'dementia-reply') {
       purposeText = '認知機能精査結果のご報告と今後のご加療のお願い';
-      cursorTarget = 'ご紹介いただきました' + call + 'は、本日当院を受診されました。\n認知機能検査では、MMSE ○○/30点、MoCA-J ○○/30点（CDR ○）でした。\n頭部MRIでは、年齢相応の慢性虚血性変化と軽度の海馬傍回萎縮を認めましたが、治療可能な二次性認知症を示唆する所見は認めませんでした。\n';
+      cursorTarget = applyImagingModeToText(
+        'ご紹介いただきました' + call + 'は、本日当院を受診されました。\n認知機能検査では、MMSE ○○/30点、MoCA-J ○○/30点（CDR ○）でした。\n頭部MRIでは、年齢相応の慢性虚血性変化と軽度の海馬傍回萎縮を認めましたが、治療可能な二次性認知症を示唆する所見は認めませんでした。\n',
+        state.imagingMode
+      );
       text =
         '平素より大変お世話になっております。\n\n' +
         cursorTarget + '\n' +
@@ -2023,7 +2144,8 @@ footer {
     var titleRow = document.createElement('div');
     titleRow.className = 'snippet-title';
     var titleSpan = document.createElement('span');
-    titleSpan.textContent = snippet.title;
+    var displayTitle = expandImagingTitle(snippet.title);
+    titleSpan.textContent = displayTitle;
     titleRow.appendChild(titleSpan);
 
     if (snippet.text.indexOf('{患者}') !== -1) {
@@ -2031,6 +2153,15 @@ footer {
       badge.className = 'snippet-title-badge';
       badge.textContent = '呼称連動';
       titleRow.appendChild(badge);
+    }
+
+    if (hasImagingToken(snippet.text, snippet.title)) {
+      var imgBadge = document.createElement('span');
+      imgBadge.className = 'snippet-title-badge';
+      imgBadge.style.background = '#e0f2fe';
+      imgBadge.style.color = '#0369a1';
+      imgBadge.textContent = 'MRI/CT連動';
+      titleRow.appendChild(imgBadge);
     }
 
     var prev = document.createElement('div');
@@ -2042,7 +2173,7 @@ footer {
 
     btn.addEventListener('click', function () {
       insertTextIntoEditor(snippet.text, snippet.cat);
-      showToast('「' + snippet.title + '」を展開しました。');
+      showToast('「' + displayTitle + '」を展開しました。');
     });
 
     var pinBtn = document.createElement('button');
@@ -2396,6 +2527,15 @@ footer {
         state.callMode = this.getAttribute('data-mode');
         updateCallPreviewAndBody();
       });
+    }
+
+    if (el('imaging-pills')) {
+      var imgPills = el('imaging-pills').querySelectorAll('.call-pill');
+      for (var mIdx = 0; mIdx < imgPills.length; mIdx++) {
+        imgPills[mIdx].addEventListener('click', function () {
+          updateImagingModeAndBody(this.getAttribute('data-img-mode'));
+        });
+      }
     }
 
     el('patient-name-input').addEventListener('input', function () {
