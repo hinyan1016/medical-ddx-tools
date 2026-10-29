@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v295';
+const CACHE_NAME = 'ddx-tools-v296';
 const ASSETS = [
   './drug_eruption_assessment.html',
   './infographics/acne-vulgaris-guide-reference-repair-20261029/index.html',
@@ -8,6 +8,9 @@ const ASSETS = [
   './infographics/male-menopause-loh-reference-repair-20261029/detail.png',
   './infographics/male-menopause-loh-reference-repair-20261029/index.html',
   './infographics/male-menopause-loh-reference-repair-20261029/infographic.png',
+  './neuro_exam_helper.html',
+  './infographics/neuro-exam-helper/index.html',
+  './infographics/neuro-exam-helper/infographic.png',
   './referral_helper.html',
   './infographics/referral-letter-helper/index.html',
   './infographics/drug-eruption/index.html',
