@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v309';
+const CACHE_NAME = 'ddx-tools-v310';
 const ASSETS = [
   './calorie_protein_calculator.html',
   './drug_eruption_assessment.html',
@@ -453,6 +453,8 @@ const ASSETS = [
   './infographics/sinusitis/index.html',
   './infographics/smoking-cessation-guidance/index.html',
   './infographics/status-epilepticus-sedation/index.html',
+  './infographics/dpc-neurology-revenue/index.html',
+  './infographics/dpc-neurology-revenue/infographic.png',
   './infographics/statin-fibrate-tg-management/index.html',
   './infographics/stroke-secondary-prevention/index.html',
   './infographics/supplement-guide/index.html',
