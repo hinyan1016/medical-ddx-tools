@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v316';
+const CACHE_NAME = 'ddx-tools-v317';
 const ASSETS = [
   './calorie_protein_calculator.html',
   './drug_eruption_assessment.html',
@@ -81,6 +81,7 @@ const ASSETS = [
   './infographics/comt-inhibitors/index.html',
   './infographics/parkinson-non-motor-symptoms/index.html',
   './infographics/return-to-work-check/index.html',
+  './infographics/status-epilepticus-initial-calculator/index.html',
   './infographics/seizure-differential-diagnosis-reference-repair-20261024/index.html',
   './infographics/tic-vs-seizure-adult-reference-repair-20261024/index.html',
 
