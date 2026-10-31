@@ -17,41 +17,98 @@
 <meta name="twitter:card" content="summary_large_image">
 <style>
 [hidden]{display:none!important}
-:root{--ink:#1b2631;--blue:#1a5276;--line:#d4e6f1;--muted:#526677}
+:root{--ink:#1c2833;--navy:#1a5276;--navy-d:#143d5c;--line:#dce5ed;--soft:#f4f7fa;--muted:#5d6d7e;--bg:#eef3f7;--pick:#e8f1f8}
 *{box-sizing:border-box}
-body{margin:0;color:var(--ink);font-family:"Yu Gothic","游ゴシック",sans-serif;background:#edf5fa;line-height:1.6}
-header{background:linear-gradient(125deg,#154360,#2874a6);color:white;padding:23px max(18px,calc((100% - 1080px)/2)) 38px}
-h1{font-size:clamp(1.35rem,4vw,2rem);line-height:1.3;margin:0 0 8px}
-header p{margin:0;font-size:.9rem}
-main{max-width:1080px;margin:-18px auto 0;padding:0 16px 40px;position:relative}
-.notice{background:#fff7dc;border-left:5px solid #b9770e;padding:14px;border-radius:10px}
-.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:16px;margin-top:16px}
-.card{background:white;border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 25px #15436012;padding:18px}
-.card h2{color:var(--blue);font-size:1.05rem;margin:0 0 12px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
-label{font-size:.86rem;font-weight:700;display:block;line-height:1.4}
+body{margin:0;color:var(--ink);font-family:"Yu Gothic","游ゴシック","Hiragino Sans","Meiryo",sans-serif;background:var(--bg);line-height:1.65;-webkit-text-size-adjust:100%}
+header{background:var(--navy-d);color:#fff;padding:18px 16px 20px}
+.wrap{max-width:1120px;margin:0 auto}
+h1{font-size:clamp(1.2rem,3.4vw,1.65rem);line-height:1.35;margin:0 0 4px}
+header p{margin:0;font-size:.86rem;color:#d3e2ee}
+main{max-width:1120px;margin:0 auto;padding:14px 16px 48px}
+a{color:var(--navy)}
+.notice{background:#fff8e6;border:1px solid #edd38c;border-radius:10px;padding:9px 14px;font-size:.86rem;line-height:1.6}
+.notice strong{color:#7d5a00}
+.first{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:12px}
+.first h2{font-size:.92rem;color:var(--navy);margin:0 0 8px}
+.first ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.first li{background:var(--soft);border-radius:8px;padding:8px 10px;font-size:.82rem;line-height:1.5}
+.first li b{display:block;color:var(--navy-d);font-size:.86rem}
+.first p{margin:8px 0 0}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;margin-top:16px;align-items:start}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 4px 16px rgba(20,61,92,.06);padding:18px}
+.card h2{color:var(--navy-d);font-size:1.02rem;margin:0}
+.step{display:flex;align-items:center;gap:8px;margin:0 0 10px}
+.step .n{flex:none;width:24px;height:24px;border-radius:50%;background:var(--navy);color:#fff;font-size:.8rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+.block+.block{margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;align-items:start}
+.field{display:block;font-size:.86rem;font-weight:700;line-height:1.45}
+.field.wide{grid-column:1/-1}
+.ft{display:block;margin-bottom:4px}
 input,select,button{font:inherit}
-input[type=number],input[type=text],select{display:block;width:100%;border:1px solid #9cbfd2;border-radius:8px;padding:9px;background:white;color:var(--ink);margin-top:4px}
-fieldset{border:1px solid var(--line);border-radius:9px;margin:14px 0 0;padding:10px}
-legend{font-weight:700;font-size:.87rem;color:var(--blue)}
-.checks label{font-weight:400;margin:5px 0}
-.muted{color:var(--muted);font-size:.83rem}
-.field-hint{display:block;font-weight:400;color:var(--muted);font-size:.78rem;margin-top:3px}
-.result{border-radius:10px;padding:14px;background:#ebf5fb;min-height:130px}
-.basis{background:#fff;border-left:4px solid #1a5276;padding:10px 12px;margin:0 0 14px}
-.basis p{margin:4px 0;font-size:.9rem}
-.result h3{margin:0 0 8px;color:#154360}
+input[type=number],input[type=text],select{display:block;width:100%;border:1px solid #a9c3d4;border-radius:8px;padding:9px 10px;background:#fff;color:var(--ink);min-height:42px}
+input[readonly]{background:var(--soft);color:var(--muted)}
+input:focus,select:focus,button:focus-visible{outline:3px solid #8bb8d8;outline-offset:1px}
+.inline{display:flex;gap:6px}
+.inline input{flex:1 1 auto;min-width:0}
+.inline select{flex:0 0 5.6em}
+.field-hint{display:block;font-weight:400;color:var(--muted);font-size:.77rem;margin-top:4px;line-height:1.5}
+.vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;padding:0;margin:-1px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button,.chips button{border:1px solid #a9c3d4;background:#fff;color:var(--ink);border-radius:8px;padding:7px 12px;min-height:40px;cursor:pointer;font-size:.86rem;font-weight:400;line-height:1.35;text-align:left}
+.seg button:hover,.chips button:hover{background:var(--soft)}
+.seg button[aria-pressed=true],.chips button[aria-pressed=true]{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:700}
+.grp-t{font-size:.78rem;font-weight:700;color:var(--muted);margin:10px 0 6px}
+.grp-t:first-child{margin-top:0}
+.chips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.chips button{display:flex;flex-direction:column;align-items:flex-start;padding:7px 10px}
+.chips small{font-size:.74rem;opacity:.8}
+.sub{font-size:.8rem;font-weight:700;color:var(--navy);margin:16px 0 8px;padding-bottom:4px;border-bottom:1px dashed var(--line)}
+.sub:first-child{margin-top:0}
+.grp+.grp{margin-top:18px}
+.checks{border:1px solid var(--line);border-radius:10px;margin:16px 0 0;padding:8px 12px 10px;background:var(--soft)}
+.checks legend{font-weight:700;font-size:.82rem;color:var(--navy);padding:0 4px}
+.checks label{display:flex;gap:8px;align-items:flex-start;font-size:.86rem;margin:6px 0;line-height:1.5}
+.checks input,.cb input{width:18px;height:18px;margin:2px 0 0;flex:none}
+.cb{display:flex;gap:8px;align-items:flex-start;font-weight:400}
+.actions{margin-top:16px}
+.actions button{border:1px solid #a9c3d4;background:#fff;border-radius:8px;padding:8px 14px;cursor:pointer;color:var(--muted)}
+.result-card{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow-y:auto}
+.result{border-radius:10px;font-size:.92rem}
+.result.is-empty{background:var(--soft);color:var(--muted);padding:22px 16px;text-align:center}
+.result.is-blocked{background:#fff8e6;border:1px solid #edd38c;padding:14px}
+.result.is-blocked h3{color:#7d5a00}
+.result h3{margin:0 0 6px;color:var(--navy-d);font-size:1.05rem;line-height:1.45}
 .result p{margin:8px 0}
-.alert{background:#fdedec;border-left:4px solid #a93226;padding:10px;margin:12px 0}
-.tag{font-size:.75rem;background:#d4e6f1;border-radius:20px;padding:3px 8px;display:inline-block}
-.sources{margin-top:16px}
-.sources li{margin-bottom:8px}
-a{color:#1a5276}
-button{cursor:pointer;border:1px solid #9cbfd2;background:white;border-radius:8px;padding:8px 14px}
-button:hover{background:#f4f9fc}
-.output-number{font-size:1.3rem;font-weight:800}
-.foot{font-size:.8rem;color:var(--muted);margin-top:20px}
-@media(max-width:700px){.layout{grid-template-columns:1fr}header{padding-bottom:32px}.grid{grid-template-columns:1fr;gap:10px}}
+.output-number{font-size:1.55rem;font-weight:800;line-height:1.3;color:var(--navy-d);background:var(--pick);border-radius:10px;padding:10px 14px;margin:10px 0!important}
+.basis{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:0 0 12px;font-size:.84rem}
+.basis p{margin:2px 0}
+.basis strong{color:var(--navy-d)}
+.alert{background:#fdf0ef;border-left:4px solid #b03a2e;border-radius:6px;padding:9px 12px;margin:10px 0;font-size:.86rem}
+.fine{font-size:.78rem!important;color:var(--muted)}
+.muted{color:var(--muted);font-size:.82rem}
+.tag{font-size:.72rem;font-weight:700;background:#fdebd0;color:#7d4a00;border-radius:20px;padding:2px 8px;display:inline-block;vertical-align:2px}
+.about{margin-top:16px}
+.about h2{margin-bottom:8px}
+.about ul{margin:0;padding-left:1.2em;font-size:.84rem}
+.about li{margin-bottom:6px}
+.foot{font-size:.78rem;color:var(--muted);margin-top:18px}
+.jump{display:none}
+@media(max-width:900px){
+.layout{grid-template-columns:1fr}
+.result-card{position:static;max-height:none;overflow:visible}
+.first ol{grid-template-columns:1fr 1fr}
+.jump{position:fixed;left:12px;right:12px;bottom:12px;z-index:20;display:block;background:var(--navy-d);color:#fff;text-decoration:none;border-radius:12px;padding:10px 14px;font-size:.86rem;line-height:1.45;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.jump b{display:block;font-size:1rem}
+.jump[hidden]{display:none!important}
+main{padding-bottom:110px}
+}
+@media(max-width:560px){
+.grid{grid-template-columns:1fr;gap:12px}
+.chips{grid-template-columns:1fr 1fr}
+.first ol{grid-template-columns:1fr}
+.output-number{font-size:1.35rem}
+.card{padding:15px}
+}
 </style></head><body><nav id="ics-globalnav" style="background:#15324E;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
 <div style="max-width:1040px;margin:0 auto;padding:8px 12px;display:flex;align-items:center;gap:2px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;">
 <a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;padding-right:8px;">医知創造ラボ</a>
@@ -61,24 +118,35 @@ button:hover{background:#f4f9fc}
 <a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">YouTube</a>
 </div>
 </nav>
-<header><h1>てんかん発作重積状態<br>初期対応・薬剤投与計算</h1><p>薬剤ごとの選択肢・投与量・調製条件を確認する医療従事者向け補助ツール</p></header>
+<header><div class="wrap"><h1>てんかん発作重積状態 初期対応・薬剤投与計算</h1><p>年齢・体重と薬剤から、投与量・調製・投与速度を確認する医療従事者向けの補助ツール</p></div></header>
 <main>
-<div class="notice"><strong>医療従事者向け投与計算補助。投与前に電子添文・使用製剤・院内手順を確認してください。</strong> 本ツールは診療判断や施設内での臨床的な検証を代替しません。<br><strong>呼吸・循環を監視し、気道確保と救急対応を並行してください。</strong> 前投薬と患者状態を確認し、投与前に電子添文と院内手順を照合してください。表示された薬剤を順番に全て投与する指示ではありません。</div>
+<div class="notice"><strong>投与前に、電子添文・使用する製剤・院内手順と照らし合わせてください。</strong> 計算は診療判断の代わりにはなりません。入力内容は端末の中だけで処理し、外部へ送信しません。</div>
 
-<section class="card" style="margin-top:16px">
-<h2>対応は並行して進める</h2>
-<p>気道・呼吸・循環、酸素化、心電図・血圧、静脈路と血糖を確認し、低血糖など可逆的な原因に対応します。全身強直間代発作が5分以上持続、または意識回復なく反復する場合は重積として初期治療を検討します。けいれんが止まっても意識回復が不十分なら非けいれん性重積と脳波検査を検討します。第一段階・第二段階の薬剤は患者背景に応じて選択し、持続時には再評価・専門家へエスカレーションします。</p>
-<p class="muted"><a href="https://blog.ichisouzo-lab.com/entry/2025/11/12/074125" target="_blank" rel="noopener noreferrer">参考：救急外来でのてんかん発作対応</a>。再投与条件は製剤ごとに異なります。</p>
+<section class="first" aria-label="初期対応">
+<h2>薬の準備と並行して行うこと</h2>
+<ol>
+<li><b>気道・呼吸・循環</b>酸素投与、心電図と血圧の監視</li>
+<li><b>静脈路と血糖</b>低血糖など治せる原因に対応する</li>
+<li><b>5分以上続く・繰り返す</b>意識が戻らなければ重積として治療を始める</li>
+<li><b>止まっても意識が戻らない</b>非けいれん性重積を考え、脳波を検討する</li>
+</ol>
+<p class="muted">表示された薬を上から順にすべて使う、という意味ではありません。患者背景に合わせて選び、発作が続くときは再評価して専門医に相談してください。<a href="https://blog.ichisouzo-lab.com/entry/2025/11/12/074125" target="_blank" rel="noopener noreferrer">参考：救急外来でのてんかん発作対応</a></p>
 </section>
 
 <div class="layout">
 <section class="card">
-<h2>1　患者・薬剤を選択</h2>
+
+<div class="block">
+<div class="step"><span class="n">1</span><h2>患者</h2></div>
 <div class="grid">
-<label data-field="age">年齢<input autocomplete="off" id="age" type="number" min="0" step="any" inputmode="decimal" placeholder="入力"></label>
-<label data-field="unit">年齢の単位<select id="unit"><option value="years">歳</option><option value="months">か月</option></select><span id="ageUnitHint" class="field-hint" hidden>1歳未満は「か月」に切り替えて月齢を入力してください。</span></label>
-<label data-field="weight">体重（kg）<input autocomplete="off" id="weight" type="number" min="0" step="any" inputmode="decimal" placeholder="入力"></label>
-<label data-field="drug">薬剤・経路<select id="drug">
+<div class="field" data-field="age"><label class="ft" for="age">年齢</label><div class="inline"><input autocomplete="off" id="age" type="number" min="0" step="any" inputmode="decimal" placeholder="入力"><select id="unit" aria-label="年齢の単位"><option value="years">歳</option><option value="months">か月</option></select></div><span id="ageUnitHint" class="field-hint" hidden>1歳未満は単位を「か月」にして月齢を入力してください。</span></div>
+<div class="field" data-field="weight"><label class="ft" for="weight">体重（kg）</label><input autocomplete="off" id="weight" type="number" min="0" step="any" inputmode="decimal" placeholder="入力"></div>
+</div>
+</div>
+
+<div class="block">
+<div class="step"><span class="n">2</span><h2>薬剤・経路</h2></div>
+<select id="drug" class="vh" aria-hidden="true" tabindex="-1">
 <option value="">選択してください</option>
 <option value="diazepam">ジアゼパム 静注</option>
 <option value="lorazepam">ロラゼパム 静注</option>
@@ -92,139 +160,196 @@ button:hover{background:#f4f9fc}
 <option value="brivaracetam">ブリィビアクト 点滴</option>
 <option value="fosphenytoin">ホスフェニトイン 点滴</option>
 <option value="phenobarbital">ノーベルバール 点滴</option>
-</select></label>
+</select>
+<div id="drugPick">
+<p class="grp-t">第1段階：ベンゾジアゼピン</p>
+<div class="chips" role="group" aria-label="ベンゾジアゼピン">
+<button type="button" data-drug="diazepam" aria-pressed="false">ジアゼパム<small>静注（ホリゾン等）</small></button>
+<button type="button" data-drug="lorazepam" aria-pressed="false">ロラゼパム<small>静注（ロラピタ）</small></button>
+<button type="button" data-drug="midazolamIV" aria-pressed="false">ミダゾラム<small>静注・持続静注</small></button>
+<button type="button" data-drug="midazolamIM" aria-pressed="false">ミダゾラム<small>筋注</small></button>
+<button type="button" data-drug="buccal" aria-pressed="false">ブコラム<small>口腔用液</small></button>
+<button type="button" data-drug="nasal" aria-pressed="false">スピジア<small>点鼻液</small></button>
+</div>
+<p class="grp-t">第2段階：抗てんかん薬の点滴</p>
+<div class="chips" role="group" aria-label="抗てんかん薬の点滴">
+<button type="button" data-drug="levetiracetam" aria-pressed="false">イーケプラ<small>レベチラセタム</small></button>
+<button type="button" data-drug="fosphenytoin" aria-pressed="false">ホストイン<small>ホスフェニトイン</small></button>
+<button type="button" data-drug="phenobarbital" aria-pressed="false">ノーベルバール<small>フェノバルビタール</small></button>
+</div>
+<p class="grp-t">経口薬の一時的な点滴代替（重積の負荷投与ではない）</p>
+<div class="chips" role="group" aria-label="経口薬の点滴代替">
+<button type="button" data-drug="lacosamide" aria-pressed="false">ビムパット<small>ラコサミド</small></button>
+<button type="button" data-drug="perampanel" aria-pressed="false">フィコンパ<small>ペランパネル</small></button>
+<button type="button" data-drug="brivaracetam" aria-pressed="false">ブリィビアクト<small>ブリーバラセタム</small></button>
+</div>
+</div>
 </div>
 
-<div class="grid" style="margin-top:12px">
-<label data-field="regimen">用法<select id="regimen">
+<div class="block" id="detailBlock" hidden>
+<div class="step"><span class="n">3</span><h2>用法と条件</h2></div>
+
+<div class="grp" data-group>
+<div class="grid">
+<div class="field wide" data-field="regimen"><span class="ft">用法</span><select id="regimen" class="vh" aria-label="用法">
 <option value="jp_se">国内添付文書：重積</option>
 <option value="esett">指針・試験：添付文書外</option>
 <option value="replacement">経口代替（重積負荷とは別）</option>
 <option value="infusion">ミダゾラム持続静注</option>
-</select></label>
-<label data-field="stage">投与段階<select id="stage">
-<option value="initial">初回量の検討</option>
-<option value="repeat">追加・再投与の検討</option>
-</select></label>
-<label data-field="dose"><span id="doseLabel">選択する1回量（mg）</span><input autocomplete="off" id="dose" type="number" min="0" step="any" inputmode="decimal" placeholder="必要時に入力"></label>
-<label data-field="dailyDose">現在の経口薬の日量（mg/日）<input autocomplete="off" id="dailyDose" type="number" min="0" step="any" inputmode="decimal" placeholder="経口代替時に入力"></label>
-<label data-field="crcl">クレアチニンクリアランス（mL/分）<input autocomplete="off" id="crcl" type="number" min="0" step="any" inputmode="decimal" placeholder="LEV経口代替で確認"></label>
-<label data-field="rescue">ベンゾジアゼピン前投薬（院外・救急隊を含む）<select id="rescue">
+</select></div>
+<div class="field wide" data-field="stage"><span class="ft">投与段階</span><select id="stage" class="vh" aria-label="投与段階">
+<option value="initial">初回量</option>
+<option value="repeat">追加・再投与</option>
+</select></div>
+</div>
+</div>
+
+<div class="grp" data-group>
+<p class="sub">今回の発作での投与歴（院外・救急隊を含む）</p>
+<div class="grid">
+<div class="field wide" data-field="rescue"><span class="ft">ベンゾジアゼピンの前投薬</span><select id="rescue" class="vh" aria-label="ベンゾジアゼピンの前投薬">
 <option value="unknown">不明</option>
 <option value="none">なし</option>
 <option value="yes">あり</option>
-</select></label>
-<label data-field="history">前投薬の内容・時刻・反応<input autocomplete="off" id="history" type="text" placeholder="薬剤・製剤・経路・量・時刻・回数・反応"></label>
-<label data-field="convulsive">けいれん性重積を確認<select id="convulsive">
-<option value="unknown">不明</option>
-<option value="yes">確認</option>
-</select></label>
-<label data-field="refractory">ベンゾジアゼピン抵抗性を確認<select id="refractory">
-<option value="unknown">不明</option>
-<option value="yes">確認</option>
-</select></label>
-<label data-field="renalStatus">腎機能（経口代替用）<select id="renalStatus">
-<option value="unknown">不明・未選択</option>
-<option value="normal">CrCl 30超</option>
-<option value="severe">CrCl 30以下／末期腎不全</option>
-</select></label>
-<label data-field="sameDrug">今回の発作でこの薬剤を投与済みか（別製剤・経路を含む）<select id="sameDrug">
+</select></div>
+<div class="field wide" data-field="sameDrug"><span class="ft">この薬剤（別製剤・別経路を含む）を投与済みか</span><select id="sameDrug" class="vh" aria-label="この薬剤を投与済みか">
 <option value="unknown">不明</option>
 <option value="no">投与なし</option>
 <option value="yes">投与あり</option>
-</select></label>
-<label data-field="priorDaily">本日のレベチラセタム既投与総量（mg、今回量を除く）<input autocomplete="off" id="priorDaily" type="number" min="0" step="any" inputmode="decimal" placeholder="0を含め入力"></label>
-<label data-field="priorDose">今回の発作での累積既投与量（この薬剤の mg、今回追加量を含めない）<input autocomplete="off" id="priorDose" type="number" min="0" step="any" inputmode="decimal" placeholder="未入力は不明"><span class="field-hint">同一薬剤の別製剤・別経路での曝露も含め、担当医が確認してください。</span></label>
-<label data-field="priorCount">今回の発作での既投与総回数<input autocomplete="off" id="priorCount" type="number" min="0" step="1" inputmode="numeric" placeholder="追加時に必須"></label>
-<label data-field="elapsed"><span id="elapsedLabel">前回からの経過（分）</span><input autocomplete="off" id="elapsed" type="number" min="0" step="any" inputmode="decimal" placeholder="必要時に入力"></label>
-<label data-field="finalVolume"><span id="finalVolumeLabel">最終総量（mL）</span><input autocomplete="off" id="finalVolume" type="number" min="0" step="any" inputmode="decimal" placeholder="経口代替で必要時"></label>
-<label data-field="minutes"><span id="minutesLabel">投与時間（分）</span><input autocomplete="off" id="minutes" type="number" min="0" step="any" inputmode="decimal" placeholder="経口代替で必要時"></label>
-<label data-field="therapy">治療形態<select id="therapy">
-<option value="">選択してください</option>
-<option value="mono">単剤</option>
-<option value="adjunct">併用</option>
-</select></label>
-<label data-field="indication">経口薬の発作型<select id="indication">
-<option value="">選択してください</option>
-<option value="partial">部分発作</option>
-<option value="tonic">強直間代発作（併用）</option>
-</select></label>
-<label data-field="perRenal">腎機能・透析<select id="perRenal">
-<option value="unknown">不明</option>
-<option value="no">腎機能障害・透析なし</option>
-<option value="yes">腎機能障害あり／透析中</option>
-</select></label>
-<label data-field="perBenefit"><input type="checkbox" id="perBenefit"> 腎障害・透析時の有益性と危険性を担当医が評価済み</label>
-<label data-field="liver">肝障害の程度<select id="liver">
-<option value="unknown">不明・未選択</option>
-<option value="none">肝機能障害なし</option>
-<option value="mild">軽度</option>
-<option value="moderate">中等度</option>
-<option value="severe">重度</option>
-</select></label>
-<label data-field="category">成人・小児区分（本ツールは18歳で境界設定）<select id="category">
+</select></div>
+<div class="field wide" data-field="history"><label class="ft" for="history">前投薬の内容</label><input autocomplete="off" id="history" type="text" placeholder="薬剤・経路・量・時刻・回数・反応"></div>
+<div class="field" data-field="priorDose"><label class="ft" for="priorDose">この薬剤の累積投与量（mg）</label><input autocomplete="off" id="priorDose" type="number" min="0" step="any" inputmode="decimal" placeholder="今回分は含めない"><span class="field-hint">別製剤・別経路の分も含めて確認してください。</span></div>
+<div class="field" data-field="priorCount"><label class="ft" for="priorCount">この薬剤の投与回数</label><input autocomplete="off" id="priorCount" type="number" min="0" step="1" inputmode="numeric" placeholder="例：1"></div>
+<div class="field" data-field="elapsed"><label class="ft" for="elapsed" id="elapsedLabel">前回からの経過（分）</label><input autocomplete="off" id="elapsed" type="number" min="0" step="any" inputmode="decimal" placeholder="必要時に入力"></div>
+<div class="field" data-field="priorDaily"><label class="ft" for="priorDaily">本日のレベチラセタム投与済み量（mg）</label><input autocomplete="off" id="priorDaily" type="number" min="0" step="any" inputmode="decimal" placeholder="なければ 0"><span class="field-hint">今回の量は含めません。</span></div>
+</div>
+</div>
+
+<div class="grp" data-group>
+<p class="sub">患者の条件</p>
+<div class="grid">
+<div class="field wide" data-field="category"><span class="ft">成人・小児の区分</span><select id="category" class="vh" aria-label="成人・小児の区分">
 <option value="">選択（施設基準）</option>
 <option value="adult">成人（18歳以上）</option>
 <option value="child">小児（18歳未満）</option>
-</select><span class="field-hint">添付文書は境界年齢を明示していません。15〜17歳等で施設基準が異なる場合は個別に確認してください。</span></label>
-<label data-field="gestWeeks">出生時在胎週数（20〜44週）<input autocomplete="off" id="gestWeeks" type="number" min="20" max="44" step="any" inputmode="decimal" placeholder="例：38"></label>
-<label data-field="postDays">出生後日数（0〜366日）<input autocomplete="off" id="postDays" type="number" min="0" max="366" step="any" inputmode="decimal" placeholder="例：120"></label>
-<label data-field="corrected">修正在胎週数（乳児：在胎週＋出生後日÷7）<input autocomplete="off" id="corrected" type="number" min="0" step="any" inputmode="decimal" placeholder="在胎週・出生後日から自動計算"></label>
-<label data-field="pedRate"><span id="pedRateLabel">選択用量（mg/kg）</span><input autocomplete="off" id="pedRate" type="number" min="0" step="any" inputmode="decimal" placeholder="必要時に入力"></label>
-<label data-field="pbDose">フェノバルビタール用量（15〜20 mg/kg）<input autocomplete="off" id="pbDose" type="number" min="15" max="20" step="any" inputmode="decimal" list="pbDoseList" placeholder="15〜20（例：15 または 20）"><datalist id="pbDoseList"><option value="15"></option><option value="20"></option></datalist></label>
-<label data-field="midProduct">静注製剤<select id="midProduct">
+</select><span class="field-hint">本ツールは18歳で区切ります。電子添文は境界年齢を明示していないため、15〜17歳などで施設基準が異なる場合は個別に確認してください。</span></div>
+<div class="field" data-field="gestWeeks"><label class="ft" for="gestWeeks">出生時の在胎週数</label><input autocomplete="off" id="gestWeeks" type="number" min="20" max="44" step="any" inputmode="decimal" placeholder="例：38（20〜44）"></div>
+<div class="field" data-field="postDays"><label class="ft" for="postDays">出生後の日数</label><input autocomplete="off" id="postDays" type="number" min="0" max="366" step="any" inputmode="decimal" placeholder="例：120"></div>
+<div class="field" data-field="corrected"><label class="ft" for="corrected">修正在胎週数</label><input autocomplete="off" id="corrected" type="number" min="0" step="any" readonly tabindex="-1" placeholder="自動計算"><span class="field-hint">在胎週数＋出生後日数÷7</span></div>
+<div class="field wide" data-field="convulsive"><span class="ft">けいれん性重積である</span><select id="convulsive" class="vh" aria-label="けいれん性重積である">
+<option value="unknown">不明</option>
+<option value="yes">確認済み</option>
+</select></div>
+<div class="field wide" data-field="refractory"><span class="ft">ベンゾジアゼピンが効かなかった</span><select id="refractory" class="vh" aria-label="ベンゾジアゼピンが効かなかった">
+<option value="unknown">不明</option>
+<option value="yes">確認済み</option>
+</select></div>
+<div class="field wide" data-field="indication"><span class="ft">経口薬の対象発作型</span><select id="indication" class="vh" aria-label="経口薬の対象発作型">
+<option value="">選択してください</option>
+<option value="partial">部分発作</option>
+<option value="tonic">強直間代発作（併用）</option>
+</select></div>
+<div class="field wide" data-field="therapy"><span class="ft">治療形態</span><select id="therapy" class="vh" aria-label="治療形態">
+<option value="">選択してください</option>
+<option value="mono">単剤</option>
+<option value="adjunct">併用</option>
+</select></div>
+<div class="field" data-field="crcl"><label class="ft" for="crcl">クレアチニンクリアランス（mL/分）</label><input autocomplete="off" id="crcl" type="number" min="0" step="any" inputmode="decimal" placeholder="例：90"></div>
+<div class="field wide" data-field="renalStatus"><span class="ft">腎機能</span><select id="renalStatus" class="vh" aria-label="腎機能">
+<option value="unknown">不明</option>
+<option value="normal">CrCl 30超</option>
+<option value="severe">CrCl 30以下・末期腎不全</option>
+</select></div>
+<div class="field wide" data-field="perRenal"><span class="ft">腎機能障害・透析</span><select id="perRenal" class="vh" aria-label="腎機能障害・透析">
+<option value="unknown">不明</option>
+<option value="no">なし</option>
+<option value="yes">腎機能障害あり・透析中</option>
+</select></div>
+<div class="field wide" data-field="perBenefit"><label class="cb"><input type="checkbox" id="perBenefit"> 腎障害・透析時の有益性と危険性を担当医が評価した</label></div>
+<div class="field wide" data-field="liver"><span class="ft">肝障害の程度</span><select id="liver" class="vh" aria-label="肝障害の程度">
+<option value="unknown">不明</option>
+<option value="none">なし</option>
+<option value="mild">軽度</option>
+<option value="moderate">中等度</option>
+<option value="severe">重度</option>
+</select></div>
+</div>
+</div>
+
+<div class="grp" data-group>
+<p class="sub">用量・調製</p>
+<div class="grid">
+<div class="field wide" data-field="midProduct"><span class="ft">静注製剤</span><select id="midProduct" class="vh" aria-label="静注製剤">
 <option value="">選択してください</option>
 <option value="midafresa">ミダフレッサ 10 mg/10 mL（重積に承認）</option>
 <option value="dormicum">ドルミカム等 10 mg/2 mL（重積は製剤適応外）</option>
-</select></label>
-<label data-field="infusionConc">ミダゾラム持続濃度<select id="infusionConc">
+</select></div>
+<div class="field wide" data-field="infusionConc"><span class="ft">持続静注の濃度</span><select id="infusionConc" class="vh" aria-label="持続静注の濃度">
 <option value="">選択してください</option>
-<option value="1">1 mg/mL（ミダフレッサ原液等）</option>
-<option value="5">5 mg/mL（10 mg/2 mL原液：重積製剤適応外）</option>
-</select></label>
-<label data-field="rate"><span id="rateLabel">投与速度</span><input autocomplete="off" id="rate" type="number" min="0" step="any" inputmode="decimal" placeholder="必要時に入力"></label>
+<option value="1">1 mg/mL（ミダフレッサ原液など）</option>
+<option value="5">5 mg/mL（10 mg/2 mL原液・重積は製剤適応外）</option>
+</select></div>
+<div class="field" data-field="pedRate"><label class="ft" for="pedRate" id="pedRateLabel">選択用量（mg/kg）</label><input autocomplete="off" id="pedRate" type="number" min="0" step="any" inputmode="decimal" placeholder="必要時に入力"></div>
+<div class="field" data-field="pbDose"><label class="ft" for="pbDose">用量（15〜20 mg/kg）</label><input autocomplete="off" id="pbDose" type="number" min="15" max="20" step="any" inputmode="decimal" list="pbDoseList" placeholder="15〜20"><datalist id="pbDoseList"><option value="15"></option><option value="20"></option></datalist></div>
+<div class="field" data-field="dailyDose"><label class="ft" for="dailyDose">現在の経口薬の1日量（mg）</label><input autocomplete="off" id="dailyDose" type="number" min="0" step="any" inputmode="decimal" placeholder="例：1000"></div>
+<div class="field" data-field="dose"><label class="ft" for="dose" id="doseLabel">1回量（mg）</label><input autocomplete="off" id="dose" type="number" min="0" step="any" inputmode="decimal" placeholder="必要時に入力"></div>
+<div class="field" data-field="rate"><label class="ft" for="rate" id="rateLabel">投与速度</label><input autocomplete="off" id="rate" type="number" min="0" step="any" inputmode="decimal" placeholder="必要時に入力"></div>
+<div class="field" data-field="minutes"><label class="ft" for="minutes" id="minutesLabel">投与時間（分）</label><input autocomplete="off" id="minutes" type="number" min="0" step="any" inputmode="decimal" placeholder="必要時に入力"></div>
+<div class="field" data-field="finalVolume"><label class="ft" for="finalVolume" id="finalVolumeLabel">最終総量（mL）</label><input autocomplete="off" id="finalVolume" type="number" min="0" step="any" inputmode="decimal" placeholder="必要時に入力"></div>
+</div>
 </div>
 
 <fieldset class="checks" id="checksBox" hidden>
-<legend>投与前に確認（注意喚起・希釈確認）</legend>
+<legend>投与前の確認</legend>
 <label data-field="prior" hidden><input type="checkbox" id="prior"> 前投薬あり／不明（院外・救急隊投与を含む）</label>
-<label data-field="resp"><input type="checkbox" id="resp"> 呼吸・循環の不安定さあり／不明</label>
+<label data-field="resp"><input type="checkbox" id="resp"> 呼吸・循環が不安定、または不明</label>
+<label data-field="renal"><input type="checkbox" id="renal"> 腎機能障害あり、または不明</label>
+<label data-field="hepatic"><input type="checkbox" id="hepatic"> 肝機能障害あり、または不明</label>
 <label data-field="dialysis"><input type="checkbox" id="dialysis"> 透析中</label>
-<label data-field="bagVerified"><input type="checkbox" id="bagVerified"> 経口代替の希釈後総量を薬剤部手順で確認済み</label>
-<label data-field="extreme"><input type="checkbox" id="extreme"> 体重250 kg超の入力値を再確認済み</label>
-<label data-field="renal"><input type="checkbox" id="renal"> 腎機能障害あり／不明</label>
-<label data-field="hepatic"><input type="checkbox" id="hepatic"> 肝機能障害あり／不明</label>
+<label data-field="bagVerified"><input type="checkbox" id="bagVerified"> 希釈後の最終総量を薬剤部の手順で確認した</label>
+<label data-field="extreme"><input type="checkbox" id="extreme"> 250 kgを超える体重の入力を確認した</label>
 </fieldset>
+</div>
 
-<p class="muted">前投薬の薬剤・規格・経路・量・時刻・回数・反応（院外・救急隊を含む）を別途確認してください。既投与量は同じ薬剤のみの値です。異なるベンゾジアゼピン同士をmg単位で合算しません。未チェックを「問題なし」の確認済みとは扱いません。特定の禁忌や併用禁忌・相互作用を網羅的に判定する機能はないため、必ず製品ごとの最新電子添文を確認してください。入力値は端末内でのみ処理し、外部へ保存・送信しません。</p>
-<button type="button" id="reset">入力を消去</button>
+<div class="actions"><button type="button" id="reset">入力を消去</button></div>
 </section>
 
-<section class="card">
-<h2>2　選択した薬剤の投与情報</h2>
-<div id="result" class="result" aria-live="polite">年齢、体重、薬剤を入力してください。</div>
+<section class="card result-card" id="resultCard">
+<div class="step"><span class="n">✓</span><h2>投与量の計算結果</h2></div>
+<div id="result" class="result is-empty" aria-live="polite">年齢・体重を入力し、薬剤を選んでください。</div>
 <div id="flags"></div>
 </section>
 </div>
 
-<section class="card sources">
-<h2>参照資料・確認状況</h2>
-<p class="muted">資料確認日：2026年10月29日。電子添文またはガイドライン・原著で確認できる範囲のみ計算し、条件外や未確立の用量は自動計算しません。</p>
+<section class="card about">
+<h2>このツールの前提</h2>
+<ul>
+<li>電子添文・ガイドライン・原著で確かめられる範囲だけを計算します。条件から外れる用量や確立していない用量は計算しません。</li>
+<li>投与済み量は同じ薬剤だけの値です。種類の違うベンゾジアゼピンをmgで合算しません。チェックを付けていない項目を「問題なし」とは扱いません。</li>
+<li>禁忌・併用禁忌・相互作用をすべて判定する機能はありません。製剤ごとの最新の電子添文で確認してください。</li>
+<li>前投薬は、薬剤・規格・経路・量・時刻・回数・反応を別に確認してください。</li>
+</ul>
+</section>
+
+<section class="card about sources">
+<h2>参照資料</h2>
+<p class="muted">資料確認日：2026年10月31日</p>
 <ul id="sources">
+<li><a href="https://www.pmda.go.jp/PmdaSearch/iyakuDetail/730119_1124402A2045_2_08" target="_blank" rel="noopener noreferrer">ホリゾン注射液10mg 電子添文（2023年8月改訂 第1版）</a></li>
 <li><a href="https://www.pmda.go.jp/PmdaSearch/iyakuDetail/672212_1139403A1020_2_04" target="_blank" rel="noopener noreferrer">ロラピタ静注2mg 電子添文（2022年12月改訂 第1版）</a></li>
 <li><a href="https://www.pmda.go.jp/PmdaSearch/iyakuDetail/530258_1139401A1020_1_10" target="_blank" rel="noopener noreferrer">ミダフレッサ静注0.1% 電子添文（2026年10月改訂 第2版）</a></li>
 <li><a href="https://www.pmda.go.jp/PmdaSearch/iyakuDetail/850372_1139700Q1029_2_02" target="_blank" rel="noopener noreferrer">ブコラム口腔用液 電子添文（2026年5月改訂 第4版）</a></li>
 <li><a href="https://www.pmda.go.jp/PmdaSearch/iyakuDetail/671450_1139701R1029_2_01" target="_blank" rel="noopener noreferrer">スピジア点鼻液 電子添文（2026年6月改訂 第3版）</a></li>
+<li><a href="https://www.pmda.go.jp/PmdaSearch/iyakuDetail/820110_1139402A1025_1_15" target="_blank" rel="noopener noreferrer">イーケプラ点滴静注500mg 電子添文（2024年4月改訂 第6版）</a></li>
 <li><a href="https://www.pmda.go.jp/PmdaSearch/iyakuDetail/620095_1132401A1020_1_11" target="_blank" rel="noopener noreferrer">ホストイン静注750mg 電子添文（2026年6月改訂 第5版）</a></li>
 <li><a href="https://www.pmda.go.jp/PmdaSearch/iyakuDetail/620095_1139400F1023_1_20" target="_blank" rel="noopener noreferrer">ノーベルバール静注用250mg 電子添文（2026年6月改訂 第6版）</a></li>
-<li><a href="https://www.pmda.go.jp/PmdaSearch/iyakuDetail/820110_1139402A1025_1_15" target="_blank" rel="noopener noreferrer">イーケプラ点滴静注500mg 電子添文（2024年4月改訂 第6版）</a></li>
-<li><a href="https://www.pmda.go.jp/PmdaSearch/iyakuDetail/730119_1124402A2045_2_08" target="_blank" rel="noopener noreferrer">ホリゾン注射液10mg 電子添文（2023年8月改訂 第1版）</a></li>
+<li><a href="https://www.pmda.go.jp/PmdaSearch/iyakuDetail/820110_1139404A1024_1_10" target="_blank" rel="noopener noreferrer">ビムパット点滴静注 電子添文（2026年8月改訂 第8版）</a>、<a href="https://www.pmda.go.jp/PmdaSearch/iyakuDetail/170033_1139405D1025_1_02" target="_blank" rel="noopener noreferrer">フィコンパ点滴静注用2mg 電子添文（2025年10月改訂 第3版）</a>、<a href="https://www.pmda.go.jp/PmdaSearch/iyakuDetail/820110_1139406A1023_1_02" target="_blank" rel="noopener noreferrer">ブリィビアクト静注25mg 電子添文（2025年9月改訂 第3版）</a>：経口代替の用法</li>
 <li><a href="https://www.childneuro.jp/uploads/files/about/SE2023GL/03SE_vol01.pdf" target="_blank" rel="noopener noreferrer">日本小児神経学会 小児けいれん重積治療ガイドライン2023（総論）</a>、<a href="https://www.childneuro.jp/uploads/files/about/SE2023GL/4SE_vol02CQ.pdf" target="_blank" rel="noopener noreferrer">各論CQ</a></li>
 <li><a href="https://aesnet.org/docs/default-source/press-releases-assets/cse-treatment-chart-final_rerelease.pdf" target="_blank" rel="noopener noreferrer">AES 2016 けいれん性重積アルゴリズム</a>、<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7098487/" target="_blank" rel="noopener noreferrer">ESETT 2019 原著（Kapur et al. NEJM 2019）</a></li>
-<li><a href="https://www.pmda.go.jp/PmdaSearch/iyakuDetail/820110_1139404A1024_1_10" target="_blank" rel="noopener noreferrer">ビムパット点滴静注 電子添文（2026年8月改訂 第8版）</a>、<a href="https://www.pmda.go.jp/PmdaSearch/iyakuDetail/170033_1139405D1025_1_02" target="_blank" rel="noopener noreferrer">フィコンパ点滴静注用2mg 電子添文（2025年10月改訂 第3版）</a>、<a href="https://www.pmda.go.jp/PmdaSearch/iyakuDetail/820110_1139406A1023_1_02" target="_blank" rel="noopener noreferrer">ブリィビアクト静注25mg 電子添文（2025年9月改訂 第3版）</a>：経口代替用法</li>
 </ul>
 </section>
-<p class="foot">医療従事者向け。患者個別の禁忌、経過、使用製剤と施設内の手順を必ず確認してください。</p>
+<p class="foot">医療従事者向け。患者ごとの禁忌・経過・使用製剤と施設内の手順を必ず確認してください。</p>
+<a id="jump" class="jump" href="#resultCard" hidden></a>
 </main>
 <script>
 (function(root){
@@ -307,14 +432,21 @@ function onlySE(p){
   return p.regimen === 'jp_se';
 }
 
-function initialWarning(p){
-  return (p.prior || p.rescue !== 'none')
-    ? ' <div class="alert">前投薬あり／不明：以下は初回量の算術例であり、追加投与の指示ではありません。既投与の種類・経路・時刻・量・回数を確認し、施設手順で判断してください。</div>'
-    : '';
+var BZD = ['lorazepam', 'diazepam', 'midazolamIV', 'midazolamIM', 'buccal', 'nasal'];
+
+function initialWarning(p, id){
+  if (!(p.prior || p.rescue !== 'none')) {
+    return '';
+  }
+  /* 第二段階の薬剤ではベンゾジアゼピン投与後が通常の経路のため、呼吸・循環抑制の増強だけを注意する */
+  if (id && BZD.indexOf(id) < 0) {
+    return ' <div class="alert">ベンゾジアゼピン投与後：呼吸抑制・血圧低下が強まることがあります。呼吸・循環の監視を続け、既投与の種類・量・時刻を確認してください。</div>';
+  }
+  return ' <div class="alert">前投薬あり／不明：以下は初回量の算術例であり、追加投与の指示ではありません。既投与の種類・経路・時刻・量・回数を確認し、施設手順で判断してください。</div>';
 }
 
 function roundNote(){
-  return '<p>計算値は丸め指示ではありません。実測容量と院内の丸め規則を独立確認してください。投与量を開封数に合わせて切り上げないでください。</p>';
+  return '<p class="fine">計算値は丸め指示ではありません。実測容量と院内の丸め規則を独立確認してください。投与量を開封数に合わせて切り上げないでください。</p>';
 }
 
 function calculate(id, p){
@@ -383,7 +515,7 @@ function calculate(id, p){
     return unavailable('薬剤・用法・投与段階を確認してください。');
   }
   if (p.regimen === 'replacement' && (p.stage !== 'initial' || ['none', 'mild', 'moderate', 'severe'].indexOf(p.liver) < 0)) {
-    return unavailable('経口代替では投与段階を「初回量の検討」とし、肝障害の程度を選択してください。');
+    return unavailable('経口代替では投与段階を「初回量」とし、肝障害の程度を選択してください。');
   }
   if (p.regimen === 'replacement' && p.hepatic && p.liver === 'none') {
     return unavailable('「肝機能障害あり／不明」のチェックと「肝機能障害なし」の選択が矛盾しています。');
@@ -409,7 +541,7 @@ function calculate(id, p){
       return unavailable('「この薬剤の投与なし」と既投与量・回数の入力が矛盾しています。履歴を確認してください。');
     }
     if (p.stage !== 'repeat' && p.sameDrug === 'yes') {
-      return unavailable('今回の発作で既に同一薬剤が投与されているため、初回量は表示しません。追加条件に該当する場合は「追加・再投与の検討」を選択してください。');
+      return unavailable('今回の発作で既に同一薬剤が投与されているため、初回量は表示しません。追加条件に該当する場合は「追加・再投与」を選択してください。');
     }
     if (p.stage === 'repeat' && p.sameDrug !== 'yes') {
       return unavailable('追加・再投与の検討には、今回の発作で同一薬剤が投与済み（投与あり）であることを確認してください。');
@@ -419,7 +551,7 @@ function calculate(id, p){
       ((p.category === 'adult' && v.months < 216) || (p.category === 'child' && v.months >= 216))) {
     return unavailable('年齢と成人・小児区分が一致しません。本ツールでは18歳を計算上の区分境界としています（電子添文が年齢境界を明示しているという意味ではありません）。');
   }
-  var bzd = ['lorazepam', 'diazepam', 'midazolamIV', 'midazolamIM', 'buccal', 'nasal'].indexOf(id) >= 0;
+  var bzd = BZD.indexOf(id) >= 0;
   if (bzd && p.regimen !== 'infusion') {
     if (p.rescue !== 'none' && p.rescue !== 'yes') {
       return unavailable('ベンゾジアゼピンの既投与歴が不明です。投与の有無・製剤・経路・量・回数・時刻を確認してください。');
@@ -428,12 +560,19 @@ function calculate(id, p){
       return unavailable('追加検討には「ベンゾジアゼピン前投薬：あり」の確認と、前投薬の内容・時刻・反応の記録が必要です。');
     }
     if (p.stage !== 'repeat' && (p.rescue === 'yes' || p.prior || num(p.priorDose) > 0 || num(p.priorCount) > 0)) {
-      return unavailable('ベンゾジアゼピン系薬剤の前投薬情報があるため、初回量は自動提示しません（異なるベンゾジアゼピン同士のmg合算も行いません）。過量・呼吸抑制を避けるため、同一薬剤の追加条件を満たす場合は「追加・再投与の検討」を選択するか、第二段階（抗てんかん薬点滴等）への移行を施設手順で検討してください。');
+      return unavailable('ベンゾジアゼピン系薬剤の前投薬情報があるため、初回量は自動提示しません（異なるベンゾジアゼピン同士のmg合算も行いません）。過量・呼吸抑制を避けるため、同一薬剤の追加条件を満たす場合は「追加・再投与」を選択するか、第二段階（抗てんかん薬点滴等）への移行を施設手順で検討してください。');
     }
   }
   var result = p.stage === 'repeat' ? repeat(id, v, p) : drugs[id](v, p);
   if (result.status === 'ok') {
-    result.html = calculationBasis(id, v, p) + result.html;
+    /* 計算根拠は投与量の直後に置く（見出し→投与量→根拠→調製・注意の順） */
+    var basis = calculationBasis(id, v, p), at = result.html.indexOf('class="output-number"');
+    if (at >= 0) {
+      at = result.html.indexOf('</p>', at) + 4;
+      result.html = result.html.slice(0, at) + basis + result.html.slice(at);
+    } else {
+      result.html = basis + result.html;
+    }
   }
   return result;
 }
@@ -658,7 +797,7 @@ drugs.buccal = function(v, p){
     html: '<h3>ブコラム口腔用液：国内承認用法</h3>' +
       '<p class="output-number">' + d + ' mg（' + fmt(d / 5) + ' mL）</p>' +
       '<p>該当規格のシリンジ1本全量を歯茎と頬の間（口腔粘膜）へゆっくり投与。注射器・針を接続しない。誤嚥・嚥下を避けるため必要に応じ左右の頬粘膜へ半量ずつ分けて投与。</p>' +
-      '<p>生後3か月以上6か月未満の乳児は、医師の監視下かつ人工呼吸器等の蘇生可能な環境下でのみ投与（電子添文8.2）。保護者等は再発しても1回分のみで追加投与しない。投与後10分しても発作が止まらない場合、全量投与できなかった場合、呼吸が浅い・意識回復が不十分な場合は緊急搬送・救急対応を行ってください。</p>' +
+      '<p>生後3か月以上6か月未満の乳児は、救急蘇生のための医療機器・薬剤を使える医師の監督下でのみ投与します（電子添文8.2）。保護者等は再発しても追加投与しません（電子添文8.4.4）。投与後10分しても発作が止まらない場合、全量投与できなかった場合、呼吸が浅い・意識回復が不十分な場合は緊急搬送・救急対応を行ってください。</p>' +
       initialWarning(p)
   };
 };
@@ -689,7 +828,7 @@ drugs.nasal = function(v, p){
     html: '<h3>スピジア点鼻液：国内承認用法</h3>' +
       '<p class="output-number">' + d + ' mg</p>' +
       '<p>' + devices + '。1容器0.1 mLの単回使用製剤です。空打ち（試し噴霧）や再使用・分割使用はしないでください（電子添文14.1.3）。</p>' +
-      '<p>2歳以上6歳未満の幼児は、医師の監視下かつ人工呼吸器等の蘇生可能な環境下でのみ投与（電子添文8.3）。効果不十分時の追加は初回から少なくとも4時間以上あけて同量を1回のみ（1発作に2回超の投与はしない）。</p>' +
+      '<p>2歳以上6歳未満の小児は、救急蘇生のための医療機器・薬剤を使える医師の監視下でのみ投与します（電子添文7.3）。効果不十分なときの2回目は、初回から4時間以上あけて1回だけです（電子添文6）。2回目の後に再発しても追加しません（電子添文8.1.4）。</p>' +
       initialWarning(p)
   };
 };
@@ -709,7 +848,7 @@ drugs.fosphenytoin = function(v, p){
       '<p>75 mg/mL、原液 ' + fmt(stock) + ' mL、開封 ' + Math.ceil(d / 750) + ' 瓶（750 mg/10 mL）。<strong>国内表記はホスフェニトインナトリウム重量（mg）であり、海外のフェニトイン当量（mgPE）ではありません。</strong></p>' +
       '<p>投与速度上限 ' + fmt(rate) + ' mg/分（3 mg/kg/分または150 mg/分の低い方）、最短 <strong>' + time + ' 分以上</strong>。心電図・血圧・呼吸を継続監視し、高齢者・衰弱患者・心疾患・肝腎障害では通常速度よりさらに緩徐に投与（電子添文7.1）。希釈条件は院内手順を確認。</p>' +
       '<p>本剤投与後も発作が止まらない場合、本剤の追加投与はせず他の抗てんかん薬を検討してください（電子添文7.2）。既投与フェニトインがある場合は過量に注意し血中濃度を確認してください。</p>' +
-      initialWarning(p) + roundNote()
+      initialWarning(p, 'fosphenytoin') + roundNote()
   };
 };
 
@@ -732,7 +871,7 @@ drugs.phenobarbital = function(v, p){
       '<p>250 mg/瓶を ' + n + ' 瓶開封。各瓶に注射用水または生理食塩液5 mLを加えて溶解（50 mg/mL）。溶解液合計 ' + (n * 5) + ' mLから <strong>' + fmt(volume) + ' mL</strong> を採取（開封数に合わせて切り上げない）。溶解後は速やかに、遅くとも6時間以内に使用。</p>' +
       '<p>10分以上かけて、かつ100 mg/分を超えない速度で緩徐に静注：この用量では <strong>' + time + ' 分以上</strong>。50 mg/mL溶解液のまま投与する場合の速度上限は ' + floor(Math.min(volume, Number(fmt(volume))) * 60 / time, 2) + ' mL/時（切下げ）。追加希釈や配合変化（酸性薬液等）は院内薬剤部に確認してください。</p>' +
       '<p>作用発現が遅いため速効性薬剤を第一選択とし、第二選択以降で検討します（電子添文5）。前投薬後の強い呼吸・循環抑制に注意してください。てんかん重積状態での追加用量は確立していません。</p>' +
-      initialWarning(p) + roundNote()
+      initialWarning(p, 'phenobarbital') + roundNote()
   };
 };
 
@@ -743,7 +882,8 @@ function pumpText(final, t, maxTime){
     return '指定の設定精度では速度を自動提示できません。施設のポンプ設定と薬剤部手順を確認';
   }
   var actual = displayed * 60 / speed;
-  if (!isFinite(actual) || (isFinite(maxTime) && actual > maxTime + 1e-9)) {
+  /* 0.01 mL/時の切下げだけで規定時間をわずかに超える場合（例：100 mL を90分）は許容する。許容幅は規定時間の0.5%かつ0.5分まで */
+  if (!isFinite(actual) || (isFinite(maxTime) && actual > maxTime + Math.min(maxTime * 0.005, 0.5) + 1e-9)) {
     return '小数第2位までの安全側の速度では許容時間内に入らないため速度を自動提示しません。ポンプ設定精度・調製を確認';
   }
   return '計算速度 ' + fmt(speed) + ' mL/時（切下げ）、表示値からの実時間 ' + ceil(actual, 3) + ' 分';
@@ -1013,7 +1153,7 @@ function repeat(id, v, p){
   }
   if (id === 'nasal') {
     if (!onlySE(p) || count !== 1 || !(elapsed >= 240)) {
-      return unavailable('スピジア点鼻液の追加は初回投与から少なくとも4時間（240分）以上あけて2回目までです（電子添文7.2）。回数または経過時間が条件を満たしません。');
+      return unavailable('スピジア点鼻液の追加は初回投与から4時間（240分）以上あけて2回目までです（電子添文6）。回数または経過時間が条件を満たしません。');
     }
     var r = drugs.nasal(v, p);
     if (r.status !== 'ok') {
@@ -1217,11 +1357,69 @@ function el(id){
 
 function syncInfantCorrected(){
   var gwStr = el('gestWeeks').value, pdStr = el('postDays').value;
-  if (gwStr !== '' && pdStr !== '') {
-    var gw = Number(gwStr), pd = Number(pdStr);
-    if (isFinite(gw) && gw >= 20 && gw <= 44 && isFinite(pd) && pd >= 0 && pd <= 366) {
-      el('corrected').value = String(Math.round((gw + pd / 7) * 100) / 100);
+  var gw = Number(gwStr), pd = Number(pdStr);
+  /* 修正在胎週数は読み取り専用。入力が揃わないときは古い値を残さない */
+  if (gwStr !== '' && pdStr !== '' && isFinite(gw) && gw >= 20 && gw <= 44 && isFinite(pd) && pd >= 0 && pd <= 366) {
+    el('corrected').value = String(Math.round((gw + pd / 7) * 100) / 100);
+  } else {
+    el('corrected').value = '';
+  }
+}
+
+/* select をボタン列で操作する（select 自体は値の正本として残す） */
+var SEG_IDS = ['regimen', 'stage', 'rescue', 'sameDrug', 'category', 'convulsive', 'refractory', 'indication',
+  'therapy', 'renalStatus', 'perRenal', 'liver', 'midProduct', 'infusionConc'];
+
+function fireChange(node){
+  var ev = document.createEvent('HTMLEvents');
+  ev.initEvent('change', true, false);
+  node.dispatchEvent(ev);
+}
+
+function buildSegs(){
+  SEG_IDS.forEach(function(id){
+    var sel = el(id), box = document.createElement('div');
+    box.className = 'seg';
+    box.setAttribute('role', 'group');
+    box.setAttribute('aria-label', sel.getAttribute('aria-label') || id);
+    box.id = id + 'Seg';
+    sel.parentNode.insertBefore(box, sel.nextSibling);
+    box.addEventListener('click', function(e){
+      var t = e.target;
+      while (t && t !== box && t.tagName !== 'BUTTON') {
+        t = t.parentNode;
+      }
+      if (!t || t === box || t.disabled) {
+        return;
+      }
+      sel.value = t.getAttribute('data-v');
+      fireChange(sel);
+    });
+  });
+}
+
+function renderSegs(){
+  var act = document.activeElement, keep = act && act.getAttribute && act.getAttribute('data-v') != null ? act.parentNode.id + '|' + act.getAttribute('data-v') : '';
+  SEG_IDS.forEach(function(id){
+    var sel = el(id), box = el(id + 'Seg'), html = '';
+    for (var i = 0; i < sel.options.length; i++) {
+      var o = sel.options[i];
+      if (o.value === '' || o.disabled) {
+        continue;
+      }
+      html += '<button type="button" data-v="' + o.value + '" aria-pressed="' + (o.value === sel.value ? 'true' : 'false') + '">' + o.textContent + '</button>';
     }
+    box.innerHTML = html;
+    if (keep && keep.indexOf(box.id + '|') === 0) {
+      var again = box.querySelector('[data-v="' + keep.split('|')[1] + '"]');
+      if (again) {
+        again.focus();
+      }
+    }
+  });
+  var picks = document.querySelectorAll('#drugPick button');
+  for (var j = 0; j < picks.length; j++) {
+    picks[j].setAttribute('aria-pressed', picks[j].getAttribute('data-drug') === el('drug').value ? 'true' : 'false');
   }
 }
 
@@ -1485,6 +1683,19 @@ function setFields(show){
     }
   }
   el('checksBox').hidden = !anyCheckVisible;
+  /* 表示項目のない小見出しは隠す */
+  var groups = document.querySelectorAll('[data-group]');
+  for (var g = 0; g < groups.length; g++) {
+    var fs = groups[g].querySelectorAll('[data-field]'), any = false;
+    for (var h = 0; h < fs.length; h++) {
+      if (!fs[h].hidden) {
+        any = true;
+        break;
+      }
+    }
+    groups[g].hidden = !any;
+  }
+  el('detailBlock').hidden = !el('drug').value;
 }
 
 function activeVal(id, fallback){
@@ -1494,6 +1705,30 @@ function activeVal(id, fallback){
 function activeCheck(id){
   return activeFields[id] ? el(id).checked : false;
 }
+
+/* スマートフォンでは結果が画面外になるため、下部に要約を出して結果へ移動できるようにする */
+function updateJump(state){
+  var j = el('jump'), out = el('result');
+  if (state === 'empty') {
+    j.hidden = true;
+    return;
+  }
+  var h = out.querySelector('h3'), n = out.querySelector('.output-number');
+  j.innerHTML = '';
+  var b = document.createElement('b');
+  b.textContent = state === 'ok' && n ? n.textContent : '計算できません';
+  j.appendChild(b);
+  j.appendChild(document.createTextNode((state === 'ok' && h ? h.textContent : '理由を確認する') + ' ↓ 結果へ'));
+  j.hidden = false;
+  jumpVisibility();
+}
+
+function jumpVisibility(){
+  var top = el('resultCard').getBoundingClientRect().top;
+  el('jump').style.visibility = top < (window.innerHeight || 600) - 90 ? 'hidden' : '';
+}
+window.addEventListener('scroll', jumpVisibility);
+window.addEventListener('resize', jumpVisibility);
 
 function update(){
   configure();
@@ -1541,16 +1776,17 @@ function update(){
     refractory: activeVal('refractory', 'unknown')
   };
 
-  var out = el('result'), id = el('drug').value;
+  var out = el('result'), id = el('drug').value, state = 'empty';
   if (!id) {
-    out.textContent = '年齢、体重、薬剤を入力してください。';
+    out.textContent = '年齢・体重を入力し、薬剤を選んでください。';
   } else {
     var r = SEEngine.calculate(id, p);
+    state = r.status === 'ok' ? 'ok' : (r.status === 'invalid' && r.reason === 'range') ? 'empty' : 'blocked';
     if (r.status === 'invalid') {
       if (r.reason === 'under_1kg') {
         out.innerHTML = '<h3>計算対象外（体重1 kg未満）</h3><p>体重1 kg未満（低出生体重児・新生児域）は本ツールの計算対象外です。NICU・専門医の手順および電子添文を確認してください。</p>';
       } else if (r.reason === 'extreme_weight') {
-        out.innerHTML = '<h3>体重の再確認が必要です</h3><p>体重が250 kgを超えています。単位の取り違え（gとkg等）がないか確認し、正しい場合は左欄「体重250 kg超の入力値を再確認済み」にチェックしてください。</p>';
+        out.innerHTML = '<h3>体重の再確認が必要です</h3><p>体重が250 kgを超えています。単位の取り違え（gとkg等）がないか確認し、正しい場合は「投与前の確認」で「250 kgを超える体重の入力を確認した」にチェックしてください。</p>';
       } else {
         out.textContent = '年齢（0〜120歳／0〜1440か月）と体重（1〜500 kg）を入力してください。';
       }
@@ -1597,6 +1833,10 @@ function update(){
       }
     }
   }
+
+  out.className = 'result is-' + state;
+  renderSegs();
+  updateJump(state);
 
   var f = [];
   if (p.prior) {
@@ -1672,6 +1912,18 @@ ids.forEach(function(id){
     el(id).addEventListener('change', handler);
   }
 });
+
+buildSegs();
+var drugButtons = document.querySelectorAll('#drugPick button');
+for (var di = 0; di < drugButtons.length; di++) {
+  drugButtons[di].addEventListener('click', function(){
+    var v = this.getAttribute('data-drug');
+    if (el('drug').value !== v) {
+      el('drug').value = v;
+      fireChange(el('drug'));
+    }
+  });
+}
 
 el('reset').addEventListener('click', function(){
   el('age').value = '';
