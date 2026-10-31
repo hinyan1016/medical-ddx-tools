@@ -260,7 +260,7 @@ main{padding-bottom:110px}
 <option value="mono">単剤</option>
 <option value="adjunct">併用</option>
 </select></div>
-<div class="field" data-field="crcl"><label class="ft" for="crcl">クレアチニンクリアランス（mL/分）</label><input autocomplete="off" id="crcl" type="number" min="0" step="any" inputmode="decimal" placeholder="例：90"></div>
+<div class="field" data-field="crcl"><label class="ft" for="crcl">クレアチニンクリアランス（mL/分）</label><input autocomplete="off" id="crcl" type="number" min="0" step="any" inputmode="decimal" placeholder="例：90"><span class="field-hint">初期値90は腎機能正常の想定です。実測値に変えてください。</span></div>
 <div class="field wide" data-field="renalStatus"><span class="ft">腎機能</span><select id="renalStatus" class="vh" aria-label="腎機能">
 <option value="unknown">不明</option>
 <option value="normal">CrCl 30超</option>
@@ -297,7 +297,7 @@ main{padding-bottom:110px}
 </select></div>
 <div class="field" data-field="pedRate"><label class="ft" for="pedRate" id="pedRateLabel">選択用量（mg/kg）</label><input autocomplete="off" id="pedRate" type="number" min="0" step="any" inputmode="decimal" placeholder="必要時に入力"></div>
 <div class="field" data-field="pbDose"><label class="ft" for="pbDose">用量（15〜20 mg/kg）</label><input autocomplete="off" id="pbDose" type="number" min="15" max="20" step="any" inputmode="decimal" list="pbDoseList" placeholder="15〜20"><datalist id="pbDoseList"><option value="15"></option><option value="20"></option></datalist></div>
-<div class="field" data-field="dailyDose"><label class="ft" for="dailyDose">現在の経口薬の1日量（mg）</label><input autocomplete="off" id="dailyDose" type="number" min="0" step="any" inputmode="decimal" placeholder="例：1000"></div>
+<div class="field" data-field="dailyDose"><label class="ft" for="dailyDose">現在の経口薬の1日量（mg）</label><input autocomplete="off" id="dailyDose" type="number" min="0" step="any" inputmode="decimal" placeholder="例：1000"><span class="field-hint">初期値は成人の開始用量です。患者の処方量に合わせてください。1回量は自動で計算します。</span></div>
 <div class="field" data-field="dose"><label class="ft" for="dose" id="doseLabel">1回量（mg）</label><input autocomplete="off" id="dose" type="number" min="0" step="any" inputmode="decimal" placeholder="必要時に入力"></div>
 <div class="field" data-field="rate"><label class="ft" for="rate" id="rateLabel">投与速度</label><input autocomplete="off" id="rate" type="number" min="0" step="any" inputmode="decimal" placeholder="必要時に入力"></div>
 <div class="field" data-field="minutes"><label class="ft" for="minutes" id="minutesLabel">投与時間（分）</label><input autocomplete="off" id="minutes" type="number" min="0" step="any" inputmode="decimal" placeholder="必要時に入力"></div>
@@ -317,7 +317,7 @@ main{padding-bottom:110px}
 </fieldset>
 </div>
 
-<div class="actions"><button type="button" id="reset">入力を消去</button></div>
+<div class="actions"><button type="button" id="reset">初期値に戻す</button></div>
 </section>
 
 <section class="card result-card" id="resultCard">
@@ -633,7 +633,7 @@ function planBox(title, dose, stockConc, t, rows, maxMin, foot){
     var vol = stock + o.add, speed = Math.floor(vol * 60 / t * 10 + 1e-9) / 10, real = vol * 60 / speed;
     var bad = !(speed > 0) || (isFinite(maxMin) && real > maxMin * 1.005);
     html += '<div class="plan-row"><p class="plan-h">' + o.title + '</p>' +
-      '<p>' + o.how + '（計 ' + fmtDec(vol, 1) + ' mL、' + fmtDec(dose / vol, 1) + ' mg/mL）</p>' +
+      '<p>' + o.how + '（計 ' + fmtDec(vol, 1) + ' mL、' + fmtDec(dose / vol, dose / vol < 1 ? 3 : 1) + ' mg/mL）</p>' +
       '<p class="plan-pump">' + (bad
         ? '0.1 mL/時単位の設定では許容時間に収まりません。薬剤部・院内手順で設定してください。'
         : fmt(speed) + ' mL/時 ・ 予定量 ' + fmtDec(vol, 1) + ' mL（約 ' + fmtDec(real, 1) + ' 分）') + '</p>' +
@@ -980,8 +980,13 @@ function pumpText(final, t, maxTime){
   return '計算速度 ' + fmt(speed) + ' mL/時（切下げ）、表示値からの実時間 ' + ceil(actual, 3) + ' 分';
 }
 
+/* 経口代替の最終総量。空欄なら null（調製例を自動で示す） */
+function finalInput(p){
+  return String(p.finalVolume == null ? '' : p.finalVolume).trim() === '' ? null : num(p.finalVolume);
+}
+
 function replacement(v, p, id){
-  var daily = num(p.dailyDose), dose = num(p.dose), t = num(p.minutes), final = num(p.finalVolume), stock, max, conc, n, h;
+  var daily = num(p.dailyDose), dose = num(p.dose), given = minutesInput(p), final = finalInput(p), t, stock, max, conc, n, h, rows;
   if (id === 'levetiracetam') {
     if (p.indication !== 'partial' && p.indication !== 'tonic') {
       return unavailable('経口薬の対象発作型を選択してください。');
@@ -1005,8 +1010,9 @@ function replacement(v, p, id){
     if (p.liver === 'unknown' || p.liver === 'severe') {
       return unavailable('肝機能が不明または重度肝障害（Child-Pugh C）です。重度肝障害ではCrCl値から腎障害を過小評価するおそれがあり個別判断が必要です（電子添文7.3）。');
     }
+    t = given === null ? 15 : given;
     if (!(daily > 0 && dose > 0 && t === 15) || Math.abs(daily - 2 * dose) > 1e-8) {
-      return unavailable('現在の経口日量、1回量（1日2回＝日量の半量）、および投与時間15分を確認してください。');
+      return unavailable('現在の経口薬の1日量（1日2回に分けて投与）と、投与時間15分（電子添文6）を確認してください。');
     }
     max = v.months >= 216 || v.weight >= 50 ? 3000 : (v.months < 6 ? 42 : 60) * v.weight;
     if (v.months >= 216) {
@@ -1016,31 +1022,32 @@ function replacement(v, p, id){
       return unavailable('電子添文の対象区分（年齢・体重・CrCl）における1日最高投与量（' + fmt(max) + ' mg/日）を超えています。');
     }
     stock = dose / 100;
-    var hasFinal = String(p.finalVolume == null ? '' : p.finalVolume).trim() !== '';
-    var defaultNote = '';
-    if (dose >= 500 && dose <= 1500) {
-      if (!hasFinal) {
-        final = stock + 100;
-        defaultNote = '（最終総量未入力のため、電子添文14.1.1の希釈液100 mL＋原液 ' + fmt(stock) + ' mL＝計算上 ' + fmt(final) + ' mLを使用）';
+    var prep;
+    if (final === null) {
+      if (dose >= 500 && dose <= 1500) {
+        rows = [{title: '生理食塩液 100 mL で希釈', add: 100, how: '生理食塩液 100 mL に原液 ' + fmt(stock) + ' mL を加える', note: '電子添文14.1.1の希釈方法（1回量500〜1500 mgは100 mLで希釈）。'}];
       } else {
-        if (!isFinite(final) || final <= stock) {
-          return unavailable('イーケプラ点滴静注は希釈して投与します（7.1）。最終総量は原液採取量（' + fmt(stock) + ' mL）より大きい値を入力してください。');
-        }
-        if (Math.abs(final - (stock + 100)) > 1e-6 && !p.bagVerified) {
-          return unavailable('電子添文14.1.1の標準例（原液 ' + fmt(stock) + ' mL＋希釈液100 mL＝' + fmt(stock + 100) + ' mL）と異なる最終総量で計算する場合は、「経口代替の希釈後総量を薬剤部手順で確認済み」にチェックしてください。');
-        }
+        /* 500 mg未満（成人の腎機能調整250 mg・小児）は液量の明記がない。成人の最終濃度（約5〜13 mg/mL）の上限を超えない最小量を5 mL単位で示す */
+        var add = Math.max(5, Math.ceil((dose / 13 - stock) / 5 - 1e-9) * 5);
+        rows = [{title: '生理食塩液 ' + add + ' mL で希釈', add: add, how: '生理食塩液 ' + add + ' mL に原液 ' + fmt(stock) + ' mL を加える',
+          note: '500 mg未満の希釈液量は電子添文に記載がありません。電子添文14.1.1「成人での希釈濃度を目安に」に沿い、成人の最終濃度（約5〜13 mg/mL）の上限を超えない最小量を本ツールで計算した目安です。'}];
       }
+      prep = planBox('調製と投与の例（15分で全量）', dose, 100, 15, rows, 15, '希釈液は生理食塩液・乳酸リンゲル液・5%ブドウ糖注射液（電子添文14.1.1）。原液のまま投与せず（7.1）、希釈後は速やかに使用します（14.1.2）。');
     } else {
-      if (!hasFinal || !isFinite(final) || final <= stock || !p.bagVerified) {
-        return unavailable('1回500 mg未満（成人腎機能調整時の250 mgや小児用量）でも原液投与せず希釈が必要です（電子添文7.1・14.1.1：成人500〜1500 mgでは希釈液100 mL、小児では成人の希釈濃度［最終約5〜13 mg/mL］を目安に希釈液量の減量を考慮）。薬剤部手順で確認した希釈後の最終総量（原液 ' + fmt(stock) + ' mL超）を入力し、「経口代替の希釈後総量を薬剤部手順で確認済み」にチェックしてください。');
+      if (!isFinite(final) || final <= stock) {
+        return unavailable('イーケプラ点滴静注は希釈して投与します（7.1）。最終総量は原液採取量（' + fmt(stock) + ' mL）より大きい値を入力してください。');
       }
+      if (!(dose >= 500 && dose <= 1500 && Math.abs(final - (stock + 100)) <= 1e-6) && !p.bagVerified) {
+        return unavailable('電子添文14.1.1の希釈方法（500〜1500 mgを100 mLで希釈）と異なる最終総量で計算する場合は、「希釈後の最終総量を薬剤部の手順で確認した」にチェックしてください。最終総量を空欄にすると調製例を自動で示します。');
+      }
+      prep = '<p>希釈後の最終総量 <strong>' + fmt(final) + ' mL</strong>（追加希釈液 ' + fmt(final - stock) + ' mL：生理食塩液・乳酸リンゲル液・5%ブドウ糖注射液）。15分で点滴静注。' + pumpText(final, 15, 15) + '。</p>';
     }
     return {
       status: 'ok',
       html: '<h3>イーケプラ：経口代替 <span class="tag">重積負荷ではない</span></h3>' +
         '<p class="output-number">' + fmt(dose) + ' mg / 回（1日2回、日量 ' + fmt(daily) + ' mg）</p>' +
-        '<p>500 mg/5 mL（100 mg/mL）、原液 ' + fmt(stock) + ' mL、開封 ' + Math.ceil(dose / 500) + ' 瓶（過量充填のため表示量を計量採取）。</p>' +
-        '<p>希釈後の最終総量 <strong>' + fmt(final) + ' mL</strong>（追加希釈液 ' + fmt(final - stock) + ' mL：生理食塩液・乳酸リンゲル液・5%ブドウ糖注射液）' + defaultNote + '。15分を目標に点滴静注。' + pumpText(final, 15, 15) + '。</p>' +
+        '<p>500 mg/5 mL（100 mg/mL）、原液 ' + fmt(stock) + ' mL、開封 ' + Math.ceil(dose / 500) + ' 瓶（過量充填のため表示量を計量採取）。1回量を15分かけて点滴静注します（電子添文6）。</p>' +
+        prep +
         '<p>経口投与が可能になり次第、速やかに経口製剤へ切り替えてください（5日間以上の点滴静注は臨床試験未実施）。</p>' +
         roundNote()
     };
@@ -1048,8 +1055,8 @@ function replacement(v, p, id){
   if (v.months < 48) {
     return unavailable('4歳未満はこの製剤の経口代替の対象外です。');
   }
-  if (!(daily > 0 && dose > 0 && t > 0)) {
-    return unavailable('現在の経口日量、1回投与量、投与時間を入力してください。');
+  if (!(daily > 0 && dose > 0)) {
+    return unavailable('現在の経口薬の1日量を入力してください。');
   }
   if (p.liver === 'unknown') {
     return unavailable('肝障害の程度を選択してください。');
@@ -1080,27 +1087,33 @@ function replacement(v, p, id){
     if (daily > max + 1e-8 || Math.abs(dose * 2 - daily) > 1e-8) {
       return unavailable('日量の上限（' + fmt(max) + ' mg/日）超過、または1日2回の経口代替量（日量の半量）と一致しません。');
     }
+    t = given === null ? 30 : given;
     if (t < 30 || t > 60) {
-      return unavailable('1回量を30〜60分かけて点滴静注します。投与時間を確認してください。');
+      return unavailable('1回量を30〜60分かけて点滴静注します（電子添文6）。投与時間を確認してください。');
     }
     stock = dose / 10;
     n = Math.ceil(dose / 100);
     var n200 = Math.ceil(dose / 200);
-    if (String(p.finalVolume == null ? '' : p.finalVolume).trim() === '') {
-      final = stock;
-    } else if (!isFinite(final) || final <= 0) {
-      return unavailable('最終総量は正の数を入力してください。');
+    if (final === null) {
+      rows = [{title: '原液のまま投与', add: 0, how: '原液（10 mg/mL）' + fmt(stock) + ' mL をシリンジに採り、シリンジポンプで', note: '電子添文14.1.1「本剤は希釈なしで投与できる」。'}];
+      if (stock < 100) {
+        rows.push({title: '生理食塩液 100 mL バッグで希釈', add: 100 - stock, how: '生理食塩液 100 mL バッグから ' + fmt(stock) + ' mL を抜き、原液 ' + fmt(stock) + ' mL を加える',
+          note: 'インタビューフォームの配合変化試験と同じ調製法（生理食塩液100 mLから20 mLを抜き、200 mg［20 mL］を加えて計100 mL）。'});
+      }
+      h = planBox('調製と投与の例（' + fmt(t) + ' 分で全量）', dose, 10, t, rows, 60, '希釈する場合は生理食塩液・5%ブドウ糖注射液・乳酸リンゲル液を使い、希釈後は速やかに使用します（電子添文14.1.1）。');
+    } else {
+      if (!isFinite(final) || final < stock) {
+        return unavailable('最終総量は原液採取量（' + fmt(stock) + ' mL）以上にしてください。');
+      }
+      h = '<p>最終総量 ' + fmt(final) + ' mL（追加希釈液 ' + fmt(final - stock) + ' mL）、' + fmt(t) + ' 分で点滴静注。' + pumpText(final, t, 60) + '。</p>';
     }
-    if (final < stock) {
-      return unavailable('最終総量は原液採取量（' + fmt(stock) + ' mL）以上にしてください。');
-    }
-    h = pumpText(final, t, 60);
     return {
       status: 'ok',
       html: '<h3>ビムパット：経口代替 <span class="tag">重積負荷ではない</span></h3>' +
         '<p class="output-number">' + fmt(dose) + ' mg / 回（1日2回、日量 ' + fmt(daily) + ' mg）</p>' +
-        '<p>濃度10 mg/mL：原液 ' + fmt(stock) + ' mL（100 mg/10 mL規格なら ' + n + ' 瓶、200 mg/20 mL規格なら ' + n200 + ' 瓶；過量充填のため表示量を計量採取）。原液のまま投与可。希釈する場合は生理食塩液・5%ブドウ糖注射液・乳酸リンゲル液を使用。最終総量 ' + fmt(final) + ' mL（追加希釈液 ' + fmt(final - stock) + ' mL）、' + fmt(t) + ' 分を目標。' + h + '。</p>' +
-        '<p>経口と同じ1日用量・回数で一時代替（血液透析後は最大50%の補充投与を検討するため個別判断）。房室ブロック等の伝導障害・徐脈・PR延長薬併用時は心電図を確認してください。</p>' +
+        '<p>10 mg/mL：原液 ' + fmt(stock) + ' mL（100 mg/10 mL規格なら ' + n + ' 瓶、200 mg/20 mL規格なら ' + n200 + ' 瓶；過量充填のため表示量を計量採取）。1回量を30〜60分かけて点滴静注します（電子添文6）。</p>' +
+        h +
+        '<p>経口と同じ1日用量・回数で一時代替します（血液透析後は最大50%の補充投与を検討するため個別判断）。房室ブロック等の伝導障害・徐脈・PR延長薬併用時は心電図を確認してください。</p>' +
         roundNote()
     };
   }
@@ -1128,28 +1141,41 @@ function replacement(v, p, id){
     }
     max = p.liver === 'moderate' ? 4 : p.liver === 'mild' ? 8 : (p.indication === 'partial' && p.therapy === 'mono' ? 8 : 12);
     if (dose !== daily || dose > max || dose % 2 !== 0) {
-      return unavailable('1日1回の経口日量と今回量の一致、肝機能・治療形態別の上限（' + max + ' mg/日）、および2 mg単位の用量を確認してください。');
+      return unavailable('1日1回の経口日量、肝機能・治療形態別の上限（' + max + ' mg/日）、および2 mg単位の用量を確認してください。');
     }
-    if (!isFinite(final) || final <= 0) {
-      return unavailable('希釈後の最終総量（mL）を入力してください。');
-    }
-    if (final < Math.ceil(dose / 2) * 6) {
-      return unavailable('最終総量が各バイアルの溶解に必要な液量の合計（' + (Math.ceil(dose / 2) * 6) + ' mL）より少ないため、調製手順を確認してください。');
-    }
+    t = given === null ? (v.months < 144 ? 90 : 30) : given;
     if ((v.months < 144 && t !== 90) || (v.months >= 144 && t < 30)) {
-      return unavailable('投与時間は4歳以上12歳未満では90分、12歳以上では30分以上です。');
+      return unavailable('投与時間は4歳以上12歳未満では90分、12歳以上では30分以上です（電子添文6）。');
     }
-    conc = dose / final;
-    if (conc < 0.02 - 1e-12 || conc > 0.12 + 1e-12) {
-      return unavailable('希釈後の最終濃度（' + fmt(conc) + ' mg/mL）が電子添文14.1の範囲（0.02〜0.12 mg/mL）外です。最終総量を確認してください。');
+    n = dose / 2;
+    if (final === null) {
+      /* 1瓶ごとに生理食塩液100 mLバッグから6 mLを抜いて溶解し、全量をバッグに戻す（計100 mL）。2〜12 mgで0.02〜0.12 mg/mLに収まる */
+      final = 100;
+      h = planBox('調製と投与の例（' + fmt(t) + ' 分で全量）', dose, 1 / 3, t, [{title: '生理食塩液 100 mL バッグで調製（計 100 mL）', add: 100 - n * 6,
+        how: '生理食塩液 100 mL バッグから 6 mL ずつ抜いて各瓶（' + n + ' 瓶）を溶解し、全量をバッグに戻す',
+        note: '電子添文14.1の溶解（6 mL）と希釈後濃度（0.02〜0.12 mg/mL）の範囲内。インタビューフォームの配合変化試験と同じ調製法で、2 mgを100 mLにした液（0.02 mg/mL）は電子添文3.2にも記載があります。'}],
+        v.months < 144 ? 90 : Infinity, '希釈液は生理食塩液または5%ブドウ糖注射液（電子添文14.1.2）。用時調製し、調製後は速やかに使用して残液は廃棄します（14.1.3）。');
+      conc = dose / final;
+    } else {
+      if (!isFinite(final) || final <= 0) {
+        return unavailable('希釈後の最終総量（mL）を確認してください。');
+      }
+      if (final < n * 6) {
+        return unavailable('最終総量が各バイアルの溶解に必要な液量の合計（' + (n * 6) + ' mL）より少ないため、調製手順を確認してください。');
+      }
+      conc = dose / final;
+      if (conc < 0.02 - 1e-12 || conc > 0.12 + 1e-12) {
+        return unavailable('希釈後の最終濃度（' + fmt(conc) + ' mg/mL）が電子添文14.1の範囲（0.02〜0.12 mg/mL）外です。最終総量を確認してください（空欄にすると調製例を自動で示します）。');
+      }
+      h = '<p>各瓶を6 mLで溶解後、生理食塩液または5%ブドウ糖注射液で<strong>最終総量 ' + fmt(final) + ' mL</strong>に希釈（最終濃度 ' + fmt(conc) + ' mg/mL）。' + fmt(t) + ' 分で点滴静注。' + pumpText(final, t, v.months < 144 ? 90 : Infinity) + '。</p>';
     }
-    h = pumpText(final, t, v.months < 144 ? 90 : Infinity);
     return {
       status: 'ok',
       html: '<h3>フィコンパ：経口代替 <span class="tag">重積負荷ではない</span></h3>' +
         '<p class="output-number">' + fmt(dose) + ' mg / 日（1日1回）</p>' +
-        '<p>2 mg規格 ' + Math.ceil(dose / 2) + ' 瓶。各瓶に注射用水・生理食塩液・5%ブドウ糖注射液のいずれか6 mLを加えて溶解後、生理食塩液または5%ブドウ糖注射液で<strong>最終総量 ' + fmt(final) + ' mL</strong>に希釈（最終濃度 ' + fmt(conc) + ' mg/mL）。バイアルに4%の過量充填があるため、溶解液の吸引・調製手順は院内薬剤部手順を確認してください。</p>' +
-        '<p>' + fmt(t) + ' 分を目標に点滴静注。' + h + '。ポリエチレン製バッグを使用し、PVC製バッグ・チューブやポリプロピレン製バッグは吸着のおそれがあるため避けてください。</p>' +
+        '<p>2 mg規格 ' + n + ' 瓶。各瓶を注射用水・5%ブドウ糖注射液・生理食塩液のいずれか6 mLで溶解します（電子添文14.1.1）。バイアルには採取量を考慮した4%の過量充填があります。' + (v.months < 144 ? '4歳以上12歳未満は90分' : '12歳以上は30分以上') + 'かけて点滴静注します（電子添文6）。</p>' +
+        h +
+        '<p>ポリエチレン製の点滴バッグを使い、ポリプロピレン製バッグとポリ塩化ビニル製のチューブ・バッグは吸着のおそれがあるため避けてください（電子添文14.2）。</p>' +
         roundNote()
     };
   }
@@ -1163,25 +1189,31 @@ function replacement(v, p, id){
     if (daily > 200 || Math.abs(dose * 2 - daily) > 1e-8) {
       return unavailable('成人1日最高200 mg以下、および1日2回の経口代替量（日量の半量）を確認してください。');
     }
+    t = given === null ? 15 : given;
     if (t < 2 || t > 15) {
-      return unavailable('1回量を2〜15分かけて静脈内投与します。投与時間を確認してください。');
+      return unavailable('1回量を2〜15分かけて静脈内投与します（電子添文6）。投与時間を確認してください。');
     }
     stock = dose / 10;
     n = Math.ceil(dose / 25);
-    if (String(p.finalVolume == null ? '' : p.finalVolume).trim() === '') {
-      final = stock;
-    } else if (!isFinite(final) || final <= 0) {
-      return unavailable('最終総量は正の数を入力してください。');
+    if (final === null) {
+      rows = [{title: '原液のまま投与', add: 0, how: '原液（10 mg/mL）' + fmt(stock) + ' mL をシリンジに採り、シリンジポンプで', note: '電子添文7.3「希釈して投与することができる」（希釈は任意）。'}];
+      if (stock < 100) {
+        rows.push({title: '生理食塩液 100 mL バッグで希釈', add: 100 - stock, how: '生理食塩液 100 mL バッグから ' + fmt(stock) + ' mL を抜き、原液 ' + fmt(stock) + ' mL を加える',
+          note: 'インタビューフォームの配合変化試験と同じ調製法（生理食塩液100 mLから抜いた量の原液を加える）。ただし試験は50 mg/5 mL製剤（国内品は25 mg/2.5 mL）で行われています。'});
+      }
+      h = planBox('調製と投与の例（' + fmt(t) + ' 分で全量）', dose, 10, t, rows, 15, '希釈する場合は生理食塩液・5%ブドウ糖注射液・乳酸リンゲル液を使い、希釈後は速やかに使用します（電子添文14.1）。');
+    } else {
+      if (!isFinite(final) || final < stock) {
+        return unavailable('最終総量は原液採取量（' + fmt(stock) + ' mL）以上にしてください。');
+      }
+      h = '<p>最終総量 ' + fmt(final) + ' mL（追加希釈液 ' + fmt(final - stock) + ' mL）、' + fmt(t) + ' 分で静脈内投与。' + pumpText(final, t, 15) + '。</p>';
     }
-    if (final < stock) {
-      return unavailable('最終総量は原液採取量（' + fmt(stock) + ' mL）以上にしてください。');
-    }
-    h = pumpText(final, t, 15);
     return {
       status: 'ok',
       html: '<h3>ブリィビアクト：経口代替 <span class="tag">重積負荷ではない</span></h3>' +
         '<p class="output-number">' + fmt(dose) + ' mg / 回（1日2回、日量 ' + fmt(daily) + ' mg）</p>' +
-        '<p>25 mg/2.5 mL（10 mg/mL）、原液 ' + fmt(stock) + ' mL、開封 ' + n + ' 瓶（過量充填のため表示量を計量採取）。原液投与可。希釈する場合は生理食塩液・5%ブドウ糖注射液・乳酸リンゲル液で速やかに使用。最終総量 ' + fmt(final) + ' mL（追加希釈液 ' + fmt(final - stock) + ' mL）、' + fmt(t) + ' 分を目標。' + h + '。</p>' +
+        '<p>25 mg/2.5 mL（10 mg/mL）、原液 ' + fmt(stock) + ' mL、開封 ' + n + ' 瓶（過量充填のため表示量を計量採取）。1回量を2〜15分かけて静脈内投与します（電子添文6）。</p>' +
+        h +
         '<p>肝機能障害患者（Child-Pugh A〜C）では血中濃度上昇のおそれがあります（電子添文9.3.1）。カルバマゼピン・フェニトイン・リファンピシン等の併用注意薬と精神症状を確認してください。</p>' +
         roundNote()
     };
@@ -1320,10 +1352,9 @@ function calculationBasis(id, v, p){
   if (mode === 'replacement') {
     name = '経口代替：入力された経口処方の1回量';
     d = num(p.dose);
-    var fv = String(p.finalVolume == null ? '' : p.finalVolume).trim() !== '' ? num(p.finalVolume) : (id === 'levetiracetam' ? d / 100 + 100 : d / 10);
     formula = '入力日量 ' + fmt(num(p.dailyDose)) + ' mg/日 ÷ ' + (id === 'perampanel' ? '1回' : '2回') + ' = ' + fmt(d) + ' mg/回';
-    if (id === 'perampanel' || id === 'levetiracetam') {
-      formula += '（希釈後総量 ' + fmt(fv) + ' mL、濃度 ' + fmtDec(d / fv, 4) + ' mg/mL）';
+    if ((id === 'perampanel' || id === 'levetiracetam') && String(p.finalVolume == null ? '' : p.finalVolume).trim() !== '') {
+      formula += '（希釈後総量 ' + fmt(num(p.finalVolume)) + ' mL、濃度 ' + fmtDec(d / num(p.finalVolume), 4) + ' mg/mL）';
     }
   } else if (id === 'diazepam') {
     if (mode === 'jp_se') {
@@ -1566,15 +1597,15 @@ function updateDynamicPrompts(drug, mode, stage, ageMonths){
     minLabel.textContent = '投与時間（分：電子添文は15分）';
     minInput.placeholder = '15';
   } else if (mode === 'replacement' && drug === 'lacosamide') {
-    minLabel.textContent = '投与時間（分：30〜60分）';
-    minInput.placeholder = '30〜60';
+    minLabel.textContent = '投与時間（分：30〜60）';
+    minInput.placeholder = '空欄なら30分';
   } else if (mode === 'replacement' && drug === 'perampanel') {
     if (el('age').value !== '' && ageMonths < 144) {
       minLabel.textContent = '投与時間（分：4〜12歳未満は90分）';
-      minInput.placeholder = '90';
+      minInput.placeholder = '空欄なら90分';
     } else {
       minLabel.textContent = '投与時間（分：12歳以上は30分以上）';
-      minInput.placeholder = '30以上（例：30, 60, 90）';
+      minInput.placeholder = '空欄なら30分';
     }
   } else if (drug === 'levetiracetam' && mode === 'jp_se') {
     minLabel.textContent = '投与時間（分：任意）';
@@ -1583,27 +1614,16 @@ function updateDynamicPrompts(drug, mode, stage, ageMonths){
     minLabel.textContent = '投与時間（分：任意）';
     minInput.placeholder = '空欄なら最短時間で提案';
   } else if (mode === 'replacement' && drug === 'brivaracetam') {
-    minLabel.textContent = '投与時間（分：2〜15分）';
-    minInput.placeholder = '2〜15';
+    minLabel.textContent = '投与時間（分：2〜15）';
+    minInput.placeholder = '空欄なら15分';
   } else {
     minLabel.textContent = '投与時間（分）';
     minInput.placeholder = '経口代替で必要時';
   }
 
   var fvLabel = el('finalVolumeLabel'), fvInput = el('finalVolume');
-  if (mode === 'replacement' && drug === 'levetiracetam') {
-    fvLabel.textContent = '希釈後の最終総量（mL）';
-    fvInput.placeholder = '500〜1500 mgで空欄なら原液＋100 mL';
-  } else if (mode === 'replacement' && drug === 'perampanel') {
-    fvLabel.textContent = '希釈後の最終総量（mL：0.02〜0.12 mg/mL）';
-    fvInput.placeholder = '例：100（必須）';
-  } else if (mode === 'replacement' && (drug === 'lacosamide' || drug === 'brivaracetam')) {
-    fvLabel.textContent = '最終総量（mL：原液投与なら空欄可）';
-    fvInput.placeholder = '空欄＝原液量、希釈時は総mL';
-  } else {
-    fvLabel.textContent = '最終総量（mL）';
-    fvInput.placeholder = '経口代替で必要時';
-  }
+  fvLabel.textContent = '最終総量（mL：任意）';
+  fvInput.placeholder = mode === 'replacement' ? '空欄なら調製例を表示' : '必要時に入力';
 
   var elapsedLabel = el('elapsedLabel'), elapsedInput = el('elapsed');
   if (drug === 'nasal' && stage === 'repeat') {
@@ -1652,8 +1672,8 @@ function configure(){
     age: 1, unit: 1, weight: 1, drug: 1,
     regimen: !!drug,
     rescue: !!drug && mode !== 'replacement' && mode !== 'infusion',
-    history: !!drug && mode !== 'replacement' && mode !== 'infusion',
-    sameDrug: !!drug && mode !== 'replacement' && mode !== 'infusion',
+    history: !!drug && mode !== 'replacement' && mode !== 'infusion' && el('rescue').value === 'yes',
+    sameDrug: !!drug && mode !== 'replacement' && mode !== 'infusion' && !(BZD_IDS.indexOf(drug) >= 0 && el('rescue').value === 'none'),
     resp: !!drug,
     renal: !!drug,
     hepatic: !!drug
@@ -1724,9 +1744,8 @@ function configure(){
     }
   }
   if (mode === 'replacement' && ['levetiracetam', 'lacosamide', 'perampanel', 'brivaracetam'].indexOf(drug) >= 0) {
-    show.dose = 1;
     show.dailyDose = 1;
-    show.minutes = 1;
+    show.minutes = drug !== 'levetiracetam' ? 1 : 0;
     show.finalVolume = 1;
     show.liver = 1;
     if (drug === 'levetiracetam') {
@@ -1827,6 +1846,15 @@ function jumpVisibility(){
 window.addEventListener('scroll', jumpVisibility);
 window.addEventListener('resize', jumpVisibility);
 
+/* 経口代替の1回量：フィコンパは1日1回、ほかは1日2回 */
+function replacementDose(){
+  var d = Number(el('dailyDose').value);
+  if (el('dailyDose').value === '' || !isFinite(d)) {
+    return '';
+  }
+  return String(el('drug').value === 'perampanel' ? d : Math.round(d / 2 * 1e6) / 1e6);
+}
+
 function update(){
   configure();
   var p = {
@@ -1841,7 +1869,7 @@ function update(){
     bagVerified: activeCheck('bagVerified'),
     extreme: activeCheck('extreme'),
     regimen: el('regimen').value,
-    dose: activeVal('dose', ''),
+    dose: el('regimen').value === 'replacement' ? replacementDose() : activeVal('dose', ''),
     priorDose: activeVal('priorDose', ''),
     rate: activeVal('rate', ''),
     category: activeVal('category', ''),
@@ -1863,7 +1891,7 @@ function update(){
     history: activeVal('history', ''),
     therapy: activeVal('therapy', ''),
     midProduct: activeVal('midProduct', ''),
-    sameDrug: activeVal('sameDrug', 'unknown'),
+    sameDrug: activeVal('sameDrug', BZD_IDS.indexOf(el('drug').value) >= 0 && el('rescue').value === 'none' ? 'no' : 'unknown'),
     priorDaily: activeVal('priorDaily', ''),
     perRenal: activeVal('perRenal', 'unknown'),
     perBenefit: activeCheck('perBenefit'),
@@ -1960,12 +1988,12 @@ ids.forEach(function(id){
       var clear = ['dose', 'dailyDose', 'finalVolume', 'minutes', 'rate', 'pedRate'];
       if (id === 'drug') {
         clear = clear.concat(['priorDose', 'priorCount', 'elapsed', 'priorDaily']);
-        el('sameDrug').value = 'unknown';
         el('stage').value = 'initial';
         el('category').value = '';
-        if (BZD_IDS.indexOf(el('drug').value) >= 0 && el('rescue').value === 'none') {
-          el('sameDrug').value = 'no';
-        }
+        /* 薬剤を替えたら用法も既定に戻す。経口代替だけが計算対象の3剤は「経口代替」で開く */
+        el('regimen').value = ['lacosamide', 'perampanel', 'brivaracetam'].indexOf(el('drug').value) >= 0 ? 'replacement' : 'jp_se';
+        /* ベンゾジアゼピンは前投薬「なし」なら同一薬剤も未投与。第二段階薬は「投与なし」を初期値にする */
+        el('sameDrug').value = BZD_IDS.indexOf(el('drug').value) < 0 || el('rescue').value === 'none' ? 'no' : 'unknown';
       }
       if (id === 'regimen') {
         el('stage').value = 'initial';
@@ -1983,6 +2011,7 @@ ids.forEach(function(id){
         el('midProduct').value = '';
       }
       el('pbDose').value = '';
+      fillDoseDefaults();
       update();
     });
   } else {
@@ -2009,6 +2038,55 @@ ids.forEach(function(id){
     el(id).addEventListener('change', handler);
   }
 });
+
+/* 初期値：50歳・50 kg・前投薬なし・臓器障害なし。用量は各薬剤の範囲の低い側を入れておく（画面に表示され、変更できる） */
+var START = {age: '50', unit: 'years', weight: '50', rescue: 'none', sameDrug: 'no', liver: 'none', renalStatus: 'normal',
+  perRenal: 'no', indication: 'partial', therapy: 'adjunct', crcl: '90'};
+
+function setStart(){
+  for (var k in START) {
+    el(k).value = START[k];
+  }
+}
+
+function fillDoseDefaults(){
+  var drug = el('drug').value, mode = el('regimen').value, stage = el('stage').value;
+  var age = Number(el('age').value) * (el('unit').value === 'years' ? 12 : 1), adult = age >= 216 || Number(el('weight').value) >= 50;
+  function put(id, val){
+    if (el(id).value === '') {
+      el(id).value = val;
+    }
+  }
+  if (drug === 'levetiracetam' && mode === 'jp_se') {
+    put('dose', '1000');
+    put('priorDaily', '0');
+  }
+  if (drug === 'phenobarbital') {
+    put('pbDose', '15');
+  }
+  if (drug === 'diazepam' && mode === 'esett') {
+    put('pedRate', '0.3');
+  }
+  if (drug === 'midazolamIM') {
+    put('pedRate', '0.2');
+  }
+  if (drug === 'midazolamIV' && mode === 'jp_se') {
+    put('midProduct', 'midafresa');
+    if (stage === 'repeat') {
+      put('pedRate', '0.1');
+    }
+  }
+  if (drug === 'midazolamIV' && mode === 'infusion') {
+    put('rate', '0.1');
+    put('infusionConc', '1');
+  }
+  /* 経口代替の1日量は、成人（または50 kg以上）の開始用量を初期値にする。小児は体重で変わるため空欄 */
+  if (mode === 'replacement' && adult) {
+    put('dailyDose', {levetiracetam: '1000', lacosamide: '100', perampanel: '2', brivaracetam: '50'}[drug] || '');
+  } else if (mode === 'replacement' && drug === 'perampanel') {
+    put('dailyDose', '2');
+  }
+}
 
 buildSegs();
 var drugButtons = document.querySelectorAll('#drugPick button');
@@ -2060,9 +2138,11 @@ el('reset').addEventListener('click', function(){
   ['prior', 'resp', 'renal', 'hepatic', 'dialysis', 'bagVerified', 'extreme', 'perBenefit'].forEach(function(cid){
     el(cid).checked = false;
   });
+  setStart();
   update();
 });
 
+setStart();
 update();
 })();
 </script></body></html>

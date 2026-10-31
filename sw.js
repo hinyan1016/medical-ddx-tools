@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v313';
+const CACHE_NAME = 'ddx-tools-v314';
 const ASSETS = [
   './calorie_protein_calculator.html',
   './drug_eruption_assessment.html',
