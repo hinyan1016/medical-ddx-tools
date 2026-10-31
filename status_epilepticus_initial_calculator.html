@@ -85,6 +85,12 @@ input:focus,select:focus,button:focus-visible{outline:3px solid #8bb8d8;outline-
 .basis strong{color:var(--navy-d)}
 .alert{background:#fdf0ef;border-left:4px solid #b03a2e;border-radius:6px;padding:9px 12px;margin:10px 0;font-size:.86rem}
 .fine{font-size:.78rem!important;color:var(--muted)}
+.plan{border:1px solid #b7d3e6;border-radius:10px;padding:10px 12px;margin:12px 0;background:#fff}
+.plan-t{font-weight:700;color:var(--navy-d);margin:0 0 6px!important}
+.plan-row{border-top:1px dashed var(--line);padding:8px 0 4px}
+.plan-row p{margin:2px 0!important}
+.plan-h{font-weight:700;font-size:.88rem}
+.plan-pump{font-size:1.05rem;font-weight:800;color:var(--navy-d)}
 .muted{color:var(--muted);font-size:.82rem}
 .tag{font-size:.72rem;font-weight:700;background:#fdebd0;color:#7d4a00;border-radius:20px;padding:2px 8px;display:inline-block;vertical-align:2px}
 .about{margin-top:16px}
@@ -344,6 +350,7 @@ main{padding-bottom:110px}
 <li><a href="https://www.pmda.go.jp/PmdaSearch/iyakuDetail/620095_1132401A1020_1_11" target="_blank" rel="noopener noreferrer">ホストイン静注750mg 電子添文（2026年6月改訂 第5版）</a></li>
 <li><a href="https://www.pmda.go.jp/PmdaSearch/iyakuDetail/620095_1139400F1023_1_20" target="_blank" rel="noopener noreferrer">ノーベルバール静注用250mg 電子添文（2026年6月改訂 第6版）</a></li>
 <li><a href="https://www.pmda.go.jp/PmdaSearch/iyakuDetail/820110_1139404A1024_1_10" target="_blank" rel="noopener noreferrer">ビムパット点滴静注 電子添文（2026年8月改訂 第8版）</a>、<a href="https://www.pmda.go.jp/PmdaSearch/iyakuDetail/170033_1139405D1025_1_02" target="_blank" rel="noopener noreferrer">フィコンパ点滴静注用2mg 電子添文（2025年10月改訂 第3版）</a>、<a href="https://www.pmda.go.jp/PmdaSearch/iyakuDetail/820110_1139406A1023_1_02" target="_blank" rel="noopener noreferrer">ブリィビアクト静注25mg 電子添文（2025年9月改訂 第3版）</a>：経口代替の用法</li>
+<li>インタビューフォーム（調製・希釈の例と安定性）：<a href="https://www.info.pmda.go.jp/go/interview/1/820110_1139402A1025_1_012_1F.pdf" target="_blank" rel="noopener noreferrer">イーケプラ点滴静注（2024年4月改訂 第14版）</a>、<a href="https://www.info.pmda.go.jp/go/interview/1/620095_1132401A1020_1_E12_1F.pdf" target="_blank" rel="noopener noreferrer">ホストイン静注（2026年6月改訂 第13版）</a>、<a href="https://www.info.pmda.go.jp/go/interview/1/620095_1139400F1023_1_016_1F.pdf" target="_blank" rel="noopener noreferrer">ノーベルバール静注用（2026年6月改訂 第15版）</a></li>
 <li><a href="https://www.childneuro.jp/uploads/files/about/SE2023GL/03SE_vol01.pdf" target="_blank" rel="noopener noreferrer">日本小児神経学会 小児けいれん重積治療ガイドライン2023（総論）</a>、<a href="https://www.childneuro.jp/uploads/files/about/SE2023GL/4SE_vol02CQ.pdf" target="_blank" rel="noopener noreferrer">各論CQ</a></li>
 <li><a href="https://aesnet.org/docs/default-source/press-releases-assets/cse-treatment-chart-final_rerelease.pdf" target="_blank" rel="noopener noreferrer">AES 2016 けいれん性重積アルゴリズム</a>、<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7098487/" target="_blank" rel="noopener noreferrer">ESETT 2019 原著（Kapur et al. NEJM 2019）</a></li>
 </ul>
@@ -577,8 +584,75 @@ function calculate(id, p){
   return result;
 }
 
+/* 希釈の例（電子添文に明示がない項目は、電子添文と矛盾しない範囲の資料から引き、出典を各行に示す） */
+var LEV_FOOT = '希釈液は生理食塩液・乳酸リンゲル液・5%ブドウ糖注射液（電子添文14.1.1）。原液のまま投与せず（7.1）、希釈後は速やかに使用します（14.1.2）。';
+function LEV_ROWS(dose, stock, child){
+  if (child) {
+    /* 小児は成人の希釈濃度（500〜1500 mgを100 mLで希釈＝最終約5〜13 mg/mL）を目安に希釈液量を減らす（電子添文14.1.1）。5 mL単位で切り上げ */
+    var add = Math.max(5, Math.ceil((dose / 13 - stock) / 5 - 1e-9) * 5);
+    return [{title: '生理食塩液 ' + add + ' mL で希釈（小児）', add: add, how: '生理食塩液 ' + add + ' mL に原液 ' + fmt(stock) + ' mL を加える',
+      note: '電子添文14.1.1「小児では成人での希釈濃度を目安に希釈液量の減量を考慮」に沿い、成人での最終濃度の上限（1500 mg＋100 mLで約13 mg/mL）を超えない最小量にしています。'}];
+  }
+  var IENE = '国内臨床試験（IENE ECT with LIFE：イーケプラのインタビューフォーム）では、1000〜3000 mgを生理食塩液100 mLで希釈し、2〜5 mg/kg/分で投与しています。';
+  var rows = [{title: '生理食塩液 100 mL で希釈', add: 100, how: '生理食塩液 100 mL に原液 ' + fmt(stock) + ' mL を加える',
+    note: dose <= 1500 ? '電子添文14.1.1の希釈方法（1回量500〜1500 mgは100 mLで希釈）。' : '1500 mg超の希釈液量は電子添文に記載がありません。' + IENE}];
+  /* 1500 mg以下は電子添文14.1.1が100 mLでの希釈を指示しているため、50 mLの例は出さない */
+  if (dose > 1500) {
+    rows.push({title: '生理食塩液 50 mL で希釈', add: 50, how: '生理食塩液 50 mL に原液 ' + fmt(stock) + ' mL を加える',
+      note: '電子添文に1500 mg超の希釈液量の記載はなく、50 mLとの矛盾はありません。ただし50 mLでの安定性データは見当たらないため、採用は薬剤部・施設の手順で確認してください。'});
+  }
+  return rows;
+}
+var FOS_FOOT = '電子添文は「使用直前に適宜希釈」（14.1.1）とし、投与速度を調節できる方法で投与します（14.2.1）。インタビューフォームでは生理食塩液・5%ブドウ糖注射液で希釈でき、2.5〜40 mg/mLで室温8時間・冷所24時間の安定性が示されています。';
+function FOS_ROWS(d, stock){
+  var rows = [], base = [
+    {add: 100, note: '国内臨床試験（IENE ECT with LIFE：イーケプラのインタビューフォーム）で用いた希釈方法（22.5 mg/kgを生理食塩液100 mLで希釈）。'},
+    {add: 50, note: '液量を減らす場合の例。インタビューフォームの安定性データ（2.5〜40 mg/mL）の範囲内です。'}
+  ];
+  /* 安定性データのある濃度（2.5〜40 mg/mL）に入る液量だけを示す */
+  base.forEach(function(o){
+    var c = d / (stock + o.add);
+    if (c >= 2.5 - 1e-9 && c <= 40 + 1e-9) {
+      rows.push({title: '生理食塩液 ' + o.add + ' mL で希釈', add: o.add, how: '生理食塩液 ' + o.add + ' mL に原液 ' + fmt(stock) + ' mL を加える', note: o.note});
+    }
+  });
+  return rows;
+}
+var PB_FOOT = 'ドパミン・アミカシン・ゲンタマイシン・ベクロニウム等と混合しないでください（電子添文14.1.2）。';
+function PB_ROWS(d, volume){
+  return [{title: '溶解液（50 mg/mL）のまま投与', add: 0, how: '溶解液 ' + fmt(volume) + ' mL をシリンジに採り、シリンジポンプで',
+    note: '電子添文14.1.1の溶解濃度と7.3の投与速度に沿った方法です。溶解後は6時間以内に使用します。生理食塩液のバッグでさらに希釈する方法は、電子添文・インタビューフォームに記載がないため例示しません。'}];
+}
+
+/* 第二段階薬の調製・投与の提案。希釈液量ごとに総量・濃度・ポンプ速度を示す。
+   ポンプ速度は0.1 mL/時単位で切り下げ（規定より速くならない側）、その速度での実時間も示す。
+   rows: [{title, add（加える液量 mL）, how, note}]、maxMin: 許容される最長時間（なければ Infinity） */
+function planBox(title, dose, stockConc, t, rows, maxMin, foot){
+  var stock = dose / stockConc, html = '<div class="plan"><p class="plan-t">' + title + '</p>';
+  rows.forEach(function(o){
+    var vol = stock + o.add, speed = Math.floor(vol * 60 / t * 10 + 1e-9) / 10, real = vol * 60 / speed;
+    var bad = !(speed > 0) || (isFinite(maxMin) && real > maxMin * 1.005);
+    html += '<div class="plan-row"><p class="plan-h">' + o.title + '</p>' +
+      '<p>' + o.how + '（計 ' + fmtDec(vol, 1) + ' mL、' + fmtDec(dose / vol, 1) + ' mg/mL）</p>' +
+      '<p class="plan-pump">' + (bad
+        ? '0.1 mL/時単位の設定では許容時間に収まりません。薬剤部・院内手順で設定してください。'
+        : fmt(speed) + ' mL/時 ・ 予定量 ' + fmtDec(vol, 1) + ' mL（約 ' + fmtDec(real, 1) + ' 分）') + '</p>' +
+      (o.note ? '<p class="fine">' + o.note + '</p>' : '') + '</div>';
+  });
+  var bag = rows.some(function(o){ return o.add > 0; });
+  if (!rows.length) {
+    html += '<p>この用量で安定性データの範囲に入る希釈例がありません。薬剤部・院内手順で調製してください。</p>';
+  }
+  return html + '<p class="fine">' + (foot ? foot + ' ' : '') + (bag ? 'バッグの実容量は表示より多いことがあります。実際の総量が違うときは、その量で速度を計算し直してください。' : '') + 'ポンプの設定上限も確認してください。</p></div>';
+}
+
+/* 投与時間の入力（分）。空欄なら null */
+function minutesInput(p){
+  return String(p.minutes == null ? '' : p.minutes).trim() === '' ? null : num(p.minutes);
+}
+
 function levetiracetamSE(v, p){
-  var dose, rate, time, prior = num(p.priorDaily), mode = p.regimen;
+  var dose, time, prior = num(p.priorDaily), mode = p.regimen, stock;
   if (mode === 'esett') {
     if (p.rescue !== 'yes' || !String(p.history || '').trim() || p.convulsive !== 'yes' || p.refractory !== 'yes') {
       return unavailable('ESETT試験用量はベンゾジアゼピン抵抗性のけいれん性重積を対象とします。前投薬あり・前投薬の内容と反応・けいれん性重積・ベンゾジアゼピン抵抗性の確認を入力してください。');
@@ -588,15 +662,15 @@ function levetiracetamSE(v, p){
     }
     dose = Math.min(60 * v.weight, 4500);
     time = 10;
-    rate = dose / v.weight / time;
+    stock = dose / 100;
     return {
       status: 'ok',
       html: '<h3>イーケプラ：ESETT試験用量 <span class="tag">国内承認用法外</span></h3>' +
         '<p>ベンゾジアゼピン抵抗性けいれん性重積に対する試験プロトコル用量です。国内承認の年齢・用量・投与速度とは異なります。</p>' +
         '<p class="output-number">' + fmt(dose) + ' mg を10分</p>' +
-        '<p>原液 ' + fmt(dose / 100) + ' mL（100 mg/mL）、開封 ' + Math.ceil(dose / 500) + ' 瓶（500 mg/5 mL瓶；過量充填のため表示量を計量採取）。投与速度 ' + fmt(rate) + ' mg/kg/分。</p>' +
+        '<p>原液 ' + fmt(stock) + ' mL（100 mg/mL）、開封 ' + Math.ceil(dose / 500) + ' 瓶（500 mg/5 mL瓶；過量充填のため表示量を計量採取）。投与速度 ' + fmt(dose / v.weight / time) + ' mg/kg/分。</p>' +
+        planBox('調製と投与の例（10分で全量）', dose, 100, time, LEV_ROWS(dose, stock, v.months < 216), Infinity, LEV_FOOT) +
         '<div class="alert">国内電子添文の重積用法は成人1回1000〜3000 mg（1日最大3000 mg）、速度2〜5 mg/kg/分です。小児への重積投与、3000 mg超、5 mg/kg/分超はいずれも国内承認用法外です。既投与量・腎肝機能を確認してください。</div>' +
-        '<p>1500 mgを超える調製は国内電子添文14.1.1に具体的な希釈液量の記載がありません。原液投与はせず、院内薬剤部の調製手順を確認してください。</p>' +
         roundNote()
     };
   }
@@ -604,34 +678,35 @@ function levetiracetamSE(v, p){
     return unavailable('用法を選択してください。');
   }
   if (v.months < 216) {
-    return unavailable('国内電子添文には小児のてんかん重積状態に対する用量の記載がありません（2歳以上のESETT試験用量［国内承認用法外］は用法「指針・試験：添付文書外」、一時的な経口代替は「経口代替」で参照できます）。');
+    return unavailable('国内電子添文には小児のてんかん重積状態に対する用量の記載がありません（2歳以上のESETT試験用量［国内承認用法外］は用法「試験：ESETT」、一時的な経口代替は「経口代替」で参照できます）。');
   }
   dose = num(p.dose);
-  rate = num(p.rate);
-  if (!(dose >= 1000 && dose <= 3000 && rate >= 2 && rate <= 5 && prior >= 0)) {
-    return unavailable('成人の国内重積用法：1回1000〜3000 mg、投与速度2〜5 mg/kg/分、および本日のレベチラセタム既投与総量（0 mgを含む）を入力してください。');
+  if (!(dose >= 1000 && dose <= 3000 && prior >= 0)) {
+    return unavailable('成人の国内重積用法：1回量（1000〜3000 mg）と、本日のレベチラセタム投与済み量（なければ 0）を入力してください。');
   }
   if (dose + prior > 3000) {
     return unavailable('本日の既投与量を含めると1日最大投与量3000 mgを超えます。投与量を提示しません。');
   }
-  time = ceil(dose / (v.weight * rate), 2);
-  var nominalVolume = 100 + dose / 100;
-  var pumpRate = floor(nominalVolume * 60 / time, 2);
-  var pumpMinutes = nominalVolume * 60 / pumpRate;
-  var deliveredRate = dose / (v.weight * pumpMinutes);
-  var pumpExample = dose <= 1500 && isFinite(pumpMinutes) && pumpRate > 0 && deliveredRate >= 2 && deliveredRate <= 5 && deliveredRate <= rate + 1e-10
-    ? '計算上の総量 ' + fmt(nominalVolume) + ' mLを全量投与する場合、ポンプ速度の目安は <strong>' + fmt(pumpRate) + ' mL/時</strong>（小数第2位で切下げ、約 ' + fmtDec(pumpMinutes, 3) + ' 分）。実際の最終総量とポンプ設定により投与時間・mg/kg/分を再確認してください。'
-    : '計算上の総量とポンプ設定の精度では速度を自動提示できません。実際の最終総量と処方速度を確認し、薬剤部・院内手順で設定してください。';
+  /* 2〜5 mg/kg/分に収まる投与時間の幅。空欄なら10分を基本に、幅の中の整数分を提案する */
+  var tMin = dose / (v.weight * 5), tMax = dose / (v.weight * 2), given = minutesInput(p);
+  if (given === null) {
+    time = tMin <= 10 && 10 <= tMax ? 10 : 10 < tMin ? Math.ceil(tMin - 1e-9) : Math.floor(tMax + 1e-9);
+    if (time < tMin - 1e-9 || time > tMax + 1e-9) {
+      time = ceil(tMin, 1);
+    }
+  } else if (given < tMin - 1e-9 || given > tMax + 1e-9) {
+    return unavailable('投与時間 ' + fmt(given) + ' 分では投与速度が2〜5 mg/kg/分の範囲外です。この体重・用量では約 ' + fmt(ceil(tMin, 1)) + '〜' + fmt(floor(tMax, 1)) + ' 分にしてください（空欄にすると自動で提案します）。');
+  } else {
+    time = given;
+  }
+  stock = dose / 100;
   return {
     status: 'ok',
     html: '<h3>イーケプラ：成人の国内承認 重積用法</h3>' +
-      '<p class="output-number">' + fmt(dose) + ' mg</p>' +
-      '<p>原液 ' + fmt(dose / 100) + ' mL（100 mg/mL）、開封 ' + Math.ceil(dose / 500) + ' 瓶（500 mg/5 mL瓶；過量充填のため表示量を計量採取）。</p>' +
-      '<p>選択速度 ' + fmt(rate) + ' mg/kg/分での理論時間は <strong>約 ' + fmtDec(dose / (v.weight * rate), 4) + ' 分</strong>。国内用法の2〜5 mg/kg/分に対応する理論時間は約 ' + fmtDec(dose / (v.weight * 5), 4) + '〜' + fmtDec(dose / (v.weight * 2), 4) + ' 分です（表示は近似値）。実際の総液量・ポンプ設定から投与速度が範囲内か確認してください。本日の合計 ' + fmt(dose + prior) + ' mg / 1日最大3000 mg。</p>' +
-      '<p>' + (dose <= 1500
-        ? '調製例（電子添文14.1.1）：生理食塩液、乳酸リンゲル液または5%ブドウ糖注射液100 mLに原液 ' + fmt(dose / 100) + ' mLを加えて希釈（薬液と希釈液の計算上の合計 ' + fmt(100 + dose / 100) + ' mL）。バッグの過量充填等による実総量は院内手順で確認してください。' + pumpExample
-        : '1500 mg超の調製は電子添文14.1.1に具体的な希釈液量の記載がありません。必ず希釈してから投与し（7.1）、希釈液の種類・量・最終総量は院内薬剤部の手順を確認してください。') + '</p>' +
-      '<p>腎機能・重度肝障害（CrCl過大評価のおそれ）を確認してください。維持療法の腎機能別用量表（7.2注a：てんかん重積状態を除く）を重積初回量へ機械的に適用しないでください。</p>' +
+      '<p class="output-number">' + fmt(dose) + ' mg を ' + fmt(time) + ' 分で</p>' +
+      '<p>原液 ' + fmt(stock) + ' mL（100 mg/mL）、開封 ' + Math.ceil(dose / 500) + ' 瓶（500 mg/5 mL瓶；過量充填のため表示量を計量採取）。速度 ' + fmtDec(dose / (v.weight * time), 2) + ' mg/kg/分。国内用法の2〜5 mg/kg/分に収まる時間は、この体重で約 ' + fmt(ceil(tMin, 1)) + '〜' + fmt(floor(tMax, 1)) + ' 分です。本日の合計 ' + fmt(dose + prior) + ' mg / 1日最大3000 mg。</p>' +
+      planBox('調製と投与の例（' + fmt(time) + ' 分で全量）', dose, 100, time, LEV_ROWS(dose, stock), tMax, LEV_FOOT) +
+      '<p>腎機能・重度肝障害（CrCl過大評価のおそれ）を確認してください。維持療法の腎機能別用量表（7.2：てんかん重積状態を除く）を重積の1回量へ機械的に適用しないでください。</p>' +
       roundNote()
   };
 }
@@ -840,14 +915,22 @@ drugs.fosphenytoin = function(v, p){
   if (v.months < 24) {
     return unavailable('2歳未満のてんかん重積状態に対する用量は国内電子添文に記載がありません。');
   }
-  var d = 22.5 * v.weight, stock = d / 75, rate = Math.min(3 * v.weight, 150), time = ceil(d / rate, 2);
+  var d = 22.5 * v.weight, stock = d / 75, rate = Math.min(3 * v.weight, 150), tMin = d / rate, given = minutesInput(p), time;
+  if (given === null) {
+    time = Math.ceil(tMin - 1e-9);
+  } else if (given < tMin - 1e-9) {
+    return unavailable('投与時間 ' + fmt(given) + ' 分では投与速度の上限（' + fmt(rate) + ' mg/分）を超えます。' + fmt(ceil(tMin, 2)) + ' 分以上にしてください（空欄にすると最短時間で提案します）。');
+  } else {
+    time = given;
+  }
   return {
     status: 'ok',
     html: '<h3>ホストイン静注：国内承認 初回量</h3>' +
-      '<p class="output-number">' + fmt(d) + ' mg（ホスフェニトインナトリウムとして）</p>' +
-      '<p>75 mg/mL、原液 ' + fmt(stock) + ' mL、開封 ' + Math.ceil(d / 750) + ' 瓶（750 mg/10 mL）。<strong>国内表記はホスフェニトインナトリウム重量（mg）であり、海外のフェニトイン当量（mgPE）ではありません。</strong></p>' +
-      '<p>投与速度上限 ' + fmt(rate) + ' mg/分（3 mg/kg/分または150 mg/分の低い方）、最短 <strong>' + time + ' 分以上</strong>。心電図・血圧・呼吸を継続監視し、高齢者・衰弱患者・心疾患・肝腎障害では通常速度よりさらに緩徐に投与（電子添文7.1）。希釈条件は院内手順を確認。</p>' +
-      '<p>本剤投与後も発作が止まらない場合、本剤の追加投与はせず他の抗てんかん薬を検討してください（電子添文7.2）。既投与フェニトインがある場合は過量に注意し血中濃度を確認してください。</p>' +
+      '<p class="output-number">' + fmt(d) + ' mg を ' + fmt(time) + ' 分以上で</p>' +
+      '<p>ホスフェニトインナトリウムとして。75 mg/mL、原液 ' + fmt(stock) + ' mL、開封 ' + Math.ceil(d / 750) + ' 瓶（750 mg/10 mL）。<strong>国内表記はホスフェニトインナトリウム重量（mg）であり、海外のフェニトイン当量（mgPE）ではありません。</strong></p>' +
+      '<p>投与速度の上限は ' + fmt(rate) + ' mg/分（3 mg/kg/分または150 mg/分の低い方）で、最短 ' + fmt(ceil(tMin, 2)) + ' 分です。' + (given === null ? '提案はこれを切り上げた ' + fmt(time) + ' 分です。' : '') + '高齢者・衰弱患者・心疾患・肝腎障害では、さらに緩徐に投与します（電子添文7.1）。投与時間の欄に長い時間を入れると再計算します。</p>' +
+      planBox('調製と投与の例（' + fmt(time) + ' 分で全量）', d, 75, time, FOS_ROWS(d, stock), Infinity, FOS_FOOT) +
+      '<p>心電図・血圧・呼吸を継続監視してください。本剤投与後も発作が止まらない場合、本剤は追加投与せず他の抗てんかん薬を検討します（電子添文7.2）。既投与フェニトインがある場合は過量に注意し、血中濃度を確認してください（7.3）。</p>' +
       initialWarning(p, 'fosphenytoin') + roundNote()
   };
 };
@@ -863,14 +946,22 @@ drugs.phenobarbital = function(v, p){
   if (!(mgkg >= 15 && mgkg <= 20)) {
     return unavailable('国内電子添文のてんかん重積状態用法（15〜20 mg/kg）の範囲で用量を入力してください。');
   }
-  var d = mgkg * v.weight, n = Math.ceil(d / 250), volume = d / 50, time = ceil(Math.max(10, d / 100), 2);
+  var d = mgkg * v.weight, n = Math.ceil(d / 250), volume = d / 50, tMin = Math.max(10, d / 100), given = minutesInput(p), time;
+  if (given === null) {
+    time = Math.ceil(tMin - 1e-9);
+  } else if (given < tMin - 1e-9) {
+    return unavailable('投与時間 ' + fmt(given) + ' 分は、電子添文7.3（10分以上かつ100 mg/分以下）より短くなります。' + fmt(ceil(tMin, 2)) + ' 分以上にしてください（空欄にすると最短時間で提案します）。');
+  } else {
+    time = given;
+  }
   return {
     status: 'ok',
     html: '<h3>ノーベルバール静注用：国内承認 重積用法</h3>' +
-      '<p class="output-number">' + fmt(d) + ' mg（フェノバルビタールとして）</p>' +
-      '<p>250 mg/瓶を ' + n + ' 瓶開封。各瓶に注射用水または生理食塩液5 mLを加えて溶解（50 mg/mL）。溶解液合計 ' + (n * 5) + ' mLから <strong>' + fmt(volume) + ' mL</strong> を採取（開封数に合わせて切り上げない）。溶解後は速やかに、遅くとも6時間以内に使用。</p>' +
-      '<p>10分以上かけて、かつ100 mg/分を超えない速度で緩徐に静注：この用量では <strong>' + time + ' 分以上</strong>。50 mg/mL溶解液のまま投与する場合の速度上限は ' + floor(Math.min(volume, Number(fmt(volume))) * 60 / time, 2) + ' mL/時（切下げ）。追加希釈や配合変化（酸性薬液等）は院内薬剤部に確認してください。</p>' +
-      '<p>作用発現が遅いため速効性薬剤を第一選択とし、第二選択以降で検討します（電子添文5）。前投薬後の強い呼吸・循環抑制に注意してください。てんかん重積状態での追加用量は確立していません。</p>' +
+      '<p class="output-number">' + fmt(d) + ' mg を ' + fmt(time) + ' 分以上で</p>' +
+      '<p>フェノバルビタールとして。250 mg/瓶を ' + n + ' 瓶開封し、各瓶に注射用水または生理食塩液5 mLを加えて溶解（50 mg/mL）。溶解液合計 ' + (n * 5) + ' mLから <strong>' + fmt(volume) + ' mL</strong> を採取します（開封数に合わせて切り上げない）。溶解後は速やかに、6時間以内に使用（電子添文14.1.1）。</p>' +
+      '<p>10分以上かけて、100 mg/分を超えない速度で緩徐に投与します（電子添文7.3）。この用量の最短は ' + fmt(ceil(tMin, 2)) + ' 分です。</p>' +
+      planBox('調製と投与の例（' + fmt(time) + ' 分で全量）', d, 50, time, PB_ROWS(d, volume), Infinity, PB_FOOT) +
+      '<p>作用発現が遅いため、速効性の薬剤を先に使い、第二選択以降で検討します（電子添文5）。前投薬後の強い呼吸・循環抑制に注意してください。てんかん重積状態での追加用量は確立していません。</p>' +
       initialWarning(p, 'phenobarbital') + roundNote()
   };
 };
@@ -941,7 +1032,7 @@ function replacement(v, p, id){
       }
     } else {
       if (!hasFinal || !isFinite(final) || final <= stock || !p.bagVerified) {
-        return unavailable('1回500 mg未満（成人腎機能調整時の250 mgや小児用量）でも原液投与せず希釈が必要です（電子添文7.1・14.1.1：成人500〜1500 mgでは希釈液100 mL、小児では成人の希釈濃度［約5〜15 mg/mL］を目安に希釈液量の減量を考慮）。薬剤部手順で確認した希釈後の最終総量（原液 ' + fmt(stock) + ' mL超）を入力し、「経口代替の希釈後総量を薬剤部手順で確認済み」にチェックしてください。');
+        return unavailable('1回500 mg未満（成人腎機能調整時の250 mgや小児用量）でも原液投与せず希釈が必要です（電子添文7.1・14.1.1：成人500〜1500 mgでは希釈液100 mL、小児では成人の希釈濃度［最終約5〜13 mg/mL］を目安に希釈液量の減量を考慮）。薬剤部手順で確認した希釈後の最終総量（原液 ' + fmt(stock) + ' mL超）を入力し、「経口代替の希釈後総量を薬剤部手順で確認済み」にチェックしてください。');
       }
     }
     return {
@@ -1312,8 +1403,7 @@ function calculationBasis(id, v, p){
       source = 'ESETT 2019 原著（Kapur et al. N Engl J Med 2019; PMC7098487）';
     } else {
       name = 'イーケプラ：国内成人重積時の選択量';
-      var exactMin = num(p.dose) / (num(p.rate) * w);
-      formula = '選択量 ' + fmt(num(p.dose)) + ' mg ÷（速度 ' + fmt(num(p.rate)) + ' mg/kg/分 × 体重 ' + fmt(w) + ' kg）= 約 ' + fmtDec(exactMin, 4) + ' 分（理論値の近似）';
+      formula = '選択量 ' + fmt(num(p.dose)) + ' mg（1回1000〜3000 mg、速度2〜5 mg/kg/分、1日最大3000 mg）';
     }
   } else if (id === 'fosphenytoin') {
     name = 'ホストイン：国内承認 重積初回量';
@@ -1486,6 +1576,12 @@ function updateDynamicPrompts(drug, mode, stage, ageMonths){
       minLabel.textContent = '投与時間（分：12歳以上は30分以上）';
       minInput.placeholder = '30以上（例：30, 60, 90）';
     }
+  } else if (drug === 'levetiracetam' && mode === 'jp_se') {
+    minLabel.textContent = '投与時間（分：任意）';
+    minInput.placeholder = '空欄なら自動で提案';
+  } else if ((drug === 'fosphenytoin' || drug === 'phenobarbital') && mode === 'jp_se') {
+    minLabel.textContent = '投与時間（分：任意）';
+    minInput.placeholder = '空欄なら最短時間で提案';
   } else if (mode === 'replacement' && drug === 'brivaracetam') {
     minLabel.textContent = '投与時間（分：2〜15分）';
     minInput.placeholder = '2〜15';
@@ -1609,11 +1705,12 @@ function configure(){
     show.refractory = 1;
   }
   if (drug === 'levetiracetam' && mode === 'jp_se') {
-    show.rate = 1;
     show.dose = 1;
     show.priorDaily = 1;
-    el('rateLabel').textContent = '投与速度（2〜5 mg/kg/分）';
-    el('rate').placeholder = '2〜5';
+    show.minutes = 1;
+  }
+  if ((drug === 'fosphenytoin' || drug === 'phenobarbital') && mode === 'jp_se' && stage === 'initial') {
+    show.minutes = 1;
   }
   if (el('sameDrug').value === 'yes' && mode !== 'replacement' && mode !== 'infusion') {
     show.priorDose = 1;
