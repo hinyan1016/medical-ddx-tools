@@ -1,5 +1,7 @@
-const CACHE_NAME = 'ddx-tools-v319';
+const CACHE_NAME = 'ddx-tools-v320';
 const ASSETS = [
+  './infographics/perioperative-antithrombotic/index.html',
+  './infographics/perioperative-antithrombotic/overview.png',
   './calorie_protein_calculator.html',
   './drug_eruption_assessment.html',
   './infographics/acne-vulgaris-guide-reference-repair-20261029/index.html',
