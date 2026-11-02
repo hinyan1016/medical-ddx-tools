@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v322';
+const CACHE_NAME = 'ddx-tools-v323';
 const ASSETS = [
   './infographics/cerebral-calcification-differential/index.html',
   './infographics/perioperative-antithrombotic/index.html',
