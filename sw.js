@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v323';
+const CACHE_NAME = 'ddx-tools-v324';
 const ASSETS = [
   './infographics/cerebral-calcification-differential/index.html',
   './infographics/perioperative-antithrombotic/index.html',
@@ -12,6 +12,12 @@ const ASSETS = [
   './infographics/fat-embolism-overview-20261101/index.html',
   './infographics/receipt-byomei-guide/index.html',
   './infographics/red-white-fish/index.html',
+  './infographics/ici-encephalopathy-reference-repair-20261102/index.html',
+  './infographics/ici-encephalopathy-reference-repair-20261102/infographic.png',
+  './infographics/ect-review-reference-repair-20261102/index.html',
+  './infographics/ect-review-reference-repair-20261102/infographic.png',
+  './infographics/neuro-hypersexuality-pharmacotherapy-reference-repair-20261102/index.html',
+  './infographics/neuro-hypersexuality-pharmacotherapy-reference-repair-20261102/infographic.png',
   './infographics/tolvaptan-samsca-reference-repair-20261102/index.html',
   './infographics/tolvaptan-samsca-reference-repair-20261102/infographic.png',
   './infographics/mgo-renal-hypermagnesemia-reference-repair-20261102/index.html',
