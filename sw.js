@@ -1,5 +1,6 @@
-const CACHE_NAME = 'ddx-tools-v321';
+const CACHE_NAME = 'ddx-tools-v322';
 const ASSETS = [
+  './infographics/cerebral-calcification-differential/index.html',
   './infographics/perioperative-antithrombotic/index.html',
   './infographics/perioperative-antithrombotic/overview.png',
   './calorie_protein_calculator.html',
