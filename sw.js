@@ -1,9 +1,22 @@
-const CACHE_NAME = 'ddx-tools-v320';
+const CACHE_NAME = 'ddx-tools-v321';
 const ASSETS = [
   './infographics/perioperative-antithrombotic/index.html',
   './infographics/perioperative-antithrombotic/overview.png',
   './calorie_protein_calculator.html',
   './drug_eruption_assessment.html',
+  './infographics/endoscopy-vs-barium-screening/index.html',
+  './infographics/entry-6802418398342812136-reference-repair-20261101/index.html',
+  './infographics/entry-6802418398427677832-reference-repair-20261101/index.html',
+  './infographics/entry-6802418398495991845-reference-repair-20261101/index.html',
+  './infographics/fat-embolism-overview-20261101/index.html',
+  './infographics/receipt-byomei-guide/index.html',
+  './infographics/red-white-fish/index.html',
+  './infographics/tolvaptan-samsca-reference-repair-20261102/index.html',
+  './infographics/tolvaptan-samsca-reference-repair-20261102/infographic.png',
+  './infographics/mgo-renal-hypermagnesemia-reference-repair-20261102/index.html',
+  './infographics/mgo-renal-hypermagnesemia-reference-repair-20261102/infographic.png',
+  './infographics/drug-eruption-emergency-reference-repair-20261102/index.html',
+  './infographics/drug-eruption-emergency-reference-repair-20261102/infographic.png',
   './infographics/acne-vulgaris-guide-reference-repair-20261029/index.html',
   './infographics/acne-vulgaris-guide-reference-repair-20261029/infographic.png',
   './infographics/constipation-drugs-adult-reference-repair-20261029/index.html',
