@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v329';
+const CACHE_NAME = 'ddx-tools-v330';
 const ASSETS = [
   './neuro_test_navigator.html',
   './cerebral_calcification.html',

@@ -51,14 +51,32 @@ def main():
     page = replace_once(page, 'var copy=document.documentElement.cloneNode(true);', "var copy=document.documentElement.cloneNode(true);Array.prototype.forEach.call(copy.querySelectorAll('[data-online-only]'),function(node){node.parentNode.removeChild(node);});")
     page = replace_once(page, '</body>', '''<script data-online-only>if(/^https?:$/.test(location.protocol)&&'serviceWorker'in navigator){navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(function(reg){return reg.update();}).catch(function(){});}</script>
 </body>''')
+    # 公開版の画面はこのフォルダで管理し、旧試作からの再生成でも保持する。
+    ui_path = Path(__file__).parent / 'app.js'
+    ui = ui_path.read_text(encoding='utf-8')
+    matches = [m for m in re.finditer(r'<script(?:\s[^>]*)?>(.*?)</script>', page, re.S)
+               if 'function coverage()' in m.group(1)]
+    if len(matches) != 1:
+        raise SystemExit('元HTMLのアプリ本体を特定できないため中止')
+    page = replace_once(page, matches[0].group(0), '<script id="neurofind-app">' + ui + '</script>')
+    page = replace_once(page, '<button class="side-link" data-action="coverage"><span class="icon-slot" data-icon="check"></span>更新と収録範囲</button>', '<button class="side-link" data-action="updates"><span class="icon-slot" data-icon="check"></span>更新履歴と機能</button>')
+    page = replace_once(page, '<button class="side-link" data-action="manage"><span class="icon-slot" data-icon="database"></span>データの手動更新</button>', '<button class="side-link" data-action="manage"><span class="icon-slot" data-icon="database"></span>データの手動更新</button>\n  <button class="side-link" data-action="about"><span class="icon-slot" data-icon="info"></span>このサイトについて・謝辞</button>')
+    page = replace_once(page, 'data-action="about">情報の範囲と利用について</button>', 'data-action="about">このサイトについて・謝辞</button>')
+    page = replace_once(page, '特殊検査の名前から、依頼先の公式案内まで。<br>疾患名や略語でも、まとめて探せます。', '検体や依頼先で絞り込み、並べて比較。<br>検査情報を保存して、院内でも使えます。')
+    page = replace_once(page, '<span data-icon="search"></span><i></i><span data-icon="vial"></span><i></i><span data-icon="external"></span>', '<span data-icon="search"></span><i></i><span data-icon="compare"></span><i></i><span data-icon="download"></span>')
+    page = replace_once(page, '検査を探す <b>→</b> 検体を確認 <b>→</b> 公式案内へ', '探す <b>→</b> 比べる <b>→</b> 院内で使う')
+    page = replace_once(page, '</footer>', '</footer>\n    <p class="acknowledgement-note">着想・収録候補の参考：綾木先生の<a href="https://sites.google.com/kuhp.kyoto-u.ac.jp/gaichukensa/脳内検査ホーム" target="_blank" rel="noopener noreferrer">「脳内検査検索サイト」</a>。検査情報を整理・公開されたご尽力に感謝いたします。</p>')
+    page = replace_once(page, '</style>', '\n' + (Path(__file__).parent / 'presentation.css').read_text(encoding='utf-8') + '\n</style>')
     if catalog(page) != data:
         raise SystemExit('検査データの変更を検出したため中止')
     target = ROOT / 'neuro_test_navigator.html'
-    target.write_text(page, encoding='utf-8')
+    target.write_text(page, encoding='utf-8', newline='\n')
     record = {
         'sourceCommit': args.source_commit,
         'sourceHtmlSha256': hashlib.sha256(raw).hexdigest(),
         'publicHtmlSha256': hashlib.sha256(target.read_bytes()).hexdigest(),
+        'presentationRevision': re.search(r"var UI_REVISION = '([^']+)'", ui).group(1),
+        'publicAppSha256': hashlib.sha256(ui.encode('utf-8')).hexdigest(),
         'catalogSha256': hashlib.sha256(json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode('utf-8')).hexdigest(),
         'dataVersion': data['version'],
         'tests': len(data['tests']),
