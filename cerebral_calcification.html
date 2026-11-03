@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A5276">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>大脳・頭蓋内石灰化病変 鑑別診断・評価支援ツール｜医知創造ラボ</title>
+<meta name="description" content="頭部CT・MRIで認める大脳・頭蓋内石灰化について、年齢別生理的石灰化とTotal Calcification Score（TCS）99パーセンタイル閾値、SWI位相画像・QSMによる微小出血との鑑別、Ca・P・intact PTH評価（副甲状腺機能低下症と偽性副甲状腺機能低下症［PHP］のピットフォール）、原発性脳石灰化症（PBC／旧称Fahr病：SLC20A2・MYORG等7原因遺伝子）やSturge-Weber症候群・結節性硬化症・神経嚢虫症・乏突起膠腫など12病態を系統的に整理。カルテ貼付用サマリーのコピー・印刷に対応します。">
+<meta property="og:title" content="大脳・頭蓋内石灰化病変 鑑別診断・評価支援ツール｜医知創造ラボ">
+<meta property="og:description" content="年齢別TCS閾値、SWI位相・QSMによる微小出血との鑑別、Ca・P・PTH評価（PHPのPTH抵抗性ピットフォール）、原発性脳石灰化症（PBC／旧称Fahr病）を含む12病態を整理し、カルテ記録のコピーに対応します。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tools.ichisouzo-lab.com/cerebral_calcification.html">
+<meta property="og:image" content="https://tools.ichisouzo-lab.com/assets/og-tools.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="医知創造ラボ">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root {
+    --dark: #15324E;
+    --primary: #1A5276;
+    --mid: #2877A7;
+    --light: #EDF6FA;
+    --accent: #D97706;
+    --red: #B91C1C;
+    --red-bg: #FEF2F2;
+    --orange: #B45309;
+    --orange-bg: #FFFBEB;
+    --green: #166534;
+    --green-bg: #F0FDF4;
+    --purple: #5B21B6;
+    --purple-bg: #F5F3FF;
+    --gray: #475569;
+    --light-gray: #F4F7FA;
+    --line: #CBD5E1;
+    --white: #FFFFFF;
+    --shadow: 0 2px 10px rgba(21,50,78,0.08);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "BIZ UDPGothic", "游ゴシック", "Yu Gothic", "Segoe UI", Meiryo, sans-serif;
+    background: linear-gradient(135deg, #EDF4F8 0%, #F4F7FA 100%);
+    color: #1E293B;
+    min-height: 100vh;
+    padding: 0 0 48px;
+    line-height: 1.68;
+    font-size: 15px;
+  }
+  a { color: var(--mid); text-underline-offset: 3px; }
+  button, input, select, textarea { font-family: inherit; }
+  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible {
+    outline: 3px solid #D97706;
+    outline-offset: 2px;
+  }
+  header {
+    background: linear-gradient(135deg, var(--dark), var(--primary));
+    color: var(--white);
+    padding: 16px 20px 22px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(21,50,78,0.18);
+  }
+  .back-bar {
+    max-width: 1040px;
+    margin: 0 auto 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .back-bar a {
+    color: rgba(255,255,255,0.95);
+    text-decoration: none;
+    font-size: 0.85em;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 11px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.14);
+  }
+  .back-bar a:hover { background: rgba(255,255,255,0.24); }
+  header h1 { font-size: clamp(1.22rem, 2.7vw, 1.68rem); font-weight: 700; letter-spacing: 0.02em; line-height: 1.42; }
+  header p { font-size: 0.88em; margin-top: 6px; color: #E2F1FA; max-width: 860px; margin-left: auto; margin-right: auto; }
+  .badge-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+  .h-badge {
+    font-size: 0.75em;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.32);
+    padding: 2px 10px;
+    border-radius: 999px;
+    color: #fff;
+  }
+  .container { max-width: 1040px; margin: 0 auto; padding: 18px 14px; }
+  .alert-disclaimer {
+    background: #FAF8F3;
+    border: 1px solid #E5DCC5;
+    border-left: 5px solid var(--accent);
+    padding: 13px 16px;
+    margin-bottom: 16px;
+    border-radius: 8px;
+    font-size: 0.86em;
+    color: #4A3712;
+  }
+  .alert-disclaimer strong { color: #78350F; }
+  .preset-bar {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    box-shadow: var(--shadow);
+  }
+  .preset-label { font-size: 0.85em; font-weight: 700; color: var(--dark); width: 100%; margin-bottom: 2px; }
+  .preset-btn {
+    border: 1px solid #B6CCE0;
+    background: var(--light);
+    color: var(--dark);
+    padding: 7px 11px;
+    border-radius: 7px;
+    font-size: 0.82em;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+    line-height: 1.45;
+  }
+  .preset-btn:hover { background: #DCECF6; border-color: var(--mid); }
+  .preset-btn.active, .preset-btn.active:hover { background: var(--primary); color: var(--white); border-color: var(--primary); }
+  .preset-btn.clear-btn { background: #FFF1F2; border-color: #FECDD3; color: #9F1239; margin-left: auto; }
+  .preset-btn.clear-btn:hover { background: #FFE4E6; }
+
+  .card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+  }
+  .step-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #E2E8F0;
+    flex-wrap: wrap;
+  }
+  .step-num {
+    background: var(--primary);
+    color: var(--white);
+    font-size: 0.78em;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+    letter-spacing: 0.03em;
+  }
+  .step-title { font-size: 1.08rem; font-weight: 700; color: var(--dark); line-height: 1.4; }
+  .step-sub { font-size: 0.85em; color: var(--gray); margin-bottom: 12px; }
+
+  .sub-group { margin-bottom: 15px; }
+  .sub-group:last-child { margin-bottom: 0; }
+  .sub-label {
+    font-size: 0.91em;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 7px;
+    display: block;
+  }
+  .seg {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+  .seg button {
+    border: 2px solid #CBD5E1;
+    background: var(--white);
+    color: #1E293B;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.85em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.12s;
+    text-align: left;
+    flex: 1 1 180px;
+    min-width: 0;
+    line-height: 1.45;
+  }
+  .seg button:hover { border-color: var(--mid); background: #F8FAFC; }
+  .seg button.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--white);
+  }
+  .seg button.active.warn-active {
+    background: #B45309;
+    border-color: #B45309;
+    color: var(--white);
+  }
+  .seg button.active.danger-active {
+    background: #B91C1C;
+    border-color: #B91C1C;
+    color: var(--white);
+  }
+
+  .check-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(275px, 1fr));
+    gap: 8px;
+  }
+  .chk-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    border: 1.5px solid #CBD5E1;
+    border-radius: 8px;
+    padding: 9px 11px;
+    cursor: pointer;
+    background: var(--white);
+    font-size: 0.85em;
+    line-height: 1.48;
+    transition: background 0.12s, border-color 0.12s;
+  }
+  .chk-item:hover { border-color: var(--mid); background: #F8FAFC; }
+  .chk-item.checked {
+    border-color: var(--primary);
+    background: var(--light);
+    font-weight: 600;
+    color: var(--dark);
+  }
+  .chk-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    flex-shrink: 0;
+    accent-color: var(--primary);
+  }
+  .chk-note { display: block; font-size: 0.84em; font-weight: 400; color: var(--gray); margin-top: 2px; }
+
+  .num-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .num-box {
+    background: #F8FAFC;
+    border: 1px solid #CBD5E1;
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .num-box label {
+    display: block;
+    font-size: 0.82em;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 4px;
+  }
+  .num-box input[type="number"] {
+    width: 100%;
+    padding: 7px 10px;
+    border: 1.5px solid #94A3B8;
+    border-radius: 6px;
+    font-size: 0.95em;
+    background: var(--white);
+  }
+  .num-hint { font-size: 0.78em; color: var(--gray); margin-top: 4px; line-height: 1.45; }
+
+  .status-box {
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 0.87em;
+    line-height: 1.62;
+  }
+  .st-info { background: var(--light); border-left: 5px solid var(--mid); color: #15324E; }
+  .st-ok { background: var(--green-bg); border-left: 5px solid var(--green); color: #14532D; }
+  .st-warn { background: var(--orange-bg); border-left: 5px solid var(--orange); color: #78350F; }
+  .st-danger { background: var(--red-bg); border-left: 5px solid var(--red); color: #7F1D1D; }
+  .st-purple { background: var(--purple-bg); border-left: 5px solid var(--purple); color: #3B0764; }
+
+  .result-banner {
+    background: linear-gradient(135deg, var(--dark), var(--primary));
+    color: var(--white);
+    padding: 16px 18px;
+    border-radius: var(--radius);
+    margin-bottom: 14px;
+  }
+  .result-banner h3 { font-size: 1.05rem; margin-bottom: 4px; }
+  .result-banner p { font-size: 0.85em; color: #E2F1FA; }
+
+  .ddx-list { display: flex; flex-direction: column; gap: 12px; }
+  .ddx-card {
+    border: 1.5px solid #CBD5E1;
+    border-left: 6px solid var(--mid);
+    border-radius: 9px;
+    padding: 13px 15px;
+    background: var(--white);
+  }
+  .ddx-card.tier-high { border-left-color: #B91C1C; background: #FFFDFD; }
+  .ddx-card.tier-mid { border-left-color: #1A5276; }
+  .ddx-card.tier-phys { border-left-color: #166534; background: #FAFFFC; }
+  .ddx-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+  .ddx-name { font-size: 0.98rem; font-weight: 700; color: var(--dark); line-height: 1.4; }
+  .ddx-badge {
+    font-size: 0.75em;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .badge-high { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; }
+  .badge-mid { background: #E0F2FE; color: #075985; border: 1px solid #BAE6FD; }
+  .badge-phys { background: #DCFCE7; color: #166534; border: 1px solid #86EFAC; }
+  .ddx-matched {
+    font-size: 0.82em;
+    background: #F1F5F9;
+    color: #0F172A;
+    padding: 5px 9px;
+    border-radius: 6px;
+    margin-bottom: 7px;
+  }
+  .ddx-body { font-size: 0.86em; color: #334155; margin-bottom: 6px; }
+  .ddx-workup { font-size: 0.84em; color: #15324E; background: #F8FAFC; border: 1px dashed #CBD5E1; padding: 7px 10px; border-radius: 6px; }
+  .ddx-pitfall { font-size: 0.83em; color: #78350F; background: #FFFBEB; border-left: 3px solid #D97706; padding: 6px 9px; margin-top: 6px; border-radius: 4px; }
+
+  .summary-area {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1.5px solid #94A3B8;
+    border-radius: 8px;
+    font-size: 0.86em;
+    line-height: 1.62;
+    color: #0F172A;
+    background: #F8FAFC;
+    resize: vertical;
+  }
+  .action-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+    align-items: center;
+  }
+  .btn-primary {
+    background: var(--primary);
+    color: var(--white);
+    border: 0;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.88em;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .btn-primary:hover { background: var(--dark); }
+  .btn-secondary {
+    background: #E2EEF5;
+    color: var(--dark);
+    border: 1px solid #94B8D0;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 0.88em;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .btn-secondary:hover { background: #D2E5F1; }
+  .btn-reset {
+    background: #FFF1F2;
+    color: #9F1239;
+    border: 1px solid #FECDD3;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.86em;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .copy-msg { font-size: 0.84em; font-weight: 700; color: var(--green); }
+
+  /* 折りたたみ規約（2026-10-26準拠：標準マーカー維持＋別行で「クリック／タップで開閉」明示） */
+  details.ref-fold {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+  }
+  details.ref-fold > summary {
+    background: #EDF6FA;
+    border-bottom: 1px solid transparent;
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--dark);
+    line-height: 1.5;
+  }
+  details.ref-fold[open] > summary {
+    border-bottom-color: var(--line);
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+  .summary-hint {
+    display: block;
+    font-size: 0.78em;
+    font-weight: 600;
+    color: var(--mid);
+    margin-top: 3px;
+  }
+  .fold-body { padding: 14px 16px; font-size: 0.87em; color: #334155; }
+  .table-wrap { overflow-x: auto; max-width: 100%; margin: 8px 0 10px; border: 1px solid #CBD5E1; border-radius: 8px; }
+  .data-table { width: 100%; min-width: 640px; border-collapse: collapse; font-size: 0.86em; line-height: 1.6; }
+  .data-table th { background: #18354C; color: #FFFFFF; text-align: left; padding: 9px 11px; font-weight: 700; }
+  .data-table td { padding: 9px 11px; border-bottom: 1px solid #E2E8F0; vertical-align: top; }
+  .data-table tr:nth-child(even) td { background: #F8FAFC; }
+  .scroll-hint { display: none; font-size: 0.78em; color: var(--gray); margin-bottom: 4px; }
+  sup a { color: var(--mid); text-decoration: none; font-weight: 700; }
+  .ref-list { font-size: 0.81em; color: var(--gray); line-height: 1.75; padding-left: 22px; overflow-wrap: anywhere; }
+  .ref-list li { margin-bottom: 6px; }
+  footer { max-width: 1040px; margin: 24px auto 0; padding: 14px; text-align: center; color: var(--gray); font-size: 0.79em; line-height: 1.65; }
+
+  @media (max-width: 680px) {
+    .container { padding: 12px 10px; }
+    .card { padding: 14px 12px; }
+    .seg button { flex: 1 1 100%; }
+    .check-grid { grid-template-columns: 1fr; }
+    .preset-btn.clear-btn { margin-left: 0; }
+    .scroll-hint { display: block; }
+  }
+  @media print {
+    #ics-globalnav, .back-bar, .preset-bar, .action-row { display: none !important; }
+    body { background: #FFFFFF; padding: 0; }
+    .card, details.ref-fold { box-shadow: none; break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<nav id="ics-globalnav" style="background:#15324E;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
+<div style="max-width:1040px;margin:0 auto;padding:8px 12px;display:flex;align-items:center;gap:2px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;">
+<a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;padding-right:8px;">医知創造ラボ</a>
+<a href="https://ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ホーム</a>
+<a href="https://blog.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ブログ</a>
+<a href="https://tools.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ツール</a>
+<a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">YouTube</a>
+</div>
+</nav>
+<header>
+  <div class="back-bar">
+    <a href="index.html">← 診療ツール一覧へ</a>
+    <a href="infographics/cerebral-calcification-differential/" target="_blank" rel="noopener">📊 全体図解（インフォグラフィック）↗</a>
+  </div>
+  <h1>大脳・頭蓋内石灰化病変 鑑別診断・評価支援ツール</h1>
+  <p>年齢別生理的石灰化・TCS閾値、MRI/CT確認、Ca・P・PTH代謝異常（副甲状腺疾患・PHP）、原発性脳石灰化症（PBC／旧称Fahr病）を含む12病態を系統的に整理します</p>
+  <div class="badge-row">
+    <span class="h-badge">医療従事者向け</span>
+    <span class="h-badge">PBC国際コンセンサス2026対応</span>
+    <span class="h-badge">Ca・P・PTHピットフォール判定</span>
+    <span class="h-badge">PubMed文献21編照合済み</span>
+  </div>
+</header>
+
+<main class="container">
+  <div class="alert-disclaimer">
+    <strong>⚠ 使用上の注意と基本原則</strong>：本ツールは医療従事者向けの臨床整理・教育支援ツールであり、確定診断や疾患確率の算出は行いません。<strong>原発性脳石灰化症（PBC／旧称Fahr病）、副甲状腺機能低下症、偽性副甲状腺機能低下症（PHP）、Fabry病、ミトコンドリア病はいずれも両側対称性の基底核・歯状核・視床・皮質下白質石灰化を呈しうるため、画像所見のみでの視覚的鑑別は困難です</strong><sup><a href="#ref1">1</a>,<a href="#ref18">18</a></sup>。必ず血清Ca・P・アルブミン・Mg・腎機能・intact PTH・25(OH)D・TSHを確認して二次性原因を先に除外してください<sup><a href="#ref9">9</a>-<a href="#ref12">12</a></sup>。
+  </div>
+
+  <!-- 臨床プリセット -->
+  <div class="preset-bar" aria-label="臨床プリセット例">
+    <span class="preset-label">💡 典型シナリオで動作確認（ワンクリック入力）：</span>
+    <button type="button" class="preset-btn" data-preset="phys_elderly">① 高齢者の偶発的軽度淡蒼球・松果体石灰化</button>
+    <button type="button" class="preset-btn" data-preset="hypopt_postop">② 甲状腺術後・けいれん＋両側基底核・歯状核石灰化</button>
+    <button type="button" class="preset-btn" data-preset="php_pitfall">③ 若年・高P＋PTH高値＋短指症（PHPピットフォール）</button>
+    <button type="button" class="preset-btn" data-preset="myorg_pbc">④ 構音障害・小脳失調＋橋石灰化・帯状白質病変（MYORG疑い）</button>
+    <button type="button" class="preset-btn" data-preset="sws_gyral">⑤ 片側脳回状石灰化＋同側脳萎縮・発作（SWS例）</button>
+    <button type="button" class="preset-btn clear-btn" id="topResetBtn">↺ リセット</button>
+  </div>
+
+  <!-- STEP 1 -->
+  <section class="card" aria-labelledby="step1-heading">
+    <div class="step-head">
+      <span class="step-num">STEP 1</span>
+      <h2 class="step-title" id="step1-heading">年齢・CT石灰化スコア（TCS）・画像モダリティの評価</h2>
+    </div>
+    <p class="step-sub">まず「年齢相応の生理的石灰化で説明できるか」と「MRIの信号変化が真の石灰化か（微小出血やT1短縮病変との鑑別）」を確認します<sup><a href="#ref1">1</a>,<a href="#ref5">5</a>-<a href="#ref8">8</a></sup>。</p>
+
+    <div class="sub-group">
+      <span class="sub-label">1-1. 年齢区分（生理的石灰化好発時期およびTCS 99パーセンタイル閾値の基準）<sup><a href="#ref1">1</a>,<a href="#ref5">5</a>,<a href="#ref16">16</a></sup></span>
+      <div class="seg" id="seg-age"></div>
+    </div>
+
+    <div class="sub-group">
+      <span class="sub-label">1-2. 画像検査モダリティとMRI信号の整理<sup><a href="#ref6">6</a>-<a href="#ref8">8</a>,<a href="#ref16">16</a>-<a href="#ref17">17</a>,<a href="#ref19">19</a></sup></span>
+      <div class="seg" id="seg-modality"></div>
+      <div class="check-grid" id="chk-mri" style="margin-top:8px;"></div>
+    </div>
+
+    <div class="sub-group">
+      <span class="sub-label">1-3. 参考入力：CTに基づく Total Calcification Score（TCS：0-80点、130 HU超）<sup><a href="#ref5">5</a>,<a href="#ref16">16</a>,<a href="#ref17">17</a></sup></span>
+      <div class="num-grid">
+        <div class="num-box">
+          <label for="input-tcs">TCS 合計点（任意・0-80点）</label>
+          <input type="number" id="input-tcs" min="0" max="80" step="1" placeholder="未測定（空欄可）">
+          <div class="num-hint">年齢別99パーセンタイル閾値：40歳未満 &gt; 0点 ／ 40-60歳 &gt; 4点 ／ 60歳超 &gt; 5点<sup><a href="#ref5">5</a>,<a href="#ref16">16</a></sup></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="step1-feedback" role="status" aria-live="polite"></div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="card" aria-labelledby="step2-heading">
+    <div class="step-head">
+      <span class="step-num">STEP 2</span>
+      <h2 class="step-title" id="step2-heading">Ca・P・intact PTH代謝スクリーニング（二次性原因の最優先除外）</h2>
+    </div>
+    <p class="step-sub">治療介入でけいれん予防や石灰化進行抑制につながる<strong>副甲状腺機能低下症</strong>と<strong>偽性副甲状腺機能低下症（PHP：PTH抵抗性）</strong>を見逃さないための評価です<sup><a href="#ref9">9</a>-<a href="#ref11">11</a></sup>。</p>
+
+    <div class="sub-group">
+      <span class="sub-label">2-1. 血清カルシウム（アルブミン補正・イオン化Ca考慮）<sup><a href="#ref9">9</a>-<a href="#ref11">11</a></sup></span>
+      <div class="seg" id="seg-ca"></div>
+    </div>
+
+    <div class="sub-group">
+      <span class="sub-label">2-2. 血清無機リン（P）<sup><a href="#ref9">9</a>-<a href="#ref11">11</a></sup></span>
+      <div class="seg" id="seg-phos"></div>
+    </div>
+
+    <div class="sub-group">
+      <span class="sub-label">2-3. 血清 intact PTH（※低値だけでなく「基準値上限以上・高値」にも注目）<sup><a href="#ref10">10</a>,<a href="#ref11">11</a></sup></span>
+      <div class="seg" id="seg-pth"></div>
+    </div>
+
+    <div class="sub-group">
+      <span class="sub-label">2-4. 交絡・関連検査（25(OH)D・Mg・腎機能・TSH）と実測値の参考計算<sup><a href="#ref9">9</a>-<a href="#ref11">11</a></sup></span>
+      <div class="check-grid" id="chk-metabolic"></div>
+      <div class="num-grid">
+        <div class="num-box">
+          <label for="input-ca-val">血清Ca 実測値（mg/dL・任意）</label>
+          <input type="number" id="input-ca-val" min="1" max="20" step="0.1" placeholder="例: 7.2">
+          <div class="num-hint">低アルブミン血症時はアルブミン・イオン化Caを併せて確認</div>
+        </div>
+        <div class="num-box">
+          <label for="input-p-val">血清無機リン P 実測値（mg/dL・任意）</label>
+          <input type="number" id="input-p-val" min="0.5" max="20" step="0.1" placeholder="例: 5.8">
+          <div class="num-hint">特発性副甲状腺機能低下症では追跡中の血清Ca/P比1%上昇ごとに基底核石灰化進行オッズが5%低下（OR 0.95）<sup><a href="#ref9">9</a></sup></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="step2-feedback" role="status" aria-live="polite"></div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="card" aria-labelledby="step3-heading">
+    <div class="step-head">
+      <span class="step-num">STEP 3</span>
+      <h2 class="step-title" id="step3-heading">解剖学的分布パターン・随伴MRI所見・臨床背景の選択</h2>
+    </div>
+    <p class="step-sub">当てはまる画像分布・随伴所見・臨床症候を選択してください（複数選択可。未選択は「所見なし」の確定を意味しません）。</p>
+
+    <div class="sub-group">
+      <span class="sub-label">3-1. 石灰化の解剖学的分布パターン<sup><a href="#ref1">1</a>-<a href="#ref5">5</a>,<a href="#ref13">13</a>-<a href="#ref16">16</a></sup></span>
+      <div class="check-grid" id="chk-dist"></div>
+    </div>
+
+    <div class="sub-group">
+      <span class="sub-label">3-2. 特徴的な随伴画像所見（頭部CT・3T MRI FLAIR・造影等）<sup><a href="#ref1">1</a>,<a href="#ref14">14</a>,<a href="#ref16">16</a>,<a href="#ref19">19</a>-<a href="#ref21">21</a></sup></span>
+      <div class="check-grid" id="chk-imaging"></div>
+    </div>
+
+    <div class="sub-group">
+      <span class="sub-label">3-3. 臨床症候・既往歴・家族歴・全身所見<sup><a href="#ref5">5</a>,<a href="#ref9">9</a>-<a href="#ref14">14</a>,<a href="#ref18">18</a>-<a href="#ref20">20</a></sup></span>
+      <div class="check-grid" id="chk-clinical"></div>
+    </div>
+  </section>
+
+  <!-- 鑑別整理結果 -->
+  <section class="card" aria-labelledby="result-heading">
+    <div class="step-head">
+      <span class="step-num">RESULT</span>
+      <h2 class="step-title" id="result-heading">関連する鑑別病態と推奨ワークアップ（全12病態から整理）</h2>
+    </div>
+    <div id="result-overview" aria-live="polite"></div>
+    <div id="ddx-container" class="ddx-list" aria-live="polite"></div>
+  </section>
+
+  <!-- STEP 4: カルテ貼付サマリ -->
+  <section class="card" aria-labelledby="step4-heading">
+    <div class="step-head">
+      <span class="step-num">STEP 4</span>
+      <h2 class="step-title" id="step4-heading">カルテ・コンサルト貼付用サマリー出力</h2>
+    </div>
+    <p class="step-sub">入力した画像分布・TCS評価・Ca/P/PTHスクリーニング状況・関連鑑別・追加確認項目をテキスト化します（内容を確認・加筆してご利用ください）。</p>
+    <div class="action-row">
+      <button type="button" class="btn-primary" id="btnCopy">📋 サマリーをクリップボードにコピー</button>
+      <button type="button" class="btn-secondary" id="btnPrint">🖨 この画面を印刷 / PDF保存</button>
+      <button type="button" class="btn-reset" id="bottomResetBtn">↺ 入力をすべてリセット</button>
+      <span class="copy-msg" id="copyStatus" role="status" aria-live="polite"></span>
+    </div>
+    <label for="summaryOutput" class="sub-label">記録用テキスト（直接編集可能）</label>
+    <textarea id="summaryOutput" class="summary-area" rows="15"></textarea>
+  </section>
+
+  <!-- 折りたたみリファレンス1: PBC 7原因遺伝子一覧 -->
+  <details class="ref-fold">
+    <summary>
+      原発性脳石灰化症（PBC／旧称Fahr病・PFBC）7原因遺伝子と臨床・画像の特徴早見表<sup><a href="#ref12">12</a>-<a href="#ref16">16</a></sup>
+      <span class="summary-hint">クリック／タップで開閉</span>
+    </summary>
+    <div class="fold-body">
+      <p style="margin-bottom:8px;">2026年の国際コンセンサスでは臨床標準呼称として<strong>原発性脳石灰化症（Primary Brain Calcification: PBC）</strong>が推奨され、次世代シークエンシング（診断率最大化の観点からはエクソームやパネルより全ゲノム解析を優先）と遺伝カウンセリングが位置づけられています<sup><a href="#ref12">12</a></sup>。なお、既知遺伝子スクリーニング後も家族例・孤発例の約50%は遺伝学的に未解決であり、遺伝子検査陰性のみでPBCは否定されません<sup><a href="#ref15">15</a></sup>。また、現時点で承認された疾患修飾薬はなく対症療法が標準です（エチドロン酸の二重盲検無作為化試験 CALCIFADE［NCT05662111］が進行中）<sup><a href="#ref17">17</a></sup>。</p>
+      <div class="scroll-hint">※ スマートフォンでは表を横にスクロールできます</div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="background:#18354C;color:#FFFFFF;">遺伝形式</th>
+              <th style="background:#18354C;color:#FFFFFF;">遺伝子（割合目安）</th>
+              <th style="background:#18354C;color:#FFFFFF;">機能・病態経路</th>
+              <th style="background:#18354C;color:#FFFFFF;">臨床浸透率・特徴的な画像・症候</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>常染色体顕性（AD）</strong></td>
+              <td><strong><em>SLC20A2</em></strong>（61%<sup><a href="#ref13">13</a></sup>）</td>
+              <td>無機リン酸トランスポーター（PiT2）</td>
+              <td>最頻原因遺伝子。臨床浸透率は70%未満で無症候保有者もみられる<sup><a href="#ref13">13</a></sup>。パーキンソニズム・認知精神症状など多彩<sup><a href="#ref5">5</a>,<a href="#ref13">13</a></sup>。</td>
+            </tr>
+            <tr>
+              <td><strong>常染色体顕性（AD）</strong></td>
+              <td><strong><em>XPR1</em></strong>（16%<sup><a href="#ref13">13</a></sup>）</td>
+              <td>細胞外へのリン酸排出トランスポーター</td>
+              <td>臨床浸透率は70%未満<sup><a href="#ref13">13</a></sup>。細胞内リン酸恒常性破綻を介する<sup><a href="#ref15">15</a></sup>。</td>
+            </tr>
+            <tr>
+              <td><strong>常染色体顕性（AD）</strong></td>
+              <td><strong><em>PDGFB</em></strong>（12%<sup><a href="#ref13">13</a></sup>）</td>
+              <td>血小板由来増殖因子B（ペリサイト・BBB維持）</td>
+              <td>臨床浸透率85%超と高い<sup><a href="#ref13">13</a></sup>。3T FLAIRでの天幕上帯状白質病変（band-like leukopathy）を伴いやすい（<em>PDGFB/PDGFRB</em>群の62.5%）<sup><a href="#ref16">16</a></sup>。</td>
+            </tr>
+            <tr>
+              <td><strong>常染色体顕性（AD）</strong></td>
+              <td><strong><em>PDGFRB</em></strong>（5%<sup><a href="#ref13">13</a></sup>）</td>
+              <td>PDGF受容体β（ペリサイト・BBB維持）</td>
+              <td>変異保有者の約54%が臨床的に無症候と報告されており、家族内でも表現型差が大きい<sup><a href="#ref13">13</a></sup>。</td>
+            </tr>
+            <tr>
+              <td><strong>常染色体潜性（AR）</strong></td>
+              <td><strong><em>MYORG</em></strong>（13%<sup><a href="#ref13">13</a></sup>）</td>
+              <td>小胞体グリコシダーゼ（アストロサイト機能）</td>
+              <td>高い臨床浸透率（85%超<sup><a href="#ref13">13</a></sup>、発症中央値52歳）。<strong>構音障害初発（11/16例）</strong>、<strong>橋（pontine）石灰化</strong>、<strong>小脳萎縮（全例）</strong><sup><a href="#ref14">14</a></sup>、<strong>帯状白質病変（90%）</strong><sup><a href="#ref16">16</a></sup>が特徴的。</td>
+            </tr>
+            <tr>
+              <td><strong>常染色体潜性（AR）</strong></td>
+              <td><strong><em>JAM2</em></strong>（2%<sup><a href="#ref13">13</a></sup>）</td>
+              <td>接合接着分子2（神経血管単位・細胞間接着）</td>
+              <td>高い臨床浸透率（85%超<sup><a href="#ref13">13</a></sup>）。広範な皮質・皮質下・脳幹（橋中心部を含む）石灰化を呈しうる<sup><a href="#ref15">15</a></sup>。</td>
+            </tr>
+            <tr>
+              <td><strong>常染色体潜性（AR）</strong></td>
+              <td><strong><em>NAA60</em></strong>（2024年同定<sup><a href="#ref15">15</a></sup>）</td>
+              <td>ゴルジ体N末端アセチル基転移酵素（SLC20A2細胞膜発現を制御）</td>
+              <td>7家系10例で両アレル機能喪失変異が同定。画像評価可能7例中3例で橋中心部石灰化が報告されている<sup><a href="#ref15">15</a></sup>。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </details>
+
+  <!-- 折りたたみリファレンス2: MRI（T1・SWI位相・QSM）とCTの比較表 -->
+  <details class="ref-fold">
+    <summary>
+      頭部MRI（T1強調・SWI位相画像・3T QSM）による石灰化と脳微小出血（CMB）の鑑別基準<sup><a href="#ref6">6</a>-<a href="#ref8">8</a></sup>
+      <span class="summary-hint">クリック／タップで開閉</span>
+    </summary>
+    <div class="fold-body">
+      <div class="scroll-hint">※ スマートフォンでは表を横にスクロールできます</div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="background:#18354C;color:#FFFFFF;">評価法</th>
+              <th style="background:#18354C;color:#FFFFFF;">頭蓋内石灰化（反磁性：diamagnetic）</th>
+              <th style="background:#18354C;color:#FFFFFF;">脳微小出血・ヘモジデリン（常磁性：paramagnetic）</th>
+              <th style="background:#18354C;color:#FFFFFF;">臨床上の注意点・文献精度</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>薄スライス単純頭部CT</strong></td>
+              <td>明瞭な高吸収域（130 HU超<sup><a href="#ref17">17</a></sup>）</td>
+              <td>慢性期微小出血は通常高吸収を示さない（急性期出血のみ高吸収）</td>
+              <td>石灰化確定と広がり（TCS評価）の第一選択<sup><a href="#ref16">16</a>,<a href="#ref17">17</a></sup>（※小児SWS疑いのルーチンCTは非推奨<sup><a href="#ref19">19</a></sup>）。</td>
+            </tr>
+            <tr>
+              <td><strong>T1強調MRI</strong></td>
+              <td>粒子状Ca濃度が重量比30%までは表面緩和で<strong>高信号（bright）</strong>になりうる（それ以上の高濃度では信号低下）<sup><a href="#ref6">6</a></sup></td>
+              <td>亜急性期メトヘモグロビン等で高信号</td>
+              <td>T1高信号＝亜急性出血や脂肪病変と即断しない<sup><a href="#ref6">6</a></sup>。</td>
+            </tr>
+            <tr>
+              <td><strong>T2* / SWI マグニチュード画像</strong></td>
+              <td>黒色点状低信号（bloomingを伴う）</td>
+              <td>黒色点状低信号（bloomingを伴う）</td>
+              <td>マグニチュード画像単独では両者の視覚的区別が困難<sup><a href="#ref7">7</a></sup>。</td>
+            </tr>
+            <tr>
+              <td><strong>SWI 磁化率位相画像（Phase）</strong></td>
+              <td>反磁性ダイポールパターン（辺縁スライス評価が安定）</td>
+              <td>常磁性ダイポールパターン（石灰化と逆極性）</td>
+              <td>辺縁スライス位相パターンで検者間一致率 κ = 1、<strong>感度98.4%・特異度100%</strong>（径2.5 mm超では100%/100%）<sup><a href="#ref7">7</a></sup>。※装置ベンダの位相極性規約（右手系/左手系）を自施設で確認。</td>
+            </tr>
+            <tr>
+              <td><strong>3T 定量的磁化率マッピング（QSM）</strong></td>
+              <td><strong>負の磁化率</strong>：平均 -214 ± 112 ppb（最大値 -52 ppb）<sup><a href="#ref8">8</a></sup></td>
+              <td><strong>正の磁化率</strong>：平均 392 ± 204 ppb（最小値 75 ppb；皮質下 299 ± 133 ppb、深部 499 ± 220 ppb）<sup><a href="#ref8">8</a></sup></td>
+              <td>232病変の検討で正負の符号のみで有意に識別（p &lt; 0.001）<sup><a href="#ref8">8</a></sup>。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </details>
+
+  <!-- 折りたたみリファレンス3: バンクーバー形式の参考文献一覧 -->
+  <details class="ref-fold" open>
+    <summary>
+      参考文献（バンクーバー形式・21編・情報確認日：2026年11月2日）
+      <span class="summary-hint">クリック／タップで開閉</span>
+    </summary>
+    <div class="fold-body">
+      <ol class="ref-list">
+        <li id="ref1">Guedes MDS, Queiroz IC, de Castro CC. Classification and clinical significance of intracranial calcifications: a pictorial essay. <em>Radiol Bras</em>. 2020;53(4):273-278. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/32904742/" target="_blank" rel="noopener">32904742</a>. DOI: <a href="https://doi.org/10.1590/0100-3984.2019.0094" target="_blank" rel="noopener">10.1590/0100-3984.2019.0094</a>.</li>
+        <li id="ref2">Saade C, Najem E, Asmar K, Salman R, El Achkar B, Naffaa L. Intracranial calcifications on CT: an updated review. <em>J Radiol Case Rep</em>. 2019;13(8):1-18. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/31558966/" target="_blank" rel="noopener">31558966</a>. DOI: <a href="https://doi.org/10.3941/jrcr.v13i8.3633" target="_blank" rel="noopener">10.3941/jrcr.v13i8.3633</a>.</li>
+        <li id="ref3">Daghighi MH, Rezaei V, Zarrintan S, Pourfathi H. Intracranial physiological calcifications in adults on computed tomography in Tabriz, Iran. <em>Folia Morphol (Warsz)</em>. 2007;66(2):115-119. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/17594669/" target="_blank" rel="noopener">17594669</a>.</li>
+        <li id="ref4">de Brouwer EJM, Kockelkoren R, De Vis JB, Dankbaar JW, Velthuis BK, Takx RA, et al. Prevalence and vascular risk factors of basal ganglia calcifications in patients at risk for cerebrovascular disease. <em>J Neuroradiol</em>. 2020;47(5):337-342. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/31034898/" target="_blank" rel="noopener">31034898</a>. DOI: <a href="https://doi.org/10.1016/j.neurad.2019.04.002" target="_blank" rel="noopener">10.1016/j.neurad.2019.04.002</a>.</li>
+        <li id="ref5">Nicolas G, Pottier C, Charbonnier C, Guyant-Maréchal L, Le Ber I, Pariente J, et al. Phenotypic spectrum of probable and genetically-confirmed idiopathic basal ganglia calcification. <em>Brain</em>. 2013;136(Pt 11):3395-3407. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/24065723/" target="_blank" rel="noopener">24065723</a>. DOI: <a href="https://doi.org/10.1093/brain/awt255" target="_blank" rel="noopener">10.1093/brain/awt255</a>.</li>
+        <li id="ref6">Henkelman RM, Watts JF, Kucharczyk W. High signal intensity in MR images of calcified brain tissue. <em>Radiology</em>. 1991;179(1):199-206. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/1848714/" target="_blank" rel="noopener">1848714</a>. DOI: <a href="https://doi.org/10.1148/radiology.179.1.1848714" target="_blank" rel="noopener">10.1148/radiology.179.1.1848714</a>.</li>
+        <li id="ref7">Weng CL, Jeng Y, Li YT, Chen CJ, Chen DY. Black Dipole or White Dipole: Using Susceptibility Phase Imaging to Differentiate Cerebral Microbleeds from Intracranial Calcifications. <em>AJNR Am J Neuroradiol</em>. 2020;41(8):1405-1413. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/32675335/" target="_blank" rel="noopener">32675335</a>. DOI: <a href="https://doi.org/10.3174/ajnr.A6636" target="_blank" rel="noopener">10.3174/ajnr.A6636</a>.</li>
+        <li id="ref8">Luo Y, Gao K, Zhou Y, Fawaz M, Mark Haacke E, Xia S, et al. Differentiating calcifications from cerebral microbleeds using quantitative susceptibility mapping. <em>Eur Radiol</em>. 2025;35(4):2043-2052. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/39285029/" target="_blank" rel="noopener">39285029</a>. DOI: <a href="https://doi.org/10.1007/s00330-024-10889-z" target="_blank" rel="noopener">10.1007/s00330-024-10889-z</a>.</li>
+        <li id="ref9">Goswami R, Sharma R, Sreenivas V, Gupta N, Ganapathy A, Das S. Prevalence and progression of basal ganglia calcification and its pathogenic mechanism in patients with idiopathic hypoparathyroidism. <em>Clin Endocrinol (Oxf)</em>. 2012;77(2):200-206. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/22288727/" target="_blank" rel="noopener">22288727</a>. DOI: <a href="https://doi.org/10.1111/j.1365-2265.2012.04353.x" target="_blank" rel="noopener">10.1111/j.1365-2265.2012.04353.x</a>.</li>
+        <li id="ref10">Khan AA, Bilezikian JP, Brandi ML, Clarke BL, Gittoes NJ, Pasieka JL, et al. Evaluation and Management of Hypoparathyroidism Summary Statement and Guidelines from the Second International Workshop. <em>J Bone Miner Res</em>. 2022;37(12):2568-2585. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/36054621/" target="_blank" rel="noopener">36054621</a>. DOI: <a href="https://doi.org/10.1002/jbmr.4691" target="_blank" rel="noopener">10.1002/jbmr.4691</a>.</li>
+        <li id="ref11">Mantovani G, Bastepe M, Monk D, de Sanctis L, Thiele S, Usardi A, et al. Diagnosis and management of pseudohypoparathyroidism and related disorders: first international Consensus Statement. <em>Nat Rev Endocrinol</em>. 2018;14(8):476-500. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/29959430/" target="_blank" rel="noopener">29959430</a>. DOI: <a href="https://doi.org/10.1038/s41574-018-0042-0" target="_blank" rel="noopener">10.1038/s41574-018-0042-0</a>.</li>
+        <li id="ref12">Luo W, Cen Z, Koek H, Carecchio M, Hozumi I, Chen WJ, et al. Primary Brain Calcification: An International Consensus on Nomenclature, Diagnosis, Evaluation, and Management. <em>Mov Disord</em>. 2026;41(2):315-336. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/41346103/" target="_blank" rel="noopener">41346103</a>. DOI: <a href="https://doi.org/10.1002/mds.70140" target="_blank" rel="noopener">10.1002/mds.70140</a>.</li>
+        <li id="ref13">Balck A, Schaake S, Kuhnke NS, Domingo A, Madoev H, Margolesky J, et al. Genotype-Phenotype Relations in Primary Familial Brain Calcification: Systematic MDSGene Review. <em>Mov Disord</em>. 2021;36(11):2468-2480. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/34432325/" target="_blank" rel="noopener">34432325</a>. DOI: <a href="https://doi.org/10.1002/mds.28753" target="_blank" rel="noopener">10.1002/mds.28753</a>.</li>
+        <li id="ref14">Grangeon L, Wallon D, Charbonnier C, Quenez O, Richard AC, Rousseau S, et al. Biallelic MYORG mutation carriers exhibit primary brain calcification with a distinct phenotype. <em>Brain</em>. 2019;142(6):1573-1586. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/31009047/" target="_blank" rel="noopener">31009047</a>. DOI: <a href="https://doi.org/10.1093/brain/awz095" target="_blank" rel="noopener">10.1093/brain/awz095</a>.</li>
+        <li id="ref15">Chelban V, Aksnes H, Maroofian R, LaMonica LC, Seabra L, Siggervåg A, et al. Biallelic NAA60 variants with impaired n-terminal acetylation capacity cause autosomal recessive primary familial brain calcifications. <em>Nat Commun</em>. 2024;15(1):2269. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/38480682/" target="_blank" rel="noopener">38480682</a>. DOI: <a href="https://doi.org/10.1038/s41467-024-46354-0" target="_blank" rel="noopener">10.1038/s41467-024-46354-0</a>.</li>
+        <li id="ref16">Librizzi G, Bonato G, Corazza M, Guerra I, Pistonesi F, Bertolin C, et al. White Matter Matters: A Magnetic Resonance Imaging Study with Clinical Correlates in Primary Brain Calcification. <em>Mov Disord</em>. 2026;41(6):1555-1565. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/41721552/" target="_blank" rel="noopener">41721552</a>. DOI: <a href="https://doi.org/10.1002/mds.70249" target="_blank" rel="noopener">10.1002/mds.70249</a>.</li>
+        <li id="ref17">Snijders BM, Mathijssen G, Peters MJ, Emmelot-Vonk MH, de Jong PA, Bakker S, et al. The effects of etidronate on brain calcifications in Fahr's disease or syndrome: rationale and design of the randomised, placebo-controlled, double-blind CALCIFADE trial. <em>Orphanet J Rare Dis</em>. 2024;19(1):49. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/38326858/" target="_blank" rel="noopener">38326858</a>. DOI: <a href="https://doi.org/10.1186/s13023-024-03039-7" target="_blank" rel="noopener">10.1186/s13023-024-03039-7</a>.</li>
+        <li id="ref18">Yektay Farahmand M, Wallenius J, Wasselius J, Gråhamn O, Puschmann A, Ilinca A. Genetic background of neurological disorders with basal ganglia calcification. <em>J Neurol</em>. 2025;272(9):632. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/40947452/" target="_blank" rel="noopener">40947452</a>. DOI: <a href="https://doi.org/10.1007/s00415-025-13344-1" target="_blank" rel="noopener">10.1007/s00415-025-13344-1</a>.</li>
+        <li id="ref19">Sabeti S, Ball KL, Bhattacharya SK, Bitrian E, Blieden LS, Brandt JD, et al. Consensus Statement for the Management and Treatment of Sturge-Weber Syndrome: Neurology, Neuroimaging, and Ophthalmology Recommendations. <em>Pediatr Neurol</em>. 2021;121:59-66. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/34153815/" target="_blank" rel="noopener">34153815</a>. DOI: <a href="https://doi.org/10.1016/j.pediatrneurol.2021.04.013" target="_blank" rel="noopener">10.1016/j.pediatrneurol.2021.04.013</a>.</li>
+        <li id="ref20">White AC Jr, Coyle CM, Rajshekhar V, Singh G, Hauser WA, Mohanty A, et al. Diagnosis and Treatment of Neurocysticercosis: 2017 Clinical Practice Guidelines by the Infectious Diseases Society of America (IDSA) and the American Society of Tropical Medicine and Hygiene (ASTMH). <em>Am J Trop Med Hyg</em>. 2018;98(4):945-966. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/29644966/" target="_blank" rel="noopener">29644966</a>. DOI: <a href="https://doi.org/10.4269/ajtmh.18-88751" target="_blank" rel="noopener">10.4269/ajtmh.18-88751</a>.</li>
+        <li id="ref21">Lee DY, Choi KE, Han K, Choi SH, Lee N, Ahn SS, et al. Revisiting oligodendroglioma grading in the 2021 WHO classification: calcification and larger contrast-enhancing tumor volume may predict higher oligodendroglioma grade. <em>Neuroradiology</em>. 2024;66(9):1527-1535. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/39014271/" target="_blank" rel="noopener">39014271</a>. DOI: <a href="https://doi.org/10.1007/s00234-024-03430-y" target="_blank" rel="noopener">10.1007/s00234-024-03430-y</a>.</li>
+      </ol>
+    </div>
+  </details>
+</main>
+
+<footer>
+  医知創造ラボ｜脳神経内科医による臨床意思決定・鑑別整理支援ツール（医療従事者向け）<br>
+  入力データはこの端末のブラウザ内でのみ処理され、外部サーバへ送信・保存されません。最終的な診断・検査・治療判断は患者個別の臨床状況と最新の原典・添付文書に基づいて行ってください。
+</footer>
+<script>
+(function () {
+  'use strict';
+
+  var AGE_OPTS = [
+    { id: 'u10', label: '10歳未満', shortLabel: '10歳未満', tcsLimit: 0 },
+    { id: 'a10_39', label: '10-39歳（若年成人・思春期）', shortLabel: '10-39歳', tcsLimit: 0 },
+    { id: 'a40_60', label: '40-60歳（中年期）', shortLabel: '40-60歳', tcsLimit: 4 },
+    { id: 'gt60', label: '60歳超（高齢期）', shortLabel: '60歳超', tcsLimit: 5 }
+  ];
+
+  var MODALITY_OPTS = [
+    { id: 'ct_mri', label: '単純頭部CT＋頭部MRIの両方を確認済み' },
+    { id: 'ct_only', label: '単純頭部CTのみ確認（MRI未施行）' },
+    { id: 'mri_only', label: '頭部MRIのみ確認（単純CT未施行）', warn: true }
+  ];
+
+  var MRI_CHECKS = [
+    { id: 't1_high', label: 'T1強調画像で高信号（bright）を呈する', note: '粒子状Ca濃度が重量比30%までは表面緩和でT1短縮し高信号化しうる [6]' },
+    { id: 'swi_dark', label: 'T2* / SWIマグニチュード画像で黒色点状低信号', note: '脳微小出血（ヘモジデリン）との鑑別に位相画像またはCT確認が有用 [7,8]' },
+    { id: 'phase_diamag', label: 'SWI辺縁スライス位相画像または3T QSMで反磁性（負の磁化率）を確認', note: '辺縁位相：感度98.4%・特異度100% [7] ／ QSM：平均 -214±112 ppb（最大 -52 ppb）[8]' }
+  ];
+
+  var CA_OPTS = [
+    { id: 'unknown', label: '未確認' },
+    { id: 'normal', label: '正常範囲（補正Ca・イオン化Ca含む）' },
+    { id: 'low', label: '低カルシウム血症（または正常下限域）', danger: true },
+    { id: 'high', label: '高カルシウム血症', warn: true }
+  ];
+
+  var PHOS_OPTS = [
+    { id: 'unknown', label: '未確認' },
+    { id: 'normal', label: '正常範囲' },
+    { id: 'high', label: '高リン血症', danger: true },
+    { id: 'low', label: '低リン血症', warn: true }
+  ];
+
+  var PTH_OPTS = [
+    { id: 'unknown', label: '未確認' },
+    { id: 'normal', label: '正常範囲（Ca・P正常下）' },
+    { id: 'low', label: '低値または低Ca下で不適切正常', danger: true },
+    { id: 'high', label: '基準値上限以上・高値（※PHPや二次性亢進に注意）', danger: true }
+  ];
+
+  var METABOLIC_CHECKS = [
+    { id: 'vitd_mg_renal_ok', label: '25(OH)D欠乏なし・血清Mg正常・腎機能（eGFR）正常を確認済み', note: 'この条件下での低Ca＋高P＋PTH高値はPTH抵抗性（PHP）を強く支持 [11]' },
+    { id: 'vitd_mg_renal_abn', label: 'ビタミンD欠乏・低/高Mg血症・慢性腎臓病（CKD）のいずれかあり', note: '二次性副甲状腺機能亢進症やPTH分泌不全の交絡要因として補正・評価が必要 [10,11]' },
+    { id: 'tsh_high', label: 'TSH高値（甲状腺機能低下症またはTSH抵抗性）', note: 'PHP（GNAS関連疾患）ではPTH抵抗性に加えてTSH抵抗性を合併しやすい [11]' }
+  ];
+
+  var DIST_CHECKS = [
+    { id: 'midline_dura', label: '松果体・脈絡叢・手綱・大脳鎌・小脳テント・硬膜のみ', note: '成人CTで松果体71.0%・脈絡叢66.2%・手綱20.1%と高頻度にみられる生理的好発部位 [1,3]' },
+    { id: 'gp_mild', label: '両側淡蒼球に限局した軽度・点状石灰化', note: '40歳以上で生理的にも出現するが、40歳未満や進行性では病的精査が必要 [1,4,5]' },
+    { id: 'bg_extensive', label: '被殻・尾状核・視床・小脳歯状核・皮質下白質へ広がる両側対称性石灰化', note: 'PBC（旧称Fahr病）、副甲状腺機能低下症、PHP、Fabry病、ミトコンドリア病が重なる [1,9,13,18]' },
+    { id: 'pons_brainstem', label: '橋（特に橋中心部）・脳幹の石灰化', note: '常染色体潜性PBC（MYORG・JAM2・NAA60）を示唆する重要所見（顕性PBCではまれ）[14,15]' },
+    { id: 'gyral_unilat', label: '脳回状（gyral / トラムライン様）皮質石灰化（主に片側性）', note: 'Sturge-Weber症候群で典型的（脳実質萎縮を伴う）[1,19]' },
+    { id: 'perivent_subep', label: '脳室周囲・上衣下の小結節状石灰化', note: '結節性硬化症（上衣下結節）や先天性CMV感染・TORCH症候群で特徴的 [1,2]' },
+    { id: 'parenchymal_nodule', label: '脳実質内・皮質下白質の孤発または散在性小結節石灰化', note: '石灰化実質性神経嚢虫症（NCC）や陳旧性肉芽腫性感染などを検討 [1,20]' },
+    { id: 'intratumoral', label: '腫瘤性病変内部の粗大・塊状・帯状石灰化', note: '乏突起膠腫（IDH変異・1p/19q共欠失）、髄膜腫、頭蓋咽頭腫などを検討 [1,2,21]' },
+    { id: 'vascular_wall', label: '主幹動脈壁・異常血管塊・陳旧性脳損傷部位に沿う石灰化', note: '脳動脈硬化、脳動静脈奇形（AVM）、海綿状血管腫、既知脳梗塞後異栄養性石灰化など [1,2]' }
+  ];
+
+  var IMAGING_CHECKS = [
+    { id: 'band_leukopathy', label: '3T MRI FLAIRでの天幕上「帯状白質病変（band-like leukopathy）」', note: 'U線維を温存し深部・脳室周囲白質に広がる高信号。MYORG例の90%、PDGFB/PDGFRB例の62.5%にみられる [16]' },
+    { id: 'cerebellar_atrophy_wm', label: '小脳萎縮 または 小脳FLAIR白質高信号', note: 'MYORG変異例では全例に小脳萎縮を認め [14]、PBC全体の32%に小脳白質病変がみられる [16]' },
+    { id: 'hemi_atrophy_lepto', label: '同側大脳実質の萎縮・軟髄膜造影増強・深部髄質静脈拡大', note: 'Sturge-Weber症候群の軟髄膜毛細血管静脈奇形に伴う特徴的MRI所見 [1,19]' },
+    { id: 'mass_enhancement', label: '周囲浮腫・腫瘤効果・造影増強域の増大', note: '乏突起膠腫では腫瘍内石灰化（OR 3.79）と造影体積増大（OR 2.70）がグレード3の独立予測因子 [21]' },
+    { id: 'microcephaly_cortical', label: '小頭症・皮質形成異常（幼少期発症例）', note: '先天性TORCH感染（CMV・トキソプラズマ）や先天性Zikaウイルス感染で特徴的 [1]' }
+  ];
+
+  var CLINICAL_CHECKS = [
+    { id: 'asymptomatic', label: '神経症状・内分泌症状ともになし（頭部外傷・頭痛精査等の偶発所見）', note: 'ただしPBC遺伝子変異保有者の約3分の1（PDGFRBでは約54%）は無症候である点に留意 [13]' },
+    { id: 'parkinson_mov', label: 'パーキンソニズム・不随意運動・歩行障害', note: 'PBC症候例の主要運動症状であり、帯状白質病変とも相関する [5,13,16]' },
+    { id: 'dysarthria_ataxia', label: '構音障害（特に初発）・小脳失調・錐体路徴候', note: 'MYORG関連PBCの11/16例で構音障害が初発し、80%で運動5症候中4つ以上を合併 [14]' },
+    { id: 'cogn_psych', label: '認知機能低下・抑うつ・不安・精神症状', note: 'IBGC症候例の認知障害58.8%・精神症状56.9% [5]。天幕上白質病変とも関連 [16]' },
+    { id: 'seizure_tetany', label: 'けいれん発作・テタニー・しびれ感・QT延長', note: '低Ca血症（副甲状腺機能低下症・PHP）、Sturge-Weber症候群（75-80%）、神経嚢虫症で重要 [9,10,19,20]' },
+    { id: 'neck_surg', label: '甲状腺・副甲状腺・頸部手術歴あり', note: '術後12か月を超えて持続する低Ca・PTH低下は永続性術後副甲状腺機能低下症と判定 [10]' },
+    { id: 'cataract_renal_calc', label: '若年性白内障・腎結石・腎石灰化症の合併', note: '慢性副甲状腺機能低下症およびPHPにおける代表的な異所性石灰化・合併症 [9,10,11]' },
+    { id: 'aho_features', label: '短指症（特に第4・5中手骨短縮）・低身長・円形顔貌・皮下異所性骨化', note: 'Albright遺伝性骨ジストロフィー（AHO）徴候。短指症はPHP1Aの70-80%、PHP1Bの15-33%に合併 [11]' },
+    { id: 'portwine_glaucoma', label: '顔面ポートワイン母斑（毛細血管奇形）・緑内障', note: 'Sturge-Weber症候群を示唆（緑内障は36か月未満の30-50%、生涯リスク最大70%）[19]' },
+    { id: 'tsc_skin_visceral', label: '顔面血管線維腫・葉状白斑・腎血管筋脂肪腫・心横紋筋腫等の皮膚/臓器病変', note: '結節性硬化症（TSC）などの神経皮膚症候群（母斑症）を支持 [1,2]' },
+    { id: 'mito_fabry_hx', label: '感音難聴・糖尿病・脳卒中様発作・被角血管腫・四肢末端痛・若年性脳梗塞/腎心障害', note: 'ミトコンドリア病（MT-TL1等）やFabry病（GLA）は治療方針に直結するため見逃せない [1,18]' },
+    { id: 'endemic_sle_hx', label: '神経嚢虫症流行地への居住/渡航歴 または 全身性エリテマトーデス（SLE）既往', note: '流行地歴はNCC [20]、SLE既往は炎症性脳血管内皮障害に伴う石灰化 [1,2] の手がかり' },
+    { id: 'fam_hx', label: '脳石灰化・神経変性疾患・内分泌異常の家族歴（または血族婚）あり', note: '顕性遺伝（SLC20A2等）、潜性遺伝（MYORG・JAM2・NAA60）、母系遺伝（MT-TL1）、X連鎖（GLA）を区別 [13-15,18]' }
+  ];
+
+  // TOOL_AUTHORING_GUIDE 互換ステップ定義
+  var STEPS = [
+    { id: 'age', title: '年齢区分', multi: false, options: AGE_OPTS },
+    { id: 'modality', title: '画像検査モダリティ', multi: false, options: MODALITY_OPTS },
+    { id: 'mri', title: 'MRI信号評価', multi: true, options: MRI_CHECKS },
+    { id: 'ca', title: '血清カルシウム', multi: false, options: CA_OPTS },
+    { id: 'phos', title: '血清無機リン', multi: false, options: PHOS_OPTS },
+    { id: 'pth', title: '血清intact PTH', multi: false, options: PTH_OPTS },
+    { id: 'metabolic', title: '代謝交絡項目', multi: true, options: METABOLIC_CHECKS },
+    { id: 'dist', title: '解剖学的分布', multi: true, options: DIST_CHECKS },
+    { id: 'imaging', title: '随伴画像所見', multi: true, options: IMAGING_CHECKS },
+    { id: 'clinical', title: '臨床症候・背景', multi: true, options: CLINICAL_CHECKS }
+  ];
+
+  var DISEASES = {
+    phys_calc: {
+      name: '生理的（加齢関連）頭蓋内石灰化',
+      refs: '[1,3,4,5]',
+      description: '松果体（10歳以上、成人CTの71.0%）、脈絡叢（66.2%）、手綱（20.1%）、大脳鎌・小脳テント（7.3%）、および40歳以上の軽度点状な淡蒼球石灰化として日常画像で高頻度に認められます。',
+      workup: '年齢別TCS閾値（40歳未満 > 0、40-60歳 > 4、60歳超 > 5）を超えず、被殻・尾状核・視床・歯状核・白質への進展や神経・内分泌症候がなければ経過観察が基本となります。',
+      pitfall: '40歳未満の基底核石灰化や10歳未満の松果体石灰化は生理的と即断せず、二次性代謝異常や遺伝性疾患・腫瘍を確認してください [1,5]。'
+    },
+    hypopt: {
+      name: '副甲状腺機能低下症（術後・特発性・遺伝性／二次性Fahr症候群）',
+      refs: '[1,9,10]',
+      description: '低カルシウム血症・高リン血症・intact PTH低値（または不適切正常）を呈し、特発性例の73.8%に基底核石灰化（淡蒼球68.8%、被殻55.9%、尾状核54.8%、灰白質白質境界39.8%、視床29.0%、歯状核24.7%）を合併します。',
+      workup: '頸部手術歴（術後12か月超は永続性）、血清Ca・P・Alb・Mg・Cr・intact PTH・25(OH)D・尿中Ca排泄、眼科（白内障）・腎エコー（腎石灰化・結石）・心電図（QT延長）を確認します。非術後で家族歴陽性・症候群性・40歳未満では遺伝学的検査も検討されます [10]。',
+      pitfall: '慢性期はカルシウム製剤と活性型ビタミンD製剤が第一選択ですが、高カルシウム尿症・腎石灰化を避けつつ、石灰化進行と関連する血清Ca/P比（高リン血症）の管理が重要です [9,10]。'
+    },
+    php: {
+      name: '偽性副甲状腺機能低下症（PHP・関連疾患／PTH抵抗性）',
+      refs: '[1,11]',
+      description: '標的臓器のPTH抵抗性（約80-90%でGNAS等の分子異常）により、ビタミンD欠乏・Mg異常・腎機能障害がないにもかかわらず「低Ca血症＋高P血症＋PTH高値」を呈し、PBCや副甲状腺機能低下症と区別困難な両側基底核・歯状核石灰化をきたします。',
+      workup: '25(OH)D正常・Mg正常・腎機能正常を確認のうえ、Albright遺伝性骨ジストロフィー（AHO）徴候（E型短指症：PHP1Aで70-80%・PHP1Bで15-33%、低身長、異所性骨化）、TSH高値（TSH抵抗性）、GNAS遺伝子・メチル化解析を内分泌専門医と連携して評価します [11]。',
+      pitfall: '最大の見落とし原因は「intact PTHが低くない（正常上限-高値）から副甲状腺関連ではない」と判断してしまうことです。25(OH)D正常かつ高リン血症でPTHが基準値上限以上なら、顕性低Ca血症がなくてもPTH抵抗性を疑います [11]。'
+    },
+    pbc_ad: {
+      name: '原発性脳石灰化症（PBC／旧称Fahr病）— 常染色体顕性群（SLC20A2・XPR1・PDGFB・PDGFRB）',
+      refs: '[5,12,13,16,17]',
+      description: '二次性原因を除外したうえで年齢別TCS閾値を超える両側対称性石灰化（基底核100%、小脳58%、視床53%、白質43%）を呈します。顕性変異ではSLC20A2（61%）、XPR1（16%）、PDGFB（12%）、PDGFRB（5%）が報告されています。',
+      workup: 'まずCa・P・PTH・25(OH)D・Mg・腎機能・TSHで二次性原因を完全に除外し、3T MRI（帯状白質病変はPDGFB/PDGFRB群の62.5%に出現 [16]）、認知・精神・運動評価、遺伝カウンセリング下の次世代シークエンシング（2026年国際コンセンサスでは全ゲノム解析を優先推奨 [12]）を検討します。',
+      pitfall: 'SLC20A2・XPR1は浸透率70%未満、PDGFRBは約54%が無症候であり「親が無症状だから孤発例」とは限りません [13]。現時点で承認された疾患修飾薬はなく対症療法が標準です（エチドロン酸のCALCIFADE試験が進行中）[17]。'
+    },
+    pbc_ar: {
+      name: '原発性脳石灰化症（PBC）— 常染色体潜性群（MYORG・JAM2・NAA60）',
+      refs: '[12,13,14,15,16]',
+      description: '高い臨床浸透率（MYORG・JAM2は85%超）を示し、特にMYORG両アレル変異では構音障害初発（11/16例）、小脳失調・歩行障害・無動筋強剛・錐体路徴候の複合（80%で5症候中4つ以上）、橋石灰化、小脳萎縮（全例）、3T FLAIRでの帯状白質病変（90%）が特徴的です。',
+      workup: '二次性代謝異常の除外に加え、脳幹（特に橋中心部）石灰化・小脳萎縮・天幕上帯状白質病変の有無を確認し、嚥下・構音リハビリテーション評価と遺伝カウンセリング・NGS解析（MYORG, JAM2, 2024年同定のNAA60を含む）を検討します [12,14,15]。',
+      pitfall: '両親が無症候のヘテロ接合保有者となるため一見「家族歴のない孤発例」にみえます。また、既知7遺伝子を調べてもPBC全体の約50%は遺伝学的に未解決です [15]。'
+    },
+    mito_fabry: {
+      name: '単一遺伝子性代謝・血管疾患（ミトコンドリア病 MT-TL1・Fabry病 GLA 等）',
+      refs: '[1,18]',
+      description: '神経症状と両側基底核石灰化を有する24家系の包括的遺伝子解析では、IBGC遺伝子（8家系）以外にミトコンドリア病（MT-TL1 m.3243A>C：4家系）やFabry病（GLA）等の血管疾患（2家系）が同定され、全体の20.8%（5/24例）が治療方針に直結する疾患でした。',
+      workup: '感音難聴・糖尿病・脳卒中様発作・高乳酸血症（ミトコンドリア病）、被角血管腫・四肢末端痛・低汗症・蛋白尿・左室肥大・若年性脳梗塞（Fabry病：男性はα-ガラクトシダーゼA活性、女性はGLA遺伝子解析）を確認します。核遺伝子だけでなくミトコンドリアDNAも含めた評価が重要です [18]。',
+      pitfall: '基底核石灰化が軽度であってもミトコンドリア病やFabry病（酵素補充療法・シャペロン療法の対象）が隠れていることがあります [18]。'
+    },
+    sws: {
+      name: 'Sturge-Weber症候群（SWS）',
+      refs: '[1,19]',
+      description: '顔面ポートワイン母斑・軟髄膜毛細血管静脈奇形・緑内障（36か月未満の30-50%、生涯最大70%）を特徴とし、約75-80%（脳病変例では81.6%）にけいれん発作を生じます。進行すると脳実質萎縮を伴う片側優位の脳回状（gyral）石灰化を呈します。',
+      workup: '症状出現後の初回画像には造影前後MRI（SWIおよびDWIを含む）が推奨され、抗てんかん発作薬管理と早期からの眼科（眼圧・緑内障）定期診察が不可欠です [19]。',
+      pitfall: '小児の新規発作・神経症状に対するルーチンの頭部CTは、早期病変への低感度と放射線被曝リスクのため推奨されません（SWIが石灰化や深部髄質静脈異常の描出に高感度です）[19]。'
+    },
+    tsc_phako: {
+      name: '結節性硬化症（TSC）・その他の神経皮膚症候群（Gorlin-Goltz症候群等）',
+      refs: '[1,2]',
+      description: 'TSCでは側脳室壁に沿う脳室周囲・上衣下の小結節状石灰化（上衣下結節）や皮質結節が特徴的です。Gorlin-Goltz症候群（基底細胞母斑症候群）では若年からの著明な大脳鎌・小脳テント層状石灰化がみられます。',
+      workup: '皮膚診察（葉状白斑、顔面血管線維腫、シャグリンパッチ、爪囲線維腫、基底細胞母斑）、頭部造影MRI（上衣下巨細胞性星細胞腫［SEGA］評価）、腎画像（血管筋脂肪腫）、心・肺・眼科評価を行います。',
+      pitfall: '脳室周囲石灰化は先天性CMV感染等のTORCH症候群でもみられるため、発症年齢・皮質形成異常・全身皮膚/臓器所見と合わせて鑑別します [1]。'
+    },
+    ncc: {
+      name: '石灰化実質性神経嚢虫症（Neurocysticercosis: NCC）',
+      refs: '[1,20]',
+      description: '有鉤条虫の流行地域への居住・渡航歴がある患者で、退縮後の死滅嚢虫として脳実質内・皮質下白質に点状-小結節状の石灰化を残し、成人発症てんかん発作の原因となります。',
+      workup: 'CT（石灰化検出に高感度）とMRI（頭節［scolex］・周囲浮腫・後頭蓋窩・くも膜下腔/脳室内の生存嚢虫評価に高感度）を併用し、生存嚢虫の有無を確認します [20]。',
+      pitfall: 'IDSA/ASTMHガイドラインでは、生存嚢虫がなく石灰化実質病変のみの患者に対し、駆虫薬は投与せず対症療法（抗てんかん発作薬等）のみを行うことが強く推奨されています [20]。'
+    },
+    torch_zika: {
+      name: '先天性感染症（TORCH：CMV・トキソプラズマ、先天性Zikaウイルス感染等）',
+      refs: '[1,2]',
+      description: '胎内感染に伴う異栄養性石灰化で、CMVでは脳室周囲点状石灰化＋脳回形成異常、トキソプラズマでは基底核・皮質を含む散在性石灰化＋水頭症・脈絡網膜炎、先天性Zika感染では皮質・皮質下境界の帯状/索状石灰化と重度小頭症がみられます。',
+      workup: '周産期歴・母体感染歴、発達歴、聴力検査（先天性CMVによる感音難聴）、眼底検査（脈絡網膜炎）、頭部MRIでの皮質形成異常・脳室拡大の評価を行います。',
+      pitfall: '成人期に偶発発見された脳室周囲・皮質下小石灰化では、結節性硬化症や陳旧性肉芽腫性病変との鑑別が必要です [1]。'
+    },
+    neoplasm: {
+      name: '石灰化を伴う脳腫瘍（乏突起膠腫・髄膜腫・頭蓋咽頭腫・上衣腫等）',
+      refs: '[1,2,21]',
+      description: '腫瘤性病変に伴う腫瘍内石灰化です。成人乏突起膠腫（IDH変異かつ1p/19q共欠失）180例の解析では、腫瘍内石灰化（多変量OR 3.79, P < 0.001）と造影増強腫瘍体積の増大（OR 2.70, P = 0.043）がグレード3の独立予測因子でした（AUC 0.78）。',
+      workup: '造影頭部MRI（T1造影・FLAIR・DWI・灌流画像等）で実質内か軸外（硬膜付着・トルコ鞍上部・脳室内）かを評価し、脳神経外科へ速やかにコンサルトして組織・分子診断（IDH1/2変異、1p/19q共欠失等）を検討します [21]。',
+      pitfall: '「石灰化がある＝緩徐進行で低悪性度だから安心」とは言えません。乏突起膠腫では石灰化の存在自体がグレード3と有意に関連するため、造影所見とあわせた専門的評価が必要です [21]。'
+    },
+    vascular_inflam: {
+      name: '脳血管性・炎症性・異栄養性石灰化（動脈硬化・AVM・海綿状血管腫・SLE・既知脳損傷後）',
+      refs: '[1,2,3]',
+      description: '内頸動脈サイフォン部・椎骨脳底動脈壁の動脈硬化性石灰化（成人CTの6.6% [3]）、脳動静脈奇形（AVM）や海綿状血管腫に伴う血管壁/血栓石灰化、SLEに伴う脳血管炎・内皮障害、および陳旧性脳梗塞・脳挫傷・放射線照射後の異栄養性石灰化が含まれます。',
+      workup: 'MRA/CTAまたは造影MRIによる異常血管網（nidus）・海綿状血管腫の確認、過去の脳卒中・外傷・頭部放射線照射歴の照合、自己免疫疾患（SLE等）の活動性評価を行います。',
+      pitfall: '海綿状血管腫や微小出血と小石灰化が混在する場合、T2*/SWIマグニチュード画像だけでは判別できないため、単純CTやSWI位相画像・QSMと照合してください [7,8]。'
+    }
+  };
+
+  var PRESETS = {
+    phys_elderly: {
+      age: 'gt60', modality: 'ct_mri', mri: [], tcs: '3',
+      ca: 'normal', phos: 'normal', pth: 'normal', metabolic: [], caVal: '9.3', pVal: '3.4',
+      dist: ['midline_dura', 'gp_mild'], imaging: [], clinical: ['asymptomatic']
+    },
+    hypopt_postop: {
+      age: 'a40_60', modality: 'ct_mri', mri: ['t1_high'], tcs: '24',
+      ca: 'low', phos: 'high', pth: 'low', metabolic: ['vitd_mg_renal_ok'], caVal: '6.8', pVal: '5.9',
+      dist: ['bg_extensive'], imaging: [], clinical: ['seizure_tetany', 'neck_surg', 'cataract_renal_calc']
+    },
+    php_pitfall: {
+      age: 'a10_39', modality: 'ct_mri', mri: [], tcs: '18',
+      ca: 'low', phos: 'high', pth: 'high', metabolic: ['vitd_mg_renal_ok', 'tsh_high'], caVal: '7.6', pVal: '5.4',
+      dist: ['bg_extensive'], imaging: [], clinical: ['seizure_tetany', 'aho_features', 'cataract_renal_calc']
+    },
+    myorg_pbc: {
+      age: 'a40_60', modality: 'ct_mri', mri: ['swi_dark', 'phase_diamag'], tcs: '36',
+      ca: 'normal', phos: 'normal', pth: 'normal', metabolic: ['vitd_mg_renal_ok'], caVal: '9.4', pVal: '3.5',
+      dist: ['bg_extensive', 'pons_brainstem'], imaging: ['band_leukopathy', 'cerebellar_atrophy_wm'], clinical: ['dysarthria_ataxia', 'parkinson_mov', 'cogn_psych']
+    },
+    sws_gyral: {
+      age: 'a10_39', modality: 'ct_mri', mri: ['swi_dark'], tcs: '',
+      ca: 'normal', phos: 'normal', pth: 'normal', metabolic: [], caVal: '', pVal: '',
+      dist: ['gyral_unilat'], imaging: ['hemi_atrophy_lepto'], clinical: ['seizure_tetany', 'portwine_glaucoma']
+    }
+  };
+
+  var state = getInitialState();
+
+  function getInitialState() {
+    return {
+      preset: '',
+      age: 'a40_60',
+      modality: 'ct_mri',
+      mri: {},
+      tcs: '',
+      ca: 'unknown',
+      phos: 'unknown',
+      pth: 'unknown',
+      metabolic: {},
+      caVal: '',
+      pVal: '',
+      dist: {},
+      imaging: {},
+      clinical: {}
+    };
+  }
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function findOpt(arr, id) {
+    var i;
+    for (i = 0; i < arr.length; i++) {
+      if (arr[i].id === id) return arr[i];
+    }
+    return arr[0];
+  }
+
+  function hasAnyKey(obj) {
+    var k;
+    for (k in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, k) && obj[k]) return true;
+    }
+    return false;
+  }
+
+  function buildSeg(containerId, groupKey, opts) {
+    var el = document.getElementById(containerId);
+    var html = '';
+    var i, o, cls;
+    for (i = 0; i < opts.length; i++) {
+      o = opts[i];
+      cls = '';
+      if (state[groupKey] === o.id) {
+        cls = 'active';
+        if (o.danger) cls += ' danger-active';
+        else if (o.warn) cls += ' warn-active';
+      }
+      html += '<button type="button" data-seg="' + groupKey + '" data-val="' + o.id + '" class="' + cls + '" aria-pressed="' + (state[groupKey] === o.id ? 'true' : 'false') + '">' + escapeHtml(o.label) + '</button>';
+    }
+    el.innerHTML = html;
+  }
+
+  function buildChecks(containerId, groupKey, opts) {
+    var el = document.getElementById(containerId);
+    var html = '';
+    var i, o, checked;
+    for (i = 0; i < opts.length; i++) {
+      o = opts[i];
+      checked = !!state[groupKey][o.id];
+      html += '<label class="chk-item' + (checked ? ' checked' : '') + '">' +
+        '<input type="checkbox" data-chk="' + groupKey + '" value="' + o.id + '"' + (checked ? ' checked' : '') + '>' +
+        '<span>' + escapeHtml(o.label) +
+        (o.note ? '<span class="chk-note">' + escapeHtml(o.note) + '</span>' : '') +
+        '</span></label>';
+    }
+    el.innerHTML = html;
+  }
+
+  function buildAllInputs() {
+    buildSeg('seg-age', 'age', AGE_OPTS);
+    buildSeg('seg-modality', 'modality', MODALITY_OPTS);
+    buildChecks('chk-mri', 'mri', MRI_CHECKS);
+    buildSeg('seg-ca', 'ca', CA_OPTS);
+    buildSeg('seg-phos', 'phos', PHOS_OPTS);
+    buildSeg('seg-pth', 'pth', PTH_OPTS);
+    buildChecks('chk-metabolic', 'metabolic', METABOLIC_CHECKS);
+    buildChecks('chk-dist', 'dist', DIST_CHECKS);
+    buildChecks('chk-imaging', 'imaging', IMAGING_CHECKS);
+    buildChecks('chk-clinical', 'clinical', CLINICAL_CHECKS);
+    document.getElementById('input-tcs').value = state.tcs;
+    document.getElementById('input-ca-val').value = state.caVal;
+    document.getElementById('input-p-val').value = state.pVal;
+
+    var pBtns = document.querySelectorAll('.preset-btn[data-preset]');
+    var i;
+    for (i = 0; i < pBtns.length; i++) {
+      if (pBtns[i].getAttribute('data-preset') === state.preset) {
+        pBtns[i].classList.add('active');
+      } else {
+        pBtns[i].classList.remove('active');
+      }
+    }
+  }
+
+  function getProbLevel(tier) {
+    if (tier === 'high') return '優先確認・介入対象';
+    if (tier === 'phys') return '生理的範囲の照合';
+    return '鑑別候補として精査';
+  }
+
+  // 各疾患と入力所見の合致整理（独自の確率計算は行わず、合致根拠を配列で保持）
+  function calcScores(st) {
+    var res = {};
+    var k;
+    for (k in DISEASES) {
+      if (Object.prototype.hasOwnProperty.call(DISEASES, k)) {
+        res[k] = { score: 0, tier: 'mid', reasons: [] };
+      }
+    }
+
+    var ageObj = findOpt(AGE_OPTS, st.age);
+    var tcsNum = st.tcs !== '' && !isNaN(parseFloat(st.tcs)) ? parseFloat(st.tcs) : null;
+    var tcsExceeds = tcsNum !== null && tcsNum > ageObj.tcsLimit;
+    var tcsWithin = tcsNum !== null && tcsNum <= ageObj.tcsLimit;
+
+    var onlyPhysSites = (st.dist.midline_dura || st.dist.gp_mild) &&
+      !st.dist.bg_extensive && !st.dist.pons_brainstem && !st.dist.gyral_unilat &&
+      !st.dist.perivent_subep && !st.dist.parenchymal_nodule && !st.dist.intratumoral;
+
+    var metabolicAbn = (st.ca === 'low' || st.ca === 'high' || st.phos === 'high' || st.pth === 'low' || st.pth === 'high');
+    var metabolicNormalConfirmed = (st.ca === 'normal' && st.phos === 'normal' && st.pth === 'normal');
+    var metabolicUnchecked = (st.ca === 'unknown' || st.phos === 'unknown' || st.pth === 'unknown');
+
+    // 1. 生理的石灰化
+    if (st.dist.midline_dura && st.age !== 'u10') {
+      res.phys_calc.score += 3;
+      res.phys_calc.reasons.push('10歳以上での松果体・脈絡叢・手綱・硬膜石灰化（生理的好発部位）[1,3]');
+    }
+    if (st.dist.gp_mild && (st.age === 'a40_60' || st.age === 'gt60')) {
+      res.phys_calc.score += 3;
+      res.phys_calc.reasons.push('40歳以上での両側淡蒼球に限局した軽度・点状石灰化 [1,4]');
+    }
+    if (tcsWithin && onlyPhysSites && !metabolicAbn) {
+      res.phys_calc.score += 2;
+      res.phys_calc.reasons.push('TCS（' + tcsNum + '点）が年齢別99パーセンタイル閾値（' + ageObj.shortLabel + '：' + ageObj.tcsLimit + '点以下）の範囲内 [5,16]');
+    }
+    if (st.clinical.asymptomatic && onlyPhysSites && !metabolicAbn && !tcsExceeds) {
+      res.phys_calc.tier = 'phys';
+      res.phys_calc.score += 2;
+      res.phys_calc.reasons.push('神経・内分泌症候のない偶発所見');
+    }
+    if (tcsExceeds || metabolicAbn || st.age === 'u10' || (st.dist.gp_mild && st.age === 'a10_39')) {
+      // 病的閾値超過や若年例では生理的のみとしない
+      res.phys_calc.score = 0;
+      res.phys_calc.reasons = [];
+    }
+
+    // 2. 副甲状腺機能低下症
+    if (st.ca === 'low' && st.pth === 'low') {
+      res.hypopt.score += 10;
+      res.hypopt.tier = 'high';
+      res.hypopt.reasons.push('低カルシウム血症＋intact PTH低値/不適切正常（副甲状腺機能低下症の中核所見）[9,10]');
+    } else if (st.ca === 'low' && st.phos === 'high' && st.pth !== 'high') {
+      res.hypopt.score += 8;
+      res.hypopt.tier = 'high';
+      res.hypopt.reasons.push('低カルシウム血症＋高リン血症（intact PTHの確認が必須）[9,10]');
+    }
+    if (st.clinical.neck_surg) {
+      res.hypopt.score += 6;
+      res.hypopt.tier = 'high';
+      res.hypopt.reasons.push('甲状腺・副甲状腺・頸部手術歴あり（術後副甲状腺機能低下症の確認）[10]');
+    }
+    if (st.dist.bg_extensive || st.dist.gp_mild) {
+      if (st.ca !== 'normal' || st.pth === 'low' || st.clinical.neck_surg || st.clinical.cataract_renal_calc || st.clinical.seizure_tetany) {
+        res.hypopt.score += 3;
+        res.hypopt.reasons.push('基底核・歯状核・視床・皮質下白質の石灰化分布（特発性例の73.8%に基底核石灰化）[1,9]');
+      }
+    }
+    if ((st.dist.bg_extensive || tcsExceeds) && metabolicUnchecked) {
+      res.hypopt.score += 4;
+      res.hypopt.reasons.push('Ca・P・intact PTHが未確認のため、PBC（Fahr病）と診断する前に除外が必須 [1,9,12]');
+    }
+    if (st.clinical.seizure_tetany && st.ca !== 'normal') {
+      res.hypopt.score += 2;
+      res.hypopt.reasons.push('けいれん発作・テタニー・QT延長などの低Ca関連症候 [9,10]');
+    }
+    if (st.clinical.cataract_renal_calc && st.ca !== 'normal') {
+      res.hypopt.score += 2;
+      res.hypopt.reasons.push('白内障・腎石灰化・腎結石の合併 [9,10]');
+    }
+
+    // 3. 偽性副甲状腺機能低下症（PHP）
+    if (st.phos === 'high' && st.pth === 'high') {
+      res.php.score += 11;
+      res.php.tier = 'high';
+      if (st.ca === 'low') {
+        res.php.reasons.push('低Ca血症＋高リン血症＋intact PTH高値（PTH抵抗性の古典的三徴）[11]');
+      } else if (st.ca === 'normal') {
+        res.php.reasons.push('高リン血症＋intact PTH基準値上限以上（顕性低Ca血症がなくてもPTH抵抗性を疑う重要パターン）[11]');
+      } else {
+        res.php.reasons.push('高リン血症＋intact PTH高値（PTH抵抗性の確認が必要）[11]');
+      }
+    } else if (st.ca === 'low' && st.pth === 'high' && !st.metabolic.vitd_mg_renal_abn) {
+      res.php.score += 7;
+      res.php.tier = 'high';
+      res.php.reasons.push('ビタミンD欠乏・腎不全がない状況での低Ca血症＋PTH高値（PTH抵抗性を検討）[11]');
+    }
+    if (st.clinical.aho_features) {
+      res.php.score += 8;
+      res.php.tier = 'high';
+      res.php.reasons.push('短指症・低身長・円形顔貌・皮下異所性骨化（Albright遺伝性骨ジストロフィー［AHO］徴候）[11]');
+    }
+    if (st.metabolic.tsh_high && (st.pth === 'high' || st.phos === 'high' || st.clinical.aho_features || st.dist.bg_extensive)) {
+      res.php.score += 3;
+      res.php.reasons.push('TSH高値（GNAS関連疾患に伴うTSH抵抗性の可能性）[11]');
+    }
+    if ((st.dist.bg_extensive || tcsExceeds) && metabolicUnchecked) {
+      res.php.score += 3;
+      res.php.reasons.push('Ca・P・intact PTH未確認（PTH低値だけでなく高値＝PTH抵抗性の除外が必要）[11]');
+    }
+
+    // 4 & 5. PBC 常染色体顕性群 / 常染色体潜性群
+    var pbcCandidate = st.dist.bg_extensive || st.dist.pons_brainstem || st.imaging.band_leukopathy || tcsExceeds ||
+      (st.dist.gp_mild && (st.age === 'u10' || st.age === 'a10_39' || st.clinical.fam_hx));
+
+    if (pbcCandidate) {
+      // 潜性群（MYORG / JAM2 / NAA60）
+      if (st.dist.pons_brainstem) {
+        res.pbc_ar.score += 9;
+        res.pbc_ar.tier = 'high';
+        res.pbc_ar.reasons.push('橋（特に橋中心部）・脳幹の石灰化（常染色体潜性 MYORG・JAM2・NAA60 に特異性の高い所見）[14,15]');
+      }
+      if (st.imaging.band_leukopathy) {
+        res.pbc_ar.score += 5;
+        res.pbc_ad.score += 4;
+        res.pbc_ar.reasons.push('3T FLAIR 天幕上帯状白質病変（MYORG変異例の90%に認められる）[16]');
+        res.pbc_ad.reasons.push('3T FLAIR 天幕上帯状白質病変（PDGFB/PDGFRB変異例の62.5%に認められる）[16]');
+      }
+      if (st.imaging.cerebellar_atrophy_wm) {
+        res.pbc_ar.score += 5;
+        res.pbc_ar.reasons.push('小脳萎縮・小脳FLAIR白質病変（MYORG変異例では全例に小脳萎縮を伴う）[14,16]');
+      }
+      if (st.clinical.dysarthria_ataxia) {
+        res.pbc_ar.score += 5;
+        res.pbc_ad.score += 2;
+        res.pbc_ar.reasons.push('構音障害・小脳失調・錐体路徴候（MYORG例の11/16例で構音障害が初発）[14]');
+        res.pbc_ad.reasons.push('構音障害・運動症状（PBC症候例で高頻度）[13]');
+      }
+      if (st.dist.bg_extensive || tcsExceeds) {
+        res.pbc_ad.score += 5;
+        res.pbc_ar.score += 3;
+        if (tcsExceeds) {
+          res.pbc_ad.reasons.push('年齢別TCS 99パーセンタイル閾値を超過（' + ageObj.shortLabel + '：' + tcsNum + '点 > ' + ageObj.tcsLimit + '点）[5,16]');
+          res.pbc_ar.reasons.push('年齢別TCS 99パーセンタイル閾値を超過（' + ageObj.shortLabel + '：' + tcsNum + '点 > ' + ageObj.tcsLimit + '点）[5,16]');
+        } else {
+          res.pbc_ad.reasons.push('両側対称性の広範な基底核・視床・歯状核・白質石灰化 [1,13]');
+          res.pbc_ar.reasons.push('両側対称性の広範な基底核・視床・歯状核・白質石灰化 [13,14]');
+        }
+      } else if (st.dist.gp_mild && (st.age === 'u10' || st.age === 'a10_39')) {
+        res.pbc_ad.score += 4;
+        res.pbc_ad.reasons.push('40歳未満での両側淡蒼球石灰化（年齢別閾値 TCS > 0 に該当し病的精査対象）[5,16]');
+      }
+      if (st.clinical.parkinson_mov || st.clinical.cogn_psych) {
+        res.pbc_ad.score += 3;
+        res.pbc_ar.score += 2;
+        res.pbc_ad.reasons.push('パーキンソニズム・認知機能低下・精神症状（PBCの中核症候）[5,13,16]');
+      }
+      if (st.clinical.fam_hx) {
+        res.pbc_ad.score += 4;
+        res.pbc_ar.score += 3;
+        res.pbc_ad.reasons.push('家族歴あり（SLC20A2・XPR1・PDGFB・PDGFRB等の常染色体顕性遺伝を検討）[13]');
+        res.pbc_ar.reasons.push('家族歴・同胞発症または血族婚の確認（MYORG・JAM2・NAA60の潜性遺伝を検討）[14,15]');
+      }
+      if (metabolicNormalConfirmed && (st.dist.bg_extensive || tcsExceeds)) {
+        res.pbc_ad.tier = 'high';
+        res.pbc_ad.score += 3;
+        res.pbc_ad.reasons.push('Ca・P・intact PTH正常を確認済み（二次性内分泌原因の除外後、PBCが主要鑑別）[12]');
+        if (res.pbc_ar.score >= 6) res.pbc_ar.tier = 'high';
+      }
+    }
+
+    // 6. ミトコンドリア病・Fabry病
+    if (st.clinical.mito_fabry_hx) {
+      res.mito_fabry.score += 9;
+      res.mito_fabry.tier = 'high';
+      res.mito_fabry.reasons.push('感音難聴・糖尿病・脳卒中様発作 または 被角血管腫・四肢末端痛・腎心障害などの全身徴候 [1,18]');
+    }
+    if (st.dist.bg_extensive || (st.dist.gp_mild && (st.age === 'u10' || st.age === 'a10_39' || !st.clinical.asymptomatic))) {
+      res.mito_fabry.score += 3;
+      res.mito_fabry.reasons.push('神経症状を伴う基底核石灰化家系の20.8%（5/24家系）でMT-TL1またはGLA変異が同定されており鑑別必須 [18]');
+    }
+
+    // 7. Sturge-Weber症候群
+    if (st.dist.gyral_unilat) {
+      res.sws.score += 9;
+      res.sws.tier = 'high';
+      res.sws.reasons.push('片側優位の脳回状（gyral / トラムライン様）皮質石灰化 [1,19]');
+    }
+    if (st.imaging.hemi_atrophy_lepto) {
+      res.sws.score += 7;
+      res.sws.tier = 'high';
+      res.sws.reasons.push('同側大脳実質萎縮・軟髄膜造影増強・深部髄質静脈異常 [1,19]');
+    }
+    if (st.clinical.portwine_glaucoma) {
+      res.sws.score += 8;
+      res.sws.tier = 'high';
+      res.sws.reasons.push('顔面ポートワイン母斑・緑内障の合併 [19]');
+    }
+
+    // 8. 結節性硬化症・母斑症
+    if (st.dist.perivent_subep) {
+      res.tsc_phako.score += 7;
+      res.tsc_phako.reasons.push('脳室周囲・上衣下の小結節状石灰化（上衣下結節）[1,2]');
+    }
+    if (st.clinical.tsc_skin_visceral) {
+      res.tsc_phako.score += 9;
+      res.tsc_phako.tier = 'high';
+      res.tsc_phako.reasons.push('顔面血管線維腫・葉状白斑・腎血管筋脂肪腫などの神経皮膚症候群所見 [1,2]');
+    }
+    if (st.dist.midline_dura && (st.age === 'u10' || st.age === 'a10_39') && st.clinical.fam_hx) {
+      res.tsc_phako.score += 3;
+      res.tsc_phako.reasons.push('若年での硬膜・大脳鎌石灰化＋家族歴（Gorlin-Goltz症候群等の母斑症も考慮）[1]');
+    }
+
+    // 9. 神経嚢虫症（NCC）
+    if (st.dist.parenchymal_nodule) {
+      res.ncc.score += 7;
+      res.ncc.reasons.push('脳実質内・皮質下白質の小結節状石灰化 [1,20]');
+    }
+    if (st.clinical.endemic_sle_hx && (st.dist.parenchymal_nodule || st.clinical.seizure_tetany)) {
+      res.ncc.score += 6;
+      res.ncc.tier = 'high';
+      res.ncc.reasons.push('流行地への居住/渡航歴＋実質内小石灰化・発作 [20]');
+    }
+
+    // 10. 先天性感染症（TORCH・Zika）
+    if (st.imaging.microcephaly_cortical) {
+      res.torch_zika.score += 9;
+      res.torch_zika.tier = 'high';
+      res.torch_zika.reasons.push('小頭症・皮質形成異常を伴う石灰化（先天性CMV・トキソプラズマ・Zika感染に特徴的）[1]');
+    }
+    if (st.age === 'u10' && (st.dist.perivent_subep || st.dist.parenchymal_nodule || st.dist.bg_extensive)) {
+      res.torch_zika.score += 5;
+      res.torch_zika.reasons.push('小児期（10歳未満）での脳室周囲・皮質下・基底核石灰化 [1,2]');
+    }
+
+    // 11. 石灰化脳腫瘍
+    if (st.dist.intratumoral || st.imaging.mass_enhancement) {
+      res.neoplasm.score += 11;
+      res.neoplasm.tier = 'high';
+      if (st.dist.intratumoral) res.neoplasm.reasons.push('腫瘤性病変内部の粗大・塊状・帯状石灰化 [1,2,21]');
+      if (st.imaging.mass_enhancement) res.neoplasm.reasons.push('周囲浮腫・腫瘤効果・造影増強域を伴う病変（乏突起膠腫グレード3予測因子 OR 3.79）[21]');
+    }
+    if (st.dist.midline_dura && st.age === 'u10') {
+      res.neoplasm.score += 5;
+      res.neoplasm.tier = 'high';
+      res.neoplasm.reasons.push('10歳未満での松果体部・正中石灰化（生理的石灰化としては非典型的であり松果体部腫瘍等を除外）[1]');
+    }
+
+    // 12. 脳血管性・炎症性・異栄養性石灰化
+    if (st.dist.vascular_wall) {
+      res.vascular_inflam.score += 8;
+      res.vascular_inflam.reasons.push('主幹動脈壁・異常血管塊（AVM/海綿状血管腫）・既知脳損傷部位に沿う石灰化 [1,2,3]');
+    }
+    if (st.clinical.endemic_sle_hx && !st.dist.parenchymal_nodule) {
+      res.vascular_inflam.score += 4;
+      res.vascular_inflam.reasons.push('SLE既往（炎症性脳血管障害に伴う石灰化の可能性）[1,2]');
+    }
+
+    return res;
+  }
+
+  function rankDiseases(evalMap) {
+    var keys = Object.keys(DISEASES);
+    var matched = [];
+    var i, id;
+    for (i = 0; i < keys.length; i++) {
+      id = keys[i];
+      if (evalMap[id] && evalMap[id].score > 0) {
+        matched.push(id);
+      }
+    }
+    matched.sort(function (a, b) {
+      var tierRank = { high: 3, mid: 2, phys: 1 };
+      var diff = tierRank[evalMap[b].tier] - tierRank[evalMap[a].tier];
+      if (diff !== 0) return diff;
+      return evalMap[b].score - evalMap[a].score;
+    });
+    return matched;
+  }
+
+  function renderStep1Feedback() {
+    var ageObj = findOpt(AGE_OPTS, state.age);
+    var tcsNum = state.tcs !== '' && !isNaN(parseFloat(state.tcs)) ? parseFloat(state.tcs) : null;
+    var msgs = [];
+    var boxClass = 'st-info';
+
+    if (tcsNum !== null) {
+      if (tcsNum > ageObj.tcsLimit) {
+        boxClass = 'st-danger';
+        msgs.push('<strong>【年齢別TCS閾値を超過】</strong>入力されたTCS <strong>' + tcsNum + '点</strong> は、' + ageObj.shortLabel + 'の99パーセンタイル閾値（<strong>&gt; ' + ageObj.tcsLimit + '点</strong>）を超えています<sup><a href="#ref5">5</a>,<a href="#ref16">16</a></sup>。生理的加齢変化のみとせず、STEP 2のCa・P・PTHスクリーニングと病的鑑別を進めてください。');
+      } else {
+        boxClass = 'st-ok';
+        msgs.push('<strong>【年齢別TCS閾値の範囲内】</strong>入力されたTCS <strong>' + tcsNum + '点</strong> は、' + ageObj.shortLabel + 'の99パーセンタイル閾値（<strong>' + ageObj.tcsLimit + '点以下</strong>）の範囲内です<sup><a href="#ref5">5</a>,<a href="#ref16">16</a></sup>（※腫瘤性・脳回状・脳室周囲などの局在異常や臨床症候がある場合はTCSにかかわらず個別精査が必要です）。');
+      }
+    } else {
+      msgs.push('<strong>【年齢区分の基準】</strong>選択中：<strong>' + escapeHtml(ageObj.label) + '</strong>（CTのTCS 99パーセンタイル病的閾値は <strong>&gt; ' + ageObj.tcsLimit + '点</strong><sup><a href="#ref5">5</a>,<a href="#ref16">16</a></sup>）。生理的石灰化は松果体で10歳以上、淡蒼球で40歳以上に典型的です<sup><a href="#ref1">1</a></sup>。');
+    }
+
+    if (state.modality === 'mri_only') {
+      boxClass = boxClass === 'st-danger' ? 'st-danger' : 'st-warn';
+      msgs.push('<strong>【単純頭部CT未確認の注意】</strong>MRIのみでは石灰化と脳微小出血（ヘモジデリン）・亜急性出血・メラニン等の誤認が起こりえます。原則として<strong>薄スライス単純頭部CT（&gt; 130 HU）</strong>で真の石灰化と広がりを確認してください<sup><a href="#ref16">16</a>,<a href="#ref17">17</a></sup>（※ただしSturge-Weber症候群が疑われる小児の新規発作ではルーチンCTは推奨されず、SWI・DWIを含む造影前後MRIが第一選択です<sup><a href="#ref19">19</a></sup>）。');
+    }
+
+    if (state.mri.t1_high) {
+      msgs.push('<strong>【T1強調高信号ピットフォール】</strong>粒子状カルシウム濃度が重量比30%までは表面緩和機構によりT1緩和時間が短縮し、T1強調MRIで高信号を呈します（亜急性出血や脂肪病変と即断しない）<sup><a href="#ref6">6</a></sup>。');
+    }
+    if (state.mri.swi_dark && !state.mri.phase_diamag && state.modality === 'mri_only') {
+      msgs.push('<strong>【SWI/T2*黒色点状低信号の鑑別】</strong>マグニチュード画像だけでは微小出血と区別できません。<strong>SWI辺縁スライスの磁化率位相パターン</strong>（感度98.4%・特異度100%<sup><a href="#ref7">7</a></sup>）または<strong>3T QSM</strong>（石灰化は負の磁化率：平均 -214±112 ppb vs 微小出血は正：平均 392±204 ppb<sup><a href="#ref8">8</a></sup>）、もしくは単純頭部CTで確認してください。');
+    } else if (state.mri.phase_diamag) {
+      msgs.push('<strong>【磁化率評価】</strong>SWI辺縁スライス位相パターンまたはQSMで反磁性（負の磁化率）を確認済みであり、常磁性（正の磁化率）を示す脳微小出血との識別に合致します<sup><a href="#ref7">7</a>,<a href="#ref8">8</a></sup>。');
+    }
+
+    document.getElementById('step1-feedback').innerHTML = '<div class="status-box ' + boxClass + '">' + msgs.join('<br>') + '</div>';
+  }
+
+  function renderStep2Feedback() {
+    var msgs = [];
+    var boxClass = 'st-info';
+
+    var caVal = state.caVal !== '' && !isNaN(parseFloat(state.caVal)) ? parseFloat(state.caVal) : null;
+    var pVal = state.pVal !== '' && !isNaN(parseFloat(state.pVal)) ? parseFloat(state.pVal) : null;
+
+    // 1) PHP（PTH抵抗性）ピットフォール検出
+    if (state.phos === 'high' && state.pth === 'high') {
+      boxClass = 'st-danger';
+      if (state.ca === 'low') {
+        msgs.push('<strong>🚨 偽性副甲状腺機能低下症（PHP：PTH抵抗性）を強く疑う検査パターンです</strong>：低Ca血症＋高リン血症＋intact PTH高値が揃っています。「PTHが低くないから副甲状腺疾患ではない」と判断せず、25(OH)D・Mg・腎機能が正常であればPTH抵抗性（GNAS関連疾患等）として内分泌専門評価を進めてください<sup><a href="#ref11">11</a></sup>。');
+      } else if (state.ca === 'normal') {
+        msgs.push('<strong>🚨 潜在性PTH抵抗性（PHP関連疾患）の重要ピットフォール</strong>：顕性低カルシウム血症がなくても、25(OH)D正常下で<strong>高リン血症＋intact PTH基準値上限以上</strong>を認めるときはPTH抵抗性を疑うべきと国際コンセンサスで勧告されています<sup><a href="#ref11">11</a></sup>。AHO徴候（短指症・低身長・異所性骨化）やTSH高値も確認してください。');
+      } else {
+        msgs.push('<strong>⚠ 高リン血症＋PTH高値</strong>：腎機能（CKDによる二次性副甲状腺機能亢進症）と25(OH)D・Mgを確認し、それらが正常であればPTH抵抗性（PHP）を検討してください<sup><a href="#ref11">11</a></sup>。');
+      }
+    } else if (state.ca === 'low' && state.pth === 'low') {
+      boxClass = 'st-danger';
+      msgs.push('<strong>🚨 副甲状腺機能低下症（二次性Fahr症候群）に合致する検査パターンです</strong>：低Ca血症にもかかわらずintact PTHが低値（または不適切正常）です<sup><a href="#ref9">9</a>,<a href="#ref10">10</a></sup>。頸部手術歴、血清Mg・25(OH)D・腎機能、QT時間・白内障・腎石灰化を確認し、カルシウムおよび活性型ビタミンD製剤による治療介入を検討してください<sup><a href="#ref10">10</a></sup>。');
+    } else if (state.ca === 'low' && state.pth === 'high') {
+      boxClass = 'st-warn';
+      if (state.metabolic.vitd_mg_renal_abn) {
+        msgs.push('<strong>⚠ 二次性副甲状腺機能亢進症 または PTH抵抗性の鑑別</strong>：ビタミンD欠乏・Mg異常・CKDを是正・評価しつつ、血清リンが高値であれば偽性副甲状腺機能低下症（PHP）の合併も鑑別してください<sup><a href="#ref10">10</a>,<a href="#ref11">11</a></sup>。');
+      } else {
+        msgs.push('<strong>⚠ 低Ca血症＋intact PTH高値</strong>：血清無機リン・25(OH)D・Mg・eGFRを必ず同時確認してください。25(OH)D・Mg・腎機能が正常で高リン血症を伴えば偽性副甲状腺機能低下症（PTH抵抗性）を強く疑います<sup><a href="#ref11">11</a></sup>。');
+      }
+    } else if (state.ca === 'unknown' || state.phos === 'unknown' || state.pth === 'unknown') {
+      boxClass = 'st-warn';
+      msgs.push('<strong>⚠ 代謝・内分泌スクリーニングに「未確認」があります</strong>：病的脳石灰化を疑う場合、<strong>血清Ca・無機リン（P）・アルブミン・Mg・クレアチニン（eGFR）・intact PTH・25(OH)D・TSH</strong>をセットで確認するまで原発性脳石灰化症（PBC／Fahr病）とは診断できません<sup><a href="#ref1">1</a>,<a href="#ref9">9</a>-<a href="#ref12">12</a></sup>。');
+    } else if (state.ca === 'normal' && state.phos === 'normal' && state.pth === 'normal') {
+      boxClass = 'st-ok';
+      msgs.push('<strong>✓ 血清Ca・無機リン・intact PTHの正常を確認済み</strong>：副甲状腺機能低下症および典型的なPTH抵抗性（PHP）は否定的です。病的石灰化がある場合はPBC（旧称Fahr病）やミトコンドリア病・Fabry病などの単一遺伝子疾患、母斑症、感染・腫瘍・血管病変をSTEP 3で整理します<sup><a href="#ref12">12</a>,<a href="#ref18">18</a></sup>。');
+    } else {
+      boxClass = 'st-warn';
+      msgs.push('<strong>⚠ カルシウム・リン代謝異常の精査</strong>：高Ca血症（原発性副甲状腺機能亢進症・ビタミンD過剰・肉芽腫性疾患等）や低リン血症を含め、アルブミン・イオン化Ca・25(OH)D・腎機能・intact PTHの全体像を照合してください。');
+    }
+
+    if (state.metabolic.tsh_high) {
+      msgs.push('<strong>【TSH高値の補足】</strong>PHP（特にPHP1A/1B）ではGNAS異常によるTSH抵抗性をしばしば合併します<sup><a href="#ref11">11</a></sup>。自己免疫性甲状腺疾患（慢性甲状腺炎）との合併も含め遊離T4・抗甲状腺抗体を確認してください。');
+    }
+
+    if (caVal !== null && pVal !== null && pVal > 0) {
+      var ratio = (caVal / pVal).toFixed(2);
+      msgs.push('<strong>【参考算出：血清Ca/P質量比（mg/dL比）＝ ' + ratio + '】</strong>（Ca ' + caVal + ' mg/dL ÷ P ' + pVal + ' mg/dL）。特発性副甲状腺機能低下症の縦断研究では、追跡中の血清Ca/P比が1%上昇するごとに基底核石灰化進行オッズが5%低下（OR 0.95, 95% CI 0.93-0.99, P &lt; 0.001）しており、血清Caだけでなく高リン血症のコントロールが重視されます<sup><a href="#ref9">9</a></sup>。');
+    }
+
+    document.getElementById('step2-feedback').innerHTML = '<div class="status-box ' + boxClass + '">' + msgs.join('<br>') + '</div>';
+  }
+
+  function renderResults() {
+    var evalMap = calcScores(state);
+    var ranked = rankDiseases(evalMap);
+    var overviewEl = document.getElementById('result-overview');
+    var listEl = document.getElementById('ddx-container');
+
+    if (!ranked.length) {
+      overviewEl.innerHTML = '<div class="status-box st-info">STEP 2の代謝所見またはSTEP 3の画像分布・随伴所見・臨床症候を選択すると、関連する鑑別病態と推奨ワークアップが表示されます（上の「典型シナリオ」ボタンで動作例を確認できます）。</div>';
+      listEl.innerHTML = '';
+      return;
+    }
+
+    overviewEl.innerHTML = '<div class="result-banner">' +
+      '<h3>入力所見と重なる鑑別候補：' + ranked.length + ' 病態</h3>' +
+      '<p>※独自の点数による確率推定は行いません。治療介入に直結する二次性内分泌・代謝疾患および特異的画像パターンの確認優先度順に整理しています。</p>' +
+      '</div>';
+
+    var html = '';
+    var i, id, d, ev, tierClass, badgeClass, badgeText;
+    for (i = 0; i < ranked.length; i++) {
+      id = ranked[i];
+      d = DISEASES[id];
+      ev = evalMap[id];
+      tierClass = ev.tier === 'high' ? 'tier-high' : (ev.tier === 'phys' ? 'tier-phys' : 'tier-mid');
+      badgeClass = ev.tier === 'high' ? 'badge-high' : (ev.tier === 'phys' ? 'badge-phys' : 'badge-mid');
+      badgeText = getProbLevel(ev.tier);
+
+      html += '<article class="ddx-card ' + tierClass + '">' +
+        '<div class="ddx-top">' +
+        '<div class="ddx-name">' + escapeHtml(d.name) + ' <span style="font-size:0.8em;font-weight:600;color:#2877A7;">' + escapeHtml(d.refs) + '</span></div>' +
+        '<span class="ddx-badge ' + badgeClass + '">' + escapeHtml(badgeText) + '</span>' +
+        '</div>' +
+        '<div class="ddx-matched"><strong>合致・注目点：</strong>' + ev.reasons.map(escapeHtml).join(' ／ ') + '</div>' +
+        '<div class="ddx-body">' + escapeHtml(d.description) + '</div>' +
+        '<div class="ddx-workup"><strong>確認・推奨ワークアップ：</strong>' + escapeHtml(d.workup) + '</div>' +
+        '<div class="ddx-pitfall"><strong>ピットフォール：</strong>' + escapeHtml(d.pitfall) + '</div>' +
+        '</article>';
+    }
+    listEl.innerHTML = html;
+  }
+
+  function collectCheckedLabels(opts, mapObj) {
+    var out = [];
+    var i;
+    for (i = 0; i < opts.length; i++) {
+      if (mapObj[opts[i].id]) out.push(opts[i].label);
+    }
+    return out;
+  }
+
+  function updateSummary() {
+    var ageObj = findOpt(AGE_OPTS, state.age);
+    var modObj = findOpt(MODALITY_OPTS, state.modality);
+    var caObj = findOpt(CA_OPTS, state.ca);
+    var phosObj = findOpt(PHOS_OPTS, state.phos);
+    var pthObj = findOpt(PTH_OPTS, state.pth);
+
+    var tcsNum = state.tcs !== '' && !isNaN(parseFloat(state.tcs)) ? parseFloat(state.tcs) : null;
+    var tcsLine = tcsNum !== null
+      ? (tcsNum + '点（' + ageObj.shortLabel + '99パーセンタイル閾値 > ' + ageObj.tcsLimit + '点：' + (tcsNum > ageObj.tcsLimit ? '超過' : '閾値内') + '）')
+      : ('未入力（参考：' + ageObj.shortLabel + 'の99パーセンタイル閾値は > ' + ageObj.tcsLimit + '点）');
+
+    var caVal = state.caVal !== '' && !isNaN(parseFloat(state.caVal)) ? parseFloat(state.caVal) : null;
+    var pVal = state.pVal !== '' && !isNaN(parseFloat(state.pVal)) ? parseFloat(state.pVal) : null;
+    var labNumStr = '';
+    if (caVal !== null || pVal !== null) {
+      labNumStr = ' [実測値: Ca ' + (caVal !== null ? caVal + ' mg/dL' : '未入力') + ' / P ' + (pVal !== null ? pVal + ' mg/dL' : '未入力');
+      if (caVal !== null && pVal !== null && pVal > 0) {
+        labNumStr += ' / Ca-P比 ' + (caVal / pVal).toFixed(2);
+      }
+      labNumStr += ']';
+    }
+
+    var mriList = collectCheckedLabels(MRI_CHECKS, state.mri);
+    var metaList = collectCheckedLabels(METABOLIC_CHECKS, state.metabolic);
+    var distList = collectCheckedLabels(DIST_CHECKS, state.dist);
+    var imgList = collectCheckedLabels(IMAGING_CHECKS, state.imaging);
+    var clinList = collectCheckedLabels(CLINICAL_CHECKS, state.clinical);
+
+    var evalMap = calcScores(state);
+    var ranked = rankDiseases(evalMap);
+    var ddxLines = [];
+    var i, id;
+    for (i = 0; i < ranked.length; i++) {
+      id = ranked[i];
+      ddxLines.push('  - [' + getProbLevel(evalMap[id].tier) + '] ' + DISEASES[id].name);
+    }
+
+    var pendingChecks = [];
+    if (state.modality === 'mri_only') pendingChecks.push('薄スライス単純頭部CT（>130 HU）での石灰化確定（小児SWS疑い例を除く）');
+    if (state.ca === 'unknown' || state.phos === 'unknown' || state.pth === 'unknown') {
+      pendingChecks.push('血清Ca・無機リン・Alb・Mg・Cr(eGFR)・intact PTH・25(OH)D・TSHによる二次性代謝異常除外');
+    }
+    if (state.phos === 'high' && state.pth === 'high') {
+      pendingChecks.push('偽性副甲状腺機能低下症（PHP：PTH抵抗性）の評価（25(OH)D・Mg・腎機能・AHO徴候・TSH・GNAS解析）');
+    }
+    if (state.ca === 'low' && state.pth === 'low') {
+      pendingChecks.push('副甲状腺機能低下症の合併症評価（心電図QT・眼科白内障・腎エコー・尿中Ca）とCa/活性型ビタミンD調整');
+    }
+
+    var lines = [
+      '【大脳・頭蓋内石灰化病変 鑑別・評価整理サマリー】',
+      '■ 年齢区分：' + ageObj.label,
+      '■ 画像モダリティ：' + modObj.label + (mriList.length ? '（MRI所見：' + mriList.join('、') + '）' : ''),
+      '■ Total Calcification Score (TCS)：' + tcsLine,
+      '■ Ca・P・PTH評価：Ca=' + caObj.label + ' ／ P=' + phosObj.label + ' ／ intact PTH=' + pthObj.label + labNumStr,
+      '■ 代謝・内分泌補足：' + (metaList.length ? metaList.join('、') : '特記入力なし'),
+      '■ 石灰化の分布：' + (distList.length ? distList.join('、') : '未選択'),
+      '■ 随伴画像所見：' + (imgList.length ? imgList.join('、') : '未選択'),
+      '■ 臨床症候・背景：' + (clinList.length ? clinList.join('、') : '未選択'),
+      '■ 整理された鑑別候補（確率推定ではなく所見の重なり順）：',
+      ddxLines.length ? ddxLines.join('\n') : '  - （分布または検査所見を入力してください）',
+      '■ 優先確認アクション：' + (pendingChecks.length ? pendingChecks.join(' ／ ') : '入力済みの臨床経過・家族歴・随伴所見に沿って個別精査'),
+      '※本記録は臨床整理補助であり、確定診断や他疾患の除外を保証するものではありません。'
+    ];
+
+    // クリップボード文字化け防止規約：全角チルダ・波ダッシュを含めない
+    document.getElementById('summaryOutput').value = lines.join('\n').replace(/[～〜]/g, '-');
+  }
+
+  function render() {
+    renderStep1Feedback();
+    renderStep2Feedback();
+    renderResults();
+    updateSummary();
+  }
+
+  function applyPreset(presetKey) {
+    var p = PRESETS[presetKey];
+    if (!p) return;
+    state = getInitialState();
+    state.preset = presetKey;
+    state.age = p.age;
+    state.modality = p.modality;
+    state.tcs = p.tcs;
+    state.ca = p.ca;
+    state.phos = p.phos;
+    state.pth = p.pth;
+    state.caVal = p.caVal;
+    state.pVal = p.pVal;
+    var i;
+    for (i = 0; i < p.mri.length; i++) state.mri[p.mri[i]] = true;
+    for (i = 0; i < p.metabolic.length; i++) state.metabolic[p.metabolic[i]] = true;
+    for (i = 0; i < p.dist.length; i++) state.dist[p.dist[i]] = true;
+    for (i = 0; i < p.imaging.length; i++) state.imaging[p.imaging[i]] = true;
+    for (i = 0; i < p.clinical.length; i++) state.clinical[p.clinical[i]] = true;
+    document.getElementById('copyStatus').textContent = '';
+    buildAllInputs();
+    render();
+  }
+
+  function resetAll() {
+    state = getInitialState();
+    document.getElementById('copyStatus').textContent = '';
+    buildAllInputs();
+    render();
+  }
+
+  // イベント委譲（ES5）
+  document.addEventListener('click', function (e) {
+    var target = e.target;
+    var segBtn = target.closest ? target.closest('button[data-seg]') : null;
+    if (!segBtn && target.tagName === 'BUTTON' && target.getAttribute('data-seg')) segBtn = target;
+    if (segBtn) {
+      var group = segBtn.getAttribute('data-seg');
+      var val = segBtn.getAttribute('data-val');
+      state[group] = val;
+      state.preset = '';
+      buildAllInputs();
+      render();
+      return;
+    }
+
+    var presetBtn = target.closest ? target.closest('button[data-preset]') : null;
+    if (!presetBtn && target.tagName === 'BUTTON' && target.getAttribute('data-preset')) presetBtn = target;
+    if (presetBtn) {
+      applyPreset(presetBtn.getAttribute('data-preset'));
+      return;
+    }
+  });
+
+  document.addEventListener('change', function (e) {
+    var t = e.target;
+    if (t && t.type === 'checkbox' && t.getAttribute('data-chk')) {
+      var grp = t.getAttribute('data-chk');
+      state[grp][t.value] = t.checked;
+      state.preset = '';
+      if (grp === 'metabolic' && t.checked) {
+        if (t.value === 'vitd_mg_renal_ok') state.metabolic.vitd_mg_renal_abn = false;
+        if (t.value === 'vitd_mg_renal_abn') state.metabolic.vitd_mg_renal_ok = false;
+      }
+      buildAllInputs();
+      render();
+    }
+  });
+
+  document.getElementById('input-tcs').addEventListener('input', function (e) {
+    state.tcs = e.target.value;
+    state.preset = '';
+    render();
+  });
+  document.getElementById('input-ca-val').addEventListener('input', function (e) {
+    state.caVal = e.target.value;
+    state.preset = '';
+    render();
+  });
+  document.getElementById('input-p-val').addEventListener('input', function (e) {
+    state.pVal = e.target.value;
+    state.preset = '';
+    render();
+  });
+
+  document.getElementById('topResetBtn').addEventListener('click', resetAll);
+  document.getElementById('bottomResetBtn').addEventListener('click', resetAll);
+
+  document.getElementById('btnPrint').addEventListener('click', function () {
+    window.print();
+  });
+
+  document.getElementById('btnCopy').addEventListener('click', function () {
+    var area = document.getElementById('summaryOutput');
+    var cleanText = String(area.value || '').replace(/[～〜]/g, '-');
+    area.value = cleanText;
+    var statusEl = document.getElementById('copyStatus');
+
+    function fallbackCopy() {
+      area.focus();
+      area.select();
+      try {
+        var ok = document.execCommand('copy');
+        statusEl.textContent = ok ? '✓ コピーしました' : 'テキストを選択しました（Ctrl+Cでコピーしてください）';
+      } catch (err) {
+        statusEl.textContent = 'テキストを選択しました（Ctrl+Cでコピーしてください）';
+      }
+    }
+
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(cleanText).then(function () {
+        statusEl.textContent = '✓ クリップボードにコピーしました';
+      }, function () {
+        fallbackCopy();
+      });
+    } else {
+      fallbackCopy();
+    }
+  });
+
+  buildAllInputs();
+  render();
+})();
+</script>
+</body>
+</html>
