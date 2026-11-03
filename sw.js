@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v324';
+const CACHE_NAME = 'ddx-tools-v325';
 const ASSETS = [
   './infographics/cerebral-calcification-differential/index.html',
   './infographics/perioperative-antithrombotic/index.html',
@@ -40,6 +40,8 @@ const ASSETS = [
   './infographics/referral-letter-helper/index.html',
   './infographics/drug-eruption/index.html',
   './infographics/drug-eruption/infographic.png',
+  './infographics/hereditary-spastic-paraplegia/index.html',
+  './infographics/hereditary-spastic-paraplegia/infographic.png',
   './infographics/ad-delirium-pharmacotherapy-reference-repair-20261027/index.html',
   './infographics/aria-apoe-japan-reference-repair-20261027/index.html',
   './infographics/aseptic-meningitis-overview-reference-repair-20261027/index.html',
