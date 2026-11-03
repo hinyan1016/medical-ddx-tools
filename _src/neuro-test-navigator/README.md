@@ -1,0 +1,15 @@
+# NeuroFind 公開版
+
+公開URL: https://tools.ichisouzo-lab.com/neuro_test_navigator.html
+
+先生が確認して公開を指示したデータ版2026.11.03.3を、検査データを変更せず移設した。105項目、元サイト73ページ・更新11項目の対応表を含む。原典照合・網羅性監査は元プロジェクト `sites/neuro-test-navigator/reviews/` に保存している。
+
+`neuro_test_navigator.html` が配信する単一HTML。ツール一覧のカードと分類、Service WorkerのASSETSへの追加・版更新を併せて行う。公開用canonical・PWA設定・一覧へのリンクを付け、試作のnoindexとSites向けの説明を公開用に変更した。元版のソースコミット・HTML/検査データのSHAは `publication.json` に記録。
+
+「HTMLを保存」「オフライン版を保存」で保存するファイルには、画面・検査データ・検索機能がすべて含まれる。公開ドメイン用のService Worker登録・manifest・Appleアイコン等は保存時に除き、院内ではファイルを開くだけで使える。公式出典リンクの閲覧にはネット接続が必要。
+
+手動更新は画面の「データの手動更新」からJSONを書き出し、公式原典・受託変更通知を確認して編集し、取り込む。確認日は実際に確認した日を残し、版番号も更新する。取り込み後のHTMLを保存して院内版へ配布する。ブラウザでの取り込みだけでは公開サイトは更新されない。
+
+元プロジェクトの新しい承認済みビルドから移す場合は、PowerShellで `PYTHONIOENCODING=utf-8` を設定して `export_public.py --source <dist/index.htmlの絶対パス> --source-commit <完全なコミットSHA>` を実行する。元データと公開データの一致検査を行い、105という件数には固定しない。元HTMLの形式が変わると停止するので、変換箇所を確認する。公開版を直接更新した後は、古い試作版から再生成して上書きしない。
+
+公開前にオフライン保存・保存HTMLの再読込、一覧の検索導線、PWAキャッシュを確認する。検査データを改訂した場合は医学的な原典照合も別に行い、Service Workerの版を上げて配信する。

@@ -1,5 +1,6 @@
-const CACHE_NAME = 'ddx-tools-v328';
+const CACHE_NAME = 'ddx-tools-v329';
 const ASSETS = [
+  './neuro_test_navigator.html',
   './cerebral_calcification.html',
   './infographics/asymptomatic-carotid-vertebral-stenosis/index.html',
   './infographics/cerebral-calcification-differential/index.html',
