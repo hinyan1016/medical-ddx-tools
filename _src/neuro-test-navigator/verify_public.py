@@ -111,7 +111,8 @@ def main():
             expect(page.locator('.data-summary')).to_contain_text('-offline-check')
             with page.expect_download() as download:
                 page.locator('.management-grid [data-action="download"]').click()
-            assert download.value.suggested_filename.endswith('_ui-r3.html')
+            ui_suffix = '_ui-' + record['presentationRevision'].rsplit('-', 1)[-1] + '.html'
+            assert download.value.suggested_filename.endswith(ui_suffix)
             saved = qa / 'NeuroFind-offline-verified.html'
             download.value.save_as(saved)
             saved_soup = BeautifulSoup(saved.read_text(encoding='utf-8'), 'html.parser')
@@ -125,7 +126,7 @@ def main():
             standalone.goto(saved.as_uri())
             expect(standalone.locator('.test-card')).to_have_count(131)
             expect(standalone.locator('#data-version')).to_contain_text('-offline-check')
-            expect(standalone.locator('#data-version')).to_contain_text('2026.11.04-r3')
+            expect(standalone.locator('#data-version')).to_contain_text(record['presentationRevision'])
             verify_editorial(standalone, qa, 'offline')
             standalone.locator('#search').fill('AQP4 CBA')
             expect(standalone.locator('[data-test-id="aqp4-cba"]')).to_be_visible()

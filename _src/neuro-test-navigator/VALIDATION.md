@@ -1,3 +1,18 @@
+## 2026-11-05 UI r4公開前検収
+
+- 先生の承認：「はい、この改善版を公開サイトに反映してください。」（2026-11-05、このチャット）。
+- 画面版：2026.11.05-r4。医学データ：2026.11.04.1、131件、参考74ページ・更新11項目。カタログSHA256はr3と一致。
+- 配信HTMLのSHA256：`2d1d61a3e1954d6961deef92603195693cdb2adf2c7e6eb904a3e3c42e048f9a`。承認済み公開候補とバイト単位で一致。
+- `verify_public.py --artifacts ../work/neurofind-ui-20261105/publish-qa` exit 0。公開用メタデータ、一覧導線、検索、謝辞・照合資料、JSON更新、保存HTML、完全オフライン動作、PWAの実アセット555件のキャッシュとオフライン再訪を検証。JavaScriptエラー0、持ち出しHTMLのHTTP要求0。
+- `export_public.py --source neuro_test_navigator.html --source-commit ab42268e75b6171d2720ed388ba9db6e425036a9 --check` exit 0。テンプレート・CSS・JSから配信HTMLを完全再現。新しいデータ版を入れてもr4のUIを保持することを確認。
+- `check_sw_cache.py` exit 0。Service Workerはddx-tools-v333からv334へ更新。既存ASSETSの範囲を保持。
+- 改善版の操作検査10点・320〜1920pxの8幅検証は`work/neurofind-ui-20261105/validation.json`。アプリとスタイルはその確認済み版から変更なし。PNG目視と独立レビュー済み。実機Safari・実際の旧ブラウザは未検査。
+- バックアップ・差分・戻し方：`UI_R4_RELEASE.md`。
+
+以前の検収記録は以下に保持。
+
+---
+
 # 独自ドメイン公開前の検収
 
 2026-11-03。先生の「この版を自分のドメイン上で公開して、既存のツール一覧にも追加」という指示に基づく移設。

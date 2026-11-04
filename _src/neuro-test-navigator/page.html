@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script data-online-only>if(/^https?:$/.test(location.protocol)&&'serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update().catch(function(){})})}).catch(function(){});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="apple-mobile-web-app-capable" content="yes" data-online-only>
+<link rel="manifest" href="manifest.json" data-online-only>
+<link rel="apple-touch-icon" href="icons/icon-192.png" data-online-only>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#153d45">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23153d45'/%3E%3Cpath d='M9 24V8l14 16V8' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E">
+<meta name="description" content="脳神経内科の特殊検査・外注検査を、検査名、疾患名、略語から検索。公式案内と確認日、検体情報をまとめて確認できます。単一HTMLのオフライン版に対応。">
+<meta name="robots" content="index,follow" data-online-only>
+<link rel="canonical" href="https://tools.ichisouzo-lab.com/neuro_test_navigator.html" data-online-only>
+<meta property="og:title" content="NeuroFind｜脳神経内科の検査ナビ" data-online-only>
+<meta property="og:description" content="脳神経内科の特殊検査・外注検査を、検査名・疾患名・依頼先から検索。公式案内と確認日を確認でき、単一HTMLのオフライン保存に対応。" data-online-only>
+<meta property="og:type" content="website" data-online-only>
+<meta property="og:url" content="https://tools.ichisouzo-lab.com/neuro_test_navigator.html" data-online-only>
+<meta property="og:image" content="https://tools.ichisouzo-lab.com/assets/og-tools.png" data-online-only>
+<meta property="og:site_name" content="医知創造ラボ" data-online-only>
+<title>NeuroFind｜脳神経内科の検査ナビ</title>
+<style>{{NEUROFIND_STYLES}}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">本文へ移動</a>
+<div class="mobile-shade" id="mobile-shade" hidden></div>
+<aside class="sidebar" id="sidebar" aria-label="検査の分野"><button class="sidebar-close icon-button" data-action="menu" aria-label="分野メニューを閉じる"><span data-icon="close"></span></button>
+  <a class="brand" href="#" aria-label="NeuroFind ホーム"><span class="brand-symbol" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M8 23V9l16 14V9M8 9l16 0M8 23h16" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="9" r="3" fill="currentColor"/><circle cx="24" cy="9" r="3" fill="currentColor"/><circle cx="8" cy="23" r="3" fill="currentColor"/><circle cx="24" cy="23" r="3" fill="currentColor"/></svg></span><span>Neuro<span class="brand-light">Find</span><small>脳神経内科の検査ナビ</small></span></a>
+  <div class="side-caption">分野から探す</div>
+  <nav id="category-nav" aria-label="分野で絞り込み"></nav>
+  <div class="side-separator"></div>
+  <button class="side-link" data-action="favorites" id="favorites-nav"></button>
+  <button class="side-link" data-action="guide"><span class="icon-slot" data-icon="book"></span>使い方・依頼前の確認</button>
+  <button class="side-link" data-action="updates"><span class="icon-slot" data-icon="check"></span>更新履歴と機能</button>
+  <button class="side-link" data-action="manage"><span class="icon-slot" data-icon="database"></span>データの手動更新</button>
+  <button class="side-link" data-action="about"><span class="icon-slot" data-icon="info"></span>このサイトについて・謝辞</button>
+  <div class="side-bottom"><div class="offline-callout"><span class="icon-slot" data-icon="download"></span><strong>ネットがなくても、探せる。</strong><p>検査情報を1つのHTMLに保存。<br>院内のオフライン環境でも。</p><button data-action="download" class="offline-side-button">オフライン版を保存 <span aria-hidden="true">↗</span></button></div><p class="side-credit">医知創造ラボ <span>FOR HEALTHCARE PROFESSIONALS</span></p></div>
+</aside>
+<div class="app-shell">
+  <header class="topbar"><div class="topbar-left"><button class="icon-button mobile-menu" id="menu-button" data-action="menu" aria-label="分野メニューを開く" aria-controls="sidebar" aria-expanded="false"><span data-icon="menu"></span></button><span class="mobile-brand">Neuro<span>Find</span></span><span class="breadcrumb"><a href="./" data-online-only style="color:inherit;text-decoration:none">ツール一覧</a><span aria-hidden="true" data-online-only>/</span> <strong>検査ライブラリ</strong></span></div><div class="topbar-actions"><button class="mobile-favorites icon-button" id="mobile-favorites" data-action="favorites" aria-label="お気に入りを表示" aria-pressed="false"><span data-icon="bookmark"></span><span id="mobile-favorite-count">0</span></button><span class="offline-badge"><i></i>オフライン対応</span><button class="button button-small button-outline" data-action="download"><span data-icon="download"></span><span>HTMLを保存</span></button></div></header>
+  <main id="main" tabindex="-1">
+    <section class="hero" aria-labelledby="page-title"><div class="hero-copy"><h1 id="page-title">探していた検査を、すぐそばに。</h1><p class="hero-description">脳神経内科の特殊検査・外注検査。検体と依頼先から、公式案内へ。</p></div><div class="hero-stats" aria-label="収録情報"><div><strong id="total-count">—</strong><span>収録項目</span></div><div><strong id="verified-count">—</strong><span>原典の条件を照合</span></div><div><strong id="source-count">—</strong><span>参照先</span></div></div></section>
+    <section class="search-panel" aria-label="検査の検索"><form id="search-form" role="search"><label class="search-label" for="search">検査を探す</label><div class="search-input-wrap"><span data-icon="search"></span><input id="search" type="search" placeholder="検査名・疾患名・略語・依頼先" autocomplete="off" spellcheck="false"><button type="button" class="search-clear" id="search-clear" data-action="clear-query" aria-label="検索語を消去" hidden>×</button><kbd aria-hidden="true">/</kbd></div></form><div class="suggestions"><span>たとえば</span><button data-action="suggest" data-value="自己免疫性脳炎">自己免疫性脳炎</button><button data-action="suggest" data-value="MOG">MOG抗体</button><button data-action="suggest" data-value="CMT">CMT</button><button data-action="suggest" data-value="髄液">髄液</button><button data-action="suggest" data-value="コスミック">コスミック</button><button data-action="suggest" data-value="A-Cube">A-Cube</button></div><div class="search-tools"><label class="category-select"><span class="sr-only">分野で絞り込み</span><select id="category-filter"></select></label><button type="button" class="button button-outline filter-toggle" id="filter-toggle" data-action="filters" aria-expanded="false" aria-controls="filter-panel"><span data-icon="filter"></span>詳しく絞り込む<span id="filter-count" hidden></span><span data-icon="chevron" class="filter-chevron"></span></button><button type="button" class="text-button search-reset" id="search-reset" data-action="reset" hidden>条件をクリア</button></div><div class="filter-panel" id="filter-panel" hidden><div class="filter-controls"><label><span class="filter-label">検体</span><select id="specimen-filter"><option value="">すべての検体</option></select></label><label><span class="filter-label">依頼先</span><select id="provider-filter"><option value="">すべての依頼先</option></select></label><label><span class="filter-label">依頼経路</span><select id="route-filter"><option value="">すべての依頼経路</option><option value="commercial">通常の検査案内</option><option value="research">研究検査・研究受付</option><option value="consult">事前相談の案内</option></select></label><label><span class="filter-label">確認状況</span><select id="review-filter"><option value="">すべての確認状況</option><option value="source-checked">原典の条件を照合</option><option value="link-only">案内リンクのみ確認</option><option value="stale">確認から90日以上</option></select></label></div><p class="filter-help">複数の条件を組み合わせて絞り込めます。</p></div></section>
+    <div class="notice-strip"><span data-icon="info"></span><p>検査の受付状況や条件は変わります。<strong>依頼前に、リンク先の公式案内をご確認ください。</strong></p><button data-action="guide" aria-label="依頼前の確認について詳しく読む">詳しく <span aria-hidden="true">↗</span></button></div>
+    <section class="catalog-section" aria-labelledby="results-title"><div class="section-heading"><div><p class="result-context" id="result-context">検査ライブラリ</p><h2 id="results-title">すべての検査 <span id="result-count"></span></h2></div><div class="view-switch" role="group" aria-label="表示形式"><button class="icon-button active" data-action="view" data-view="grid" id="grid-view" aria-label="カード表示" aria-pressed="true"><span data-icon="grid"></span><span>カード</span></button><button class="icon-button" data-action="view" data-view="list" id="list-view" aria-label="一覧表示" aria-pressed="false"><span data-icon="list"></span><span>一覧</span></button></div></div>
+      <div class="results-toolbar"><p id="results-hint">検査名から詳細・公式案内を確認できます</p><label class="sort-control"><span>並び順</span><select id="sort"><option value="default">分野・収録順</option><option value="name">検査名順</option><option value="updated">確認日が新しい順</option></select></label></div>
+      <div class="active-filters" id="active-filters" hidden></div><p class="sr-only" aria-live="polite" aria-atomic="true" id="results-live"></p><div class="catalog-grid" id="catalog"></div><div class="empty-state" id="empty-state" hidden><div data-icon="search"></div><h3 id="empty-title">該当する検査がありません</h3><p id="empty-message">検査名の一部や、別の略語でもお試しください。</p><div class="empty-actions"><button class="button button-primary" id="empty-broaden" data-action="broaden" hidden>絞り込みを解除して検索</button><button class="button button-outline" data-action="reset">すべての検査に戻る</button></div></div>
+    </section>
+    <section class="bottom-note"><div><span data-icon="shield"></span><strong>公式の情報へ、確実につなぐ。</strong><p>各項目に出典と確認日を表示しています。リンク先の閲覧にはネット接続が必要です。</p></div><button class="text-button" data-action="manage">更新データを管理 <span aria-hidden="true">→</span></button></section>
+    <footer class="footer"><span>NeuroFind <span class="footer-dot">·</span> 医知創造ラボ</span><span id="data-version"></span><button data-action="about">このサイトについて・謝辞</button></footer>
+    <p class="acknowledgement-note">着想・収録候補の参考：綾木先生の<a href="https://sites.google.com/kuhp.kyoto-u.ac.jp/gaichukensa/脳内検査ホーム" target="_blank" rel="noopener noreferrer">「脳内検査検索サイト」</a>。検査情報を整理・公開されたご尽力に感謝いたします。</p>
+  </main>
+</div>
+<div id="compare-tray" class="compare-tray" hidden role="region" aria-label="比較する検査"><div class="compare-tray-info"><strong><span id="compare-count">0</span>件を選択 <small>最大3件</small></strong><div id="compare-names" class="compare-names"></div></div><div class="compare-tray-actions"><button class="text-button" data-action="clear-compare">すべて解除</button><button class="button button-primary" id="compare-submit" data-action="compare">比較する <span data-icon="compare"></span></button></div></div>
+<div class="modal-overlay" id="modal-overlay" hidden><section class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1"><button class="modal-close icon-button" data-action="close-modal" aria-label="閉じる"><span data-icon="close"></span></button><div id="modal-body"></div></section></div>
+<div class="toast" id="toast" role="status" hidden></div>
+<noscript><p class="noscript">検索にはJavaScriptを有効にしてください。保存したHTMLでも、ネット接続なしで動作します。</p></noscript>
+<script type="application/json" id="catalog-data">{{NEUROFIND_CATALOG}}</script>
+<script id="neurofind-app">{{NEUROFIND_APP}}</script>
+<script data-online-only>if(/^https?:$/.test(location.protocol)&&'serviceWorker'in navigator){navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(function(reg){return reg.update();}).catch(function(){});}</script>
+</body>
+</html>
