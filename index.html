@@ -23,160 +23,339 @@
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
 <style>
-:root { --navy:#1b3a5c; --blue:#2c5aa0; --teal:#25675d; --line:#dce4eb; --muted:#536476; }
-* { box-sizing:border-box; margin:0; padding:0; }
-[hidden] { display:none !important; }
-body { font-family:"Yu Gothic",Meiryo,"Segoe UI",sans-serif; background:#f3f6f9; color:#243648; line-height:1.6; }
-a { color:var(--blue); }
-button,input,select { font:inherit; }
-button,select { cursor:pointer; }
-:focus-visible { outline:3px solid #cb7900; outline-offset:4px; }
-.skip-link { position:absolute; top:-80px; left:12px; z-index:10; padding:10px; background:white; }
-.skip-link:focus { top:6px; }
-header { background:linear-gradient(120deg,#1b3a5c,#29557e); color:white; padding:26px 20px; }
-.header-inner,.container { max-width:1180px; margin:auto; }
-.eyebrow { color:#c8dded; font-size:.78rem; letter-spacing:.12em; font-weight:bold; }
-header h1 { font-size:clamp(1.45rem,3vw,2rem); margin:4px 0; letter-spacing:.02em; }
-header p { color:#e0eaf3; font-size:.9rem; }
-.container { padding:22px 22px 44px; }
-.directory-panel { background:white; border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:25px; box-shadow:0 3px 14px #1b3a5c08; }
-.type-options { display:grid; grid-template-columns:.65fr 1fr 1fr; gap:10px; margin-bottom:17px; }
-.type-option { text-align:left; background:#f8fafc; border:1px solid #c9d5df; border-radius:10px; padding:12px 14px; color:var(--navy); min-height:76px; }
-.type-option strong { display:block; font-size:1rem; }
-.type-option small { display:block; font-size:.74rem; color:var(--muted); margin-top:3px; }
-.type-option[aria-pressed="true"] { background:#eaf1fa; border:2px solid var(--blue); padding:11px 13px; box-shadow:inset 0 0 0 1px #2c5aa012; }
-.type-option[data-kind="handout"][aria-pressed="true"] { background:#edf6f2; border-color:var(--teal); }
-.number { font-size:.82em; font-weight:normal; white-space:nowrap; }
-.search-label { display:block; font-weight:bold; font-size:.84rem; margin-bottom:5px; }
-.search-row { display:flex; gap:8px; }
-.search-input { width:100%; min-width:0; border:1px solid #9bafbf; border-radius:8px; padding:11px 13px; color:#243648; background:white; }
-.clear-search,.reset-button { border:1px solid #c1ced8; background:white; color:var(--blue); border-radius:8px; padding:8px 13px; flex-shrink:0; }
-.search-hint { font-size:.75rem; color:var(--muted); margin-top:5px; }
-.theme-label { font-size:.84rem; font-weight:bold; margin:16px 0 7px; }
-.theme-options { display:flex; flex-wrap:wrap; gap:7px; }
-.select-field.mobile-theme { display:none; }
-.theme-button { border:1px solid #d5dfe7; background:white; color:#3c5268; border-radius:7px; padding:7px 10px; font-size:.8rem; min-height:36px; }
-.theme-button[aria-pressed="true"] { border-color:var(--navy); background:var(--navy); color:white; }
-.theme-button span { font-size:.85em; margin-left:5px; opacity:.8; }
-.filter-row { display:flex; flex-wrap:wrap; align-items:end; gap:12px; border-top:1px solid var(--line); padding-top:15px; margin-top:16px; }
-.select-field { display:flex; align-items:center; gap:7px; font-size:.8rem; }
-select { padding:8px; border:1px solid #bccbd7; border-radius:6px; background:white; color:#243648; max-width:100%; }
-.reset-button { margin-left:auto; min-height:39px; font-size:.8rem; }
-.result-bar { display:flex; flex-wrap:wrap; gap:5px 16px; justify-content:space-between; align-items:center; margin:17px 0 0; }
-.result-count { font-weight:bold; font-size:.9rem; color:var(--navy); }
-.active-filters,.load-status { font-size:.76rem; color:var(--muted); }
-.load-status { margin-top:7px; }
-.catalog-section { margin:0 0 30px; scroll-margin-top:20px; }
-.section-heading { display:flex; align-items:baseline; flex-wrap:wrap; gap:9px; font-size:1.12rem; padding-bottom:9px; border-bottom:2px solid #ccd9e5; color:var(--navy); }
-.section-heading span { font-size:.76rem; font-weight:normal; color:var(--muted); }
-.kind-heading { font-size:.76rem; font-weight:bold; color:var(--muted); margin:13px 0 8px; }
-.kind-heading.handout-heading { color:var(--teal); }
-.tool-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
-.tool-card { display:block; background:white; padding:13px 15px; border:1px solid var(--line); border-left:3px solid #7294b7; border-radius:9px; text-decoration:none; color:inherit; min-width:0; position:relative; }
-.tool-card:hover { border-color:#8da9c0; background:#f9fcff; box-shadow:0 3px 9px #1b3a5c0d; }
-.tool-card.handout-card { border-left-color:#699c8b !important; }
-.card-audience { display:block; font-size:.66rem; color:#3e5f80; font-weight:bold; margin-bottom:4px; }
-.handout-card .card-audience { color:var(--teal); }
-.tool-emoji { display:none; }
-.tool-name { font-size:.94rem; font-weight:bold; color:var(--navy); line-height:1.5; overflow-wrap:anywhere; padding-right:10px; }
-.tool-name::after { content:'↗'; position:absolute; top:13px; right:11px; font-size:.8rem; color:#7b91a6; }
-.tool-desc { font-size:.76rem; line-height:1.65; margin-top:5px; color:var(--muted); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-.tool-tag { display:none; }
-.series-label { display:block; color:#657969; font-size:.66rem; margin-top:6px; }
-.empty-state { text-align:center; background:white; padding:35px 18px; border:1px dashed #c1ced8; border-radius:10px; margin-bottom:25px; }
-.empty-state h2 { font-size:1.05rem; margin-bottom:8px; }
-.empty-state p { font-size:.86rem; color:var(--muted); margin-bottom:16px; }
-.other-resources { border-top:1px solid #d0dce5; padding-top:22px; margin-top:30px; }
-.other-resources h2 { font-size:1rem; margin-bottom:10px; color:var(--navy); }
-.resource-links { display:flex; flex-wrap:wrap; gap:8px 20px; font-size:.82rem; }
-.audience-note { font-size:.75rem; color:var(--muted); margin-top:12px; }
-footer { margin-top:28px; font-size:.72rem; color:var(--muted); line-height:1.8; }
-noscript p { padding:12px; background:#fff3d9; margin-bottom:15px; }
-@media(max-width:960px) { .tool-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-@media(max-width:600px) {
-  header { padding:20px 16px; }
-  header p { font-size:.8rem; }
-  .container { padding:15px 12px 32px; }
-  .directory-panel { padding:14px 12px; margin-bottom:22px; }
-  .type-options { grid-template-columns:1fr 1fr; gap:7px; }
-  .type-option { padding:9px 10px; min-height:78px; }
-  .type-option strong { font-size:.88rem; }
-  .type-option small { font-size:.65rem; }
-  .type-option[aria-pressed="true"] { padding:8px 9px; }
-  .type-option:first-child { grid-column:1/-1; min-height:43px; display:flex; gap:9px; align-items:baseline; }
-  .type-option:first-child small { margin:0; }
-  .theme-options,.theme-label { display:none; }
-  .select-field.mobile-theme { display:flex; margin-top:14px; }
-  .search-input { font-size:16px; padding:9px; }
-  .clear-search { font-size:.8rem; padding:7px 9px; }
-  .filter-row { gap:10px; }
-  .select-field { width:100%; justify-content:space-between; }
-  .select-field select { flex:1; max-width:75%; }
-  .reset-button { width:100%; }
-  .tool-grid { grid-template-columns:1fr; gap:8px; }
-  .tool-card { padding:11px 13px; }
-  .section-heading { font-size:1rem; }
-  .tool-name { font-size:.92rem; }
-  .catalog-section { margin-bottom:24px; }
+:root {
+  --navy:#14304d; --navy-2:#1d4570; --ink:#16212c; --sub:#4b5b6b; --muted:#6a7a8a;
+  --line:#e2e8ef; --line-2:#cdd7e1; --bg:#f5f7fa; --card:#fff; --accent:#1f6fd1;
+  --focus:#1f6fd1; --radius:14px; --shadow:0 1px 2px rgba(20,48,77,.06),0 2px 8px rgba(20,48,77,.05);
+  --shadow-hover:0 4px 10px rgba(20,48,77,.08),0 12px 28px rgba(20,48,77,.10);
 }
-@media(prefers-reduced-motion:reduce) { * { scroll-behavior:auto !important; } }
+* { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-padding-top:120px; }
+body { font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic UI","Yu Gothic","游ゴシック","Meiryo",system-ui,sans-serif; color:var(--ink); background:var(--bg); line-height:1.7; -webkit-font-smoothing:antialiased; }
+a { color:inherit; }
+button, select, input { font:inherit; color:inherit; }
+:focus-visible { outline:3px solid var(--focus); outline-offset:2px; border-radius:6px; }
+.skip-link { position:absolute; left:-999px; top:8px; background:#fff; padding:8px 12px; z-index:100; }
+.skip-link:focus { left:8px; }
+.sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
 
+/* ── グローバルナビ（現行と同じリンク・インラインstyleをやめてクラス化） ── */
+.gnav { background:#0f2740; font-size:13px; }
+.gnav-inner { max-width:1240px; margin:0 auto; padding:8px 20px; display:flex; align-items:center; gap:4px; overflow-x:auto; white-space:nowrap; }
+.gnav .brand { color:#fff; font-weight:700; letter-spacing:.06em; text-decoration:none; margin-right:auto; padding-right:10px; }
+.gnav a.nav { color:#c6d6e6; text-decoration:none; padding:4px 9px; border-radius:6px; }
+.gnav a.nav:hover { background:rgba(255,255,255,.08); color:#fff; }
+.gnav a.nav[aria-current="page"] { color:#fff; background:rgba(255,255,255,.12); }
+
+/* ── ヒーロー：検索を主役に ── */
+.hero { background:radial-gradient(1200px 400px at 85% -10%, #2a5f93 0%, rgba(42,95,147,0) 60%), linear-gradient(180deg,#14304d 0%,#173a5e 100%); color:#fff; }
+.hero-inner { max-width:1240px; margin:0 auto; padding:34px 20px 30px; display:grid; grid-template-columns:minmax(0,1fr); gap:14px; }
+.eyebrow { font-size:12px; letter-spacing:.14em; color:#9fc0e0; font-weight:700; }
+.hero h1 { font-size:clamp(1.55rem,2.6vw,2.15rem); line-height:1.3; letter-spacing:.02em; font-feature-settings:"palt"; }
+.lead { color:#d3e2f0; font-size:.95rem; max-width:44em; }
+.lead b { color:#fff; font-variant-numeric:tabular-nums; }
+#leadCounts { display:inline-block; max-width:100%; }
+#leadCounts > span { white-space:nowrap; }
+.search { position:relative; max-width:760px; margin-top:6px; }
+.search svg.ico { position:absolute; left:16px; top:50%; transform:translateY(-50%); width:20px; height:20px; color:#6a7a8a; pointer-events:none; }
+.search input { width:100%; height:56px; border:0; border-radius:12px; padding:0 96px 0 48px; font-size:16px; background:#fff; color:var(--ink); box-shadow:0 8px 24px rgba(0,0,0,.18); }
+.search input::placeholder { color:#8795a3; }
+.search input::-webkit-search-cancel-button { display:none; }
+.search .kbd { position:absolute; right:14px; top:50%; transform:translateY(-50%); font:12px/1 ui-monospace,Consolas,monospace; color:#6a7a8a; border:1px solid #cdd7e1; border-bottom-width:2px; border-radius:6px; padding:4px 7px; background:#f7f9fb; }
+.search .clear { position:absolute; right:10px; top:50%; transform:translateY(-50%); border:0; background:#eef2f6; color:#3b4b5b; border-radius:8px; height:34px; padding:0 12px; font-size:13px; cursor:pointer; }
+.quick { display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:13px; color:#a9c3dc; }
+.quick button { border:1px solid rgba(255,255,255,.22); background:rgba(255,255,255,.07); color:#fff; border-radius:999px; padding:3px 12px; cursor:pointer; font-size:13px; }
+.quick button:hover { background:rgba(255,255,255,.16); }
+
+/* ── 固定ツールバー ── */
+.toolbar { position:sticky; top:0; z-index:20; background:rgba(245,247,250,.92); -webkit-backdrop-filter:saturate(1.4) blur(10px); backdrop-filter:saturate(1.4) blur(10px); border-bottom:1px solid var(--line); }
+.toolbar-inner { max-width:1240px; margin:0 auto; padding:10px 20px; display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.seg { display:inline-flex; background:#e8edf3; border-radius:11px; padding:3px; gap:2px; }
+.seg button { border:0; background:transparent; padding:6px 14px; border-radius:9px; font-size:14px; font-weight:600; color:var(--sub); cursor:pointer; white-space:nowrap; }
+.seg button .n { font-weight:500; font-size:12px; color:var(--muted); margin-left:4px; font-variant-numeric:tabular-nums; }
+.seg button[aria-pressed="true"] { background:#fff; color:var(--navy); box-shadow:0 1px 3px rgba(20,48,77,.15); }
+.tb-right { margin-left:auto; display:flex; gap:10px; align-items:center; }
+.field { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--sub); white-space:nowrap; }
+.field select { height:36px; border:1px solid var(--line-2); border-radius:9px; background:#fff; padding:0 30px 0 10px; font-size:14px; color:var(--ink); }
+.mini-search { display:none; }
+.filter-toggle { display:none; }
+.theme-strip { display:none; }
+
+/* ── 2カラム：左にテーマ ── */
+.layout { max-width:1240px; margin:0 auto; padding:22px 20px 40px; display:grid; grid-template-columns:232px minmax(0,1fr); gap:28px; align-items:start; }
+.side { position:sticky; top:72px; max-height:calc(100vh - 90px); overflow:auto; padding-bottom:12px; }
+.side h2 { font-size:12px; letter-spacing:.12em; color:var(--muted); margin:2px 0 8px 10px; }
+.theme-list { list-style:none; display:grid; gap:2px; }
+.theme-btn { width:100%; display:flex; align-items:center; gap:10px; border:0; background:transparent; text-align:left; padding:7px 10px; border-radius:9px; font-size:14px; color:var(--ink); cursor:pointer; }
+.theme-btn:hover { background:#eaf0f6; }
+.theme-btn .dot { width:9px; height:9px; border-radius:50%; background:var(--c,#8a99a8); flex:none; }
+.theme-btn .lbl { flex:1; line-height:1.4; }
+.theme-btn .n { font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; }
+.theme-btn[aria-pressed="true"] { background:#fff; box-shadow:var(--shadow); font-weight:700; color:var(--navy); }
+.theme-btn[disabled] { opacity:.4; cursor:default; }
+.side-links { margin-top:18px; border-top:1px solid var(--line); padding-top:14px; display:grid; gap:2px; }
+.side-links h2 { margin-bottom:6px; }
+.side-links a { font-size:13px; color:var(--sub); text-decoration:none; padding:5px 10px; border-radius:8px; }
+.side-links a:hover { background:#eaf0f6; color:var(--navy); }
+
+/* ── 結果の見出し ── */
+.status { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:14px; min-height:32px; }
+.count { font-size:14px; color:var(--sub); }
+.count b { color:var(--ink); font-size:16px; font-variant-numeric:tabular-nums; }
+.chips { display:flex; gap:6px; flex-wrap:wrap; }
+.chip { display:inline-flex; align-items:center; gap:6px; border:1px solid var(--line-2); background:#fff; border-radius:999px; padding:2px 6px 2px 11px; font-size:12.5px; color:var(--sub); }
+.chip button { border:0; background:#eef2f6; width:20px; height:20px; border-radius:50%; cursor:pointer; font-size:12px; line-height:1; color:var(--sub); }
+.reset { border:0; background:none; color:var(--accent); font-size:13px; cursor:pointer; text-decoration:underline; text-underline-offset:3px; }
+
+/* ── 上段の個人用エリア ── */
+.shelf { margin-bottom:26px; }
+.shelf-head { display:flex; align-items:baseline; gap:10px; margin-bottom:10px; }
+.shelf-head h2 { font-size:15px; color:var(--navy); }
+.shelf-head p { font-size:12.5px; color:var(--muted); }
+.shelf-head .clear-recent { margin-left:auto; border:0; background:none; font-size:12.5px; color:var(--muted); cursor:pointer; text-decoration:underline; }
+.mini-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:10px; }
+.mini { position:relative; display:flex; align-items:center; gap:10px; background:#fff; border:1px solid var(--line); border-radius:12px; padding:10px 12px; text-decoration:none; box-shadow:var(--shadow); transition:box-shadow .15s, border-color .15s; }
+.mini:hover { box-shadow:var(--shadow-hover); border-color:var(--c,#b8c6d4); }
+.mini .pi { flex:none; width:32px; height:32px; border-radius:9px; display:grid; place-items:center; background:color-mix(in srgb,var(--c,#5d6b7a) 12%,#fff); color:var(--c,#5d6b7a); }
+.mini .pi svg { width:18px; height:18px; }
+.mini .t { font-size:13.5px; font-weight:600; line-height:1.45; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.more-link { display:inline-block; margin-top:12px; border:0; background:none; padding:4px 0; font-size:13px; color:var(--accent); cursor:pointer; text-align:left; }
+.more-link:hover { text-decoration:underline; text-underline-offset:3px; }
+
+/* ── セクションとカード ── */
+.section { margin-bottom:34px; scroll-margin-top:80px; }
+.section-head { display:flex; align-items:center; gap:10px; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--line); }
+.section-head .bar { width:4px; height:20px; border-radius:2px; background:var(--c); }
+.section-head h2 { font-size:18px; letter-spacing:.02em; font-feature-settings:"palt"; }
+.section-head .n { font-size:13px; color:var(--muted); }
+.sub-head { font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--muted); margin:14px 0 8px; }
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:14px; }
+.card { position:relative; display:flex; flex-direction:column; gap:8px; background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:16px 16px 14px; box-shadow:var(--shadow); transition:box-shadow .18s, transform .18s, border-color .18s; }
+.card:hover { box-shadow:var(--shadow-hover); transform:translateY(-2px); border-color:color-mix(in srgb,var(--c) 45%,#fff); }
+.card:focus-within { border-color:var(--focus); }
+.card-top { display:flex; align-items:center; gap:8px; padding-right:34px; min-height:24px; }
+.badge { display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:700; padding:2px 9px 2px 7px; border-radius:7px; background:color-mix(in srgb,var(--c) 11%,#fff); color:color-mix(in srgb,var(--c) 85%,#000); }
+.badge svg { width:14px; height:14px; }
+.aud { font-size:12px; color:var(--muted); }
+.new { font-size:10.5px; font-weight:800; letter-spacing:.06em; color:#fff; background:#d9480f; border-radius:5px; padding:1px 6px; }
+.card h3 { font-size:15.5px; line-height:1.5; font-feature-settings:"palt"; letter-spacing:.01em; }
+.card h3 a { text-decoration:none; }
+.card h3 a::after { content:""; position:absolute; inset:0; border-radius:var(--radius); }
+.card h3 a:focus-visible { outline:none; }
+.card h3 a:focus-visible::after { outline:3px solid var(--focus); outline-offset:2px; }
+.card .desc { font-size:13.5px; color:var(--sub); line-height:1.65; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.tags { list-style:none; display:flex; gap:6px; flex-wrap:wrap; margin-top:auto; padding-top:2px; }
+.tags li { font-size:11.5px; color:#3b4b5b; background:#f1f4f8; border-radius:6px; padding:1px 8px; }
+.card-foot { display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:12px; color:var(--muted); }
+.card-foot .th { display:inline-flex; align-items:center; gap:5px; }
+.card-foot .th i { width:7px; height:7px; border-radius:50%; background:var(--tc); display:inline-block; }
+.card-foot a.ext { position:relative; z-index:2; color:var(--accent); text-decoration:none; font-weight:600; }
+.card-foot a.ext:hover { text-decoration:underline; }
+.series { font-size:12px; color:var(--muted); }
+.pin { position:absolute; z-index:3; top:10px; right:10px; width:34px; height:34px; border:0; border-radius:9px; background:transparent; color:#9aa8b6; cursor:pointer; display:grid; place-items:center; }
+.pin:hover { background:#f1f4f8; color:#e8a400; }
+.pin svg { width:19px; height:19px; }
+.pin[aria-pressed="true"] { color:#e8a400; }
+.pin[aria-pressed="true"] svg path { fill:currentColor; }
+mark { background:#fff1a8; color:inherit; border-radius:3px; padding:0 1px; }
+.empty { text-align:center; background:#fff; border:1px dashed var(--line-2); border-radius:var(--radius); padding:38px 18px; }
+.empty h2 { font-size:17px; margin-bottom:6px; }
+.empty p { font-size:14px; color:var(--sub); margin-bottom:14px; }
+.btn { border:1px solid var(--line-2); background:#fff; border-radius:9px; padding:8px 16px; cursor:pointer; font-size:14px; }
+.btn.primary { background:var(--navy); color:#fff; border-color:var(--navy); }
+
+.site-foot { border-top:1px solid var(--line); background:#fff; }
+.site-foot-inner { max-width:1240px; margin:0 auto; padding:22px 20px 34px; font-size:12.5px; color:var(--muted); line-height:1.8; }
+.toast { position:fixed; left:50%; bottom:22px; transform:translateX(-50%) translateY(20px); background:#16212c; color:#fff; font-size:13px; padding:9px 16px; border-radius:10px; opacity:0; transition:all .2s; pointer-events:none; z-index:50; }
+.toast.on { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* ── タブレット ── */
+@media (max-width:980px) {
+  .layout { grid-template-columns:minmax(0,1fr); padding-top:14px; }
+  .side { display:none; }
+  .theme-strip { display:block; border-top:1px solid var(--line); }
+  .theme-strip ul { list-style:none; max-width:1240px; margin:0 auto; display:flex; gap:6px; overflow-x:auto; padding:8px 20px; scrollbar-width:none; }
+  .theme-strip ul::-webkit-scrollbar { display:none; }
+  .theme-strip .theme-btn { white-space:nowrap; width:auto; border:1px solid var(--line-2); background:#fff; padding:4px 12px; font-size:13px; border-radius:999px; }
+  .theme-strip .theme-btn[aria-pressed="true"] { background:var(--navy); color:#fff; border-color:var(--navy); box-shadow:none; }
+  .theme-strip .theme-btn[aria-pressed="true"] .n { color:#c6d6e6; }
+  .theme-strip .theme-btn .dot { width:7px; height:7px; }
+}
+/* ── スマートフォン ── */
+@media (max-width:640px) {
+  html { scroll-padding-top:150px; }
+  .gnav-inner { padding:7px 14px; }
+  .hero-inner { padding:18px 14px 16px; gap:10px; }
+  .eyebrow { font-size:11px; }
+  .lead { font-size:13px; }
+  .search input { height:50px; font-size:16px; padding-right:70px; }
+  .search .kbd { display:none; }
+  .quick { flex-wrap:nowrap; overflow-x:auto; margin:0 -14px; padding:0 14px; scrollbar-width:none; }
+  .quick::-webkit-scrollbar { display:none; }
+  .quick span { flex:none; }
+  .quick button { flex:none; }
+  .toolbar-inner { padding:8px 14px; gap:8px; flex-wrap:nowrap; }
+  .seg { flex:1; }
+  .seg button { flex:1; padding:6px 6px; font-size:13px; }
+  .seg button .n { display:block; margin:0; font-size:11px; line-height:1.2; }
+  .tb-right { display:none; }
+  .tb-right.open { display:flex; position:absolute; left:0; right:0; top:100%; background:#fff; border-bottom:1px solid var(--line); padding:12px 14px; gap:10px; flex-wrap:wrap; box-shadow:0 10px 20px rgba(20,48,77,.08); }
+  .tb-right.open .field { flex:1 1 140px; }
+  .tb-right.open .field select { flex:1; min-width:0; }
+  .filter-toggle { display:inline-flex; align-items:center; gap:4px; border:1px solid var(--line-2); background:#fff; border-radius:10px; height:40px; padding:0 10px; font-size:13px; cursor:pointer; flex:none; }
+  .filter-toggle .on { width:7px; height:7px; border-radius:50%; background:#d9480f; display:none; }
+  .filter-toggle.active .on { display:inline-block; }
+  .theme-strip ul { padding:7px 14px; }
+  .layout { padding:12px 14px 30px; }
+  .grid { grid-template-columns:minmax(0,1fr); gap:10px; }
+  .mini-grid { grid-template-columns:minmax(0,1fr); gap:8px; }
+  .card { padding:14px 14px 12px; gap:6px; }
+  .card:hover { transform:none; }
+  .card h3 { font-size:15px; }
+  .card .desc { font-size:13px; }
+  .section-head h2 { font-size:16.5px; }
+  .site-foot-inner { padding:20px 14px 30px; }
+}
+@media (prefers-reduced-motion:reduce) { .card, .mini, .toast { transition:none; } .card:hover { transform:none; } }
+@media print { .gnav, .toolbar, .side, .pin, .quick { display:none !important; } .layout { display:block; } .card { box-shadow:none; break-inside:avoid; } }
+
+/* 非表示属性を優先し、JavaScriptなしでも静的カードを表示する。 */
+[hidden] { display:none !important; }
+.side[hidden] + main { grid-column:1 / -1; }
+.side[hidden] + main #catalog { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:14px; }
+.side[hidden] + main #catalog > .tool-card { margin-bottom:0; }
+@media (max-width:640px) { .side[hidden] + main #catalog { grid-template-columns:minmax(0,1fr); gap:10px; } }
+#catalog > .tool-card { display:block; background:#fff; border:1px solid var(--line); border-left:4px solid var(--navy); border-radius:var(--radius); padding:16px; margin-bottom:12px; text-decoration:none; box-shadow:var(--shadow); }
+#catalog > .tool-card:hover { border-color:var(--accent); }
+#catalog > .tool-card .tool-name { font-size:16px; font-weight:700; margin-bottom:6px; }
+#catalog > .tool-card .tool-desc { font-size:14px; color:var(--sub); }
+#catalog > .tool-card .tool-tag { display:inline-block; font-size:12px; color:var(--sub); background:#f1f4f8; border-radius:6px; padding:2px 8px; margin-top:8px; }
+#catalog > .tool-card .tool-emoji { font-size:22px; }
+noscript p, .load-status { font-size:13px; color:var(--sub); margin-bottom:14px; }
+.other-resources { border-top:1px solid var(--line); padding-top:22px; margin-top:30px; }
+.other-resources h2 { font-size:16px; margin-bottom:10px; color:var(--navy); }
+.resource-links { display:flex; flex-wrap:wrap; gap:10px 20px; font-size:14px; color:var(--accent); }
+.audience-note { font-size:12px; color:var(--muted); margin-top:12px; }
+.view-switch { display:inline-flex; border:1px solid var(--line-2); border-radius:9px; padding:2px; background:#fff; }
+.view-switch button { border:0; background:transparent; border-radius:6px; padding:5px 9px; min-height:32px; font-size:13px; cursor:pointer; white-space:nowrap; }
+.view-switch button[aria-pressed="true"] { background:var(--navy); color:#fff; }
+#catalog.compact .desc, #catalog.compact .tags { display:none; }
+#catalog.compact .card { padding:12px 14px; gap:5px; }
+#catalog.compact .section { margin-bottom:24px; }
+#catalog.compact .grid { gap:10px; }
+/* 色の混合に未対応のブラウザにも用途の背景色を用意する。 */
+.badge, .mini .pi { background-color:#edf2f7; color:var(--c); }
+@supports (background:color-mix(in srgb, red, white)) { .badge, .mini .pi { background-color:color-mix(in srgb,var(--c) 11%,#fff); } }
+@media (max-width:1100px) and (min-width:641px) { .toolbar-inner { gap:8px; } .tb-right { gap:7px; } .seg button { padding:6px 9px; } }
+@media (max-width:640px) {
+ .toolbar-inner { flex-wrap:wrap; }
+ .toolbar-inner > .view-field { flex:1 0 100%; justify-content:flex-end; }
+ .toolbar-inner > .view-field .view-switch { flex:1; }
+ .view-switch button { flex:1; min-height:40px; }
+ .card-top { flex-wrap:wrap; gap:4px 8px; }
+}
+@media (min-width:641px) { .toolbar-inner > .view-field { margin-left:auto; } .tb-right { margin-left:0; } }
+@media print {
+ .hero .search, .shelf, .chips, .toast, .empty, .load-status { display:none !important; }
+ .hero { background:#fff; color:#000; } .lead, .lead b, .eyebrow { color:#333; }
+ .grid { display:block; } .card { margin-bottom:10px; transform:none; }
+ #catalog.compact .desc { display:block; } #catalog.compact .tags { display:flex; }
+}
 </style>
 </head>
 <body>
-
 <a class="skip-link" href="#main">一覧へ移動</a>
-<nav id="ics-globalnav" style="background:#15324E;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
-<div style="max-width:1040px;margin:0 auto;padding:8px 12px;display:flex;align-items:center;gap:2px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;">
-<a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;padding-right:8px;">医知創造ラボ</a>
-<a href="https://ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ホーム</a>
-<a href="https://blog.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ブログ</a>
-<a href="https://tools.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ツール</a>
-<a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">YouTube</a>
-</div>
+<nav id="ics-globalnav" class="gnav" aria-label="サイト全体">
+  <div class="gnav-inner">
+    <a class="brand" href="https://ichisouzo-lab.com/">医知創造ラボ</a>
+    <a class="nav" href="https://ichisouzo-lab.com/">ホーム</a>
+    <a class="nav" href="https://blog.ichisouzo-lab.com/">ブログ</a>
+    <a class="nav" href="https://tools.ichisouzo-lab.com/" aria-current="page">ツール</a>
+    <a class="nav" href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ">YouTube</a>
+  </div>
 </nav>
-<header><div class="header-inner">
-  <div class="eyebrow">医知創造ラボ / TOOLS &amp; HANDOUTS</div>
-  <h1>診療ツール・配布資料を探す</h1>
-  <p>病名・症状・診療テーマから探せます。</p>
-</div></header>
-<main class="container" id="main">
-  <section class="directory-panel" id="directoryPanel" aria-label="一覧の検索と絞り込み" hidden>
-    <div class="type-options" role="group" aria-label="探すもの">
-      <button class="type-option" type="button" data-kind="all" aria-pressed="true"><strong>すべて <span class="number">読込中</span></strong><small>ツールと配布資料をまとめて探す</small></button>
-      <button class="type-option" type="button" data-kind="tool" aria-pressed="false"><strong>診療ツール <span class="number">60件</span></strong><small>主に医療者向け · 鑑別・計算・治療支援</small></button>
-      <button class="type-option" type="button" data-kind="handout" aria-pressed="false"><strong>配布資料 <span class="number">読込中</span></strong><small>主に患者さん・ご家族向け · 印刷して説明に</small></button>
+
+<header class="hero">
+  <div class="hero-inner">
+    <p class="eyebrow">医知創造ラボ ・ TOOLS &amp; HANDOUTS</p>
+    <h1>診療ツール・配布資料を探す</h1>
+    <p class="lead">鑑別・計算・説明に使える診療ツールと、患者さんに渡せる配布資料を、病名・症状から探せます。<span id="leadCounts" hidden></span></p>
+    <div class="search" role="search" data-js hidden>
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <label class="sr-only" for="searchInput">病名・症状・ツール名で検索</label>
+      <input id="searchInput" type="search" placeholder="病名・症状・ツール名（例：低ナトリウム、めまい）" autocomplete="off" enterkeyhint="search">
+      <span class="kbd" id="kbd" aria-hidden="true">/</span>
+      <button class="clear" id="clearQ" type="button" hidden>消す</button>
     </div>
-    <label class="search-label" for="searchInput">病名・症状・ツール名で探す</label>
-    <div class="search-row"><input class="search-input" id="searchInput" type="search" placeholder="例：脳梗塞、めまい、血圧" aria-describedby="searchHint" autocomplete="off"><button class="clear-search" id="clearSearch" type="button">検索を消す</button></div>
-    <p class="search-hint" id="searchHint">説明文も検索します。空白で区切ると、すべての語を含むものを表示します。</p>
-    <div class="theme-label" id="themeLabel">診療テーマから絞る</div>
-    <div class="theme-options" id="themeOptions" role="group" aria-labelledby="themeLabel"></div>
-    <label class="select-field mobile-theme" for="themeSelect">診療テーマ <select id="themeSelect"></select></label>
-    <div class="filter-row">
-      <label class="select-field" for="purposeFilter">用途 <select id="purposeFilter"><option value="all">すべての用途</option></select></label>
-      <label class="select-field" for="sortOrder">並び順 <select id="sortOrder"><option value="theme">テーマ別・テーマ内は名称順</option><option value="name">名称順（ツール・配布資料ごと）</option></select></label>
-      <button class="reset-button" type="button" data-reset>すべての条件を解除</button>
+    <div class="quick" id="quick" data-js hidden><span>よく探される言葉</span></div>
+  </div>
+</header>
+
+<div class="toolbar" id="toolbar" data-js hidden>
+  <div class="toolbar-inner">
+    <div class="seg" role="group" aria-label="探すもの">
+      <button type="button" data-kind="all" aria-pressed="true">すべて<span class="n"></span></button>
+      <button type="button" data-kind="tool" aria-pressed="false">診療ツール<span class="n"></span></button>
+      <button type="button" data-kind="handout" aria-pressed="false">配布資料<span class="n"></span></button>
     </div>
-    <div class="result-bar"><p class="result-count" id="searchCount" role="status" aria-live="polite" aria-atomic="true"></p><p class="active-filters" id="activeFilters"></p></div>
-    <p class="load-status" id="loadStatus" role="status">配布資料の検索データを読み込んでいます…</p>
-  </section>
-  <noscript><p>検索・絞り込みにはJavaScriptが必要です。診療ツールは下にすべて掲載しています。<a href="handouts/">配布資料の専用一覧はこちら</a>。</p></noscript>
-  <div class="empty-state" id="noResults" hidden><h2>条件に合う項目が見つかりませんでした</h2><p>語句を短くするか、診療テーマ・用途の条件を解除してください。</p><button class="reset-button" type="button" data-reset>すべての条件を解除</button></div>
-  <div id="catalog"><section class="catalog-section"><h2 class="section-heading">診療ツール</h2><div class="tool-grid">
+    <button class="filter-toggle" id="filterToggle" type="button" aria-expanded="false" aria-controls="tbRight">条件<span class="on" aria-hidden="true"></span></button>
+    <div class="field view-field"><span id="viewLabel">表示</span><div class="view-switch" role="group" aria-labelledby="viewLabel"><button type="button" data-view="detail" aria-pressed="true">詳しく</button><button type="button" data-view="compact" aria-pressed="false">コンパクト</button></div></div>
+    <div class="tb-right" id="tbRight">
+      <label class="field">用途 <select id="purposeFilter"></select></label>
+      <label class="field">並び順 <select id="sort">
+        <option value="theme">テーマ別</option>
+        <option value="name">名前順</option>
+      </select></label>
+    </div>
+  </div>
+  <nav class="theme-strip" aria-label="診療テーマ（横にスクロールできます）"><ul id="themeStrip"></ul></nav>
+</div>
+
+<div class="layout">
+  <aside class="side" aria-label="診療テーマ" data-js hidden>
+    <h2>診療テーマ</h2>
+    <ul class="theme-list" id="themeList"></ul>
+    <div class="side-links">
+      <h2>ほかの一覧</h2>
+      <a href="handouts/">配布資料の専用一覧</a>
+      <a href="slides/">スライド資料</a>
+      <a href="infographics/">インフォグラフィック</a>
+      <a href="https://check.ichisouzo-lab.com/">一般向け 症状セルフチェック</a>
+    </div>
+  </aside>
+
+  <main id="main">
+    <noscript><p>JavaScriptが無効のため、診療ツールを一覧表示しています。配布資料は下の専用一覧からお探しください。</p></noscript>
+    <p class="load-status" id="loadStatus" role="status" hidden>配布資料の検索データを読み込んでいます。</p>
+    <div class="status" data-js hidden>
+      <p class="count" id="count" role="status" aria-live="polite" aria-atomic="true"></p>
+      <div class="chips" id="chips"></div>
+    </div>
+    <section class="shelf" id="pinShelf" hidden aria-labelledby="pinHead">
+      <div class="shelf-head"><h2 id="pinHead">★ ピン留め</h2><p>よく使うものをカード右上の☆で固定できます（この端末だけに保存）</p></div>
+      <div class="mini-grid" id="pinGrid"></div>
+    </section>
+    <section class="shelf" id="recentShelf" aria-labelledby="recentHead" hidden>
+      <div class="shelf-head"><h2 id="recentHead">最近開いたもの</h2><button class="clear-recent" id="clearRecent" type="button">履歴を消す</button></div>
+      <div class="mini-grid" id="recentGrid"></div>
+    </section>
+    <div id="catalog">
 <a class="tool-card" href="neuro_test_navigator.html" style="border-left-color:#23665e;">
       <div class="tool-emoji">🔎</div>
       <div class="tool-name">NeuroFind｜脳神経内科の検査検索</div>
       <div class="tool-desc">脳神経内科の特殊検査・外注検査105項目を、検査名・疾患名・略語・依頼先から検索。検体・測定法・公式案内・確認日を確認し、比較できます。手動更新と単一HTMLのオフライン保存に対応。</div>
       <span class="tool-tag">105項目 / 外注・特殊検査 / オフライン保存</span>
     </a>
+
 <a class="tool-card" href="cerebral_calcification.html" style="border-left-color:#1A5276;">
       <div class="tool-emoji">🧠</div>
       <div class="tool-name">大脳・頭蓋内石灰化病変 鑑別診断・評価支援ツール</div>
       <div class="tool-desc">頭部CT・MRIで認める大脳・頭蓋内石灰化について、年齢別生理的石灰化とTotal Calcification Score（TCS）99パーセンタイル閾値、SWI位相画像・QSMによる微小出血との鑑別、Ca・P・intact PTH評価（副甲状腺機能低下症と偽性副甲状腺機能低下症［PHP］のピットフォール）、原発性脳石灰化症（PBC／旧称Fahr病：SLC20A2・MYORG等7原因遺伝子）やSturge-Weber症候群・結節性硬化症・神経嚢虫症・乏突起膠腫など12病態を系統的に整理。カルテ貼付用サマリーのコピー・印刷に対応します。</div>
       <span class="tool-tag">TCS年齢別閾値 / Ca・P・PTH・PHP判定 / PBC(Fahr病)7遺伝子</span>
     </a>
+
 <a class="tool-card" href="drug_eruption_assessment.html" style="border-left-color:#1A5276;"><div class="tool-emoji">🩺</div><div class="tool-name">薬疹の初期評価・鑑別整理</div><div class="tool-desc">重症徴候、皮疹、薬剤歴と時間軸を整理し、関連する鑑別と再評価の手がかりを確認します。</div><span class="tool-tag">重症徴候 / 薬剤歴 / 医療従事者向け</span></a>
+
 <a class="tool-card" href="seizure_lateralization.html" style="border-left-color:#1A5276;">
       <div class="tool-emoji">🧠</div>
       <div class="tool-name">焦点てんかん 側方徴候（半球推定）整理ツール</div>
@@ -825,39 +1004,70 @@ noscript p { padding:12px; background:#fff3d9; margin-bottom:15px; }
         </div>
         <span class="tool-tag">インフォグラフィック</span>
       </a>
-  </div></section></div>
-  <aside class="other-resources" aria-labelledby="otherResources"><h2 id="otherResources">ほかの資料・専用一覧</h2><div class="resource-links">
+    </div>
+    <div class="empty" id="empty" hidden>
+      <h2>条件に合うものが見つかりませんでした</h2>
+      <p>言葉を短くするか、テーマ・用途の条件を外してみてください。</p>
+      <button class="btn primary" type="button" data-reset>条件をすべて外す</button>
+    </div>
+    <aside class="other-resources" aria-labelledby="otherResources"><h2 id="otherResources">ほかの資料・専用一覧</h2><div class="resource-links">
     <a href="handouts/">📄 配布資料の専用一覧 →</a><a href="slides/">📊 スライド資料 →</a><a href="infographics/">🖼️ インフォグラフィック →</a><a href="https://check.ichisouzo-lab.com/">🩺 一般向け症状セルフチェック →</a>
   </div><p class="audience-note">各カードに利用対象を表示しています。診療ツールには一般向けセルフチェック、配布資料には医療者向け資料も一部含まれます。</p></aside>
-  <footer>診療ツールは臨床判断の補助であり、確定診断を行うものではありません。実臨床では総合的な臨床判断が必要です。<br>配布資料は一般的な情報です。個別の診断・治療については主治医にご相談ください。</footer>
-</main>
+  </main>
+</div>
+
+<footer class="site-foot">
+  <div class="site-foot-inner">
+    診療ツールは臨床判断の補助であり、確定診断を行うものではありません。実臨床では総合的な臨床判断が必要です。<br>
+    配布資料は一般的な情報です。個別の診断・治療については主治医にご相談ください。
+  </div>
+</footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(function(reg) { reg.update(); }).catch(function() {}); }
 (function () {
   'use strict';
-  // ツールの正本は既存の .tool-card、配布資料の正本は handouts/manifest.json。
-  // ここでは分類と検索語だけを補い、タイトル・説明・URLを複製管理しない。
+  // 正本の静的カードと実行時の配布資料manifestから一覧を組み立てる。
+  var TODAY = new Date();
+  var NEW_DAYS = 45;
+
+  // テーマ（id, 表示名, 検索用の言い換え, 色）
   var themes = [
-    ['stroke','脳卒中・脳画像','脳梗塞 脳血管 MNI MRI'],
-    ['epilepsy','てんかん・脳波','癲癇 発作 AED ASM EEG'],
-    ['headache','頭痛・めまい','片頭痛 偏頭痛 ずつう ふらつき'],
-    ['neuro','神経・運動・しびれ','神経 しびれ 痺れ 振戦 ふるえ パーキンソン'],
-    ['dementia','認知症・せん妄','もの忘れ 物忘れ BPSD'],
-    ['renal','腎臓・電解質・むくみ','腎障害 腎不全 浮腫 むくみ Na K Ca CKD'],
-    ['metabolic','糖尿病・内分泌・生活習慣病','血糖 脂質 血圧 甲状腺 痛風'],
-    ['cardioresp','循環器・呼吸器','心臓 心房細動 心不全 胸痛 呼吸 睡眠時無呼吸 CPAP'],
-    ['digestive','消化器・肝臓','腹痛 肝機能 便秘 胃 食道 脂肪肝'],
-    ['general','全身症状・感染症・血液','不明熱 感染 貧血 ワクチン'],
-    ['nutrition','栄養・リハビリ・暮らし','低栄養 運動 食事 転倒 睡眠 禁煙 飲酒'],
-    ['medication','薬剤・周術期・診療支援','薬 くすり 手術 休薬 病状説明 保険病名'],
-    ['antiaging','アンチエイジング','老化 加齢 若返り サプリ']
+    ['stroke','脳卒中・脳画像','脳梗塞 脳血管 MNI MRI','#2f66b3'],
+    ['epilepsy','てんかん・脳波','癲癇 発作 AED ASM EEG','#7656a8'],
+    ['headache','頭痛・めまい','片頭痛 偏頭痛 ずつう ふらつき','#2a8aa6'],
+    ['neuro','神経・運動・しびれ','神経 しびれ 痺れ 振戦 ふるえ パーキンソン','#227a69'],
+    ['dementia','認知症・せん妄','もの忘れ 物忘れ BPSD','#a06a2c'],
+    ['renal','腎臓・電解質・むくみ','腎障害 腎不全 浮腫 むくみ Na K Ca CKD','#1f8a8f'],
+    ['metabolic','糖尿病・内分泌・生活習慣病','血糖 脂質 血圧 甲状腺 痛風','#c0562b'],
+    ['cardioresp','循環器・呼吸器','心臓 心房細動 心不全 胸痛 呼吸 睡眠時無呼吸 CPAP','#c03e55'],
+    ['digestive','消化器・肝臓','腹痛 肝機能 便秘 胃 食道 脂肪肝','#8a7420'],
+    ['general','全身症状・感染症・血液','不明熱 感染 貧血 ワクチン','#56677a'],
+    ['nutrition','栄養・リハビリ・暮らし','低栄養 運動 食事 転倒 睡眠 禁煙 飲酒','#3f8a3a'],
+    ['medication','薬剤・周術期・診療支援','薬 くすり 手術 休薬 病状説明 保険病名','#5b54a0'],
+    ['antiaging','アンチエイジング','老化 加齢 若返り サプリ','#a24d7c']
   ];
   var purposes = {
-    diagnosis:'鑑別・原因検索', calculation:'計算・スコア', treatment:'薬剤・治療の確認',
-    communication:'説明・記録', learning:'学習・解剖', selfcheck:'セルフチェック', handout:'配布・説明資料'
+    diagnosis:['鑑別','鑑別・原因検索'], calculation:['計算','計算・スコア'], treatment:['治療','薬剤・治療の確認'],
+    communication:['説明・記録','説明・記録'], learning:['学習','学習・解剖'], selfcheck:['セルフチェック','セルフチェック'], handout:['配布資料','配布・説明資料']
   };
-  // URL単位の分類メタデータ。未分類の新規カードも「診療支援」に表示して隠さない。
+  // 用途アイコン（外部ファイルに頼らないインラインSVG）
+  var icons = {
+    diagnosis:'<path d="M10 3a7 7 0 1 0 4.2 12.6L20 21" /><path d="M7 10h6M10 7v6"/>',
+    calculation:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M14 12h2M8 16h2M14 16h2"/>',
+    treatment:'<rect x="3" y="8.5" width="18" height="7" rx="3.5" transform="rotate(-45 12 12)"/><path d="m9.5 9.5 5 5"/>',
+    communication:'<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h5"/>',
+    learning:'<path d="M3 5.5C5.5 4.5 8.5 4.5 12 6c3.5-1.5 6.5-1.5 9-.5V19c-2.5-1-5.5-1-9 .5-3.5-1.5-6.5-1.5-9-.5z"/><path d="M12 6v13.5"/>',
+    selfcheck:'<rect x="4" y="4" width="16" height="16" rx="3"/><path d="m8 12 3 3 5-6"/>',
+    handout:'<path d="M7 3h10v5H7zM5 8h14a2 2 0 0 1 2 2v6h-4v5H7v-5H3v-6a2 2 0 0 1 2-2z"/><path d="M9 15h6"/>'
+  };
+  function svg(name) {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + icons[name] + '</svg>';
+  }
+  var starSvg = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 16.9l-5.2 2.8 1-5.9-4.3-4.1 5.9-.8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>';
+
+  // URL単位の分類。タイトル・説明・リンクは静的カードを正本とする。
   var toolGroups = [
     ['stroke','learning','vascular-territory-atlas'],
     ['stroke neuro metabolic dementia epilepsy','diagnosis','cerebral_calcification'],
@@ -872,6 +1082,7 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js', { 
     ['headache','selfcheck','vestibular_migraine'],
     ['neuro','diagnosis','hyperckemia sensory_polyneuropathy polyneuropathy_workup abducens_palsy nerve_localization neurodiagnosis tremor gait_ataxia hemichorea'],
     ['neuro medication','diagnosis','neuro_test_navigator'],
+    ['neuro cardioresp','diagnosis','post_cardiac_arrest_prognosis'],
     ['neuro medication','calculation','levodopa_equivalent_calculator'],
     ['neuro','learning','cavernous_sinus infographics/tolosa_hunt'],
     ['stroke dementia neuro','communication','driving_fitness_evaluation'],
@@ -899,48 +1110,22 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js', { 
   ];
   var toolMeta = {};
   toolGroups.forEach(function (group) {
-    group[2].split(' ').forEach(function (slug) { toolMeta[slug + '.html'] = {themes:group[0].split(' '),purpose:group[1]}; });
+    group[2].split(' ').forEach(function (slug) { toolMeta[slug + '.html'] = {themes:group[0].split(' '), purpose:group[1]}; });
   });
+
   var themeMap = {};
   themes.forEach(function (t) { themeMap[t[0]] = t; });
-  var input = document.getElementById('searchInput');
-  var themeBox = document.getElementById('themeOptions');
-  var themeSelect = document.getElementById('themeSelect');
-  var purpose = document.getElementById('purposeFilter');
-  var sort = document.getElementById('sortOrder');
-  var catalog = document.getElementById('catalog');
-  var kind = 'all';
-  var theme = 'all';
-  var handoutState = 'loading';
-  var items = [];
-  var collator = new Intl.Collator('ja', {numeric:true,sensitivity:'base'});
 
   function normalize(text) {
-    var value = String(text).toLowerCase();
-    if (value.normalize) value = value.normalize('NFKC');
-    return value.replace(/[ァ-ヶ]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 96); });
+    var v = String(text).toLowerCase();
+    if (v.normalize) v = v.normalize('NFKC');
+    return v.replace(/[ァ-ヶ]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 96); });
   }
-  function prepare(item) {
-    item.search = normalize(item.title + ' ' + item.description + ' ' + item.extra + ' ' + item.audience + ' ' + purposes[item.purpose] + ' ' + item.themes.map(function (id) { return themeMap[id].slice(1).join(' '); }).join(' '));
-    return item;
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; });
   }
-  function audienceBadge(card, text) {
-    var badge = document.createElement('span');
-    badge.className = 'card-audience';
-    badge.textContent = text;
-    card.insertBefore(badge, card.firstChild);
-  }
-  Array.prototype.forEach.call(document.querySelectorAll('a.tool-card'), function (card) {
-    var href = card.getAttribute('href');
-    var meta = toolMeta[href] || {themes:['medication'],purpose:'learning'};
-    var audience = meta.purpose === 'selfcheck' ? '一般向け・セルフチェック' : '医療者向け';
-    audienceBadge(card, 'ツール · ' + audience);
-    items.push(prepare({card:card,kind:'tool',title:card.querySelector('.tool-name').textContent.trim(),description:card.querySelector('.tool-desc').textContent.trim(),extra:card.textContent,audience:audience,themes:meta.themes,purpose:meta.purpose,href:href}));
-  });
   function handoutThemes(it) {
-    var slug = it.slug;
-    var text = it.title + ' ' + it.series;
-    var ids = [];
+    var slug = it.slug, ids = [];
     if (/^anti-aging-/.test(slug)) return ['antiaging'];
     if (/^dementia-|bpsd/.test(slug)) ids.push('dementia');
     if (/stroke/.test(slug)) ids.push('stroke');
@@ -954,121 +1139,373 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js', { 
     if (/shingles|cold|flu-covid|anemia|cancer/.test(slug)) ids.push('general');
     if (/rls|anxiety|smoking|alcohol|heatstroke|fall-prevention|sleeping-pills|osteoporosis|multidomain|multiple-risk/.test(slug)) ids.push('nutrition');
     if (slug === 'status-epilepticus-sedation') ids = ['epilepsy','medication'];
-    // 分類の追加がまだ無い資料も取りこぼさない。
     return ids.length ? ids : ['nutrition'];
   }
-  function handoutCard(it) {
-    var a = document.createElement('a');
-    a.className = 'tool-card handout-card';
-    a.href = 'handouts/' + it.slug + '/';
-    audienceBadge(a, '配布資料 · ' + it.audience);
-    [['tool-name',it.title],['tool-desc',it.desc],['series-label',it.series]].forEach(function (part) {
-      var el = document.createElement('div');
-      el.className = part[0]; el.textContent = part[1]; a.appendChild(el);
+  // 対象者表記のゆれ（7種類）を表示上そろえる
+  function audienceLabel(a) {
+    if (/医療者|医師/.test(a) && /一般/.test(a)) return '医療者・一般向け';
+    if (/医療者|医師/.test(a)) return '医療者向け';
+    if (/一般/.test(a)) return '一般向け';
+    return '患者さん・ご家族向け';
+  }
+  function isNew(date) {
+    if (!date) return false;
+    var d = new Date(date + 'T00:00:00+09:00');
+    var age = (TODAY - d) / 86400000;
+    return age >= 0 && age <= NEW_DAYS;
+  }
+
+  // ── データ組み立て ──
+  var items = [], byId = {}, handoutState = 'loading';
+  Array.prototype.forEach.call(document.querySelectorAll('#catalog a.tool-card'), function (card) {
+    var href = card.getAttribute('href');
+    var meta = toolMeta[href] || {themes:['medication'], purpose:'learning'};
+    var tags = [];
+    Array.prototype.forEach.call(card.querySelectorAll('.tool-tag'), function (tag) {
+      tags = tags.concat(tag.textContent.trim().split(/\s*[/／]\s*/));
     });
-    return a;
-  }
-  function button(label, value) {
-    var b = document.createElement('button');
-    b.type = 'button'; b.className = 'theme-button'; b.dataset.theme = value;
-    b.appendChild(document.createTextNode(label));
-    b.appendChild(document.createElement('span'));
-    b.setAttribute('aria-pressed', value === theme ? 'true' : 'false');
-    b.addEventListener('click', function () { theme = value; render(); });
-    themeBox.appendChild(b);
-  }
-  button('すべてのテーマ','all');
-  themes.forEach(function (t) { button(t[1],t[0]); });
-  [['all','すべてのテーマ']].concat(themes).forEach(function (t) {
-    var opt = document.createElement('option'); opt.value = t[0]; opt.textContent = t[1]; themeSelect.appendChild(opt);
+    tags = tags.filter(function (tag) { return tag && !/医療(従事)?者向け/.test(tag); }).slice(0, 3);
+    items.push({id:href, kind:'tool', href:href, title:card.querySelector('.tool-name').textContent.trim(),
+      desc:card.querySelector('.tool-desc').textContent.trim().replace(/\s+/g, ' '), tags:tags,
+      themes:meta.themes, purpose:meta.purpose, audience:meta.purpose === 'selfcheck' ? '一般向け' : '医療者向け', isNew:false});
   });
-  Object.keys(purposes).forEach(function (key) {
-    var opt = document.createElement('option'); opt.value = key; opt.textContent = purposes[key]; purpose.appendChild(opt);
-  });
-  function matches(item, ignoreTheme) {
-    if (kind !== 'all' && item.kind !== kind) return false;
-    if (!ignoreTheme && theme !== 'all' && item.themes.indexOf(theme) === -1) return false;
-    if (purpose.value !== 'all' && item.purpose !== purpose.value) return false;
-    var query = normalize(input.value.trim());
-    return !query || query.split(/\s+/).every(function (word) { return item.search.indexOf(word) !== -1; });
+  function prepare(it) {
+    it.nTitle = normalize(it.title);
+    it.nAll = normalize(it.title + ' ' + it.desc + ' ' + it.tags.join(' ') + ' ' + (it.series || '') + ' ' + it.audience + ' ' + purposes[it.purpose][1] + ' ' +
+      it.themes.map(function (id) { return themeMap[id][1] + ' ' + themeMap[id][2]; }).join(' '));
+    byId[it.id] = it;
+    return it;
   }
-  function renderGroup(list, heading, id) {
-    if (!list.length) return;
-    var section = document.createElement('section'); section.className = 'catalog-section';
-    var h2 = document.createElement('h2'); h2.className = 'section-heading'; h2.id = 'section-' + id;
-    h2.appendChild(document.createTextNode(heading));
-    var count = document.createElement('span'); count.textContent = list.length + '件'; h2.appendChild(count);
-    section.setAttribute('aria-labelledby',h2.id); section.appendChild(h2);
-    ['tool','handout'].forEach(function (type) {
-      var group = list.filter(function (it) { return it.kind === type; });
-      if (!group.length) return;
-      var h3 = document.createElement('h3'); h3.className = 'kind-heading ' + (type === 'handout' ? 'handout-heading' : '');
-      h3.textContent = (type === 'tool' ? '診療ツール' : '配布資料・ハンドアウト') + ' · ' + group.length + '件';
-      section.appendChild(h3);
-      var grid = document.createElement('div'); grid.className = 'tool-grid';
-      group.forEach(function (it) { grid.appendChild(it.card); }); section.appendChild(grid);
+  items.forEach(prepare);
+
+  // ── 端末内の保存（ピン留め・最近開いたもの） ──
+  function load(key) { try { var value = JSON.parse(localStorage.getItem(key) || '[]'); return Array.isArray(value) ? value.filter(function (id, i) { return typeof id === 'string' && value.indexOf(id) === i; }) : []; } catch (e) { return []; } }
+  function save(key, v) { try { localStorage.setItem(key, JSON.stringify(v)); } catch (e) {} }
+  var pins = load('ics-tools-pins');
+  var recent = load('ics-tools-recent').slice(0, 12);
+  var view = 'detail';
+  try { if (localStorage.getItem('ics-tools-view') === 'compact') view = 'compact'; } catch (e) {}
+
+  // ── 状態（URLと同期） ──
+  var state = { q:'', kind:'all', theme:'all', purpose:'all', sort:'theme' };
+  function decode(value) { try { return decodeURIComponent(value.replace(/\+/g, ' ')); } catch (e) { return value; } }
+  function readUrl() {
+    var params = {};
+    location.search.slice(1).split('&').forEach(function (part) {
+      var at = part.indexOf('='), key = decode(at < 0 ? part : part.slice(0, at));
+      if (/^(q|kind|theme|purpose|sort)$/.test(key)) params[key] = decode(at < 0 ? '' : part.slice(at + 1));
     });
-    catalog.appendChild(section);
+    state.q = params.q || '';
+    state.kind = /^(tool|handout)$/.test(params.kind) ? params.kind : 'all';
+    state.theme = Object.prototype.hasOwnProperty.call(themeMap, params.theme) ? params.theme : 'all';
+    state.purpose = Object.prototype.hasOwnProperty.call(purposes, params.purpose) ? params.purpose : 'all';
+    state.sort = params.sort === 'name' ? 'name' : 'theme';
+  }
+  function writeUrl() {
+    var params = [];
+    ['q','kind','theme','purpose','sort'].forEach(function (key) {
+      if (state[key] && state[key] !== (key === 'sort' ? 'theme' : key === 'q' ? '' : 'all')) params.push(key + '=' + encodeURIComponent(state[key]));
+    });
+    try { history.replaceState(null, '', location.pathname + (params.length ? '?' + params.join('&') : '') + location.hash); } catch (e) {}
+  }
+
+  var $ = function (id) { return document.getElementById(id); };
+  var input = $('searchInput'), purposeSel = $('purposeFilter'), sortSel = $('sort');
+
+  // ── 一致判定と並べ替え ──
+  function words() { return normalize(state.q).trim().split(/\s+/).filter(Boolean); }
+  function match(it, ignore) {
+    if (ignore !== 'kind' && state.kind !== 'all' && it.kind !== state.kind) return false;
+    if (ignore !== 'theme' && state.theme !== 'all' && it.themes.indexOf(state.theme) === -1) return false;
+    if (ignore !== 'purpose' && state.purpose !== 'all' && it.purpose !== state.purpose) return false;
+    var w = words();
+    return w.every(function (x) { return it.nAll.indexOf(x) !== -1; });
+  }
+  function score(it) {
+    var w = words(), s = 0;
+    w.forEach(function (x) {
+      if (it.nTitle.indexOf(x) === 0) s += 6;
+      else if (it.nTitle.indexOf(x) !== -1) s += 4;
+      else s += 1;
+    });
+    if (it.kind === 'tool') s += 0.5;
+    return s;
+  }
+  var collator = window.Intl && Intl.Collator ? new Intl.Collator('ja', {numeric:true, sensitivity:'base'}) : {compare:function (a, b) { return a.localeCompare(b); }};
+  function byName(a, b) { return collator.compare(a.title, b.title); }
+
+  // ── 強調表示（検索語） ──
+  function highlight(text) {
+    // 正規化後の位置を元の文字へ戻し、実体参照や挿入済みタグを再検索しない。
+    text = String(text);
+    var normalized = '', starts = [], ends = [], ranges = [], i, j, part;
+    for (i = 0; i < text.length; i++) {
+      part = normalize(text.charAt(i));
+      for (j = 0; j < part.length; j++) { starts.push(i); ends.push(i + 1); }
+      normalized += part;
+    }
+    words().forEach(function (word) {
+      var at = normalized.indexOf(word);
+      while (at !== -1) {
+        ranges.push([starts[at], ends[at + word.length - 1]]);
+        at = normalized.indexOf(word, at + word.length);
+      }
+    });
+    ranges.sort(function (a, b) { return a[0] - b[0]; });
+    var merged = [];
+    ranges.forEach(function (range) {
+      var last = merged[merged.length - 1];
+      if (last && range[0] <= last[1]) last[1] = Math.max(last[1], range[1]);
+      else merged.push(range);
+    });
+    var result = '', cursor = 0;
+    merged.forEach(function (range) {
+      result += esc(text.slice(cursor, range[0])) + '<mark>' + esc(text.slice(range[0], range[1])) + '</mark>';
+      cursor = range[1];
+    });
+    return result + esc(text.slice(cursor));
+  }
+
+  // ── カード ──
+  function card(it) {
+    var c = themeMap[it.themes[0]][3];
+    var p = purposes[it.purpose];
+    var pinned = pins.indexOf(it.id) !== -1;
+    var h = '<article class="card" style="--c:' + c + '">';
+    h += '<div class="card-top"><span class="badge">' + svg(it.purpose) + esc(p[0]) + '</span><span class="aud">' + esc(it.audience) + '</span>' + (it.isNew ? '<span class="new">NEW</span>' : '') + '</div>';
+    h += '<h3><a class="' + 'tool-card' + '" href="' + esc(it.href) + '" data-id="' + esc(it.id) + '">' + highlight(it.title) + '</a></h3>';
+    h += '<p class="desc">' + highlight(it.desc) + '</p>';
+    if (it.tags.length) h += '<ul class="tags">' + it.tags.map(function (g) { return '<li>' + esc(g) + '</li>'; }).join('') + '</ul>';
+    h += '<div class="card-foot">';
+    if (it.series) h += '<span class="series">' + esc(it.series) + '</span>';
+    it.themes.slice(0, 2).forEach(function (id) { h += '<span class="th" style="--tc:' + themeMap[id][3] + '"><i></i>' + esc(themeMap[id][1]) + '</span>'; });
+    if (it.blog) h += '<a class="ext" href="' + esc(it.blog) + '" target="_blank" rel="noopener">解説記事</a>';
+    if (it.yt) h += '<a class="ext" href="https://www.youtube.com/watch?v=' + esc(it.yt) + '" target="_blank" rel="noopener">解説動画</a>';
+    h += '</div>';
+    h += '<button class="pin" type="button" data-pin="' + esc(it.id) + '" aria-pressed="' + pinned + '" aria-label="' + esc(it.title) + 'をピン留め">' + starSvg + '</button>';
+    return h + '</article>';
+  }
+  function mini(it) {
+    var c = themeMap[it.themes[0]][3];
+    return '<a class="mini" style="--c:' + c + '" href="' + esc(it.href) + '" data-id="' + esc(it.id) + '"><span class="pi">' + svg(it.purpose) + '</span><span class="t">' + esc(it.title) + '</span></a>';
+  }
+
+  // ── 描画 ──
+  function themeButtons(ul, strip) {
+    var cand = items.filter(function (it) { return match(it, 'theme'); });
+    var list = [['all','すべて','', '#8a99a8']].concat(themes);
+    ul.innerHTML = list.map(function (t) {
+      var n = t[0] === 'all' ? cand.length : cand.filter(function (it) { return it.themes.indexOf(t[0]) !== -1; }).length;
+      var on = state.theme === t[0];
+      return '<li><button class="theme-btn '+ (strip ? 'theme-strip-button' : 'theme-button') +'" type="button" data-theme="' + t[0] + '" aria-pressed="' + on + '"' + (n || on ? '' : ' disabled') + ' style="--c:' + t[3] + '">' +
+        (t[0] === 'all' ? '' : '<span class="dot"></span>') + '<span class="lbl">' + esc(strip && t[0] === 'all' ? 'すべてのテーマ' : t[1]) + '</span><span class="n">' + n + '</span></button></li>';
+    }).join('');
   }
   function render() {
-    var filtered = items.filter(function (it) { return matches(it,false); });
-    filtered.sort(function (a,b) { return collator.compare(a.title,b.title) || collator.compare(a.href,b.href); });
-    while (catalog.firstChild) catalog.removeChild(catalog.firstChild);
-    if (sort.value === 'name') renderGroup(filtered,'名称順','all');
-    else themes.forEach(function (t) {
-      renderGroup(filtered.filter(function (it) { return (theme !== 'all' ? theme : it.themes[0]) === t[0]; }),t[1],t[0]);
-    });
-    var tools = filtered.filter(function (it) { return it.kind === 'tool'; }).length;
-    var handouts = filtered.length - tools;
-    var total = items.length;
-    document.getElementById('searchCount').textContent = filtered.length + '件 / 全' + total + '件（ツール ' + tools + '件・配布資料 ' + handouts + '件）';
-    document.getElementById('activeFilters').textContent = (kind === 'tool' ? '診療ツール' : kind === 'handout' ? '配布資料' : 'すべて') + ' / ' + (theme === 'all' ? '全テーマ' : themeMap[theme][1]) + ' / ' + (purpose.value === 'all' ? '全用途' : purposes[purpose.value]) + (input.value.trim() ? ' / 「' + input.value.trim() + '」' : '');
-    document.getElementById('noResults').hidden = filtered.length !== 0 || handoutState === 'loading';
-    Array.prototype.forEach.call(document.querySelectorAll('[data-kind]'), function (b) {
-      b.setAttribute('aria-pressed', b.dataset.kind === kind ? 'true' : 'false');
-      var n = items.filter(function (it) { return b.dataset.kind === 'all' || it.kind === b.dataset.kind; }).length;
-      b.querySelector('.number').textContent = (b.dataset.kind !== 'tool' && handoutState === 'loading') ? '読込中' : n + '件';
-    });
-    var candidates = items.filter(function (it) { return matches(it,true); });
-    Array.prototype.forEach.call(themeBox.children, function (b) {
-      b.setAttribute('aria-pressed',b.dataset.theme === theme ? 'true' : 'false');
-      b.lastChild.textContent = candidates.filter(function (it) { return b.dataset.theme === 'all' || it.themes.indexOf(b.dataset.theme) !== -1; }).length;
-    });
-    themeSelect.value = theme;
-  }
-  function reset() { kind = 'all'; theme = 'all'; input.value = ''; purpose.value = 'all'; sort.value = 'theme'; render(); }
-  Array.prototype.forEach.call(document.querySelectorAll('[data-kind]'), function (b) {
-    b.addEventListener('click',function () { kind = b.dataset.kind; render(); });
-  });
-  input.addEventListener('input',render);
-  document.getElementById('clearSearch').addEventListener('click',function () { input.value = ''; render(); input.focus(); });
-  Array.prototype.forEach.call(document.querySelectorAll('[data-reset]'),function (b) { b.addEventListener('click',function () { reset(); input.focus(); }); });
-  purpose.addEventListener('change',render); sort.addEventListener('change',render);
-  themeSelect.addEventListener('change',function () { theme = themeSelect.value; render(); });
-  document.getElementById('directoryPanel').hidden = false;
-  render();
-  fetch('handouts/manifest.json', {cache:'no-cache'}).then(function (response) {
-    if (!response.ok) throw new Error('manifest');
-    return response.json();
-  }).then(function (data) {
-    if (!Array.isArray(data.items)) throw new Error('items');
-    var seen = {};
-    // 読み込み全体を検証してから反映し、途中までの件数を確定値にしない。
-    var handouts = data.items.map(function (it) {
-      if (!it.slug || !/^[a-z0-9-]+$/.test(it.slug) || seen[it.slug] || typeof it.title !== 'string' || typeof it.desc !== 'string' || typeof it.audience !== 'string') throw new Error('item');
-      seen[it.slug] = true;
-      var card = handoutCard(it);
-      return prepare({card:card,kind:'handout',title:it.title,description:it.desc,extra:it.series || '',audience:it.audience,themes:handoutThemes(it),purpose:'handout',href:card.getAttribute('href')});
-    });
-    items = items.concat(handouts); handoutState = 'ready';
-    document.getElementById('loadStatus').hidden = true; render();
-  }).catch(function () {
-    handoutState = 'error';
-    document.getElementById('loadStatus').textContent = '配布資料の検索データを読み込めませんでした。下の「配布資料の専用一覧」からお探しください。表示件数は読み込めたツールのみです。';
-    render();
-  });
-})();
+    var focused = document.activeElement;
+    var focusTheme = focused && focused.getAttribute('data-theme');
+    var focusStrip = focused && focused.classList.contains('theme-strip-button');
+    var list = items.filter(function (it) { return match(it); });
+    var searching = words().length > 0;
+    var html = '';
+    if (searching) {
+      list.sort(function (a, b) { return score(b) - score(a) || byName(a, b); });
+      html += '<section class="section" style="--c:#14304d"><div class="section-head"><span class="bar"></span><h2>「' + esc(state.q.trim()) + '」の検索結果</h2><span class="n">関連の高い順</span></div><div class="grid">' + list.map(card).join('') + '</div></section>';
+    } else if (state.sort === 'name') {
+      ['tool','handout'].forEach(function (k) {
+        var g = list.filter(function (it) { return it.kind === k; }).sort(byName);
+        if (!g.length) return;
+        html += '<section class="section" style="--c:#14304d"><div class="section-head"><span class="bar"></span><h2>' + (k === 'tool' ? '診療ツール' : '配布資料') + '</h2><span class="n">' + g.length + '件・名前順</span></div><div class="grid">' + g.map(card).join('') + '</div></section>';
+      });
+    } else {
+      themes.forEach(function (t) {
+        if (state.theme !== 'all' && state.theme !== t[0]) return;
+        var g = list.filter(function (it) { return (state.theme !== 'all' ? state.theme : it.themes[0]) === t[0]; });
+        var extra = state.theme === 'all' ? list.filter(function (it) { return it.themes.indexOf(t[0]) > 0; }).length : 0;
+        if (!g.length && !extra) return;
+        var tools = g.filter(function (it) { return it.kind === 'tool'; }).sort(byName);
+        var hand = g.filter(function (it) { return it.kind === 'handout'; }).sort(byName);
+        html += '<section class="section" id="sec-' + t[0] + '" style="--c:' + t[3] + '"><div class="section-head"><span class="bar"></span><h2>' + esc(t[1]) + '</h2><span class="n">' + g.length + '件</span></div>';
+        if (tools.length) html += (hand.length ? '<p class="sub-head">診療ツール ' + tools.length + '</p>' : '') + '<div class="grid">' + tools.map(card).join('') + '</div>';
+        if (hand.length) html += (tools.length ? '<p class="sub-head">配布資料 ' + hand.length + '</p>' : '') + '<div class="grid">' + hand.map(card).join('') + '</div>';
+        // 主テーマが別でも、このテーマにも関わるもの（絞り込むと一緒に出る）
+        if (state.theme === 'all') {
+          if (extra) html += '<button class="more-link" type="button" data-theme="' + t[0] + '">ほかのテーマにも関わるもの' + extra + '件を含めて、' + esc(t[1]) + 'だけを見る →</button>';
+        }
+        html += '</section>';
+      });
+    }
+    $('catalog').innerHTML = html;
+    $('empty').hidden = list.length > 0 || handoutState === 'loading';
+    $('catalog').classList.toggle('compact', view === 'compact');
+    Array.prototype.forEach.call(document.querySelectorAll('[data-view]'), function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-view') === view)); });
 
+    // 件数と条件チップ
+    var nt = list.filter(function (it) { return it.kind === 'tool'; }).length;
+    $('count').innerHTML = '<b>' + list.length + '</b>件（ツール ' + nt + '・資料 ' + (list.length - nt) + '）';
+    var chips = [];
+    if (state.q.trim()) chips.push(['q', '「' + state.q.trim() + '」']);
+    if (state.kind !== 'all') chips.push(['kind', state.kind === 'tool' ? '診療ツール' : '配布資料']);
+    if (state.theme !== 'all') chips.push(['theme', themeMap[state.theme][1]]);
+    if (state.purpose !== 'all') chips.push(['purpose', purposes[state.purpose][1]]);
+    $('chips').innerHTML = chips.map(function (c) { return '<span class="chip">' + esc(c[1]) + '<button type="button" data-clear="' + c[0] + '" aria-label="' + esc(c[1]) + 'の条件を外す">×</button></span>'; }).join('') +
+      (chips.length ? '<button class="reset" type="button" data-reset>すべて外す</button>' : '');
+
+    // 種類の件数
+    Array.prototype.forEach.call(document.querySelectorAll('[data-kind]'), function (b) {
+      var k = b.getAttribute('data-kind');
+      b.setAttribute('aria-pressed', String(state.kind === k));
+      b.querySelector('.n').textContent = items.filter(function (it) { return (k === 'all' || it.kind === k) && match(it, 'kind'); }).length;
+    });
+    themeButtons($('themeList'), false);
+    themeButtons($('themeStrip'), true);
+    if (focusTheme !== null && focused && focused.classList.contains('theme-btn')) {
+      var focusButtons = (focusStrip ? $('themeStrip') : $('themeList')).querySelectorAll('[data-theme]');
+      Array.prototype.forEach.call(focusButtons, function (b) { if (b.getAttribute('data-theme') === focusTheme) b.focus(); });
+    }
+    $('clearQ').hidden = !state.q;
+    $('kbd').hidden = !!state.q;
+    $('filterToggle').classList.toggle('active', state.purpose !== 'all' || state.sort !== 'theme');
+    renderShelves(chips.length === 0);
+    writeUrl();
+  }
+  function renderShelves(show) {
+    // ピン留めが空のときは場所を取らない（☆はカード右上に常に見えている）
+    var availablePins = pins.filter(function (id) { return !!byId[id]; });
+    $('pinShelf').hidden = !show || !availablePins.length;
+    $('pinGrid').innerHTML = availablePins.map(function (id) { return mini(byId[id]); }).join('');
+    var r = recent.filter(function (id) { return byId[id] && pins.indexOf(id) === -1; }).slice(0, 6);
+    $('recentShelf').hidden = !show || !r.length;
+    $('recentGrid').innerHTML = r.map(function (id) { return mini(byId[id]); }).join('');
+  }
+  var toastTimer;
+  function toast(msg) {
+    var t = $('toast'); t.textContent = msg; t.classList.add('on');
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.classList.remove('on'); }, 1600);
+  }
+
+  // ── 初期化 ──
+  ['めまい','頭痛','てんかん','脳梗塞','低ナトリウム','認知症','血圧','栄養'].forEach(function (w) {
+    var b = document.createElement('button'); b.type = 'button'; b.textContent = w;
+    b.addEventListener('click', function () { input.value = w; state.q = w; render(); scrollToResults(); });
+    $('quick').appendChild(b);
+  });
+  purposeSel.innerHTML = '<option value="all">すべての用途</option>' + Object.keys(purposes).map(function (k) { return '<option value="' + k + '">' + purposes[k][1] + '</option>'; }).join('');
+  readUrl();
+  input.value = state.q; purposeSel.value = state.purpose; sortSel.value = state.sort;
+
+  function scrollToResults() {
+    var top = $('main').getBoundingClientRect().top + window.pageYOffset - $('toolbar').offsetHeight - 8;
+    if (window.pageYOffset < top) {
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) window.scrollTo(0, top);
+      else { try { window.scrollTo({top:top, behavior:'smooth'}); } catch (e) { window.scrollTo(0, top); } }
+    }
+  }
+  input.addEventListener('input', function () { state.q = input.value; render(); });
+  input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { state.q = input.value; render(); scrollToResults(); input.blur(); } if (e.key === 'Escape') { input.value = ''; state.q = ''; render(); } });
+  $('clearQ').addEventListener('click', function () { input.value = ''; state.q = ''; render(); input.focus(); });
+  purposeSel.addEventListener('change', function () { state.purpose = purposeSel.value; render(); });
+  sortSel.addEventListener('change', function () { state.sort = sortSel.value; render(); });
+  $('filterToggle').addEventListener('click', function () {
+    var box = $('tbRight'), open = !box.classList.contains('open');
+    box.classList.toggle('open', open); this.setAttribute('aria-expanded', String(open));
+  });
+  $('clearRecent').addEventListener('click', function () { recent = []; save('ics-tools-recent', recent); render(); });
+
+  function closest(el, selector) {
+    while (el && el.nodeType === 1) {
+      var matches = el.matches || el.msMatchesSelector || el.webkitMatchesSelector;
+      if (matches && matches.call(el, selector)) return el;
+      el = el.parentElement;
+    }
+    return null;
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target.nodeType === 1 ? e.target : e.target.parentElement;
+    if (!t) return;
+    var b = closest(t, '[data-view]');
+    if (b) {
+      view = b.getAttribute('data-view');
+      try { localStorage.setItem('ics-tools-view', view); } catch (err) {}
+      render(); return;
+    }
+    b = closest(t, '[data-kind]');
+    if (b) { state.kind = b.getAttribute('data-kind'); render(); return; }
+    b = closest(t, '[data-theme]');
+    if (b) { state.theme = b.getAttribute('data-theme'); render(); scrollToResults(); return; }
+    b = closest(t, '[data-pin]');
+    if (b) {
+      var id = b.getAttribute('data-pin'), i = pins.indexOf(id);
+      if (i === -1) { pins.unshift(id); toast('ピン留めしました'); } else { pins.splice(i, 1); toast('ピン留めを外しました'); }
+      save('ics-tools-pins', pins);
+      b.setAttribute('aria-pressed', String(i === -1));
+      renderShelves(!document.querySelector('#chips .chip'));
+      return;
+    }
+    b = closest(t, '[data-clear]');
+    if (b) {
+      var k = b.getAttribute('data-clear');
+      if (k === 'q') { state.q = ''; input.value = ''; } else { state[k] = 'all'; if (k === 'purpose') purposeSel.value = 'all'; }
+      render(); return;
+    }
+    if (closest(t, '[data-reset]')) {
+      state = { q:'', kind:'all', theme:'all', purpose:'all', sort:'theme' };
+      input.value = ''; purposeSel.value = 'all'; sortSel.value = 'theme'; render(); return;
+    }
+    var a = closest(t, 'a[data-id]');
+    if (a) {
+      var aid = a.getAttribute('data-id');
+      recent = [aid].concat(recent.filter(function (x) { return x !== aid; })).slice(0, 12);
+      save('ics-tools-recent', recent);
+      setTimeout(function () { renderShelves(!document.querySelector('#chips .chip')); }, 50);
+    }
+  });
+  // 「/」で検索欄へ
+  document.addEventListener('keydown', function (e) {
+    if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey && !e.isComposing && document.activeElement !== input && !document.activeElement.isContentEditable && !/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) { e.preventDefault(); input.focus(); input.select(); }
+  });
+  window.addEventListener('popstate', function () {
+    readUrl(); input.value = state.q; purposeSel.value = state.purpose; sortSel.value = state.sort; render();
+  });
+  function updateLead() {
+    var tools = items.filter(function (it) { return it.kind === 'tool'; }).length;
+    $('leadCounts').innerHTML = ' <span>ツール' + tools + '件</span>' + (handoutState === 'ready' ? '・<span>資料' + (items.length - tools) + '件</span>' : handoutState === 'loading' ? '・資料は読み込み中' : '（資料は専用一覧へ）');
+    $('leadCounts').hidden = false;
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('[data-js]'), function (el) { el.hidden = false; });
+  $('loadStatus').hidden = false;
+  updateLead();
+  render();
+  if (window.fetch) {
+    fetch('handouts/manifest.json', {cache:'no-cache'}).then(function (response) {
+      if (!response.ok) throw new Error('manifest');
+      return response.json();
+    }).then(function (data) {
+      if (!Array.isArray(data.items)) throw new Error('items');
+      var seen = {};
+      // 全資料の検証が終わってから反映し、途中までの件数を確定値にしない。
+      var handouts = data.items.map(function (h) {
+        if (!h.slug || !/^[a-z0-9-]+$/.test(h.slug) || seen[h.slug] || typeof h.title !== 'string' || typeof h.desc !== 'string' || typeof h.audience !== 'string') throw new Error('item');
+        seen[h.slug] = true;
+        var href = 'handouts/' + h.slug + '/';
+        return {id:href, kind:'handout', href:href, title:h.title, desc:h.desc, tags:[], series:h.series || '',
+          themes:handoutThemes(h), purpose:'handout', audience:audienceLabel(h.audience),
+          blog:/^https?:\/\//i.test(h.blog_url || '') ? h.blog_url : '', yt:/^[a-zA-Z0-9_-]{11}$/.test(h.youtube_id || '') ? h.youtube_id : '', isNew:isNew(h.date)};
+      });
+      handouts.forEach(prepare);
+      items = items.concat(handouts); handoutState = 'ready';
+      pins = pins.filter(function (id) { return !!byId[id]; });
+      recent = recent.filter(function (id) { return !!byId[id]; });
+      $('loadStatus').hidden = true; updateLead(); render();
+    }).catch(handoutError);
+  } else handoutError();
+  function handoutError() {
+    handoutState = 'error';
+    $('loadStatus').hidden = false;
+    $('loadStatus').textContent = '配布資料の検索データを読み込めませんでした。下の「配布資料の専用一覧」からお探しください。表示件数は読み込めたツールのみです。';
+    updateLead(); render();
+  }
+})();
 </script>
 </body>
 </html>
