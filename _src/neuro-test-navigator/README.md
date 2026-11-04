@@ -1,3 +1,5 @@
+> 2026-11-04更新：公開データ2026.11.04.1、131項目。画面2026.11.04-r3。かずさ26項目を追加し、旧105項目は完全一致で保持。公式PDF23種類と現行一覧・変更通知・依頼条件を照合。原典は元プロジェクトsources/kazusa-20261104/、差分記録はKAZUSA_REVIEW.md、追加データはkazusa-20261104.json。publication.jsonのsourceCommitは元プロジェクトの確認済み更新。下記は従来版の履歴。
+
 # NeuroFind 公開版
 
 公開URL: https://tools.ichisouzo-lab.com/neuro_test_navigator.html
