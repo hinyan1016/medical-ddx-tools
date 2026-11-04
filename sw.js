@@ -1,5 +1,15 @@
-const CACHE_NAME = 'ddx-tools-v330';
+const CACHE_NAME = 'ddx-tools-v331';
 const ASSETS = [
+  './infographics/dka-initial-assessment/infographic.png',
+  './infographics/ich-initial-management/abc2-method.png',
+  './infographics/ich-initial-management/ct-hydrocephalus-upper.png',
+  './infographics/ich-initial-management/ct-cerebellum-hydrocephalus.png',
+  './infographics/ich-initial-management/ct-lobar.png',
+  './infographics/ich-initial-management/ct-thalamus.png',
+  './infographics/ich-initial-management/ct-putamen.png',
+  './infographics/ich-initial-management/infographic.png',
+  './infographics/ich-initial-management/index.html',
+  './infographics/dka-initial-assessment/index.html',
   './neuro_test_navigator.html',
   './cerebral_calcification.html',
   './infographics/asymptomatic-carotid-vertebral-stenosis/index.html',
