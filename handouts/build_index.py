@@ -39,7 +39,26 @@ CARD = (
 )
 
 # カード化しない（一覧に出さない）ディレクトリ
-SKIP_DIRS = {"__pycache__"}
+# 個別ページ自体は公開済みブログ記事・YouTube概要欄・QRからの直リンク維持のため残す
+SKIP_DIRS = {
+    "__pycache__",
+    "orforglipron",
+    "anti-aging-collagen",
+    "anti-aging-fasting",
+    "anti-aging-gh-dhea",
+    "anti-aging-mediterranean-vegan",
+    "anti-aging-metformin",
+    "anti-aging-nmn",
+    "anti-aging-placenta",
+    "anti-aging-ranking",
+    "anti-aging-rapamycin",
+    "anti-aging-retinoid",
+    "anti-aging-stem-cell",
+    "anti-aging-strength-training",
+    "anti-aging-sunscreen",
+    "anti-aging-tadalafil",
+    "anti-aging-vitamind-omega3",
+}
 
 
 def load_items():

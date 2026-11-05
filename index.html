@@ -1045,8 +1045,7 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js', { 
     ['digestive','消化器・肝臓','腹痛 肝機能 便秘 胃 食道 脂肪肝','#8a7420'],
     ['general','全身症状・感染症・血液','不明熱 感染 貧血 ワクチン','#56677a'],
     ['nutrition','栄養・リハビリ・暮らし','低栄養 運動 食事 転倒 睡眠 禁煙 飲酒','#3f8a3a'],
-    ['medication','薬剤・周術期・診療支援','薬 くすり 手術 休薬 病状説明 保険病名','#5b54a0'],
-    ['antiaging','アンチエイジング','老化 加齢 若返り サプリ','#a24d7c']
+    ['medication','薬剤・周術期・診療支援','薬 くすり 手術 休薬 病状説明 保険病名','#5b54a0']
   ];
   var purposes = {
     diagnosis:['鑑別','鑑別・原因検索'], calculation:['計算','計算・スコア'], treatment:['治療','薬剤・治療の確認'],
@@ -1126,14 +1125,13 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js', { 
   }
   function handoutThemes(it) {
     var slug = it.slug, ids = [];
-    if (/^anti-aging-/.test(slug)) return ['antiaging'];
     if (/^dementia-|bpsd/.test(slug)) ids.push('dementia');
     if (/stroke/.test(slug)) ids.push('stroke');
     if (/epilep/.test(slug)) ids.push('epilepsy');
     if (/migraine|headache|dizziness|bppv/.test(slug)) ids.push('headache');
     if (/parkinson|tremor|carpal-tunnel|facial-palsy|diabetic-foot/.test(slug)) ids.push('neuro');
     if (/ckd|edema|bladder/.test(slug)) ids.push('renal');
-    if (/hypertension|diabet|dyslipid|gout|obesity|ldl|orforglipron/.test(slug)) ids.push('metabolic');
+    if (/hypertension|diabet|dyslipid|gout|obesity|ldl/.test(slug)) ids.push('metabolic');
     if (/orthostatic|atrial|heart-failure|cpap|sleep-apnea|aspiration|atherosclerosis/.test(slug)) ids.push('cardioresp');
     if (/gerd|constipation|fatty-liver/.test(slug)) ids.push('digestive');
     if (/shingles|cold|flu-covid|anemia|cancer/.test(slug)) ids.push('general');
@@ -1484,7 +1482,9 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js', { 
       if (!Array.isArray(data.items)) throw new Error('items');
       var seen = {};
       // 全資料の検証が終わってから反映し、途中までの件数を確定値にしない。
-      var handouts = data.items.map(function (h) {
+      var handouts = data.items.filter(function (h) {
+        return h && h.slug !== 'orforglipron' && !/^anti-aging-/.test(h.slug);
+      }).map(function (h) {
         if (!h.slug || !/^[a-z0-9-]+$/.test(h.slug) || seen[h.slug] || typeof h.title !== 'string' || typeof h.desc !== 'string' || typeof h.audience !== 'string') throw new Error('item');
         seen[h.slug] = true;
         var href = 'handouts/' + h.slug + '/';
