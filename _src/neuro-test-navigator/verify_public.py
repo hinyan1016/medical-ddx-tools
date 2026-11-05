@@ -21,13 +21,13 @@ class QuietHandler(SimpleHTTPRequestHandler):
 
 def verify_editorial(page, qa, tag):
     """謝辞と、自サイトの更新→検証資料という階層を操作して確かめる。"""
-    expect(page.locator('.acknowledgement-note')).to_contain_text('綾木先生')
+    expect(page.locator('.acknowledgement-note')).to_contain_text('管理者の許可を得たうえで')
     page.locator('#sidebar [data-action="updates"]').click()
     expect(page.locator('#modal-title')).to_have_text('更新履歴と機能')
     expect(page.locator('.feature-card')).to_have_count(3)
     expect(page.locator('.site-history li')).to_have_count(4)
     expect(page.locator('.provider-updates li')).to_have_count(6)
-    expect(page.locator('#modal-body')).to_contain_text('綾木先生')
+    expect(page.locator('#modal-body')).to_contain_text('管理者の許可を得たうえで')
     expect(page.locator('#modal-body')).not_to_contain_text('73 / 73')
     expect(page.locator('.coverage-table')).to_have_count(0)
     expect(page.locator('.coverage-changes')).to_have_count(0)
@@ -42,7 +42,7 @@ def verify_editorial(page, qa, tag):
     page.keyboard.press('Escape')
     page.locator('#sidebar [data-action="about"]').click()
     expect(page.locator('#modal-title')).to_have_text('このサイトについて・謝辞')
-    expect(page.locator('.acknowledgement')).to_contain_text('綾木先生')
+    expect(page.locator('.acknowledgement')).to_contain_text('管理者の許可を得たうえで')
     expect(page.locator('.acknowledgement')).to_contain_text('監修や提携を示すものではありません')
     expect(page.locator('.acknowledgement a')).to_have_attribute(
         'href', 'https://sites.google.com/kuhp.kyoto-u.ac.jp/gaichukensa/脳内検査ホーム')
@@ -145,7 +145,7 @@ def main():
                     standalone.locator('#menu-button').click()
                     standalone.locator('#sidebar [data-action="about"]').click()
                     expect(standalone.locator('#mobile-shade')).to_be_hidden()
-                    expect(standalone.locator('.acknowledgement')).to_contain_text('綾木先生')
+                    expect(standalone.locator('.acknowledgement')).to_contain_text('管理者の許可を得たうえで')
                     standalone.keyboard.press('Escape')
             standalone.set_viewport_size({'width': 390, 'height': 844})
             standalone.screenshot(path=str(qa / 'public-offline-mobile.png'))
