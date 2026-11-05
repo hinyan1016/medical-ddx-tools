@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v337';
+const CACHE_NAME = 'ddx-tools-v338';
 const ASSETS = [
   './infographics/dka-initial-assessment/infographic.png',
   './infographics/ich-initial-management/abc2-method.png',
@@ -8,6 +8,8 @@ const ASSETS = [
   './infographics/ich-initial-management/ct-thalamus.png',
   './infographics/ich-initial-management/ct-putamen.png',
   './infographics/ich-initial-management/infographic.png',
+  './infographics/shojo-shoki-helper-guide/index.html',
+  './infographics/special-unit-daily-documentation/index.html',
   './infographics/ich-initial-management/index.html',
   './infographics/dka-initial-assessment/index.html',
   './neuro_test_navigator.html',
