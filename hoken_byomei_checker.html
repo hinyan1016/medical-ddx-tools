@@ -6,12 +6,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#1A5276">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="description" content="病名・薬剤名・検査名から、保険病名（レセプト病名）になりやすい組み合わせを示し、添付文書・診療報酬点数表・審査事例で確かめた正しい病名と症状詳記のひな型を出す医療者向けツール（脳神経内科版・37項目）。">
+<meta name="description" content="病名・薬剤名・検査名から、保険病名（レセプト病名）になりやすい組み合わせを示し、添付文書・診療報酬点数表・審査事例で確かめた正しい病名と症状詳記のひな型を出す医療者向けツール（脳神経内科版・37項目）。神経内科でよく出す検査（PT・APTT、ビタミンB12・葉酸、アンモニア、BNP、血液型・不規則抗体、CRP、脂質・HbA1c）の病名と回数・間隔のルールも場面別に確かめられます。">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>保険病名チェッカー（脳神経内科版）</title>
 <meta property="og:title" content="保険病名チェッカー（脳神経内科版）">
-<meta property="og:description" content="病名・薬剤名・検査名から、保険病名（レセプト病名）になりやすい組み合わせを示し、添付文書・診療報酬点数表・審査事例で確かめた正しい病名と症状詳記のひな型を出す医療者向けツール（脳神経内科版・37項目）。">
+<meta property="og:description" content="病名・薬剤名・検査名から、保険病名（レセプト病名）になりやすい組み合わせを示し、添付文書・診療報酬点数表・審査事例で確かめた正しい病名と症状詳記のひな型を出す医療者向けツール（脳神経内科版・37項目）。神経内科でよく出す検査（PT・APTT、ビタミンB12・葉酸、アンモニア、BNP、血液型・不規則抗体、CRP、脂質・HbA1c）の病名と回数・間隔のルールも場面別に確かめられます。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://tools.ichisouzo-lab.com/hoken_byomei_checker.html">
 <meta property="og:image" content="https://tools.ichisouzo-lab.com/assets/og-tools.png">
@@ -89,9 +89,33 @@ textarea { width: 100%; min-height: 220px; font-family: inherit; font-size: 14px
 .general { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 18px; margin-top: 22px; }
 .general h2 { font-size: 15px; color: var(--primary-dark); margin: 0 0 6px; }
 .general li { font-size: 13.5px; }
+.scene-lead { font-size: 14.5px; margin: 6px 0 2px; }
+.scene-lead, .stest, .qrow, .freq, .caution { word-break: auto-phrase; }
+.stest { border-top: 1px dashed #c5d0d9; margin-top: 16px; padding-top: 12px; }
+.stest h3 { font-size: 16px; color: var(--primary-dark); margin: 0 0 8px; }
+.slabel { font-size: 12.5px; font-weight: 700; color: var(--muted); margin: 8px 0 3px; }
+.freq { background: #eef5fb; border-left: 4px solid var(--primary); padding: 6px 12px; font-size: 14px; }
+.rules { list-style: none; margin: 0; padding: 0; }
+.rules li { font-size: 14px; margin: 5px 0; }
+.kind { display: inline-block; font-size: 11px; font-weight: 700; color: #fff; border-radius: 3px;
+        padding: 0 6px; margin-right: 6px; white-space: nowrap; vertical-align: 1px; }
+.caution { background: #fdf2f0; border-left: 4px solid var(--ng); padding: 6px 12px; font-size: 14px; margin-top: 8px; }
+.linkbtn { margin-top: 8px; }
+.qtable { margin-top: 12px; border-top: 1px solid var(--line); }
+.qrow { display: grid; grid-template-columns: 13em 1fr 11em; gap: 4px 12px; padding: 8px 2px;
+        border-bottom: 1px solid var(--line); font-size: 14px; }
+.qrow .qt { font-weight: 700; color: var(--primary-dark); }
+.qrow .qs { font-size: 12px; color: var(--muted); }
+.qhead { font-size: 12px; font-weight: 700; color: var(--muted); }
+.scene-chip { border-color: #117A65; color: #0E6251; }
+.scene-chip.on { background: #117A65; color: #fff; }
 @media (max-width: 480px) {
   header h1 { font-size: 18px; }
   .card { padding: 14px; }
+}
+@media (max-width: 640px) {
+  .qrow { grid-template-columns: 1fr; gap: 2px; }
+  .qhead { display: none; }
 }
 </style>
 </head>
@@ -108,7 +132,7 @@ textarea { width: 100%; min-height: 220px; font-family: inherit; font-size: 14px
 <header>
   <div class="back"><a href="index.html">← ツール一覧へ</a></div>
   <h1>保険病名チェッカー</h1>
-  <p>病名・薬剤名・検査名を入れると、保険病名になりやすい組み合わせかを示し、正しい病名と症状詳記のひな型を出します（脳神経内科版）</p>
+  <p>病名・薬剤名・検査名を入れると、保険病名になりやすい組み合わせかを示し、正しい病名と症状詳記のひな型を出します。神経内科でよく出す検査は、場面ごとに病名の候補と回数・間隔のルールを確かめられます（脳神経内科版）</p>
 </header>
 <main>
 <div class="notice">
@@ -118,7 +142,7 @@ textarea { width: 100%; min-height: 220px; font-family: inherit; font-size: 14px
   入力内容はどこにも保存・送信されません。
 </div>
 
-<input type="text" id="q" placeholder="病名・薬剤名・検査名で探す（例：トピナ、BNP、湿布、ビタミンB6）" autocomplete="off">
+<input type="text" id="q" placeholder="病名・薬剤名・検査名で探す（例：トピナ、APTT、HbA1c、不規則抗体）" autocomplete="off">
 <div class="hint">一部だけでも探せます。下の一覧から選ぶこともできます。</div>
 <div id="list"></div>
 <div id="detail"></div>
@@ -135,7 +159,7 @@ textarea { width: 100%; min-height: 220px; font-family: inherit; font-size: 14px
 </div>
 
 <div class="foot">
-  保険病名チェッカー（脳神経内科版） 収録 <span id="n"></span> 件／根拠の確認日：<span id="checked"></span><br>
+  保険病名チェッカー（脳神経内科版） 薬・病名の組み合わせ <span id="n"></span> 件（根拠の確認日：<span id="checked"></span>）／検査の場面別ガイド <span id="ns"></span> 件（根拠の確認日：<span id="checked2"></span>）<br>
   添付文書・点数表・通知は改訂されます。処方・請求の前に最新版を確認してください。「要確認」の印は、一次資料で原文をまだ確かめていない記載です。<br>
   監修：今村久司（脳神経内科専門医・指導医）
 </div>
@@ -1148,6 +1172,288 @@ var ENTRIES = [
 }
 ];
 
+/* ------------------------------------------------------------ 検査の場面別ガイド
+   rules の各行: [種類, 文言]  種類 = rule（告示・通知）／case（審査事例）／gl（指針・ガイドライン）／none（事例が見つからない）
+   根拠の照合記録は offline-bundle/inhouse/hoken-byomei/evidence_ledger_5.md（2026-11-05） */
+var SCENE_CHECKED = '2026-11-05';
+
+var RULE_KIND = {
+  rule: { label: '告示・通知', color: '#1A5276' },
+  case: { label: '審査事例', color: '#117A65' },
+  gl: { label: '指針', color: '#7D3C98' },
+  none: { label: '事例なし', color: '#7B7D7D' }
+};
+
+var SCENES = [
+{
+  id: 'sc_stroke_coag',
+  title: '脳卒中で搬送 × PT・APTT',
+  keys: ['PT', 'APTT', 'PT-INR', 'INR', 'プロトロンビン', '凝固', '出血時間', '脳卒中', '脳梗塞', '脳出血', '搬送', '救急', 'rt-PA', 'tPA', 'アルテプラーゼ', '血栓溶解', '抗凝固', 'ワルファリン', 'DOAC'],
+  lead: '初診時の一般検査として、関連する病名がないまま出すPT・APTTは、審査では原則として認められていません。脳卒中の急性期に測るときは、血栓溶解療法の適応を判断する、抗凝固薬を飲んでいるかを確かめるなど、測った理由を診療録に書き、関連する病名がレセプトにあることを確かめます。',
+  tests: [
+    {
+      name: 'PT（PT-INR）・APTT',
+      names: ['脳梗塞（疑いを含む）', '脳出血', 'くも膜下出血', '心房細動（抗凝固薬を内服している場合）', '血液凝固異常（実際にある場合）'],
+      freq: '回数を定めた通知・審査事例はありません。',
+      rules: [
+        ['case', '取扱 検査394：初診時の一般検査としての出血時間・PT・APTTは、関連する病名がなければ原則として認められない。'],
+        ['case', '取扱 検査644：組織採取（生検など）の前のPT・APTTは原則として認められる。'],
+        ['gl', 'rt-PA静注療法 適正治療指針 第三版（2019年3月）のチェックリストは、抗凝固療法中または凝固異常症の患者で、PT-INRが1.7を超える、aPTTが前値の1.5倍（目安として約40秒）を超える、を適応外の項目にしている。'],
+        ['none', '脳卒中そのものに対するPT・APTTを扱った審査事例は見つかりませんでした。']
+      ],
+      caution: '出血傾向の所見がないのに「出血傾向の疑い」「血液凝固異常の疑い」を付けて通すことはしません。'
+    }
+  ],
+  template: '【時刻】に発症した【症状】で搬送された。脳梗塞を疑い、静注血栓溶解療法の適応を判断するためPT-INR・APTTを測定した。抗凝固薬は【なし／薬剤名と最終服用時刻】。',
+  refs: ['審査の一般的な取扱い（医科）検査394・検査644', '静注血栓溶解（rt-PA）療法 適正治療指針 第三版（日本脳卒中学会、2019年3月）']
+},
+{
+  id: 'sc_dementia_labs',
+  title: '認知症疑い × ビタミンB12・葉酸・B1・甲状腺',
+  keys: ['認知症', '物忘れ', 'もの忘れ', 'ビタミンB12', 'B12', '葉酸', 'ビタミンB1', 'B1', 'チアミン', '甲状腺', 'TSH', 'FT4', 'FT3', '甲状腺機能低下症', 'ウェルニッケ'],
+  lead: '認知症疾患診療ガイドライン2017は、内科的な病気による認知機能低下を見分けるために、ビタミンB12・葉酸・甲状腺ホルモンなどの血液検査を勧めています。ビタミンB1はこの推奨の一覧に入っていません。甲状腺は、疑い病名のまま毎月測らないことが要点です。',
+  tests: [
+    {
+      name: 'ビタミンB12・葉酸',
+      names: ['認知症（疑いを含む）', 'ビタミンＢ１２欠乏症の疑い（欠乏を疑う背景があるとき）', '葉酸欠乏症の疑い（同上）', '大球性貧血（あれば）'],
+      freq: '回数を定めた通知はありません。',
+      rules: [
+        ['gl', '認知症疾患診療ガイドライン2017 CQ2-9：血算・血液生化学・甲状腺ホルモン・電解質・空腹時血糖・ビタミンB12・葉酸の測定が推奨される。'],
+        ['case', '取扱 検査136（葉酸）：大球性貧血・巨赤芽球性貧血（疑いを含む）・葉酸欠乏症は原則として認める。認知症についての記載はない。'],
+        ['none', '認知症でビタミンB12・葉酸を測ることを扱った審査事例は見つかりませんでした。ガイドラインを根拠に症状詳記で示します。']
+      ],
+      caution: '欠乏を疑う背景がないのに、欠乏症の疑い病名を並べて検査後も放置しないようにします。',
+      link: 'dementia_vit'
+    },
+    {
+      name: 'ビタミンB1',
+      names: ['ビタミンＢ１欠乏症の疑い', 'ウェルニッケ脳症の疑い'],
+      freq: '回数を定めた通知はありません。',
+      rules: [
+        ['gl', '認知症疾患診療ガイドライン2017：CQ2-9の推奨検査にビタミンB1はない。B1欠乏はCQ16-1でウェルニッケ脳症（急性の代謝脳症）として扱われている。'],
+        ['none', '認知症でビタミンB1を測ることを扱った審査事例は見つかりませんでした。']
+      ],
+      caution: 'アルコール多飲・低栄養・急に起きた意識障害など、欠乏を疑う背景があるときに測ります。',
+      link: 'dementia_vit'
+    },
+    {
+      name: '甲状腺（TSH・FT4・FT3）',
+      names: ['甲状腺機能低下症の疑い', '甲状腺機能低下症（治療開始時・薬剤変更時）'],
+      freq: '疑い病名のままの連月の測定は、原則として認められません。',
+      rules: [
+        ['case', '取扱 検査357：甲状腺機能低下症の疑いに対するTSHは原則として認められる。'],
+        ['case', '取扱 検査474：TSH・FT4・FT3の併算定を原則認める病名は、甲状腺機能低下症（治療開始時又は薬剤変更時）・橋本病（同）・バセドウ病などで、疑い病名は挙がっていない。'],
+        ['case', '取扱 検査475：甲状腺機能低下症の疑い・橋本病の疑いなどに対する連月の算定は原則として認められない。'],
+        ['case', '審査情報提供事例（医科）9：T4とFT4、T3とFT3の併施は原則として認められない。FT3とFT4の組み合わせは認められる。']
+      ],
+      caution: '結果が出たら、疑い病名を確定するか「中止」にします。'
+    }
+  ],
+  template: '',
+  refs: ['認知症疾患診療ガイドライン2017（日本神経学会）CQ2-9・CQ16-1', '審査の一般的な取扱い（医科）検査136・検査357・検査474・検査475', '審査情報提供事例（医科）9']
+},
+{
+  id: 'sc_seizure_labs',
+  title: 'てんかん発作 × アンモニア・静脈血ガス',
+  keys: ['てんかん', '発作', 'けいれん', '痙攣', 'アンモニア', 'NH3', '血液ガス', '静脈血ガス', 'VBG', '乳酸', 'アシドーシス', 'バルプロ酸', 'デパケン', '重積', '意識障害'],
+  lead: 'アンモニアにも静脈血ガスにも、てんかん発作で測ることを扱った審査事例は見つかりませんでした。てんかんの病名だけでは、測った理由がレセプトから分からないので、疑った病態を病名と診療録に残します。',
+  tests: [
+    {
+      name: 'アンモニア',
+      names: ['高アンモニア血症の疑い（バルプロ酸内服中・肝疾患などで疑うとき）', '意識障害', '肝性脳症の疑い（肝疾患があるとき）'],
+      freq: '回数を定めた通知はありません。',
+      rules: [
+        ['rule', '点数表 D007「16」アンモニア：算定要件・回数制限の定めはない（留意事項にも固有の項がない）。'],
+        ['none', 'アンモニアの測定を扱った審査事例は見つかりませんでした（見つかったのは高アンモニア血症の薬の事例だけ）。']
+      ],
+      caution: '発作のたびに一律で測るのではなく、意識障害が続く、バルプロ酸を飲んでいるなど、高アンモニア血症を疑う理由があるときに測ります。',
+      link: 'vpa_carnitine'
+    },
+    {
+      name: '静脈血ガス（D007「35」血液ガス分析）',
+      names: ['代謝性アシドーシス（実際にある場合）', '乳酸アシドーシス（実際にある場合）', 'てんかん重積状態', '呼吸不全（実際にある場合）'],
+      freq: '急性期の呼吸不全は毎日複数回も認められ、症状の安定した慢性期は毎日複数回は認められません。',
+      rules: [
+        ['case', '取扱 検査80：代謝性アシドーシス（糖尿病性ケトアシドーシスなど）に対する静脈血での血液ガス分析は原則として認められる。静脈血でも酸塩基平衡の評価ができる、と根拠に書かれている。'],
+        ['rule', '点数表 D007「35」注：血液ガス分析は、その医療機関の中で行った場合に算定する。留意事項D007(12)：同じ検体で重炭酸塩と併せて行ったときは血液ガス分析だけを算定する。'],
+        ['case', '審査情報提供事例（医科）8・26：急性期の呼吸不全では毎日複数回の血液ガス分析を認める。症状の安定した慢性期の呼吸不全では、原則として毎日複数回は認めない。'],
+        ['none', 'てんかん発作に対する静脈血ガスを扱った審査事例は見つかりませんでした。']
+      ],
+      caution: 'アシドーシスを疑う所見がないのに、病名だけ付けて測ることはしません。'
+    }
+  ],
+  template: '【日時】に【発作型】の発作があり、来院時の意識は【意識レベル】だった。意識障害の原因として高アンモニア血症を除外するため、アンモニアを測定した（バルプロ酸の内服：【あり／なし】）。',
+  refs: ['医科点数表 D007「16」「35」・留意事項 D007(12)（令和8年度）', '審査の一般的な取扱い（医科）検査80', '審査情報提供事例（医科）8・26']
+},
+{
+  id: 'sc_stroke_admission',
+  title: '脳卒中の入院時 × BNP・心電図・胸部X線',
+  keys: ['BNP', 'NT-proBNP', '心電図', 'ECG', '12誘導', '胸部X線', '胸部写真', 'レントゲン', '胸部単純', 'スクリーニング', '入院時', '脳梗塞', '心原性', '心房細動', '脳卒中'],
+  lead: '入院時の一般検査として、心電図は審査で原則として認められています。BNPは心不全（疑いを含む）の診断・病態把握に限られ、脳梗塞の病型を調べる目的や心房細動だけでは認められません。胸部X線は、脳卒中の入院時を扱った審査事例が見つかりませんでした。',
+  tests: [
+    {
+      name: 'BNP・NT-proBNP',
+      names: ['心不全の疑い（息切れ・浮腫・心拡大などの所見があるとき）', '心不全（確定している場合）'],
+      freq: '月1回まで。心不全の確定病名なら連月も原則認められ、疑い病名のままの連月は原則認められません。',
+      rules: [
+        ['rule', '留意事項D008(7)(10)：心不全の診断又は病態把握のために実施した場合に月1回に限り算定する。'],
+        ['case', '取扱 検査89：心不全・心不全の疑い以外の病名に対するBNPは原則として認められない。検査285：心房細動・高血圧症に対するNT-proBNPは原則として認められない。検査286：BNPとNT-proBNPは同等に扱う。'],
+        ['case', '取扱 検査154：初回受診時の心不全（疑いを含む）は、胸部X線や心エコーがなくても原則として認められる。検査319：心不全の疑いに対する連月の算定は原則として認められない。']
+      ],
+      caution: '心原性脳塞栓の推定を目的に、脳梗塞の病名だけで測ることはしません。',
+      link: 'bnp'
+    },
+    {
+      name: '心電図（12誘導）',
+      names: ['（入院時は一般検査として原則認められる）', '高血圧症（外来で出すとき）'],
+      freq: '回数を定めた通知はありません。',
+      rules: [
+        ['case', '取扱 検査394：入院時の一般検査として、12誘導心電図とCRPは原則として認められる。初診時の一般検査としての12誘導心電図は、関連する病名がなければ原則として認められない。'],
+        ['case', '取扱 検査506：高血圧症、前胸部痛（初診時）に対する心電図は原則として認められる。']
+      ],
+      caution: '外来で出すときは、測る理由になる病名（高血圧症など）があるかを確かめます。'
+    },
+    {
+      name: '胸部X線（単純撮影）',
+      names: ['誤嚥性肺炎の疑い（実際に疑うとき）', '心不全の疑い（実際に疑うとき）'],
+      freq: '回数を定めた通知はありません。',
+      rules: [
+        ['case', '取扱 画像診断221：初診時の高血圧症・睡眠時無呼吸症候群は原則として認める。再診時（経過観察時）の糖尿病・高脂血症・睡眠時無呼吸症候群は原則として認めない。'],
+        ['none', '脳卒中の入院時の胸部X線を扱った審査事例は見つかりませんでした。誤嚥や心不全の評価など、撮った理由を診療録に書きます。']
+      ],
+      caution: ''
+    }
+  ],
+  template: '',
+  refs: ['医科点数表 留意事項 D008(7)(10)（令和8年度）', '審査の一般的な取扱い（医科）検査89・154・285・286・319・394・506、画像診断221']
+},
+{
+  id: 'sc_ich_transfusion',
+  title: '脳出血の入院時 × 血液型・不規則抗体・交叉試験',
+  keys: ['血液型', 'ABO', 'Rh', '不規則抗体', '交叉試験', '交差試験', 'クロスマッチ', 'クームス', '輸血', '輸血準備', '脳出血', '開頭', '血腫除去', 'FFP', '新鮮凍結血漿', 'T&S'],
+  lead: '輸血の準備として出す検査は、点数表での扱いが検査ごとに違います。不規則抗体の検査として算定できる手術に、開頭術などの神経系・頭蓋の手術は入っていません。交叉試験は検査の項目ではなく、輸血をしたときの加算です。',
+  tests: [
+    {
+      name: 'ABO血液型・Rh(D)血液型（D011「1」）',
+      names: ['脳出血（輸血の予定を診療録とレセプトの摘要欄・症状詳記に書く）'],
+      freq: '輸血前の検査として、一連の輸血につき1回（輸血の反復が明らかな場合は別）。',
+      rules: [
+        ['case', '取扱 検査394：初診時の一般検査としてのABO・Rh(D)血液型は、関連する病名がなければ原則として認められない。'],
+        ['case', '取扱 検査451：輸血前検査としてのABO・Rh(D)血液型、輸血をしたときの血液型加算は、それぞれ原則として一連の輸血につき1回認められる。'],
+        ['case', '取扱 検査794：ヘルニア手術の術前の血液型は原則として認められる。観血的手術では出血で輸血が必要になることがある、が根拠。'],
+        ['case', '取扱 検査483：輸血料の算定がない輸血前検査は、輸血前又は輸血予定の記載があれば原則として認められ、記載がなければ原則として認められない（根拠には肝炎ウイルス等の感染リスクが挙がっている）。'],
+        ['none', '脳出血の入院時に血液型を測ることを扱った審査事例は見つかりませんでした。']
+      ],
+      caution: ''
+    },
+    {
+      name: '不規則抗体（D011「4」）',
+      names: ['（病名ではなく、対象の手術と輸血歴・妊娠歴で決まる）'],
+      freq: '検査としては対象の手術の当日。輸血をしたときの加算は月1回（頻回の輸血では週1回）。',
+      rules: [
+        ['rule', '点数表 D011「4」・留意事項D011(2)：輸血歴又は妊娠歴のある患者に、胸部手術・心・脈管手術・腹部手術、子宮全摘術・帝王切開術などが行われた場合に、手術の当日に算定する。神経系・頭蓋の手術（開頭血腫除去術など）は挙がっていない。摘要欄に輸血歴・妊娠歴のどちらかを書く。'],
+        ['rule', '点数表 K920「注6」：輸血をしたときの不規則抗体検査加算は、検査回数にかかわらず1月につき1回。頻回に輸血を行う場合（週1回以上、その月に3週以上）は1週間に1回。']
+      ],
+      caution: '脳出血で開頭術を行う場合も、入院時に輸血の準備として出した不規則抗体は D011「4」の対象になりません。算定できるのは、輸血をしたときの K920「注6」の加算です。'
+    },
+    {
+      name: '交叉試験（クロスマッチ）',
+      names: ['（輸血をしたときの加算。病名で決まるものではない）'],
+      freq: '保存血では1バッグごとに加算。',
+      rules: [
+        ['rule', '点数表 K920「注8」：輸血に伴って血液交叉試験、間接クームス検査又はコンピュータクロスマッチを行った場合に加算する（コンピュータクロスマッチを算定したときは、交叉試験加算・間接クームス加算は算定できない）。D011（免疫血液学的検査）に交叉試験の項目はない（間接クームス検査はD011「2」ロにも項目がある）。'],
+        ['case', '取扱 手術72：新鮮凍結血漿（FFP）の輸注では、交叉試験加算・間接クームス検査加算・不規則抗体加算は原則として認められない。抗凝固薬の中和などでFFPを使うときに注意します。']
+      ],
+      caution: ''
+    }
+  ],
+  template: '',
+  refs: ['医科点数表 D011・K920（令和8年度）', '留意事項 D011(2)・K920(17)(19)（令和8年度）', '審査の一般的な取扱い（医科）検査394・検査451・検査483・検査794・手術72']
+},
+{
+  id: 'sc_crp',
+  title: '普段の採血 × CRP',
+  keys: ['CRP', 'C反応性蛋白', '炎症', '感染', '定期採血', '再診', '外来', 'ESR', '赤沈', 'セット検査'],
+  lead: '入院時の一般検査としてのCRPは原則として認められています。一方、外来の再診で高脂血症・高血圧症・糖尿病などの病名だけを根拠に出すCRP定性は、原則として認められません。神経内科の外来で定期的に出すCRPを扱った事例は見つからず、炎症や感染を実際に評価する理由が要ります。',
+  tests: [
+    {
+      name: 'CRP（D015「1」）',
+      names: ['肺炎', '誤嚥性肺炎の疑い', '尿路感染症', '（実際に炎症・感染を評価するときの病名）'],
+      freq: '回数を定めた通知はありません。確定病名の経過観察が認められた事例でも、月に複数回・連月は個別に判断するとされています。',
+      rules: [
+        ['case', '取扱 検査394：入院時の一般検査としてのCRP（定性・定量）は原則として認められる。'],
+        ['case', '取扱 検査734：再診時の高脂血症・脂質異常症・高血圧症・糖尿病・狭心症、陳旧性心筋梗塞などに対するCRP定性は原則として認められない（この事例はCRP定性についてのもの）。'],
+        ['case', '取扱 検査760・762：診断が確定した真性多血症・血小板減少症の経過観察時のCRPは原則として認められる。ただし月に複数回・連月の算定は、レセプトの内容から個別に判断する。'],
+        ['case', '審査情報提供事例（医科）1：同じ検体での赤沈（ESR）とCRPの併施は原則として認められる。'],
+        ['rule', '保険診療の理解のために（令和8年度）p.56：検査は必要最小限の回数で行う。必要性を個別に検討しない「セット検査」に注意し、結果が治療に全く反映されない検査は行わない。']
+      ],
+      caution: '外来の定期採血セットにCRPを入れたままにしていないかを見直します。'
+    }
+  ],
+  template: '',
+  refs: ['審査の一般的な取扱い（医科）検査394・734・760・762', '審査情報提供事例（医科）1', '保険診療の理解のために（医科）令和8年度 p.56']
+},
+{
+  id: 'sc_followup_metabolic',
+  title: '定期フォロー × 脂質・HbA1c',
+  keys: ['HbA1c', 'ヘモグロビンA1c', 'グリコアルブミン', '1,5AG', '糖尿病', '境界型糖尿病', '脂質', 'コレステロール', 'LDL', 'HDL', '総コレステロール', '中性脂肪', 'TG', 'トリグリセライド', '脂質異常症', '高脂血症', '定期採血', '再診', 'フォロー'],
+  lead: 'HbA1cは糖尿病の病名が前提で、月1回まで、糖尿病の疑いや境界型では3か月に1回が目安です。総コレステロール・HDL・LDL・中性脂肪には回数の定めがありませんが、総コレステロール・HDL・LDLを同時に測ると2つ分しか算定できません。リポ蛋白(a)とRLP-Cは3か月に1回までです。',
+  tests: [
+    {
+      name: 'HbA1c（グリコアルブミン・1,5AG）',
+      names: ['２型糖尿病', '糖尿病', '境界型糖尿病（3か月に1回）'],
+      freq: 'HbA1c・グリコアルブミン・1,5AGを合わせて月1回（主たるもの）。糖尿病の疑い・潜在性糖尿病・境界型糖尿病は原則3か月に1回。',
+      rules: [
+        ['rule', '留意事項D005(9)：HbA1c・グリコアルブミン・1,5AGのいずれかを同じ月に2回以上行ったときは、月1回に限り主たるものだけを算定する。妊娠中の患者、1型糖尿病患者、経口血糖降下薬やインスリン治療を始めて6月以内の患者などは、いずれか1項目を月1回に限り別に算定できる。'],
+        ['case', '取扱 検査473：糖尿病の疑い・潜在性糖尿病・境界型糖尿病に対するHbA1cの算定間隔は、原則として3か月に1回。'],
+        ['case', '取扱 検査134：糖尿病の病名がないときの低血糖（疑いを含む）・腎臓疾患・下垂体疾患などに対するHbA1cは原則として認められない。']
+      ],
+      caution: ''
+    },
+    {
+      name: '総コレステロール・HDL・LDL・中性脂肪',
+      names: ['脂質異常症', '高ＬＤＬコレステロール血症', '高トリグリセライド血症'],
+      freq: '回数を定めた通知・審査事例はありません。',
+      rules: [
+        ['rule', '留意事項D007(5)：HDLコレステロール・総コレステロール・LDLコレステロールを併せて測った場合は、主たるもの2つの点数を算定する。'],
+        ['rule', '点数表 D007注：1回の採血でD007の「1」から「8」の検査（中性脂肪・総コレステロール・HDL・LDL・AST・ALTなど）を5項目以上行ったときは、項目数に応じたまとめた点数で算定する。'],
+        ['none', '総コレステロール・HDL・LDL・中性脂肪の測定間隔を定めた通知・審査事例は見つかりませんでした。'],
+        ['rule', '留意事項D007(19)(33)：リポ蛋白(a)、レムナント様リポ蛋白コレステロール（RLP-C）は、それぞれ3月に1回を限度として算定できる（取扱 検査566も原則3か月に1回）。'],
+        ['rule', '保険診療の理解のために（令和8年度）p.56：個々の患者の状況に応じて検査項目を選び、必要最小限の回数で行う。']
+      ],
+      caution: '再診時の高脂血症・糖尿病だけでは胸部X線（取扱 画像診断221）が、再診時の高脂血症・脂質異常症・糖尿病だけではCRP定性（取扱 検査734）が、原則として認められません。'
+    }
+  ],
+  template: '',
+  refs: ['医科点数表 D007注・留意事項 D005(9)・D007(5)(14)(19)(33)（令和8年度）', '審査の一般的な取扱い（医科）検査134・検査473・検査566・検査734、画像診断221', '保険診療の理解のために（医科）令和8年度 p.56']
+},
+{
+  id: 'sc_frequency_table',
+  title: '検査の回数・間隔の早見表',
+  keys: ['回数', '間隔', '月1回', '連月', '3か月', '6月', '早見表', '何か月', '定期', '算定間隔', 'HBs', 'HCV', 'カルニチン'],
+  lead: '通知と審査事例にある回数・間隔をまとめました。ここに載っていない検査も「何度でもよい」わけではありません。個々の患者に応じて必要最小限の回数で行い、結果が治療に全く反映されない検査は行いません（保険診療の理解のために p.56）。',
+  table: [
+    ['BNP・NT-proBNP', '月1回（心不全の診断・病態把握）。確定病名の連月は原則可、疑い病名の連月は原則不可', '留意 D008(7)(10)・取扱 検査133・319'],
+    ['HbA1c・GA・1,5AG（糖尿病）', '合わせて月1回（主たるもの）。妊娠中・1型・治療開始6月以内などは1項目を別に月1回', '留意 D005(9)'],
+    ['HbA1c（糖尿病の疑い・境界型・潜在性）', '原則3か月に1回', '取扱 検査473'],
+    ['TSH・FT4・FT3（疑い病名）', '連月は原則不可', '取扱 検査475'],
+    ['総コレステロール・HDL・LDL・中性脂肪', '回数の定めはない。総コレステロール・HDL・LDLを同時に測ると主たる2つだけ算定', '留意 D007(5)'],
+    ['リポ蛋白(a)・RLP-C', 'それぞれ3月に1回まで', '留意 D007(19)(33)・取扱 検査566'],
+    ['ABO・Rh(D)血液型（輸血前）', '一連の輸血につき1回（反復が明らかな場合は別）', '取扱 検査451'],
+    ['不規則抗体', '検査は対象の手術の当日。輸血時の加算は月1回（頻回の輸血は週1回）', '告示 D011「4」・K920注6'],
+    ['交叉試験（輸血時の加算）', '輸血をしたときの加算。保存血は1バッグごと', '告示 K920注8・留意 K920(19)'],
+    ['血液ガス分析', '急性期の呼吸不全は毎日複数回も可。症状の安定した慢性期は毎日複数回は不可', '審査情報提供事例 8・26'],
+    ['HBs抗原・HCV抗体（入院時・術前）', '原則3か月に1回（入院時と術前を通して数える）', '取扱 検査610・611'],
+    ['総カルニチン・遊離カルニチン（バルプロ酸ナトリウム製剤投与中のカルニチン欠乏症の診断補助・経過観察）', '6月に1回', '留意 D007(17)ウ'],
+    ['CRP', '回数の定めはない。真性多血症・血小板減少症の経過観察を認めた事例でも、月複数回・連月は個別に判断', '取扱 検査760・762'],
+    ['ビタミンB1・B12・葉酸・アンモニア', '回数の定めはない', '留意事項の全文検索']
+  ],
+  tests: [],
+  template: '',
+  refs: ['医科点数表・留意事項通知（令和8年度、保医発0305第6号 1007訂正後）', '審査の一般的な取扱い（医科）（DX審査支払機構、令和8年10月版）', '審査情報提供事例（医科）', '保険診療の理解のために（医科）令和8年度 p.56']
+}
+];
+
 /* ------------------------------------------------------------ 表示 */
 
 var current = null;
@@ -1175,12 +1481,24 @@ function matches(e, kw) {
 
 function renderList() {
   var kw = document.getElementById('q').value;
-  var groups = ['てんかん', '認知症・精神症状', '痛み・しびれ・頭痛', '不随意運動・睡眠', '脳血管', '起立性低血圧', '予防投与・栄養', '検査'], out = [], g, i, rows, e, total = 0;
+  var groups = ['てんかん', '認知症・精神症状', '痛み・しびれ・頭痛', '不随意運動・睡眠', '脳血管', '起立性低血圧', '予防投与・栄養', '検査'], out = [], g, i, rows, e, total = 0, srows = [], single = null;
+  for (i = 0; i < SCENES.length; i++) {
+    e = SCENES[i];
+    if (matches(e, kw)) {
+      srows.push('<button class="chip scene-chip' + (current === e.id ? ' on' : '') + '" onclick="selectScene(\'' + e.id + '\')">' + esc(e.title) + '</button>');
+      single = { kind: 'scene', id: e.id };
+    }
+  }
+  total += srows.length;
+  if (srows.length) {
+    out.push('<div class="group-title">神経内科でよく出す検査（場面別：病名と回数のルール）（' + srows.length + '）</div><div class="chips">' + srows.join('') + '</div>');
+  }
   for (g = 0; g < groups.length; g++) {
     rows = [];
     for (i = 0; i < ENTRIES.length; i++) {
       e = ENTRIES[i];
       if (e.group === groups[g] && matches(e, kw)) {
+        single = { kind: 'entry', id: e.id };
         rows.push('<button class="chip' + (current === e.id ? ' on' : '') + '" onclick="selectEntry(\'' + e.id + '\')">' + esc(e.title) + '</button>');
       }
     }
@@ -1193,10 +1511,8 @@ function renderList() {
     out.push('<div class="empty">該当する組み合わせはまだ収録していません。追加の希望は作成者まで。</div>');
   }
   document.getElementById('list').innerHTML = out.join('');
-  if (total === 1 && kw) {
-    for (i = 0; i < ENTRIES.length; i++) {
-      if (matches(ENTRIES[i], kw)) { if (current !== ENTRIES[i].id) { selectEntry(ENTRIES[i].id); } break; }
-    }
+  if (total === 1 && kw && single && current !== single.id) {
+    if (single.kind === 'scene') { selectScene(single.id); } else { selectEntry(single.id); }
   }
 }
 
@@ -1240,6 +1556,58 @@ function selectEntry(id) {
     '</div><div class="answer" id="answer"></div></div>' +
     '<div class="sec refs"><h3>根拠</h3>' + listHtml(e.refs) + '</div>' +
     '</div>';
+  document.getElementById('detail').innerHTML = h;
+  renderList();
+}
+
+function findScene(id) {
+  var i;
+  for (i = 0; i < SCENES.length; i++) { if (SCENES[i].id === id) { return SCENES[i]; } }
+  return null;
+}
+
+function sceneTestHtml(t) {
+  var i, k, rl = [], nm = [], h = '<div class="stest"><h3>' + esc(t.name) + '</h3>';
+  for (i = 0; i < t.names.length; i++) { nm.push('<span class="name">' + esc(t.names[i]) + '</span>'); }
+  h += '<div class="slabel">病名の候補（実際にある病態に限る）</div><div class="names">' + nm.join('') + '</div>';
+  h += '<div class="slabel">回数・間隔</div><div class="freq">' + esc(t.freq) + '</div>';
+  for (i = 0; i < t.rules.length; i++) {
+    k = RULE_KIND[t.rules[i][0]];
+    rl.push('<li><span class="kind" style="background:' + k.color + '">' + k.label + '</span>' + esc(t.rules[i][1]) + '</li>');
+  }
+  h += '<div class="slabel">算定要件・審査の取扱い</div><ul class="rules">' + rl.join('') + '</ul>';
+  if (t.caution) { h += '<div class="caution">' + esc(t.caution) + '</div>'; }
+  if (t.link && findEntry(t.link)) {
+    h += '<div class="linkbtn"><button class="btn btn-sub" onclick="selectEntry(\'' + t.link + '\')">「' + esc(findEntry(t.link).title) + '」を開く（症状詳記のひな型など）</button></div>';
+  }
+  return h + '</div>';
+}
+
+function selectScene(id) {
+  var e = findScene(id), i, q, h;
+  if (!e) { return; }
+  current = id;
+  h = '<div class="card">' +
+    '<span class="type" style="background:#117A65">検査の病名と回数のルール</span>' +
+    '<h2>' + esc(e.title) + '</h2>' +
+    '<p class="scene-lead">' + esc(e.lead) + '</p>';
+  if (e.table && e.table.length) {
+    q = ['<div class="qtable"><div class="qrow qhead"><div>検査</div><div>回数・間隔</div><div>根拠</div></div>'];
+    for (i = 0; i < e.table.length; i++) {
+      q.push('<div class="qrow"><div class="qt">' + esc(e.table[i][0]) + '</div><div>' + esc(e.table[i][1]) + '</div><div class="qs">' + esc(e.table[i][2]) + '</div></div>');
+    }
+    h += q.join('') + '</div>';
+  }
+  for (i = 0; i < e.tests.length; i++) { h += sceneTestHtml(e.tests[i]); }
+  if (e.template) {
+    h += '<div class="sec"><h3>診療録・症状詳記の例（【　】に事実を書き入れてから使う）</h3>' +
+      '<textarea id="tpl">' + esc(e.template) + '</textarea>' +
+      '<div class="copyrow"><button class="btn btn-sub" onclick="copyTpl()">コピーする</button>' +
+      '<span class="copymsg" id="copymsg"></span></div></div>';
+  }
+  h += '<div class="sec refs"><h3>根拠（確認日 ' + SCENE_CHECKED + '）</h3>' + listHtml(e.refs) +
+    '<p class="hint">「取扱」はDX審査支払機構「審査の一般的な取扱い（医科）」の事例番号です。審査事例は画一的・一律に適用されるものではなく、取扱いは審査支払機関・地域で異なることがあります。</p></div>';
+  h += '</div>';
   document.getElementById('detail').innerHTML = h;
   renderList();
 }
@@ -1289,6 +1657,8 @@ function copyTpl() {
 
 document.getElementById('n').innerHTML = ENTRIES.length;
 document.getElementById('checked').innerHTML = CHECKED_DATE;
+document.getElementById('ns').innerHTML = SCENES.length;
+document.getElementById('checked2').innerHTML = SCENE_CHECKED;
 var box = document.getElementById('q');
 box.onkeyup = renderList;
 box.onsearch = renderList;
