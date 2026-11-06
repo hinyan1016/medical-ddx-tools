@@ -295,7 +295,7 @@ main {
   font-size: 13px;
 }
 .preset-subheading + .preset-list {
-  grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 .preset-btn {
   background: #f5f9fb;
@@ -778,6 +778,7 @@ footer {
 }
 @media (max-width: 600px) {
   header, main { padding-left: 14px; padding-right: 14px; }
+  .preset-subheading + .preset-list { grid-template-columns: 1fr; }
   .form-grid { grid-template-columns: 1fr; }
   .editor-actions-primary { grid-template-columns: 1fr; }
 }
@@ -892,12 +893,20 @@ footer {
         <h3 class="preset-subheading">転居先の医療機関へのフォロー依頼</h3>
         <div class="preset-list">
           <button type="button" class="preset-btn" data-preset="relocation-neurodegenerative">
-            神経変性疾患
+            神経変性疾患（汎用）
             <small>症状の推移・服薬・嚥下や呼吸・療養支援</small>
           </button>
           <button type="button" class="preset-btn" data-preset="relocation-epilepsy">
             てんかん
             <small>発作型・最終発作日・服薬・発作時の対応</small>
+          </button>
+          <button type="button" class="preset-btn" data-preset="relocation-parkinson">
+            パーキンソン病
+            <small>服薬時刻・オン／オフ・ジスキネジア・機器設定</small>
+          </button>
+          <button type="button" class="preset-btn" data-preset="relocation-als">
+            ALS（筋萎縮性側索硬化症）
+            <small>呼吸・排痰・栄養・意思伝達・在宅療養</small>
           </button>
         </div>
         <h3 class="preset-subheading">かかりつけ医への継続診療依頼</h3>
@@ -1429,6 +1438,36 @@ footer {
         '【発作時の対応・生活指導】本人・家族に説明済みの対応、救急要請の目安、頓用薬の使用条件・用法（処方がある場合）、運転等に関する指導内容：○○',
         '【引き継ぎのお願い】初診希望時期、現処方が切れる時期、今後の検査や治療上の課題：○○',
         '【添付資料】○○'
+      ]
+    },
+    'relocation-parkinson': {
+      purpose: '転居に伴うパーキンソン病の継続診療のお願い',
+      intro: 'パーキンソン病で当院外来に通院中の{患者}につきまして、転居に伴い、貴院での継続診療をお願いしたくご紹介申し上げます。',
+      lines: [
+        '【診断・経過】発症・診断時期、主な症状、レボドパへの反応、最近の経過：○○',
+        '【現在の処方】薬剤名・剤形・1回量・実際の服用時刻、頓用薬の使い方、直近の変更とその理由：○○',
+        '【薬効の変動】オン時とオフ時の状態、ウェアリングオフやジスキネジアが出る時刻・持続時間、服薬との関係：○○',
+        '【生活機能】すくみ足、転倒、移動・日常生活動作、嚥下、リハビリの状況：○○',
+        '【非運動症状・副作用】幻視、認知機能、起立性低血圧、便秘、眠気など、現在の課題と対応：○○',
+        '【機器を用いた治療（該当する場合）】脳深部刺激療法（DBS）の機種・刺激設定・電池の状況、または持続投与療法の薬剤・投与経路・ポンプ設定、機器の管理先：○○',
+        '【転居後の診療】転居日、初診希望時期、現処方が切れる日、優先してご確認いただきたい事項：○○',
+        '【添付資料】処方一覧、機器設定表など：○○'
+      ]
+    },
+    'relocation-als': {
+      purpose: '転居に伴うALSの継続診療と療養支援のお願い',
+      intro: '筋萎縮性側索硬化症（ALS）で当院外来に通院中の{患者}につきまして、転居に伴い、貴院での継続診療と療養支援をお願いしたくご紹介申し上げます。',
+      lines: [
+        '【診断・進行】発症・診断時期、初発症状、最近の進行状況、直近のALSFRS-R（評価日・スコア）：○○',
+        '【治療】現在の薬剤・用量・投与方法、処方が切れる日や次回の投与予定、継続にあたり調整が必要な事項：○○',
+        '【呼吸機能】息苦しさなどの症状、呼吸機能検査の結果（検査日、%FVCや咳嗽最大流量など）、排痰の状況：○○',
+        '【換気補助（使用中の場合）】非侵襲的人工換気（NIV）または気管切開下人工換気（TIV）、機種・設定・使用時間帯、マスクや気管カニューレの種類：○○',
+        '【吸引・排痰補助（実施中の場合）】使用機器、設定、実施方法：○○',
+        '【嚥下・栄養】体重の推移、嚥下の状態、食形態・栄養経路、胃ろう等を使用中の場合は注入内容と交換予定：○○',
+        '【日常生活と意思伝達】移動・日常生活動作、介助量、普段の意思伝達方法（文字盤・意思伝達装置など）：○○',
+        '【療養に関する意向】呼吸補助や栄養、急変時の対応について、ご本人の意向、話し合った内容・時期、今後確認する事項：○○',
+        '【転居後の療養体制】転居日、初診希望時期、優先してご確認いただきたい事項、訪問診療・訪問看護の開始予定、機器の管理先、緊急連絡先、停電時の備え（該当する場合）：○○',
+        '【添付資料】呼吸機能検査、機器設定表、訪問看護の記録など：○○'
       ]
     },
     'primary-care-dementia': {
