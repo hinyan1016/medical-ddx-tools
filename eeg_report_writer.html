@@ -458,10 +458,10 @@
         <summary>文献と対応する判読文<span class="op">クリック／タップで開閉</span></summary>
         <div>
           <ul class="refs">
-            <li><b>局在性の持続的徐波 → 器質的異常</b>：局在性のデルタ活動は、皮質下白質の限局性病変の上の皮質に現れる。<br>Gloor P, et al. Brain lesions that produce delta waves in the EEG. Neurology. 1977;27(4):326-33. <a href="https://pubmed.ncbi.nlm.nih.gov/557774/" target="_blank" rel="noopener">PMID 557774</a></li>
+            <li><b>局在性の持続的徐波 → 器質的異常</b>：ネコの実験で、局在性のデルタ活動は白質の限局性病変の上の皮質に現れた。<br>Gloor P, et al. Brain lesions that produce delta waves in the EEG. Neurology. 1977;27(4):326-33. <a href="https://pubmed.ncbi.nlm.nih.gov/557774/" target="_blank" rel="noopener">PMID 557774</a></li>
             <li><b>LPDs</b>：脳卒中が主な原因で、発作との関連が強い。重症患者の持続脳波では、LPDsは周波数によらず発作との関連が最も強かった。<br>Pohlmann-Eden B, et al. Periodic lateralized epileptiform discharges--a critical review. J Clin Neurophysiol. 1996;13(6):519-30. <a href="https://pubmed.ncbi.nlm.nih.gov/8978624/" target="_blank" rel="noopener">PMID 8978624</a><br>Rodriguez Ruiz A, et al. Association of Periodic and Rhythmic Electroencephalographic Patterns With Seizures in Critically Ill Patients. JAMA Neurol. 2017;74(2):181-188. <a href="https://pubmed.ncbi.nlm.nih.gov/27992625/" target="_blank" rel="noopener">PMID 27992625</a></li>
             <li><b>GPDs</b>：急性の脳障害・全身疾患・心停止後でみられ、非けいれん性発作・非けいれん性てんかん重積状態と強く関連する。発作との関連は1.5 Hz以上やPlus修飾子で強い。<br>Foreman B, et al. Generalized periodic discharges in the critically ill: a case-control study of 200 patients. Neurology. 2012;79(19):1951-60. <a href="https://pubmed.ncbi.nlm.nih.gov/23035068/" target="_blank" rel="noopener">PMID 23035068</a><br>Rodriguez Ruiz A, et al. JAMA Neurol. 2017（上記）</li>
-            <li><b>LRDA・GRDA</b>：重症患者の持続脳波で、LRDAは発作と関連し、1.5 Hz以上やPlus修飾子で関連が強かった。GRDAは周期性・律動性パターンがない場合と発作の頻度に差がなかった。<br>Rodriguez Ruiz A, et al. JAMA Neurol. 2017（上記）</li>
+            <li><b>LRDA・GRDA</b>：重症患者の持続脳波で、LRDAは1.5 Hz以上かPlus修飾子を伴うときに発作と関連した。GRDAは周期性・律動性パターンがない場合と発作の頻度に差がなかった。<br>Rodriguez Ruiz A, et al. JAMA Neurol. 2017（上記）</li>
             <li><b>用語と定義（ACNS 2021）</b>：分布（G・L・BI・UI・Mf、focal・regional・hemispheric は L に含む）、PDs・RDA・SW、Plus修飾子（+F・+R・+S）、出現率の区分、背景の連続性（nearly continuous・discontinuous・burst-attenuation/suppression・suppression）と電位（低電位20 µV未満・抑制10 µV未満）、非対称の程度、棘波・鋭波の持続、脳波上の発作（ESz）・てんかん重積状態（ESE）・BIRDs の定義。本文（PMC8135051）で確認。<br>Hirsch LJ, et al. American Clinical Neurophysiology Society's Standardized Critical Care EEG Terminology: 2021 Version. J Clin Neurophysiol. 2021;38(1):1-29. <a href="https://pubmed.ncbi.nlm.nih.gov/33475321/" target="_blank" rel="noopener">PMID 33475321</a></li>
             <li><b>6 Hz棘徐波のWHAM型・FOLD型</b>：WHAM型は主に発作のある例、FOLD型は主に自律神経症状や心理的な訴えのある例でみられた。<br>Hughes JR. Two forms of the 6/sec spike and wave complex. Electroencephalogr Clin Neurophysiol. 1980;48(5):535-50. <a href="https://pubmed.ncbi.nlm.nih.gov/6153962/" target="_blank" rel="noopener">PMID 6153962</a></li>
             <li><b>正常亜型</b>（wicket spikes、small sharp spikes、RMTD、6 Hz棘徐波、14&amp;6 Hz陽性棘波）：過去には異常とされたが、現在は正常（または臨床的意義の不確かな）亜型とされ、てんかん性と読みすぎないことが重要。<br>Amin U, et al. Normal variants and artifacts: Importance in EEG interpretation. Epileptic Disord. 2023;25(5):591-648. <a href="https://pubmed.ncbi.nlm.nih.gov/36938895/" target="_blank" rel="noopener">PMID 36938895</a></li>
@@ -1070,7 +1070,7 @@ function interpLines(L) {
     if ((f.cat === 'slow' && !isRDA(f) && f.dist !== 'generalized' && f.dist !== 'multifocal' && f.dist !== 'bilatind') || f.cat === 'asym') {
       var hit = null;
       for (j = 0; j < groups.length; j++) { if (sameRegion(groups[j].f, f)) hit = groups[j]; }
-      // 持続的な局在性徐波は皮質下白質を含む器質的病変で生じやすい（Gloor 1977）。
+      // 持続的な局在性徐波は白質を含む器質的病変で生じやすい（Gloor 1977・ネコの実験）。
       // 速波・紡錘波の低下（非対称）が加わるときは、皮質を含む器質的異常と書く。
       var contSlow = f.cat === 'slow' && (f.cont === 'continuous' || f.cont === 'almost');
       var cortical = f.cat === 'asym';
@@ -1144,7 +1144,7 @@ function interpLines(L) {
   }
   for (j = 0; j < lrda.length; j++) {
     var ra = RPPHEAD[lrda[j].dist][0] + 'RDA';
-    out.push(en ? 'Lateralized rhythmic delta activity (' + ra + ') over ' + lw(lrda[j]) + ' is associated with seizures, more so at 1.5 Hz or faster or with a Plus modifier; clinical correlation is required.' : lw(lrda[j]) + 'の律動性デルタ活動（' + ra + '）は発作と関連し、1.5 Hz以上やPlus修飾子を伴うと関連が強い。臨床的相関の検討を要する。');
+    out.push(en ? 'Lateralized rhythmic delta activity (' + ra + ') over ' + lw(lrda[j]) + ' is associated with seizures when it is 1.5 Hz or faster or has a Plus modifier; clinical correlation is required.' : lw(lrda[j]) + 'の律動性デルタ活動（' + ra + '）を認める。LRDAは、1.5 Hz以上かPlus修飾子を伴うときに発作と関連する。臨床的相関の検討を要する。');
   }
   if (grda) out.push(en ? 'Generalized rhythmic delta activity (GRDA) has not been associated with seizures in continuous EEG studies of critically ill patients.' : '全般性律動性デルタ活動（GRDA）は、重症患者の持続脳波研究では発作との関連が示されていない。');
   if (birds.length) out.push(en ? 'Brief potentially ictal rhythmic discharges (BIRDs) are present; clinical correlation is required.' : 'BIRDs（短時間の、発作の可能性がある律動性放電）を認める。臨床的相関の検討を要する。');
@@ -1348,7 +1348,7 @@ function warnings() {
     if ((f.cat === 'slow' || f.cat === 'epi') && (f.prevT === 'p' || f.prevT === 's') && !range(f.a, f.b)) w.push((i + 1) + ') の出現頻度（ページ数・秒数）が未入力です。');
     // ACNS の定義との食い違い
     var hiHz = parseFloat(trim(f.f2) || trim(f.f1));
-    if (isRDA(f) && hiHz > 4) w.push((i + 1) + ') ACNSのRDAは0.5〜4 Hzです。4 Hzを超える律動性活動は、10秒未満ならBIRDs、10秒以上なら脳波上の発作にあたります。');
+    if (isRDA(f) && hiHz > 4) w.push((i + 1) + ') ACNSのRDAは0.5〜4 Hzです。4 Hzを超える律動性活動は、10秒未満ならBIRDs、10秒以上なら脳波上の発作にあたる可能性があります。');
     if (isPD(f) && hiHz > 2.5) w.push((i + 1) + ') ACNSでは、2.5 Hzを超える周期性放電が10秒以上続けば脳波上の発作（ESz）にあたります。持続を確かめてください。');    if (f.cat === 'seiz' && f.kind === 'eeg' && f.durU === 's' && trim(f.dur) && parseFloat(f.dur) < 10) w.push((i + 1) + ') ACNSの脳波上の発作（ESz）は10秒以上です。10秒未満の律動性放電はBIRDsにあたる可能性があります。');
   }
   return w;
@@ -1427,7 +1427,7 @@ function cardHTML(i) {
     if (f.type === 'burst' || f.type === 'pfa') h += txt(i, 'd1', f.d1, '持続（下限 秒）', 'narrow', '3', 'decimal') + txt(i, 'd2', f.d2, '持続（上限 秒）', 'narrow', '7', 'decimal');
     if (isPD(f)) h += sel(i, 'plus', PLUS_PD, f.plus, 'Plus修飾子', 1, null);
     h += '</div>';
-    if (f.type === 'pfa' || f.type === 'birds') h += '<p class="hint">ACNSでは、4 Hzを超える律動性活動が0.5秒以上10秒未満なら BIRDs、10秒以上なら脳波上の発作（ESz）にあたります（突発性速波もこれに含みます）。</p>';
+    if (f.type === 'pfa' || f.type === 'birds') h += '<p class="hint">ACNSのBIRDsは、4 Hzを超える律動性活動が0.5秒以上10秒未満続き、正常パターン・良性亜型やburst-suppressionの一部でなく、明らかな臨床症状を伴わず、evolution・同じ患者の放電や発作と同じ形と部位・sharply contouredのいずれかを伴うものです。突発性速波もこれに含みます。10秒以上なら脳波上の発作（ESz）の定義に照らします。</p>';
     h += locBlock(i, f) + prevBlock(i, f) + modBlock(i, f);
   } else if (f.cat === 'asym') {
     h += '<div class="row">' + sel(i, 'what', ASYMS, f.what, '内容', 1, 2) + sel(i, 'side', SIDES.slice(0, 2), f.side, '低下している側', 1, null) + sel(i, 'loc', LOCS, f.loc, '部位', 1, null) + sel(i, 'deg', [['', '記載しない'], ['mild', '軽度 mild（電位差50%未満、周波数差0.5〜1 Hz）'], ['marked', '高度 marked（電位差50%以上、周波数差1 Hz超）']], f.deg, '程度（ACNS）', 1, null) + '</div>';
