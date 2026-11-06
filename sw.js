@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v352';
+const CACHE_NAME = 'ddx-tools-v353';
 const ASSETS = [
   './infographics/elderly-itch-pruritus/index.html',
   './infographics/elderly-itch-pruritus/infographic.png',
@@ -123,6 +123,7 @@ const ASSETS = [
   './infographics/parkinson-non-motor-symptoms/index.html',
   './infographics/return-to-work-check/index.html',
   './infographics/status-epilepticus-initial-calculator/index.html',
+  './infographics/eeg-report-writer/index.html',
   './infographics/histamine-poisoning/index.html',
   './infographics/seizure-differential-diagnosis-reference-repair-20261024/index.html',
   './infographics/tic-vs-seizure-adult-reference-repair-20261024/index.html',
