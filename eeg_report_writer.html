@@ -653,7 +653,7 @@ function endDot(s, L) {
 
 // ===== 部位の書き方 =====
 function locWord(f, mode) {
-  // mode: 'ja' = 右前頭側頭部 / 'en' = R frontotemporal / 'enlong' = the right frontotemporal region / 'mix' = right frontotemporal
+  // mode: 'ja' = 右前頭側頭部 / 'en' = R frontotemporal / 'enlong' = the right frontotemporal region
   var loc = look(LOCS, f.loc || ''); var side = look(SIDES, f.side || 'R');
   var noSide = (f.loc === 'vertex' || f.loc === 'midline');
   if (mode === 'ja') {
@@ -670,11 +670,6 @@ function locWord(f, mode) {
     return side[2] + ' ' + loc[2];
   }
   var sl = side[3];
-  if (mode === 'mix') {
-    if (noSide) return loc[3];
-    if (!f.loc) return sl;
-    return sl + ' ' + loc[3];
-  }
   // enlong
   if (noSide) return 'the ' + loc[3];
   if (f.loc === 'hemisphere') {
@@ -936,11 +931,11 @@ function diffDegree() {
   return DEGKEYS[lv];
 }
 function interpLines(L) {
-  // L: 'ja' / 'en' / 'mix'（mixは日本語文＋英語の部位名）
+  // L: 'ja' / 'en'（英日併記も判読は他科の医師が読めるよう日本語で書く）
   var out = [], i, j, f, g;
   var en = L === 'en';
-  var lw = function (x) { return en ? locWord(x, 'enlong') : (L === 'mix' ? locWord(x, 'mix') : locWord(x, 'ja')); };
-  var abn = function () { return L === 'mix' ? 'のfocal abnormality' : 'の局在性の機能異常'; };
+  var lw = function (x) { return en ? locWord(x, 'enlong') : locWord(x, 'ja'); };
+  var abn = function () { return 'の局在性の機能異常'; };
   var F = S.findings;
   var hasEpi = false, hasSz = false, singleEpi = true;
 
@@ -963,7 +958,7 @@ function interpLines(L) {
     }
   }
   if (S.special === 'bs') {
-    out.push(en ? 'A burst-suppression pattern is present; it should be interpreted in light of sedative or anesthetic medication and body temperature.' : 'burst-suppression patternを認める。鎮静薬・麻酔薬の使用や低体温の有無を踏まえて解釈する必要がある。');
+    out.push(en ? 'A burst-suppression pattern is present; it should be interpreted in light of sedative or anesthetic medication and body temperature.' : '群発と平坦化が交互に現れるパターン（burst-suppression）を認める。鎮静薬・麻酔薬の使用や低体温の有無を踏まえて解釈する必要がある。');
   }
 
   // 3) 局在性（徐波・非対称）を部位ごとにまとめる
@@ -1062,19 +1057,20 @@ function interpLines(L) {
   if (S.nt.p146 || S.nt.bets || S.nt.wicket || S.nt.rmtd) {
     var bv = [];
     if (S.nt.p146) bv.push(en ? '14 & 6 Hz positive spikes' : '14&6 Hz陽性棘波');
-    if (S.nt.bets) bv.push('small sharp spikes');
-    if (S.nt.wicket) bv.push('wicket spikes');
-    if (S.nt.rmtd) bv.push('RMTD');
-    noteI.push(en ? bv.join(', ') + (bv.length > 1 ? ' are benign variants' : ' is a benign variant') + ' without epileptic significance.' : bv.join('、') + 'は良性亜型であり、てんかん性の意義は乏しい。');
+    if (S.nt.bets) bv.push(en ? 'small sharp spikes' : '睡眠時良性てんかん型一過性波（small sharp spikes）');
+    if (S.nt.wicket) bv.push(en ? 'wicket spikes' : 'ウィケット棘波（wicket spikes）');
+    if (S.nt.rmtd) bv.push(en ? 'RMTD' : '傾眠期律動性中側頭部シータ（RMTD）');
+    var bvEn = bv.length > 1 ? bv.slice(0, -1).join(', ') + ' and ' + bv[bv.length - 1] : bv[0];
+    noteI.push(en ? bvEn.charAt(0).toUpperCase() + bvEn.slice(1) + ((bv.length > 1 || /s$/.test(bv[0])) ? ' are benign variants' : ' is a benign variant') + ' without epileptic significance.' : bv.join('、') + 'は良性亜型であり、てんかん性の意義は乏しい。');
   }
   if (S.nt.phantom) {
-    if (S.phType === 'wham') noteI.push(en ? 'Phantom spike-and-wave of the WHAM type (waking, high amplitude, anterior, male) is not regarded as an epileptiform discharge, but it has been associated with seizures; clinical correlation is required.' : 'WHAM型（waking, high amplitude, anterior, male）のphantom spike-and-waveは、てんかん性放電とはされないものの、てんかん発作との関連が報告されているため、臨床的相関の検討を要する。');
-    else if (S.phType === 'fold') noteI.push(en ? 'Phantom spike-and-wave of the FOLD type (female, occipital, low amplitude, drowsy) is considered a benign variant.' : 'FOLD型（female, occipital, low amplitude, drowsy）のphantom spike-and-waveは、良性亜型と考えられる。');
-    else noteI.push(en ? 'The phantom spike-and-wave fits neither the WHAM nor the FOLD type; clinical correlation is required.' : 'phantom spike-and-waveはWHAM型・FOLD型のいずれとも判断しにくく、臨床的相関の検討を要する。');
+    if (S.phType === 'wham') noteI.push(en ? 'Phantom spike-and-wave of the WHAM type (waking, high amplitude, anterior, male) is not regarded as an epileptiform discharge, but it has been associated with seizures; clinical correlation is required.' : 'WHAM型（覚醒時・高振幅・前方優位・男性）の6 Hz棘徐波（phantom spike-and-wave）は、てんかん性放電とはされないものの、てんかん発作との関連が報告されているため、臨床的相関の検討を要する。');
+    else if (S.phType === 'fold') noteI.push(en ? 'Phantom spike-and-wave of the FOLD type (female, occipital, low amplitude, drowsy) is considered a benign variant.' : 'FOLD型（女性・後頭部優位・低振幅・傾眠時）の6 Hz棘徐波（phantom spike-and-wave）は、良性亜型と考えられる。');
+    else noteI.push(en ? 'The phantom spike-and-wave fits neither the WHAM nor the FOLD type; clinical correlation is required.' : '6 Hz棘徐波（phantom spike-and-wave）はWHAM型・FOLD型のいずれとも判断しにくく、臨床的相関の検討を要する。');
   }
   if (S.nt.beta) {
     if (S.betaEx === 'yes') noteI.push(en ? 'Excessive beta activity raises the possibility of a medication effect (e.g., benzodiazepines or barbiturates).' : '過剰な速波（excessive beta）を認め、ベンゾジアゼピン系・バルビツール酸系などの薬剤の影響を考慮する。');
-    else noteI.push(en ? 'Beta activity is admixed but does not meet the criteria for excessive beta.' : '速波の混入を認めるが、excessive betaの基準は満たさない。');
+    else noteI.push(en ? 'Beta activity is admixed but does not meet the criteria for excessive beta.' : '速波の混入を認めるが、過剰な速波（excessive beta）の基準は満たさない。');
   }
   if (S.nt.sorem) noteI.push(en ? 'Sleep onset REM raises the possibility of a sleep disorder such as narcolepsy; clinical correlation is required.' : '入眠時レム睡眠を認め、ナルコレプシーなどの睡眠障害の可能性について臨床的相関の検討を要する。');
   if (S.nt.arousal) noteI.push(en ? 'Frequent alternation between wakefulness and light sleep warrants clinical correlation for sleep-disordered breathing such as obstructive sleep apnea.' : '覚醒と軽睡眠を頻回に繰り返しており、閉塞性睡眠時無呼吸などの睡眠呼吸障害について臨床的相関の検討を要する。');
@@ -1159,7 +1155,7 @@ function buildParts() {
   }
   var act = actText(FL);
 
-  var ip = interpLines(L);
+  var ip = interpLines(IL);
   var interp = [];
   for (i = 0; i < ip.main.length; i++) interp.push(ip.main[i]);
   if (ip.note.length) {
@@ -1182,7 +1178,7 @@ function buildText(which) {
   if (p.fnd.length) fsec = fsec.concat(p.fnd);
   if (p.noteBlock.length) { fsec.push(''); fsec = fsec.concat(p.noteBlock); }
   if (p.act) { fsec.push(''); fsec.push(p.FL === 'en' ? 'Activation: ' + p.act : '賦活：' + p.act); }  var titleF = p.FL === 'en' ? 'EEG FINDINGS' : '【脳波所見】';
-  var titleI = S.lang === 'en' ? 'INTERPRETATION AND RECOMMENDATION' : (S.lang === 'mix' ? '【Interpretation and Recommendation】' : '【判読と推奨】');
+  var titleI = S.lang === 'en' ? 'INTERPRETATION AND RECOMMENDATION' : '【判読と推奨】';
   if (which === 'findings') return fsec.join('\n');
   if (which === 'interp') return p.interp.join('\n');
   return titleF + '\n' + fsec.join('\n') + '\n\n' + titleI + '\n' + p.interp.join('\n');
@@ -1342,7 +1338,7 @@ function update() {
   for (var k = 0; k < langs.length; k++) {
     document.getElementById('lang_' + langs[k]).className = S.lang === langs[k] ? 'on' : '';
   }
-  var hint = { ja: '所見・判読とも日本語で出力します。', en: 'Findings and interpretation are written in English.', mix: '所見は英語、判読と推奨は日本語で出力します（部位名は英語のまま）。' };
+  var hint = { ja: '所見・判読とも日本語で出力します。', en: 'Findings and interpretation are written in English.', mix: '所見は英語、判読と推奨は日本語で出力します。判読は他科の先生にも読めるよう、部位名も日本語にします。' };
   document.getElementById('langHint').textContent = hint[S.lang];
   // 用語体系に合わせた表示
   var stg = document.querySelectorAll('.stg');
