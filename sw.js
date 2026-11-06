@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v350';
+const CACHE_NAME = 'ddx-tools-v351';
 const ASSETS = [
   './infographics/elderly-itch-pruritus/index.html',
   './infographics/elderly-itch-pruritus/infographic.png',

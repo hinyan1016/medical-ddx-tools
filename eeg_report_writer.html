@@ -273,7 +273,8 @@
             <option value="mild">ごく軽度不良 mildly poorly organized</option>
             <option value="poor">軽度不良 poorly organized</option>
             <option value="disorg">不良 disorganized</option>
-            <option value="absent">認めない lack of PDR</option>
+            <option value="absent">認めない lack of PDR（ACNS：absent）</option>
+            <option value="unclear">判定できない（ACNS：unclear）</option>
           </select>
         </div>
         <div class="fld narrow"><label for="s_pdrF1">周波数（下限 Hz）</label><input type="text" id="s_pdrF1" data-s="pdrF1" inputmode="decimal" placeholder="9"></div>
@@ -296,15 +297,19 @@
             <option value="poor">開眼による抑制が乏しい</option>
           </select>
         </div>
-        <div class="fld"><label for="s_special">背景活動の特殊パターン</label>
+        <div class="fld"><label for="s_special">背景の連続性・電位（ACNS）</label>
           <select id="s_special" data-s="special">
-            <option value="none">なし</option>
-            <option value="bs">burst-suppression</option>
-            <option value="supp">背景活動の抑制（suppression）</option>
-            <option value="lowv">びまん性低電位</option>
+            <option value="none">連続（continuous）・記載しない</option>
+            <option value="nearly">ほぼ連続 nearly continuous（減衰・抑制が記録の1〜9%）</option>
+            <option value="discont">不連続 discontinuous（減衰・抑制が10〜49%）</option>
+            <option value="ba">burst-attenuation（減衰が50〜99%）</option>
+            <option value="bs">burst-suppression（抑制が50〜99%）</option>
+            <option value="supp">抑制 suppression（記録のほぼ全体が10 µV未満）</option>
+            <option value="lowv">低電位 low voltage（大部分が20 µV未満）</option>
           </select>
         </div>
       </div>
+      <p class="hint">ACNSの定義では、減衰（attenuation）は10 µV以上で高い部分の50%未満、抑制（suppression）は10 µV未満です。後頭部優位律動は開眼で減衰することを確かめ、0.5 Hz単位で記載します。</p>
     </div>
 
     <!-- 3. 所見 -->
@@ -317,6 +322,17 @@
         <button class="btn small" type="button" onclick="addFinding('seiz')">＋ 発作時記録</button>
         <button class="btn small" type="button" onclick="addFinding('other')">＋ その他（自由記載）</button>
       </div>
+      <details class="help" style="margin-bottom:10px;">
+        <summary>ACNS用語との対応<span class="op">クリック／タップで開閉</span></summary>
+        <div>
+          <ul>
+            <li>用語は米国臨床神経生理学会（ACNS）の標準用語2021年版に合わせています。ACNSでは focal・regional・hemispheric はすべて lateralized に含めます。本ツールの「局在性（regional）」は、部位を細かく書くための通常脳波向けの選択肢です。</li>
+            <li>律動性デルタ（0.5〜4 Hz）は RDA、周期性放電は PDs として、分布から LRDA・GRDA・BIRDA、LPDs・GPDs・BIPDs・UIPDs・MfPDs の名前で出力します。不規則・多形性のデルタは RDA にしません。</li>
+            <li>出現率は ACNS の区分も選べます。散発性のてんかん性放電は回数（10秒・1分・1時間あたり）、周期性・律動性パターンは記録に占める割合で区分します。</li>
+            <li>棘波は持続20〜70ミリ秒未満、鋭波は70〜200ミリ秒です。</li>
+          </ul>
+        </div>
+      </details>
       <div id="findings"></div>
       <p class="hint" id="noFinding">所見はまだありません。上のボタンで追加してください。</p>
     </div>
@@ -445,7 +461,8 @@
             <li><b>局在性の持続的徐波 → 器質的異常</b>：局在性のデルタ活動は、皮質下白質の限局性病変の上の皮質に現れる。<br>Gloor P, et al. Brain lesions that produce delta waves in the EEG. Neurology. 1977;27(4):326-33. <a href="https://pubmed.ncbi.nlm.nih.gov/557774/" target="_blank" rel="noopener">PMID 557774</a></li>
             <li><b>LPDs</b>：脳卒中が主な原因で、発作との関連が強い。重症患者の持続脳波では、LPDsは周波数によらず発作との関連が最も強かった。<br>Pohlmann-Eden B, et al. Periodic lateralized epileptiform discharges--a critical review. J Clin Neurophysiol. 1996;13(6):519-30. <a href="https://pubmed.ncbi.nlm.nih.gov/8978624/" target="_blank" rel="noopener">PMID 8978624</a><br>Rodriguez Ruiz A, et al. Association of Periodic and Rhythmic Electroencephalographic Patterns With Seizures in Critically Ill Patients. JAMA Neurol. 2017;74(2):181-188. <a href="https://pubmed.ncbi.nlm.nih.gov/27992625/" target="_blank" rel="noopener">PMID 27992625</a></li>
             <li><b>GPDs</b>：急性の脳障害・全身疾患・心停止後でみられ、非けいれん性発作・非けいれん性てんかん重積状態と強く関連する。発作との関連は1.5 Hz以上やPlus修飾子で強い。<br>Foreman B, et al. Generalized periodic discharges in the critically ill: a case-control study of 200 patients. Neurology. 2012;79(19):1951-60. <a href="https://pubmed.ncbi.nlm.nih.gov/23035068/" target="_blank" rel="noopener">PMID 23035068</a><br>Rodriguez Ruiz A, et al. JAMA Neurol. 2017（上記）</li>
-            <li><b>LPDs・GPDs・Plus修飾子の用語</b>：Hirsch LJ, et al. American Clinical Neurophysiology Society's Standardized Critical Care EEG Terminology: 2021 Version. J Clin Neurophysiol. 2021;38(1):1-29. <a href="https://pubmed.ncbi.nlm.nih.gov/33475321/" target="_blank" rel="noopener">PMID 33475321</a></li>
+            <li><b>LRDA・GRDA</b>：重症患者の持続脳波で、LRDAは発作と関連し、1.5 Hz以上やPlus修飾子で関連が強かった。GRDAは周期性・律動性パターンがない場合と発作の頻度に差がなかった。<br>Rodriguez Ruiz A, et al. JAMA Neurol. 2017（上記）</li>
+            <li><b>用語と定義（ACNS 2021）</b>：分布（G・L・BI・UI・Mf、focal・regional・hemispheric は L に含む）、PDs・RDA・SW、Plus修飾子（+F・+R・+S）、出現率の区分、背景の連続性（nearly continuous・discontinuous・burst-attenuation/suppression・suppression）と電位（低電位20 µV未満・抑制10 µV未満）、非対称の程度、棘波・鋭波の持続、脳波上の発作（ESz）・てんかん重積状態（ESE）・BIRDs の定義。本文（PMC8135051）で確認。<br>Hirsch LJ, et al. American Clinical Neurophysiology Society's Standardized Critical Care EEG Terminology: 2021 Version. J Clin Neurophysiol. 2021;38(1):1-29. <a href="https://pubmed.ncbi.nlm.nih.gov/33475321/" target="_blank" rel="noopener">PMID 33475321</a></li>
             <li><b>6 Hz棘徐波のWHAM型・FOLD型</b>：WHAM型は主に発作のある例、FOLD型は主に自律神経症状や心理的な訴えのある例でみられた。<br>Hughes JR. Two forms of the 6/sec spike and wave complex. Electroencephalogr Clin Neurophysiol. 1980;48(5):535-50. <a href="https://pubmed.ncbi.nlm.nih.gov/6153962/" target="_blank" rel="noopener">PMID 6153962</a></li>
             <li><b>正常亜型</b>（wicket spikes、small sharp spikes、RMTD、6 Hz棘徐波、14&amp;6 Hz陽性棘波）：過去には異常とされたが、現在は正常（または臨床的意義の不確かな）亜型とされ、てんかん性と読みすぎないことが重要。<br>Amin U, et al. Normal variants and artifacts: Importance in EEG interpretation. Epileptic Disord. 2023;25(5):591-648. <a href="https://pubmed.ncbi.nlm.nih.gov/36938895/" target="_blank" rel="noopener">PMID 36938895</a></li>
             <li><b>excessive betaと薬剤</b>、<b>burst-suppressionと薬剤</b>：過剰な速波は薬剤による脳波変化として最も多いものの一つ。burst-suppressionなども薬剤が主因なら正常化しうる。<br>Blume WT. Drug effects on EEG. J Clin Neurophysiol. 2006;23(4):306-11. <a href="https://pubmed.ncbi.nlm.nih.gov/16885705/" target="_blank" rel="noopener">PMID 16885705</a></li>
@@ -516,13 +533,33 @@ var SIDES = [
   ['RL', '両側（右優位）', 'bilateral (R>L)', 'bilateral, right-predominant'],
   ['LR', '両側（左優位）', 'bilateral (L>R)', 'bilateral, left-predominant']
 ];
+// ACNS 2021 の Main term 1（G・L・BI・UI・Mf）。regional は ACNS では L に含まれる。
 var DISTS = [
-  ['regional', '局在性', 'regional'],
-  ['lateralized', '一側性', 'lateralized'],
-  ['generalized', '全般性', 'generalized'],
-  ['bilatind', '両側独立性', 'bilateral independent'],
-  ['multifocal', '多焦点性', 'multifocal']
+  ['regional', '局在性（ACNSのLに含む）', 'regional'],
+  ['lateralized', '一側性 L', 'lateralized'],
+  ['generalized', '全般性 G', 'generalized'],
+  ['bilatind', '両側独立性 BI', 'bilateral independent'],
+  ['unilatind', '一側独立性 UI', 'unilateral independent'],
+  ['multifocal', '多焦点性 Mf', 'multifocal']
 ];
+// 周期性・律動性パターンの略号の頭（LPDs・GRDA など）
+var RPPHEAD = { regional: ['L', '一側性', 'Lateralized'], lateralized: ['L', '一側性', 'Lateralized'], generalized: ['G', '全般性', 'Generalized'], bilatind: ['BI', '両側独立性', 'Bilateral independent'], unilatind: ['UI', '一側独立性', 'Unilateral independent'], multifocal: ['Mf', '多焦点性', 'Multifocal'] };
+// ACNS の出現率（散発性てんかん性放電は回数、周期性・律動性パターンは割合）
+var PREV_SPORADIC = [
+  ['abundant', '多発', 'abundant', '10秒に1回以上'],
+  ['frequent', '頻回', 'frequent', '1分に1回以上、10秒に1回未満'],
+  ['occasional', '時々', 'occasional', '1時間に1回以上、1分に1回未満'],
+  ['rare', 'まれ', 'rare', '1時間に1回未満']
+];
+var PREV_RPP = [
+  ['continuous', '持続', 'continuous', '記録の90%以上'],
+  ['abundant', '多発', 'abundant', '記録の50〜89%'],
+  ['frequent', '頻回', 'frequent', '記録の10〜49%'],
+  ['occasional', '時々', 'occasional', '記録の1〜9%'],
+  ['rare', 'まれ', 'rare', '記録の1%未満']
+];
+var PLUS_RDA = [['', 'なし', ''], ['F', '+F（速波の重畳）', '+F'], ['S', '+S（鋭波・棘波を伴う）', '+S'], ['FS', '+FS', '+FS']];
+var PLUS_PD = [['', 'なし', ''], ['F', '+F（速波の重畳）', '+F'], ['R', '+R（律動性デルタの重畳）', '+R'], ['FR', '+FR', '+FR']];
 var CONTS = [
   ['intermittent', '間欠的', 'Intermittent'],
   ['almost', 'ほぼ持続的', 'Almost continuous'],
@@ -549,9 +586,12 @@ var EPIS = [
   ['sswc', '鋭徐波複合', 'Sharp-and-slow wave complex'],
   ['burst', '棘波群発', 'Burst of spikes'],
   ['pfa', '突発性速波', 'Paroxysmal fast activity'],
-  ['lpd', '一側性周期性放電（LPDs）', 'Lateralized periodic discharges (LPDs)'],
-  ['gpd', '全般性周期性放電（GPDs）', 'Generalized periodic discharges (GPDs)']
+  ['pd', '周期性放電（PDs：分布からLPDs・GPDs・BIPDsなど）', 'Periodic discharges'],
+  ['birds', 'BIRDs（4 Hz超の律動性活動・0.5秒以上10秒未満）', 'Brief potentially ictal rhythmic discharges (BIRDs)']
 ];
+function isSporadicEpi(f) { return f.cat === 'epi' && /^(spike|polyspike|sharp|swc|pswc|sswc)$/.test(f.type); }
+function isRDA(f) { return f.cat === 'slow' && f.morph === 'rhythmic' && f.band === 'delta'; }
+function isPD(f) { return f.cat === 'epi' && f.type === 'pd'; }
 var MODS = [
   ['sleep', '主に睡眠期', 'mainly during sleep'],
   ['drowsy', '主に傾眠期', 'mostly during drowsy state'],
@@ -572,8 +612,8 @@ var ASYMS = [
   ['breach', '速波の増高（breach rhythm）', 'increased fast activity (breach rhythm)']
 ];
 var SKINDS = [
-  ['clin', '臨床発作を伴う脳波上の発作', 'EEG and clinical seizure'],
-  ['eeg', '臨床症状を伴わない脳波上の発作', 'Electrographic seizure without clinical signs'],
+  ['clin', '臨床症状を伴う発作（electroclinical seizure）', 'Electroclinical seizure'],
+  ['eeg', '臨床症状を伴わない脳波上の発作（electrographic seizure）', 'Electrographic seizure without clinical signs'],
   ['noeeg', '脳波変化を伴わない臨床的イベント', 'Clinical event without EEG change']
 ];
 var SPATS = [
@@ -637,10 +677,10 @@ function defaults() {
   };
 }
 function newFinding(cat) {
-  if (cat === 'slow') return { cat: 'slow', cont: 'intermittent', morph: 'irregular', band: 'delta', f1: '', f2: '', dist: 'regional', side: 'R', loc: 'temporal', max: '', prevT: 'p', n: '1', a: '', b: '', mods: {}, runs: '' };
-  if (cat === 'epi') return { cat: 'epi', type: 'sharp', f1: '', f2: '', d1: '', d2: '', dist: 'regional', side: 'R', loc: 'temporal', max: '', prevT: 'p', n: '1', a: '', b: '', mods: {}, runs: '' };
-  if (cat === 'asym') return { cat: 'asym', what: 'beta', side: 'R', loc: 'frontotemporal' };
-  if (cat === 'seiz') return { cat: 'seiz', kind: 'clin', video: true, count: '1', dist: 'regional', side: 'R', loc: 'temporal', pat: 'delta', dur: '', durU: 's', stype: 'fias', evo_ja: '', evo_en: '', sem_ja: '', sem_en: '' };
+  if (cat === 'slow') return { cat: 'slow', cont: 'intermittent', morph: 'irregular', band: 'delta', f1: '', f2: '', dist: 'regional', side: 'R', loc: 'temporal', max: '', prevT: 'p', n: '1', a: '', b: '', acat: 'frequent', plus: '', mods: {}, runs: '' };
+  if (cat === 'epi') return { cat: 'epi', type: 'sharp', f1: '', f2: '', d1: '', d2: '', dist: 'regional', side: 'R', loc: 'temporal', max: '', prevT: 'p', n: '1', a: '', b: '', acat: 'occasional', plus: '', mods: {}, runs: '' };
+  if (cat === 'asym') return { cat: 'asym', what: 'beta', side: 'R', loc: 'frontotemporal', deg: '' };
+  if (cat === 'seiz') return { cat: 'seiz', kind: 'clin', video: true, count: '1', dist: 'regional', side: 'R', loc: 'temporal', pat: 'delta', dur: '', durU: 's', ese: false, stype: 'fias', evo_ja: '', evo_en: '', sem_ja: '', sem_en: '' };
   return { cat: 'other', ja: '', en: '' };
 }
 S = defaults();
@@ -709,31 +749,50 @@ function locWord(f, mode) {
 }
 function distLoc(f, L) {
   // 「分布、部位（最大電極）」
+  // noDist=true のときは分布の語を省く（LPDs・GRDA などの名前に分布が含まれるため）
   var d = look(DISTS, f.dist); var mx = trim(f.max);
-  var hasLoc = !!f.loc || f.dist !== 'generalized';
+  var noDist = arguments[2] === true;
+  // ACNS：全般性は前頭部優位・後頭部優位・正中優位を書く
+  var gpred = { frontopolar: ['frontally predominant', '前頭部優位'], frontal: ['frontally predominant', '前頭部優位'], occipital: ['occipitally predominant', '後頭部優位'], vertex: ['midline predominant', '正中優位'], midline: ['midline predominant', '正中優位'] }[f.loc];
   if (L === 'en') {
     if (f.dist === 'generalized') {
       var inner = [];
-      if (f.loc) inner.push(locWord(f, 'en'));
+      if (f.loc && !gpred) inner.push(locWord(f, 'en'));
       if (mx) inner.push(mx);
       var pr = (!f.loc && (f.side === 'RL' || f.side === 'LR')) ? (f.side === 'RL' ? ' (R>L)' : ' (L>R)') : '';
-      return 'generalized' + pr + (inner.length ? ' (max. ' + inner.join(', ') + ')' : '');
+      var gh = noDist ? '' : 'generalized';
+      var gp = gpred ? (gh ? ', ' : '') + gpred[0] : '';
+      var gm = inner.length ? ' (max. ' + inner.join(', ') + ')' : '';
+      return trim(gh + pr + gp + gm);
     }
-    if (f.dist === 'bilatind') return 'bilateral independent' + (f.loc ? ' ' + look(LOCS, f.loc)[2] : '') + (mx ? ' (max. ' + mx + ')' : '');
-    if (f.dist === 'multifocal') return 'multifocal' + (f.loc ? ' (' + locWord(f, 'en') + ')' : '') + (mx ? ' (max. ' + mx + ')' : '');
-    return d[2] + ' ' + locWord(f, 'en') + (mx ? ' (max. ' + mx + ')' : '');
+    var head = noDist ? '' : ({ bilatind: 'bilateral independent', unilatind: 'unilateral independent', multifocal: 'multifocal' }[f.dist] || d[2]);
+    if (f.dist === 'bilatind') return trim(head + (f.loc ? ' ' + (noDist ? 'bilateral ' : '') + look(LOCS, f.loc)[2] : '')) + (mx ? ' (max. ' + mx + ')' : '');
+    if (f.dist === 'multifocal') return (head ? head + (f.loc ? ' (' + locWord(f, 'en') + ')' : '') : (f.loc ? locWord(f, 'en') : '')) + (mx ? ' (max. ' + mx + ')' : '');
+    return trim(head + ' ' + locWord(f, 'en')) + (mx ? ' (max. ' + mx + ')' : '');
   }
   if (f.dist === 'generalized') {
     var inj = '';
-    if (f.loc && mx) inj = locWord(f, 'ja') + '、' + mx + '最大';
+    if (gpred) inj = gpred[1] + (mx ? '、' + mx + '最大' : '');
+    else if (f.loc && mx) inj = locWord(f, 'ja') + '、' + mx + '最大';
     else if (f.loc) inj = locWord(f, 'ja') + '最大';
     else if (mx) inj = mx + '最大';
     if (!f.loc && (f.side === 'RL' || f.side === 'LR')) inj = (f.side === 'RL' ? '右優位' : '左優位') + (inj ? '、' + inj : '');
+    if (noDist) return inj;
     return '全般性' + (inj ? '（' + inj + '）' : '');
   }
-  if (f.dist === 'bilatind') return '両側独立性' + (f.loc ? '、両側' + look(LOCS, f.loc)[1] : '') + (mx ? '（' + mx + '最大）' : '');
-  if (f.dist === 'multifocal') return '多焦点性' + (f.loc ? '（' + locWord(f, 'ja') + 'など）' : '') + (mx ? '（' + mx + '最大）' : '');
-  return d[1] + '、' + locWord(f, 'ja') + (mx ? '（' + mx + '最大）' : '');
+  var hj = noDist ? '' : d[1].replace(/（.*$/, '').replace(/ [A-Za-z]+$/, '') + '、';
+  if (f.dist === 'bilatind') return (noDist ? '' : '両側独立性') + (f.loc ? (noDist ? '' : '、') + '両側' + look(LOCS, f.loc)[1] : '') + (mx ? '（' + mx + '最大）' : '');
+  if (f.dist === 'multifocal') return (noDist ? '' : '多焦点性') + (f.loc ? (noDist ? locWord(f, 'ja') + 'など' : '（' + locWord(f, 'ja') + 'など）') : '') + (mx ? '（' + mx + '最大）' : '');
+  return hj + locWord(f, 'ja') + (mx ? '（' + mx + '最大）' : '');
+}
+function rppName(f, L) {
+  // ACNS の名前：LPDs+F（1 Hz） / GRDA など
+  var h = RPPHEAD[f.dist] || RPPHEAD.lateralized;
+  var pd = isPD(f);
+  var abbr = h[0] + (pd ? 'PDs' : 'RDA') + (f.plus ? '+' + f.plus : '');
+  var hz = range(f.f1, f.f2);
+  if (L === 'en') return h[2] + (pd ? ' periodic discharges' : ' rhythmic delta activity') + ' (' + abbr + (hz ? ', ' + hz + ' Hz' : '') + ')';
+  return h[1] + (pd ? '周期性放電' : '律動性デルタ活動') + '（' + abbr + (hz ? '、' + hz + ' Hz' : '') + '）';
 }
 function prevText(f, L) {
   var n = trim(f.n) || '1'; var r = range(f.a, f.b);
@@ -749,6 +808,10 @@ function prevText(f, L) {
       return 'x' + n;
     }
     return n === '1' ? '記録中1回のみ' : '記録中' + n + '回';
+  }
+  if (f.prevT === 'acns') {
+    var cat = look(isSporadicEpi(f) ? PREV_SPORADIC : PREV_RPP, f.acat);
+    return L === 'en' ? cat[2] : cat[1] + '（' + cat[2] + '）';
   }
   return '';
 }
@@ -766,6 +829,13 @@ function isSingle(f) { return f.prevT === 'c' && (trim(f.n) || '1') === '1'; }
 // ===== 所見の1行 =====
 function findingLine(f, L) {
   var parts = [], hz, x;
+  if (isRDA(f) || isPD(f)) {
+    parts.push(rppName(f, L));
+    x = distLoc(f, L, true); if (x) parts.push(x);
+    x = prevText(f, L); if (x) parts.push(x);
+    parts = parts.concat(modsText(f, L));
+    return parts.join(L === 'en' ? ', ' : '、');
+  }
   if (f.cat === 'slow') {
     var c = look(CONTS, f.cont), m = look(MORPHS, f.morph), b = look(BANDS, f.band);
     hz = range(f.f1, f.f2);
@@ -785,7 +855,7 @@ function findingLine(f, L) {
       if (du) head += ' of ' + du + ' sec';
       if (hz) head = /\)$/.test(head) ? head.replace(/\)$/, ', ' + hz + ' Hz)') : head + ' (' + hz + ' Hz)';
     } else {
-      head = (du ? du + '秒の' : '') + e[1];
+      head = (du ? du + '秒の' : '') + (f.type === 'birds' ? 'BIRDs（短時間の発作の可能性がある律動性放電）' : e[1]);
       if (hz) head = /）$/.test(head) ? head.replace(/）$/, '、' + hz + ' Hz）') : head + '（' + hz + ' Hz）';
     }
     parts.push(head);
@@ -796,8 +866,9 @@ function findingLine(f, L) {
   }
   if (f.cat === 'asym') {
     var a = look(ASYMS, f.what);
-    if (L === 'en') return 'Asymmetry, ' + a[2] + ' over the ' + locWord(f, 'en') + (f.loc && f.loc !== 'hemisphere' && f.loc !== 'vertex' && f.loc !== 'midline' ? ' region' : '');
-    return '非対称性：' + locWord(f, 'ja') + 'の' + a[1];
+    var dg = { mild: ['軽度の', 'Mild asymmetry'], marked: ['高度の', 'Marked asymmetry'] }[f.deg];
+    if (L === 'en') return (dg ? dg[1] : 'Asymmetry') + ', ' + a[2] + ' over the ' + locWord(f, 'en') + (f.loc && f.loc !== 'hemisphere' && f.loc !== 'vertex' && f.loc !== 'midline' ? ' region' : '');
+    return (dg ? dg[0] : '') + '非対称性：' + locWord(f, 'ja') + 'の' + a[1];
   }
   if (f.cat === 'seiz') {
     var k = look(SKINDS, f.kind), p = look(SPATS, f.pat);
@@ -811,6 +882,7 @@ function findingLine(f, L) {
         s += ': ' + onset;
         if (p[2]) s += ', ' + p[2];
         if (dur) s += ', lasting ' + dur + (f.durU === 'm' ? ' min' : ' sec');
+        if (f.ese) s += ', meeting criteria for electrographic status epilepticus (ESE)';
       }
       var evo = trim(f.evo_en) || trim(f.evo_ja);
       if (evo) s += '; ' + evo;
@@ -825,6 +897,7 @@ function findingLine(f, L) {
       sj += '：' + onset;
       if (p[1]) sj += '、' + p[1];
       if (dur) sj += '、持続' + dur + (f.durU === 'm' ? '分' : '秒');
+      if (f.ese) sj += '、脳波上のてんかん重積状態（ESE）の基準を満たす';
     }
     var evj = trim(f.evo_ja) || trim(f.evo_en);
     if (evj) sj += '。' + evj;
@@ -886,6 +959,7 @@ function pdrText(L) {
   var t;
   if (L === 'en') {
     if (S.pdrOrg === 'absent') t = 'lack of posterior dominant rhythm';
+    else if (S.pdrOrg === 'unclear') t = 'posterior dominant rhythm unclear' + (hz ? ' (' + hz + ' Hz)' : '');
     else {
       var w = { well: 'well organized', mild: 'mildly poorly organized', poor: 'poorly organized', disorg: 'disorganized' }[S.pdrOrg];
       t = w + ' posterior dominant rhythm' + (hz ? ' (' + hz + ' Hz)' : '');
@@ -894,11 +968,12 @@ function pdrText(L) {
     if (as && S.pdrOrg !== 'absent') t += as;
     if (S.pdrReact === 'good') t += ', attenuated by eye opening';
     if (S.pdrReact === 'poor') t += ', poorly reactive to eye opening';
-    var sp = { bs: 'burst-suppression pattern', supp: 'background suppression', lowv: 'diffuse low-voltage activity' }[S.special];
+    var sp = { nearly: 'nearly continuous background', discont: 'discontinuous background', ba: 'burst-attenuation pattern', bs: 'burst-suppression pattern', supp: 'suppressed background (<10 μV)', lowv: 'low-voltage background (<20 μV)' }[S.special];
     if (sp) t += '; ' + sp;
     return t;
   }
   if (S.pdrOrg === 'absent') t = '後頭部優位律動を認めない';
+  else if (S.pdrOrg === 'unclear') t = '後頭部優位律動ははっきりしない' + (hz ? '（' + hz + ' Hz）' : '');
   else {
     var wj = { well: '組織化良好', mild: '組織化ごく軽度不良', poor: '組織化軽度不良', disorg: '組織化不良' }[S.pdrOrg];
     t = '後頭部優位律動' + (hz ? ' ' + hz + ' Hz' : '') + '、' + wj;
@@ -907,7 +982,7 @@ function pdrText(L) {
   if (asj && S.pdrOrg !== 'absent') t += asj;
   if (S.pdrReact === 'good') t += '、開眼で抑制される';
   if (S.pdrReact === 'poor') t += '、開眼による抑制が乏しい';
-  var spj = { bs: 'burst-suppression pattern', supp: '背景活動の抑制（suppression）', lowv: 'びまん性低電位' }[S.special];
+  var spj = { nearly: '背景はほぼ連続（nearly continuous）', discont: '背景は不連続（discontinuous）', ba: 'burst-attenuation pattern', bs: 'burst-suppression pattern', supp: '背景活動の抑制（suppression、10 µV未満）', lowv: '背景は低電位（20 µV未満）' }[S.special];
   if (spj) t += '。' + spj;
   return t;
 }
@@ -992,7 +1067,7 @@ function interpLines(L) {
   var groups = [];
   for (i = 0; i < F.length; i++) {
     f = F[i];
-    if ((f.cat === 'slow' && f.dist !== 'generalized' && f.dist !== 'multifocal' && f.dist !== 'bilatind') || f.cat === 'asym') {
+    if ((f.cat === 'slow' && !isRDA(f) && f.dist !== 'generalized' && f.dist !== 'multifocal' && f.dist !== 'bilatind') || f.cat === 'asym') {
       var hit = null;
       for (j = 0; j < groups.length; j++) { if (sameRegion(groups[j].f, f)) hit = groups[j]; }
       // 持続的な局在性徐波は皮質下白質を含む器質的病変で生じやすい（Gloor 1977）。
@@ -1004,12 +1079,22 @@ function interpLines(L) {
     }
   }
   // てんかん性放電
-  var epiFocal = [], epiGen = false, epiMulti = false, lpd = [], gpd = false;
+  var epiFocal = [], epiGen = false, epiMulti = false, lpd = [], gpd = false, otherPd = [], birds = [], lrda = [], grda = false, rppSeen = false;
+  for (i = 0; i < F.length; i++) {
+    f = F[i];
+    if (isRDA(f)) { if (f.dist === 'generalized') grda = true; else lrda.push(f); }
+  }
   for (i = 0; i < F.length; i++) {
     f = F[i];
     if (f.cat !== 'epi') continue;
-    if (f.type === 'lpd') { lpd.push(f); continue; }
-    if (f.type === 'gpd') { gpd = true; continue; }
+    if (isPD(f)) {
+      rppSeen = true;
+      if (f.dist === 'generalized') gpd = true;
+      else if (f.dist === 'regional' || f.dist === 'lateralized') lpd.push(f);
+      else otherPd.push(f);
+      continue;
+    }
+    if (f.type === 'birds') { rppSeen = true; birds.push(f); continue; }
     hasEpi = true;
     if (!isSingle(f)) singleEpi = false;
     if (f.dist === 'generalized') { epiGen = true; continue; }
@@ -1053,6 +1138,16 @@ function interpLines(L) {
     out.push(en ? 'Lateralized periodic discharges over ' + lw(lpd[j]) + ' are often seen with brain injury such as stroke and are strongly associated with seizures; clinical correlation is required.' : lw(lpd[j]) + 'の周期性放電（LPDs）は、脳卒中などの脳障害でみられることが多く、発作との関連が強い。臨床的相関の検討を要する。');
   }
   if (gpd) out.push(en ? 'Generalized periodic discharges occur in acute brain injury, systemic illness, and after cardiac arrest, and are associated with nonconvulsive seizures and status epilepticus (more so at 1.5 Hz or faster or with a Plus modifier); clinical correlation is required.' : '全般性周期性放電（GPDs）は、急性の脳障害・全身疾患・心停止後などでみられ、非けいれん性の発作・てんかん重積状態と関連する（1.5 Hz以上やPlus修飾子で関連が強い）。臨床的相関の検討を要する。');
+  for (j = 0; j < otherPd.length; j++) {
+    var ab = RPPHEAD[otherPd[j].dist][0] + 'PDs';
+    out.push(en ? RPPHEAD[otherPd[j].dist][2] + ' periodic discharges (' + ab + ') are present; clinical correlation is required.' : RPPHEAD[otherPd[j].dist][1] + '周期性放電（' + ab + '）を認める。臨床的相関の検討を要する。');
+  }
+  for (j = 0; j < lrda.length; j++) {
+    var ra = RPPHEAD[lrda[j].dist][0] + 'RDA';
+    out.push(en ? 'Lateralized rhythmic delta activity (' + ra + ') over ' + lw(lrda[j]) + ' is associated with seizures, more so at 1.5 Hz or faster or with a Plus modifier; clinical correlation is required.' : lw(lrda[j]) + 'の律動性デルタ活動（' + ra + '）は発作と関連し、1.5 Hz以上やPlus修飾子を伴うと関連が強い。臨床的相関の検討を要する。');
+  }
+  if (grda) out.push(en ? 'Generalized rhythmic delta activity (GRDA) has not been associated with seizures in continuous EEG studies of critically ill patients.' : '全般性律動性デルタ活動（GRDA）は、重症患者の持続脳波研究では発作との関連が示されていない。');
+  if (birds.length) out.push(en ? 'Brief potentially ictal rhythmic discharges (BIRDs) are present; clinical correlation is required.' : 'BIRDs（短時間の、発作の可能性がある律動性放電）を認める。臨床的相関の検討を要する。');
 
   // 4) 発作時記録
   for (i = 0; i < F.length; i++) {
@@ -1066,12 +1161,15 @@ function interpLines(L) {
     } else if (f.kind === 'eeg') {
       if (en) out.push('An electrographic seizure without clinical signs' + where + ' was recorded.');
       else out.push('記録中に、' + where + '臨床症状を伴わない脳波上の発作（electrographic seizure）が記録されている。');
+    }
+    if (f.ese && f.kind !== 'noeeg') {
+      out.push(en ? 'This meets the criteria for electrographic status epilepticus (ESE: seizure activity for 10 or more continuous minutes, or 20% or more of any 60-minute period).' : '脳波上のてんかん重積状態（ESE：10分以上連続、または任意の60分間の20%以上）の基準を満たす。');
     } else {
       if (en) out.push('A clinical event was recorded without an EEG change. ' + (S.term === 'classic' ? 'Simple partial seizures' : 'Focal aware seizures') + ' often lack a scalp EEG correlate, so a seizure cannot be excluded; clinical correlation is required.');
       else out.push('臨床的イベントを記録したが、脳波変化を認めない。' + (S.term === 'classic' ? '単純部分発作' : '焦点意識保持発作') + 'は頭皮脳波に変化が出ないことが多く、発作は否定できない。臨床的相関の検討を要する。');
     }
   }
-  if (!hasEpi && !hasSz && !(S.cls === 'normal' && !anyFinding)) {
+  if (!hasEpi && !hasSz && !rppSeen && !(S.cls === 'normal' && !anyFinding)) {
     out.push(en ? 'No definite epileptiform discharges were recorded.' : '記録中に明らかなてんかん性放電を認めない。');
   }
   if (S.cls === 'normal' && !anyFinding) {
@@ -1246,8 +1344,12 @@ function warnings() {
   }
   for (i = 0; i < S.findings.length; i++) {
     var f = S.findings[i];
-    if ((f.cat === 'slow' || f.cat === 'epi') && f.dist !== 'generalized' && f.dist !== 'multifocal' && !f.loc) w.push((i + 1) + ') の部位が未選択です。');
+    if ((f.cat === 'slow' || f.cat === 'epi') && f.dist !== 'generalized' && f.dist !== 'multifocal' && f.dist !== 'bilatind' && f.dist !== 'unilatind' && !f.loc) w.push((i + 1) + ') の部位が未選択です。');
     if ((f.cat === 'slow' || f.cat === 'epi') && (f.prevT === 'p' || f.prevT === 's') && !range(f.a, f.b)) w.push((i + 1) + ') の出現頻度（ページ数・秒数）が未入力です。');
+    // ACNS の定義との食い違い
+    var hiHz = parseFloat(trim(f.f2) || trim(f.f1));
+    if (isRDA(f) && hiHz > 4) w.push((i + 1) + ') ACNSのRDAは0.5〜4 Hzです。4 Hzを超える律動性活動は、10秒未満ならBIRDs、10秒以上なら脳波上の発作にあたります。');
+    if (isPD(f) && hiHz > 2.5) w.push((i + 1) + ') ACNSでは、2.5 Hzを超える周期性放電が10秒以上続けば脳波上の発作（ESz）にあたります。持続を確かめてください。');    if (f.cat === 'seiz' && f.kind === 'eeg' && f.durU === 's' && trim(f.dur) && parseFloat(f.dur) < 10) w.push((i + 1) + ') ACNSの脳波上の発作（ESz）は10秒以上です。10秒未満の律動性放電はBIRDsにあたる可能性があります。');
   }
   return w;
 }
@@ -1277,7 +1379,7 @@ function locBlock(i, f) {
   return h;
 }
 function prevBlock(i, f) {
-  var P = [['p', 'ページあたり（1/x-yp）'], ['s', '秒あたり（1/x-ys）'], ['c', '記録中の回数'], ['none', '記載しない']];
+  var P = [['p', 'ページあたり（1/x-yp）'], ['s', '秒あたり（1/x-ys）'], ['c', '記録中の回数'], ['acns', 'ACNSの区分'], ['none', '記載しない']];
   var h = '<div class="row">';
   h += sel(i, 'prevT', P, f.prevT, '出現頻度', 1, null, true);
   if (f.prevT === 'p' || f.prevT === 's') {
@@ -1286,6 +1388,11 @@ function prevBlock(i, f) {
     h += txt(i, 'b', f.b, (f.prevT === 'p' ? 'ページ' : '秒') + '（上限）', 'narrow', f.prevT === 'p' ? '30' : '5', 'decimal');
   } else if (f.prevT === 'c') {
     h += txt(i, 'n', f.n, '回数', 'narrow', '1', 'numeric');
+  } else if (f.prevT === 'acns') {
+    var AC = isSporadicEpi(f) ? PREV_SPORADIC : PREV_RPP;
+    var AL = [];
+    for (var q = 0; q < AC.length; q++) AL.push([AC[q][0], AC[q][1] + ' ' + AC[q][2] + '（' + AC[q][3] + '）']);
+    h += sel(i, 'acat', AL, f.acat, isSporadicEpi(f) ? '区分（散発性てんかん性放電）' : '区分（記録に占める割合）', 1, null, false);
   }
   h += '</div>';
   return h;
@@ -1310,23 +1417,28 @@ function cardHTML(i) {
   h += '<button class="btn small ghost" type="button" onclick="dupF(' + i + ')">複製</button>';
   h += '<button class="btn small danger" type="button" onclick="delF(' + i + ')">削除</button></div>';
   if (f.cat === 'slow') {
-    h += '<div class="row">' + sel(i, 'cont', CONTS, f.cont, '持続性', 1, 2) + sel(i, 'morph', MORPHS, f.morph, '波形', 1, 2) + sel(i, 'band', BANDS, f.band, '周波数帯', 1, 2) + '</div>';
+    h += '<div class="row">' + (isRDA(f) ? '' : sel(i, 'cont', CONTS, f.cont, '持続性', 1, 2)) + sel(i, 'morph', MORPHS, f.morph, '波形', 1, 2, true) + sel(i, 'band', BANDS, f.band, '周波数帯', 1, 2, true) + (isRDA(f) ? sel(i, 'plus', PLUS_RDA, f.plus, 'Plus修飾子', 1, null) : '') + '</div>';
+    if (isRDA(f)) h += '<p class="hint">律動性デルタ（0.5〜4 Hz）は ACNS の RDA として出力します。出現率は「ACNSの区分」を選ぶと記録に占める割合で書けます。</p>';
     h += '<div class="row">' + txt(i, 'f1', f.f1, '周波数（下限 Hz）', 'narrow', '2', 'decimal') + txt(i, 'f2', f.f2, '周波数（上限 Hz）', 'narrow', '3', 'decimal') + '</div>';
     h += locBlock(i, f) + prevBlock(i, f) + modBlock(i, f);
   } else if (f.cat === 'epi') {
     h += '<div class="row">' + sel(i, 'type', EPIS, f.type, '種類', 1, 2, true) + '</div>';
     h += '<div class="row">' + txt(i, 'f1', f.f1, '周波数（任意・下限 Hz）', 'narrow', '', 'decimal') + txt(i, 'f2', f.f2, '周波数（上限 Hz）', 'narrow', '', 'decimal');
     if (f.type === 'burst' || f.type === 'pfa') h += txt(i, 'd1', f.d1, '持続（下限 秒）', 'narrow', '3', 'decimal') + txt(i, 'd2', f.d2, '持続（上限 秒）', 'narrow', '7', 'decimal');
+    if (isPD(f)) h += sel(i, 'plus', PLUS_PD, f.plus, 'Plus修飾子', 1, null);
     h += '</div>';
+    if (f.type === 'pfa' || f.type === 'birds') h += '<p class="hint">ACNSでは、4 Hzを超える律動性活動が0.5秒以上10秒未満なら BIRDs、10秒以上なら脳波上の発作（ESz）にあたります（突発性速波もこれに含みます）。</p>';
     h += locBlock(i, f) + prevBlock(i, f) + modBlock(i, f);
   } else if (f.cat === 'asym') {
-    h += '<div class="row">' + sel(i, 'what', ASYMS, f.what, '内容', 1, 2) + sel(i, 'side', SIDES.slice(0, 2), f.side, '低下している側', 1, null) + sel(i, 'loc', LOCS, f.loc, '部位', 1, null) + '</div>';
+    h += '<div class="row">' + sel(i, 'what', ASYMS, f.what, '内容', 1, 2) + sel(i, 'side', SIDES.slice(0, 2), f.side, '低下している側', 1, null) + sel(i, 'loc', LOCS, f.loc, '部位', 1, null) + sel(i, 'deg', [['', '記載しない'], ['mild', '軽度 mild（電位差50%未満、周波数差0.5〜1 Hz）'], ['marked', '高度 marked（電位差50%以上、周波数差1 Hz超）']], f.deg, '程度（ACNS）', 1, null) + '</div>';
   } else if (f.cat === 'seiz') {
     h += '<div class="row">' + sel(i, 'kind', SKINDS, f.kind, '種類', 1, null, true) + txt(i, 'count', f.count, '回数', 'narrow', '1', 'numeric') + '</div>';
     h += '<label class="chk"><input type="checkbox" data-f="' + i + '" data-k="video"' + (f.video ? ' checked' : '') + '>ビデオ脳波で記録</label>';
     if (f.kind !== 'noeeg') {
       h += '<div class="row">' + sel(i, 'dist', DISTS.slice(0, 3), f.dist, '起始の分布', 1, 2) + sel(i, 'side', SIDES, f.side, '左右', 1, null) + sel(i, 'loc', LOCS, f.loc, '起始部位', 1, null) + '</div>';
       h += '<div class="row">' + sel(i, 'pat', SPATS, f.pat, '発作パターン', 1, null) + txt(i, 'dur', f.dur, '持続', 'narrow', '2', 'decimal') + sel(i, 'durU', [['s', '秒'], ['m', '分']], f.durU, '単位', 1, null) + '</div>';
+      h += '<label class="chk"><input type="checkbox" data-f="' + i + '" data-k="ese"' + (f.ese ? ' checked' : '') + '>脳波上のてんかん重積状態（ESE：10分以上連続、または任意の60分間の20%以上）</label>';
+      h += '<p class="hint">ACNSの脳波上の発作（ESz）は、平均2.5 Hzを超えるてんかん性放電が10秒以上続くか、明らかな変化（evolution）を伴うパターンが10秒以上続くものです。臨床症状がはっきり伴う発作は10秒未満でも electroclinical seizure にあたります。</p>';
       h += '<div class="row">' + txt(i, 'evo_ja', f.evo_ja, '脳波の経過（日本語・任意）', 'wide', '例：10秒間の反復性棘波の後、律動性シータ活動に移行') + txt(i, 'evo_en', f.evo_en, '脳波の経過（英語・任意）', 'wide', 'e.g., evolving into rhythmic theta activity') + '</div>';
     }
     if (f.kind === 'clin' || f.kind === 'noeeg') {
