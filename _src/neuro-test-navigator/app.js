@@ -1,8 +1,9 @@
 (function () {
   'use strict';
-  var UI_REVISION = '2026.11.05-r5';
+  var UI_REVISION = '2026.11.06-r6';
   var REFERENCE_HOME = 'https://sites.google.com/kuhp.kyoto-u.ac.jp/gaichukensa/脳内検査ホーム';
   var SITE_HISTORY = [
+    {date:'2026-11-06',title:'6件の検査・相談案内を公式情報で更新しました',body:'抗NF155・抗CNTN1抗体にBMLの検査経路を追加。コレスタノール測定、研究用尿PBG迅速キット、NIIDの相談、猫ひっかき病DNA検査を新設しました。定量と定性、遺伝子検査と生化学測定、通常の検査と研究・相談の条件を区別しています。'},
     {date:'2026-11-04',title:'かずさの神経関連検査26項目を追加しました',body:'参考サイトの追加資料を手掛かりに現行公式資料と照合。HTRA1・遺伝性ジストニア・白質疾患・糖原病などを追加し、旧称と遺伝子名でも検索できるようにしました。連絡先は転載せず公式案内へリンクします。'},
     {date:'2026-11-03',title:'謝辞と更新案内を整えました',body:'参考サイトへの謝辞を明記し、機能紹介とNeuroFindの更新履歴を中心に再構成。参考サイトとの対応表は、制作・検証資料の画面へ移しました。公開版と保存用HTMLに反映しています。'},
     {date:'2026-11-03',title:'独自ドメインで公開しました',body:'医知創造ラボのツール一覧に追加。検索・比較・お気に入りと、JSONによる手動更新、検査データを含む単一HTMLの保存に対応しました。'},
@@ -187,7 +188,7 @@
   function serialize(data) { return JSON.stringify(data).replace(/</g,'\\u003c').replace(/>/g,'\\u003e').replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029'); }
   function downloadHTML() {
     var copy=document.documentElement.cloneNode(true);Array.prototype.forEach.call(copy.querySelectorAll('[data-online-only]'),function(node){node.parentNode.removeChild(node);});Array.prototype.forEach.call(copy.querySelectorAll('[inert]'),function(node){node.removeAttribute('inert');});copy.querySelector('#catalog-data').textContent=serialize(publicData());copy.querySelector('#modal-overlay').setAttribute('hidden','');copy.querySelector('#modal-body').innerHTML='';copy.querySelector('#toast').setAttribute('hidden','');copy.querySelector('#compare-tray').setAttribute('hidden','');copy.querySelector('#mobile-shade').setAttribute('hidden','');copy.querySelector('#sidebar').classList.remove('is-open');copy.querySelector('#menu-button').setAttribute('aria-expanded','false');copy.querySelector('body').style.overflow='';copy.querySelector('#search').setAttribute('value','');
-    saveFile('NeuroFind_'+String(DATA.version).replace(/[^a-zA-Z0-9._-]/g,'_')+'_ui-r5.html','<!DOCTYPE html>\n'+copy.outerHTML,'text/html;charset=utf-8');toast('検査データを含むHTMLを保存しました。院内端末のブラウザで開けます。');
+    saveFile('NeuroFind_'+String(DATA.version).replace(/[^a-zA-Z0-9._-]/g,'_')+'_ui-r6.html','<!DOCTYPE html>\n'+copy.outerHTML,'text/html;charset=utf-8');toast('検査データを含むHTMLを保存しました。院内端末のブラウザで開けます。');
   }
   function exportJSON() { saveFile('NeuroFind_data_'+DATA.version.replace(/[^a-zA-Z0-9._-]/g,'_')+'.json',JSON.stringify(publicData(),null,2),'application/json;charset=utf-8');toast('手動更新用のJSONを書き出しました。'); }
   function csvCell(value) { var s=String(value==null?'':value);if(/^[\s]*[=+\-@]/.test(s)){s="'"+s;}return '"'+s.replace(/"/g,'""')+'"'; }

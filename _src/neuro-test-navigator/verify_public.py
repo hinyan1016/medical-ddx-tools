@@ -25,8 +25,8 @@ def verify_editorial(page, qa, tag):
     page.locator('#sidebar [data-action="updates"]').click()
     expect(page.locator('#modal-title')).to_have_text('更新履歴と機能')
     expect(page.locator('.feature-card')).to_have_count(3)
-    expect(page.locator('.site-history li')).to_have_count(4)
-    expect(page.locator('.provider-updates li')).to_have_count(6)
+    expect(page.locator('.site-history li')).to_have_count(5)
+    expect(page.locator('.provider-updates li')).to_have_count(7)
     expect(page.locator('#modal-body')).to_contain_text('管理者の許可を得たうえで')
     expect(page.locator('#modal-body')).not_to_contain_text('73 / 73')
     expect(page.locator('.coverage-table')).to_have_count(0)
@@ -61,13 +61,13 @@ def main():
     assert hashlib.sha256(html).hexdigest() == record['publicHtmlSha256']
     soup = BeautifulSoup(html, 'html.parser')
     data = json.loads(soup.select_one('#catalog-data').get_text())
-    assert len(data['tests']) == record['tests'] == 131
+    assert len(data['tests']) == record['tests'] == 135
     assert len(data['coverage']['items']) == 74
     assert soup.select_one('link[rel="canonical"]')['href'] == record['publicUrl']
     assert soup.select_one('meta[name="robots"]')['content'] == 'index,follow'
     assert hashlib.sha256(json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode('utf-8')).hexdigest() == record['catalogSha256']
     cache_name = re.search(r"CACHE_NAME\s*=\s*'([^']+)'", (ROOT / 'sw.js').read_text(encoding='utf-8')).group(1)
-    checks = ['承認済みの131検査データ・74ページ対応・公開用canonicalを保持']
+    checks = ['承認済みの135検査データ・74ページ対応・公開用canonicalを保持']
     errors, offline_requests = [], []
     server = ThreadingHTTPServer(('127.0.0.1', 0), functools.partial(QuietHandler, directory=str(ROOT)))
     thread = threading.Thread(target=server.serve_forever, daemon=True)
@@ -87,7 +87,7 @@ def main():
             expect(page.locator('#catalog a.tool-card')).to_have_count(1)
             page.screenshot(path=str(qa / 'public-index.png'))
             page.locator('a.tool-card[href="neuro_test_navigator.html"]').click()
-            expect(page.locator('.test-card')).to_have_count(131)
+            expect(page.locator('.test-card')).to_have_count(135)
             page.screenshot(path=str(qa / 'public-desktop.png'))
             checks.append('ツール一覧の外注検索・神経分類・鑑別用途から新しいページへ移動')
             verify_editorial(page, qa, 'public')
@@ -124,7 +124,7 @@ def main():
             standalone.on('pageerror', lambda e: errors.append(str(e)))
             standalone.on('request', lambda r: offline_requests.append(r.url) if r.url.startswith(('http:', 'https:')) else None)
             standalone.goto(saved.as_uri())
-            expect(standalone.locator('.test-card')).to_have_count(131)
+            expect(standalone.locator('.test-card')).to_have_count(135)
             expect(standalone.locator('#data-version')).to_contain_text('-offline-check')
             expect(standalone.locator('#data-version')).to_contain_text(record['presentationRevision'])
             verify_editorial(standalone, qa, 'offline')
@@ -159,17 +159,17 @@ def main():
             live.on('pageerror', lambda e: errors.append(str(e)))
             live.goto(url + '/neuro_test_navigator.html')
             live.wait_for_function('navigator.serviceWorker.controller !== null', timeout=120000)
-            expect(live.locator('.test-card')).to_have_count(131)
+            expect(live.locator('.test-card')).to_have_count(135)
             cache = live.evaluate("async function(name){var c=await caches.open(name);var r=await c.match('./neuro_test_navigator.html');return !!r&&r.status===200;}", cache_name)
             assert cache
             pwa.set_offline(True)
             cached = pwa.new_page()
             cached.on('pageerror', lambda e: errors.append(str(e)))
             cached.goto(url + '/neuro_test_navigator.html')
-            expect(cached.locator('.test-card')).to_have_count(131)
+            expect(cached.locator('.test-card')).to_have_count(135)
             cached.locator('#search').fill('MOG')
             expect(cached.locator('[data-test-id="mog"]')).to_be_visible()
-            checks.append('新SWの全実アセットをキャッシュし、オフライン再訪でも131項目を表示・検索')
+            checks.append('新SWの全実アセットをキャッシュし、オフライン再訪でも135項目を表示・検索')
             assert not errors, errors
             pwa.close()
             browser.close()

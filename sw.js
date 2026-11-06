@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v341';
+const CACHE_NAME = 'ddx-tools-v342';
 const ASSETS = [
   './infographics/dka-initial-assessment/infographic.png',
   './infographics/ich-initial-management/abc2-method.png',
@@ -454,6 +454,7 @@ const ASSETS = [
   './infographics/imaging-radiation-exposure/index.html',
   './infographics/imaging-radiation-exposure/infographic.png',
   './infographics/imaging-radiation-exposure/thumb.png',
+  './infographics/japanese-generations-2026/index.html',
   './infographics/index.html',
   './infographics/individual-jgb/index.html',
   './infographics/insomnia-nondrug-therapy/index.html',
