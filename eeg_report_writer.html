@@ -985,7 +985,7 @@ function interpLines(L) {
     }
   }
   if (S.special === 'bs') {
-    out.push(en ? 'A burst-suppression pattern is present; it should be interpreted in light of sedative or anesthetic medication and body temperature.' : '群発と平坦化が交互に現れるパターン（burst-suppression）を認める。鎮静薬・麻酔薬の使用や低体温の有無を踏まえて解釈する必要がある。');
+    out.push(en ? 'A burst-suppression pattern is present; sedative or anesthetic effects and hypothermia should be considered.' : 'burst-suppression（群発と平坦化の交互出現）を認め、鎮静薬・麻酔薬や低体温の影響を考慮して解釈する。');
   }
 
   // 3) 局在性（徐波・非対称）を部位ごとにまとめる
@@ -1050,9 +1050,9 @@ function interpLines(L) {
   if (epiMulti) out.push(en ? 'This EEG suggests ' + focalSzWord('en') + ' arising from independent multiple foci.' : '独立した多焦点から出現する' + focalSzWord('ja') + 'を示唆する。');
   if (epiGen) out.push(en ? 'Generalized epileptiform discharges suggest a tendency to generalized seizures.' : '全般性のてんかん性放電は、全般発作を示唆する。');
   for (j = 0; j < lpd.length; j++) {
-    out.push(en ? 'Lateralized periodic discharges over ' + lw(lpd[j]) + ' are often associated with brain injury such as stroke and are strongly associated with seizures; clinical correlation is required.' : lw(lpd[j]) + 'の周期性放電（LPDs）を認める。LPDsは脳卒中などの脳障害を背景とすることが多く、てんかん発作との関連が強いため、臨床的相関の検討を要する。');
+    out.push(en ? 'Lateralized periodic discharges over ' + lw(lpd[j]) + ' are often seen with brain injury such as stroke and are strongly associated with seizures; clinical correlation is required.' : lw(lpd[j]) + 'の周期性放電（LPDs）は、脳卒中などの脳障害でみられることが多く、発作との関連が強い。臨床的相関の検討を要する。');
   }
-  if (gpd) out.push(en ? 'Generalized periodic discharges are seen in acute brain injury, systemic illness, and after cardiac arrest, and are associated with nonconvulsive seizures and nonconvulsive status epilepticus, particularly at 1.5 Hz or faster or with a Plus modifier; clinical correlation is required.' : '全般性周期性放電（GPDs）を認める。GPDsは急性の脳障害、全身疾患、心停止後などでみられ、非けいれん性発作や非けいれん性てんかん重積状態との関連があり、とくに1.5 Hz以上やPlus修飾子を伴う場合に発作との関連が強い。臨床的相関の検討を要する。');
+  if (gpd) out.push(en ? 'Generalized periodic discharges occur in acute brain injury, systemic illness, and after cardiac arrest, and are associated with nonconvulsive seizures and status epilepticus (more so at 1.5 Hz or faster or with a Plus modifier); clinical correlation is required.' : '全般性周期性放電（GPDs）は、急性の脳障害・全身疾患・心停止後などでみられ、非けいれん性の発作・てんかん重積状態と関連する（1.5 Hz以上やPlus修飾子で関連が強い）。臨床的相関の検討を要する。');
 
   // 4) 発作時記録
   for (i = 0; i < F.length; i++) {
@@ -1067,8 +1067,8 @@ function interpLines(L) {
       if (en) out.push('An electrographic seizure without clinical signs' + where + ' was recorded.');
       else out.push('記録中に、' + where + '臨床症状を伴わない脳波上の発作（electrographic seizure）が記録されている。');
     } else {
-      if (en) out.push('A clinical event was recorded without an accompanying EEG change. ' + (S.term === 'classic' ? 'Simple partial seizures' : 'Focal aware seizures') + ' often show no ictal change on scalp EEG, so the absence of an EEG change does not exclude a seizure; clinical correlation is required.');
-      else out.push('臨床的イベントが記録されたが、対応する脳波変化を認めない。' + (S.term === 'classic' ? '単純部分発作' : '焦点意識保持発作') + 'では発作時の頭皮脳波に変化が現れないことが多く、脳波変化がないことで発作は否定できない。臨床的相関の検討を要する。');
+      if (en) out.push('A clinical event was recorded without an EEG change. ' + (S.term === 'classic' ? 'Simple partial seizures' : 'Focal aware seizures') + ' often lack a scalp EEG correlate, so a seizure cannot be excluded; clinical correlation is required.');
+      else out.push('臨床的イベントを記録したが、脳波変化を認めない。' + (S.term === 'classic' ? '単純部分発作' : '焦点意識保持発作') + 'は頭皮脳波に変化が出ないことが多く、発作は否定できない。臨床的相関の検討を要する。');
     }
   }
   if (!hasEpi && !hasSz && !(S.cls === 'normal' && !anyFinding)) {
@@ -1078,7 +1078,7 @@ function interpLines(L) {
     out.push(en ? 'No epileptiform discharges were recorded.' : '記録中に明らかなてんかん性放電を認めない。');
   }
   if (hasEpi && singleEpi) {
-    out.push(en ? 'However, the epileptiform discharge was recorded only once, and clinical correlation (presence or absence of seizures) is required.' : 'ただし、てんかん性放電は記録中1回のみであり、臨床症状（発作の有無）との相関の検討を要する。');
+    out.push(en ? 'However, the epileptiform discharge was recorded only once; correlation with clinical seizures is required.' : 'ただし、てんかん性放電は記録中1回のみで、発作の有無との相関の検討を要する。');
   }
 
   // 5) Note由来
@@ -1091,19 +1091,19 @@ function interpLines(L) {
     if (S.nt.wicket) bv.push(en ? 'wicket spikes' : 'ウィケット棘波（wicket spikes）');
     if (S.nt.rmtd) bv.push(en ? 'RMTD' : '傾眠期律動性中側頭部シータ（RMTD）');
     var bvEn = bv.length > 1 ? bv.slice(0, -1).join(', ') + ' and ' + bv[bv.length - 1] : bv[0];
-    noteI.push(en ? bvEn.charAt(0).toUpperCase() + bvEn.slice(1) + ((bv.length > 1 || /s$/.test(bv[0])) ? ' are normal variants' : ' is a normal variant') + ' and should not be interpreted as epileptiform.' : bv.join('、') + 'は正常亜型であり、てんかん性放電とは判断しない。');
+    noteI.push(en ? bvEn.charAt(0).toUpperCase() + bvEn.slice(1) + ((bv.length > 1 || /s$/.test(bv[0])) ? ' are normal variants' : ' is a normal variant') + ', not epileptiform.' : bv.join('、') + 'は正常亜型で、てんかん性放電ではない。');
   }
   if (S.nt.phantom) {
-    if (S.phType === 'wham') noteI.push(en ? 'The 6 Hz phantom spike-and-wave is classified among normal variants or variants of uncertain clinical significance, but the WHAM type (waking, high amplitude, anterior, male) has been reported mainly in patients with seizures; clinical correlation is required.' : '6 Hz棘徐波（phantom spike-and-wave）は正常亜型（臨床的意義の不確かな亜型を含む）に分類されるが、WHAM型（覚醒時・高振幅・前方優位・男性）は主にてんかん発作のある例でみられると報告されており、臨床的相関の検討を要する。');
-    else if (S.phType === 'fold') noteI.push(en ? 'The 6 Hz phantom spike-and-wave of the FOLD type (female, occipital, low amplitude, drowsy) is classified among normal variants; this form has been reported mainly in patients with autonomic or psychological complaints rather than seizures.' : 'FOLD型（女性・後頭部優位・低振幅・傾眠時）の6 Hz棘徐波（phantom spike-and-wave）は正常亜型に分類される。この型は、てんかん発作よりも自律神経症状や心理的な訴えのある例で主にみられると報告されている。');
+    if (S.phType === 'wham') noteI.push(en ? 'The 6 Hz phantom spike-and-wave is a normal variant or a variant of uncertain significance, but the WHAM type (waking, high amplitude, anterior, male) is reported mainly in patients with seizures; clinical correlation is required.' : '6 Hz棘徐波（phantom spike-and-wave）は正常亜型または意義不明の亜型とされるが、WHAM型（覚醒時・高振幅・前方優位・男性）は主に発作のある例で報告されており、臨床的相関の検討を要する。');
+    else if (S.phType === 'fold') noteI.push(en ? 'The FOLD type (female, occipital, low amplitude, drowsy) of 6 Hz phantom spike-and-wave is a normal variant, reported mainly in patients with autonomic or psychological complaints rather than seizures.' : 'FOLD型（女性・後頭部優位・低振幅・傾眠時）の6 Hz棘徐波（phantom spike-and-wave）は正常亜型で、発作よりも自律神経症状や心理的な訴えのある例に多いと報告されている。');
     else noteI.push(en ? 'The 6 Hz phantom spike-and-wave fits neither the WHAM nor the FOLD type; clinical correlation is required.' : '6 Hz棘徐波（phantom spike-and-wave）はWHAM型・FOLD型のいずれとも判断しにくく、臨床的相関の検討を要する。');
   }
   if (S.nt.beta) {
-    if (S.betaEx === 'yes') noteI.push(en ? 'Excessive beta activity is among the most common EEG changes associated with medication; the effect of current medication should be considered.' : '過剰な速波（excessive beta）を認める。薬剤による脳波変化として最も多いものの一つであり、服用中の薬剤の影響を考慮する。');
+    if (S.betaEx === 'yes') noteI.push(en ? 'Excessive beta activity is present; a medication effect should be considered.' : '過剰な速波（excessive beta）を認め、服用中の薬剤の影響を考慮する。');
     else noteI.push(en ? 'Beta activity is admixed but does not meet the criteria for excessive beta.' : '速波の混入を認めるが、過剰な速波（excessive beta）の基準は満たさない。');
   }
-  if (S.nt.sorem) noteI.push(en ? 'Sleep onset REM is present. On routine EEG it can be associated with sleep deprivation or drug withdrawal; clinical correlation, including for sleep disorders such as narcolepsy, is required.' : '入眠時レム睡眠を認める。通常の脳波検査では睡眠不足や薬剤の中止に伴ってみられることがあり、ナルコレプシーなどの睡眠障害を含めて臨床的相関の検討を要する。');
-  if (S.nt.arousal) noteI.push(en ? 'Frequent alternation between wakefulness and light sleep warrants clinical correlation for sleep-disordered breathing such as obstructive sleep apnea.' : '覚醒と軽睡眠を頻回に繰り返しており、閉塞性睡眠時無呼吸などの睡眠呼吸障害について臨床的相関の検討を要する。');
+  if (S.nt.sorem) noteI.push(en ? 'Sleep onset REM is present; as it can also occur with sleep deprivation or drug withdrawal, clinical correlation, including for narcolepsy and other sleep disorders, is required.' : '入眠時レム睡眠を認める。睡眠不足や薬剤の中止でもみられるため、ナルコレプシーなどの睡眠障害を含めて臨床的相関の検討を要する。');
+  if (S.nt.arousal) noteI.push(en ? 'Frequent alternation between wakefulness and light sleep warrants clinical correlation for sleep apnea or related disorders.' : '覚醒と軽睡眠を頻回に繰り返しており、睡眠時無呼吸などについて臨床的相関の検討を要する。');
   if (S.nt.artifact) noteI.push(en ? 'Interpretation is limited by frequent artifacts.' : 'アーチファクトが多く、判読には制限がある。');
   if (S.ps === 'ppr') noteI.push(en ? 'A photoparoxysmal response suggests photosensitivity.' : '光突発反応を認め、光感受性を示唆する。');
 
