@@ -289,6 +289,14 @@ main {
   grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
   gap: 8px;
 }
+.preset-subheading {
+  margin: 16px 0 6px;
+  color: var(--navy);
+  font-size: 13px;
+}
+.preset-subheading + .preset-list {
+  grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+}
 .preset-btn {
   background: #f5f9fb;
   border: 1.5px solid #b8cddb;
@@ -853,7 +861,7 @@ footer {
       <section class="card" aria-labelledby="preset-heading">
         <div class="card-header">
           <h2 id="preset-heading">⚡ ワンクリック基本骨格セット</h2>
-          <p class="sub-hint">紹介目的＋挨拶＋導入＋結びをまとめてセットし、中央の経過欄にカーソルを合わせます</p>
+          <p class="sub-hint">紹介目的と本文をセットし、経過を記入する位置にカーソルを合わせます</p>
         </div>
         <div class="preset-list">
           <button type="button" class="preset-btn" data-preset="reply-return">
@@ -879,6 +887,28 @@ footer {
           <button type="button" class="preset-btn" data-preset="new-referral">
             ✉️ 新規紹介・逆紹介セット
             <small>挨拶 ＋ 紹介導入 ＋ ご高診依頼の結び</small>
+          </button>
+        </div>
+        <h3 class="preset-subheading">転居先の医療機関へのフォロー依頼</h3>
+        <div class="preset-list">
+          <button type="button" class="preset-btn" data-preset="relocation-neurodegenerative">
+            神経変性疾患
+            <small>症状の推移・服薬・嚥下や呼吸・療養支援</small>
+          </button>
+          <button type="button" class="preset-btn" data-preset="relocation-epilepsy">
+            てんかん
+            <small>発作型・最終発作日・服薬・発作時の対応</small>
+          </button>
+        </div>
+        <h3 class="preset-subheading">かかりつけ医への継続診療依頼</h3>
+        <div class="preset-list">
+          <button type="button" class="preset-btn" data-preset="primary-care-dementia">
+            認知症
+            <small>認知機能・生活状況・介護支援・再相談の目安</small>
+          </button>
+          <button type="button" class="preset-btn" data-preset="primary-care-stroke">
+            脳梗塞後
+            <small>病型・後遺症・再発予防・専門外来との分担</small>
           </button>
         </div>
       </section>
@@ -1375,6 +1405,59 @@ footer {
     { id: 'custom', label: '7. その他・マイ定型文' }
   ];
 
+  // 診療継続用のひな形。診療上の判断や患者固有の情報は記入欄とする。
+  var FOLLOWUP_PRESETS = {
+    'relocation-neurodegenerative': {
+      purpose: '転居に伴う神経変性疾患の継続診療のお願い',
+      intro: '神経変性疾患で当院外来に通院中の{患者}につきまして、転居に伴い、貴院での継続診療をお願いしたくご紹介申し上げます。',
+      lines: [
+        '【診断・経過】病名、発症・診断時期、診断根拠となった所見、最近の進行状況：○○',
+        '【現在の状態】主な症状、歩行・転倒、日常生活動作、嚥下・栄養、呼吸や自律神経症状のうち該当するもの：○○',
+        '【治療】現在の薬剤・用量・服用時刻、治療効果・副作用、薬効の日内変動や医療機器の管理（該当する場合）：○○',
+        '【療養支援】介助者、訪問看護やリハビリの利用状況、転居先で調整中の支援（該当する場合は難病医療費助成の手続き状況）：○○',
+        '【引き継ぎのお願い】優先してご確認いただきたい事項、予定している検査、初診希望時期、現処方が切れる時期：○○',
+        '【添付資料】○○'
+      ]
+    },
+    'relocation-epilepsy': {
+      purpose: '転居に伴うてんかんの継続診療のお願い',
+      intro: 'てんかんで当院外来に通院中の{患者}につきまして、転居に伴い、貴院での継続診療をお願いしたくご紹介申し上げます。',
+      lines: [
+        '【診断・検査】発症時期、てんかんの病型・病因、脳波・頭部画像の主な所見：○○',
+        '【発作の経過】発作時の様子、発作型ごとの頻度・最終発作日、重積や救急受診歴：○○',
+        '【治療】現在の抗てんかん発作薬・用量・用法、服薬状況、副作用、過去に使用した薬剤と変更理由：○○',
+        '【発作時の対応・生活指導】本人・家族に説明済みの対応、救急要請の目安、頓用薬の使用条件・用法（処方がある場合）、運転等に関する指導内容：○○',
+        '【引き継ぎのお願い】初診希望時期、現処方が切れる時期、今後の検査や治療上の課題：○○',
+        '【添付資料】○○'
+      ]
+    },
+    'primary-care-dementia': {
+      purpose: '認知症の継続診療と療養支援のお願い',
+      intro: '認知症で当院外来に通院中の{患者}につきまして、今後の日常診療と療養支援をお願いしたくご紹介申し上げます。',
+      lines: [
+        '【診断・経過】病型、診断時期、診断の根拠、直近の認知機能検査（検査日・検査名・結果）：○○',
+        '【現在の状態】日常生活動作、服薬・金銭管理、行動・心理症状（BPSD）と対応状況：○○',
+        '【治療】現在の薬剤・用量・用法、治療効果、副作用や処方変更時の注意点：○○',
+        '【生活・介護】生活環境、主な介護者、ケアマネジャーや利用中のサービス：○○',
+        '【診療の分担】貴院にお願いしたい処方・経過観察、専門外来で継続する診療（該当する場合）、再相談をお願いしたい変化と連絡先：○○',
+        '【添付資料】○○'
+      ]
+    },
+    'primary-care-stroke': {
+      purpose: '脳梗塞後の再発予防と継続診療のお願い',
+      intro: '脳梗塞後に当院外来で経過をみております{患者}につきまして、再発予防を含めた日常診療をお願いしたくご紹介申し上げます。',
+      lines: [
+        '【発症・診断】発症日、梗塞部位、病型・推定原因、主な検査所見と治療経過：○○',
+        '【現在の状態】後遺症、日常生活動作、嚥下や高次脳機能、リハビリの利用状況：○○',
+        '【再発予防】現在の抗血栓薬（使用中の場合）、選択理由・用量、併用時の予定期間、出血歴やモニタリング上の注意点：○○',
+        '【危険因子の管理】血圧・脂質・糖尿病・心房細動など、該当する項目の管理状況と個別の方針：○○',
+        '【診療の分担】貴院にお願いしたい処方・検査、専門外来で継続する診療（該当する場合）、再相談の目安と連絡先：○○',
+        '新たに脳卒中を疑う症状が現れた場合は、すぐに救急車を呼ぶよう、ご本人やご家族へのご説明をお願いいたします。',
+        '【添付資料】○○'
+      ]
+    }
+  };
+
   var state = {
     callMode: 'sama',
     patientName: '',
@@ -1646,10 +1729,11 @@ footer {
     return applyImagingModeToText(out, state.imagingMode);
   }
 
-  function pushUndo() {
+  function pushUndo(purpose) {
     var current = el('editor-textarea').value;
-    if (state.undoStack.length === 0 || state.undoStack[state.undoStack.length - 1] !== current) {
-      state.undoStack.push(current);
+    var last = state.undoStack[state.undoStack.length - 1];
+    if (purpose !== undefined || !last || last.text !== current || last.purpose !== undefined) {
+      state.undoStack.push({ text: current, purpose: purpose });
       if (state.undoStack.length > 30) state.undoStack.shift();
     }
     el('btn-undo').disabled = state.undoStack.length === 0;
@@ -1876,8 +1960,15 @@ footer {
     var text = '';
     var cursorTarget = '';
     var purposeText = '';
+    var followup = FOLLOWUP_PRESETS[presetKey];
 
-    if (presetKey === 'reply-return') {
+    if (followup) {
+      purposeText = followup.purpose;
+      cursorTarget = followup.intro.replace('{患者}', function () { return call; }) + '\n\n';
+      text = '平素より大変お世話になっております。\n\n' +
+        cursorTarget + followup.lines.join('\n') + '\n\n' +
+        'お手数をおかけいたしますが、今後ともどうぞよろしくお願い申し上げます。';
+    } else if (presetKey === 'reply-return') {
       purposeText = '精査結果のご報告と今後のご加療継続のお願い';
       cursorTarget = 'ご紹介いただきました' + call + 'は、本日当院を受診されました。\n';
       text =
@@ -1929,20 +2020,22 @@ footer {
 
     var textarea = el('editor-textarea');
     if (textarea.value.replace(/\s+/g, '') !== '') {
-      if (!window.confirm('現在の本文をこの基本骨格セットに置き換えますか？\n（置き換えたあとも「↩ 1つ戻す」で元に戻せます）')) {
+      if (!window.confirm('現在の紹介目的と本文をこの基本骨格セットに置き換えますか？\n（置き換えたあとも「↩ 1つ戻す」で元に戻せます）')) {
         return;
       }
     }
 
-    pushUndo();
-    if (purposeText) el('inp-purpose').value = purposeText;
+    var purposeInput = el('inp-purpose');
+    pushUndo(purposeText !== purposeInput.value ? purposeInput.value : undefined);
+    purposeInput.value = purposeText;
     textarea.value = text;
     var pos = text.indexOf(cursorTarget);
     var caret = pos !== -1 ? pos + cursorTarget.length : text.length;
     textarea.focus();
     textarea.setSelectionRange(caret, caret);
     updateEditorStats();
-    showToast('基本骨格と紹介目的をセットしました。続けて単語ボタンをクリックするとカーソル位置に挿入されます。');
+    showToast(followup ? '紹介目的と本文をセットしました。「○○」を記入し、該当しない項目は削除してください。' :
+      '基本骨格と紹介目的をセットしました。続けて単語ボタンをクリックするとカーソル位置に挿入されます。');
   }
 
   // 2. 回復期リハ ADL・状態クイック組み立てバー
@@ -2699,7 +2792,9 @@ footer {
 
     el('btn-undo').addEventListener('click', function () {
       if (state.undoStack.length === 0) return;
-      el('editor-textarea').value = state.undoStack.pop();
+      var previous = state.undoStack.pop();
+      el('editor-textarea').value = previous.text;
+      if (previous.purpose !== undefined) el('inp-purpose').value = previous.purpose;
       el('btn-undo').disabled = state.undoStack.length === 0;
       updateEditorStats();
       showToast('1つ前の状態に戻しました。');
