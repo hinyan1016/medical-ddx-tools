@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1E3A5F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>脳波所見作成ツール（日本語・英語切り替え）</title>
+<meta name="description" content="判定・背景活動・所見の列挙・Note・判読と推奨の順に、脳波レポートの所見文を組み立てます。出力は日本語・英語・英日併記（所見は英語、判読は日本語）を切り替えられます。">
+<meta property="og:title" content="脳波所見作成ツール（日本語・英語切り替え）">
+<meta property="og:description" content="判定・背景活動・所見の列挙・Note・判読と推奨の順に、脳波レポートの所見文を組み立てます。出力は日本語・英語・英日併記（所見は英語、判読は日本語）を切り替えられます。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tools.ichisouzo-lab.com/eeg_report_writer.html">
+<meta property="og:image" content="https://tools.ichisouzo-lab.com/assets/og-tools.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="医知創造ラボ">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root {
+    --navy: #1E3A5F;
+    --blue: #2563EB;
+    --light-blue: #EFF6FF;
+    --line: #E2E8F0;
+    --text: #1E293B;
+    --sub: #64748B;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04);
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Hiragino Sans", "Segoe UI", sans-serif;
+    background: linear-gradient(145deg, #F8FAFC 0%, #EFF6FF 50%, #F0F9FF 100%);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 72px;
+    line-height: 1.6;
+  }
+  .header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+    color: #fff;
+    padding: 18px 16px 16px;
+    text-align: center;
+    position: relative;
+  }
+  .header-sub { font-size: 0.7rem; opacity: 0.8; letter-spacing: 2px; margin-bottom: 4px; }
+  .header h1 { font-size: 1.15rem; font-weight: 700; line-height: 1.4; }
+  .header p { font-size: 0.78rem; opacity: 0.85; margin-top: 6px; }
+  .back-link {
+    position: absolute; left: 12px; top: 14px;
+    color: #fff; text-decoration: none; font-size: 0.9rem; opacity: 0.85;
+  }
+  .layout { max-width: 1240px; margin: 0 auto; padding: 14px 10px; }
+  .disclaimer {
+    background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 10px;
+    padding: 10px 14px; margin-bottom: 14px; font-size: 0.8rem; color: #92400E;
+  }
+  .card {
+    background: #fff; border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 16px; margin-bottom: 14px;
+  }
+  .card h2 {
+    font-size: 1rem; color: var(--navy); margin-bottom: 10px;
+    padding-left: 10px; border-left: 4px solid var(--blue);
+  }
+  .card h3 { font-size: 0.88rem; color: #334155; margin: 12px 0 6px; }
+  .hint { font-size: 0.76rem; color: var(--sub); margin-top: 4px; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; }
+  .fld { display: flex; flex-direction: column; min-width: 0; flex: 1 1 140px; }
+  .fld.narrow { flex: 0 1 90px; }
+  .fld.wide { flex: 1 1 100%; }
+  .fld label, .lbl { font-size: 0.75rem; color: #475569; margin-bottom: 3px; font-weight: 600; }
+  select, input[type=text], input[type=number], textarea {
+    font-family: inherit; font-size: 0.9rem; color: var(--text);
+    border: 1.5px solid #CBD5E1; border-radius: 8px; padding: 7px 8px;
+    background: #fff; width: 100%; max-width: 100%;
+  }
+  textarea { min-height: 60px; resize: vertical; }
+  select:focus, input:focus, textarea:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+  .chk { display: inline-flex; align-items: center; gap: 5px; font-size: 0.84rem; margin: 2px 12px 2px 0; cursor: pointer; }
+  .chk input { width: 17px; height: 17px; accent-color: var(--blue); }
+  .btn {
+    font-family: inherit; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+    border-radius: 8px; padding: 8px 12px; border: 1.5px solid var(--blue);
+    background: #fff; color: var(--blue);
+  }
+  .btn:hover { background: var(--light-blue); }
+  .btn.primary { background: var(--blue); color: #fff; }
+  .btn.primary:hover { background: #1D4ED8; }
+  .btn.small { font-size: 0.76rem; padding: 4px 8px; }
+  .btn.ghost { border-color: #CBD5E1; color: #475569; }
+  .btn.danger { border-color: #FCA5A5; color: #B91C1C; }
+  .btnrow { display: flex; flex-wrap: wrap; gap: 8px; }
+  .finding {
+    border: 1.5px solid var(--line); border-radius: 12px; padding: 12px;
+    margin-bottom: 10px; background: #FAFCFF;
+  }
+  .finding-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  .finding-no { font-weight: 700; color: var(--navy); }
+  .tag { font-size: 0.72rem; font-weight: 700; border-radius: 999px; padding: 2px 9px; }
+  .tag.slow { background: #E0F2FE; color: #075985; }
+  .tag.epi { background: #FEE2E2; color: #991B1B; }
+  .tag.asym { background: #EDE9FE; color: #5B21B6; }
+  .tag.seiz { background: #FFEDD5; color: #9A3412; }
+  .tag.other { background: #F1F5F9; color: #334155; }
+  .finding-head .sp { flex: 1; }
+  .preview-line { font-size: 0.78rem; color: #0F766E; background: #F0FDFA; border-radius: 6px; padding: 5px 8px; margin-top: 6px; word-break: break-word; }
+  .seg { display: inline-flex; border: 1.5px solid var(--blue); border-radius: 9px; overflow: hidden; }
+  .seg button {
+    font-family: inherit; font-size: 0.82rem; font-weight: 600; border: none; background: #fff;
+    color: var(--blue); padding: 7px 12px; cursor: pointer;
+  }
+  .seg button + button { border-left: 1.5px solid var(--blue); }
+  .seg button.on { background: var(--blue); color: #fff; }
+  .out-card { position: relative; }
+  .out-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  #output {
+    white-space: pre-wrap; word-break: break-word; font-family: "游ゴシック", "Yu Gothic", "Hiragino Sans", "Segoe UI", sans-serif;
+    font-size: 0.88rem; line-height: 1.75; background: #F8FAFC; border: 1px solid var(--line);
+    border-radius: 10px; padding: 12px; min-height: 200px; color: #0F172A;
+  }
+  .warn { background: #FEF2F2; border: 1px solid #FECACA; color: #991B1B; border-radius: 8px; padding: 8px 10px; font-size: 0.78rem; margin-top: 8px; }
+  .toast { position: fixed; left: 50%; bottom: 80px; transform: translateX(-50%); background: #0F172A; color: #fff; padding: 8px 16px; border-radius: 999px; font-size: 0.85rem; opacity: 0; transition: opacity .25s; pointer-events: none; z-index: 300; }
+  .toast.show { opacity: 0.92; }
+  .jump { display: none; }
+  .note-grid { display: grid; grid-template-columns: 1fr; gap: 2px; }
+  details.help { margin-top: 8px; font-size: 0.8rem; color: #334155; }
+  details.help summary { cursor: pointer; font-weight: 700; color: var(--navy); border: 1px solid #BFDBFE; background: #EFF6FF; border-radius: 8px; padding: 6px 10px; }
+  details.help summary .op { display: block; font-size: 0.72rem; font-weight: 500; color: #475569; }
+  details.help div { padding: 8px 4px; }
+  details.help li { margin-left: 18px; }
+  @media (min-width: 980px) {
+    .layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 470px); gap: 16px; align-items: start; }
+    .disclaimer { grid-column: 1 / -1; margin-bottom: 0; }
+    .out-col { position: sticky; top: 12px; max-height: calc(100vh - 24px); overflow: auto; }
+    body { padding-bottom: 24px; }
+  }
+  @media (max-width: 979px) {
+    .jump {
+      display: block; position: fixed; right: 12px; bottom: 14px; z-index: 200;
+      background: var(--blue); color: #fff; border-radius: 999px; padding: 10px 16px;
+      font-weight: 700; font-size: 0.88rem; text-decoration: none; box-shadow: 0 6px 18px rgba(37,99,235,0.35);
+    }
+  }
+  @media (max-width: 480px) {
+    .card { padding: 13px; }
+    .fld { flex-basis: 120px; }
+    .seg button { padding: 7px 9px; font-size: 0.78rem; }
+  }
+</style>
+</head>
+<body>
+<nav id="ics-globalnav" style="background:#15324E;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
+<div style="max-width:1040px;margin:0 auto;padding:8px 12px;display:flex;align-items:center;gap:2px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;">
+<a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;padding-right:8px;">医知創造ラボ</a>
+<a href="https://ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ホーム</a>
+<a href="https://blog.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ブログ</a>
+<a href="https://tools.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ツール</a>
+<a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">YouTube</a>
+</div>
+</nav>
+
+<div class="header">
+  <a class="back-link" href="index.html">← 戻る</a>
+  <div class="header-sub">EEG REPORT WRITER</div>
+  <h1>脳波所見作成ツール</h1>
+  <p>所見を選ぶと、日本語・英語のレポート文がその場で組み上がります</p>
+</div>
+
+<div class="layout">
+  <div class="disclaimer">
+    &#x26A0;&#xFE0F; 文章作成の補助ツールです。判読と最終的な文面は、判読医が記録を見て決めてください。「判読と推奨」の文は所見から自動で提案される下書きです。患者氏名やIDは入力しないでください（入力内容はこの端末の外へ送信されず、保存もしません）。
+  </div>
+
+  <div class="form-col">
+    <!-- 0. 記入例 -->
+    <div class="card">
+      <h2>記入例・設定</h2>
+      <div class="lbl">記入例を読み込む（架空の例です）</div>
+      <div class="btnrow" style="margin-bottom:10px;">
+        <button class="btn small" type="button" onclick="loadSample('normal')">正常（覚醒・睡眠）</button>
+        <button class="btn small" type="button" onclick="loadSample('focal')">左側頭部の焦点性異常</button>
+        <button class="btn small" type="button" onclick="loadSample('diffuse')">意識障害・びまん性異常</button>
+        <button class="btn small" type="button" onclick="loadSample('gen')">全般性てんかん性放電</button>
+        <button class="btn small danger" type="button" onclick="resetAll()">すべてクリア</button>
+      </div>
+      <div class="row">
+        <div class="fld">
+          <label for="s_term">用語の体系</label>
+          <select id="s_term" data-s="term">
+            <option value="current">現行（焦点発作・N1〜N3）</option>
+            <option value="classic">従来（部分発作・Stage I〜IV）</option>
+          </select>
+        </div>
+        <div class="fld">
+          <label for="s_diffWord">びまん性異常の表し方</label>
+          <select id="s_diffWord" data-s="diffWord">
+            <option value="enc">びまん性脳症（diffuse encephalopathy）</option>
+            <option value="dys">びまん性脳機能障害（diffuse cerebral dysfunction）</option>
+          </select>
+        </div>
+      </div>
+      <details class="help">
+        <summary>レポートの組み立て方<span class="op">クリック／タップで開閉</span></summary>
+        <div>
+          <ol>
+            <li>判定（正常〜高度異常）と記録状態を書き、異常なら「EEG because of:」の後に背景活動を書きます。</li>
+            <li>異常所見は1行1所見で番号を付け、「持続性・波形・周波数帯 → 分布 → 部位 → 出現頻度 → 出現状況」の順に並べます。</li>
+            <li>てんかん性放電と区別すべき良性亜型や睡眠所見は「Note」に分けて書きます。</li>
+            <li>「判読と推奨」では、所見が何を示唆するか（びまん性異常・局在性異常・てんかん原性）と、臨床的相関や再検の要否をまとめます。</li>
+          </ol>
+          <p class="hint">出現頻度の「1/10-30p」は、10〜30ページ（画面）に1回の意味です。1ページの秒数は記録条件に合わせて読み替えてください。</p>
+        </div>
+      </details>
+    </div>
+
+    <!-- 1. 基本情報・記録状態 -->
+    <div class="card">
+      <h2>1. 基本情報・記録状態</h2>
+      <div class="row">
+        <div class="fld narrow"><label for="s_age">年齢</label><input type="number" id="s_age" data-s="age" min="0" max="120" inputmode="numeric"></div>
+        <div class="fld narrow"><label for="s_sex">性別</label>
+          <select id="s_sex" data-s="sex"><option value="">未記載</option><option value="M">男性</option><option value="F">女性</option></select>
+        </div>
+        <div class="fld"><label for="s_clin_ja">臨床情報（日本語）</label><input type="text" id="s_clin_ja" data-s="clin_ja" placeholder="例：意識障害の精査"></div>
+        <div class="fld"><label for="s_clin_en">臨床情報（英語）</label><input type="text" id="s_clin_en" data-s="clin_en" placeholder="e.g., altered mental status"></div>
+      </div>
+      <p class="hint">臨床情報は出力言語の欄が使われます。片方だけ入力したときは、その文をそのまま出力します。</p>
+      <h3>記録中の状態</h3>
+      <div>
+        <label class="chk"><input type="checkbox" data-s="st.awake">覚醒 Awake</label>
+        <label class="chk"><input type="checkbox" data-s="st.drowsy">傾眠 Drowsy</label>
+        <label class="chk"><input type="checkbox" data-s="st.sleep">睡眠 Sleep</label>
+        <label class="chk"><input type="checkbox" data-s="st.coma">昏睡 Comatose</label>
+      </div>
+      <h3>睡眠段階の割合（％・任意）</h3>
+      <div class="row" id="sleepRow">
+        <div class="fld narrow"><label for="sp_w">覚醒</label><input type="number" id="sp_w" data-s="sp.w" min="0" max="100" inputmode="numeric"></div>
+        <div class="fld narrow"><label for="sp_s1" class="stg" data-c="Stage I" data-n="N1">N1</label><input type="number" id="sp_s1" data-s="sp.s1" min="0" max="100" inputmode="numeric"></div>
+        <div class="fld narrow"><label for="sp_s2" class="stg" data-c="Stage II" data-n="N2">N2</label><input type="number" id="sp_s2" data-s="sp.s2" min="0" max="100" inputmode="numeric"></div>
+        <div class="fld narrow"><label for="sp_s3" class="stg" data-c="Stage III" data-n="N3">N3</label><input type="number" id="sp_s3" data-s="sp.s3" min="0" max="100" inputmode="numeric"></div>
+        <div class="fld narrow" id="s4wrap"><label for="sp_s4">Stage IV</label><input type="number" id="sp_s4" data-s="sp.s4" min="0" max="100" inputmode="numeric"></div>
+        <div class="fld narrow"><label for="sp_rem">REM</label><input type="number" id="sp_rem" data-s="sp.rem" min="0" max="100" inputmode="numeric"></div>
+      </div>
+    </div>
+
+    <!-- 2. 判定・背景活動 -->
+    <div class="card">
+      <h2>2. 判定と背景活動</h2>
+      <div class="row">
+        <div class="fld"><label for="s_cls">判定</label>
+          <select id="s_cls" data-s="cls">
+            <option value="normal">正常 Normal</option>
+            <option value="mild">軽度異常 Mildly abnormal</option>
+            <option value="mildmod">軽度から中等度の異常 Mildly to moderately abnormal</option>
+            <option value="moderate">中等度異常 Moderately abnormal</option>
+            <option value="modmarked">中等度から高度の異常 Moderately to markedly abnormal</option>
+            <option value="marked">高度異常 Markedly abnormal</option>
+          </select>
+        </div>
+      </div>
+      <h3>後頭部優位律動（posterior dominant rhythm）</h3>
+      <div class="row">
+        <div class="fld"><label for="s_pdrOrg">組織化</label>
+          <select id="s_pdrOrg" data-s="pdrOrg">
+            <option value="well">良好 well organized</option>
+            <option value="mild">ごく軽度不良 mildly poorly organized</option>
+            <option value="poor">軽度不良 poorly organized</option>
+            <option value="disorg">不良 disorganized</option>
+            <option value="absent">認めない lack of PDR</option>
+          </select>
+        </div>
+        <div class="fld narrow"><label for="s_pdrF1">周波数（下限 Hz）</label><input type="text" id="s_pdrF1" data-s="pdrF1" inputmode="decimal" placeholder="9"></div>
+        <div class="fld narrow"><label for="s_pdrF2">周波数（上限 Hz）</label><input type="text" id="s_pdrF2" data-s="pdrF2" inputmode="decimal" placeholder="10"></div>
+      </div>
+      <div class="row">
+        <div class="fld"><label for="s_pdrAsym">左右差</label>
+          <select id="s_pdrAsym" data-s="pdrAsym">
+            <option value="none">なし／記載しない</option>
+            <option value="poorR">右側でより不良</option>
+            <option value="poorL">左側でより不良</option>
+            <option value="lackR">右側では認めない</option>
+            <option value="lackL">左側では認めない</option>
+          </select>
+        </div>
+        <div class="fld"><label for="s_pdrReact">開眼による反応性</label>
+          <select id="s_pdrReact" data-s="pdrReact">
+            <option value="">記載しない</option>
+            <option value="good">開眼で抑制される</option>
+            <option value="poor">開眼による抑制が乏しい</option>
+          </select>
+        </div>
+        <div class="fld"><label for="s_special">背景活動の特殊パターン</label>
+          <select id="s_special" data-s="special">
+            <option value="none">なし</option>
+            <option value="bs">burst-suppression</option>
+            <option value="supp">背景活動の抑制（suppression）</option>
+            <option value="lowv">びまん性低電位</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. 所見 -->
+    <div class="card">
+      <h2>3. 所見（1行1所見）</h2>
+      <div class="btnrow" style="margin-bottom:10px;">
+        <button class="btn small" type="button" onclick="addFinding('slow')">＋ 徐波</button>
+        <button class="btn small" type="button" onclick="addFinding('epi')">＋ てんかん性放電・周期性放電</button>
+        <button class="btn small" type="button" onclick="addFinding('asym')">＋ 非対称（速波・紡錘波の低下など）</button>
+        <button class="btn small" type="button" onclick="addFinding('seiz')">＋ 発作時記録</button>
+        <button class="btn small" type="button" onclick="addFinding('other')">＋ その他（自由記載）</button>
+      </div>
+      <div id="findings"></div>
+      <p class="hint" id="noFinding">所見はまだありません。上のボタンで追加してください。</p>
+    </div>
+
+    <!-- 4. Note・賦活 -->
+    <div class="card">
+      <h2>4. Note（良性亜型・睡眠関連など）と賦活</h2>
+      <div class="note-grid">
+        <label class="chk"><input type="checkbox" data-s="nt.st">鋭一過性波 sharp transients（睡眠期）</label>
+        <label class="chk"><input type="checkbox" data-s="nt.p146">14&amp;6 Hz陽性棘波 14 &amp; 6 Hz positive spikes</label>
+        <label class="chk"><input type="checkbox" data-s="nt.bets">small sharp spikes（BETS）</label>
+        <label class="chk"><input type="checkbox" data-s="nt.wicket">wicket spikes</label>
+        <label class="chk"><input type="checkbox" data-s="nt.rmtd">傾眠期律動性中側頭部シータ（RMTD）</label>
+        <label class="chk"><input type="checkbox" data-s="nt.phantom">6 Hz棘徐波（phantom spike-and-wave）</label>
+      </div>
+      <div class="row" style="margin:4px 0 6px 22px;">
+        <div class="fld"><label for="s_phType">phantom spike-and-waveの型</label>
+          <select id="s_phType" data-s="phType">
+            <option value="wham">WHAM型（覚醒・高振幅・前方・男性）</option>
+            <option value="fold">FOLD型（女性・後頭部・低振幅・傾眠）</option>
+            <option value="und">どちらともいえない</option>
+          </select>
+        </div>
+        <div class="fld narrow"><label for="s_phN">回数</label><input type="number" id="s_phN" data-s="phN" min="1" inputmode="numeric"></div>
+      </div>
+      <div class="note-grid">
+        <label class="chk"><input type="checkbox" data-s="nt.beta">速波の混入（admixed beta activity）</label>
+      </div>
+      <div class="row" style="margin:4px 0 6px 22px;">
+        <div class="fld"><label for="s_betaEx">excessive betaの判断</label>
+          <select id="s_betaEx" data-s="betaEx">
+            <option value="no">基準を満たさない</option>
+            <option value="yes">excessive betaと判断する</option>
+          </select>
+        </div>
+      </div>
+      <div class="note-grid">
+        <label class="chk"><input type="checkbox" data-s="nt.sorem">入眠時レム睡眠 sleep onset REM</label>
+        <label class="chk"><input type="checkbox" data-s="nt.arousal">覚醒と軽睡眠を頻回に繰り返す</label>
+        <label class="chk"><input type="checkbox" data-s="nt.artifact">アーチファクトが多く判読に制限がある</label>
+      </div>
+      <h3>賦活</h3>
+      <div class="row">
+        <div class="fld"><label for="s_hv">過呼吸（HV）</label>
+          <select id="s_hv" data-s="hv">
+            <option value="">記載しない</option>
+            <option value="nd">未実施</option>
+            <option value="nc">著変なし</option>
+            <option value="bu">build-up（非特異的な徐波化）</option>
+            <option value="act">上記の異常所見が増加</option>
+            <option value="poor">施行が不十分</option>
+          </select>
+        </div>
+        <div class="fld"><label for="s_ps">光刺激（PS）</label>
+          <select id="s_ps" data-s="ps">
+            <option value="">記載しない</option>
+            <option value="nd">未実施</option>
+            <option value="nc">著変なし</option>
+            <option value="drv">光駆動反応 photic driving</option>
+            <option value="ppr">光突発反応 photoparoxysmal response</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. 判読と推奨 -->
+    <div class="card">
+      <h2>5. 判読と推奨</h2>
+      <div class="row">
+        <div class="fld"><label for="s_diffDeg">びまん性異常の程度</label>
+          <select id="s_diffDeg" data-s="diffDeg">
+            <option value="auto">自動（判定と所見から）</option>
+            <option value="none">記載しない</option>
+            <option value="mild">軽度</option>
+            <option value="mildmod">軽度から中等度</option>
+            <option value="moderate">中等度</option>
+            <option value="modmarked">中等度から高度</option>
+            <option value="marked">高度</option>
+          </select>
+        </div>
+        <div class="fld"><label for="s_diffPred">左右の優位</label>
+          <select id="s_diffPred" data-s="diffPred">
+            <option value="none">なし</option>
+            <option value="R">右優位</option>
+            <option value="L">左優位</option>
+          </select>
+        </div>
+      </div>
+      <p class="hint">「自動」は目安です。後頭部優位律動のごく軽度不良・軽度不良を軽度、不良（disorganized）を軽度から中等度とし、全般性徐波があれば1段階（持続的なら2段階）上げます。後頭部優位律動を認めなければ中等度以上、昏睡なら中等度から高度以上、burst-suppression・抑制は高度とします。記録に合わせて選び直してください。</p>
+      <h3>前回脳波との比較</h3>
+      <div class="row">
+        <div class="fld"><label for="s_prevDate">前回の検査日</label><input type="text" id="s_prevDate" data-s="prevDate" placeholder="2026/05/12"></div>
+        <div class="fld"><label for="s_prevChg">変化</label>
+          <select id="s_prevChg" data-s="prevChg">
+            <option value="">記載しない</option>
+            <option value="same">著変なし</option>
+            <option value="better">改善</option>
+            <option value="worse">悪化</option>
+          </select>
+        </div>
+      </div>
+      <h3>推奨</h3>
+      <div class="note-grid">
+        <label class="chk"><input type="checkbox" data-s="rec.clin">臨床症状との相関の検討を要する</label>
+        <label class="chk"><input type="checkbox" data-s="rec.repeat">必要に応じて脳波の再検査</label>
+        <label class="chk"><input type="checkbox" data-s="rec.sleep">睡眠を含む脳波の再検査</label>
+        <label class="chk"><input type="checkbox" data-s="rec.ltm">長時間ビデオ脳波モニタリング</label>
+        <label class="chk"><input type="checkbox" data-s="rec.img">画像所見（MRIなど）との対比</label>
+        <label class="chk"><input type="checkbox" data-s="rec.normal">発作間欠期の脳波が正常でも、てんかんは否定されない</label>
+      </div>
+      <h3>追加コメント（自由記載）</h3>
+      <div class="row">
+        <div class="fld wide"><label for="s_cmt_ja">日本語</label><textarea id="s_cmt_ja" data-s="cmt_ja" placeholder="例：右頭頂後頭部の陳旧性脳梗塞の画像所見と合致する。"></textarea></div>
+        <div class="fld wide"><label for="s_cmt_en">英語</label><textarea id="s_cmt_en" data-s="cmt_en" placeholder="e.g., The focal slowing is concordant with the old right parieto-occipital infarct on MRI."></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 出力 -->
+  <div class="out-col" id="outCol">
+    <div class="card out-card">
+      <div class="out-head">
+        <h2 style="margin:0;">出力</h2>
+        <div class="seg" role="group" aria-label="出力言語">
+          <button type="button" id="lang_ja" onclick="setLang('ja')">日本語</button>
+          <button type="button" id="lang_en" onclick="setLang('en')">English</button>
+          <button type="button" id="lang_mix" onclick="setLang('mix')">英日併記</button>
+        </div>
+      </div>
+      <p class="hint" id="langHint" style="margin-bottom:8px;"></p>
+      <div id="output" aria-live="polite"></div>
+      <div id="warnings"></div>
+      <div class="btnrow" style="margin-top:10px;">
+        <button class="btn primary" type="button" onclick="copyText('all')">すべてコピー</button>
+        <button class="btn" type="button" onclick="copyText('findings')">所見だけコピー</button>
+        <button class="btn" type="button" onclick="copyText('interp')">判読だけコピー</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<a class="jump" href="#outCol">出力を見る ↓</a>
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== 辞書 =====
+var LOCS = [
+  ['', '（部位なし）', '', ''],
+  ['frontopolar', '前頭極部', 'frontopolar', 'frontopolar'],
+  ['frontal', '前頭部', 'frontal', 'frontal'],
+  ['frontotemporal', '前頭側頭部', 'frontotemporal', 'frontotemporal'],
+  ['frontocentral', '前頭中心部', 'frontocentral', 'frontocentral'],
+  ['anteriortemporal', '前側頭部', 'anterior temporal', 'anterior temporal'],
+  ['temporal', '側頭部', 'temporal', 'temporal'],
+  ['midtemporal', '中側頭部', 'midtemporal', 'midtemporal'],
+  ['posteriortemporal', '後側頭部', 'posterior temporal', 'posterior temporal'],
+  ['central', '中心部', 'central', 'central'],
+  ['centroparietal', '中心頭頂部', 'centroparietal', 'centroparietal'],
+  ['parietal', '頭頂部', 'parietal', 'parietal'],
+  ['parietooccipital', '頭頂後頭部', 'parieto-occipital', 'parieto-occipital'],
+  ['temporooccipital', '側頭後頭部', 'temporo-occipital', 'temporo-occipital'],
+  ['occipital', '後頭部', 'occipital', 'occipital'],
+  ['posteriorquadrant', '後方領域（後方四分円）', 'posterior quadrant', 'posterior quadrant'],
+  ['hemisphere', '半球', 'hemisphere', 'hemisphere'],
+  ['vertex', '頭蓋頂部', 'vertex', 'vertex'],
+  ['midline', '正中部', 'midline', 'midline']
+];
+var SIDES = [
+  ['R', '右', 'R', 'right'],
+  ['L', '左', 'L', 'left'],
+  ['B', '両側', 'bilateral', 'bilateral'],
+  ['RL', '両側（右優位）', 'bilateral (R>L)', 'bilateral, right-predominant'],
+  ['LR', '両側（左優位）', 'bilateral (L>R)', 'bilateral, left-predominant']
+];
+var DISTS = [
+  ['regional', '局在性', 'regional'],
+  ['lateralized', '一側性', 'lateralized'],
+  ['generalized', '全般性', 'generalized'],
+  ['bilatind', '両側独立性', 'bilateral independent'],
+  ['multifocal', '多焦点性', 'multifocal']
+];
+var CONTS = [
+  ['intermittent', '間欠的', 'Intermittent'],
+  ['almost', 'ほぼ持続的', 'Almost continuous'],
+  ['continuous', '持続的', 'Continuous']
+];
+var MORPHS = [
+  ['irregular', '不規則', 'irregular'],
+  ['quasi', '準律動性', 'quasirhythmic'],
+  ['rhythmic', '律動性', 'rhythmic'],
+  ['poly', '多形性', 'polymorphic']
+];
+var BANDS = [
+  ['delta', 'デルタ波', 'delta'],
+  ['theta', 'シータ波', 'theta'],
+  ['dt', 'デルタ・シータ波', 'delta/theta'],
+  ['slow', '徐波', 'slow']
+];
+var EPIS = [
+  ['spike', '棘波', 'Spike'],
+  ['polyspike', '多棘波', 'Polyspike'],
+  ['sharp', '鋭波', 'Sharp wave'],
+  ['swc', '棘徐波複合', 'Spike-and-wave complex'],
+  ['pswc', '多棘徐波複合', 'Polyspike-and-wave complex'],
+  ['sswc', '鋭徐波複合', 'Sharp-and-slow wave complex'],
+  ['burst', '棘波群発', 'Burst of spikes'],
+  ['pfa', '突発性速波', 'Paroxysmal fast activity'],
+  ['lpd', '一側性周期性放電（LPDs）', 'Lateralized periodic discharges (LPDs)'],
+  ['gpd', '全般性周期性放電（GPDs）', 'Generalized periodic discharges (GPDs)']
+];
+var MODS = [
+  ['sleep', '主に睡眠期', 'mainly during sleep'],
+  ['drowsy', '主に傾眠期', 'mostly during drowsy state'],
+  ['light', '軽睡眠期', 'during light sleep'],
+  ['wake', '主に覚醒時', 'mainly during wakefulness'],
+  ['hv', '過呼吸で増加', 'increased by hyperventilation'],
+  ['rep', 'しばしば反復性', 'often repetitive'],
+  ['rhy', '時に律動性', 'sometimes rhythmic'],
+  ['indep', 'それぞれ独立して出現', 'each independently'],
+  ['post', '発作後に増加', 'more frequent after seizures']
+];
+var ASYMS = [
+  ['beta', '速波の振幅低下', 'decreased beta activity'],
+  ['spindle', '睡眠紡錘波の低下', 'decreased sleep spindles'],
+  ['betaspindle', '速波と睡眠紡錘波の低下', 'decreased beta and spindle activity'],
+  ['slowfast', '徐波と速波の振幅低下', 'decreased slow and fast activities'],
+  ['all', '全周波数帯の振幅低下', 'attenuation of all activities'],
+  ['breach', '速波の増高（breach rhythm）', 'increased fast activity (breach rhythm)']
+];
+var SKINDS = [
+  ['clin', '臨床発作を伴う脳波上の発作', 'EEG and clinical seizure'],
+  ['eeg', '臨床症状を伴わない脳波上の発作', 'Electrographic seizure without clinical signs'],
+  ['noeeg', '脳波変化を伴わない臨床的イベント', 'Clinical event without EEG change']
+];
+var SPATS = [
+  ['delta', '律動性デルタ活動', 'rhythmic delta activity'],
+  ['theta', '律動性シータ活動', 'rhythmic theta activity'],
+  ['alpha', '律動性アルファ活動', 'rhythmic alpha activity'],
+  ['lvfa', '低振幅速波', 'low-voltage fast activity'],
+  ['rspike', '反復性棘波', 'repetitive spikes'],
+  ['atten', '背景活動の平坦化（electrodecrement）', 'electrodecremental change'],
+  ['gsw', '全般性棘徐波', 'generalized spike-and-wave'],
+  ['', '（指定しない）', '']
+];
+// 発作型：[id, 現行JA, 従来JA, 現行EN, 従来EN]
+var STYPES = [
+  ['fias', '焦点意識減損発作', '複雑部分発作', 'focal impaired awareness seizure', 'complex partial seizure'],
+  ['fas', '焦点意識保持発作', '単純部分発作', 'focal aware seizure', 'simple partial seizure'],
+  ['fbtc', '焦点起始両側強直間代発作', '二次性全般化発作', 'focal to bilateral tonic-clonic seizure', 'secondarily generalized seizure'],
+  ['focal', '焦点発作', '部分発作', 'focal seizure', 'partial seizure'],
+  ['gtc', '全般強直間代発作', '全般強直間代発作', 'generalized tonic-clonic seizure', 'generalized tonic-clonic seizure'],
+  ['abs', '欠神発作', '欠神発作', 'absence seizure', 'absence seizure'],
+  ['myo', 'ミオクロニー発作', 'ミオクロニー発作', 'myoclonic seizure', 'myoclonic seizure'],
+  ['tonic', '強直発作', '強直発作', 'tonic seizure', 'tonic seizure'],
+  ['unk', '発作（分類不能）', '発作（分類不能）', 'seizure (unclassified)', 'seizure (unclassified)']
+];
+var CLS = {
+  normal: ['正常', 'Normal'],
+  mild: ['軽度異常', 'Mildly abnormal'],
+  mildmod: ['軽度から中等度の異常', 'Mildly to moderately abnormal'],
+  moderate: ['中等度異常', 'Moderately abnormal'],
+  modmarked: ['中等度から高度の異常', 'Moderately to markedly abnormal'],
+  marked: ['高度異常', 'Markedly abnormal']
+};
+var DEG = {
+  mild: ['軽度', 'mild'],
+  mildmod: ['軽度から中等度', 'mild to moderate'],
+  moderate: ['中等度', 'moderate'],
+  modmarked: ['中等度から高度', 'moderate to severe'],
+  marked: ['高度', 'severe']
+};
+
+function look(list, id) {
+  for (var i = 0; i < list.length; i++) { if (list[i][0] === id) return list[i]; }
+  return list[0];
+}
+
+// ===== 状態 =====
+var S;
+function defaults() {
+  return {
+    lang: 'ja', term: 'current', diffWord: 'enc',
+    age: '', sex: '', clin_ja: '', clin_en: '',
+    st: { awake: true, drowsy: false, sleep: false, coma: false },
+    sp: { w: '', s1: '', s2: '', s3: '', s4: '', rem: '' },
+    cls: 'normal', pdrOrg: 'well', pdrF1: '', pdrF2: '', pdrAsym: 'none', pdrReact: '', special: 'none',
+    findings: [],
+    nt: { st: false, p146: false, bets: false, wicket: false, rmtd: false, phantom: false, beta: false, sorem: false, arousal: false, artifact: false },
+    phType: 'wham', phN: '', betaEx: 'no', hv: '', ps: '',
+    diffDeg: 'auto', diffPred: 'none', prevDate: '', prevChg: '',
+    rec: { clin: false, repeat: false, sleep: false, ltm: false, img: false, normal: false },
+    cmt_ja: '', cmt_en: ''
+  };
+}
+function newFinding(cat) {
+  if (cat === 'slow') return { cat: 'slow', cont: 'intermittent', morph: 'irregular', band: 'delta', f1: '', f2: '', dist: 'regional', side: 'R', loc: 'temporal', max: '', prevT: 'p', n: '1', a: '', b: '', mods: {}, runs: '' };
+  if (cat === 'epi') return { cat: 'epi', type: 'sharp', f1: '', f2: '', d1: '', d2: '', dist: 'regional', side: 'R', loc: 'temporal', max: '', prevT: 'p', n: '1', a: '', b: '', mods: {}, runs: '' };
+  if (cat === 'asym') return { cat: 'asym', what: 'beta', side: 'R', loc: 'frontotemporal' };
+  if (cat === 'seiz') return { cat: 'seiz', kind: 'clin', video: true, count: '1', dist: 'regional', side: 'R', loc: 'temporal', pat: 'delta', dur: '', durU: 's', stype: 'fias', evo_ja: '', evo_en: '', sem_ja: '', sem_en: '' };
+  return { cat: 'other', ja: '', en: '' };
+}
+S = defaults();
+
+// ===== 小道具 =====
+function esc(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function trim(s) { return String(s == null ? '' : s).replace(/^\s+|\s+$/g, ''); }
+function getPath(obj, path) {
+  var p = path.split('.'); var o = obj;
+  for (var i = 0; i < p.length; i++) { if (o == null) return undefined; o = o[p[i]]; }
+  return o;
+}
+function setPath(obj, path, val) {
+  var p = path.split('.'); var o = obj;
+  for (var i = 0; i < p.length - 1; i++) { o = o[p[i]]; }
+  o[p[p.length - 1]] = val;
+}
+function range(a, b) {
+  a = trim(a); b = trim(b);
+  if (a && b && a !== b) return a + '-' + b;
+  return a || b;
+}
+function pick(ja, en, L) {
+  ja = trim(ja); en = trim(en);
+  if (L === 'ja') return ja || en;
+  return en || ja;
+}
+function endDot(s, L) {
+  s = trim(s);
+  if (!s) return s;
+  var last = s.charAt(s.length - 1);
+  if (L === 'en' && !/[぀-ヿ一-鿿]/.test(s)) { return /[.!?]/.test(last) ? s : s + '.'; }
+  return /[。．.!?！？]/.test(last) ? s : s + '。';
+}
+
+// ===== 部位の書き方 =====
+function locWord(f, mode) {
+  // mode: 'ja' = 右前頭側頭部 / 'en' = R frontotemporal / 'enlong' = the right frontotemporal region / 'mix' = right frontotemporal
+  var loc = look(LOCS, f.loc || ''); var side = look(SIDES, f.side || 'R');
+  var noSide = (f.loc === 'vertex' || f.loc === 'midline');
+  if (mode === 'ja') {
+    if (noSide) return loc[1];
+    var sj = side[1];
+    if (f.side === 'RL') sj = '右優位の両側';
+    if (f.side === 'LR') sj = '左優位の両側';
+    if (!f.loc) return sj + (f.side === 'R' || f.side === 'L' ? '側' : '');
+    return sj + loc[1];
+  }
+  if (mode === 'en') {
+    if (noSide) return loc[2];
+    if (!f.loc) return side[2];
+    return side[2] + ' ' + loc[2];
+  }
+  var sl = side[3];
+  if (mode === 'mix') {
+    if (noSide) return loc[3];
+    if (!f.loc) return sl;
+    return sl + ' ' + loc[3];
+  }
+  // enlong
+  if (noSide) return 'the ' + loc[3];
+  if (f.loc === 'hemisphere') {
+    if (f.side === 'R' || f.side === 'L') return 'the ' + sl + ' hemisphere';
+    return 'both hemispheres';
+  }
+  if (!f.loc) return (f.side === 'R' || f.side === 'L') ? 'the ' + sl + ' side' : 'both sides';
+  if (f.side === 'R' || f.side === 'L') return 'the ' + sl + ' ' + loc[3] + ' region';
+  return 'the ' + loc[3] + ' regions bilaterally';
+}
+function distLoc(f, L) {
+  // 「分布、部位（最大電極）」
+  var d = look(DISTS, f.dist); var mx = trim(f.max);
+  var hasLoc = !!f.loc || f.dist !== 'generalized';
+  if (L === 'en') {
+    if (f.dist === 'generalized') {
+      var inner = [];
+      if (f.loc) inner.push(locWord(f, 'en'));
+      if (mx) inner.push(mx);
+      var pr = (!f.loc && (f.side === 'RL' || f.side === 'LR')) ? (f.side === 'RL' ? ' (R>L)' : ' (L>R)') : '';
+      return 'generalized' + pr + (inner.length ? ' (max. ' + inner.join(', ') + ')' : '');
+    }
+    if (f.dist === 'bilatind') return 'bilateral independent' + (f.loc ? ' ' + look(LOCS, f.loc)[2] : '') + (mx ? ' (max. ' + mx + ')' : '');
+    if (f.dist === 'multifocal') return 'multifocal' + (f.loc ? ' (' + locWord(f, 'en') + ')' : '') + (mx ? ' (max. ' + mx + ')' : '');
+    return d[2] + ' ' + locWord(f, 'en') + (mx ? ' (max. ' + mx + ')' : '');
+  }
+  if (f.dist === 'generalized') {
+    var inj = '';
+    if (f.loc && mx) inj = locWord(f, 'ja') + '、' + mx + '最大';
+    else if (f.loc) inj = locWord(f, 'ja') + '最大';
+    else if (mx) inj = mx + '最大';
+    if (!f.loc && (f.side === 'RL' || f.side === 'LR')) inj = (f.side === 'RL' ? '右優位' : '左優位') + (inj ? '、' + inj : '');
+    return '全般性' + (inj ? '（' + inj + '）' : '');
+  }
+  if (f.dist === 'bilatind') return '両側独立性' + (f.loc ? '、両側' + look(LOCS, f.loc)[1] : '') + (mx ? '（' + mx + '最大）' : '');
+  if (f.dist === 'multifocal') return '多焦点性' + (f.loc ? '（' + locWord(f, 'ja') + 'など）' : '') + (mx ? '（' + mx + '最大）' : '');
+  return d[1] + '、' + locWord(f, 'ja') + (mx ? '（' + mx + '最大）' : '');
+}
+function prevText(f, L) {
+  var n = trim(f.n) || '1'; var r = range(f.a, f.b);
+  if (f.prevT === 'p' || f.prevT === 's') {
+    if (!r) return '';
+    if (L === 'en') return n + '/' + r + f.prevT;
+    return r + (f.prevT === 'p' ? 'ページ' : '秒') + 'に' + n + '回';
+  }
+  if (f.prevT === 'c') {
+    if (L === 'en') {
+      if (n === '1') return 'once';
+      if (n === '2') return 'twice';
+      return 'x' + n;
+    }
+    return n === '1' ? '記録中1回のみ' : '記録中' + n + '回';
+  }
+  return '';
+}
+function modsText(f, L) {
+  var out = [];
+  for (var i = 0; i < MODS.length; i++) {
+    if (f.mods && f.mods[MODS[i][0]]) out.push(L === 'en' ? MODS[i][2] : MODS[i][1]);
+  }
+  var rn = trim(f.runs);
+  if (f.mods && f.mods.runs && rn) out.push(L === 'en' ? 'at times occurring as short runs of ' + rn + ' sec' : '時に' + rn + '秒の短い連続として出現');
+  return out;
+}
+function isSingle(f) { return f.prevT === 'c' && (trim(f.n) || '1') === '1'; }
+
+// ===== 所見の1行 =====
+function findingLine(f, L) {
+  var parts = [], hz, x;
+  if (f.cat === 'slow') {
+    var c = look(CONTS, f.cont), m = look(MORPHS, f.morph), b = look(BANDS, f.band);
+    hz = range(f.f1, f.f2);
+    if (L === 'en') parts.push(c[2] + ' ' + m[2] + ' ' + b[2] + (hz ? ' (' + hz + ' Hz)' : ''));
+    else parts.push(c[1] + m[1] + b[1] + (hz ? '（' + hz + ' Hz）' : ''));
+    parts.push(distLoc(f, L));
+    x = prevText(f, L); if (x) parts.push(x);
+    parts = parts.concat(modsText(f, L));
+    return parts.join(L === 'en' ? ', ' : '、');
+  }
+  if (f.cat === 'epi') {
+    var e = look(EPIS, f.type);
+    hz = range(f.f1, f.f2); var du = range(f.d1, f.d2);
+    var head;
+    if (L === 'en') {
+      head = e[2];
+      if (du) head += ' of ' + du + ' sec';
+      if (hz) head = /\)$/.test(head) ? head.replace(/\)$/, ', ' + hz + ' Hz)') : head + ' (' + hz + ' Hz)';
+    } else {
+      head = (du ? du + '秒の' : '') + e[1];
+      if (hz) head = /）$/.test(head) ? head.replace(/）$/, '、' + hz + ' Hz）') : head + '（' + hz + ' Hz）';
+    }
+    parts.push(head);
+    parts.push(distLoc(f, L));
+    x = prevText(f, L); if (x) parts.push(x);
+    parts = parts.concat(modsText(f, L));
+    return parts.join(L === 'en' ? ', ' : '、');
+  }
+  if (f.cat === 'asym') {
+    var a = look(ASYMS, f.what);
+    if (L === 'en') return 'Asymmetry, ' + a[2] + ' over the ' + locWord(f, 'en') + (f.loc && f.loc !== 'hemisphere' && f.loc !== 'vertex' && f.loc !== 'midline' ? ' region' : '');
+    return '非対称性：' + locWord(f, 'ja') + 'の' + a[1];
+  }
+  if (f.cat === 'seiz') {
+    var k = look(SKINDS, f.kind), p = look(SPATS, f.pat);
+    var cnt = trim(f.count) || '1';
+    var dur = trim(f.dur);
+    var onset;
+    if (L === 'en') {
+      var s = k[2] + (cnt !== '1' ? ' (x' + cnt + ')' : ' (x1)');
+      if (f.kind !== 'noeeg') {
+        onset = (f.dist === 'generalized') ? 'generalized onset' : look(DISTS, f.dist)[2] + ' ' + locWord(f, 'en') + ' onset';
+        s += ': ' + onset;
+        if (p[2]) s += ', ' + p[2];
+        if (dur) s += ', lasting ' + dur + (f.durU === 'm' ? ' min' : ' sec');
+      }
+      var evo = trim(f.evo_en) || trim(f.evo_ja);
+      if (evo) s += '; ' + evo;
+      var sem = trim(f.sem_en) || trim(f.sem_ja);
+      if (sem) s += '. Clinically, ' + sem;
+      if (f.video) s += ' (recorded on video-EEG)';
+      return s;
+    }
+    var sj = k[1] + '（' + cnt + '回）';
+    if (f.kind !== 'noeeg') {
+      onset = (f.dist === 'generalized') ? '全般性に起始' : locWord(f, 'ja') + 'に起始';
+      sj += '：' + onset;
+      if (p[1]) sj += '、' + p[1];
+      if (dur) sj += '、持続' + dur + (f.durU === 'm' ? '分' : '秒');
+    }
+    var evj = trim(f.evo_ja) || trim(f.evo_en);
+    if (evj) sj += '。' + evj;
+    var smj = trim(f.sem_ja) || trim(f.sem_en);
+    if (smj) sj += '。臨床症状：' + smj;
+    if (f.video) sj += '（ビデオ脳波で記録）';
+    return sj;
+  }
+  return pick(f.ja, f.en, L);
+}
+
+// ===== Note =====
+function noteLines(L) {
+  var out = [], en = (L === 'en' || L === 'mix');
+  if (S.nt.st) out.push(en ? 'Sharp transients during sleep' : '睡眠期の鋭一過性波（sharp transients）');
+  if (S.nt.p146) out.push(en ? '14 & 6 Hz positive spikes' : '14&6 Hz陽性棘波');
+  if (S.nt.bets) out.push(en ? 'Small sharp spikes (benign epileptiform transients of sleep)' : 'small sharp spikes（BETS）');
+  if (S.nt.wicket) out.push(en ? 'Wicket spikes' : 'wicket spikes');
+  if (S.nt.rmtd) out.push(en ? 'Rhythmic midtemporal theta of drowsiness' : '傾眠期の律動性中側頭部シータ（RMTD）');
+  if (S.nt.phantom) {
+    var n = trim(S.phN);
+    var ty = S.phType === 'wham' ? 'WHAM' : (S.phType === 'fold' ? 'FOLD' : '');
+    if (en) out.push('Phantom spike-and-wave' + (n ? ': x' + n : '') + (ty ? (n ? ', ' : ': ') + (n === '1' ? 'belongs' : 'all of which belong') + ' to the ' + ty + ' type' : ''));
+    else out.push('6 Hz棘徐波（phantom spike-and-wave）' + (n ? n + '回' : '') + (ty ? '、' + (n && n !== '1' ? 'いずれも' : '') + ty + '型' : ''));
+  }
+  if (S.nt.beta) out.push(en ? 'Admixed with beta activity' + (S.betaEx === 'yes' ? ' (excessive beta)' : '') : '速波の混入' + (S.betaEx === 'yes' ? '（excessive beta）' : ''));
+  if (S.nt.sorem) out.push(en ? 'Sleep onset REM' : '入眠時レム睡眠（sleep onset REM）');
+  if (S.nt.arousal) out.push(en ? 'Frequent alternation between wakefulness and light sleep' : '覚醒と軽睡眠を頻回に繰り返す');
+  if (S.nt.artifact) out.push(en ? 'Frequent muscle and movement artifacts' : '筋電図・体動によるアーチファクトが多い');
+  return out;
+}
+
+// ===== 見出し部 =====
+function stageLabel(key, L) {
+  var classic = S.term === 'classic';
+  var map = { s1: classic ? 'Stage I' : 'N1', s2: classic ? 'Stage II' : 'N2', s3: classic ? 'Stage III' : 'N3', s4: 'Stage IV', rem: 'REM' };
+  if (key === 'w') return L === 'en' ? 'Awake' : '覚醒';
+  return map[key];
+}
+function sleepText(L) {
+  var keys = ['w', 's1', 's2', 's3', 's4', 'rem'], out = [];
+  for (var i = 0; i < keys.length; i++) {
+    if (keys[i] === 's4' && S.term !== 'classic') continue;
+    var v = trim(S.sp[keys[i]]);
+    if (v !== '') out.push(stageLabel(keys[i], L) + ' ' + v + '%');
+  }
+  return out.join(L === 'en' ? ', ' : '、');
+}
+function stateText(L) {
+  if (S.st.coma) return L === 'en' ? 'Comatose' : '昏睡';
+  var a = [];
+  if (S.st.awake) a.push(L === 'en' ? 'Awake' : '覚醒');
+  if (S.st.drowsy) a.push(L === 'en' ? 'Drowsy' : '傾眠');
+  if (S.st.sleep) a.push(L === 'en' ? 'Sleep' : '睡眠');
+  return a.join(L === 'en' ? ' & ' : '・');
+}
+function pdrText(L) {
+  var hz = range(S.pdrF1, S.pdrF2);
+  var t;
+  if (L === 'en') {
+    if (S.pdrOrg === 'absent') t = 'lack of posterior dominant rhythm';
+    else {
+      var w = { well: 'well organized', mild: 'mildly poorly organized', poor: 'poorly organized', disorg: 'disorganized' }[S.pdrOrg];
+      t = w + ' posterior dominant rhythm' + (hz ? ' (' + hz + ' Hz)' : '');
+    }
+    var as = { poorR: ', poorer on the right', poorL: ', poorer on the left', lackR: ', absent on the right', lackL: ', absent on the left' }[S.pdrAsym];
+    if (as && S.pdrOrg !== 'absent') t += as;
+    if (S.pdrReact === 'good') t += ', attenuated by eye opening';
+    if (S.pdrReact === 'poor') t += ', poorly reactive to eye opening';
+    var sp = { bs: 'burst-suppression pattern', supp: 'background suppression', lowv: 'diffuse low-voltage activity' }[S.special];
+    if (sp) t += '; ' + sp;
+    return t;
+  }
+  if (S.pdrOrg === 'absent') t = '後頭部優位律動を認めない';
+  else {
+    var wj = { well: '組織化良好', mild: '組織化ごく軽度不良', poor: '組織化軽度不良', disorg: '組織化不良' }[S.pdrOrg];
+    t = '後頭部優位律動' + (hz ? ' ' + hz + ' Hz' : '') + '、' + wj;
+  }
+  var asj = { poorR: '（右側でより不良）', poorL: '（左側でより不良）', lackR: '（右側では認めない）', lackL: '（左側では認めない）' }[S.pdrAsym];
+  if (asj && S.pdrOrg !== 'absent') t += asj;
+  if (S.pdrReact === 'good') t += '、開眼で抑制される';
+  if (S.pdrReact === 'poor') t += '、開眼による抑制が乏しい';
+  var spj = { bs: 'burst-suppression pattern', supp: '背景活動の抑制（suppression）', lowv: 'びまん性低電位' }[S.special];
+  if (spj) t += '。' + spj;
+  return t;
+}
+function actText(L) {
+  var hv = S.hv, ps = S.ps, a = [];
+  var HV = { nd: ['過呼吸は未実施', 'not performed'], nc: ['過呼吸で著変なし', 'no significant change'], bu: ['過呼吸で非特異的な徐波化（build-up）を認める', 'build-up'], act: ['過呼吸で上記の異常所見が増加する', 'activation of the abnormalities above'], poor: ['過呼吸の施行は不十分', 'poor effort'] };
+  var PS = { nd: ['光刺激は未実施', 'not performed'], nc: ['光刺激で著変なし', 'no significant change'], drv: ['光刺激で光駆動反応を認める', 'photic driving response'], ppr: ['光刺激で光突発反応を認める', 'photoparoxysmal response'] };
+  if (hv && HV[hv]) a.push(L === 'en' ? 'HV, ' + HV[hv][1] : HV[hv][0] + '。');
+  if (ps && PS[ps]) a.push(L === 'en' ? 'photic stimulation, ' + PS[ps][1] : PS[ps][0] + '。');
+  return L === 'en' ? (a.length ? a.join('; ') + '.' : '') : a.join('');
+}
+
+// ===== 判読の自動提案 =====
+function sameRegion(f, g) {
+  return f.loc && g.loc && f.loc === g.loc && sideGroup(f.side) === sideGroup(g.side);
+}
+function sideGroup(s) { return (s === 'R' || s === 'L') ? s : 'B'; }
+function stype(f, L) {
+  var t = look(STYPES, f.stype); var classic = S.term === 'classic';
+  if (L === 'en') return classic ? t[4] : t[3];
+  return classic ? t[2] : t[1];
+}
+function focalSzWord(L) {
+  var classic = S.term === 'classic';
+  if (L === 'en') return classic ? 'partial seizures' : 'focal seizures';
+  return classic ? '部分てんかん発作' : '焦点発作';
+}
+var DEGKEYS = ['', 'mild', 'mildmod', 'moderate', 'modmarked', 'marked'];
+function diffDegree() {
+  // 自動は目安：PDRのごく軽度不良・軽度不良=軽度、不良（disorganized）=軽度から中等度、全般性徐波で1〜2段階上げる、PDR欠如=中等度以上、昏睡=中等度から高度以上、
+  // burst-suppression・抑制=高度。判定が「正常」のときは書かない。
+  if (S.diffDeg !== 'auto') return S.diffDeg === 'none' ? '' : S.diffDeg;
+  if (S.cls === 'normal') return '';
+  var lv = 0, i, f, gen = 0;
+  if (S.pdrOrg === 'mild' || S.pdrOrg === 'poor') lv = 1;
+  if (S.pdrOrg === 'disorg') lv = 2;
+  if (S.pdrOrg === 'absent') lv = 3;
+  for (i = 0; i < S.findings.length; i++) {
+    f = S.findings[i];
+    if (f.cat === 'slow' && f.dist === 'generalized') {
+      gen = Math.max(gen, (f.cont === 'continuous' || f.cont === 'almost') ? 2 : 1);
+    }
+  }
+  if (gen) lv = Math.max(lv, 1) + gen;
+  if (S.st.coma) lv = Math.max(lv, 4);
+  if (S.special === 'bs' || S.special === 'supp') lv = 5;
+  if (lv > 5) lv = 5;
+  return DEGKEYS[lv];
+}
+function interpLines(L) {
+  // L: 'ja' / 'en' / 'mix'（mixは日本語文＋英語の部位名）
+  var out = [], i, j, f, g;
+  var en = L === 'en';
+  var lw = function (x) { return en ? locWord(x, 'enlong') : (L === 'mix' ? locWord(x, 'mix') : locWord(x, 'ja')); };
+  var abn = function () { return L === 'mix' ? 'のfocal abnormality' : 'の局在性の機能異常'; };
+  var F = S.findings;
+  var hasEpi = false, hasSz = false, singleEpi = true;
+
+  // 1) 正常
+  var anyFinding = false;
+  for (i = 0; i < F.length; i++) { if (F[i].cat !== 'other') anyFinding = true; }
+  if (S.cls === 'normal' && !anyFinding) {
+    out.push(en ? 'This is a normal EEG.' : '正常脳波である。');
+  }
+
+  // 2) びまん性
+  var dg = diffDegree();
+  if (dg) {
+    var dw = S.diffWord === 'dys';
+    var pred = S.diffPred;
+    if (en) {
+      out.push('This EEG suggests ' + DEG[dg][1] + (pred === 'R' ? ', right-predominant' : pred === 'L' ? ', left-predominant' : '') + ' diffuse ' + (dw ? 'cerebral dysfunction' : 'encephalopathy') + '.');
+    } else {
+      out.push((pred === 'R' ? '右優位の' : pred === 'L' ? '左優位の' : '') + DEG[dg][0] + 'の' + (dw ? 'びまん性脳機能障害' : 'びまん性脳症') + 'を示唆する。');
+    }
+  }
+  if (S.special === 'bs') {
+    out.push(en ? 'A burst-suppression pattern is present; it should be interpreted in light of sedative or anesthetic medication and body temperature.' : 'burst-suppression patternを認める。鎮静薬・麻酔薬の使用や低体温の有無を踏まえて解釈する必要がある。');
+  }
+
+  // 3) 局在性（徐波・非対称）を部位ごとにまとめる
+  var groups = [];
+  for (i = 0; i < F.length; i++) {
+    f = F[i];
+    if ((f.cat === 'slow' && f.dist !== 'generalized' && f.dist !== 'multifocal' && f.dist !== 'bilatind') || f.cat === 'asym') {
+      var hit = null;
+      for (j = 0; j < groups.length; j++) { if (sameRegion(groups[j].f, f)) hit = groups[j]; }
+      var structural = f.cat === 'asym' || f.cont === 'continuous' || f.cont === 'almost';
+      if (hit) { hit.structural = hit.structural || structural; }
+      else groups.push({ f: f, structural: structural, epi: false });
+    }
+  }
+  // てんかん性放電
+  var epiFocal = [], epiGen = false, epiMulti = false, lpd = [], gpd = false;
+  for (i = 0; i < F.length; i++) {
+    f = F[i];
+    if (f.cat !== 'epi') continue;
+    if (f.type === 'lpd') { lpd.push(f); continue; }
+    if (f.type === 'gpd') { gpd = true; continue; }
+    hasEpi = true;
+    if (!isSingle(f)) singleEpi = false;
+    if (f.dist === 'generalized') { epiGen = true; continue; }
+    if (f.dist === 'multifocal' || f.dist === 'bilatind') { epiMulti = true; continue; }
+    var matched = false;
+    for (j = 0; j < groups.length; j++) { if (sameRegion(groups[j].f, f)) { groups[j].epi = true; matched = true; } }
+    if (!matched) {
+      var dup = false;
+      for (j = 0; j < epiFocal.length; j++) { if (sameRegion(epiFocal[j], f)) dup = true; }
+      if (!dup) epiFocal.push(f);
+    }
+  }
+  for (j = 0; j < groups.length; j++) {
+    g = groups[j];
+    var szPart = g.epi;
+    if (en) {
+      var s = 'This EEG suggests ' + (g.structural ? 'a structural abnormality involving the cortex' : 'focal cerebral dysfunction') + ' in ' + lw(g.f);
+      s += szPart ? ', and ' + focalSzWord('en') + ' arising from the same region.' : '.';
+      out.push(s);
+    } else {
+      var t = lw(g.f) + (g.structural ? 'に皮質を含む器質的異常' : abn());
+      t += szPart ? 'と、同部位から出現する' + focalSzWord('ja') + 'を示唆する。' : 'を示唆する。';
+      out.push(t);
+    }
+  }
+  // 局在のみのてんかん性放電（徐波と部位が一致しないもの）
+  var sides = {};
+  for (j = 0; j < epiFocal.length; j++) sides[sideGroup(epiFocal[j].side)] = true;
+  if (epiFocal.length >= 2 && ((sides.R && sides.L) || sides.B)) {
+    var names = [];
+    for (j = 0; j < epiFocal.length; j++) names.push(en ? lw(epiFocal[j]).replace(/^the /, '') : lw(epiFocal[j]));
+    out.push(en ? 'This EEG suggests ' + focalSzWord('en') + ' arising independently from multiple foci in both hemispheres (' + names.join('; ') + ').' : names.join('、') + 'からそれぞれ独立して出現する、両側半球の多焦点性の' + focalSzWord('ja') + 'を示唆する。');
+  } else {
+    for (j = 0; j < epiFocal.length; j++) {
+      out.push(en ? 'This EEG suggests ' + focalSzWord('en') + ' arising from ' + lw(epiFocal[j]) + '.' : lw(epiFocal[j]) + 'から出現する' + focalSzWord('ja') + 'を示唆する。');
+    }
+  }
+  if (epiMulti) out.push(en ? 'This EEG suggests ' + focalSzWord('en') + ' arising from independent multiple foci.' : '独立した多焦点から出現する' + focalSzWord('ja') + 'を示唆する。');
+  if (epiGen) out.push(en ? 'Generalized epileptiform discharges suggest a tendency to generalized seizures.' : '全般性のてんかん性放電は、全般発作を示唆する。');
+  for (j = 0; j < lpd.length; j++) {
+    out.push(en ? 'Lateralized periodic discharges over ' + lw(lpd[j]) + ' suggest cortical dysfunction in that region and an increased risk of seizures.' : lw(lpd[j]) + 'の周期性放電（LPDs）は、同部位の皮質障害と、てんかん発作の起こりやすさを示唆する。');
+  }
+  if (gpd) out.push(en ? 'Generalized periodic discharges suggest diffuse encephalopathy; clinical correlation, including for nonconvulsive status epilepticus, is required.' : '全般性周期性放電（GPDs）はびまん性脳症を示唆する。非けいれん性てんかん重積状態の可能性を含めて、臨床的相関の検討を要する。');
+
+  // 4) 発作時記録
+  for (i = 0; i < F.length; i++) {
+    f = F[i];
+    if (f.cat !== 'seiz') continue;
+    hasSz = true;
+    var where = f.dist === 'generalized' ? (en ? '' : '全般性に出現する') : (en ? ' arising from ' + lw(f) : lw(f) + 'から出現する');
+    if (f.kind === 'clin') {
+      if (en) out.push('A' + (/^[aeiou]/i.test(stype(f, 'en')) ? 'n ' : ' ') + stype(f, 'en') + where + ' was recorded' + (f.video ? ' on video-EEG' : '') + '.');
+      else out.push('記録中に、' + where + stype(f, 'ja') + 'が' + (f.video ? 'ビデオと脳波で' : '') + '記録されている。');
+    } else if (f.kind === 'eeg') {
+      if (en) out.push('An electrographic seizure without clinical signs' + where + ' was recorded.');
+      else out.push('記録中に、' + where + '臨床症状を伴わない脳波上の発作（electrographic seizure）が記録されている。');
+    } else {
+      if (en) out.push('A clinical event was recorded without an accompanying EEG change. Some seizures, such as ' + (S.term === 'classic' ? 'simple partial seizures' : 'focal aware seizures') + ' or frontal lobe seizures, may lack a scalp EEG correlate; clinical correlation is required.');
+      else out.push('臨床的イベントが記録されたが、対応する脳波変化を認めない。' + (S.term === 'classic' ? '単純部分発作' : '焦点意識保持発作') + 'や前頭葉発作などでは頭皮脳波に変化が現れないこともあり、臨床的相関の検討を要する。');
+    }
+  }
+  if (!hasEpi && !hasSz && !(S.cls === 'normal' && !anyFinding)) {
+    out.push(en ? 'No definite epileptiform discharges were recorded.' : '記録中に明らかなてんかん性放電を認めない。');
+  }
+  if (S.cls === 'normal' && !anyFinding) {
+    out.push(en ? 'No epileptiform discharges were recorded.' : '記録中に明らかなてんかん性放電を認めない。');
+  }
+  if (hasEpi && singleEpi) {
+    out.push(en ? 'However, the epileptiform discharge was recorded only once, and clinical correlation (presence or absence of seizures) is required.' : 'ただし、てんかん性放電は記録中1回のみであり、臨床症状（発作の有無）との相関の検討を要する。');
+  }
+
+  // 5) Note由来
+  var noteI = [];
+  if (S.nt.st) noteI.push(en ? 'The sharp transients during sleep are not considered epileptiform.' : '睡眠期の鋭一過性波は、てんかん性放電とは判断しない。');
+  if (S.nt.p146 || S.nt.bets || S.nt.wicket || S.nt.rmtd) {
+    var bv = [];
+    if (S.nt.p146) bv.push(en ? '14 & 6 Hz positive spikes' : '14&6 Hz陽性棘波');
+    if (S.nt.bets) bv.push('small sharp spikes');
+    if (S.nt.wicket) bv.push('wicket spikes');
+    if (S.nt.rmtd) bv.push('RMTD');
+    noteI.push(en ? bv.join(', ') + (bv.length > 1 ? ' are benign variants' : ' is a benign variant') + ' without epileptic significance.' : bv.join('、') + 'は良性亜型であり、てんかん性の意義は乏しい。');
+  }
+  if (S.nt.phantom) {
+    if (S.phType === 'wham') noteI.push(en ? 'Phantom spike-and-wave of the WHAM type (waking, high amplitude, anterior, male) is not regarded as an epileptiform discharge, but it has been associated with seizures; clinical correlation is required.' : 'WHAM型（waking, high amplitude, anterior, male）のphantom spike-and-waveは、てんかん性放電とはされないものの、てんかん発作との関連が報告されているため、臨床的相関の検討を要する。');
+    else if (S.phType === 'fold') noteI.push(en ? 'Phantom spike-and-wave of the FOLD type (female, occipital, low amplitude, drowsy) is considered a benign variant.' : 'FOLD型（female, occipital, low amplitude, drowsy）のphantom spike-and-waveは、良性亜型と考えられる。');
+    else noteI.push(en ? 'The phantom spike-and-wave fits neither the WHAM nor the FOLD type; clinical correlation is required.' : 'phantom spike-and-waveはWHAM型・FOLD型のいずれとも判断しにくく、臨床的相関の検討を要する。');
+  }
+  if (S.nt.beta) {
+    if (S.betaEx === 'yes') noteI.push(en ? 'Excessive beta activity raises the possibility of a medication effect (e.g., benzodiazepines or barbiturates).' : '過剰な速波（excessive beta）を認め、ベンゾジアゼピン系・バルビツール酸系などの薬剤の影響を考慮する。');
+    else noteI.push(en ? 'Beta activity is admixed but does not meet the criteria for excessive beta.' : '速波の混入を認めるが、excessive betaの基準は満たさない。');
+  }
+  if (S.nt.sorem) noteI.push(en ? 'Sleep onset REM raises the possibility of a sleep disorder such as narcolepsy; clinical correlation is required.' : '入眠時レム睡眠を認め、ナルコレプシーなどの睡眠障害の可能性について臨床的相関の検討を要する。');
+  if (S.nt.arousal) noteI.push(en ? 'Frequent alternation between wakefulness and light sleep warrants clinical correlation for sleep-disordered breathing such as obstructive sleep apnea.' : '覚醒と軽睡眠を頻回に繰り返しており、閉塞性睡眠時無呼吸などの睡眠呼吸障害について臨床的相関の検討を要する。');
+  if (S.nt.artifact) noteI.push(en ? 'Interpretation is limited by frequent artifacts.' : 'アーチファクトが多く、判読には制限がある。');
+  if (S.ps === 'ppr') noteI.push(en ? 'A photoparoxysmal response suggests photosensitivity.' : '光突発反応を認め、光感受性を示唆する。');
+
+  // 6) 前回との比較
+  var cmp = '';
+  var pd = trim(S.prevDate);
+  if (S.prevChg) {
+    if (en) {
+      var wd = { same: 'No significant change', better: 'Improved', worse: 'Worsened' }[S.prevChg];
+      cmp = wd + ' compared with the previous EEG' + (pd ? ' (' + pd + ')' : '') + '.';
+    } else {
+      var wj = { same: '著変なし', better: '改善を認める', worse: '悪化を認める' }[S.prevChg];
+      cmp = '前回脳波' + (pd ? '（' + pd + '）' : '') + 'と比較して' + wj + '。';
+    }
+  }
+
+  // 7) 推奨
+  var rec = [];
+  if (S.rec.clin) rec.push(en ? 'Clinical correlation is recommended.' : '臨床症状との相関の検討を要する。');
+  if (S.rec.repeat) rec.push(en ? 'A repeat EEG may be helpful if clinically indicated.' : '臨床的に必要であれば、脳波の再検査が有用と考えられる。');
+  if (S.rec.sleep) rec.push(en ? 'A repeat EEG including sleep (e.g., a sleep-deprived EEG) may be helpful.' : '睡眠を含む脳波（断眠脳波など）の再検査が有用と考えられる。');
+  if (S.rec.ltm) rec.push(en ? 'Long-term video-EEG monitoring to capture the habitual events should be considered.' : '普段の発作症状を記録するため、長時間ビデオ脳波モニタリングを検討されたい。');
+  if (S.rec.img) rec.push(en ? 'Correlation with neuroimaging (e.g., MRI) is recommended.' : '画像所見（MRIなど）との対比を勧める。');
+  if (S.rec.normal) rec.push(en ? 'A normal interictal EEG does not exclude a diagnosis of epilepsy.' : '発作間欠期の脳波が正常であっても、てんかんの診断は否定されない。');
+
+  var cm = en ? trim(S.cmt_en) || trim(S.cmt_ja) : trim(S.cmt_ja) || trim(S.cmt_en);
+  return { main: out, note: noteI, cmp: cmp, rec: rec, cmt: cm ? endDot(cm, en ? 'en' : 'ja') : '' };
+}
+
+// ===== 組み立て =====
+function buildParts() {
+  var L = S.lang;
+  var FL = (L === 'ja') ? 'ja' : 'en'; // 所見部の言語
+  var IL = (L === 'en') ? 'en' : 'ja'; // 判読部の言語（mixは日本語）
+  var head = [], fnd = [], i;
+
+  // 臨床情報
+  var who = '';
+  var age = trim(S.age);
+  if (FL === 'en') {
+    if (age && S.sex) who = age + '-year-old ' + (S.sex === 'M' ? 'male' : 'female');
+    else if (age) who = age + ' years old';
+    else if (S.sex) who = S.sex === 'M' ? 'Male' : 'Female';
+  } else {
+    who = (age ? age + '歳' : '') + (S.sex ? (age ? ' ' : '') + (S.sex === 'M' ? '男性' : '女性') : '');
+  }
+  var clin = pick(S.clin_ja, S.clin_en, FL);
+  if (FL === 'en' && clin) clin = clin.charAt(0).toUpperCase() + clin.slice(1);
+  if (who || clin) {
+    if (FL === 'en') head.push('Clinical information: ' + [who, clin].filter(function (x) { return x; }).join('. ') + (/[.]$/.test(clin || who) ? '' : '.'));
+    else head.push('臨床情報：' + [who, clin].filter(function (x) { return x; }).join('。') + (/[。]$/.test(clin || who) ? '' : '。'));
+  }
+  // 状態・睡眠
+  var st = stateText(FL), sl = sleepText(FL);
+  if (sl) head.push(FL === 'en' ? 'Sleep stages: ' + sl : '睡眠段階：' + sl);
+  // 判定
+  var c = CLS[S.cls];
+  if (FL === 'en') head.push(c[1] + (st ? '  ' + st : ''));
+  else head.push('判定：' + c[0] + (st ? '（' + st + '）' : ''));
+  // 背景活動
+  if (FL === 'en') {
+    head.push((S.cls === 'normal' ? 'Background: ' : 'EEG because of: ') + pdrText('en') + '.');
+  } else {
+    head.push('背景活動：' + pdrText('ja') + '。');
+  }
+  // 所見
+  var n = 0;
+  for (i = 0; i < S.findings.length; i++) {
+    var line = findingLine(S.findings[i], FL);
+    if (!trim(line)) continue;
+    n++;
+    fnd.push(n + ') ' + line);
+  }
+  var notes = noteLines(L === 'ja' ? 'ja' : 'en');
+  var noteBlock = [];
+  if (notes.length) {
+    noteBlock.push(FL === 'en' ? 'Note:' : 'Note：');
+    for (i = 0; i < notes.length; i++) noteBlock.push((i + 1) + ') ' + notes[i]);
+  }
+  var act = actText(FL);
+
+  var ip = interpLines(L);
+  var interp = [];
+  for (i = 0; i < ip.main.length; i++) interp.push(ip.main[i]);
+  if (ip.note.length) {
+    interp.push('');
+    interp.push(IL === 'en' ? 'Note:' : 'Note：');
+    for (i = 0; i < ip.note.length; i++) interp.push(ip.note[i]);
+  }
+  var tail = [];
+  if (ip.cmt) tail.push(ip.cmt);
+  if (ip.cmp) tail.push(ip.cmp);
+  for (i = 0; i < ip.rec.length; i++) tail.push(ip.rec[i]);
+  if (tail.length) { interp.push(''); interp = interp.concat(tail); }
+
+  return { FL: FL, IL: IL, head: head, fnd: fnd, noteBlock: noteBlock, act: act, interp: interp };
+}
+function buildText(which) {
+  var p = buildParts();
+  var fsec = [];
+  fsec = fsec.concat(p.head);
+  if (p.fnd.length) fsec = fsec.concat(p.fnd);
+  if (p.noteBlock.length) { fsec.push(''); fsec = fsec.concat(p.noteBlock); }
+  if (p.act) { fsec.push(''); fsec.push(p.FL === 'en' ? 'Activation: ' + p.act : '賦活：' + p.act); }  var titleF = p.FL === 'en' ? 'EEG FINDINGS' : '【脳波所見】';
+  var titleI = S.lang === 'en' ? 'INTERPRETATION AND RECOMMENDATION' : (S.lang === 'mix' ? '【Interpretation and Recommendation】' : '【判読と推奨】');
+  if (which === 'findings') return fsec.join('\n');
+  if (which === 'interp') return p.interp.join('\n');
+  return titleF + '\n' + fsec.join('\n') + '\n\n' + titleI + '\n' + p.interp.join('\n');
+}
+
+// ===== 警告 =====
+function warnings() {
+  var w = [], i, sum = 0, any = false;
+  var keys = ['w', 's1', 's2', 's3', 's4', 'rem'];
+  for (i = 0; i < keys.length; i++) {
+    if (keys[i] === 's4' && S.term !== 'classic') continue;
+    var v = trim(S.sp[keys[i]]);
+    if (v !== '') { any = true; sum += parseFloat(v) || 0; }
+  }
+  if (any && Math.abs(sum - 100) > 0.5) w.push('睡眠段階の合計が ' + sum + '% です（100% になるか確認してください）。');
+  var abnormalFinding = false;
+  for (i = 0; i < S.findings.length; i++) { if (S.findings[i].cat !== 'other') abnormalFinding = true; }
+  if (S.cls === 'normal' && (abnormalFinding || S.pdrOrg === 'poor' || S.pdrOrg === 'disorg' || S.pdrOrg === 'absent' || S.special !== 'none')) w.push('判定が「正常」ですが、異常所見が入力されています。判定を見直してください。');
+  if (S.cls !== 'normal' && !abnormalFinding && S.pdrOrg === 'well' && S.special === 'none') w.push('判定が異常ですが、異常の根拠となる所見がまだ入力されていません。');
+  if (S.st.coma && (S.st.awake || S.st.sleep || S.st.drowsy)) w.push('「昏睡」を選んだときは、記録状態は「Comatose」だけを出力します。');
+  if (!S.st.coma && !S.st.awake && !S.st.drowsy && !S.st.sleep) w.push('記録中の状態を1つ以上選んでください。');
+  // 自由記載が出力言語で未入力のとき
+  var jpRe = /[぀-ヿ一-鿿]/;
+  var pairs = [['臨床情報', S.clin_ja, S.clin_en], ['追加コメント', S.cmt_ja, S.cmt_en]];
+  for (i = 0; i < S.findings.length; i++) {
+    var g = S.findings[i];
+    if (g.cat === 'seiz') { pairs.push([(i + 1) + ') の臨床症状', g.sem_ja, g.sem_en]); pairs.push([(i + 1) + ') の脳波の経過', g.evo_ja, g.evo_en]); }
+    if (g.cat === 'other') pairs.push([(i + 1) + ') の自由記載', g.ja, g.en]);
+  }
+  for (i = 0; i < pairs.length; i++) {
+    var ja = trim(pairs[i][1]), en = trim(pairs[i][2]);
+    if (S.lang !== 'ja' && ja && !en) w.push(pairs[i][0] + 'の英語欄が空のため、日本語のまま出力しています。');
+    if (S.lang === 'ja' && en && !ja) w.push(pairs[i][0] + 'の日本語欄が空のため、英語のまま出力しています。');
+    if (en && jpRe.test(en)) w.push(pairs[i][0] + 'の英語欄に日本語が含まれています。');
+  }
+  for (i = 0; i < S.findings.length; i++) {
+    var f = S.findings[i];
+    if ((f.cat === 'slow' || f.cat === 'epi') && f.dist !== 'generalized' && f.dist !== 'multifocal' && !f.loc) w.push((i + 1) + ') の部位が未選択です。');
+    if ((f.cat === 'slow' || f.cat === 'epi') && (f.prevT === 'p' || f.prevT === 's') && !range(f.a, f.b)) w.push((i + 1) + ') の出現頻度（ページ数・秒数）が未入力です。');
+  }
+  return w;
+}
+
+// ===== 所見カードの描画 =====
+function opts(list, cur, jaIdx, enIdx) {
+  var h = '';
+  for (var i = 0; i < list.length; i++) {
+    var lab = list[i][jaIdx] + (enIdx != null && list[i][enIdx] ? '  ' + list[i][enIdx] : '');
+    h += '<option value="' + esc(list[i][0]) + '"' + (list[i][0] === cur ? ' selected' : '') + '>' + esc(lab) + '</option>';
+  }
+  return h;
+}
+function sel(idx, key, list, cur, label, jaIdx, enIdx, rer) {
+  return '<div class="fld"><label>' + label + '</label><select data-f="' + idx + '" data-k="' + key + '"' + (rer ? ' data-r="1"' : '') + '>' + opts(list, cur, jaIdx, enIdx) + '</select></div>';
+}
+function txt(idx, key, val, label, cls, ph, mode) {
+  return '<div class="fld ' + (cls || '') + '"><label>' + label + '</label><input type="text" data-f="' + idx + '" data-k="' + key + '" value="' + esc(val) + '"' + (ph ? ' placeholder="' + esc(ph) + '"' : '') + (mode ? ' inputmode="' + mode + '"' : '') + '></div>';
+}
+function locBlock(i, f) {
+  var h = '<div class="row">';
+  h += sel(i, 'dist', DISTS, f.dist, '分布', 1, 2, true);
+  h += sel(i, 'side', SIDES, f.side, '左右', 1, null, false);
+  h += sel(i, 'loc', LOCS, f.loc, f.dist === 'generalized' ? '部位（全般性なら最大部位・任意）' : '部位', 1, null, false);
+  h += txt(i, 'max', f.max, '最大電極（任意）', 'narrow', 'F8');
+  h += '</div>';
+  return h;
+}
+function prevBlock(i, f) {
+  var P = [['p', 'ページあたり（1/x-yp）'], ['s', '秒あたり（1/x-ys）'], ['c', '記録中の回数'], ['none', '記載しない']];
+  var h = '<div class="row">';
+  h += sel(i, 'prevT', P, f.prevT, '出現頻度', 1, null, true);
+  if (f.prevT === 'p' || f.prevT === 's') {
+    h += txt(i, 'n', f.n, '回数', 'narrow', '1', 'numeric');
+    h += txt(i, 'a', f.a, (f.prevT === 'p' ? 'ページ' : '秒') + '（下限）', 'narrow', f.prevT === 'p' ? '10' : '1', 'decimal');
+    h += txt(i, 'b', f.b, (f.prevT === 'p' ? 'ページ' : '秒') + '（上限）', 'narrow', f.prevT === 'p' ? '30' : '5', 'decimal');
+  } else if (f.prevT === 'c') {
+    h += txt(i, 'n', f.n, '回数', 'narrow', '1', 'numeric');
+  }
+  h += '</div>';
+  return h;
+}
+function modBlock(i, f) {
+  var h = '<div class="lbl">出現状況（任意）</div><div>';
+  for (var m = 0; m < MODS.length; m++) {
+    h += '<label class="chk"><input type="checkbox" data-f="' + i + '" data-k="mods.' + MODS[m][0] + '"' + (f.mods[MODS[m][0]] ? ' checked' : '') + '>' + esc(MODS[m][1]) + '</label>';
+  }
+  h += '<label class="chk"><input type="checkbox" data-f="' + i + '" data-k="mods.runs"' + (f.mods.runs ? ' checked' : '') + '>短い連続（秒）</label>';
+  h += '<input type="text" style="width:90px;display:inline-block;" data-f="' + i + '" data-k="runs" value="' + esc(f.runs) + '" placeholder="3-5">';
+  h += '</div>';
+  return h;
+}
+var CATNAME = { slow: '徐波', epi: 'てんかん性放電', asym: '非対称', seiz: '発作時記録', other: 'その他' };
+function cardHTML(i) {
+  var f = S.findings[i];
+  var h = '<div class="finding" id="fc' + i + '">';
+  h += '<div class="finding-head"><span class="finding-no">' + (i + 1) + ')</span><span class="tag ' + f.cat + '">' + CATNAME[f.cat] + '</span><span class="sp"></span>';
+  h += '<button class="btn small ghost" type="button" onclick="moveF(' + i + ',-1)" aria-label="上へ">↑</button>';
+  h += '<button class="btn small ghost" type="button" onclick="moveF(' + i + ',1)" aria-label="下へ">↓</button>';
+  h += '<button class="btn small ghost" type="button" onclick="dupF(' + i + ')">複製</button>';
+  h += '<button class="btn small danger" type="button" onclick="delF(' + i + ')">削除</button></div>';
+  if (f.cat === 'slow') {
+    h += '<div class="row">' + sel(i, 'cont', CONTS, f.cont, '持続性', 1, 2) + sel(i, 'morph', MORPHS, f.morph, '波形', 1, 2) + sel(i, 'band', BANDS, f.band, '周波数帯', 1, 2) + '</div>';
+    h += '<div class="row">' + txt(i, 'f1', f.f1, '周波数（下限 Hz）', 'narrow', '2', 'decimal') + txt(i, 'f2', f.f2, '周波数（上限 Hz）', 'narrow', '3', 'decimal') + '</div>';
+    h += locBlock(i, f) + prevBlock(i, f) + modBlock(i, f);
+  } else if (f.cat === 'epi') {
+    h += '<div class="row">' + sel(i, 'type', EPIS, f.type, '種類', 1, 2, true) + '</div>';
+    h += '<div class="row">' + txt(i, 'f1', f.f1, '周波数（任意・下限 Hz）', 'narrow', '', 'decimal') + txt(i, 'f2', f.f2, '周波数（上限 Hz）', 'narrow', '', 'decimal');
+    if (f.type === 'burst' || f.type === 'pfa') h += txt(i, 'd1', f.d1, '持続（下限 秒）', 'narrow', '3', 'decimal') + txt(i, 'd2', f.d2, '持続（上限 秒）', 'narrow', '7', 'decimal');
+    h += '</div>';
+    h += locBlock(i, f) + prevBlock(i, f) + modBlock(i, f);
+  } else if (f.cat === 'asym') {
+    h += '<div class="row">' + sel(i, 'what', ASYMS, f.what, '内容', 1, 2) + sel(i, 'side', SIDES.slice(0, 2), f.side, '低下している側', 1, null) + sel(i, 'loc', LOCS, f.loc, '部位', 1, null) + '</div>';
+  } else if (f.cat === 'seiz') {
+    h += '<div class="row">' + sel(i, 'kind', SKINDS, f.kind, '種類', 1, null, true) + txt(i, 'count', f.count, '回数', 'narrow', '1', 'numeric') + '</div>';
+    h += '<label class="chk"><input type="checkbox" data-f="' + i + '" data-k="video"' + (f.video ? ' checked' : '') + '>ビデオ脳波で記録</label>';
+    if (f.kind !== 'noeeg') {
+      h += '<div class="row">' + sel(i, 'dist', DISTS.slice(0, 3), f.dist, '起始の分布', 1, 2) + sel(i, 'side', SIDES, f.side, '左右', 1, null) + sel(i, 'loc', LOCS, f.loc, '起始部位', 1, null) + '</div>';
+      h += '<div class="row">' + sel(i, 'pat', SPATS, f.pat, '発作パターン', 1, null) + txt(i, 'dur', f.dur, '持続', 'narrow', '2', 'decimal') + sel(i, 'durU', [['s', '秒'], ['m', '分']], f.durU, '単位', 1, null) + '</div>';
+      h += '<div class="row">' + txt(i, 'evo_ja', f.evo_ja, '脳波の経過（日本語・任意）', 'wide', '例：10秒間の反復性棘波の後、律動性シータ活動に移行') + txt(i, 'evo_en', f.evo_en, '脳波の経過（英語・任意）', 'wide', 'e.g., evolving into rhythmic theta activity') + '</div>';
+    }
+    if (f.kind === 'clin' || f.kind === 'noeeg') {
+      h += '<div class="row">' + sel(i, 'stype', STYPES, f.stype, '発作型（判読文に使用）', S.term === 'classic' ? 2 : 1, null) + '</div>';
+    }
+    h += '<div class="row">' + txt(i, 'sem_ja', f.sem_ja, '臨床症状（日本語）', 'wide', '例：動作停止、口部自動症') + txt(i, 'sem_en', f.sem_en, '臨床症状（英語）', 'wide', 'e.g., behavioral arrest with oral automatisms') + '</div>';
+  } else {
+    h += '<div class="row">' + txt(i, 'ja', f.ja, '日本語', 'wide', '') + txt(i, 'en', f.en, '英語', 'wide', '') + '</div>';
+  }
+  h += '<div class="preview-line" id="pv' + i + '"></div>';
+  h += '</div>';
+  return h;
+}
+function renderFindings() {
+  var h = '';
+  for (var i = 0; i < S.findings.length; i++) h += cardHTML(i);
+  document.getElementById('findings').innerHTML = h;
+  document.getElementById('noFinding').style.display = S.findings.length ? 'none' : 'block';
+}
+function rerenderCard(i) {
+  var el = document.getElementById('fc' + i);
+  if (!el) { renderFindings(); return; }
+  var tmp = document.createElement('div');
+  tmp.innerHTML = cardHTML(i);
+  el.parentNode.replaceChild(tmp.firstChild, el);
+}
+
+// ===== 出力の更新 =====
+function update() {
+  document.getElementById('output').textContent = buildText('all');
+  for (var i = 0; i < S.findings.length; i++) {
+    var pv = document.getElementById('pv' + i);
+    if (pv) pv.textContent = (S.lang === 'ja' ? findingLine(S.findings[i], 'ja') : findingLine(S.findings[i], 'en')) || '（未入力）';
+  }
+  var w = warnings(), h = '';
+  for (var j = 0; j < w.length; j++) h += '<div class="warn">' + esc(w[j]) + '</div>';
+  document.getElementById('warnings').innerHTML = h;
+  var langs = ['ja', 'en', 'mix'];
+  for (var k = 0; k < langs.length; k++) {
+    document.getElementById('lang_' + langs[k]).className = S.lang === langs[k] ? 'on' : '';
+  }
+  var hint = { ja: '所見・判読とも日本語で出力します。', en: 'Findings and interpretation are written in English.', mix: '所見は英語、判読と推奨は日本語で出力します（部位名は英語のまま）。' };
+  document.getElementById('langHint').textContent = hint[S.lang];
+  // 用語体系に合わせた表示
+  var stg = document.querySelectorAll('.stg');
+  for (var s = 0; s < stg.length; s++) stg[s].textContent = S.term === 'classic' ? stg[s].getAttribute('data-c') : stg[s].getAttribute('data-n');
+  document.getElementById('s4wrap').style.display = S.term === 'classic' ? '' : 'none';
+}
+function setLang(l) { S.lang = l; update(); }
+
+// ===== 入力イベント =====
+function onStatic(e) {
+  var el = e.target; var path = el.getAttribute('data-s');
+  if (!path) return;
+  var v = el.type === 'checkbox' ? el.checked : el.value;
+  setPath(S, path, v);
+  if (path === 'term') renderFindings();
+  update();
+}
+function onFinding(e) {
+  var el = e.target; var idx = el.getAttribute('data-f'); var key = el.getAttribute('data-k');
+  if (idx == null || !key) return;
+  var f = S.findings[parseInt(idx, 10)];
+  if (!f) return;
+  var v = el.type === 'checkbox' ? el.checked : el.value;
+  setPath(f, key, v);
+  if (el.getAttribute('data-r') === '1' && e.type === 'change') rerenderCard(parseInt(idx, 10));
+  update();
+}
+function syncStatic() {
+  var els = document.querySelectorAll('[data-s]');
+  for (var i = 0; i < els.length; i++) {
+    var v = getPath(S, els[i].getAttribute('data-s'));
+    if (els[i].type === 'checkbox') els[i].checked = !!v;
+    else els[i].value = v == null ? '' : v;
+  }
+}
+
+// ===== 操作 =====
+function addFinding(cat) {
+  S.findings.push(newFinding(cat));
+  renderFindings(); update();
+  var el = document.getElementById('fc' + (S.findings.length - 1));
+  if (el && el.scrollIntoView) el.scrollIntoView({ block: 'nearest' });
+}
+function delF(i) { S.findings.splice(i, 1); renderFindings(); update(); }
+function dupF(i) { S.findings.splice(i + 1, 0, JSON.parse(JSON.stringify(S.findings[i]))); renderFindings(); update(); }
+function moveF(i, d) {
+  var j = i + d; if (j < 0 || j >= S.findings.length) return;
+  var t = S.findings[i]; S.findings[i] = S.findings[j]; S.findings[j] = t;
+  renderFindings(); update();
+}
+function resetAll() {
+  if (!window.confirm('入力内容をすべて消去します。よろしいですか？')) return;
+  var lang = S.lang, term = S.term;
+  S = defaults(); S.lang = lang; S.term = term;
+  syncStatic(); renderFindings(); update();
+}
+function toast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show';
+  setTimeout(function () { t.className = 'toast'; }, 1600);
+}
+function copyText(which) {
+  var text = buildText(which);
+  text = text.replace(/[～〜]/g, '-');
+  var done = function () { toast('コピーしました'); };
+  var fallback = function () {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed'; ta.style.top = '-1000px';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); } catch (err) { toast('コピーできませんでした'); }
+    document.body.removeChild(ta);
+  };
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(done, fallback);
+  } else fallback();
+}
+
+// ===== 記入例（架空） =====
+function loadSample(k) {
+  var lang = S.lang, term = S.term;
+  S = defaults(); S.lang = lang; S.term = term;
+  var f;
+  if (k === 'normal') {
+    S.age = '28'; S.sex = 'F'; S.clin_ja = '一過性意識消失の精査'; S.clin_en = 'evaluation of transient loss of consciousness';
+    S.st = { awake: true, drowsy: false, sleep: true, coma: false };
+    S.sp = { w: '60', s1: '25', s2: '15', s3: '0', s4: '', rem: '' };
+    S.cls = 'normal'; S.pdrOrg = 'well'; S.pdrF1 = '10'; S.pdrF2 = '11'; S.pdrReact = 'good';
+    S.hv = 'nc'; S.ps = 'drv';
+    S.rec.normal = true; S.rec.clin = true;
+  } else if (k === 'focal') {
+    S.age = '45'; S.sex = 'M'; S.clin_ja = '意識減損を伴う発作の反復'; S.clin_en = 'recurrent seizures with impaired awareness';
+    S.st = { awake: true, drowsy: false, sleep: true, coma: false };
+    S.sp = { w: '50', s1: '30', s2: '20', s3: '0', s4: '', rem: '' };
+    S.cls = 'moderate'; S.pdrOrg = 'poor'; S.pdrF1 = '9'; S.pdrF2 = '10';
+    f = newFinding('slow'); f.side = 'L'; f.loc = 'temporal'; f.a = '10'; f.b = '30'; f.mods = { sleep: true };
+    S.findings.push(f);
+    f = newFinding('epi'); f.type = 'sharp'; f.side = 'L'; f.loc = 'temporal'; f.max = 'F7'; f.a = '5'; f.b = '10'; f.mods = { sleep: true };
+    S.findings.push(f);
+    S.nt.st = true;
+    S.rec.img = true;
+  } else if (k === 'diffuse') {
+    S.age = '72'; S.sex = 'M'; S.clin_ja = '意識障害（代謝性脳症の疑い）'; S.clin_en = 'altered mental status, suspected metabolic encephalopathy';
+    S.st = { awake: false, drowsy: false, sleep: false, coma: true };
+    S.cls = 'marked'; S.pdrOrg = 'absent';
+    f = newFinding('slow'); f.cont = 'continuous'; f.band = 'dt'; f.f1 = '1'; f.f2 = '5'; f.dist = 'generalized'; f.side = 'B'; f.loc = 'frontal'; f.prevT = 'none';
+    S.findings.push(f);
+    S.prevDate = '2026/10/30'; S.prevChg = 'worse';
+    S.rec.clin = true; S.rec.repeat = true;
+  } else if (k === 'gen') {
+    S.age = '17'; S.sex = 'F'; S.clin_ja = '起床後のミオクローヌスと全身けいれん'; S.clin_en = 'morning myoclonic jerks and a generalized convulsion';
+    S.st = { awake: true, drowsy: true, sleep: false, coma: false };
+    S.sp = { w: '85', s1: '15', s2: '0', s3: '0', s4: '', rem: '' };
+    S.cls = 'mildmod'; S.pdrOrg = 'well'; S.pdrF1 = '10'; S.pdrF2 = '10'; S.pdrReact = 'good';
+    f = newFinding('epi'); f.type = 'pswc'; f.f1 = '4'; f.f2 = '6'; f.dist = 'generalized'; f.side = 'B'; f.loc = 'frontal'; f.prevT = 'c'; f.n = '4'; f.mods = { drowsy: true };
+    S.findings.push(f);
+    S.hv = 'nc'; S.ps = 'ppr';
+    S.rec.clin = true;
+  }
+  syncStatic(); renderFindings(); update();
+  toast('記入例を読み込みました');
+}
+
+// ===== 起動 =====
+var formCol = document.querySelector('.form-col');
+formCol.addEventListener('input', function (e) { if (e.target.getAttribute('data-f') != null) onFinding(e); else onStatic(e); });
+formCol.addEventListener('change', function (e) { if (e.target.getAttribute('data-f') != null) onFinding(e); else onStatic(e); });
+syncStatic(); renderFindings(); update();
+</script>
+</body>
+</html>

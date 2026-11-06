@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v346';
+const CACHE_NAME = 'ddx-tools-v347';
 const ASSETS = [
   './infographics/elderly-itch-pruritus/index.html',
   './infographics/elderly-itch-pruritus/infographic.png',
@@ -345,6 +345,7 @@ const ASSETS = [
   './vertigo.html',
   './consciousness.html',
   './cceeg.html',
+  './eeg_report_writer.html',
   './dyspnea.html',
   './chest_pain.html',
   './fuo.html',
