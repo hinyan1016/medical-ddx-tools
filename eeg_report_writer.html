@@ -273,7 +273,7 @@
             <option value="mild">ごく軽度不良 mildly poorly organized</option>
             <option value="poor">軽度不良 poorly organized</option>
             <option value="disorg">不良 disorganized</option>
-            <option value="absent">認めない lack of PDR（ACNS：absent）</option>
+            <option value="absent">欠如 lack（不良より悪い・ACNS：absent）</option>
             <option value="unclear">判定できない（ACNS：unclear）</option>
           </select>
         </div>
@@ -421,7 +421,7 @@
           </select>
         </div>
       </div>
-      <p class="hint">「自動」は目安です。後頭部優位律動のごく軽度不良・軽度不良を軽度、不良（disorganized）を軽度から中等度とし、全般性徐波があれば1段階（持続的なら2段階）上げます。後頭部優位律動を認めなければ中等度以上、昏睡なら中等度から高度以上、burst-suppression・抑制は高度とします。記録に合わせて選び直してください。</p>
+      <p class="hint">「自動」は目安です。後頭部優位律動のごく軽度不良・軽度不良を軽度、不良（disorganized）を軽度から中等度とし、全般性徐波があれば1段階（持続的なら2段階）上げます。欠如（lack）なら中等度以上、昏睡なら中等度から高度以上、burst-suppression・抑制は高度とします。記録に合わせて選び直してください。</p>
       <h3>前回脳波との比較</h3>
       <div class="row">
         <div class="fld"><label for="s_prevDate">前回の検査日</label><input type="text" id="s_prevDate" data-s="prevDate" placeholder="2026/05/12"></div>
@@ -972,7 +972,7 @@ function pdrText(L) {
     if (sp) t += '; ' + sp;
     return t;
   }
-  if (S.pdrOrg === 'absent') t = '後頭部優位律動を認めない';
+  if (S.pdrOrg === 'absent') t = '後頭部優位律動の欠如';
   else if (S.pdrOrg === 'unclear') t = '後頭部優位律動ははっきりしない' + (hz ? '（' + hz + ' Hz）' : '');
   else {
     var wj = { well: '組織化良好', mild: '組織化ごく軽度不良', poor: '組織化軽度不良', disorg: '組織化不良' }[S.pdrOrg];
@@ -1012,7 +1012,7 @@ function focalSzWord(L) {
 }
 var DEGKEYS = ['', 'mild', 'mildmod', 'moderate', 'modmarked', 'marked'];
 function diffDegree() {
-  // 自動は目安：PDRのごく軽度不良・軽度不良=軽度、不良（disorganized）=軽度から中等度、全般性徐波で1〜2段階上げる、PDR欠如=中等度以上、昏睡=中等度から高度以上、
+  // 自動は目安：PDRのごく軽度不良・軽度不良=軽度、不良（disorganized）=軽度から中等度、全般性徐波で1〜2段階上げる、PDR欠如（lack）=中等度以上、昏睡=中等度から高度以上、
   // burst-suppression・抑制=高度。判定が「正常」のときは書かない。
   if (S.diffDeg !== 'auto') return S.diffDeg === 'none' ? '' : S.diffDeg;
   if (S.cls === 'normal') return '';
