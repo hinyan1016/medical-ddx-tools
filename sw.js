@@ -1,5 +1,8 @@
-const CACHE_NAME = 'ddx-tools-v355';
+const CACHE_NAME = 'ddx-tools-v356';
 const ASSETS = [
+  './infographics/eagle-syndrome/index.html',
+  './infographics/eagle-syndrome/infographic.png',
+  './infographics/dka-initial-assessment/animated.html',
   './infographics/elderly-itch-pruritus/index.html',
   './infographics/elderly-itch-pruritus/infographic.png',
   './infographics/dka-initial-assessment/infographic.png',
