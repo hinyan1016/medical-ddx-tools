@@ -194,13 +194,13 @@ if (location.protocol !== 'file:' && 'serviceWorker' in navigator) {
         </div>
         <div id="cidp-assessment" aria-labelledby="cidp-title">
           <h3 id="cidp-title">CIDPの電気診断基準との照合（EAN/PNS 2021）</h3>
-          <div class="reference-box" id="cidp-sample-controls">
-            <h4>架空のCIDPサンプルを読み込む</h4>
-            <p class="hint">典型的CIDPと、典型的な臨床像を示すpossible CIDPを比較します。測定値・採用した所見・臨床条件を復元し、満たした基準と不足情報を表示します。日英の解釈候補は下の採用ボタンから取り込めます。再読み込み後もこのボタンから試せます。</p>
-            <div class="sample-buttons"><button type="button" data-cidp-sample="typical">典型的CIDPを読み込む</button><button type="button" data-cidp-sample="possible">possible CIDPを読み込む</button></div>
+          <details class="reference-box reference-source" id="cidp-sample-controls">
+            <summary><span>架空のCIDPサンプルを読み込む</span><span class="hint">クリック／タップで開閉</span></summary>
+            <p class="hint">典型的CIDP・possible CIDPと各亜型を比較します。測定値・採用した所見・臨床条件・症候肢を復元し、満たした基準と不足情報を表示します。日英の解釈候補は下の採用ボタンから取り込めます。再読み込み後もこのボタンから試せます。純粋感覚型はpossibleが上限の例です。</p>
+            <div class="sample-buttons"><button type="button" data-cidp-sample="typical">典型的CIDPを読み込む</button><button type="button" data-cidp-sample="possible">possible CIDPを読み込む</button><button type="button" data-cidp-sample="distal">遠位型CIDPを読み込む</button><button type="button" data-cidp-sample="multifocal">多巣性CIDPを読み込む</button><button type="button" data-cidp-sample="focal">局所性CIDPを読み込む</button><button type="button" data-cidp-sample="motor">運動型CIDPを読み込む</button><button type="button" data-cidp-sample="sensory">感覚型CIDPを読み込む</button></div>
             <div class="notice" id="cidp-sample-replace" hidden><p id="cidp-sample-replace-text"></p><p>現在の全検査、身長、CIDP・鑑別・MMNの入力、日英の編集済み解釈を置き換えます。必要な内容は先に控えてください。</p><div class="sample-buttons"><button type="button" id="cidp-sample-confirm">現在の入力を置き換えて読み込む</button><button type="button" id="cidp-sample-cancel">キャンセルして入力を残す</button></div></div>
             <p class="notice" id="cidp-sample-status" role="status" hidden></p>
-          </div>
+          </details>
           <p class="hint">採用した判定と実測値を、運動の表2(a)〜(g)・感覚の表3・亜型別の表6に照合します。照合する病型を選択してください。臨床病型は診察で別途判断し、未入力・未採用は正常や陰性として扱いません。</p>
           <label>照合する病型<select id="cidp-mode" autocomplete="off">
             <option value="typical">典型的CIDP</option><option value="distal">遠位型CIDP</option>
@@ -339,13 +339,13 @@ if (location.protocol !== 'file:' && 'serviceWorker' in navigator) {
         </div>
         <section id="mmn-assessment" aria-labelledby="mmn-title">
           <h3 id="mmn-title">MMNの臨床・電気診断基準との照合（EFNS/PNS 2010）</h3>
-          <div class="reference-box" id="mmn-sample-controls">
-            <h4>架空のMMNサンプルを読み込む</h4>
+          <details class="reference-box reference-source" id="mmn-sample-controls">
+            <summary><span>架空のMMNサンプルを読み込む</span><span class="hint">クリック／タップで開閉</span></summary>
             <p class="hint">検査の測定値・採用した所見・臨床条件を再現します。再読み込み後もこのボタンから試せます。患者データの保存は行いません。日英の解釈候補は、読み込み後に下の採用ボタンから取り込めます。</p>
             <div class="sample-buttons"><button type="button" data-mmn-sample="definite">definite MMNを読み込む</button><button type="button" data-mmn-sample="probable">probable MMNを読み込む</button><button type="button" data-mmn-sample="possible">possible MMNを読み込む</button></div>
             <div class="notice" id="mmn-sample-replace" hidden><p id="mmn-sample-replace-text"></p><p>現在の全検査、身長、CIDP・鑑別・MMNの入力、日英の編集済み解釈を置き換えます。必要な内容は先に控えてください。</p><div class="sample-buttons"><button type="button" id="mmn-sample-confirm">現在の入力を置き換えて読み込む</button><button type="button" id="mmn-sample-cancel">キャンセルして入力を残す</button></div></div>
             <p class="notice" id="mmn-sample-status" role="status" hidden></p>
-          </div>
+          </details>
           <label class="hint"><input type="checkbox" id="mmn-active" data-mmn-input autocomplete="off">MMNの総合照合を有効にする</label>
           <p class="hint">面積は各運動神経の遠位・近位刺激欄で入力します。MMN用の面積基準に該当する所見を採用し、該当する神経のブロック区間を含む感覚評価を記録してください。CIDP用の振幅基準とは別に照合します。</p>
           <div id="mmn-fields" hidden>
@@ -2300,7 +2300,12 @@ var mmnSamples = {
 };
 var cidpSamples = {
   typical: { ja: '典型的CIDP', en: 'typical CIDP', note: '臨床基準と、表2(b)の運動速度基準2神経＋感覚異常2神経を組み合わせる例です。' },
-  possible: { ja: 'possible CIDP', en: 'possible CIDP', note: '典型的な臨床像と、運動速度基準1神経＋感覚異常2神経を組み合わせる例です。格上げを検討する場合に不足する支持所見も表示します。' }
+  possible: { ja: 'possible CIDP', en: 'possible CIDP', note: '典型的な臨床像と、運動速度基準1神経＋感覚異常2神経を組み合わせる例です。格上げを検討する場合に不足する支持所見も表示します。' },
+  distal: { ja: '遠位型CIDP', en: 'distal CIDP', mode: 'distal', note: '下肢優位の遠位型の臨床像を設定し、電気診断は上肢2運動神経の基準（遠位CMAPはいずれも1 mV以上）と感覚異常2神経で照合する例です。下肢の測定は未入力です。' },
+  multifocal: { ja: '多巣性CIDP', en: 'multifocal CIDP', mode: 'multifocal', limbs: ['r-upper', 'l-upper'], note: '右正中・左尺骨の2運動神経と、対応する感覚異常を採用する例です。診察上の症候肢として左右の上肢を指定し、2肢にまたがる根拠を示します。' },
+  focal: { ja: '局所性CIDP', en: 'focal CIDP', mode: 'focal', limbs: ['r-upper'], note: '症候肢を右上肢の1肢に限定し、その肢内の正中・尺骨2運動神経と感覚異常2神経を組み合わせる例です。' },
+  motor: { ja: '運動型CIDP', en: 'motor CIDP', mode: 'motor', note: '臨床的な感覚障害がない運動型の設定です。運動基準2神経と、正中・尺骨・橈骨・腓腹の4種類の感覚伝導を測定して正常と採用した所見を照合します。' },
+  sensory: { ja: '感覚型CIDP（possible上限）', en: 'sensory CIDP (possible only)', mode: 'sensory', note: '臨床的筋力低下がない純粋感覚型の設定です。4種類の運動伝導・同側F波を正常と採用し、正中・尺骨の感覚異常と振幅に応じた著明な速度低下を照合します。この経路はpossibleが上限で、支持所見での格上げはしません。' }
 };
 function hasSampleReplacementInput() {
   if (studies.length) return true;
@@ -2334,8 +2339,8 @@ function resetForReportSample() {
   byId('cidp-sample-status').hidden = true;
   refreshKinds(); renderFReferences(); byId('lang-ja').click();
 }
-function addSampleStudy(nerve, kind) {
-  byId('nerve').value = nerve; refreshKinds(); byId('kind').value = kind; byId('side').value = 'r';
+function addSampleStudy(nerve, kind, side) {
+  byId('nerve').value = nerve; refreshKinds(); byId('kind').value = kind; byId('side').value = side || 'r';
   addStudy();
   return studies[studies.length - 1];
 }
@@ -2384,24 +2389,44 @@ function loadCIDPSample(kind) {
   var sample = cidpSamples[kind];
   if (!sample) return;
   resetForReportSample(); activeCIDPSample = kind;
+  var mode = sample.mode || 'typical', pureSensory = mode === 'sensory';
   byId('height-cm').value = '170'; renderFReferences();
+  byId('cidp-mode').value = mode;
   byId('cidp-integrate').checked = true; byId('cidp-conditions').checked = true;
-  var clinical = { age: '60', weeks: '12', course: 'progressive', phenotype: 'typical', reflexes: 'all', mimics: 'excluded' };
+  var clinical = { age: '60', weeks: '12', course: 'progressive', phenotype: mode, reflexes: mode === 'typical' ? 'all' : 'affected', mimics: 'excluded' };
   Object.keys(clinical).forEach(function (key) { byId('cidp-' + key).value = clinical[key]; });
+  (sample.limbs || []).forEach(function (limb) { document.querySelector('[data-cidp-limb="' + limb + '"]').checked = true; });
   function fill(site, values) { Object.keys(values).forEach(function (key) { site.node.querySelector('[data-metric="' + key + '"]').value = values[key]; }); }
   function adopt(site) { var button = site.node.querySelector('[data-apply-candidate]'); if (!button.hidden) button.click(); }
-  ['median', 'ulnar'].forEach(function (nerve) {
-    var motor = addSampleStudy(nerve, 'motor'), distal = motor.sites[0], proximal = motor.sites[1];
+  function addSensory(nerve, side, normal) {
+    var sensory = addSampleStudy(nerve, 'sensory', side);
+    var values = normal ? nerve === 'radial' ? { latency: 1.7, peak: 2.2, amplitude: 20, velocity: 58.8 } :
+      nerve === 'sural' ? { latency: 2.8, peak: 3.5, amplitude: 10, velocity: 50 } : { latency: 2.3, peak: 3, amplitude: 20, velocity: 60.9 } :
+      pureSensory ? { latency: 4.7, peak: 5.5, amplitude: 20, velocity: 29.8 } : { latency: 2.3, peak: 3, amplitude: 2, velocity: 60.9 };
+    fill(sensory.sites[0], values); renderReport(); adopt(sensory.sites[0]);
+  }
+  var motorPairs = pureSensory ? [['median', 'r'], ['ulnar', 'r'], ['fibular', 'r'], ['tibial', 'r']] :
+    mode === 'multifocal' ? [['median', 'r'], ['ulnar', 'l']] : [['median', 'r'], ['ulnar', 'r']];
+  motorPairs.forEach(function (pair) {
+    var nerve = pair[0], side = pair[1];
+    var motor = addSampleStudy(nerve, 'motor', side), distal = motor.sites[0], proximal = motor.sites[1];
     distal.node.querySelector('[data-lff]').value = '2';
-    fill(distal, { latency: 3.5, amplitude: 8, duration: 5 });
-    fill(proximal, { amplitude: 7.5, velocity: kind === 'typical' || nerve === 'median' ? 20 : 55, duration: 6 });
+    fill(distal, { latency: pureSensory ? 3 : 3.5, amplitude: 8, duration: 5 });
+    fill(proximal, { amplitude: pureSensory ? 8 : 7.5, velocity: pureSensory ? 60 : kind === 'possible' && nerve === 'ulnar' ? 55 : 20, duration: pureSensory ? 5 : 6 });
     proximal.node.querySelector('[data-waveform-confirmed]').checked = true;
     renderReport(); adopt(distal); adopt(proximal);
-    var sensory = addSampleStudy(nerve, 'sensory');
-    fill(sensory.sites[0], { latency: 2.3, peak: 3, amplitude: 2, velocity: 60.9 });
-    renderReport(); adopt(sensory.sites[0]);
+    if (pureSensory) {
+      var f = addSampleStudy(nerve, 'f', side);
+      fill(f.sites[0], { latency: nerve === 'median' || nerve === 'ulnar' ? 25 : 45, persistence: 100 });
+      renderReport(); adopt(f.sites[0]);
+    } else if (mode !== 'motor') addSensory(nerve, side, false);
   });
-  byId('cidp-sample-status').textContent = '【架空サンプル：' + sample.ja + '】' + sample.note + ' 両例とも12週進行する典型的臨床像、全肢の腱反射低下・消失を設定しています。医師の確認項目も操作確認用で、実際の診察・鑑別除外の記録ではありません。F波・下肢検査・支持所見は未入力で、正常・陰性とは扱いません。基準の全条項を同時に満たす必要があるという意味ではありません。';
+  if (mode === 'motor') ['median', 'ulnar', 'radial', 'sural'].forEach(function (nerve) { addSensory(nerve, 'r', true); });
+  if (pureSensory) ['median', 'ulnar'].forEach(function (nerve) { addSensory(nerve, 'r', false); });
+  byId('cidp-sample-status').textContent = '【架空サンプル：' + sample.ja + '】' + sample.note + ' 12週進行する選択病型の臨床像と、' +
+    (mode === 'typical' ? '全肢' : '症候肢') + 'の腱反射低下・消失を設定しています。医師の確認項目も操作確認用で、実際の診察・鑑別除外の記録ではありません。' +
+    (pureSensory ? '運動・F波の正常所見は入力・採用済みの項目に基づきます。' : 'F波・未追加の下肢検査は未入力です。') +
+    ' 支持所見も未入力で、未入力を正常・陰性とは扱いません。基準の全条項を同時に満たす必要があるという意味ではありません。';
   byId('cidp-sample-status').hidden = false;
   renderReport(); byId('cidp-summary').focus(); byId('cidp-summary').scrollIntoView(true);
 }
