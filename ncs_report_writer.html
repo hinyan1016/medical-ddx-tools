@@ -207,6 +207,11 @@ if (location.protocol !== 'file:' && 'serviceWorker' in navigator) {
             <h4>感覚型：どちらもpossibleが上限</h4>
             <p class="hint">純粋感覚型には、それより高い確実度のサンプルはありません。速度低下とsural-sparingの2経路を比較でき、支持所見を追加しても格上げしません。</p>
             <div class="sample-buttons"><button type="button" data-cidp-sample="sensory">感覚型CIDP（速度低下・possible上限）を読み込む</button><button type="button" data-cidp-sample="sensory-possible">possible感覚型CIDP（sural-sparing・上限）を読み込む</button></div>
+            <h4>支持2領域を追加：possibleからの格上げと上限を比較</h4>
+            <p class="hint">上のpossible例と同じ電気診断所見に、髄液と神経超音波の架空の支持所見を追加します。髄液と神経画像を独立した2領域として数え、超音波の2部位を2領域とは数えません。総合判定の根拠を開き、髄液または画像の確認チェックを外すと、支持の不足による違いを試せます。</p>
+            <div class="sample-buttons"><button type="button" data-cidp-sample="typical-supported">典型的CIDPへの格上げ例を読み込む</button><button type="button" data-cidp-sample="distal-supported">遠位型CIDPへの格上げ例を読み込む</button><button type="button" data-cidp-sample="multifocal-supported">多巣性CIDPへの格上げ例を読み込む</button><button type="button" data-cidp-sample="motor-supported">運動型CIDPへの格上げ例を読み込む</button></div>
+            <p class="hint">局所性の次の例は「同一症候肢の運動1神経＋感覚1神経」のpossible上限経路です。局所性のすべての経路が格上げ不可という意味ではありません。純粋感覚型も、支持所見が増えてもpossible上限を保ちます。</p>
+            <div class="sample-buttons"><button type="button" data-cidp-sample="focal-supported">局所性（運動1＋感覚1）支持2領域・possible上限を読み込む</button><button type="button" data-cidp-sample="sensory-supported">感覚型・支持2領域・possible上限を読み込む</button></div>
             <div class="notice" id="cidp-sample-replace" hidden><p id="cidp-sample-replace-text"></p><p>現在の全検査、身長、CIDP・鑑別・MMNの入力、日英の編集済み解釈を置き換えます。必要な内容は先に控えてください。</p><div class="sample-buttons"><button type="button" id="cidp-sample-confirm">現在の入力を置き換えて読み込む</button><button type="button" id="cidp-sample-cancel">キャンセルして入力を残す</button></div></div>
             <p class="notice" id="cidp-sample-status" role="status" hidden></p>
           </details>
@@ -2319,7 +2324,13 @@ var cidpSamples = {
   'multifocal-possible': { ja: 'possible多巣性CIDP', en: 'possible multifocal CIDP', mode: 'multifocal', singleMotor: true, limbs: ['r-upper', 'l-upper'], note: '症候肢は左右上肢の2肢ですが、運動速度基準は右正中神経の1神経のみです。左尺骨神経の速度は基準内で、感覚異常は各症候肢の1神経ずつ、計2神経です。既存例の2肢にまたがる2運動神経の基準は未充足で、possibleの運動1神経＋感覚2神経の経路にとどまります。支持所見は未入力のためpossibleにとどまり、格上げを検討する場合の独立した支持2領域も不足しています。' },
   'focal-possible': { ja: 'possible局所性CIDP', en: 'possible focal CIDP', mode: 'focal', singlePair: true, limbs: ['r-upper'], note: '症候肢は右上肢の1肢で、その肢の右正中神経だけに運動速度基準と感覚異常を設定しています。既存例の運動2神経＋感覚2神経に対し、運動1神経＋感覚1神経の経路です。未追加の尺骨神経を正常とは扱いません。この経路はpossibleが上限で、支持所見による格上げはできません。' },
   'motor-possible': { ja: 'possible運動型CIDP', en: 'possible motor CIDP', mode: 'motor', singleMotor: true, note: '運動型の既存例との違いは、運動速度基準が右正中神経の1神経のみで、右尺骨神経の速度は基準内である点です。臨床的な感覚障害はなく、正中・尺骨・橈骨・腓腹の4種類の感覚伝導は完全な実測を正常と採用しています。運動2神経の基準は未充足です。支持所見は未入力のためpossibleにとどまり、格上げを検討する場合の独立した支持2領域も不足しています。' },
-  'sensory-possible': { ja: 'possible感覚型CIDP（sural-sparing・上限）', en: 'possible sensory CIDP (sural sparing; possible only)', mode: 'sensory', suralSparing: true, note: '純粋感覚型の別経路です。4種類の運動伝導・同側F波を正常と採用し、右正中・橈骨のSNAP振幅低下と同側腓腹SNAP振幅正常によるsural-sparingを照合します。手根管症候群の影響を除外済みという架空の確認を設定しています。既存の速度低下例と異なり、著明な感覚速度低下2神経はありませんが、別の追加条件を満たします。両例ともpossibleが上限で、支持所見を追加しても格上げできません。' }
+  'sensory-possible': { ja: 'possible感覚型CIDP（sural-sparing・上限）', en: 'possible sensory CIDP (sural sparing; possible only)', mode: 'sensory', suralSparing: true, note: '純粋感覚型の別経路です。4種類の運動伝導・同側F波を正常と採用し、右正中・橈骨のSNAP振幅低下と同側腓腹SNAP振幅正常によるsural-sparingを照合します。手根管症候群の影響を除外済みという架空の確認を設定しています。既存の速度低下例と異なり、著明な感覚速度低下2神経はありませんが、別の追加条件を満たします。両例ともpossibleが上限で、支持所見を追加しても格上げできません。' },
+  'typical-supported': { ja: '典型的CIDPへの支持所見による格上げ例', en: 'typical CIDP supportive upgrade example', singleMotor: true, supports: true, note: 'possible CIDP例と同じ運動基準1神経＋感覚異常2神経に、独立した支持2領域を追加する例です。電気診断のみではpossibleのまま、臨床条件と支持所見を含む総合判定で典型的CIDPへの格上げ経路を照合します。' },
+  'distal-supported': { ja: '遠位型CIDPへの支持所見による格上げ例', en: 'distal CIDP supportive upgrade example', mode: 'distal', singleMotor: true, supports: true, note: 'possible遠位型例と同じ上肢1運動神経の基準＋感覚異常2神経に、独立した支持2領域を追加する例です。総合判定で遠位型CIDPへの格上げ経路を照合します。下肢のみ2運動神経のpossible上限経路とは異なります。' },
+  'multifocal-supported': { ja: '多巣性CIDPへの支持所見による格上げ例', en: 'multifocal CIDP supportive upgrade example', mode: 'multifocal', singleMotor: true, supports: true, limbs: ['r-upper', 'l-upper'], note: 'possible多巣性例と同じ左右上肢の臨床分布、運動基準1神経＋症候肢の感覚異常2神経に、独立した支持2領域を追加します。総合判定で多巣性CIDPへの格上げ経路を照合します。' },
+  'motor-supported': { ja: '運動型CIDPへの支持所見による格上げ例', en: 'motor CIDP supportive upgrade example', mode: 'motor', singleMotor: true, supports: true, note: 'possible運動型例と同じ運動基準1神経、完全な実測で正常と採用した4種類の感覚伝導に、独立した支持2領域を追加します。総合判定で運動型CIDPへの格上げ経路を照合します。' },
+  'focal-supported': { ja: '局所性（運動1＋感覚1）支持2領域・possible上限例', en: 'possible focal CIDP (one motor and one sensory nerve; two supports; possible only)', mode: 'focal', singlePair: true, supports: true, limbs: ['r-upper'], note: 'possible局所性例と同じ右上肢の運動1神経＋感覚1神経に、他の格上げ例と同じ支持2領域を追加します。この経路はpossible上限で格上げできません。未追加の神経を正常とは扱いません。局所性の別経路まで格上げ不可と一般化しないでください。' },
+  'sensory-supported': { ja: '感覚型・支持2領域・possible上限例', en: 'possible sensory CIDP (two supports; possible only)', mode: 'sensory', suralSparing: true, supports: true, note: 'possible感覚型のsural-sparing例と同じ所見に、他の格上げ例と同じ支持2領域を追加します。4種類の運動伝導・同側F波の正常、感覚異常2神経とsural-sparingを照合し、手根管症候群の影響を除外済みという架空の確認を設定します。純粋感覚型はpossibleが上限で、支持2領域がそろっても格上げできません。' }
 };
 function hasSampleReplacementInput() {
   if (studies.length) return true;
@@ -2441,10 +2452,18 @@ function loadCIDPSample(kind) {
     (sample.suralSparing ? ['median', 'radial'] : ['median', 'ulnar']).forEach(function (nerve) { addSensory(nerve, 'r', false); });
     if (sample.suralSparing) { addSensory('sural', 'r', true); byId('cidp-sensory-cts-r').checked = true; }
   }
+  if (sample.supports) {
+    // 架空の支持2領域を、格上げ可能な経路とpossible上限の経路へ同じ条件で設定します。
+    var supportValues = { 'cidp-csf-status': 'yes', 'cidp-csf-protein': '80', 'cidp-csf-upper': '60', 'cidp-csf-cells': '2', 'cidp-csf-cell-upper': '5',
+      'cidp-us-status': 'yes', 'cidp-us-note': '架空：右近位正中神経と右腕神経叢の2部位で、施設基準を超える神経腫大を専門的に確認する設定。' };
+    Object.keys(supportValues).forEach(function (id) { byId(id).value = supportValues[id]; });
+    ['cidp-csf-reviewed', 'cidp-us-pattern', 'cidp-image-reviewed'].forEach(function (id) { byId(id).checked = true; });
+  }
   byId('cidp-sample-status').textContent = '【架空サンプル：' + sample.ja + '】' + sample.note + ' 12週進行する選択病型の臨床像と、' +
     (mode === 'typical' ? '全肢' : '症候肢') + 'の腱反射低下・消失を設定しています。医師の確認項目も操作確認用で、実際の診察・鑑別除外の記録ではありません。' +
     (pureSensory ? '運動・F波の正常所見は入力・採用済みの項目に基づきます。' : 'F波・未追加の下肢検査は未入力です。') +
-    ' 支持所見も未入力で、未入力を正常・陰性とは扱いません。基準の全条項を同時に満たす必要があるという意味ではありません。';
+    (sample.supports ? ' 支持所見は髄液（蛋白80 mg/dL／年齢相応の施設上限60 mg/dL、細胞2/µL／施設上限5/µL）と神経超音波の2領域です。各確認チェックも架空の操作確認用です。MRI・神経生検・治療反応は未入力です。' : ' 支持所見も未入力です。') +
+    ' 未入力を正常・陰性とは扱いません。基準の全条項を同時に満たす必要があるという意味ではありません。';
   byId('cidp-sample-status').hidden = false;
   renderReport(); byId('cidp-summary').focus(); byId('cidp-summary').scrollIntoView(true);
 }
