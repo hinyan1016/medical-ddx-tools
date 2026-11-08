@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v376';
+const CACHE_NAME = 'ddx-tools-v377';
 const ASSETS = [
   './infographics/eagle-syndrome-revised-20261108/index.html',
   './infographics/gambling-payout-rate/index.html',

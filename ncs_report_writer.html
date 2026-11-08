@@ -197,7 +197,16 @@ if (location.protocol !== 'file:' && 'serviceWorker' in navigator) {
           <details class="reference-box reference-source" id="cidp-sample-controls">
             <summary><span>架空のCIDPサンプルを読み込む</span><span class="hint">クリック／タップで開閉</span></summary>
             <p class="hint">典型的CIDP・possible CIDPと各亜型を比較します。測定値・採用した所見・臨床条件・症候肢を復元し、満たした基準と不足情報を表示します。日英の解釈候補は下の採用ボタンから取り込めます。再読み込み後もこのボタンから試せます。純粋感覚型はpossibleが上限の例です。</p>
-            <div class="sample-buttons"><button type="button" data-cidp-sample="typical">典型的CIDPを読み込む</button><button type="button" data-cidp-sample="possible">possible CIDPを読み込む</button><button type="button" data-cidp-sample="distal">遠位型CIDPを読み込む</button><button type="button" data-cidp-sample="multifocal">多巣性CIDPを読み込む</button><button type="button" data-cidp-sample="focal">局所性CIDPを読み込む</button><button type="button" data-cidp-sample="motor">運動型CIDPを読み込む</button><button type="button" data-cidp-sample="sensory">感覚型CIDPを読み込む</button></div>
+            <h4>典型的CIDP</h4>
+            <div class="sample-buttons"><button type="button" data-cidp-sample="typical">典型的CIDPを読み込む</button><button type="button" data-cidp-sample="possible">possible CIDPを読み込む</button></div>
+            <h4>遠位型・多巣性・局所性・運動型：CIDPとpossibleを比較</h4>
+            <div class="sample-buttons"><button type="button" data-cidp-sample="distal">遠位型CIDPを読み込む</button><button type="button" data-cidp-sample="distal-possible">possible遠位型CIDPを読み込む</button></div>
+            <div class="sample-buttons"><button type="button" data-cidp-sample="multifocal">多巣性CIDPを読み込む</button><button type="button" data-cidp-sample="multifocal-possible">possible多巣性CIDPを読み込む</button></div>
+            <div class="sample-buttons"><button type="button" data-cidp-sample="focal">局所性CIDPを読み込む</button><button type="button" data-cidp-sample="focal-possible">possible局所性CIDPを読み込む</button></div>
+            <div class="sample-buttons"><button type="button" data-cidp-sample="motor">運動型CIDPを読み込む</button><button type="button" data-cidp-sample="motor-possible">possible運動型CIDPを読み込む</button></div>
+            <h4>感覚型：どちらもpossibleが上限</h4>
+            <p class="hint">純粋感覚型には、それより高い確実度のサンプルはありません。速度低下とsural-sparingの2経路を比較でき、支持所見を追加しても格上げしません。</p>
+            <div class="sample-buttons"><button type="button" data-cidp-sample="sensory">感覚型CIDP（速度低下・possible上限）を読み込む</button><button type="button" data-cidp-sample="sensory-possible">possible感覚型CIDP（sural-sparing・上限）を読み込む</button></div>
             <div class="notice" id="cidp-sample-replace" hidden><p id="cidp-sample-replace-text"></p><p>現在の全検査、身長、CIDP・鑑別・MMNの入力、日英の編集済み解釈を置き換えます。必要な内容は先に控えてください。</p><div class="sample-buttons"><button type="button" id="cidp-sample-confirm">現在の入力を置き換えて読み込む</button><button type="button" id="cidp-sample-cancel">キャンセルして入力を残す</button></div></div>
             <p class="notice" id="cidp-sample-status" role="status" hidden></p>
           </details>
@@ -2022,7 +2031,7 @@ function assessCIDPVariant(data, base, mode) {
       notes.push('同一症候肢の1運動＋1感覚神経を使うpossible局所性経路です。この経路では支持所見による格上げはできません（表6）。');
     } else if (localWeak && localSensory.length >= 2) {
       desired = 'possible'; selected = localWeak;
-      notes.push('表6の運動1神経＋感覚異常2神経のpossible経路です。支持所見による格上げはここでは評価していません。');
+      notes.push('表6の運動1神経＋感覚異常2神経のpossible経路です。支持所見による格上げは、臨床・支持所見を含む照合を有効にすると総合判定で評価します。');
     }
     if (!localStrong && !localWeak) missing.push('指定した肢の運動基準の単一神経経路も未確認です。分布に合わない所見や減数(d)/(g)の適用は手動照合してください。');
     sensory = localSensory;
@@ -2305,7 +2314,12 @@ var cidpSamples = {
   multifocal: { ja: '多巣性CIDP', en: 'multifocal CIDP', mode: 'multifocal', limbs: ['r-upper', 'l-upper'], note: '右正中・左尺骨の2運動神経と、対応する感覚異常を採用する例です。診察上の症候肢として左右の上肢を指定し、2肢にまたがる根拠を示します。' },
   focal: { ja: '局所性CIDP', en: 'focal CIDP', mode: 'focal', limbs: ['r-upper'], note: '症候肢を右上肢の1肢に限定し、その肢内の正中・尺骨2運動神経と感覚異常2神経を組み合わせる例です。' },
   motor: { ja: '運動型CIDP', en: 'motor CIDP', mode: 'motor', note: '臨床的な感覚障害がない運動型の設定です。運動基準2神経と、正中・尺骨・橈骨・腓腹の4種類の感覚伝導を測定して正常と採用した所見を照合します。' },
-  sensory: { ja: '感覚型CIDP（possible上限）', en: 'sensory CIDP (possible only)', mode: 'sensory', note: '臨床的筋力低下がない純粋感覚型の設定です。4種類の運動伝導・同側F波を正常と採用し、正中・尺骨の感覚異常と振幅に応じた著明な速度低下を照合します。この経路はpossibleが上限で、支持所見での格上げはしません。' }
+  sensory: { ja: '感覚型CIDP（possible上限）', en: 'sensory CIDP (possible only)', mode: 'sensory', note: '臨床的筋力低下がない純粋感覚型の設定です。4種類の運動伝導・同側F波を正常と採用し、正中・尺骨の感覚異常と振幅に応じた著明な速度低下を照合します。この経路はpossibleが上限で、支持所見での格上げはしません。' },
+  'distal-possible': { ja: 'possible遠位型CIDP', en: 'possible distal CIDP', mode: 'distal', singleMotor: true, note: '遠位型の既存例との違いは、上肢の運動速度基準が右正中神経の1神経のみで、右尺骨神経の速度は基準内である点です。遠位CMAPはともに1 mV以上、感覚異常は2神経です。上肢2運動神経の基準は未充足です。支持所見は未入力のためpossibleにとどまり、格上げを検討する場合の独立した支持2領域も不足しています。' },
+  'multifocal-possible': { ja: 'possible多巣性CIDP', en: 'possible multifocal CIDP', mode: 'multifocal', singleMotor: true, limbs: ['r-upper', 'l-upper'], note: '症候肢は左右上肢の2肢ですが、運動速度基準は右正中神経の1神経のみです。左尺骨神経の速度は基準内で、感覚異常は各症候肢の1神経ずつ、計2神経です。既存例の2肢にまたがる2運動神経の基準は未充足で、possibleの運動1神経＋感覚2神経の経路にとどまります。支持所見は未入力のためpossibleにとどまり、格上げを検討する場合の独立した支持2領域も不足しています。' },
+  'focal-possible': { ja: 'possible局所性CIDP', en: 'possible focal CIDP', mode: 'focal', singlePair: true, limbs: ['r-upper'], note: '症候肢は右上肢の1肢で、その肢の右正中神経だけに運動速度基準と感覚異常を設定しています。既存例の運動2神経＋感覚2神経に対し、運動1神経＋感覚1神経の経路です。未追加の尺骨神経を正常とは扱いません。この経路はpossibleが上限で、支持所見による格上げはできません。' },
+  'motor-possible': { ja: 'possible運動型CIDP', en: 'possible motor CIDP', mode: 'motor', singleMotor: true, note: '運動型の既存例との違いは、運動速度基準が右正中神経の1神経のみで、右尺骨神経の速度は基準内である点です。臨床的な感覚障害はなく、正中・尺骨・橈骨・腓腹の4種類の感覚伝導は完全な実測を正常と採用しています。運動2神経の基準は未充足です。支持所見は未入力のためpossibleにとどまり、格上げを検討する場合の独立した支持2領域も不足しています。' },
+  'sensory-possible': { ja: 'possible感覚型CIDP（sural-sparing・上限）', en: 'possible sensory CIDP (sural sparing; possible only)', mode: 'sensory', suralSparing: true, note: '純粋感覚型の別経路です。4種類の運動伝導・同側F波を正常と採用し、右正中・橈骨のSNAP振幅低下と同側腓腹SNAP振幅正常によるsural-sparingを照合します。手根管症候群の影響を除外済みという架空の確認を設定しています。既存の速度低下例と異なり、著明な感覚速度低下2神経はありませんが、別の追加条件を満たします。両例ともpossibleが上限で、支持所見を追加しても格上げできません。' }
 };
 function hasSampleReplacementInput() {
   if (studies.length) return true;
@@ -2402,17 +2416,18 @@ function loadCIDPSample(kind) {
     var sensory = addSampleStudy(nerve, 'sensory', side);
     var values = normal ? nerve === 'radial' ? { latency: 1.7, peak: 2.2, amplitude: 20, velocity: 58.8 } :
       nerve === 'sural' ? { latency: 2.8, peak: 3.5, amplitude: 10, velocity: 50 } : { latency: 2.3, peak: 3, amplitude: 20, velocity: 60.9 } :
-      pureSensory ? { latency: 4.7, peak: 5.5, amplitude: 20, velocity: 29.8 } : { latency: 2.3, peak: 3, amplitude: 2, velocity: 60.9 };
+      pureSensory && !sample.suralSparing ? { latency: 4.7, peak: 5.5, amplitude: 20, velocity: 29.8 } :
+      nerve === 'radial' ? { latency: 1.7, peak: 2.2, amplitude: 2, velocity: 58.8 } : { latency: 2.3, peak: 3, amplitude: 2, velocity: 60.9 };
     fill(sensory.sites[0], values); renderReport(); adopt(sensory.sites[0]);
   }
-  var motorPairs = pureSensory ? [['median', 'r'], ['ulnar', 'r'], ['fibular', 'r'], ['tibial', 'r']] :
+  var motorPairs = pureSensory ? [['median', 'r'], ['ulnar', 'r'], ['fibular', 'r'], ['tibial', 'r']] : sample.singlePair ? [['median', 'r']] :
     mode === 'multifocal' ? [['median', 'r'], ['ulnar', 'l']] : [['median', 'r'], ['ulnar', 'r']];
   motorPairs.forEach(function (pair) {
     var nerve = pair[0], side = pair[1];
     var motor = addSampleStudy(nerve, 'motor', side), distal = motor.sites[0], proximal = motor.sites[1];
     distal.node.querySelector('[data-lff]').value = '2';
     fill(distal, { latency: pureSensory ? 3 : 3.5, amplitude: 8, duration: 5 });
-    fill(proximal, { amplitude: pureSensory ? 8 : 7.5, velocity: pureSensory ? 60 : kind === 'possible' && nerve === 'ulnar' ? 55 : 20, duration: pureSensory ? 5 : 6 });
+    fill(proximal, { amplitude: pureSensory ? 8 : 7.5, velocity: pureSensory ? 60 : (kind === 'possible' || sample.singleMotor) && nerve === 'ulnar' ? 55 : 20, duration: pureSensory ? 5 : 6 });
     proximal.node.querySelector('[data-waveform-confirmed]').checked = true;
     renderReport(); adopt(distal); adopt(proximal);
     if (pureSensory) {
@@ -2422,7 +2437,10 @@ function loadCIDPSample(kind) {
     } else if (mode !== 'motor') addSensory(nerve, side, false);
   });
   if (mode === 'motor') ['median', 'ulnar', 'radial', 'sural'].forEach(function (nerve) { addSensory(nerve, 'r', true); });
-  if (pureSensory) ['median', 'ulnar'].forEach(function (nerve) { addSensory(nerve, 'r', false); });
+  if (pureSensory) {
+    (sample.suralSparing ? ['median', 'radial'] : ['median', 'ulnar']).forEach(function (nerve) { addSensory(nerve, 'r', false); });
+    if (sample.suralSparing) { addSensory('sural', 'r', true); byId('cidp-sensory-cts-r').checked = true; }
+  }
   byId('cidp-sample-status').textContent = '【架空サンプル：' + sample.ja + '】' + sample.note + ' 12週進行する選択病型の臨床像と、' +
     (mode === 'typical' ? '全肢' : '症候肢') + 'の腱反射低下・消失を設定しています。医師の確認項目も操作確認用で、実際の診察・鑑別除外の記録ではありません。' +
     (pureSensory ? '運動・F波の正常所見は入力・採用済みの項目に基づきます。' : 'F波・未追加の下肢検査は未入力です。') +
