@@ -1,5 +1,7 @@
-const CACHE_NAME = 'ddx-tools-v377';
+const CACHE_NAME = 'ddx-tools-v379';
 const ASSETS = [
+  './infographics/japan-religion-top10/index.html',
+  './infographics/japan-religion-top10/infographic.png',
   './infographics/eagle-syndrome-revised-20261108/index.html',
   './infographics/gambling-payout-rate/index.html',
   './infographics/eagle-syndrome/index.html',
