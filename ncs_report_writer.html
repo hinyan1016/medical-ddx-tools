@@ -194,6 +194,13 @@ if (location.protocol !== 'file:' && 'serviceWorker' in navigator) {
         </div>
         <div id="cidp-assessment" aria-labelledby="cidp-title">
           <h3 id="cidp-title">CIDPの電気診断基準との照合（EAN/PNS 2021）</h3>
+          <div class="reference-box" id="cidp-sample-controls">
+            <h4>架空のCIDPサンプルを読み込む</h4>
+            <p class="hint">典型的CIDPと、典型的な臨床像を示すpossible CIDPを比較します。測定値・採用した所見・臨床条件を復元し、満たした基準と不足情報を表示します。日英の解釈候補は下の採用ボタンから取り込めます。再読み込み後もこのボタンから試せます。</p>
+            <div class="sample-buttons"><button type="button" data-cidp-sample="typical">典型的CIDPを読み込む</button><button type="button" data-cidp-sample="possible">possible CIDPを読み込む</button></div>
+            <div class="notice" id="cidp-sample-replace" hidden><p id="cidp-sample-replace-text"></p><p>現在の全検査、身長、CIDP・鑑別・MMNの入力、日英の編集済み解釈を置き換えます。必要な内容は先に控えてください。</p><div class="sample-buttons"><button type="button" id="cidp-sample-confirm">現在の入力を置き換えて読み込む</button><button type="button" id="cidp-sample-cancel">キャンセルして入力を残す</button></div></div>
+            <p class="notice" id="cidp-sample-status" role="status" hidden></p>
+          </div>
           <p class="hint">採用した判定と実測値を、運動の表2(a)〜(g)・感覚の表3・亜型別の表6に照合します。照合する病型を選択してください。臨床病型は診察で別途判断し、未入力・未採用は正常や陰性として扱いません。</p>
           <label>照合する病型<select id="cidp-mode" autocomplete="off">
             <option value="typical">典型的CIDP</option><option value="distal">遠位型CIDP</option>
@@ -281,7 +288,7 @@ if (location.protocol !== 'file:' && 'serviceWorker' in navigator) {
               <p class="hint">主観的改善だけでは数えません。障害尺度と機能障害尺度を各1つ以上記録します。数値の改善だけで治療反応を確定せず、担当医の確認を必要とします。</p>
             </div>
           </div>
-          <p id="cidp-summary" class="notice" role="status"></p>
+          <p id="cidp-summary" class="notice" role="status" tabindex="-1"></p>
           <div id="cidp-integrated-results" class="reference-box" hidden></div>
           <div id="cidp-variant-results" class="reference-box" hidden></div>
           <div id="cidp-criteria"></div>
@@ -541,6 +548,8 @@ var generatedDifferential = { ja: {}, en: {} };
 var generatedMMN = { ja: '', en: '' };
 var pendingMMNSample = '';
 var activeMMNSample = '';
+var pendingCIDPSample = '';
+var activeCIDPSample = '';
 var differentialReviewSignature = '';
 var paragraphBreak = /(\n(?:[ \t]*\n)+)/;
 var fWaveUpperLimits = {};
@@ -2289,7 +2298,11 @@ var mmnSamples = {
   probable: { distributions: 2, nerves: ['median', 'ulnar'], note: '面積減少30%のprobable CBを2神経で採用する例です。1神経だけでは支持2領域などの条件が不足します。' },
   possible: { distributions: 1, nerves: ['median'], note: '面積減少60%のdefinite CBがあっても、臨床症候が右正中神経の1分布のみのためpossibleが上限となる例です。' }
 };
-function hasMMNSampleReplacementInput() {
+var cidpSamples = {
+  typical: { ja: '典型的CIDP', en: 'typical CIDP', note: '臨床基準と、表2(b)の運動速度基準2神経＋感覚異常2神経を組み合わせる例です。' },
+  possible: { ja: 'possible CIDP', en: 'possible CIDP', note: '典型的な臨床像と、運動速度基準1神経＋感覚異常2神経を組み合わせる例です。格上げを検討する場合に不足する支持所見も表示します。' }
+};
+function hasSampleReplacementInput() {
   if (studies.length) return true;
   return Array.prototype.some.call(document.querySelectorAll('input, select, textarea'), function (input) {
     if (input.type === 'checkbox') return input.checked !== input.defaultChecked;
@@ -2297,8 +2310,12 @@ function hasMMNSampleReplacementInput() {
     return !!input.value || !!(input.validity && input.validity.badInput);
   });
 }
-function resetForMMNSample() {
-  activeMMNSample = '';
+function closeSampleRequests() {
+  pendingMMNSample = ''; pendingCIDPSample = '';
+  byId('mmn-sample-replace').hidden = true; byId('cidp-sample-replace').hidden = true;
+}
+function resetForReportSample() {
+  activeMMNSample = ''; activeCIDPSample = ''; closeSampleRequests();
   studies.forEach(function (study) { study.node.parentNode.removeChild(study.node); });
   studies = [];
   Array.prototype.forEach.call(document.querySelectorAll('input, select, textarea'), function (input) {
@@ -2314,9 +2331,10 @@ function resetForMMNSample() {
   currentCopy = {}; currentDraft = {};
   byId('empty-studies').hidden = false;
   byId('mmn-sample-status').hidden = true;
+  byId('cidp-sample-status').hidden = true;
   refreshKinds(); renderFReferences(); byId('lang-ja').click();
 }
-function addMMNSampleStudy(nerve, kind) {
+function addSampleStudy(nerve, kind) {
   byId('nerve').value = nerve; refreshKinds(); byId('kind').value = kind; byId('side').value = 'r';
   addStudy();
   return studies[studies.length - 1];
@@ -2324,7 +2342,7 @@ function addMMNSampleStudy(nerve, kind) {
 function loadMMNSample(kind) {
   var sample = mmnSamples[kind];
   if (!sample) return;
-  resetForMMNSample();
+  resetForReportSample();
   activeMMNSample = kind;
   pendingMMNSample = ''; byId('mmn-sample-replace').hidden = true;
   byId('height-cm').value = '170'; renderFReferences();
@@ -2336,7 +2354,7 @@ function loadMMNSample(kind) {
   function fill(site, values) { Object.keys(values).forEach(function (key) { site.node.querySelector('[data-metric="' + key + '"]').value = values[key]; }); }
   function adopt(site) { var button = site.node.querySelector('[data-apply-candidate]'); if (!button.hidden) button.click(); }
   sample.nerves.forEach(function (nerve) {
-    var motor = addMMNSampleStudy(nerve, 'motor'), distal = motor.sites[0], proximal = motor.sites[1];
+    var motor = addSampleStudy(nerve, 'motor'), distal = motor.sites[0], proximal = motor.sites[1];
     var amplitude = nerve === 'ulnar' ? 8 : 4.1, area = nerve === 'ulnar' ? 20 : 10;
     distal.node.querySelector('[data-lff]').value = '2';
     fill(distal, { latency: 3.5, amplitude: amplitude, duration: 5, area: area });
@@ -2345,7 +2363,7 @@ function loadMMNSample(kind) {
     proximal.node.querySelector('[data-mmn-sensory]').value = 'normal';
     proximal.node.querySelector('[data-mmn-sensory-note]').value = '【架空サンプル】当該神経の非絞扼ブロック区間を含む追加感覚伝導を施設基準内とする設定です。実患者・原波形の記録ではありません。';
     renderReport(); adopt(distal); adopt(proximal);
-    var sensory = addMMNSampleStudy(nerve, 'sensory');
+    var sensory = addSampleStudy(nerve, 'sensory');
     fill(sensory.sites[0], { latency: 2.3, peak: 3, amplitude: 20, velocity: 60.9 });
     renderReport(); adopt(sensory.sites[0]);
   });
@@ -2355,11 +2373,45 @@ function loadMMNSample(kind) {
 }
 function requestMMNSample(kind) {
   if (!mmnSamples[kind]) return;
-  if (!hasMMNSampleReplacementInput()) { loadMMNSample(kind); return; }
+  closeSampleRequests();
+  if (!hasSampleReplacementInput()) { loadMMNSample(kind); return; }
   pendingMMNSample = kind;
   byId('mmn-sample-replace-text').textContent = '架空の' + kind + ' MMNサンプルを読み込みます。';
   byId('mmn-sample-replace').hidden = false;
   byId('mmn-sample-confirm').focus();
+}
+function loadCIDPSample(kind) {
+  var sample = cidpSamples[kind];
+  if (!sample) return;
+  resetForReportSample(); activeCIDPSample = kind;
+  byId('height-cm').value = '170'; renderFReferences();
+  byId('cidp-integrate').checked = true; byId('cidp-conditions').checked = true;
+  var clinical = { age: '60', weeks: '12', course: 'progressive', phenotype: 'typical', reflexes: 'all', mimics: 'excluded' };
+  Object.keys(clinical).forEach(function (key) { byId('cidp-' + key).value = clinical[key]; });
+  function fill(site, values) { Object.keys(values).forEach(function (key) { site.node.querySelector('[data-metric="' + key + '"]').value = values[key]; }); }
+  function adopt(site) { var button = site.node.querySelector('[data-apply-candidate]'); if (!button.hidden) button.click(); }
+  ['median', 'ulnar'].forEach(function (nerve) {
+    var motor = addSampleStudy(nerve, 'motor'), distal = motor.sites[0], proximal = motor.sites[1];
+    distal.node.querySelector('[data-lff]').value = '2';
+    fill(distal, { latency: 3.5, amplitude: 8, duration: 5 });
+    fill(proximal, { amplitude: 7.5, velocity: kind === 'typical' || nerve === 'median' ? 20 : 55, duration: 6 });
+    proximal.node.querySelector('[data-waveform-confirmed]').checked = true;
+    renderReport(); adopt(distal); adopt(proximal);
+    var sensory = addSampleStudy(nerve, 'sensory');
+    fill(sensory.sites[0], { latency: 2.3, peak: 3, amplitude: 2, velocity: 60.9 });
+    renderReport(); adopt(sensory.sites[0]);
+  });
+  byId('cidp-sample-status').textContent = '【架空サンプル：' + sample.ja + '】' + sample.note + ' 両例とも12週進行する典型的臨床像、全肢の腱反射低下・消失を設定しています。医師の確認項目も操作確認用で、実際の診察・鑑別除外の記録ではありません。F波・下肢検査・支持所見は未入力で、正常・陰性とは扱いません。基準の全条項を同時に満たす必要があるという意味ではありません。';
+  byId('cidp-sample-status').hidden = false;
+  renderReport(); byId('cidp-summary').focus(); byId('cidp-summary').scrollIntoView(true);
+}
+function requestCIDPSample(kind) {
+  if (!cidpSamples[kind]) return;
+  closeSampleRequests();
+  if (!hasSampleReplacementInput()) { loadCIDPSample(kind); return; }
+  pendingCIDPSample = kind;
+  byId('cidp-sample-replace-text').textContent = '架空の' + cidpSamples[kind].ja + 'サンプルを読み込みます。';
+  byId('cidp-sample-replace').hidden = false; byId('cidp-sample-confirm').focus();
 }
 function mmnSnapshot() {
   var active = byId('mmn-active').checked;
@@ -2989,9 +3041,11 @@ function renderReport() {
   byId('findings-section').lang = findingsLang;
   byId('interpretation-section').lang = interpLang;
   byId('findings-title').textContent = findingsTitle;
-  if (activeMMNSample) {
-    if (findings) findings = (findingsLang === 'ja' ? '【架空サンプル：' + activeMMNSample + ' MMN／操作確認用】' : '[Fictional sample: ' + activeMMNSample + ' MMN / tool testing]') + '\n' + findings;
-    if (interpretation) interpretation = (interpLang === 'ja' ? '【架空サンプル：' + activeMMNSample + ' MMN／操作確認用】' : '[Fictional sample: ' + activeMMNSample + ' MMN / tool testing]') + '\n' + interpretation;
+  var sampleNameJA = activeCIDPSample ? cidpSamples[activeCIDPSample].ja : activeMMNSample ? activeMMNSample + ' MMN' : '';
+  var sampleNameEN = activeCIDPSample ? cidpSamples[activeCIDPSample].en : activeMMNSample ? activeMMNSample + ' MMN' : '';
+  if (sampleNameJA) {
+    if (findings) findings = (findingsLang === 'ja' ? '【架空サンプル：' + sampleNameJA + '／操作確認用】' : '[Fictional sample: ' + sampleNameEN + ' / tool testing]') + '\n' + findings;
+    if (interpretation) interpretation = (interpLang === 'ja' ? '【架空サンプル：' + sampleNameJA + '／操作確認用】' : '[Fictional sample: ' + sampleNameEN + ' / tool testing]') + '\n' + interpretation;
   }
   byId('interpretation-title').textContent = interpTitle;
   byId('findings').textContent = findings || (findingsLang === 'ja' ? '所見はまだありません。' : 'No findings entered.');
@@ -3116,6 +3170,11 @@ Array.prototype.forEach.call(document.querySelectorAll('[data-mmn-sample]'), fun
 });
 byId('mmn-sample-confirm').addEventListener('click', function () { if (pendingMMNSample) loadMMNSample(pendingMMNSample); });
 byId('mmn-sample-cancel').addEventListener('click', function () { pendingMMNSample = ''; byId('mmn-sample-replace').hidden = true; byId('mmn-sample-controls').querySelector('button').focus(); });
+Array.prototype.forEach.call(document.querySelectorAll('[data-cidp-sample]'), function (button) {
+  button.addEventListener('click', function () { requestCIDPSample(button.getAttribute('data-cidp-sample')); });
+});
+byId('cidp-sample-confirm').addEventListener('click', function () { if (pendingCIDPSample) loadCIDPSample(pendingCIDPSample); });
+byId('cidp-sample-cancel').addEventListener('click', function () { pendingCIDPSample = ''; byId('cidp-sample-replace').hidden = true; byId('cidp-sample-controls').querySelector('button').focus(); });
 refreshKinds();
 renderFReferences();
 renderReport();
