@@ -1,5 +1,7 @@
-const CACHE_NAME = 'ddx-tools-v357';
+const CACHE_NAME = 'ddx-tools-v373';
 const ASSETS = [
+  './infographics/eagle-syndrome-revised-20261108/index.html',
+  './infographics/gambling-payout-rate/index.html',
   './infographics/eagle-syndrome/index.html',
   './infographics/eagle-syndrome/infographic.png',
   './infographics/dka-initial-assessment/animated.html',
@@ -350,6 +352,7 @@ const ASSETS = [
   './consciousness.html',
   './cceeg.html',
   './eeg_report_writer.html',
+  './ncs_report_writer.html',
   './dyspnea.html',
   './chest_pain.html',
   './fuo.html',
