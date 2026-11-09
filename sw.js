@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v392';
+const CACHE_NAME = 'ddx-tools-v393';
 const ASSETS = [
   './facial_palsy_assessment.html',
   './infographics/facial-palsy-differential/index.html',
