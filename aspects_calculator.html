@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A5276">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>ASPECTS（脳梗塞急性期の早期虚血変化スコア）計算ツール</title>
+<meta name="description" content="中大脳動脈領域を10か所に分けて早期虚血変化のある領域を減点するASPECTS（CT・拡散強調画像）と、後方循環のpc-ASPECTSを、模式図をタップして計算。国内指針での扱いと読影の注意点を示し、カルテ用の所見文をコピーできます。">
+<meta property="og:title" content="ASPECTS（脳梗塞急性期の早期虚血変化スコア）計算ツール">
+<meta property="og:description" content="中大脳動脈領域を10か所に分けて早期虚血変化のある領域を減点するASPECTS（CT・拡散強調画像）と、後方循環のpc-ASPECTSを、模式図をタップして計算。国内指針での扱いと読影の注意点を示し、カルテ用の所見文をコピーできます。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tools.ichisouzo-lab.com/aspects_calculator.html">
+<meta property="og:image" content="https://tools.ichisouzo-lab.com/assets/og-tools.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="医知創造ラボ">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root {
+    --dark: #1A5276;
+    --primary: #1F6391;
+    --mid: #2E86C1;
+    --light: #E8F1F8;
+    --red: #C0392B;
+    --orange: #E08600;
+    --green: #2E7D32;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(26,82,118,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #E8F1F8 0%, #F4F6F8 100%);
+    color: #222; min-height: 100vh; padding: 0 0 40px; line-height: 1.6;
+  }
+  header {
+    background: linear-gradient(135deg, var(--dark), var(--mid));
+    color: var(--white); padding: 14px 20px 18px; text-align: center;
+    box-shadow: 0 4px 16px rgba(26,82,118,0.18);
+  }
+  .back-bar { display: flex; align-items: center; margin-bottom: 8px; }
+  .back-bar a { color: rgba(255,255,255,0.85); text-decoration: none; font-size: 0.85em; padding: 4px 8px; border-radius: 6px; }
+  header h1 { font-size: 1.35em; font-weight: 700; letter-spacing: 0.02em; }
+  header p { font-size: 0.85em; margin-top: 6px; opacity: 0.92; }
+  .container { max-width: 860px; margin: 0 auto; padding: 20px 14px; }
+  .card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 16px; overflow: hidden; }
+  .card-header { padding: 12px 16px; background: var(--light); border-bottom: 2px solid var(--primary); font-weight: 700; color: var(--primary); }
+  .card-body { padding: 16px; }
+  .card-body p { font-size: 0.92em; margin-bottom: 10px; }
+  .card-body p:last-child { margin-bottom: 0; }
+  .alert-disclaimer { background: #fff8e1; border-left: 4px solid var(--orange); padding: 10px 14px; margin-bottom: 16px; border-radius: 6px; font-size: 0.85em; color: #5d4400; }
+
+  .row { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; margin-bottom: 12px; }
+  .row-label { font-weight: 700; font-size: 0.9em; color: var(--primary); min-width: 5.5em; }
+  .seg { display: inline-flex; flex-wrap: wrap; border: 1.5px solid var(--primary); border-radius: 8px; overflow: hidden; }
+  .seg button { border: none; background: var(--white); color: var(--primary); padding: 8px 12px; font-size: 0.9em; font-family: inherit; cursor: pointer; border-right: 1px solid #c9d9e6; min-height: 40px; }
+  .seg button:last-child { border-right: none; }
+  .seg button.active { background: var(--primary); color: var(--white); font-weight: 700; }
+  .hint { font-size: 0.82em; color: var(--gray); }
+
+  .maps { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 640px) { .maps { grid-template-columns: 1fr; } }
+  .map-box { border: 1px solid #dbe5ee; border-radius: 8px; padding: 8px; background: #fbfdff; }
+  .map-title { font-weight: 700; font-size: 0.88em; color: var(--dark); margin-bottom: 4px; }
+  .map-box svg { width: 100%; height: auto; display: block; touch-action: manipulation; }
+  .rg { cursor: pointer; }
+  .rg path, .rg ellipse { transition: fill .15s; }
+  .rg:focus { outline: none; }
+  .rg:focus path, .rg:focus ellipse { stroke: #E08600; stroke-width: 3; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .chip { border: 1.5px solid var(--primary); background: var(--white); color: var(--primary); border-radius: 18px; padding: 6px 11px; font-size: 0.86em; font-family: inherit; cursor: pointer; min-height: 36px; }
+  .chip.on { background: var(--red); border-color: var(--red); color: var(--white); font-weight: 700; }
+  .chip small { font-size: 0.82em; opacity: 0.85; }
+
+  .result { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  .score-big { font-size: 2.6em; font-weight: 800; color: var(--dark); line-height: 1; }
+  .score-big span { font-size: 0.4em; color: var(--gray); font-weight: 600; }
+  .score-band { padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 0.92em; }
+  .band-hi { background: #e7f4ea; color: var(--green); }
+  .band-mid { background: #fff3e0; color: #a35d00; }
+  .band-lo { background: #fdecea; color: var(--red); }
+  .deducted { font-size: 0.9em; margin-top: 8px; }
+  .notes { margin-top: 12px; border-top: 1px dashed #c9d9e6; padding-top: 10px; }
+  .notes li { font-size: 0.88em; margin: 0 0 7px 1.2em; }
+  .summary { white-space: pre-wrap; background: var(--light-gray); border: 1px solid #dde3ea; border-radius: 8px; padding: 10px 12px; font-size: 0.88em; margin-top: 12px; font-family: inherit; }
+  .btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .btn { border: none; border-radius: 8px; padding: 9px 14px; font-size: 0.9em; font-family: inherit; cursor: pointer; background: var(--primary); color: var(--white); min-height: 40px; }
+  .btn.sub { background: var(--white); color: var(--primary); border: 1.5px solid var(--primary); }
+  .btn.copied { background: var(--green); }
+
+  table.legend { width: 100%; border-collapse: collapse; font-size: 0.86em; }
+  table.legend th, table.legend td { border: 1px solid #dbe5ee; padding: 6px 8px; text-align: left; vertical-align: top; }
+  table.legend th { background: #1A5276; color: #fff; }
+  .tbl-wrap { overflow-x: auto; max-width: 100%; }
+  .refs li { font-size: 0.8em; margin: 0 0 6px 1.4em; line-height: 1.55; word-break: break-word; }
+  .refs a, .card-body a { color: var(--mid); }
+  .article-link { display: block; border: 1.5px solid var(--mid); border-radius: 8px; padding: 10px 12px; text-decoration: none; color: var(--dark); font-weight: 700; }
+  .article-link span { display: block; font-weight: 400; font-size: 0.85em; color: var(--gray); }
+  footer { max-width: 860px; margin: 30px auto 0; padding: 14px; text-align: center; color: var(--gray); font-size: 0.78em; line-height: 1.6; }
+  footer a { color: var(--mid); text-decoration: none; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<nav id="ics-globalnav" style="background:#15324E;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
+<div style="max-width:1040px;margin:0 auto;padding:8px 12px;display:flex;align-items:center;gap:2px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;">
+<a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;padding-right:8px;">医知創造ラボ</a>
+<a href="https://ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ホーム</a>
+<a href="https://blog.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ブログ</a>
+<a href="https://tools.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ツール</a>
+<a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">YouTube</a>
+</div>
+</nav>
+
+<header>
+  <div class="back-bar"><a href="index.html">← ツール一覧へ</a></div>
+  <h1>ASPECTS 計算ツール</h1>
+  <p>早期虚血変化のある領域をタップして減点します（CT・拡散強調画像の ASPECTS／後方循環の pc-ASPECTS）</p>
+</header>
+
+<div class="container">
+
+  <div class="alert-disclaimer">
+    <strong>⚠ 使用上の注意</strong>：医療従事者向けの<strong>教育・参考用</strong>の計算機です。ASPECTS は治療を決める材料の一つで、点数だけでは静注血栓溶解療法や機械的血栓回収療法の適応は決まりません。閉塞部位・発症からの時間・重症度・発症前の生活自立度などとあわせ、最新の指針と施設の手順に沿って判断してください。
+  </div>
+
+  <div class="card">
+    <div class="card-header">① 評価の種類と患側</div>
+    <div class="card-body">
+      <div class="row">
+        <span class="row-label">評価</span>
+        <div class="seg" id="modeSeg">
+          <button type="button" data-v="ct" class="active">CT-ASPECTS</button>
+          <button type="button" data-v="dwi">DWI-ASPECTS</button>
+          <button type="button" data-v="pc">pc-ASPECTS（後方循環）</button>
+        </div>
+      </div>
+      <div class="row" id="sideRow">
+        <span class="row-label">患側</span>
+        <div class="seg" id="sideSeg">
+          <button type="button" data-v="R" class="active">右半球</button>
+          <button type="button" data-v="L">左半球</button>
+        </div>
+        <span class="hint">図は画像の表示どおり（患者の右が画面の左）です。</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="anteriorCard">
+    <div class="card-header">② 早期虚血変化のある領域をタップ（中大脳動脈領域 10 か所）</div>
+    <div class="card-body">
+      <div class="maps">
+        <div class="map-box">
+          <div class="map-title">基底核レベル（C・L・IC・I・M1〜M3）</div>
+          <svg id="svgLow" viewBox="0 0 320 300" role="group" aria-label="基底核レベルの模式図"></svg>
+        </div>
+        <div class="map-box">
+          <div class="map-title">基底核より上のレベル（M4〜M6）</div>
+          <svg id="svgHigh" viewBox="0 0 320 300" role="group" aria-label="基底核より上のレベルの模式図"></svg>
+        </div>
+      </div>
+      <div class="chips" id="chipsA"></div>
+      <p class="hint" style="margin-top:10px;">図は位置関係を示す模式図で、領域の境界は目安です（原著者らも M 領域を「解剖学的ではなく幾何学的な区域」と説明しています<sup><a href="#ref2">2</a></sup>）。灰色の A・P（原著の図で anterior circulation・posterior circulation と記された領域）と視床は 10 領域に含まれず、数えません。</p>
+    </div>
+  </div>
+
+  <div class="card hidden" id="posteriorCard">
+    <div class="card-header">② 早期虚血変化のある部位をタップ（後方循環・pc-ASPECTS）</div>
+    <div class="card-body">
+      <p>10 点から、中脳・橋はそれぞれ 2 点、左右の視床・小脳・後大脳動脈領域はそれぞれ 1 点を引きます<sup><a href="#ref6">6</a></sup>。</p>
+      <div class="chips" id="chipsP"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">③ 結果</div>
+    <div class="card-body">
+      <div class="result">
+        <div class="score-big" id="scoreBig">10<span> / 10</span></div>
+        <div class="score-band band-hi" id="scoreBand"></div>
+      </div>
+      <div class="deducted" id="deducted"></div>
+      <ul class="notes" id="notes"></ul>
+      <div class="summary" id="summaryBox"></div>
+      <div class="btns">
+        <button type="button" class="btn" id="copyBtn">📋 所見文をコピー</button>
+        <button type="button" class="btn sub" id="resetBtn">↺ すべて解除</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">読影のポイント</div>
+    <div class="card-body">
+      <ul class="notes" style="border:none;padding-top:0;margin-top:0;">
+        <li>早期虚血変化は、実質の低吸収（灰白質と白質の境界が不鮮明になる）と限局性の腫脹（脳溝の消失・脳室の圧排）です<sup><a href="#ref2">2</a>,<a href="#ref5">5</a></sup>。国内の指針はレンズ核構造の消失・島皮質の消失・皮髄境界不鮮明化・脳溝の消失を early CT signs として挙げています<sup><a href="#ref8">8</a></sup>。</li>
+        <li>原法は、視床と基底核を通る断面と、基底核が見えなくなる直上の断面の 2 枚で判定します<sup><a href="#ref2">2</a></sup>。全スライスを2つのレベルに振り分け、連続する2枚以上で変化がある領域を減点する読み方も用いられています<sup><a href="#ref5">5</a></sup>。</li>
+        <li>必ず反対側と比べます。ごく明瞭な低吸収や局所の萎縮は陳旧性病変を示唆し、原著者らは新しい変化と区別して読んでいました<sup><a href="#ref2">2</a></sup>。</li>
+        <li>狭いウインドウ幅で見ると軽い濃度差が分かりやすくなります。国内の指針はウインドウ幅 80 以下を推奨しています<sup><a href="#ref8">8</a></sup>。</li>
+        <li>DWI-ASPECTS は同じ患者の CT-ASPECTS より低く出る傾向があります（約 1 点<sup><a href="#ref7">7</a></sup>、指針の記載では 0.5〜0.9 点<sup><a href="#ref8">8</a></sup>）。どちらで評価したかを必ず記録します。</li>
+        <li>同じ点数でも梗塞の容積は病変の場所で大きく異なり、ASPECTS は前方循環だけの指標です<sup><a href="#ref5">5</a></sup>。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">10 領域の内訳</div>
+    <div class="card-body">
+      <div class="tbl-wrap">
+      <table class="legend">
+        <tr><th style="background:#1A5276;color:#fff;">略号</th><th style="background:#1A5276;color:#fff;">領域</th><th style="background:#1A5276;color:#fff;">見るレベル</th></tr>
+        <tr><td>C</td><td>尾状核（頭部）</td><td>基底核レベル</td></tr>
+        <tr><td>L</td><td>レンズ核</td><td>基底核レベル</td></tr>
+        <tr><td>IC</td><td>内包</td><td>基底核レベル</td></tr>
+        <tr><td>I</td><td>島皮質（insular ribbon）</td><td>基底核レベル</td></tr>
+        <tr><td>M1</td><td>中大脳動脈領域の前方皮質（シルビウス裂の前端より前・前頭弁蓋を含む）</td><td>基底核レベル</td></tr>
+        <tr><td>M2</td><td>島皮質の外側の皮質（前縁は側頭葉の前端）</td><td>基底核レベル</td></tr>
+        <tr><td>M3</td><td>中大脳動脈領域の後方皮質</td><td>基底核レベル</td></tr>
+        <tr><td>M4・M5・M6</td><td>M1・M2・M3 の約 2 cm 上の前方・外側・後方の領域（M5 は側脳室の縁まで及ぶ）</td><td>基底核より上</td></tr>
+      </table>
+      </div>
+      <p class="hint" style="margin-top:8px;">領域の定義は原著の図説明と著者らの読影法の記述によります<sup><a href="#ref2">2</a></sup>。</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">解説記事</div>
+    <div class="card-body" id="articleLinkArea"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">参考文献</div>
+    <div class="card-body">
+      <ol class="refs">
+        <li id="ref1">Barber PA, et al. Validity and reliability of a quantitative computed tomography score in predicting outcome of hyperacute stroke before thrombolytic therapy. ASPECTS Study Group. Alberta Stroke Programme Early CT Score. Lancet. 2000;355(9216):1670-4. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/10905241/" target="_blank" rel="noopener">10905241</a></li>
+        <li id="ref2">Pexman JH, et al. Use of the Alberta Stroke Program Early CT Score (ASPECTS) for assessing CT scans in patients with acute stroke. AJNR Am J Neuroradiol. 2001;22(8):1534-42. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/11559501/" target="_blank" rel="noopener">11559501</a></li>
+        <li id="ref3">日本脳卒中学会 脳卒中ガイドライン委員会. 脳卒中治療ガイドライン2021〔改訂2025〕改訂項目（1-2 経動脈的血行再建療法）. <a href="https://www.jsts.gr.jp/img/guideline2021_kaitei2025_kaiteikoumoku.pdf" target="_blank" rel="noopener">日本脳卒中学会</a></li>
+        <li id="ref4">日本脳卒中学会・日本脳神経外科学会・日本脳神経血管内治療学会. 経皮経管的脳血栓回収用機器 適正使用指針 第5版. 2023年8月. <a href="https://www.jsts.gr.jp/img/noukessen_5.pdf" target="_blank" rel="noopener">日本脳卒中学会</a></li>
+        <li id="ref5">Schröder J, Thomalla G. A Critical Review of Alberta Stroke Program Early CT Score for Evaluation of Acute Stroke Imaging. Front Neurol. 2017;7:245. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/28127292/" target="_blank" rel="noopener">28127292</a></li>
+        <li id="ref6">Puetz V, et al. Extent of hypoattenuation on CT angiography source images predicts functional outcome in patients with basilar artery occlusion. Stroke. 2008;39(9):2485-90. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/18617663/" target="_blank" rel="noopener">18617663</a></li>
+        <li id="ref7">Nezu T, et al. Early ischemic change on CT versus diffusion-weighted imaging for patients with stroke receiving intravenous recombinant tissue-type plasminogen activator therapy: SAMURAI rt-PA registry. Stroke. 2011;42(8):2196-200. PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/21719764/" target="_blank" rel="noopener">21719764</a></li>
+        <li id="ref8">日本脳卒中学会 脳卒中医療向上・社会保険委員会 静注血栓溶解療法指針改訂部会. 静注血栓溶解（rt-PA）療法 適正治療指針 第三版. 2019年3月（2023年9月追補あり）. <a href="https://www.jsts.gr.jp/img/rt-PA03.pdf" target="_blank" rel="noopener">日本脳卒中学会</a>・<a href="https://www.jsts.gr.jp/img/rt-pa03_supple.pdf" target="_blank" rel="noopener">追補</a></li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>本ツールは医療従事者向けの教育・参考情報です。診断の代替ではありません。最終的な判断は最新ガイドライン・施設プロトコル・個別症例の臨床状況に基づき医師が行ってください。</p>
+  <p style="margin-top:6px;">© 医知創造ラボ ｜ <a href="index.html">DDxツール一覧</a></p>
+</footer>
+
+<script>
+(function(){
+  // 解説記事のURL（はてなは公開時にURLを採番するため、公開後にここへ正規URLを入れる）
+  var ARTICLE_URL = 'https://blog.ichisouzo-lab.com/entry/2026/11/09/150530';
+
+  var NS = 'http://www.w3.org/2000/svg';
+  var A_REGIONS = [
+    { id: 'C',  name: '尾状核',   lv: 'low' },
+    { id: 'L',  name: 'レンズ核', lv: 'low' },
+    { id: 'IC', name: '内包',     lv: 'low' },
+    { id: 'I',  name: '島皮質',   lv: 'low' },
+    { id: 'M1', name: '前方皮質', lv: 'low' },
+    { id: 'M2', name: '島の外側の皮質', lv: 'low' },
+    { id: 'M3', name: '後方皮質', lv: 'low' },
+    { id: 'M4', name: '上位レベル前方', lv: 'high' },
+    { id: 'M5', name: '上位レベル外側', lv: 'high' },
+    { id: 'M6', name: '上位レベル後方', lv: 'high' }
+  ];
+  var P_REGIONS = [
+    { id: 'mid',  name: '中脳', pt: 2 },
+    { id: 'pons', name: '橋',   pt: 2 },
+    { id: 'thR',  name: '右視床', pt: 1 },
+    { id: 'thL',  name: '左視床', pt: 1 },
+    { id: 'cbR',  name: '右小脳', pt: 1 },
+    { id: 'cbL',  name: '左小脳', pt: 1 },
+    { id: 'pcaR', name: '右後大脳動脈領域', pt: 1 },
+    { id: 'pcaL', name: '左後大脳動脈領域', pt: 1 }
+  ];
+
+  var mode = 'ct';
+  var side = 'R';
+  var selA = {};
+  var selP = {};
+
+  // 半球の模式図：画面中央線 x=160、上が前方。角度は前方(0°)から外側を回って後方(180°)。
+  var CX = 160, CY = 150, RX = 128, RY = 138;
+  function pt(sign, deg, k) {
+    var t = deg * Math.PI / 180;
+    return [CX + sign * RX * k * Math.sin(t), CY - RY * k * Math.cos(t)];
+  }
+  function sector(sign, d0, d1, k0, k1) {
+    var s = '', i, p, n = 18;
+    for (i = 0; i <= n; i++) { p = pt(sign, d0 + (d1 - d0) * i / n, k1); s += (i === 0 ? 'M' : 'L') + p[0].toFixed(1) + ' ' + p[1].toFixed(1) + ' '; }
+    for (i = n; i >= 0; i--) { p = pt(sign, d0 + (d1 - d0) * i / n, k0); s += 'L' + p[0].toFixed(1) + ' ' + p[1].toFixed(1) + ' '; }
+    return s + 'Z';
+  }
+  function el(tag, attrs) {
+    var e = document.createElementNS(NS, tag), k;
+    for (k in attrs) { if (attrs.hasOwnProperty(k)) e.setAttribute(k, attrs[k]); }
+    return e;
+  }
+  function addText(svg, x, y, txt, size, color, weight) {
+    var t = el('text', { x: x, y: y, 'text-anchor': 'middle', 'dominant-baseline': 'middle', 'font-size': size || 12, fill: color || '#1A5276', 'font-weight': weight || 700, 'pointer-events': 'none', 'font-family': 'Segoe UI, Yu Gothic, sans-serif' });
+    t.textContent = txt; svg.appendChild(t); return t;
+  }
+  // 深部構造（片側の半球内での相対位置。sign=+1 で画面右）
+  function deepShapes(sign) {
+    function X(dx) { return CX + sign * dx; }
+    return {
+      // 尾状核頭部：側脳室前角の外側
+      C: 'M' + X(22) + ' 92 C ' + X(40) + ' 86 ' + X(46) + ' 104 ' + X(40) + ' 122 C ' + X(35) + ' 134 ' + X(26) + ' 134 ' + X(22) + ' 124 Z',
+      // 内包：前脚・膝・後脚（「く」の字）
+      IC: 'M' + X(44) + ' 98 L ' + X(51) + ' 100 L ' + X(43) + ' 142 L ' + X(55) + ' 186 L ' + X(48) + ' 190 L ' + X(35) + ' 143 Z',
+      // レンズ核：内包の外側の凸レンズ形
+      L: 'M' + X(55) + ' 104 C ' + X(65) + ' 110 ' + X(70) + ' 128 ' + X(70) + ' 146 C ' + X(70) + ' 164 ' + X(65) + ' 178 ' + X(59) + ' 183 L ' + X(48) + ' 143 Z'
+    };
+  }
+  function regionFill(id, on) { return on ? '#E74C3C' : (id.charAt(0) === 'M' ? '#D6E6F2' : '#C3DAEC'); }
+
+  function drawLevel(svg, level) {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var affSign = (side === 'R') ? -1 : 1;   // 患者の右＝画面の左
+    var s, sg, k;
+    for (k = 0; k < 2; k++) {
+      sg = (k === 0) ? -1 : 1;
+      var aff = (sg === affSign);
+      var g = el('g', { opacity: aff ? 1 : 0.45 });
+      svg.appendChild(g);
+      // 半球の外形
+      g.appendChild(el('path', { d: sector(sg, 0, 180, 0.0, 1.0), fill: '#F2F4F6', stroke: '#8A9BAA', 'stroke-width': 1.2 }));
+      // 原著の図の A・P（anterior／posterior circulation）の領域（数えない）
+      var aEnd = level === 'low' ? 24 : 26, pStart = level === 'low' ? 152 : 156;
+      g.appendChild(el('path', { d: sector(sg, 0, aEnd, 0.34, 1.0), fill: '#E1E4E8', stroke: '#B5BEC8', 'stroke-width': 1 }));
+      g.appendChild(el('path', { d: sector(sg, pStart, 180, 0.34, 1.0), fill: '#E1E4E8', stroke: '#B5BEC8', 'stroke-width': 1 }));
+      if (aff) {
+        var pa = pt(sg, aEnd / 2, 0.78), pp = pt(sg, (pStart + 180) / 2, 0.78);
+        addText(g, pa[0], pa[1], 'A', 11, '#7A8794');
+        addText(g, pp[0], pp[1], 'P', 11, '#7A8794');
+      }
+      if (level === 'low') {
+        // 側脳室前角・第三脳室・視床（参考）
+        g.appendChild(el('path', { d: 'M' + (CX + sg * 4) + ' 96 C ' + (CX + sg * 18) + ' 92 ' + (CX + sg * 22) + ' 112 ' + (CX + sg * 16) + ' 128 L ' + (CX + sg * 4) + ' 130 Z', fill: '#FFFFFF', stroke: '#9AA8B5', 'stroke-width': 1 }));
+        g.appendChild(el('ellipse', { cx: CX + sg * 20, cy: 172, rx: 16, ry: 22, fill: '#E1E4E8', stroke: '#B5BEC8', 'stroke-width': 1 }));
+        if (aff) addText(g, CX + sg * 20, 172, '視床', 9, '#7A8794', 600);
+        var deep = deepShapes(sg);
+        if (aff) {
+          addRegion(g, 'M1', sector(sg, 24, 62, 0.69, 1.0), pt(sg, 43, 0.85));
+          addRegion(g, 'M2', sector(sg, 62, 112, 0.69, 1.0), pt(sg, 87, 0.85));
+          addRegion(g, 'M3', sector(sg, 112, 152, 0.69, 1.0), pt(sg, 132, 0.85));
+          addRegion(g, 'I',  sector(sg, 50, 126, 0.565, 0.665), pt(sg, 88, 0.615), 11);
+          addRegion(g, 'L',  deep.L, [CX + sg * 60, 146]);
+          addRegion(g, 'IC', deep.IC, [CX + sg * 44, 168], 9);
+          addRegion(g, 'C',  deep.C, [CX + sg * 33, 110], 11);
+        } else {
+          g.appendChild(el('path', { d: sector(sg, 24, 152, 0.69, 1.0), fill: '#E9EEF2', stroke: '#B5BEC8', 'stroke-width': 1 }));
+          g.appendChild(el('path', { d: sector(sg, 50, 126, 0.565, 0.665), fill: '#E1E4E8', stroke: '#B5BEC8', 'stroke-width': 1 }));
+          g.appendChild(el('path', { d: deep.L, fill: '#E1E4E8', stroke: '#B5BEC8' }));
+          g.appendChild(el('path', { d: deep.IC, fill: '#E1E4E8', stroke: '#B5BEC8' }));
+          g.appendChild(el('path', { d: deep.C, fill: '#E1E4E8', stroke: '#B5BEC8' }));
+        }
+      } else {
+        // 側脳室体部（参考）
+        g.appendChild(el('path', { d: 'M' + (CX + sg * 4) + ' 100 C ' + (CX + sg * 20) + ' 100 ' + (CX + sg * 24) + ' 150 ' + (CX + sg * 20) + ' 196 L ' + (CX + sg * 4) + ' 200 Z', fill: '#FFFFFF', stroke: '#9AA8B5', 'stroke-width': 1 }));
+        if (aff) {
+          addRegion(g, 'M4', sector(sg, 26, 70, 0.30, 1.0), pt(sg, 48, 0.68));
+          addRegion(g, 'M5', sector(sg, 70, 114, 0.22, 1.0), pt(sg, 92, 0.64));
+          addRegion(g, 'M6', sector(sg, 114, 156, 0.30, 1.0), pt(sg, 135, 0.68));
+        } else {
+          g.appendChild(el('path', { d: sector(sg, 26, 156, 0.26, 1.0), fill: '#E9EEF2', stroke: '#B5BEC8', 'stroke-width': 1 }));
+        }
+      }
+    }
+    // 左右と前後の表示
+    addText(svg, 22, 18, '患者の右', 11, '#334155', 700);
+    addText(svg, 298, 18, '患者の左', 11, '#334155', 700);
+    addText(svg, CX, 6, '前', 10, '#334155', 700);
+    addText(svg, CX, 295, '後', 10, '#334155', 700);
+    svg.appendChild(el('line', { x1: CX, y1: 12, x2: CX, y2: 288, stroke: '#8A9BAA', 'stroke-width': 1, 'stroke-dasharray': '3 3' }));
+  }
+
+  function addRegion(parent, id, d, labelPos, fs) {
+    var g = el('g', { 'class': 'rg', tabindex: '0', role: 'button', 'aria-pressed': selA[id] ? 'true' : 'false', 'aria-label': id + ' ' + regionName(id) });
+    var p = el('path', { d: d, fill: regionFill(id, !!selA[id]), stroke: '#1A5276', 'stroke-width': 1.4 });
+    g.appendChild(p);
+    parent.appendChild(g);
+    addText(parent, labelPos[0], labelPos[1], id, fs || 13, selA[id] ? '#FFFFFF' : '#1A5276', 800);
+    g.addEventListener('click', function(){ toggleA(id); });
+    g.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleA(id); } });
+  }
+  function regionName(id) { for (var i = 0; i < A_REGIONS.length; i++) { if (A_REGIONS[i].id === id) return A_REGIONS[i].name; } return ''; }
+
+  function toggleA(id) { selA[id] = !selA[id]; renderAll(); }
+  function toggleP(id) { selP[id] = !selP[id]; renderAll(); }
+
+  function renderChips() {
+    var box = document.getElementById('chipsA'), html = '', i, r;
+    for (i = 0; i < A_REGIONS.length; i++) {
+      r = A_REGIONS[i];
+      html += '<button type="button" class="chip' + (selA[r.id] ? ' on' : '') + '" data-id="' + r.id + '" aria-pressed="' + (selA[r.id] ? 'true' : 'false') + '">' + r.id + ' <small>' + r.name + '</small></button>';
+    }
+    box.innerHTML = html;
+    var bs = box.querySelectorAll('.chip');
+    for (i = 0; i < bs.length; i++) { bs[i].addEventListener('click', function(){ toggleA(this.getAttribute('data-id')); }); }
+    var boxP = document.getElementById('chipsP'); html = '';
+    for (i = 0; i < P_REGIONS.length; i++) {
+      r = P_REGIONS[i];
+      html += '<button type="button" class="chip' + (selP[r.id] ? ' on' : '') + '" data-id="' + r.id + '" aria-pressed="' + (selP[r.id] ? 'true' : 'false') + '">' + r.name + ' <small>−' + r.pt + '点</small></button>';
+    }
+    boxP.innerHTML = html;
+    bs = boxP.querySelectorAll('.chip');
+    for (i = 0; i < bs.length; i++) { bs[i].addEventListener('click', function(){ toggleP(this.getAttribute('data-id')); }); }
+  }
+
+  function computeScore() {
+    var i, sc = 10, list = [];
+    if (mode === 'pc') {
+      for (i = 0; i < P_REGIONS.length; i++) { if (selP[P_REGIONS[i].id]) { sc -= P_REGIONS[i].pt; list.push(P_REGIONS[i].name + '（−' + P_REGIONS[i].pt + '）'); } }
+    } else {
+      for (i = 0; i < A_REGIONS.length; i++) { if (selA[A_REGIONS[i].id]) { sc -= 1; list.push(A_REGIONS[i].id); } }
+    }
+    return { score: sc, list: list };
+  }
+
+  function bandFor(sc) {
+    if (mode === 'pc') {
+      if (sc >= 8) return ['band-hi', '8点以上'];
+      if (sc >= 6) return ['band-mid', '6〜7点'];
+      return ['band-lo', '6点未満'];
+    }
+    if (sc >= 6) return ['band-hi', '6点以上'];
+    if (sc >= 3) return ['band-mid', '3〜5点（広範囲虚血）'];
+    return ['band-lo', '3点未満'];
+  }
+
+  function notesFor(sc) {
+    var n = [];
+    if (mode === 'pc') {
+      n.push('脳底動脈の急性閉塞では、発症前 mRS 0〜2・NIHSS 10 以上・pc-ASPECTS 6 点以上の場合に、発症または最終健常確認から 24 時間以内の機械的血栓回収療法は「妥当」とされています（推奨度 B）<sup><a href="#ref3">3</a></sup>。' + (sc >= 6 ? '' : '<strong>現在の点数は 6 点未満です。</strong>'));
+      n.push('原著では、椎骨脳底動脈系の虚血が疑われた 130 例で、単純 CT は CT 血管造影の元画像より虚血変化の検出感度が低く、単純 CT の pc-ASPECTS は機能的自立を予測しませんでした。別に調べた脳底動脈閉塞の 46 例では、元画像による pc-ASPECTS 8 点以上の 52%、8 点未満の 4% が転帰良好（mRS 0〜3）でした<sup><a href="#ref6">6</a></sup>。');
+      return n;
+    }
+    if (sc >= 6) {
+      n.push('内頸動脈・中大脳動脈 M1 部の急性閉塞で、発症前 mRS 0〜1・NIHSS 6 以上・18 歳以上・ASPECTS 6 点以上をすべて満たせば、発症 6 時間以内の機械的血栓回収療法が勧められています（推奨度 A）<sup><a href="#ref3">3</a></sup>。');
+    } else if (sc >= 3) {
+      n.push('ASPECTS 3〜5 点は「広範囲虚血領域」にあたります。内頸動脈・M1 部の急性閉塞で発症または最終健常確認から 24 時間以内なら、機械的血栓回収療法は「妥当」とされています（推奨度 B）<sup><a href="#ref3">3</a></sup>。');
+      n.push('適正使用指針は、治療適応となる ASPECTS の下限は明らかでないとして、症例ごとに慎重に検討するよう求めています（RESCUE-Japan LIMIT 試験では 3 点の患者で有効性が示されなかった）<sup><a href="#ref4">4</a></sup>。');
+    } else if (mode === 'dwi') {
+      n.push('DWI で ASPECTS 3 点未満かつ発症から 6.5 時間以内なら、機械的血栓回収療法を「考慮しても良い」とされています（推奨度 C）。リスクとベネフィットを考えて慎重に判断するよう求められています<sup><a href="#ref3">3</a></sup>。');
+    } else {
+      n.push('国内のガイドラインの 3 点未満についての推奨（推奨度 C）は、MRI 拡散強調画像（DWI）で ASPECTS 3 点未満かつ発症から 6.5 時間以内の場合に限った記載です<sup><a href="#ref3">3</a></sup>。');
+    }
+    n.push('静注血栓溶解療法では、広汎な早期虚血性変化は適応外の項目です。ただし「広汎」の基準は定め難く、ASPECTS 7 未満をそのまま「広汎」とみなす根拠は乏しいとされています（一般に ASPECTS 7 が中大脳動脈領域の 1/3 に相当）<sup><a href="#ref8">8</a></sup>。');
+    if (mode === 'dwi') {
+      n.push('DWI-ASPECTS で 7 点以上・5 点以上・3 点以上は、それぞれ虚血コア 25 mL 以下・70 mL 以下・100 mL 以下に相当するという報告が、虚血コアを見積もる参考になり得るとされています<sup><a href="#ref4">4</a></sup>。');
+      n.push('DWI-ASPECTS は同じ患者の CT-ASPECTS より低く出る傾向があります（約 1 点<sup><a href="#ref7">7</a></sup>、国内の指針では 0.5〜0.9 点<sup><a href="#ref8">8</a></sup>）。');
+    }
+    return n;
+  }
+
+  function sideLabel() { return side === 'R' ? '右' : '左'; }
+
+  function renderAll() {
+    var isPc = (mode === 'pc');
+    document.getElementById('anteriorCard').className = 'card' + (isPc ? ' hidden' : '');
+    document.getElementById('posteriorCard').className = 'card' + (isPc ? '' : ' hidden');
+    document.getElementById('sideRow').style.display = isPc ? 'none' : '';
+    if (!isPc) { drawLevel(document.getElementById('svgLow'), 'low'); drawLevel(document.getElementById('svgHigh'), 'high'); }
+    renderChips();
+    var r = computeScore();
+    document.getElementById('scoreBig').innerHTML = r.score + '<span> / 10</span>';
+    var b = bandFor(r.score);
+    var bandEl = document.getElementById('scoreBand');
+    bandEl.className = 'score-band ' + b[0]; bandEl.textContent = b[1];
+    var name = mode === 'ct' ? 'CT-ASPECTS' : (mode === 'dwi' ? 'DWI-ASPECTS' : 'pc-ASPECTS');
+    document.getElementById('deducted').innerHTML = r.list.length ? ('減点した領域：' + r.list.join('、')) : '減点した領域：なし（早期虚血変化を認めない）';
+    var ns = notesFor(r.score), h = '', i;
+    for (i = 0; i < ns.length; i++) h += '<li>' + ns[i] + '</li>';
+    document.getElementById('notes').innerHTML = h;
+    var txt;
+    if (isPc) {
+      txt = name + ' ' + r.score + '/10' + (r.list.length ? '（早期虚血変化：' + r.list.join('、') + '）' : '（早期虚血変化なし）');
+    } else {
+      txt = name + ' ' + r.score + '/10（' + sideLabel() + '中大脳動脈領域' + (r.list.length ? '、早期虚血変化：' + r.list.join(', ') : '、早期虚血変化なし') + '）';
+    }
+    document.getElementById('summaryBox').textContent = txt;
+  }
+
+  function bindSeg(id, fn) {
+    var bs = document.getElementById(id).querySelectorAll('button'), i;
+    for (i = 0; i < bs.length; i++) {
+      bs[i].addEventListener('click', function(){
+        var all = this.parentNode.querySelectorAll('button'), j;
+        for (j = 0; j < all.length; j++) all[j].classList.remove('active');
+        this.classList.add('active');
+        fn(this.getAttribute('data-v'));
+      });
+    }
+  }
+  bindSeg('modeSeg', function(v){ mode = v; renderAll(); });
+  bindSeg('sideSeg', function(v){ side = v; renderAll(); });
+
+  document.getElementById('resetBtn').addEventListener('click', function(){ selA = {}; selP = {}; renderAll(); });
+  document.getElementById('copyBtn').addEventListener('click', function(){
+    var btn = this;
+    var text = document.getElementById('summaryBox').textContent;
+    text = text.replace(/[～〜]/g, '-');
+    function done(ok){
+      btn.textContent = ok ? '✓ コピー完了' : 'コピーできませんでした（文を選択してコピーしてください）';
+      if (ok) btn.classList.add('copied');
+      setTimeout(function(){ btn.textContent = '📋 所見文をコピー'; btn.classList.remove('copied'); }, 2400);
+    }
+    function fallback(){
+      var ok = false;
+      var ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta);
+      ta.select(); try { ok = document.execCommand('copy'); } catch (err) { ok = false; } document.body.removeChild(ta); done(ok);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function(){ done(true); }, fallback);
+    } else {
+      fallback();
+    }
+  });
+
+  var area = document.getElementById('articleLinkArea');
+  if (ARTICLE_URL) {
+    area.innerHTML = '<a class="article-link" href="' + ARTICLE_URL + '" target="_blank" rel="noopener">ASPECTS の解説（医知創造ラボ ブログ）<span>10 領域の読み方、原著の成績、国内指針での扱いと限界をまとめています</span></a>';
+  } else {
+    area.innerHTML = '<p><a href="https://blog.ichisouzo-lab.com/" target="_blank" rel="noopener">医知創造ラボ ブログ</a>で脳卒中の解説記事を公開しています。</p>';
+  }
+
+  renderAll();
+})();
+</script>
+</body>
+</html>

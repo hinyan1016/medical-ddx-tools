@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v385';
+const CACHE_NAME = 'ddx-tools-v386';
 const ASSETS = [
   './infographics/japan-religion-top10/index.html',
   './infographics/japan-religion-top10/infographic.png',
@@ -104,6 +104,8 @@ const ASSETS = [
   './cave_score.html',
   './select_score.html',
   './abcd2_calculator.html',
+  './aspects_calculator.html',
+  './infographics/aspects-score/index.html',
   './infographics/abcd2-tia-risk-score/index.html',
   './infographics/moca-j-v81/index.html',
   './fazekas_calculator.html',
