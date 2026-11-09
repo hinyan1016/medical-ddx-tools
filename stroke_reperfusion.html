@@ -169,12 +169,12 @@ var STEPS = [
     title: "画 ― 画像所見の禁忌",
     subtitle: "Step 3/7",
     type: "multi",
-    hint: "来院時CT/MRIの所見を選択。",
+    hint: "来院時CT/MRIの所見を選択。ASPECTS は ASPECTS 計算ツール（aspects_calculator.html）で算出できます。",
     options: [
       { label: "頭蓋内出血あり（脳内血腫・硬膜下血腫など）", value: "ich" },
       { label: "くも膜下出血（疑い含む）", value: "sah" },
-      { label: "広範な早期虚血性変化（ASPECTS \u2264 5）", value: "extensive_ischemia" },
-      { label: "ASPECTS 6", value: "aspects_6" },
+      { label: "広汎な早期虚血性変化（判読者が広汎と判断）", value: "extensive_ischemia" },
+      { label: "ASPECTS 7 未満（広汎かどうか迷う）", value: "aspects_6" },
       { label: "圧排所見・正中線偏位あり", value: "mass_effect" },
       { label: "該当なし", value: "none" }
     ]
@@ -354,10 +354,10 @@ function evaluate() {
   }
   if (imaging.indexOf("extensive_ischemia") >= 0) {
     result.rtpa.eligible = false;
-    result.rtpa.contras.push("広範な早期虚血性変化（ASPECTS \u2264 5）");
+    result.rtpa.contras.push("広汎な早期虚血性変化");
   }
   if (imaging.indexOf("aspects_6") >= 0) {
-    result.rtpa.warnings.push("ASPECTS 6: 相対禁忌。出血転化リスクを考慮して判断");
+    result.rtpa.warnings.push("ASPECTS 7 未満: 適正治療指針は「広汎」の基準を定めておらず、ASPECTS 7 未満をそのまま広汎とみなす根拠は乏しいとしている。早期虚血変化が広がるほど症候性頭蓋内出血の危険が増すため、範囲を個別に判断");
   }
   if (imaging.indexOf("mass_effect") >= 0) {
     result.rtpa.eligible = false;
@@ -449,7 +449,7 @@ function evaluate() {
   /* ASPECTS による EVT 判断 */
   if (imaging.indexOf("extensive_ischemia") >= 0) {
     if (result.evt.eligible) {
-      result.evt.warnings.push("ASPECTS \u2264 5: 広範虚血。SELECT2基準等で慎重に判断");
+      result.evt.warnings.push("広汎な早期虚血性変化: ASPECTS を確認。3〜5点で発症24時間以内なら血栓回収は妥当（推奨度B）、DWIで3点未満かつ発症6.5時間以内なら考慮しても良い（推奨度C）。適応となるASPECTSの下限は明らかでなく、症例ごとに慎重に判断");
     }
   }
 
@@ -614,7 +614,7 @@ function renderResults() {
 
   html += '<p style="font-size:0.8rem;color:var(--gray);margin-top:10px;border-top:1px solid #eee;padding-top:8px;">';
   html += '\u26A0 本ツールは判断支援であり、最終的な治療決定は臨床状況と上級医の判断に基づいてください。';
-  html += '<br>準拠: 脳卒中治療ガイドライン2025、AHA/ASA Guidelines 2019、アルテプラーゼ添付文書</p>';
+  html += '<br>準拠: 脳卒中治療ガイドライン2021〔改訂2025〕、静注血栓溶解（rt-PA）療法 適正治療指針 第三版（2023年9月追補）、経皮経管的脳血栓回収用機器 適正使用指針 第5版、AHA/ASA Guidelines 2019、アルテプラーゼ添付文書</p>';
   html += '</div></div>';
 
   return html;
