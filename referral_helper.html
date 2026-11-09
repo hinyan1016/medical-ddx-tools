@@ -877,6 +877,10 @@ footer {
             🧠 返事：もの忘れ・認知機能精査セット
             <small>挨拶 ＋ 認知機能検査・画像結果 ＋ 紹介元継続の結び</small>
           </button>
+          <button type="button" class="preset-btn" data-preset="dizziness-reply">
+            🌀 返事：ふらつき感・めまい精査セット
+            <small>挨拶 ＋ 神経診察・画像・起立時血圧 ＋ 紹介元継続の結び</small>
+          </button>
           <button type="button" class="preset-btn" data-preset="reply-exam">
             🔍 返事：当院で精査中・結果報告セット
             <small>挨拶 ＋ 検査施行報告 ＋ 精査継続の結び</small>
@@ -2071,6 +2075,20 @@ footer {
         '平素より大変お世話になっております。\n\n' +
         cursorTarget + '\n' +
         '大切な患者様をご紹介いただきありがとうございました。何かありましたら、いつでもご連絡ください。今後ともよろしくお願い申し上げます。';
+    } else if (presetKey === 'dizziness-reply') {
+      purposeText = 'ふらつき感精査結果のご報告と今後のご加療のお願い';
+      cursorTarget = applyImagingModeToText(
+        'ふらつき感の精査目的でご紹介いただきました' + call + 'は、本日当院を受診されました。\n' +
+        '神経学的診察では、構音障害、四肢・体幹の失調、筋力低下、感覚障害を認めず、Romberg徴候は陰性でした。\n' +
+        '眼振所見および頭部MRIにて、脳幹・小脳梗塞などの危険な中枢性めまいを示唆する所見は認めませんでした。\n' +
+        '臥位・立位の血圧測定では、起立性低血圧を認めませんでした（臥位 ○○/○○ mmHg、立位3分後 ○○/○○ mmHg）。\n',
+        state.imagingMode
+      );
+      text =
+        '平素より大変お世話になっております。\n\n' +
+        cursorTarget + '\n' +
+        '今後は貴院にてご加療を継続いただけますと幸いです。ふらつき感が増悪する場合や、新たな神経症状が出現した場合には、いつでも再度ご紹介ください。\n' +
+        '大切な患者様をご紹介いただきありがとうございました。今後ともよろしくお願い申し上げます。';
     } else if (presetKey === 'reply-exam') {
       purposeText = '精査途中のご報告（当院にて精査継続）';
       cursorTarget = 'ご紹介いただきました' + call + 'は、本日当院を受診されました。\n';
