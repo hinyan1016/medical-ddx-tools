@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v388';
+const CACHE_NAME = 'ddx-tools-v389';
 const ASSETS = [
   './infographics/japan-religion-top10/index.html',
   './infographics/japan-religion-top10/infographic.png',
