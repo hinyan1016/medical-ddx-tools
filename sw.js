@@ -1,5 +1,7 @@
-const CACHE_NAME = 'ddx-tools-v394';
+const CACHE_NAME = 'ddx-tools-v395';
 const ASSETS = [
+  './infographics/ncs-report-writer-development/index.html',
+  './infographics/ncs-report-writer-development/infographic.png',
   './infographics/facial-palsy-standard-treatment/index.html',
   './facial_palsy_assessment.html',
   './infographics/facial-palsy-differential/index.html',
