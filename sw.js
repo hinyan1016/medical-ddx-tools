@@ -1,5 +1,8 @@
-const CACHE_NAME = 'ddx-tools-v389';
+const CACHE_NAME = 'ddx-tools-v390';
 const ASSETS = [
+  './facial_palsy_assessment.html',
+  './infographics/facial-palsy-differential/index.html',
+  './infographics/facial-palsy-differential/infographic.png',
   './infographics/japan-religion-top10/index.html',
   './infographics/japan-religion-top10/infographic.png',
   './infographics/eagle-syndrome-revised-20261108/index.html',
