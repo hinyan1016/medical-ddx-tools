@@ -1,5 +1,7 @@
-const CACHE_NAME = 'ddx-tools-v397';
+const CACHE_NAME = 'ddx-tools-v398';
 const ASSETS = [
+  './infographics/glp1-naion-vision-loss/index.html',
+  './infographics/glp1-naion-vision-loss/infographic.png',
   './infographics/ncs-report-writer-development/index.html',
   './infographics/ncs-report-writer-development/infographic.png',
   './infographics/facial-palsy-standard-treatment/index.html',
