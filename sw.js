@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v396';
+const CACHE_NAME = 'ddx-tools-v397';
 const ASSETS = [
   './infographics/ncs-report-writer-development/index.html',
   './infographics/ncs-report-writer-development/infographic.png',
@@ -345,6 +345,8 @@ const ASSETS = [
   './hypernatremia.html',
   './hyperckemia.html',
   './hypokalemia.html',
+  './hyperkalemia.html',
+  './infographics/hyperkalemia-differential/index.html',
   './highbun.html',
   './abdominal_pain.html',
   './bilateral_thalamus.html',

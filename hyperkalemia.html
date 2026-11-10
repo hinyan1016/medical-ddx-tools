@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A5276">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>高カリウム血症 鑑別診断ツール</title>
+<meta name="description" content="緊急度、偽性高カリウム血症、細胞からの移動、摂取、腎排泄の低下、原因になる薬を順にチェックし、考えられる原因と次に確かめることを整理します。">
+<meta property="og:title" content="高カリウム血症 鑑別診断ツール">
+<meta property="og:description" content="緊急度、偽性高カリウム血症、細胞からの移動、摂取、腎排泄の低下、原因になる薬を順にチェックし、考えられる原因と次に確かめることを整理します。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tools.ichisouzo-lab.com/hyperkalemia.html">
+<meta property="og:image" content="https://tools.ichisouzo-lab.com/assets/og-tools.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="医知創造ラボ">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root {
+    --dark: #1A5276;
+    --primary: #2E86C1;
+    --pale: #EAF3FA;
+    --red: #C0392B;
+    --red-pale: #FDEDEC;
+    --amber: #B9770E;
+    --amber-pale: #FEF5E7;
+    --green: #1E8449;
+    --green-pale: #E9F7EF;
+    --text: #2C3E50;
+    --sub: #5D6D7E;
+    --line: #D6E0E8;
+    --bg: #F4F7FA;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Yu Gothic', '游ゴシック', 'Hiragino Kaku Gothic ProN', 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); line-height: 1.75; -webkit-text-size-adjust: 100%; }
+  header.tool-head { background: var(--dark); color: #fff; padding: 18px 16px 22px; text-align: center; }
+  header.tool-head .back-bar { text-align: left; max-width: 860px; margin: 0 auto 8px; font-size: 14px; }
+  header.tool-head .back-bar a { color: #cfe0ee; text-decoration: none; }
+  header.tool-head h1 { font-size: 1.45em; line-height: 1.4; }
+  header.tool-head p { font-size: 0.9em; color: #cfe0ee; margin-top: 4px; }
+  .container { max-width: 860px; margin: 0 auto; padding: 18px 14px 60px; }
+  .note { background: #fff; border-left: 4px solid var(--primary); border-radius: 8px; padding: 14px 16px; margin-bottom: 18px; font-size: 0.95em; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 12px; margin-bottom: 16px; overflow: hidden; }
+  .card-head { background: var(--pale); padding: 12px 16px; display: flex; align-items: flex-start; gap: 10px; }
+  .card-num { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 50%; background: var(--dark); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+  .card-title { font-weight: 700; color: var(--dark); font-size: 1.08em; line-height: 1.5; padding-top: 2px; }
+  .card-body { padding: 14px 16px 16px; }
+  .hint { color: var(--sub); font-size: 0.9em; margin-bottom: 10px; }
+  .opts { display: flex; flex-direction: column; gap: 8px; }
+  .opt { display: flex; align-items: flex-start; gap: 10px; padding: 11px 12px; border: 1.5px solid var(--line); border-radius: 9px; background: #fff; cursor: pointer; font-size: 0.97em; line-height: 1.55; min-height: 46px; }
+  .opt input { flex: 0 0 auto; width: 20px; height: 20px; margin-top: 2px; accent-color: var(--primary); }
+  .opt.on { border-color: var(--primary); background: var(--pale); }
+  .group-label { font-weight: 700; color: var(--dark); font-size: 0.92em; margin: 14px 0 6px; }
+  .group-label:first-child { margin-top: 0; }
+  #result { background: #fff; border: 2px solid var(--dark); border-radius: 12px; padding: 16px; margin-top: 22px; }
+  #result h2 { color: var(--dark); font-size: 1.2em; margin-bottom: 10px; }
+  .banner { border-radius: 9px; padding: 12px 14px; margin-bottom: 12px; font-weight: 700; line-height: 1.6; }
+  .banner small { display: block; font-weight: 400; font-size: 0.9em; margin-top: 4px; }
+  .banner.red { background: var(--red-pale); color: var(--red); border: 1px solid #E6B0AA; }
+  .banner.amber { background: var(--amber-pale); color: var(--amber); border: 1px solid #F5CBA7; }
+  .banner.blue { background: var(--pale); color: var(--dark); border: 1px solid #AED6F1; }
+  .banner.green { background: var(--green-pale); color: var(--green); border: 1px solid #A9DFBF; }
+  .dx { border: 1px solid var(--line); border-left: 5px solid var(--primary); border-radius: 9px; padding: 12px 14px; margin-bottom: 10px; }
+  .dx.warn { border-left-color: var(--amber); }
+  .dx-name { font-weight: 700; color: var(--dark); margin-bottom: 4px; }
+  .dx-why { font-size: 0.94em; }
+  .dx-next { font-size: 0.92em; color: var(--sub); margin-top: 6px; }
+  .dx-next strong { color: var(--text); }
+  .empty { color: var(--sub); font-size: 0.95em; }
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+  .btn { flex: 1 1 160px; padding: 12px 14px; border-radius: 9px; border: none; font-size: 1em; font-weight: 700; cursor: pointer; min-height: 46px; font-family: inherit; }
+  .btn.primary { background: var(--primary); color: #fff; }
+  .btn.ghost { background: #fff; color: var(--dark); border: 1.5px solid var(--dark); }
+  #copyMsg { font-size: 0.9em; color: var(--green); margin-top: 8px; min-height: 1.4em; }
+  .foot { font-size: 0.85em; color: var(--sub); margin-top: 22px; line-height: 1.7; }
+  .foot ol { padding-left: 20px; margin-top: 6px; }
+  .foot li { margin-bottom: 4px; overflow-wrap: anywhere; }
+  .foot a { color: var(--primary); }
+  @media (max-width: 480px) { header.tool-head h1 { font-size: 1.25em; } }
+</style>
+</head>
+<body>
+<nav id="ics-globalnav" style="background:#15324E;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
+<div style="max-width:1040px;margin:0 auto;padding:8px 12px;display:flex;align-items:center;gap:2px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;">
+<a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;padding-right:8px;">医知創造ラボ</a>
+<a href="https://ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ホーム</a>
+<a href="https://blog.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ブログ</a>
+<a href="https://tools.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ツール</a>
+<a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">YouTube</a>
+</div>
+</nav>
+<header class="tool-head">
+  <div class="back-bar"><a href="index.html">‹ ツール一覧</a></div>
+  <h1>高カリウム血症 鑑別診断ツール</h1>
+  <p>Hyperkalemia Differential Diagnosis Tool</p>
+  <a href="https://blog.ichisouzo-lab.com/entry/2026/11/10/151408" target="_blank" rel="noopener" style="display:inline-block;margin-top:10px;padding:6px 16px;background:rgba(255,255,255,0.18);color:#fff;border-radius:20px;font-size:0.85em;text-decoration:none;border:1px solid rgba(255,255,255,0.35);">📝 解説ブログ記事を読む</a>
+</header>
+
+<div class="container">
+  <div class="note">
+    <strong>使い方：</strong>当てはまる項目にチェックを入れると、下の「考えられる原因と次に確かめること」がその場で更新されます。原因はひとつとは限らないので、6つの欄を最後まで確かめてください。医療従事者向けの整理用ツールで、診断や治療を決めるものではありません。治療薬の用量は対象外です。
+  </div>
+  <div id="steps"></div>
+
+  <div id="result">
+    <h2>考えられる原因と次に確かめること</h2>
+    <div id="resultBody"></div>
+    <div class="btn-row">
+      <button type="button" class="btn primary" id="copyBtn">カルテ用の要約をコピー</button>
+      <button type="button" class="btn ghost" id="resetBtn">最初からやり直す</button>
+    </div>
+    <div id="copyMsg" role="status" aria-live="polite"></div>
+  </div>
+
+  <div class="foot">
+    <strong>根拠にした資料</strong>（重症度の区分と偽性の判定差は英国の指針と総説の値で、国内の統一基準ではありません）
+    <ol>
+      <li>Palmer BF, et al. Diagnosis and treatment of hyperkalemia. Cleve Clin J Med. 2017;84(12):934-942. <a href="https://pubmed.ncbi.nlm.nih.gov/29244647/" target="_blank" rel="noopener noreferrer">PMID: 29244647</a></li>
+      <li>Hunter RW, et al. Hyperkalemia: pathophysiology, risk factors and consequences. Nephrol Dial Transplant. 2019;34(Suppl 3):iii2-iii11. <a href="https://pubmed.ncbi.nlm.nih.gov/31800080/" target="_blank" rel="noopener noreferrer">PMID: 31800080</a></li>
+      <li>Lindner G, et al. Acute hyperkalemia in the emergency department: a summary from a Kidney Disease: Improving Global Outcomes conference. Eur J Emerg Med. 2020;27(5):329-337. <a href="https://pubmed.ncbi.nlm.nih.gov/32852924/" target="_blank" rel="noopener noreferrer">PMID: 32852924</a></li>
+      <li>UK Kidney Association. Clinical Practice Guidelines: Treatment of Acute Hyperkalaemia in Adults. October 2023.</li>
+      <li>Montague BT, et al. Retrospective review of the frequency of ECG changes in hyperkalemia. Clin J Am Soc Nephrol. 2008;3(2):324-30. <a href="https://pubmed.ncbi.nlm.nih.gov/18235147/" target="_blank" rel="noopener noreferrer">PMID: 18235147</a></li>
+      <li>Oster JR, et al. Heparin-induced aldosterone suppression and hyperkalemia. Am J Med. 1995;98(6):575-86. <a href="https://pubmed.ncbi.nlm.nih.gov/7778574/" target="_blank" rel="noopener noreferrer">PMID: 7778574</a></li>
+      <li>Muto S, et al. Mechanisms of hyperkalemia caused by nafamostat mesilate. Gen Pharmacol. 1995;26(8):1627-32. <a href="https://pubmed.ncbi.nlm.nih.gov/8745149/" target="_blank" rel="noopener noreferrer">PMID: 8745149</a></li>
+    </ol>
+  </div>
+</div>
+
+<script>
+/* 高カリウム血症 鑑別診断ツール
+   文言と数値は根拠台帳（evidence-ledger.md の C01-C34）に合わせる。台帳にない数値を足さない。 */
+var STEPS = [
+  { id: 'urgency', title: '緊急度を確かめる', hint: 'カリウムの値はひとつ選び、所見は当てはまるものすべてにチェックします。', groups: [
+    { label: 'カリウムの値（mmol/L）', type: 'radio', name: 'klevel', options: [
+      { id: 'k_mild', label: '5.5-5.9（軽度）' },
+      { id: 'k_mod', label: '6.0-6.4（中等度）' },
+      { id: 'k_sev', label: '6.5 以上（重度）' }
+    ]},
+    { label: '所見', type: 'check', options: [
+      { id: 'ecg', label: '著しい心電図変化がある（尖ったT波、PR延長、QRS幅の拡大、P波の消失など）' },
+      { id: 'weak', label: '高度の筋力低下や麻痺がある' },
+      { id: 'noecg', label: 'まだ心電図をとっていない' }
+    ]}
+  ]},
+  { id: 'pseudo', title: '本当に高いのか（偽性高カリウム血症）', hint: '採血と検体の状況を確かめます。', groups: [
+    { label: '', type: 'check', options: [
+      { id: 'norisk', label: '腎機能が正常で、原因になる病気や薬が見当たらず、心電図も正常' },
+      { id: 'hemolysis', label: '検体が溶血している、採血が難しかった' },
+      { id: 'tourniquet', label: '長く駆血した、採血中に手を強く握っていた、細い針で引いた' },
+      { id: 'transit', label: '検査までに時間がかかった、冷所で保存した' },
+      { id: 'cells', label: '血小板・白血球・赤血球が多い（血液疾患を含む）' },
+      { id: 'edta', label: 'カルシウムも同時に低い、または血算用の採血管のあとに採った' },
+      { id: 'ivarm', label: 'カリウムを含む輸液をしている腕から採血した' }
+    ]}
+  ]},
+  { id: 'shift', title: '細胞の中から出てきたのか', hint: '細胞からの移動は、急な上昇の原因になります。', groups: [
+    { label: '', type: 'check', options: [
+      { id: 'injury', label: '横紋筋融解症、外傷、大量の溶血、腫瘍崩壊がある' },
+      { id: 'dka', label: '高血糖でインスリンが足りない（糖尿病性ケトアシドーシスなど）' },
+      { id: 'osm', label: '高張マンニトールを大量に使った、または免疫グロブリン製剤を繰り返し投与した' },
+      { id: 'nagma', label: 'アニオンギャップが正常の高クロール性アシドーシスがある' },
+      { id: 'hyperpp', label: '高カリウム性周期性四肢麻痺が疑われる' }
+    ]}
+  ]},
+  { id: 'intake', title: '入ってくるカリウムが多くないか', hint: '摂取だけで起こることはまれで、腎排泄の障害が背景にあることがほとんどです。', groups: [
+    { label: '', type: 'check', options: [
+      { id: 'ksupp', label: 'カリウム補充薬を使っている' },
+      { id: 'salt', label: 'カリウムを含む代用塩（減塩用の塩）を使っている' }
+    ]}
+  ]},
+  { id: 'renal', title: '腎臓から出せているか', hint: '高カリウム血症が続いているなら、腎排泄の低下を考えます。', groups: [
+    { label: '腎機能と尿量', type: 'check', options: [
+      { id: 'aki', label: '急性腎障害がある' },
+      { id: 'oliguria', label: '乏尿がある' },
+      { id: 'gfrlow', label: '慢性腎臓病で、糸球体濾過量が 10-15 mL/分未満' },
+      { id: 'gfrmild', label: '腎機能の低下はそれより軽い（腎機能のわりにカリウムが高い）' }
+    ]},
+    { label: 'アルドステロンの働き', type: 'check', options: [
+      { id: 'dmckd', label: '糖尿病性腎症または間質性腎疾患がある' },
+      { id: 'acidosis', label: '代謝性アシドーシスを伴っている' },
+      { id: 'cortisol', label: 'コルチゾールも低い、副腎疾患がある' }
+    ]}
+  ]},
+  { id: 'drugs', title: '薬が関わっていないか', hint: '処方薬、注射薬、市販薬、ハーブ製品まで見直します。', groups: [
+    { label: 'レニン・アンジオテンシン・アルドステロン系', type: 'check', options: [
+      { id: 'raas', label: 'ACE阻害薬、アンジオテンシンII受容体拮抗薬、アリスキレン' },
+      { id: 'mra', label: 'スピロノラクトン、エプレレノン、ドロスピレノン' },
+      { id: 'nsaid', label: '非ステロイド性抗炎症薬（市販の解熱鎮痛薬を含む）' },
+      { id: 'cni', label: 'カルシニューリン阻害薬（シクロスポリン、タクロリムス）' },
+      { id: 'bb', label: 'β遮断薬' },
+      { id: 'heparin', label: 'ヘパリン' },
+      { id: 'keto', label: 'ケトコナゾール' }
+    ]},
+    { label: '集合管のナトリウムチャネル', type: 'check', options: [
+      { id: 'enac', label: 'アミロライド、トリアムテレン' },
+      { id: 'tmp', label: 'トリメトプリム（ST合剤）、ペンタミジン' },
+      { id: 'nafa', label: 'ナファモスタット' },
+      { id: 'li', label: 'リチウム' }
+    ]},
+    { label: '細胞からの移動', type: 'check', options: [
+      { id: 'sux', label: 'サクシニルコリン' },
+      { id: 'dig', label: 'ジゴキシン（ジギタリス）' }
+    ]}
+  ]}
+];
+
+var state = {};
+
+function esc(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function renderSteps() {
+  var h = '';
+  var i, g, o, st, grp, opt, type, name;
+  for (i = 0; i < STEPS.length; i++) {
+    st = STEPS[i];
+    h += '<div class="card"><div class="card-head"><span class="card-num">' + (i + 1) + '</span><span class="card-title">' + esc(st.title) + '</span></div><div class="card-body">';
+    h += '<p class="hint">' + esc(st.hint) + '</p>';
+    for (g = 0; g < st.groups.length; g++) {
+      grp = st.groups[g];
+      if (grp.label) { h += '<div class="group-label">' + esc(grp.label) + '</div>'; }
+      h += '<div class="opts">';
+      for (o = 0; o < grp.options.length; o++) {
+        opt = grp.options[o];
+        type = grp.type === 'radio' ? 'radio' : 'checkbox';
+        name = grp.type === 'radio' ? grp.name : opt.id;
+        h += '<label class="opt" id="lab_' + opt.id + '"><input type="' + type + '" name="' + name + '" value="' + opt.id + '" data-id="' + opt.id + '"><span>' + esc(opt.label) + '</span></label>';
+      }
+      h += '</div>';
+    }
+    h += '</div></div>';
+  }
+  document.getElementById('steps').innerHTML = h;
+  var inputs = document.getElementById('steps').getElementsByTagName('input');
+  for (i = 0; i < inputs.length; i++) {
+    inputs[i].onchange = onChange;
+  }
+}
+
+function onChange() {
+  var inputs = document.getElementById('steps').getElementsByTagName('input');
+  var i, id, lab;
+  state = {};
+  for (i = 0; i < inputs.length; i++) {
+    id = inputs[i].getAttribute('data-id');
+    lab = document.getElementById('lab_' + id);
+    if (inputs[i].checked) {
+      state[id] = true;
+      lab.className = 'opt on';
+    } else {
+      lab.className = 'opt';
+    }
+  }
+  document.getElementById('copyMsg').innerHTML = '';
+  renderResult();
+}
+
+function has() {
+  var i;
+  for (i = 0; i < arguments.length; i++) {
+    if (state[arguments[i]]) { return true; }
+  }
+  return false;
+}
+
+/* 緊急度の帯 */
+function urgency() {
+  if (has('ecg', 'weak', 'k_sev')) {
+    return { cls: 'red', title: '緊急の対応が必要です', text: '著しい心電図変化、高度の筋力低下、重度（6.5 mmol/L 以上）のいずれかがあります。原因の検索と並行して、心電図モニターのもとで施設の手順に沿って対応してください。' };
+  }
+  if (has('k_mod')) {
+    return { cls: 'amber', title: '心電図とモニターを確かめます', text: '6.0 mmol/L を超える値では、12誘導心電図と心電図モニターが勧められています。心電図が正常でも高カリウム血症は否定できません。' };
+  }
+  if (has('k_mild')) {
+    return { cls: 'blue', title: '軽度の範囲です', text: '再検で確かめながら原因を調べます。院外で見つかった場合、急性の体調不良、とくに急性腎障害があれば、軽度でも病院での評価が提案されています。心電図が正常でも高カリウム血症は否定できないので、値の推移と症状をあわせて判断します。' };
+  }
+  return null;
+}
+
+/* 原因の候補 */
+function findings() {
+  var out = [];
+  if (has('norisk', 'hemolysis', 'tourniquet', 'transit', 'cells', 'edta', 'ivarm')) {
+    var why = [];
+    if (has('norisk')) { why.push('危険因子がなく心電図も正常'); }
+    if (has('hemolysis')) { why.push('溶血・採血困難'); }
+    if (has('tourniquet')) { why.push('駆血や手の握り'); }
+    if (has('transit')) { why.push('搬送や保存の条件'); }
+    if (has('cells')) { why.push('血球の増加'); }
+    if (has('edta')) { why.push('EDTAの混入の疑い'); }
+    if (has('ivarm')) { why.push('輸液側の腕からの採血'); }
+    var next = '太い静脈から強く引かずに採り直し、すぐに検査へ出します。ヘパリンリチウム採血管（血漿）と凝固管（血清）を対で提出し、血清が血漿を上回る差（英国の指針では 0.4 mmol/L、総説では 0.5 mmol/L を超える差）を確かめます。血算も確認します。';
+    if (has('cells')) { next += ' 白血球が著しく多い血液疾患では、血漿のほうが偽って高く血清が正常という逆のパターンも報告されています。'; }
+    if (has('ecg')) { next += ' 著しい心電図変化があれば、偽性の確認を待たずに治療を始めます。'; }
+    out.push({ warn: true, name: '偽性高カリウム血症の可能性', why: why.join('、') + '。', next: next });
+  }
+  if (has('injury')) {
+    out.push({ name: '組織の障害による細胞からの移動', why: '横紋筋融解症、外傷、大量の溶血、腫瘍崩壊では、壊れた細胞からカリウムが出ます。', next: '原因となった病態の評価と、腎機能・尿量の確認。' });
+  }
+  if (has('dka')) {
+    out.push({ name: 'インスリン欠乏と高浸透圧による移動', why: '糖尿病性ケトアシドーシスの入院時にみられる高カリウム血症は、有機酸そのものではなく、インスリンの欠乏と高浸透圧によるものです。', next: '血糖、血液ガス、浸透圧の確認。' });
+  }
+  if (has('osm')) {
+    out.push({ name: '高浸透圧による移動（マンニトール・免疫グロブリン製剤）', why: '高張マンニトールの大量投与や、糖を添加した免疫グロブリン製剤の反復投与では、高浸透圧によって細胞からカリウムが出ることがあります。', next: '投与の経過とカリウムの推移を照らし合わせます。免疫グロブリン製剤の添加物は製剤によって異なります。' });
+  }
+  if (has('nagma')) {
+    out.push({ name: 'アニオンギャップ正常のアシドーシスによる移動', why: 'カリウムが細胞から出やすいのは、アニオンギャップが正常の高クロール性アシドーシスです。有機酸によるアシドーシスでは移動が起こりにくいとされていますが、乳酸アシドーシスでは虚血で細胞が壊れるためカリウムの移動がよく伴います。', next: 'アシドーシスの原因の評価。腎機能のわりにカリウムが高ければ、アルドステロンの働きの低下も調べます。' });
+  }
+  if (has('hyperpp')) {
+    out.push({ name: '高カリウム性周期性四肢麻痺', why: '細胞からの移動で高カリウム血症を起こす原因のひとつに挙げられています。', next: '発作時のカリウムと経過を確かめ、脳神経内科で評価します。' });
+  }
+  if (has('ksupp', 'salt')) {
+    out.push({ name: 'カリウムの摂取・負荷', why: 'カリウム補充薬やカリウムを含む代用塩は原因になります。ただし摂取だけで起こることはまれで、ほぼ常に腎排泄の障害が背景にあります。', next: '使用量の確認と、腎機能・薬の見直し。' });
+  }
+  if (has('aki', 'oliguria')) {
+    out.push({ name: '急性腎障害・乏尿による排泄の低下', why: '糸球体濾過量の急な低下と、遠位ネフロンに届くナトリウムと水の減少で、カリウムの分泌が落ちます。乏尿があると高カリウム血症が起こりやすくなります。', next: '尿量、腎機能の推移、急性腎障害の原因の評価。' });
+  }
+  if (has('gfrlow')) {
+    out.push({ name: '進行した慢性腎臓病による排泄の低下', why: '慢性腎臓病では、糸球体濾過量が 10-15 mL/分未満に下がるまで血漿カリウムは正常範囲に保たれます。腎機能の低下だけでも起こりうる水準です。', next: 'ほかの原因（薬、摂取、アシドーシス）が重なっていないかも確かめます。' });
+  }
+  if (has('gfrmild')) {
+    out.push({ warn: true, name: '腎機能だけでは説明できない高カリウム血症', why: '軽い腎機能低下で高カリウム血症が起これば、アルドステロンの働きの低下か、尿細管の障害が示唆されます。', next: '薬の見直し、糖尿病性腎症・間質性腎疾患の有無、代謝性アシドーシスの有無を確かめます。' });
+  }
+  if (has('dmckd') || (has('acidosis') && has('gfrmild'))) {
+    out.push({ name: '低レニン性低アルドステロン症', why: '糸球体濾過量が 40-60 mL/分の患者にみられる高カリウム血症の原因として多く、背景の病気としては糖尿病性腎症と間質性腎疾患が最も多いとされています。' + (has('acidosis') ? '高カリウム血症に腎の酸排泄障害を伴う状態は IV 型尿細管性アシドーシスと呼ばれ、アルドステロンが足りないか効いていない状態で出会います。' : ''), next: '血液ガス、レニン・アルドステロンの評価を腎臓内科や内分泌内科と相談します。' });
+  }
+  if (has('cortisol')) {
+    out.push({ warn: true, name: '副腎の障害によるアルドステロン欠乏', why: 'アルドステロンとコルチゾールの両方が低ければ、副腎そのものの障害が示唆されます。', next: 'コルチゾール、アルドステロンの評価を内分泌内科と相談します。' });
+  }
+  if (has('raas', 'mra')) {
+    out.push({ name: 'レニン・アンジオテンシン・アルドステロン系を抑える薬', why: 'ACE阻害薬、アンジオテンシンII受容体拮抗薬、アリスキレンはアンジオテンシンIIを減らすか効かなくし、スピロノラクトン、エプレレノン、ドロスピレノンはアルドステロンの受容体を遮断します。', next: '適応と用量を確かめ、併用している薬を見直します。' });
+  }
+  if (has('nsaid')) {
+    out.push({ name: '非ステロイド性抗炎症薬', why: 'レニンの分泌を抑え、遠位ネフロンに届くナトリウムを減らします。', next: '市販薬を含めて使用を確かめます。' });
+  }
+  if (has('cni')) {
+    out.push({ name: 'カルシニューリン阻害薬', why: 'レニン分泌の抑制と尿細管への直接作用でカリウムの分泌を妨げます。タクロリムスは遠位曲尿細管のナトリウム・クロール共輸送体を間接的に活性化し、腎移植後に、高血圧・高カリウム血症・高クロール性アシドーシスを示す Gordon 症候群に似た病態を起こすことがあります。', next: '処方している診療科と相談します。' });
+  }
+  if (has('bb')) {
+    out.push({ name: 'β遮断薬', why: '細胞へのカリウムの取り込みを妨げ、低レニン状態も起こします。', next: 'ほかの原因と重なっていないかを確かめます。' });
+  }
+  if (has('heparin')) {
+    out.push({ name: 'ヘパリン', why: 'アルドステロンの産生を抑えます。作用は開始後数日以内に現れ、可逆的で、5,000単位を1日2回という用量でも起こりえます。著しい高カリウム血症には、腎機能低下、糖尿病、ほかの薬が重なっていることが多いとされています。', next: 'ヘパリンを3日以上使う患者では、カリウムを定期的に確かめることが勧められています。' });
+  }
+  if (has('keto')) {
+    out.push({ name: 'ケトコナゾール', why: 'アルドステロンの合成を妨げます。', next: 'ほかの原因と重なっていないかを確かめます。' });
+  }
+  if (has('enac', 'tmp', 'li')) {
+    out.push({ name: '集合管のナトリウムチャネルを妨げる薬', why: 'アミロライドとトリアムテレンは主細胞の上皮型ナトリウムチャネルを介するナトリウム再吸収を阻害し、カリウム分泌の駆動力をなくします。トリメトプリムとペンタミジンも同様に作用します。リチウムも同じ分類に挙げられています。', next: '腎機能と併用薬を確かめます。' });
+  }
+  if (has('nafa')) {
+    out.push({ name: 'ナファモスタット', why: '尿へのカリウム排泄を減らして高カリウム血症を起こすことが報告されています。皮質集合管の実験では、アミロライド感受性のナトリウムの通り道を妨げてカリウムの分泌を抑えました。', next: '投与の経過とカリウムの推移を照らし合わせます。' });
+  }
+  if (has('sux')) {
+    out.push({ name: 'サクシニルコリン', why: '筋弛緩のために使うと、著しい高カリウム血症を起こすことがあります。', next: '投与の時刻とカリウムの推移を照らし合わせます。' });
+  }
+  if (has('dig')) {
+    out.push({ name: 'ジゴキシン（ジギタリス）', why: '細胞内外のカリウムの移動に関わる薬で、使用中の患者は高カリウム血症の危険があります。', next: '腎機能と血中濃度を確かめます。' });
+  }
+  return out;
+}
+
+function renderResult() {
+  var u = urgency();
+  var f = findings();
+  var h = '';
+  var i;
+  if (u) {
+    h += '<div class="banner ' + u.cls + '">' + esc(u.title) + '<small>' + esc(u.text) + '</small></div>';
+  }
+  if (has('noecg')) {
+    h += '<div class="banner amber">心電図を確認してください<small>心電図が正常でも高カリウム血症は否定できませんが、変化があれば緊急度が上がります。</small></div>';
+  }
+  if (f.length === 0) {
+    h += '<p class="empty">当てはまる項目にチェックを入れると、ここに原因の候補が並びます。</p>';
+  } else {
+    for (i = 0; i < f.length; i++) {
+      h += '<div class="dx' + (f[i].warn ? ' warn' : '') + '"><div class="dx-name">' + esc(f[i].name) + '</div><div class="dx-why">' + esc(f[i].why) + '</div><div class="dx-next"><strong>次に確かめること：</strong>' + esc(f[i].next) + '</div></div>';
+    }
+    if (f.length > 1) {
+      h += '<p class="empty">候補が複数あります。原因が重なっていることもあるので、ひとつずつ確かめてください。</p>';
+    }
+  }
+  document.getElementById('resultBody').innerHTML = h;
+}
+
+function summaryText() {
+  var u = urgency();
+  var f = findings();
+  var lines = ['【高カリウム血症の鑑別】'];
+  var i;
+  if (has('k_mild')) { lines.push('カリウム: 5.5-5.9 mmol/L（軽度）'); }
+  if (has('k_mod')) { lines.push('カリウム: 6.0-6.4 mmol/L（中等度）'); }
+  if (has('k_sev')) { lines.push('カリウム: 6.5 mmol/L 以上（重度）'); }
+  if (has('ecg')) { lines.push('著しい心電図変化: あり'); }
+  if (has('weak')) { lines.push('高度の筋力低下・麻痺: あり'); }
+  if (has('noecg')) { lines.push('心電図: 未施行'); }
+  if (u) { lines.push('緊急度: ' + u.title); }
+  if (f.length === 0) {
+    lines.push('原因の候補: 未選択');
+  } else {
+    lines.push('原因の候補:');
+    for (i = 0; i < f.length; i++) {
+      lines.push('・' + f[i].name + '（次に確かめること: ' + f[i].next + '）');
+    }
+  }
+  return lines.join('\n');
+}
+
+function copySummary() {
+  var text = summaryText();
+  text = text.replace(/[～〜]/g, '-');
+  var msg = document.getElementById('copyMsg');
+  function ok() { msg.innerHTML = 'コピーしました。'; }
+  function fallback() {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.top = '-1000px';
+    document.body.appendChild(ta);
+    ta.select();
+    ta.setSelectionRange(0, text.length);
+    try { document.execCommand('copy'); ok(); } catch (e) { msg.innerHTML = 'コピーできませんでした。'; }
+    document.body.removeChild(ta);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(ok, fallback);
+  } else {
+    fallback();
+  }
+}
+
+function resetAll() {
+  var inputs = document.getElementById('steps').getElementsByTagName('input');
+  var i;
+  for (i = 0; i < inputs.length; i++) { inputs[i].checked = false; }
+  onChange();
+  window.scrollTo(0, 0);
+}
+
+renderSteps();
+renderResult();
+document.getElementById('copyBtn').onclick = copySummary;
+document.getElementById('resetBtn').onclick = resetAll;
+</script>
+</body>
+</html>
