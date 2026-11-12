@@ -265,7 +265,7 @@
 </header>
 
 <div class="container">
-  <div class="action-bar"><a class="btn btn-info" href="image-credits.html">図版出典・ライセンス</a><a class="btn btn-info" href="infographic.html">原寸インフォグラフィック</a>
+  <div class="action-bar"><a class="btn btn-info" href="https://blog.ichisouzo-lab.com/entry/2026/11/12/220851">解説記事を読む</a><a class="btn btn-info" href="image-credits.html">図版出典・ライセンス</a><a class="btn btn-info" href="infographic.html">原寸インフォグラフィック</a>
     
     <a class="btn btn-pdf" href="slides.pdf" target="_blank" rel="noopener">
       📄 PDFをダウンロード
@@ -415,6 +415,7 @@
 </div>
 
 <div class="lightbox" id="lightbox">
+  <a id="lbOriginal" href="slide-01.png" target="_blank" rel="noopener" style="position:fixed;top:16px;left:16px;z-index:1100;color:#fff;background:#334155;padding:10px 14px;border-radius:8px;text-decoration:underline;">原寸画像を開く</a>
   <button class="lightbox-close" id="lbClose" aria-label="閉じる">✕</button>
   <div class="lightbox-img-wrap">
     <img id="lbImg" src="" alt="">
@@ -461,6 +462,7 @@
     if (i >= slideCount) i = slideCount - 1;
     current = i;
     lbImg.src = srcOf(i);
+    document.getElementById('lbOriginal').href = srcOf(i);
     lbImg.alt = 'スライド ' + (i + 1);
     lbCounter.textContent = (i + 1) + ' / ' + slideCount;
     lbPrev.disabled = (i === 0);
