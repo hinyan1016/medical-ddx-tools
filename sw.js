@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v399';
+const CACHE_NAME = 'ddx-tools-v400';
 const ASSETS = [
   './infographics/alzheimer-genetics-data-2026/index.html',
   './infographics/alzheimer-genetics-nature-2026/index.html',
@@ -153,6 +153,8 @@ const ASSETS = [
   './infographics/status-epilepticus-initial-calculator/index.html',
   './infographics/eeg-report-writer/index.html',
   './infographics/histamine-poisoning/index.html',
+  './infographics/multivariable-logistic-regression/index.html',
+  './infographics/gemini-4-hydrogen/index.html',
   './infographics/seizure-differential-diagnosis-reference-repair-20261024/index.html',
   './infographics/tic-vs-seizure-adult-reference-repair-20261024/index.html',
 
