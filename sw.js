@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v400';
+const CACHE_NAME = 'ddx-tools-v401';
 const ASSETS = [
   './infographics/alzheimer-genetics-data-2026/index.html',
   './infographics/alzheimer-genetics-nature-2026/index.html',
