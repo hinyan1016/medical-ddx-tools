@@ -1,5 +1,16 @@
-const CACHE_NAME = 'ddx-tools-v398';
+const CACHE_NAME = 'ddx-tools-v399';
 const ASSETS = [
+  './infographics/alzheimer-genetics-data-2026/index.html',
+  './infographics/alzheimer-genetics-nature-2026/index.html',
+  './infographics/claude-fable-5-2/index.html',
+  './infographics/gemini-4-carbon/index.html',
+  './infographics/gfap-astrocytopathy/index.html',
+  './infographics/hyperkalemia-treatment/index.html',
+  './infographics/orthosis-afo-kafo/index.html',
+  './infographics/semi-solid-enteral-nutrition/index-animated-v1.html',
+  './infographics/semi-solid-enteral-nutrition/index-animated-v2.html',
+  './infographics/semi-solid-enteral-nutrition/index-v4.html',
+  './infographics/semi-solid-enteral-nutrition/index.html',
   './infographics/glp1-naion-vision-loss/index.html',
   './infographics/glp1-naion-vision-loss/infographic.png',
   './infographics/ncs-report-writer-development/index.html',
