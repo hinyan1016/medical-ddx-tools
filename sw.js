@@ -1,5 +1,8 @@
-const CACHE_NAME = 'ddx-tools-v403';
+const CACHE_NAME = 'ddx-tools-v404';
 const ASSETS = [
+  './infographics/elderly-epilepsy/index.html',
+  './infographics/ptau217-approval-future/index.html',
+  './infographics/ptau217-approval-future/infographic.png',
   './bilateral_facial_palsy.html',
   './infographics/alzheimer-genetics-data-2026/index.html',
   './infographics/alzheimer-genetics-nature-2026/index.html',
