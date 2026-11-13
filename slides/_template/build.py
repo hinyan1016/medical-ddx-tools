@@ -108,8 +108,14 @@ def copy_jc_deck(jc_dir, dst) -> bool:
 def render_viewer(deck: dict, slide_count: int, has_deck: bool = False,
                   has_infographic: bool = False,
                   has_infographic_html: bool = False,
-                  has_jc: bool = False) -> str:
+                  has_jc: bool = False,
+                  has_pdf: bool = True) -> str:
     template = (TEMPLATE_DIR / "viewer.html").read_text(encoding="utf-8")
+    if not has_pdf:
+        # PDFを提供しないデッキ（manifest の pdf_filename が空）: ボタンと案内文からPDFを外す
+        import re as _re
+        template = _re.sub(r'[ \t]*<a class="btn btn-pdf".*?</a>\s*?\n', '', template, flags=_re.S)
+        template = template.replace("PDFは保存・印刷可能です。", "")
 
     cards_html = []
     for i in range(1, slide_count + 1):
@@ -253,8 +259,9 @@ def build_deck(deck: dict, dry_run: bool = False) -> bool:
         print(f"  [SKIP] missing PNGs: {missing[:3]}{'...' if len(missing)>3 else ''}", file=sys.stderr)
         return False
 
-    pdf_src = src / deck["pdf_filename"]
-    if not pdf_src.exists():
+    has_pdf = bool(deck.get("pdf_filename"))
+    pdf_src = src / deck["pdf_filename"] if has_pdf else None
+    if has_pdf and not pdf_src.exists():
         print(f"  [SKIP] PDF not found: {pdf_src.name}", file=sys.stderr)
         return False
 
@@ -279,7 +286,8 @@ def build_deck(deck: dict, dry_run: bool = False) -> bool:
             im.save(dst / f"slide-{i:02d}.webp", "WEBP", quality=80, method=6)
 
     # Copy PDF (rename to slides.pdf for stable URL)
-    shutil.copy2(pdf_src, dst / "slides.pdf")
+    if has_pdf:
+        shutil.copy2(pdf_src, dst / "slides.pdf")
 
     # Copy interactive HTML deck (+ assets) if requested. ボタンは配置成功時のみ出す。
     has_deck = False
@@ -317,7 +325,7 @@ def build_deck(deck: dict, dry_run: bool = False) -> bool:
 
     # Write viewer
     viewer_html = render_viewer(deck, slide_count, has_deck, has_infographic,
-                                has_infographic_html, has_jc)
+                                has_infographic_html, has_jc, has_pdf)
     (dst / "index.html").write_text(viewer_html, encoding="utf-8", newline="\n")
 
     extra = " + deck.html" if has_deck else ""

@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#1B3A5C">
-<meta name="description" content="多変量ロジスティック回帰を論文で読むときに確かめる点（オッズ比とリスク比の違い、変数の選び方、事象数、似た因子の同時投入、説明か予測か）を整理した医療従事者向けスライド資料です。例の数字は架空です。">
+<meta name="description" content="多変量ロジスティック回帰を論文で読むときに確かめる点（調整オッズ比、95%信頼区間とフォレストプロット、オッズ比とリスク比の違い、変数の選び方、事象数、似た因子の同時投入、説明か予測か）を整理した医療従事者向けスライド資料です。例の数字は架空です。">
 <meta property="og:title" content="多変量ロジスティック回帰分析の読み方｜調整オッズ比で「独立した因子」を読み違えない | スライド資料">
-<meta property="og:description" content="多変量ロジスティック回帰を論文で読むときに確かめる点（オッズ比とリスク比の違い、変数の選び方、事象数、似た因子の同時投入、説明か予測か）を整理した医療従事者向けスライド資料です。例の数字は架空です。">
+<meta property="og:description" content="多変量ロジスティック回帰を論文で読むときに確かめる点（調整オッズ比、95%信頼区間とフォレストプロット、オッズ比とリスク比の違い、変数の選び方、事象数、似た因子の同時投入、説明か予測か）を整理した医療従事者向けスライド資料です。例の数字は架空です。">
 <meta property="og:image" content="https://tools.ichisouzo-lab.com/slides/multivariable-logistic-regression/slide-01.png">
 <meta property="og:url" content="https://tools.ichisouzo-lab.com/slides/multivariable-logistic-regression/">
 <meta name="twitter:card" content="summary_large_image">
@@ -259,17 +259,12 @@
     <a href="../">スライド一覧</a> / <a href="https://tools.ichisouzo-lab.com/">DDxツール</a>
   </div>
   <h1>多変量ロジスティック回帰分析の読み方｜調整オッズ比で「独立した因子」を読み違えない</h1>
-  <p class="subtitle">調整オッズ比・変数の選び方・事象数・同時投入・説明か予測かを整理した公開動画と同じ全15スライド</p>
+  <p class="subtitle">調整オッズ比、フォレストプロット、ロジットの式、変数の選び方、事象数、同時投入、説明か予測かを整理した動画と同じ全24スライド</p>
 </header>
 
 <div class="container">
   <div class="action-bar">
-        <a class="btn btn-youtube" href="https://youtu.be/ixwfXIPtTYE" target="_blank" rel="noopener">
-      ▶ YouTubeで動画を見る
-    </a>
-    <a class="btn btn-pdf" href="slides.pdf" target="_blank" rel="noopener">
-      📄 PDFをダウンロード
-    </a>
+    
         <a class="btn btn-blog" href="https://blog.ichisouzo-lab.com/entry/2026/11/13/080136" target="_blank" rel="noopener">
       📝 解説記事を読む
     </a>
@@ -279,75 +274,111 @@
   </div>
 
   <div class="meta-bar">
-    <span>📊 全15枚</span>
+    <span>📊 全24枚</span>
     <span>クリックで拡大表示</span>
   </div>
 
   <div class="info-box">
     <strong>このページについて</strong><br>
-    動画を見る時間が無い方向けに、スライドのみを閲覧できるページです。各スライドをクリックすると拡大表示され、矢印キーまたはスワイプで送れます。PDFは保存・印刷可能です。
+    動画を見る時間が無い方向けに、スライドのみを閲覧できるページです。各スライドをクリックすると拡大表示され、矢印キーまたはスワイプで送れます。
   </div>
 
   <div class="slide-grid" id="slideGrid">
         <div class="slide-card" data-idx="0">
-      <span class="slide-num">1 / 15</span>
+      <span class="slide-num">1 / 24</span>
       <img src="slide-01.png" alt="スライド1" loading="lazy">
     </div>
     <div class="slide-card" data-idx="1">
-      <span class="slide-num">2 / 15</span>
+      <span class="slide-num">2 / 24</span>
       <img src="slide-02.webp" alt="スライド2" loading="lazy">
     </div>
     <div class="slide-card" data-idx="2">
-      <span class="slide-num">3 / 15</span>
+      <span class="slide-num">3 / 24</span>
       <img src="slide-03.webp" alt="スライド3" loading="lazy">
     </div>
     <div class="slide-card" data-idx="3">
-      <span class="slide-num">4 / 15</span>
+      <span class="slide-num">4 / 24</span>
       <img src="slide-04.webp" alt="スライド4" loading="lazy">
     </div>
     <div class="slide-card" data-idx="4">
-      <span class="slide-num">5 / 15</span>
+      <span class="slide-num">5 / 24</span>
       <img src="slide-05.webp" alt="スライド5" loading="lazy">
     </div>
     <div class="slide-card" data-idx="5">
-      <span class="slide-num">6 / 15</span>
+      <span class="slide-num">6 / 24</span>
       <img src="slide-06.webp" alt="スライド6" loading="lazy">
     </div>
     <div class="slide-card" data-idx="6">
-      <span class="slide-num">7 / 15</span>
+      <span class="slide-num">7 / 24</span>
       <img src="slide-07.webp" alt="スライド7" loading="lazy">
     </div>
     <div class="slide-card" data-idx="7">
-      <span class="slide-num">8 / 15</span>
+      <span class="slide-num">8 / 24</span>
       <img src="slide-08.webp" alt="スライド8" loading="lazy">
     </div>
     <div class="slide-card" data-idx="8">
-      <span class="slide-num">9 / 15</span>
+      <span class="slide-num">9 / 24</span>
       <img src="slide-09.webp" alt="スライド9" loading="lazy">
     </div>
     <div class="slide-card" data-idx="9">
-      <span class="slide-num">10 / 15</span>
+      <span class="slide-num">10 / 24</span>
       <img src="slide-10.webp" alt="スライド10" loading="lazy">
     </div>
     <div class="slide-card" data-idx="10">
-      <span class="slide-num">11 / 15</span>
+      <span class="slide-num">11 / 24</span>
       <img src="slide-11.webp" alt="スライド11" loading="lazy">
     </div>
     <div class="slide-card" data-idx="11">
-      <span class="slide-num">12 / 15</span>
+      <span class="slide-num">12 / 24</span>
       <img src="slide-12.webp" alt="スライド12" loading="lazy">
     </div>
     <div class="slide-card" data-idx="12">
-      <span class="slide-num">13 / 15</span>
+      <span class="slide-num">13 / 24</span>
       <img src="slide-13.webp" alt="スライド13" loading="lazy">
     </div>
     <div class="slide-card" data-idx="13">
-      <span class="slide-num">14 / 15</span>
+      <span class="slide-num">14 / 24</span>
       <img src="slide-14.webp" alt="スライド14" loading="lazy">
     </div>
     <div class="slide-card" data-idx="14">
-      <span class="slide-num">15 / 15</span>
+      <span class="slide-num">15 / 24</span>
       <img src="slide-15.webp" alt="スライド15" loading="lazy">
+    </div>
+    <div class="slide-card" data-idx="15">
+      <span class="slide-num">16 / 24</span>
+      <img src="slide-16.webp" alt="スライド16" loading="lazy">
+    </div>
+    <div class="slide-card" data-idx="16">
+      <span class="slide-num">17 / 24</span>
+      <img src="slide-17.webp" alt="スライド17" loading="lazy">
+    </div>
+    <div class="slide-card" data-idx="17">
+      <span class="slide-num">18 / 24</span>
+      <img src="slide-18.webp" alt="スライド18" loading="lazy">
+    </div>
+    <div class="slide-card" data-idx="18">
+      <span class="slide-num">19 / 24</span>
+      <img src="slide-19.webp" alt="スライド19" loading="lazy">
+    </div>
+    <div class="slide-card" data-idx="19">
+      <span class="slide-num">20 / 24</span>
+      <img src="slide-20.webp" alt="スライド20" loading="lazy">
+    </div>
+    <div class="slide-card" data-idx="20">
+      <span class="slide-num">21 / 24</span>
+      <img src="slide-21.webp" alt="スライド21" loading="lazy">
+    </div>
+    <div class="slide-card" data-idx="21">
+      <span class="slide-num">22 / 24</span>
+      <img src="slide-22.webp" alt="スライド22" loading="lazy">
+    </div>
+    <div class="slide-card" data-idx="22">
+      <span class="slide-num">23 / 24</span>
+      <img src="slide-23.webp" alt="スライド23" loading="lazy">
+    </div>
+    <div class="slide-card" data-idx="23">
+      <span class="slide-num">24 / 24</span>
+      <img src="slide-24.webp" alt="スライド24" loading="lazy">
     </div>
   </div>
 </div>
@@ -359,7 +390,7 @@
   </div>
   <div class="lightbox-controls">
     <button class="lightbox-btn" id="lbPrev" aria-label="前へ">‹</button>
-    <span class="lightbox-counter" id="lbCounter">1 / 15</span>
+    <span class="lightbox-counter" id="lbCounter">1 / 24</span>
     <button class="lightbox-btn" id="lbNext" aria-label="次へ">›</button>
   </div>
 </div>
@@ -377,7 +408,7 @@
 
 <script>
 (function(){
-  var slideCount = 15;
+  var slideCount = 24;
   var current = 0;
   var lightbox = document.getElementById('lightbox');
   var lbImg = document.getElementById('lbImg');
