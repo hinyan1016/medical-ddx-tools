@@ -1,0 +1,1654 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update();});}).catch(function(){});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload();});}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A5276">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>両側顔面神経麻痺の鑑別と初期評価</title>
+<meta name="description" content="両側顔面神経麻痺の初期トリアージ（呼吸・球麻痺・自律神経・脳幹・角膜保護）、橋から神経筋接合部までの局在整理、11疾患の鑑別と検査ピットフォール、カルテ用サマリー作成を支援する臨床評価ツール。">
+<meta property="og:title" content="両側顔面神経麻痺の鑑別と初期評価">
+<meta property="og:description" content="両側顔面神経麻痺の安全確保・角膜保護、橋下部から神経筋接合部までの局在整理、GBS・ライム病・神経サルコイドーシス・髄膜病変・MGなど11疾患の系統的鑑別を支援する医療従事者向けツール。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tools.ichisouzo-lab.com/bilateral_facial_palsy.html">
+<meta name="twitter:card" content="summary">
+<style>
+:root{
+  --navy:#1A5276;
+  --navy-dark:#123B54;
+  --blue:#2E86C1;
+  --blue-bg:#EBF5FB;
+  --red:#C0392B;
+  --red-bg:#FDEDEC;
+  --orange:#D35400;
+  --orange-bg:#FEF5E7;
+  --green:#1E8449;
+  --green-bg:#EAFAF1;
+  --purple:#6C3483;
+  --purple-bg:#F5EEF8;
+  --teal:#0E6251;
+  --teal-bg:#E8F8F5;
+  --border:#D4E1EA;
+  --text:#1F2D3D;
+  --muted:#566573;
+  --bg:#F4F7FA;
+  --card:#FFFFFF;
+  --radius:10px;
+}
+*,*::before,*::after{box-sizing:border-box;}
+html{font-size:16px;-webkit-text-size-adjust:100%;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:"BIZ UDPGothic","Yu Gothic UI","Hiragino Kaku Gothic ProN","Meiryo",system-ui,sans-serif;
+  line-height:1.65;
+}
+a{color:var(--navy);text-decoration:underline;text-underline-offset:2px;}
+a:hover{color:var(--blue);}
+/* Global nav */
+#ics-globalnav{
+  background:var(--navy-dark);
+  color:#FFFFFF;
+  padding:8px 16px;
+  font-size:0.86rem;
+  border-bottom:1px solid rgba(255,255,255,0.16);
+}
+.gn-inner{
+  max-width:1100px;
+  margin:0 auto;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.gn-brand{font-weight:700;color:#FFFFFF;text-decoration:none;letter-spacing:0.02em;}
+.gn-links{display:flex;flex-wrap:wrap;gap:6px;}
+.gn-links a{
+  color:#EBF5FB;
+  text-decoration:none;
+  padding:3px 9px;
+  border-radius:14px;
+  background:rgba(255,255,255,0.12);
+  font-size:0.82rem;
+}
+.gn-links a:hover{background:rgba(255,255,255,0.24);color:#FFFFFF;}
+/* Header */
+.hero{
+  background:linear-gradient(135deg,#1A5276 0%,#2E86C1 100%);
+  color:#FFFFFF;
+  padding:22px 18px 20px;
+  box-shadow:0 2px 8px rgba(18,59,84,0.18);
+}
+.hero-inner{max-width:1100px;margin:0 auto;}
+.hero-kicker{
+  display:inline-block;
+  font-size:0.78rem;
+  font-weight:700;
+  background:rgba(255,255,255,0.18);
+  padding:3px 10px;
+  border-radius:14px;
+  margin-bottom:8px;
+}
+.hero h1{margin:0 0 8px;font-size:1.52rem;line-height:1.3;letter-spacing:0.01em;}
+.hero-sub{margin:0 0 12px;font-size:0.93rem;color:#EAF2F8;max-width:900px;}
+.hero-stat{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:12px;
+}
+.stat-pill{
+  background:rgba(18,59,84,0.45);
+  border:1px solid rgba(255,255,255,0.28);
+  border-radius:8px;
+  padding:5px 11px;
+  font-size:0.83rem;
+}
+.stat-pill strong{color:#FFF9C4;}
+.hero-nav-pills{display:flex;flex-wrap:wrap;gap:8px;}
+.hero-pill{
+  display:inline-block;
+  background:#FFFFFF;
+  color:var(--navy);
+  font-weight:700;
+  font-size:0.82rem;
+  padding:5px 12px;
+  border-radius:18px;
+  text-decoration:none;
+}
+.hero-pill:hover{background:#D6EAF8;color:var(--navy-dark);}
+.hero-pill.ghost{
+  background:rgba(255,255,255,0.14);
+  color:#FFFFFF;
+  border:1px solid rgba(255,255,255,0.45);
+}
+.hero-pill.ghost:hover{background:rgba(255,255,255,0.26);}
+/* Main container */
+.container{max-width:1100px;margin:0 auto;padding:16px 16px 40px;}
+/* Notice callout */
+.notice-box{
+  background:#FFFFFF;
+  border:1px solid var(--border);
+  border-left:5px solid var(--navy);
+  border-radius:var(--radius);
+  padding:12px 15px;
+  margin-bottom:16px;
+  font-size:0.88rem;
+}
+.notice-box strong{color:var(--navy-dark);}
+.notice-list{margin:6px 0 0;padding-left:18px;}
+.notice-list li{margin:2px 0;}
+/* Details collapsible (<details> explicit operation) */
+details.anat-details{
+  background:#FFFFFF;
+  border:1px solid #B6CDE0;
+  border-radius:var(--radius);
+  margin-bottom:16px;
+  overflow:hidden;
+}
+details.anat-details summary{
+  cursor:pointer;
+  padding:12px 15px;
+  background:#EBF4FB;
+  font-weight:700;
+  color:var(--navy-dark);
+  border-bottom:1px solid transparent;
+  line-height:1.45;
+}
+details.anat-details[open] summary{
+  border-bottom-color:#C5DAE9;
+}
+.sum-title{display:inline;vertical-align:middle;}
+.sum-hint{
+  display:block;
+  margin-top:4px;
+  font-size:0.8rem;
+  font-weight:700;
+  color:var(--blue);
+}
+.anat-body{padding:14px 15px;}
+.anat-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+.anat-card{
+  background:#FAFBFD;
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:10px;
+}
+.anat-card h3{margin:0 0 8px;font-size:0.96rem;color:var(--navy-dark);}
+.anat-card svg{width:100%;height:auto;display:block;}
+.anat-cap{margin:8px 0 0;font-size:0.82rem;color:var(--muted);}
+/* Preset bar */
+.preset-bar{
+  background:#FFFFFF;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:12px 14px;
+  margin-bottom:16px;
+}
+.preset-head{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:8px;
+}
+.preset-title{font-weight:700;font-size:0.95rem;color:var(--navy-dark);}
+.preset-btns{display:flex;flex-wrap:wrap;gap:7px;}
+.preset-btn{
+  font:inherit;
+  font-size:0.83rem;
+  font-weight:700;
+  padding:6px 11px;
+  border-radius:18px;
+  border:1px solid #A9C8DF;
+  background:#F4F9FD;
+  color:var(--navy-dark);
+  cursor:pointer;
+}
+.preset-btn:hover{background:#DCECF9;}
+.preset-btn.active{
+  background:var(--navy);
+  color:#FFFFFF;
+  border-color:var(--navy);
+}
+.btn-reset{
+  font:inherit;
+  font-size:0.82rem;
+  font-weight:700;
+  padding:5px 12px;
+  border-radius:6px;
+  border:1px solid #C0392B;
+  background:#FFFFFF;
+  color:#C0392B;
+  cursor:pointer;
+}
+.btn-reset:hover{background:#FDEDEC;}
+/* Step cards */
+.step-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  margin-bottom:16px;
+  overflow:hidden;
+  box-shadow:0 1px 3px rgba(0,0,0,0.04);
+}
+.step-head{
+  background:#EEF5FA;
+  border-bottom:1px solid var(--border);
+  padding:11px 15px;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:8px;
+}
+.step-badge{
+  background:var(--navy);
+  color:#FFFFFF;
+  font-size:0.78rem;
+  font-weight:700;
+  padding:3px 9px;
+  border-radius:6px;
+}
+.step-badge.urgent{background:var(--red);}
+.step-title{margin:0;font-size:1.05rem;font-weight:700;color:var(--navy-dark);}
+.step-body{padding:14px 15px;}
+.sub-group{margin-bottom:14px;}
+.sub-group:last-child{margin-bottom:0;}
+.sub-group-title{
+  font-size:0.9rem;
+  font-weight:700;
+  color:var(--navy);
+  border-left:4px solid var(--blue);
+  padding-left:8px;
+  margin:0 0 8px;
+}
+.opt-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+}
+.opt-item{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  padding:9px 10px;
+  border:1px solid #DCE6EE;
+  border-radius:8px;
+  background:#FAFBFD;
+  cursor:pointer;
+  font-size:0.89rem;
+  line-height:1.45;
+  transition:background 0.12s,border-color 0.12s;
+}
+.opt-item:hover{background:#F0F7FC;border-color:#9EC3DC;}
+.opt-item.checked{background:#EBF5FB;border-color:var(--blue);}
+.opt-item.urgent-item.checked{background:#FDEDEC;border-color:var(--red);}
+.opt-item input{margin-top:3px;flex:0 0 auto;accent-color:var(--navy);}
+.opt-item.urgent-item input{accent-color:var(--red);}
+.opt-label-main{display:block;font-weight:700;color:var(--text);}
+.opt-label-sub{display:block;font-size:0.8rem;color:var(--muted);margin-top:2px;}
+/* Feedback banners */
+.feedback-stack{margin-top:12px;display:flex;flex-direction:column;gap:8px;}
+.fb-banner{
+  border-radius:8px;
+  padding:10px 13px;
+  font-size:0.88rem;
+  border-left:5px solid var(--navy);
+  background:var(--blue-bg);
+}
+.fb-banner.danger{background:var(--red-bg);border-left-color:var(--red);}
+.fb-banner.warn{background:var(--orange-bg);border-left-color:var(--orange);}
+.fb-banner.eye{background:var(--teal-bg);border-left-color:var(--teal);}
+.fb-banner strong{display:block;margin-bottom:3px;color:var(--text);}
+.fb-banner.danger strong{color:#922B21;}
+.fb-banner.warn strong{color:#A04000;}
+.fb-banner.eye strong{color:#0E6251;}
+/* Results section */
+.result-header{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin:18px 0 10px;
+}
+.result-header h2{margin:0;font-size:1.18rem;color:var(--navy-dark);}
+.selected-summary-pill{
+  font-size:0.83rem;
+  font-weight:700;
+  color:var(--navy);
+  background:#EBF5FB;
+  border:1px solid #AED6F1;
+  padding:4px 10px;
+  border-radius:14px;
+}
+.ddx-grid{display:flex;flex-direction:column;gap:11px;}
+.ddx-card{
+  background:#FFFFFF;
+  border:1px solid var(--border);
+  border-left:6px solid #95A5A6;
+  border-radius:var(--radius);
+  padding:13px 15px;
+}
+.ddx-card.tier-high{border-left-color:var(--red);background:#FFFCFC;}
+.ddx-card.tier-mid{border-left-color:var(--blue);}
+.ddx-card.tier-base{border-left-color:#BDC3C7;background:#FCFDFF;}
+.ddx-top{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:6px;
+}
+.ddx-title-wrap{display:flex;flex-wrap:wrap;align-items:center;gap:8px;}
+.ddx-name{margin:0;font-size:1.04rem;font-weight:700;color:var(--navy-dark);}
+.ddx-cat{
+  font-size:0.76rem;
+  font-weight:700;
+  padding:2px 8px;
+  border-radius:12px;
+  background:#EEF3F7;
+  color:var(--navy);
+}
+.ddx-match{
+  font-size:0.8rem;
+  font-weight:700;
+  padding:3px 9px;
+  border-radius:12px;
+  background:#F2F4F4;
+  color:#4D5656;
+}
+.tier-high .ddx-match{background:#FDEDEC;color:#922B21;}
+.tier-mid .ddx-match{background:#EBF5FB;color:#1A5276;}
+.ddx-matched-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+  margin-bottom:7px;
+}
+.match-tag{
+  font-size:0.77rem;
+  background:#E8F4FA;
+  color:var(--navy-dark);
+  border:1px solid #C2DFF0;
+  padding:2px 7px;
+  border-radius:5px;
+}
+.ddx-body{font-size:0.88rem;line-height:1.6;}
+.ddx-row{margin:4px 0;}
+.ddx-row b{color:var(--navy-dark);}
+.ddx-pitfall{
+  margin-top:6px;
+  padding:7px 10px;
+  background:#FEF9E7;
+  border-left:4px solid #D4AC0D;
+  border-radius:5px;
+  font-size:0.85rem;
+}
+.ddx-refs{margin-top:6px;font-size:0.8rem;color:var(--muted);}
+.ref-chip{
+  display:inline-block;
+  margin-right:5px;
+  padding:1px 6px;
+  border-radius:4px;
+  background:#EEF5FA;
+  color:var(--navy);
+  text-decoration:none;
+  font-weight:700;
+}
+/* Summary export box */
+.export-card{
+  background:#FFFFFF;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:14px 15px;
+  margin-top:18px;
+}
+.export-head{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:8px;
+}
+.export-head h2{margin:0;font-size:1.05rem;color:var(--navy-dark);}
+.export-actions{display:flex;flex-wrap:wrap;gap:8px;}
+.btn-primary,.btn-secondary{
+  font:inherit;
+  font-size:0.86rem;
+  font-weight:700;
+  padding:7px 14px;
+  border-radius:7px;
+  cursor:pointer;
+  border:1px solid transparent;
+}
+.btn-primary{background:var(--navy);color:#FFFFFF;}
+.btn-primary:hover{background:var(--navy-dark);}
+.btn-secondary{background:#F4F8FB;color:var(--navy-dark);border-color:#A9C8DF;}
+.btn-secondary:hover{background:#E3EFF8;}
+#copy-status{font-size:0.83rem;color:var(--green);font-weight:700;margin-left:4px;}
+#summary-text{
+  width:100%;
+  min-height:210px;
+  padding:10px 12px;
+  border:1px solid #C2D4E2;
+  border-radius:8px;
+  font-family:"Consolas","BIZ UDPGothic",monospace;
+  font-size:0.84rem;
+  line-height:1.55;
+  color:var(--text);
+  background:#FAFBFD;
+  resize:vertical;
+}
+/* References */
+.refs-card{
+  background:#FFFFFF;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:14px 16px;
+  margin-top:18px;
+}
+.refs-card h2{margin:0 0 10px;font-size:1.05rem;color:var(--navy-dark);}
+ol.refs{margin:0;padding-left:22px;font-size:0.83rem;line-height:1.6;}
+ol.refs li{margin-bottom:6px;overflow-wrap:anywhere;}
+.tool-footer{
+  margin-top:20px;
+  text-align:center;
+  font-size:0.8rem;
+  color:var(--muted);
+}
+@media(max-width:760px){
+  .anat-grid{grid-template-columns:1fr;}
+  .opt-grid{grid-template-columns:1fr;}
+  .hero h1{font-size:1.3rem;}
+}
+@media print{
+  #ics-globalnav,.preset-bar,.export-actions,.hero-nav-pills{display:none!important;}
+  body{background:#FFFFFF;}
+  .step-card,.ddx-card,.export-card,.refs-card{box-shadow:none;break-inside:avoid;}
+}
+</style>
+</head>
+<body>
+<nav id="ics-globalnav" aria-label="共通ナビゲーション">
+  <div class="gn-inner">
+    <a class="gn-brand" href="index.html">医知創造ラボ｜臨床ツール</a>
+    <div class="gn-links">
+      <a href="index.html">ツール一覧へ戻る</a>
+      <a href="facial_palsy_assessment.html">片側顔面神経麻痺・スコア評価</a>
+      <a href="abducens_palsy.html">外転神経麻痺</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="hero-kicker">脳神経内科 臨床評価・鑑別補助</span>
+    <h1>両側顔面神経麻痺の鑑別と初期評価</h1>
+    <p class="hero-sub">片側性とは背景疾患の内訳が大きく異なります。まず呼吸・球麻痺・自律神経・脳幹症候と閉眼不全への角膜保護を確認し、橋下部から神経筋接合部までの局在と検査ピットフォールを整理します。</p>
+    <div class="hero-stat">
+      <span class="stat-pill">全顔面神経麻痺に占める割合：<strong>0.3〜2.0%</strong></span>
+      <span class="stat-pill">片側でのベル麻痺：<strong>50%超</strong></span>
+      <span class="stat-pill">両側でのベル麻痺：<strong>20%未満（除外診断）</strong></span>
+    </div>
+    <div class="hero-nav-pills">
+      <a class="hero-pill" href="facial_palsy_assessment.html">片側顔面神経麻痺の評価ツールへ</a>
+      <a class="hero-pill ghost" href="https://blog.ichisouzo-lab.com/entry/2026/11/12/220851" target="_blank" rel="noopener">解説ブログ記事</a>
+      <a class="hero-pill ghost" href="https://www.youtube.com/watch?v=Tvw7Cx1uBh8" target="_blank" rel="noopener">解説YouTube動画</a>
+      <a class="hero-pill ghost" href="https://tools.ichisouzo-lab.com/slides/bilateral-facial-palsy-differential/" target="_blank" rel="noopener">解説スライド</a>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <div class="notice-box" role="note">
+    <strong>ご利用上の注意（重要）</strong>
+    <ul class="notice-list">
+      <li>本ツールは文献根拠に基づく初期評価・鑑別項目の整理を補助するものであり、診断・治療の最終判断は医師の責任で行ってください。</li>
+      <li>未選択の項目は「未評価」として扱い、陰性や安全を意味するものではありません。</li>
+      <li>鑑別候補の表示順は選択された所見との整合項目数を反映した整理順であり、疾患確率を算出するものではありません。</li>
+      <li>入力情報はすべてご利用端末のブラウザ内でのみ処理され、外部サーバーへ送信されることはありません。</li>
+    </ul>
+  </div>
+
+  <details class="anat-details">
+    <summary>
+      <span class="sum-title">解剖・局在マップを確認する（5つの解剖学的局在 ＆ 橋下部の第VII神経走行）</span>
+      <span class="sum-hint">クリック／タップで開閉</span>
+    </summary>
+    <div class="anat-body">
+      <div class="anat-grid">
+        <div class="anat-card">
+          <h3>図1：両側顔面麻痺をきたす5つの解剖学的局在</h3>
+          <svg viewBox="0 0 640 380" width="640" height="380" role="img" aria-label="両側顔面神経麻痺をきたす5つの解剖学的局在の図">
+            <rect x="6" y="6" width="628" height="368" rx="14" fill="#F4F8FC" stroke="#C5DAE9" stroke-width="2"></rect>
+            <text x="320" y="34" text-anchor="middle" font-size="16" font-weight="700" fill="#123B54">中枢から末梢・神経筋接合部までの系統的整理</text>
+            <!-- 5 boxes -->
+            <rect x="24" y="54" width="286" height="90" rx="10" fill="#FFFFFF" stroke="#C0392B" stroke-width="2"></rect>
+            <text x="38" y="77" font-size="14" font-weight="700" fill="#C0392B">1. 橋下部（第VII核・線維束）</text>
+            <text x="38" y="99" font-size="12.5" fill="#1F2D3D">・第VI核近傍のため水平注視障害を伴いやすい</text>
+            <text x="38" y="118" font-size="12.5" fill="#1F2D3D">・脳幹病変でも額を含む末梢性パターン</text>
+            <text x="38" y="135" font-size="11.5" fill="#566573">代表：橋梗塞/出血、脱髄、Möbius症候群</text>
+
+            <rect x="330" y="54" width="286" height="90" rx="10" fill="#FFFFFF" stroke="#2E86C1" stroke-width="2"></rect>
+            <text x="344" y="77" font-size="14" font-weight="700" fill="#1A5276">2. 小脳橋角部・くも膜下腔・髄膜</text>
+            <text x="344" y="99" font-size="12.5" fill="#1F2D3D">・VII以外の多発脳神経麻痺や頭痛・髄膜刺激</text>
+            <text x="344" y="118" font-size="12.5" fill="#1F2D3D">・造影MRIと十分な髄液量による精査が鍵</text>
+            <text x="344" y="135" font-size="11.5" fill="#566573">代表：サルコイド、ライム、HIV、髄膜播種、PCNSL</text>
+
+            <rect x="24" y="162" width="286" height="90" rx="10" fill="#FFFFFF" stroke="#D35400" stroke-width="2"></rect>
+            <text x="38" y="185" font-size="14" font-weight="700" fill="#A04000">3. 側頭骨内・神経根（顔面神経管）</text>
+            <text x="38" y="207" font-size="12.5" fill="#1F2D3D">・耳痛・耳介水疱（遅発や無疱疹性に注意）</text>
+            <text x="38" y="226" font-size="12.5" fill="#1F2D3D">・頭部外傷は側頭骨高分解能CTで骨折線確認</text>
+            <text x="38" y="243" font-size="11.5" fill="#566573">代表：GBS、VZV、両側側頭骨骨折、医原性</text>
+
+            <rect x="330" y="162" width="286" height="90" rx="10" fill="#FFFFFF" stroke="#0E6251" stroke-width="2"></rect>
+            <text x="344" y="185" font-size="14" font-weight="700" fill="#0E6251">4. 頭蓋外（耳下腺・末梢神経）</text>
+            <text x="344" y="207" font-size="12.5" fill="#1F2D3D">・耳下腺腫脹・前部ぶどう膜炎・微熱</text>
+            <text x="344" y="226" font-size="12.5" fill="#1F2D3D">・耳科/耳下腺/顎矯正/歯科手技後の医原性</text>
+            <text x="344" y="243" font-size="11.5" fill="#566573">代表：Heerfordt症候群、術後損傷</text>
+
+            <rect x="24" y="270" width="592" height="84" rx="10" fill="#FFFFFF" stroke="#6C3483" stroke-width="2"></rect>
+            <text x="38" y="294" font-size="14" font-weight="700" fill="#6C3483">5. 神経筋接合部・筋（偽性両側顔面麻痺）</text>
+            <text x="38" y="316" font-size="12.5" fill="#1F2D3D">・易疲労性・日内/日差変動・眼瞼下垂・複視・球症状の手がかり（MG）</text>
+            <text x="38" y="336" font-size="12.5" fill="#1F2D3D">・生下時からの非進行例では先天性筋無力症や先天性ミオパチーも検討</text>
+          </svg>
+          <p class="anat-cap">両側顔面筋の筋力低下は「顔面神経そのもの」だけでなく、橋・髄膜・末梢神経・神経筋接合部・筋まで評価範囲を広げます（<a href="#ref5">S05</a>, <a href="#ref15">S15</a>, <a href="#ref19">S19</a>）。</p>
+        </div>
+
+        <div class="anat-card">
+          <h3>図2：橋下部 軸位断（背側を上にした解剖模式図）</h3>
+          <svg viewBox="0 0 700 470" width="700" height="470" role="img" aria-label="橋下部横断面の顔面神経線維束走行模式図">
+            <defs>
+              <marker id="cn7-arrow-l" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4.2" markerHeight="4.2" orient="auto">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#b42318"></path>
+              </marker>
+              <marker id="cn7-arrow-r" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4.2" markerHeight="4.2" orient="auto">
+                <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563c9"></path>
+              </marker>
+            </defs>
+            <rect x="10" y="10" width="680" height="450" rx="20" fill="#f5f8fd" stroke="#c8d9f0" stroke-width="2"></rect>
+            <text x="350" y="46" text-anchor="middle" font-size="22" font-weight="800" fill="#17365d">橋下部 軸位断（第4脳室側が上＝背側）</text>
+            <text x="365" y="76" text-anchor="middle" font-size="17" font-weight="700" fill="#526782">背側（第4脳室側）</text>
+            <path d="M175 162 C175 102, 555 102, 555 162 C582 258, 542 392, 365 402 C188 392, 148 258, 175 162 Z" fill="#ffffff" stroke="#1f3a68" stroke-width="4"></path>
+            <polygon points="300,104 365,132 430,104" fill="#dbeafe" stroke="#2563c9" stroke-width="2"></polygon>
+            <line x1="365" y1="132" x2="365" y2="348" stroke="#94a3b8" stroke-width="2" stroke-dasharray="6 6"></line>
+            <path d="M 280 242 C 328 232, 352 212, 352 184 C 352 136, 279 136, 279 184 C 279 208, 222 232, 156 286" fill="none" stroke="#b42318" stroke-width="5.5" stroke-linecap="round" marker-end="url(#cn7-arrow-l)"></path>
+            <path d="M 450 242 C 402 232, 378 212, 378 184 C 378 136, 451 136, 451 184 C 451 208, 508 232, 574 286" fill="none" stroke="#2563c9" stroke-width="4.8" stroke-dasharray="8 5" stroke-linecap="round" marker-end="url(#cn7-arrow-r)"></path>
+            <circle cx="316" cy="188" r="22" fill="#147d6c"></circle>
+            <text x="316" y="194" text-anchor="middle" font-size="16" font-weight="800" fill="#ffffff">VI核</text>
+            <circle cx="414" cy="188" r="22" fill="#147d6c"></circle>
+            <text x="414" y="194" text-anchor="middle" font-size="16" font-weight="800" fill="#ffffff">VI核</text>
+            <rect x="500" y="66" width="174" height="32" rx="8" fill="#e7f5f1" stroke="#147d6c" stroke-width="1.5"></rect>
+            <text x="587" y="88" text-anchor="middle" font-size="15.5" font-weight="800" fill="#147d6c">外転神経核（背側）</text>
+            <line x1="542" y1="98" x2="430" y2="172" stroke="#147d6c" stroke-width="2"></line>
+            <circle cx="264" cy="258" r="24" fill="#2563c9"></circle>
+            <text x="264" y="265" text-anchor="middle" font-size="16" font-weight="800" fill="#ffffff">VII核</text>
+            <circle cx="466" cy="258" r="24" fill="#2563c9"></circle>
+            <text x="466" y="265" text-anchor="middle" font-size="16" font-weight="800" fill="#ffffff">VII核</text>
+            <circle cx="316" cy="168" r="34" fill="#ef4444" opacity="0.24" stroke="#b42318" stroke-width="3"></circle>
+            <rect x="24" y="96" width="124" height="34" rx="8" fill="#fee2e2" stroke="#b42318" stroke-width="1.5"></rect>
+            <text x="86" y="120" text-anchor="middle" font-size="17" font-weight="800" fill="#b42318">橋背側病変</text>
+            <line x1="148" y1="115" x2="283" y2="156" stroke="#b42318" stroke-width="2.5"></line>
+            <text x="20" y="318" font-size="16.5" font-weight="800" fill="#b42318">第VII線維束出口</text>
+            <text x="20" y="340" font-size="15" font-weight="700" fill="#b42318">（小脳橋角部へ）</text>
+            <ellipse cx="298" cy="332" rx="44" ry="19" fill="#e2e8f0" stroke="#475569" stroke-width="2"></ellipse>
+            <ellipse cx="432" cy="332" rx="44" ry="19" fill="#e2e8f0" stroke="#475569" stroke-width="2"></ellipse>
+            <text x="365" y="380" text-anchor="middle" font-size="17.5" font-weight="700" fill="#334155">錐体路（腹側）</text>
+            <text x="350" y="436" text-anchor="middle" font-size="17.5" font-weight="700" fill="#17365d">腹側（脳底動脈側）｜額を含む末梢性パターン＋水平注視障害</text>
+          </svg>
+          <p class="anat-cap">第VII神経線維束は同側第VI核の背側をループして出るため、橋下部病変でも額のしわ寄せ低下を含む末梢性パターンとなります（<a href="#ref8">S08</a>）。</p>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <section class="preset-bar" aria-label="典型症例プリセット">
+    <div class="preset-head">
+      <span class="preset-title">典型症例プリセット（クリックで所見を自動入力）</span>
+      <button type="button" class="btn-reset" id="btn-reset">すべてリセット</button>
+    </div>
+    <div class="preset-btns">
+      <button type="button" class="preset-btn" data-preset="gbs">1. GBS疑い（両側顔面＋四肢感覚異常）</button>
+      <button type="button" class="preset-btn" data-preset="lyme">2. ライム病疑い（マダニ曝露・髄液細胞増多）</button>
+      <button type="button" class="preset-btn" data-preset="sarcoid">3. 神経サルコイドーシス疑い（ぶどう膜炎・耳下腺）</button>
+      <button type="button" class="preset-btn" data-preset="pontine">4. 橋下部病変疑い（突発・水平注視障害）</button>
+      <button type="button" class="preset-btn" data-preset="mg">5. 重症筋無力症疑い（眼瞼下垂・日内変動）</button>
+      <button type="button" class="preset-btn" data-preset="meningeal">6. 髄膜播種／PCNSL疑い（がん既往・多発脳神経）</button>
+    </div>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="step-card" id="sec-step1">
+    <div class="step-head">
+      <span class="step-badge urgent">STEP 1｜最優先</span>
+      <h2 class="step-title">初期トリアージ・安全確認と角膜保護（原因確定より先に確認）</h2>
+    </div>
+    <div class="step-body">
+      <div class="opt-grid">
+        <label class="opt-item urgent-item">
+          <input type="checkbox" name="triage" value="bulbar_resp">
+          <span>
+            <span class="opt-label-main">球麻痺・呼吸予備能低下の徴候</span>
+            <span class="opt-label-sub">むせ・構音障害・嚥下困難・痰貯留、ひと息での数え上げ低下、VC ≤ 20 mL/kg または %VC &lt; 70%</span>
+          </span>
+        </label>
+        <label class="opt-item urgent-item">
+          <input type="checkbox" name="triage" value="autonomic">
+          <span>
+            <span class="opt-label-main">自律神経障害・循環変動</span>
+            <span class="opt-label-sub">高度の頻脈・徐脈、不整脈、急激な血圧変動、排尿障害の合併</span>
+          </span>
+        </label>
+        <label class="opt-item urgent-item">
+          <input type="checkbox" name="triage" value="brainstem_hyperacute">
+          <span>
+            <span class="opt-label-main">突発発症・急性脳幹徴候</span>
+            <span class="opt-label-sub">突発〜急激な進行、複視・水平注視障害・運動失調・四肢麻痺</span>
+          </span>
+        </label>
+        <label class="opt-item urgent-item">
+          <input type="checkbox" name="triage" value="high_trauma">
+          <span>
+            <span class="opt-label-main">高エネルギー外傷・頭部外傷</span>
+            <span class="opt-label-sub">交通事故・転落・頭部打撲後（ATLS全身救急・気道・頭蓋内出血評価優先）</span>
+          </span>
+        </label>
+        <label class="opt-item urgent-item">
+          <input type="checkbox" name="triage" value="lagophthalmos">
+          <span>
+            <span class="opt-label-main">閉眼不全（兎眼・Bell現象観察対象）</span>
+            <span class="opt-label-sub">検査結果を待たず初診当日から曝露性角膜症予防を開始</span>
+          </span>
+        </label>
+        <label class="opt-item urgent-item">
+          <input type="checkbox" name="triage" value="corneal_danger">
+          <span>
+            <span class="opt-label-main">眼痛・充血・角膜混濁／角膜知覚低下</span>
+            <span class="opt-label-sub">角膜潰瘍・穿孔による不可逆的視力障害リスク（速やかな眼科連携）</span>
+          </span>
+        </label>
+      </div>
+      <div class="feedback-stack" id="step1-feedback" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="step-card" id="sec-step2">
+    <div class="step-head">
+      <span class="step-badge">STEP 2</span>
+      <h2 class="step-title">発症様式・時間経過と顔面診察（左右対称による見落としに注意）</h2>
+    </div>
+    <div class="step-body">
+      <div class="sub-group">
+        <h3 class="sub-group-title">時間経過（1つ選択）</h3>
+        <div class="opt-grid">
+          <label class="opt-item">
+            <input type="radio" name="onset" value="unknown" checked>
+            <span>
+              <span class="opt-label-main">未評価・経過不明</span>
+              <span class="opt-label-sub">発症時期と左右の出現間隔を問診で確認</span>
+            </span>
+          </label>
+          <label class="opt-item">
+            <input type="radio" name="onset" value="hyperacute">
+            <span>
+              <span class="opt-label-main">突発〜数時間以内</span>
+              <span class="opt-label-sub">脳幹梗塞・出血、外傷・医原性を優先想起</span>
+            </span>
+          </label>
+          <label class="opt-item">
+            <input type="radio" name="onset" value="acute_sim">
+            <span>
+              <span class="opt-label-main">急性〜30日以内に両側発症（同時性）</span>
+              <span class="opt-label-sub">Molinari基準の同時性。GBS・ライム病・HIV・VZV・橋病変・サルコイドーシス等</span>
+            </span>
+          </label>
+          <label class="opt-item">
+            <input type="radio" name="onset" value="rec_alt">
+            <span>
+              <span class="opt-label-main">30日超の間隔で反復・交互性</span>
+              <span class="opt-label-sub">Molinari基準の反復交互性。サルコイドーシス・MG・特発性・腫瘍性再発など</span>
+            </span>
+          </label>
+          <label class="opt-item">
+            <input type="radio" name="onset" value="subacute_chr">
+            <span>
+              <span class="opt-label-main">亜急性（数日〜数週）〜慢性（4週以上）</span>
+              <span class="opt-label-sub">サルコイドーシス・髄膜播種・PCNSL・結核・真菌・MG等</span>
+            </span>
+          </label>
+          <label class="opt-item">
+            <input type="radio" name="onset" value="congenital">
+            <span>
+              <span class="opt-label-main">先天性・乳幼児期から非進行性</span>
+              <span class="opt-label-sub">Möbius症候群・先天性筋無力症・先天性ミオパチー等</span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="sub-group">
+        <h3 class="sub-group-title">顔面所見（該当項目を選択）</h3>
+        <div class="opt-grid">
+          <label class="opt-item">
+            <input type="checkbox" name="finding" value="lmn_pattern">
+            <span>
+              <span class="opt-label-main">額のしわ寄せ低下を含む末梢性パターン</span>
+              <span class="opt-label-sub">眉挙上・閉瞼（下方強膜露出）・頬膨らまし・微笑を各項目で確認（橋下部病変でも生じ得る）</span>
+            </span>
+          </label>
+          <label class="opt-item">
+            <input type="checkbox" name="finding" value="symmetric_mask">
+            <span>
+              <span class="opt-label-main">左右対称で仮面様・表情乏しい（左右差が目立たない）</span>
+              <span class="opt-label-sub">片側性より見落とされやすく、閉瞼不全や頬膨らましで必ず両側を検査</span>
+            </span>
+          </label>
+          <label class="opt-item">
+            <input type="checkbox" name="finding" value="fluctuation">
+            <span>
+              <span class="opt-label-main">易疲労性・日内変動または日差変動</span>
+              <span class="opt-label-sub">夕方・反復運動で悪化し、休息やアイスパックで改善（MGを強く示唆）</span>
+            </span>
+          </label>
+          <label class="opt-item">
+            <input type="checkbox" name="finding" value="synkinesis">
+            <span>
+              <span class="opt-label-main">病的共同運動・片側麻痺の既往あり</span>
+              <span class="opt-label-sub">過去の回復期顔面神経麻痺後の反復や非同時性発症を示唆</span>
+            </span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="step-card" id="sec-step3">
+    <div class="step-head">
+      <span class="step-badge">STEP 3</span>
+      <h2 class="step-title">顔面外の神経徴候・局在の手がかり</h2>
+    </div>
+    <div class="step-body">
+      <div class="opt-grid">
+        <label class="opt-item">
+          <input type="checkbox" name="finding" value="dtr_loss">
+          <span>
+            <span class="opt-label-main">四肢腱反射の低下〜消失</span>
+            <span class="opt-label-sub">GBSでは全経過の98%で低下/消失（ただし病初期は正常例あり）</span>
+          </span>
+        </label>
+        <label class="opt-item">
+          <input type="checkbox" name="finding" value="limb_paresthesia">
+          <span>
+            <span class="opt-label-main">四肢遠位の感覚異常（しびれ）・軽度四肢筋力低下</span>
+            <span class="opt-label-sub">GBSの局在型「両側顔面麻痺と四肢感覚異常型」の代表的組み合わせ</span>
+          </span>
+        </label>
+        <label class="opt-item">
+          <input type="checkbox" name="finding" value="gaze_abducens">
+          <span>
+            <span class="opt-label-main">水平注視障害・外転制限・複視</span>
+            <span class="opt-label-sub">橋下部第VI核近傍病変、重症筋無力症（MG）、Möbius症候群で重視</span>
+          </span>
+        </label>
+        <label class="opt-item">
+          <input type="checkbox" name="finding" value="ptosis">
+          <span>
+            <span class="opt-label-main">眼瞼下垂（片側・両側または左右交代性）</span>
+            <span class="opt-label-sub">本邦MG統計で初発時71.9%・診断時81.9%と最も多い随伴徴候</span>
+          </span>
+        </label>
+        <label class="opt-item">
+          <input type="checkbox" name="finding" value="other_cn">
+          <span>
+            <span class="opt-label-main">VII以外の脳神経障害（聴力低下・下位脳神経など）</span>
+            <span class="opt-label-sub">小脳橋角部・髄膜病変（サルコイドーシス・髄膜播種・慢性髄膜炎等）を示唆</span>
+          </span>
+        </label>
+        <label class="opt-item">
+          <input type="checkbox" name="finding" value="ataxia_longtract">
+          <span>
+            <span class="opt-label-main">運動失調・錐体路徴候（病的反射など）</span>
+            <span class="opt-label-sub">橋・脳幹実質障害やフィッシャー症候群関連スペクトラムを考慮</span>
+          </span>
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 4 -->
+  <section class="step-card" id="sec-step4">
+    <div class="step-head">
+      <span class="step-badge">STEP 4</span>
+      <h2 class="step-title">全身所見・耳・眼・曝露歴・既往歴</h2>
+    </div>
+    <div class="step-body">
+      <div class="opt-grid">
+        <label class="opt-item">
+          <input type="checkbox" name="finding" value="ear_vesicle">
+          <span>
+            <span class="opt-label-main">耳痛・耳介/外耳道・口腔・頭頸部の水疱</span>
+            <span class="opt-label-sub">VZV水疱は耳76%・口腔13%・頭頸部11%（遅発出現やZSH無疱疹性にも注意）</span>
+          </span>
+        </label>
+        <label class="opt-item">
+          <input type="checkbox" name="finding" value="uveitis_parotid">
+          <span>
+            <span class="opt-label-main">前部ぶどう膜炎・耳下腺腫脹・微熱／BHL・皮疹</span>
+            <span class="opt-label-sub">Heerfordt症候群を含む神経サルコイドーシスを強く疑う所見</span>
+          </span>
+        </label>
+        <label class="opt-item">
+          <input type="checkbox" name="finding" value="tick_epidemic">
+          <span>
+            <span class="opt-label-main">マダニ曝露歴・流行地（北海道・欧米等）滞在</span>
+            <span class="opt-label-sub">国内ライム病感染例の過半数が北海道。遊走性紅斑や髄膜・神経根症状も確認</span>
+          </span>
+        </label>
+        <label class="opt-item">
+          <input type="checkbox" name="finding" value="hiv_risk">
+          <span>
+            <span class="opt-label-main">HIV関連徴候（発熱・無菌性髄膜炎・リンパ節腫脹・リスク曝露）</span>
+            <span class="opt-label-sub">急性HIV血清陽転に伴う無菌性髄膜炎が両側顔面麻痺で初発し得るためHIV検査が重要</span>
+          </span>
+        </label>
+        <label class="opt-item">
+          <input type="checkbox" name="finding" value="tb_fungal_risk">
+          <span>
+            <span class="opt-label-main">結核・真菌（クリプトコッカス等）リスク・免疫不全</span>
+            <span class="opt-label-sub">免疫正常者にも生じるクリプトコッカス脳底部髄膜炎や結核性髄膜炎を含め検索</span>
+          </span>
+        </label>
+        <label class="opt-item">
+          <input type="checkbox" name="finding" value="malignancy_hx">
+          <span>
+            <span class="opt-label-main">悪性腫瘍の既往・進行性体重減少・発熱</span>
+            <span class="opt-label-sub">固形癌髄膜播種（特に乳癌・肺癌・悪性黒色腫等）およびPCNSLの検索必須</span>
+          </span>
+        </label>
+        <label class="opt-item">
+          <input type="checkbox" name="finding" value="trauma_iatrogenic">
+          <span>
+            <span class="opt-label-main">側頭骨外傷疑い／耳科・耳下腺・顎矯正・歯科麻酔後</span>
+            <span class="opt-label-sub">外傷性側頭骨骨折や各種手術・局所麻酔後の医原性損傷を病歴で確認</span>
+          </span>
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 5 -->
+  <section class="step-card" id="sec-step5">
+    <div class="step-head">
+      <span class="step-badge">STEP 5</span>
+      <h2 class="step-title">検査所見・検査ピットフォールと治療前確認</h2>
+    </div>
+    <div class="step-body">
+      <div class="opt-grid">
+        <label class="opt-item">
+          <input type="checkbox" name="finding" value="csf_acd">
+          <span>
+            <span class="opt-label-main">髄液 蛋白細胞解離（または発症初期の蛋白正常）</span>
+            <span class="opt-label-sub">GBSでは発症3日以内の蛋白上昇は52%にとどまり（約半数は正常）、発症第1週でも30〜50%は正常範囲であり、初回正常で除外できない</span>
+          </span>
+        </label>
+        <label class="opt-item">
+          <input type="checkbox" name="finding" value="csf_pleo_10_50">
+          <span>
+            <span class="opt-label-main">髄液 細胞数 10〜50 /μL（軽度上昇）</span>
+            <span class="opt-label-sub">GBSでも認め得るが、ライム病・HIV・VZV等の感染性多発神経根炎を並行鑑別</span>
+          </span>
+        </label>
+        <label class="opt-item">
+          <input type="checkbox" name="finding" value="csf_pleo_gt50">
+          <span>
+            <span class="opt-label-main">髄液 細胞数 &gt; 50 /μL（明らかな細胞増多）</span>
+            <span class="opt-label-sub">GBS以外の髄膜悪性腫瘍・感染性髄膜炎・神経サルコイドーシス等の炎症を強く疑う</span>
+          </span>
+        </label>
+        <label class="opt-item">
+          <input type="checkbox" name="finding" value="ncs_normal_early">
+          <span>
+            <span class="opt-label-main">初回NCS正常またはF波低下のみ</span>
+            <span class="opt-label-sub">発症初期は正常例があり、臨床疑いが強ければ数日後に再検して脱髄・軸索障害を評価</span>
+          </span>
+        </label>
+        <label class="opt-item">
+          <input type="checkbox" name="finding" value="mri_brainstem">
+          <span>
+            <span class="opt-label-main">脳MRIで橋下部背側・脳幹病変あり</span>
+            <span class="opt-label-sub">DWI含む撮像で脳幹梗塞・出血・脱髄・占拠性病変を確認</span>
+          </span>
+        </label>
+        <label class="opt-item">
+          <input type="checkbox" name="finding" value="mri_meningeal">
+          <span>
+            <span class="opt-label-main">脳・脊髄造影MRIで髄膜・脳神経造影効果</span>
+            <span class="opt-label-sub">神経サルコイドーシス、髄膜播種、PCNSL、感染性髄膜炎の精査へ</span>
+          </span>
+        </label>
+        <label class="opt-item">
+          <input type="checkbox" name="finding" value="ct_temporal">
+          <span>
+            <span class="opt-label-main">高分解能側頭骨CTで顔面神経管の骨折線</span>
+            <span class="opt-label-sub">外傷性両側顔面麻痺の確定評価</span>
+          </span>
+        </label>
+        <label class="opt-item">
+          <input type="checkbox" name="finding" value="achr_musk">
+          <span>
+            <span class="opt-label-main">抗AChR/MuSK抗体・RNS・SFEMG・アイスパック陽性</span>
+            <span class="opt-label-sub">重症筋無力症または神経筋接合部障害の裏付け</span>
+          </span>
+        </label>
+        <label class="opt-item">
+          <input type="checkbox" name="finding" value="lyme_paired">
+          <span>
+            <span class="opt-label-main">血清ライム抗体または同時採取CSF/血清抗体指数陽性</span>
+            <span class="opt-label-sub">単独CSF抗体・ルーチンPCR/培養ではなく血清抗体およびペア抗体指数で評価</span>
+          </span>
+        </label>
+        <label class="opt-item urgent-item">
+          <input type="checkbox" name="triage" value="pre_steroid_check">
+          <span>
+            <span class="opt-label-main">原因確定前の経験的全身ステロイド投与を検討中</span>
+            <span class="opt-label-sub">GBS無効・PCNSL生検前診断困難・ライム病推奨なし等の注意点を表示</span>
+          </span>
+        </label>
+      </div>
+      <div class="feedback-stack" id="step5-feedback" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- DIFFERENTIAL RESULTS -->
+  <section aria-label="鑑別疾患リスト">
+    <div class="result-header">
+      <h2>系統的鑑別疾患（11疾患・整合所見と検査ピットフォール）</h2>
+      <span class="selected-summary-pill" id="selected-count-pill">選択中の所見：0項目</span>
+    </div>
+    <div class="ddx-grid" id="ddx-list"></div>
+  </section>
+
+  <!-- SUMMARY EXPORT -->
+  <section class="export-card" aria-label="カルテ記載用サマリー">
+    <div class="export-head">
+      <h2>評価サマリー（カルテ・紹介状記載補助）</h2>
+      <div class="export-actions">
+        <button type="button" class="btn-primary" id="btn-copy">サマリーをコピー</button>
+        <button type="button" class="btn-secondary" id="btn-print">印刷 / PDF保存</button>
+        <span id="copy-status" aria-live="polite"></span>
+      </div>
+    </div>
+    <textarea id="summary-text" readonly aria-label="評価サマリー出力欄"></textarea>
+  </section>
+
+  <!-- REFERENCES -->
+  <section class="refs-card" aria-label="参考文献">
+    <h2>参考文献（一次資料・ガイドライン）</h2>
+    <ol class="refs">
+      <li id="ref1">[S01] 日本神経学会 監修「ギラン・バレー症候群，フィッシャー症候群診療ガイドライン2024」（南江堂, 2024）</li>
+      <li id="ref2">[S02] Leonhard SE, Mandarakas MR, Gondim FAA, et al. Diagnosis and management of Guillain-Barré syndrome in ten steps. Nat Rev Neurol. 2019;15(11):671-683. <a href="https://pubmed.ncbi.nlm.nih.gov/31541214/" target="_blank" rel="noopener">PMID:31541214</a></li>
+      <li id="ref3">[S03] Lantos PM, Rumbaugh J, Bockenstedt LK, et al. Clinical Practice Guidelines by the Infectious Diseases Society of America (IDSA), American Academy of Neurology (AAN), and American College of Rheumatology (ACR): 2020 Guidelines for the Prevention, Diagnosis and Treatment of Lyme Disease. Clin Infect Dis. 2021;72(1):e1-e48. <a href="https://pubmed.ncbi.nlm.nih.gov/33417672/" target="_blank" rel="noopener">PMID:33417672</a></li>
+      <li id="ref4">[S04] 国立健康危機管理研究機構（JIHS）「感染症法に基づくライム病の届出状況、2006年5月1日〜2024年3月31日」 <a href="https://id-info.jihs.go.jp/surveillance/idss/target-diseases/lyme-disease/200605-202403/index.html" target="_blank" rel="noopener">https://id-info.jihs.go.jp/surveillance/idss/target-diseases/lyme-disease/200605-202403/index.html</a></li>
+      <li id="ref5">[S05] Yang A, Dalal V. Bilateral Facial Palsy: A Clinical Approach. Cureus. 2021;13(4):e14671. <a href="https://pubmed.ncbi.nlm.nih.gov/34079670/" target="_blank" rel="noopener">PMID:34079670</a></li>
+      <li id="ref6">[S06] Bradshaw MJ, Pawate S, Koth LL, Cho TA, Gelfand JM. Neurosarcoidosis: Pathophysiology, Diagnosis, and Treatment. Neurol Neuroimmunol Neuroinflamm. 2021;8(6):e1084. <a href="https://pubmed.ncbi.nlm.nih.gov/34607912/" target="_blank" rel="noopener">PMID:34607912</a></li>
+      <li id="ref7">[S07] Le Rhun E, Weller M, van den Bent M, et al. Leptomeningeal metastasis from solid tumours: EANO-ESMO Clinical Practice Guideline for diagnosis, treatment and follow-up. ESMO Open. 2023;8(5):101624. <a href="https://pubmed.ncbi.nlm.nih.gov/37863528/" target="_blank" rel="noopener">PMID:37863528</a></li>
+      <li id="ref8">[S08] Min YG, et al. Patterns of pontine strokes mimicking Bell's palsy. BMC Neurol. 2019;19(1):208. <a href="https://pubmed.ncbi.nlm.nih.gov/31455262/" target="_blank" rel="noopener">PMID:31455262</a></li>
+      <li id="ref9">[S09] 藤原 崇志 ほか「顔面神経麻痺診療ガイドライン2023年版におけるBell麻痺（特発性顔面神経麻痺）に関する概要」日本耳鼻咽喉科頭頸部外科学会会報. 2025;128(9):1151-1155. <a href="https://www.jstage.jst.go.jp/article/jibiinkotokeibu/128/9/128_1151/_pdf" target="_blank" rel="noopener">J-STAGE PDF</a></li>
+      <li id="ref10">[S10] Lin H, et al. Bilateral facial palsy caused by HIV infection: A case report and literature review. Medicine (Baltimore). 2023;102(11):e33263. <a href="https://pubmed.ncbi.nlm.nih.gov/36930128/" target="_blank" rel="noopener">PMID:36930128</a></li>
+      <li id="ref11">[S11] Baugh RF, et al. Clinical practice guideline: Bell's palsy. Otolaryngol Head Neck Surg. 2013;149(3 Suppl):S1-S27. <a href="https://pubmed.ncbi.nlm.nih.gov/24189771/" target="_blank" rel="noopener">PMID:24189771</a></li>
+      <li id="ref12">[S12] Molinari G, et al. Acquired bilateral facial palsy: a systematic review on aetiologies and management. J Neurol. 2023;270(11):5303-5312. <a href="https://pubmed.ncbi.nlm.nih.gov/37523065/" target="_blank" rel="noopener">PMID:37523065</a></li>
+      <li id="ref13">[S13] Mathenge W. Emergency management: exposure keratopathy. Community Eye Health. 2018;31(103):67. <a href="https://pubmed.ncbi.nlm.nih.gov/30487689/" target="_blank" rel="noopener">PMID:30487689</a></li>
+      <li id="ref14">[S14] Ferreri AJM, et al. Primary central nervous system lymphomas: EHA-ESMO Clinical Practice Guideline for diagnosis, treatment and follow-up. Hemasphere. 2024;8(6):e89. <a href="https://pubmed.ncbi.nlm.nih.gov/38836097/" target="_blank" rel="noopener">PMID:38836097</a></li>
+      <li id="ref15">[S15] Webb BD, et al. A framework for the evaluation of patients with congenital facial weakness. Orphanet J Rare Dis. 2021;16(1):158. <a href="https://pubmed.ncbi.nlm.nih.gov/33827624/" target="_blank" rel="noopener">PMID:33827624</a></li>
+      <li id="ref16">[S16] Pauna HF, et al. Task force of the Brazilian Society of Otology - evaluation and management of peripheral facial palsy. Braz J Otorhinolaryngol. 2024;90(3):101374. <a href="https://pubmed.ncbi.nlm.nih.gov/38377729/" target="_blank" rel="noopener">PMID:38377729</a></li>
+      <li id="ref17">[S17] Klein RS. Subacute and Chronic Meningitis. Merck Manual Professional Version. <a href="https://www.merckmanuals.com/professional/neurologic-disorders/meningitis/subacute-and-chronic-meningitis" target="_blank" rel="noopener">Merck Manual</a></li>
+      <li id="ref18">[S18] Ghiasi S, et al. Bilateral Facial Paralysis Caused by Temporal Bone Fracture: A Case Report. Arch Trauma Res. 2016;5(2):e26892. <a href="https://pubmed.ncbi.nlm.nih.gov/27679786/" target="_blank" rel="noopener">PMID:27679786</a></li>
+      <li id="ref19">[S19] 日本神経学会 監修「重症筋無力症／ランバート・イートン筋無力症候群診療ガイドライン2022」（南江堂, 2022）</li>
+    </ol>
+  </section>
+
+  <footer class="tool-footer">
+    医知創造ラボ｜臨床評価ツール（オフライン対応・ブラウザ内完結）
+  </footer>
+</main>
+
+<script>
+(function(){
+  'use strict';
+
+  var ONSET_LABELS = {
+    unknown: '未評価・経過不明',
+    hyperacute: '突発〜数時間以内',
+    acute_sim: '急性〜30日以内に両側発症（同時性）',
+    rec_alt: '30日超の間隔で反復・交互性',
+    subacute_chr: '亜急性（数日〜数週）〜慢性（4週以上）',
+    congenital: '先天性・乳幼児期から非進行性'
+  };
+
+  var FEATURE_LABELS = {
+    bulbar_resp: '球麻痺・呼吸予備能低下',
+    autonomic: '自律神経障害・循環変動',
+    brainstem_hyperacute: '突発発症・急性脳幹徴候',
+    high_trauma: '高エネルギー・頭部外傷',
+    lagophthalmos: '閉眼不全（兎眼）',
+    corneal_danger: '眼痛・充血・角膜混濁/知覚低下',
+    pre_steroid_check: '原因確定前の経験的ステロイド検討',
+    lmn_pattern: '額を含む末梢性パターン',
+    symmetric_mask: '左右対称の仮面様顔貌',
+    fluctuation: '易疲労性・日内/日差変動',
+    synkinesis: '病的共同運動・先行麻痺歴',
+    dtr_loss: '四肢腱反射低下〜消失',
+    limb_paresthesia: '四肢遠位感覚異常/軽度脱力',
+    gaze_abducens: '水平注視障害・外転制限・複視',
+    ptosis: '眼瞼下垂',
+    other_cn: 'VII以外の脳神経障害',
+    ataxia_longtract: '運動失調・錐体路徴候',
+    ear_vesicle: '耳痛・耳介/口腔/頭頸部水疱',
+    uveitis_parotid: '前部ぶどう膜炎・耳下腺腫脹・微熱',
+    tick_epidemic: 'マダニ曝露・流行地滞在',
+    hiv_risk: 'HIV関連徴候・リスク',
+    tb_fungal_risk: '結核・真菌リスク/免疫不全',
+    malignancy_hx: '悪性腫瘍既往・体重減少',
+    trauma_iatrogenic: '側頭骨外傷・手術/麻酔後',
+    csf_acd: '髄液 蛋白細胞解離（または初期正常）',
+    csf_pleo_10_50: '髄液細胞 10〜50 /μL',
+    csf_pleo_gt50: '髄液細胞 > 50 /μL',
+    ncs_normal_early: '初回NCS正常/F波低下のみ',
+    mri_brainstem: '脳MRI 橋下部/脳幹病変',
+    mri_meningeal: '造影MRI 髄膜/脳神経造影効果',
+    ct_temporal: '側頭骨CT 顔面神経管骨折線',
+    achr_musk: '抗AChR/MuSK・RNS/SFEMG陽性',
+    lyme_paired: '血清ライム抗体/ペアCSF抗体指数陽性'
+  };
+
+  var DISEASES = [
+    {
+      id: 'gbs',
+      name: 'ギラン・バレー症候群（GBS／両側顔面麻痺と四肢感覚異常型を含む）',
+      category: '免疫介在性・末梢神経',
+      triggers: ['bulbar_resp', 'autonomic', 'lmn_pattern', 'dtr_loss', 'limb_paresthesia', 'ataxia_longtract', 'csf_acd', 'csf_pleo_10_50', 'ncs_normal_early'],
+      onsets: ['acute_sim'],
+      keyClues: 'regional variant「両側顔面麻痺と四肢感覚異常型」があり、四肢の筋力低下が軽微でも重要な鑑別です。DTR低下/消失は全経過の98%ですが病初期には正常な例があります。',
+      workup: '呼吸機能（VC・%VC・MIP・MEP）と自律神経の連続監視を優先し、初回NCSが正常でも数日後に再検します。治療はIVIGまたは血漿浄化療法を検討します。',
+      pitfall: '髄液の蛋白細胞解離は全経過で70%（846/1,231例）にみられますが、発症3日以内の蛋白上昇は52%（265/506例）にとどまり（約半数は正常）、発症第1週でも30〜50%は正常です。呼吸困難感が乏しくても第1週以内に最大22%が人工呼吸管理を要します。ステロイド単独療法は無効（経口ステロイドは転帰悪化の報告あり）です。',
+      refs: [1, 2]
+    },
+    {
+      id: 'lyme',
+      name: 'ライム病（神経ボレリア症）',
+      category: '感染症・スピロヘータ',
+      triggers: ['lmn_pattern', 'other_cn', 'tick_epidemic', 'csf_pleo_10_50', 'csf_pleo_gt50', 'lyme_paired', 'mri_meningeal'],
+      onsets: ['acute_sim', 'subacute_chr'],
+      keyClues: '流行地域での妥当なマダニ曝露歴と適合する神経症候が手がかりです。国内届出265例（2006〜2024年、国内感染216例）のうち2012年以降は毎年国内例の半数以上が北海道から報告され、欧米への渡航後感染もあります。',
+      workup: '診断には血清抗体検査が強く推奨されます。CNS関与を疑い髄液を採取する場合は、同時採取したCSF/血清抗体指数を評価します（単独の髄液抗体測定やルーチンPCR・培養は非推奨）。',
+      pitfall: '適切な抗菌薬治療が基本であり、抗菌薬へのステロイド上乗せを支持する根拠は十分ではありません（知識の空白）。',
+      refs: [3, 4]
+    },
+    {
+      id: 'sarcoid',
+      name: '神経サルコイドーシス（Heerfordt症候群含む）',
+      category: '肉芽腫性・炎症性疾患',
+      triggers: ['lmn_pattern', 'other_cn', 'uveitis_parotid', 'csf_pleo_10_50', 'csf_pleo_gt50', 'mri_meningeal'],
+      onsets: ['acute_sim', 'rec_alt', 'subacute_chr'],
+      keyClues: '神経サルコイドーシスに伴う顔面神経麻痺の30〜40%が両側性です。耳下腺腫脹・顔面神経麻痺・前部ぶどう膜炎・微熱をそろえるHeerfordt症候群にも注意します。',
+      workup: '頭部造影MRI・胸部画像・眼科評価を行い、2018年診断基準に基づき中枢または他臓器（リンパ節・肺・皮膚・唾液腺など）からの組織生検と感染症・悪性腫瘍の除外を組み合わせます。',
+      pitfall: '血清ACE（感度62%・特異度76%）やsIL-2R（感度88%・特異度85%）の測定単独では診断確定にも除外にも使えません。',
+      refs: [6]
+    },
+    {
+      id: 'meningeal_ca',
+      name: '髄膜播種・髄膜がん腫症（固形癌）',
+      category: '腫瘍性・髄膜病変',
+      triggers: ['lmn_pattern', 'other_cn', 'malignancy_hx', 'csf_pleo_gt50', 'mri_meningeal'],
+      onsets: ['subacute_chr', 'acute_sim'],
+      keyClues: '悪性腫瘍の既往、複数脳神経障害、髄液細胞数 > 50 /μL、亜急性〜慢性の経過では髄膜播種を見落とさないことが重要です。',
+      workup: '脳および脊髄全体の造影＋非造影MRIを実施し、髄液細胞診・生化学検査を計画します。',
+      pitfall: '髄液細胞診は採取量が少ないと偽陰性になりやすいため、理想は10 mL超（最低5 mL以上）を採取し30分以内に処理します。初回陰性でも臨床疑いが残る場合は条件を最適化して再穿刺します。',
+      refs: [7, 17]
+    },
+    {
+      id: 'pcnsl',
+      name: '中枢神経原発悪性リンパ腫（PCNSL）',
+      category: '腫瘍性・血液腫瘍',
+      triggers: ['lmn_pattern', 'other_cn', 'malignancy_hx', 'csf_pleo_gt50', 'mri_meningeal', 'mri_brainstem'],
+      onsets: ['subacute_chr', 'acute_sim'],
+      keyClues: '亜急性進行性の脳神経麻痺や脳幹・髄膜病変を呈することがあり、髄液細胞増多や造影効果の鑑別に必ず含めます。',
+      workup: '画像で腫瘤や広範な浮腫がある場合は腰椎穿刺前の安全性を確認します。髄液検査でPCNSLの診断に至る例は20%未満であり、通常細胞診単独では髄液浸潤を見逃しやすいためフローサイトメトリー・MYD88 L265P変異・IL-10等を組み合わせ、脳生検の適応を検討します。',
+      pitfall: '組織生検を予定する場合、生検前のステロイド投与はリンパ腫細胞を退縮させて確定診断を困難にするため原則回避します。',
+      refs: [14]
+    },
+    {
+      id: 'infection_other',
+      name: 'HIV急性感染・結核・クリプトコッカス・帯状疱疹（VZV/ZSH）',
+      category: '感染症・ウイルス/抗酸菌/真菌',
+      triggers: ['lmn_pattern', 'other_cn', 'ear_vesicle', 'hiv_risk', 'tb_fungal_risk', 'csf_pleo_10_50', 'csf_pleo_gt50', 'mri_meningeal'],
+      onsets: ['acute_sim', 'subacute_chr'],
+      keyClues: '両側顔面麻痺がHIV関連無菌性髄膜炎の初発契機となる例があり、原因不明例でのHIV血清検査は重要です。VZV水疱は耳76%・口腔13%・頭頸部他11%に分布しますが遅発や無疱疹性（ZSH）があります。',
+      workup: 'HIV抗原/抗体検査、クリプトコッカス抗原・墨汁染色・真菌培養、抗酸菌検査、VZV評価（耳鏡・口腔診察・血清/髄液）を曝露歴と免疫状態に応じて選択します。',
+      pitfall: 'クリプトコッカスは免疫正常者でも脳底部髄膜炎を起こすことがあります。VZVでは初診時に皮疹がみられず後日出現する場合があります。',
+      refs: [10, 16, 17]
+    },
+    {
+      id: 'pons',
+      name: '橋下部脳幹病変（梗塞・出血・脱髄・占拠性病変）',
+      category: '中枢性・脳幹病変',
+      triggers: ['brainstem_hyperacute', 'lmn_pattern', 'gaze_abducens', 'ataxia_longtract', 'mri_brainstem'],
+      onsets: ['hyperacute', 'acute_sim'],
+      keyClues: '第VII神経線維束が同側第VI核の背側をループして小脳橋角部へ出るため、橋下部病変であっても「額のしわ寄せ低下を含む末梢性パターン」をとります。',
+      workup: '突発発症、水平注視障害・外転制限、運動失調、錐体路徴候のいずれかがあれば直ちに頭部MRI（DWI含む）を実施します。',
+      pitfall: '「額のしわが消えている＝末梢神経障害（頭蓋外/神経根）であり中枢性ではない」と誤認しないことが最大の注意点です。',
+      refs: [8]
+    },
+    {
+      id: 'mg',
+      name: '重症筋無力症（MG）',
+      category: '神経筋接合部疾患',
+      triggers: ['bulbar_resp', 'symmetric_mask', 'fluctuation', 'gaze_abducens', 'ptosis', 'achr_musk'],
+      onsets: ['subacute_chr', 'rec_alt', 'acute_sim'],
+      keyClues: '本邦統計では初発時の顔面筋力低下は5.3%（診断時13.9%）ですが、眼瞼下垂（初発71.9%・診断時81.9%）、複視（初発47.3%・診断時59.1%）、球症状（初発14.9%・診断時27.6%）の随伴と日内変動・易疲労性が決定的な手がかりです。',
+      workup: '眼瞼易疲労性試験・アイスパック試験、抗AChR抗体・抗MuSK抗体、反復神経刺激検査（RNS）・単線維筋電図（SFEMG）、胸部CTを行います。',
+      pitfall: '球麻痺や呼吸筋脱力が急速に進行すると筋無力症クリーゼに至るため、初期の気道・換気評価が不可欠です。',
+      refs: [19]
+    },
+    {
+      id: 'trauma',
+      name: '両側側頭骨骨折・医原性顔面神経損傷',
+      category: '外傷・医原性',
+      triggers: ['high_trauma', 'lmn_pattern', 'symmetric_mask', 'trauma_iatrogenic', 'ct_temporal'],
+      onsets: ['hyperacute', 'acute_sim'],
+      keyClues: '両側側頭骨骨折による両側顔面神経麻痺は左右対称の仮面様顔貌を呈するため、多発外傷の救急対応の中で見落とされやすい病態です。耳科・耳下腺・顎矯正手術や歯科麻酔後の医原性も問診します。',
+      workup: '高エネルギー外傷ではまずATLSに沿った全身蘇生・気道・頭蓋内出血評価を優先し、全身安定後に高分解能側頭骨CTで顔面神経管の骨折線を確認します。',
+      pitfall: '患者が会話や表情を示しにくくても「両側性のため左右差が出ない」点を意識し、閉瞼と口角・前頭筋の収縮を個別に確認します。',
+      refs: [16, 18]
+    },
+    {
+      id: 'congenital',
+      name: '先天性両側顔面麻痺（Möbius症候群・先天性筋無力症/ミオパチー等）',
+      category: '先天性・発達性/遺伝性',
+      triggers: ['lmn_pattern', 'symmetric_mask', 'gaze_abducens', 'ptosis'],
+      onsets: ['congenital'],
+      keyClues: '生下時または乳幼児期から続く非進行性の両側顔面麻痺で鑑別します。両側外転神経麻痺（水平外転制限）を合併する代表例がMöbius症候群です。',
+      workup: '発症時期の写真・母子手帳による経過確認、眼球運動・嚥下機能・筋力・CK・電気生理・遺伝学的評価を検討します。',
+      pitfall: '成人期まで「無表情」として見逃されていた軽症の先天性ミオパチーや先天性筋無力症候群が急性増悪で気づかれる場合もあるため、過去の写真を必ず確認します。',
+      refs: [15]
+    },
+    {
+      id: 'bell_bilateral',
+      name: '両側特発性ベル麻痺（厳密な除外診断）',
+      category: '特発性（除外診断）',
+      triggers: ['lmn_pattern', 'synkinesis'],
+      onsets: ['acute_sim', 'rec_alt'],
+      keyClues: '片側顔面神経麻痺では50%超を占めますが、両側顔面神経麻痺では20%未満にとどまるため、決して最初から仮定せず厳密な除外診断と位置づけます。',
+      workup: 'GBS・ライム病・HIV・VZV・髄膜病変・サルコイドーシス・橋病変・MG・外傷を系統的に除外し、特発性ベル麻痺と確定できた場合の急性期（発症72時間以内）には経口ステロイドを検討します（抗ウイルス薬単独は非推奨、閉眼不全の眼保護は強く推奨）。',
+      pitfall: '原因精査前の「とりあえずのベル麻痺扱い」は、GBSの呼吸不全やPCNSLの生検診断不能など重大な不利益につながります。',
+      refs: [5, 9, 11]
+    }
+  ];
+
+  var PRESETS = {
+    gbs: {
+      triage: ['bulbar_resp', 'lagophthalmos'],
+      onset: 'acute_sim',
+      findings: ['lmn_pattern', 'dtr_loss', 'limb_paresthesia', 'csf_acd', 'ncs_normal_early']
+    },
+    lyme: {
+      triage: ['lagophthalmos'],
+      onset: 'acute_sim',
+      findings: ['lmn_pattern', 'other_cn', 'tick_epidemic', 'csf_pleo_10_50', 'lyme_paired']
+    },
+    sarcoid: {
+      triage: [],
+      onset: 'subacute_chr',
+      findings: ['lmn_pattern', 'other_cn', 'uveitis_parotid', 'mri_meningeal', 'csf_pleo_10_50']
+    },
+    pontine: {
+      triage: ['brainstem_hyperacute', 'lagophthalmos'],
+      onset: 'hyperacute',
+      findings: ['lmn_pattern', 'gaze_abducens', 'ataxia_longtract', 'mri_brainstem']
+    },
+    mg: {
+      triage: ['bulbar_resp'],
+      onset: 'subacute_chr',
+      findings: ['symmetric_mask', 'fluctuation', 'ptosis', 'gaze_abducens', 'achr_musk']
+    },
+    meningeal: {
+      triage: ['pre_steroid_check'],
+      onset: 'subacute_chr',
+      findings: ['lmn_pattern', 'other_cn', 'malignancy_hx', 'csf_pleo_gt50', 'mri_meningeal']
+    }
+  };
+
+  function getCheckedValues(name) {
+    var nodes = document.querySelectorAll('input[name="' + name + '"]:checked');
+    var out = [];
+    for (var i = 0; i < nodes.length; i++) {
+      out.push(nodes[i].value);
+    }
+    return out;
+  }
+
+  function getSelectedOnset() {
+    var node = document.querySelector('input[name="onset"]:checked');
+    return node ? node.value : 'unknown';
+  }
+
+  function arrayContains(arr, val) {
+    for (var i = 0; i < arr.length; i++) {
+      if (arr[i] === val) return true;
+    }
+    return false;
+  }
+
+  function updateCheckedClasses() {
+    var items = document.querySelectorAll('.opt-item');
+    for (var i = 0; i < items.length; i++) {
+      var inp = items[i].querySelector('input');
+      if (inp && inp.checked) {
+        items[i].className = items[i].className.indexOf('checked') === -1 ? items[i].className + ' checked' : items[i].className;
+      } else {
+        items[i].className = items[i].className.replace(/\s*checked\b/g, '');
+      }
+    }
+  }
+
+  function renderStep1Feedback(triage) {
+    var box = document.getElementById('step1-feedback');
+    var html = [];
+
+    if (arrayContains(triage, 'bulbar_resp')) {
+      html.push(
+        '<div class="fb-banner danger">' +
+        '<strong>気道・球麻痺・呼吸予備能のアラート（最優先対応）</strong>' +
+        '呼吸困難感が乏しくても呼吸不全へ急速に移行し得ます（GBSでは第1週以内に最大22%が人工呼吸管理）。SpO2のみに過度に依存せず、VC ≤ 20 mL/kg、%VC &lt; 70%（30%低下）、MIP &lt; 30 cmH2O、MEP &lt; 40 cmH2O、重度球麻痺/誤嚥があれば気道確保・挿管を考慮してください（SBC &lt; 20は日本語版未検証の補助指標）。MGクリーゼも並行して警戒します（S01, S02, S19）。' +
+        '</div>'
+      );
+    }
+    if (arrayContains(triage, 'autonomic')) {
+      html.push(
+        '<div class="fb-banner danger">' +
+        '<strong>自律神経障害・循環動態モニタリング</strong>' +
+        '高度の頻脈・徐脈、不整脈、急激な血圧変動はGBS等の重篤な自律神経障害を示唆するため、連続心電図・血圧モニタリングが必要です（S01, S02）。' +
+        '</div>'
+      );
+    }
+    if (arrayContains(triage, 'brainstem_hyperacute')) {
+      html.push(
+        '<div class="fb-banner danger">' +
+        '<strong>緊急脳MRI（DWI含む）を優先</strong>' +
+        '突発発症や水平注視障害・運動失調・四肢麻痺を伴う場合、脳幹（橋下部）梗塞・出血などの緊急中枢性病変を即座に評価します。額のしわ寄せが低下していても橋下部病変は除外できません（S08）。' +
+        '</div>'
+      );
+    }
+    if (arrayContains(triage, 'high_trauma')) {
+      html.push(
+        '<div class="fb-banner warn">' +
+        '<strong>ATLSに基づく外傷初期診療を優先</strong>' +
+        '高エネルギー外傷では気道・呼吸・循環および頭蓋内出血の評価・安定化を最優先とし、その後に高分解能側頭骨CTで顔面神経管骨折線を確認します（S16, S18）。' +
+        '</div>'
+      );
+    }
+    if (arrayContains(triage, 'lagophthalmos') || arrayContains(triage, 'corneal_danger')) {
+      var eyeClass = arrayContains(triage, 'corneal_danger') ? 'danger' : 'eye';
+      var eyeExtra = arrayContains(triage, 'corneal_danger')
+        ? '眼痛・充血・角膜混濁や角膜知覚低下は角膜潰瘍・穿孔による不可逆的視力障害（数時間〜数日）のリスクが高いため、速やかに眼科へコンサルトしてください。'
+        : '検査結果を待たず、初診当日から角膜乾燥予防（日中の頻回防腐剤フリー潤滑点眼＋夜間の眼軟膏および閉瞼保持）を開始し、フルオレセイン染色・角膜知覚を確認してください。';
+      html.push(
+        '<div class="fb-banner ' + eyeClass + '">' +
+        '<strong>閉眼不全に対する曝露性角膜症予防（即日開始）</strong>' +
+        eyeExtra + '（S11, S13）' +
+        '</div>'
+      );
+    }
+
+    if (html.length === 0) {
+      html.push(
+        '<div class="fb-banner">' +
+        '<strong>初期安全確認のチェックポイント</strong>' +
+        '現在トリアージ項目は選択されていません（陰性または安全を意味するものではありません）。まず球麻痺・呼吸数/努力性肺活量・自律神経変動・脳幹徴候・閉眼不全（兎眼）を診察で確認してください。' +
+        '</div>'
+      );
+    }
+
+    box.innerHTML = html.join('');
+  }
+
+  function renderStep5Feedback(triage, findings) {
+    var box = document.getElementById('step5-feedback');
+    var html = [];
+
+    if (arrayContains(triage, 'pre_steroid_check')) {
+      html.push(
+        '<div class="fb-banner danger">' +
+        '<strong>原因確定前の経験的全身ステロイド投与に関する注意</strong>' +
+        '1) GBSではステロイド単独は無効であり、経口ステロイドは転帰悪化の報告があります（標準はIVIG/PE）[S02]。' +
+        '2) 中枢神経原発悪性リンパ腫（PCNSL）が鑑別に残る場合、生検前のステロイド投与は組織診断を困難にするため原則回避します [S14]。' +
+        '3) ライム病では抗菌薬へのステロイド上乗せを支持する根拠は乏しく（知識の空白）、まず原因検索を優先します [S03]。' +
+        '4) 特発性ベル麻痺と厳密に確定した場合の急性期（72時間以内）のみ全身ステロイドの強い推奨対象となります [S09, S11]。' +
+        '</div>'
+      );
+    }
+
+    if (arrayContains(findings, 'csf_acd')) {
+      html.push(
+        '<div class="fb-banner warn">' +
+        '<strong>髄液検査の時期による偽陰性ピットフォール</strong>' +
+        'GBSの蛋白細胞解離は全経過で70%（846/1,231例）ですが、発症3日以内の蛋白上昇は52%（265/506例）にとどまり（約半数は正常）、発症第1週でも30〜50%は正常です。初回正常のみでGBSを除外せず、必要に応じNCS再検や髄液再検を行います（S01, S02）。' +
+        '</div>'
+      );
+    }
+
+    if (arrayContains(findings, 'csf_pleo_gt50')) {
+      html.push(
+        '<div class="fb-banner danger">' +
+        '<strong>髄液細胞数 &gt; 50 /μL：GBS以外の重大疾患を優先検索</strong>' +
+        '髄液細胞数 &gt; 50 /μL では髄膜悪性腫瘍（細胞診 10 mL超・30分以内処理）、感染性髄膜炎（ライム病・HIV・結核・真菌・VZV）、神経サルコイドーシス等の炎症性疾患を強く疑います（S02, S07, S14）。' +
+        '</div>'
+      );
+    } else if (arrayContains(findings, 'csf_pleo_10_50')) {
+      html.push(
+        '<div class="fb-banner warn">' +
+        '<strong>髄液細胞数 10〜50 /μL：GBSと感染性多発神経根炎の並行鑑別</strong>' +
+        'GBSでも10〜50 /μL の軽度上昇はあり得ますが、ライム病・HIV・VZV等の感染性・炎症性疾患を必ず並行して評価してください（S02, S03, S10）。' +
+        '</div>'
+      );
+    }
+
+    if (arrayContains(findings, 'ncs_normal_early')) {
+      html.push(
+        '<div class="fb-banner">' +
+        '<strong>初回NCS正常時の再検推奨</strong>' +
+        '発症早期の神経伝導検査（NCS）では異常が検出されない、あるいはF波低下のみの場合があります。GBS疑いが残る場合は数日後に再検してください（S01）。' +
+        '</div>'
+      );
+    }
+
+    box.innerHTML = html.join('');
+  }
+
+  function evaluateAll() {
+    updateCheckedClasses();
+    var triage = getCheckedValues('triage');
+    var findings = getCheckedValues('finding');
+    var onset = getSelectedOnset();
+
+    var allTokens = [];
+    for (var i = 0; i < triage.length; i++) allTokens.push(triage[i]);
+    for (var j = 0; j < findings.length; j++) allTokens.push(findings[j]);
+
+    var countVal = allTokens.length + (onset !== 'unknown' ? 1 : 0);
+    document.getElementById('selected-count-pill').textContent = '選択中の所見：' + countVal + '項目';
+
+    renderStep1Feedback(triage);
+    renderStep5Feedback(triage, findings);
+
+    var ranked = [];
+    for (var d = 0; d < DISEASES.length; d++) {
+      var dis = DISEASES[d];
+      var matched = [];
+      var score = 0;
+
+      if (onset !== 'unknown' && arrayContains(dis.onsets, onset)) {
+        matched.push('経過：' + ONSET_LABELS[onset]);
+        score += 2;
+      }
+      for (var t = 0; t < allTokens.length; t++) {
+        if (arrayContains(dis.triggers, allTokens[t])) {
+          matched.push(FEATURE_LABELS[allTokens[t]] || allTokens[t]);
+          score += 2;
+        }
+      }
+
+      // Penalty/nuance notice without hiding exclusion: e.g. bell_bilateral only rises if specific red flags absent
+      ranked.push({
+        disease: dis,
+        matched: matched,
+        score: score,
+        order: d
+      });
+    }
+
+    ranked.sort(function(a, b) {
+      if (b.score !== a.score) return b.score - a.score;
+      return a.order - b.order;
+    });
+
+    var listHtml = [];
+    for (var r = 0; r < ranked.length; r++) {
+      var item = ranked[r];
+      var disObj = item.disease;
+      var tierClass = 'tier-base';
+      var badgeText = '参考・鑑別対象';
+      if (item.score >= 6) {
+        tierClass = 'tier-high';
+        badgeText = '整合所見あり（' + item.matched.length + '項目）';
+      } else if (item.score >= 2) {
+        tierClass = 'tier-mid';
+        badgeText = '部分整合（' + item.matched.length + '項目）';
+      }
+
+      var tagsHtml = '';
+      if (item.matched.length > 0) {
+        var tagParts = [];
+        for (var m = 0; m < item.matched.length; m++) {
+          tagParts.push('<span class="match-tag">' + escapeHtml(item.matched[m]) + '</span>');
+        }
+        tagsHtml = '<div class="ddx-matched-tags">' + tagParts.join('') + '</div>';
+      }
+
+      var refParts = [];
+      for (var rf = 0; rf < disObj.refs.length; rf++) {
+        var rNum = disObj.refs[rf];
+        var sCode = rNum < 10 ? 'S0' + rNum : 'S' + rNum;
+        refParts.push('<a class="ref-chip" href="#ref' + rNum + '">' + sCode + '</a>');
+      }
+
+      listHtml.push(
+        '<article class="ddx-card ' + tierClass + '" data-disease-id="' + disObj.id + '">' +
+          '<div class="ddx-top">' +
+            '<div class="ddx-title-wrap">' +
+              '<h3 class="ddx-name">' + escapeHtml(disObj.name) + '</h3>' +
+              '<span class="ddx-cat">' + escapeHtml(disObj.category) + '</span>' +
+            '</div>' +
+            '<span class="ddx-match">' + badgeText + '</span>' +
+          '</div>' +
+          tagsHtml +
+          '<div class="ddx-body">' +
+            '<div class="ddx-row"><b>主な特徴・根拠：</b>' + escapeHtml(disObj.keyClues) + '</div>' +
+            '<div class="ddx-row"><b>初期対応・推奨検査：</b>' + escapeHtml(disObj.workup) + '</div>' +
+            '<div class="ddx-pitfall"><b>注意・ピットフォール：</b>' + escapeHtml(disObj.pitfall) + '</div>' +
+            '<div class="ddx-refs">根拠：' + refParts.join('') + '</div>' +
+          '</div>' +
+        '</article>'
+      );
+    }
+
+    document.getElementById('ddx-list').innerHTML = listHtml.join('');
+    updateSummaryText(triage, onset, findings, ranked);
+  }
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function updateSummaryText(triage, onset, findings, ranked) {
+    var lines = [];
+    lines.push('【両側顔面神経麻痺 初期評価・鑑別整理サマリー】');
+    lines.push('・時間経過: ' + (ONSET_LABELS[onset] || '未評価'));
+
+    var triageLabels = [];
+    for (var i = 0; i < triage.length; i++) {
+      triageLabels.push(FEATURE_LABELS[triage[i]] || triage[i]);
+    }
+    lines.push('・初期トリアージ確認: ' + (triageLabels.length ? triageLabels.join('、') : '選択なし（未評価）'));
+
+    var eyeStatus = '要確認（未選択）';
+    if (arrayContains(triage, 'corneal_danger')) {
+      eyeStatus = '眼痛・充血・角膜リスクあり（即日角膜保護＋速やかな眼科紹介）';
+    } else if (arrayContains(triage, 'lagophthalmos')) {
+      eyeStatus = '閉眼不全あり（初診当日から日中頻回潤滑点眼・夜間眼軟膏・閉瞼保持を開始）';
+    }
+    lines.push('・角膜保護方針: ' + eyeStatus);
+
+    var findingLabels = [];
+    for (var j = 0; j < findings.length; j++) {
+      findingLabels.push(FEATURE_LABELS[findings[j]] || findings[j]);
+    }
+    lines.push('・診察/検査所見: ' + (findingLabels.length ? findingLabels.join('、') : '選択なし（未評価）'));
+
+    var topList = [];
+    for (var k = 0; k < ranked.length; k++) {
+      if (ranked[k].score >= 2 && topList.length < 4) {
+        topList.push(ranked[k].disease.name + '（整合 ' + ranked[k].matched.length + '項目）');
+      }
+    }
+    lines.push('・優先して検討する鑑別候補（所見整合順・非確率）:');
+    if (topList.length) {
+      for (var p = 0; p < topList.length; p++) {
+        lines.push('  - ' + topList[p]);
+      }
+    } else {
+      lines.push('  - 所見未入力のため、GBS・ライム病・HIV・VZV・サルコイドーシス・髄膜病変・橋病変・MG・外傷を系統的に評価');
+    }
+
+    if (arrayContains(triage, 'pre_steroid_check')) {
+      lines.push('・治療前注意: 原因確定前の経験的全身ステロイドはGBS無効・PCNSL生検困難化に留意');
+    }
+    lines.push('※本記録は臨床整理の補助メモです（未選択＝陰性または安全を意味しません）。');
+
+    document.getElementById('summary-text').value = lines.join('\n').replace(/[～〜]/g, '-');
+  }
+
+  function applyPreset(key) {
+    var p = PRESETS[key];
+    if (!p) return;
+
+    var allInputs = document.querySelectorAll('input[name="triage"], input[name="finding"]');
+    for (var i = 0; i < allInputs.length; i++) {
+      var inp = allInputs[i];
+      if (inp.name === 'triage') {
+        inp.checked = arrayContains(p.triage, inp.value);
+      } else {
+        inp.checked = arrayContains(p.findings, inp.value);
+      }
+    }
+    var onsetRadios = document.querySelectorAll('input[name="onset"]');
+    for (var j = 0; j < onsetRadios.length; j++) {
+      onsetRadios[j].checked = (onsetRadios[j].value === p.onset);
+    }
+
+    var btns = document.querySelectorAll('.preset-btn');
+    for (var b = 0; b < btns.length; b++) {
+      if (btns[b].getAttribute('data-preset') === key) {
+        btns[b].className = 'preset-btn active';
+      } else {
+        btns[b].className = 'preset-btn';
+      }
+    }
+
+    evaluateAll();
+  }
+
+  function resetAll() {
+    var allChecks = document.querySelectorAll('input[name="triage"], input[name="finding"]');
+    for (var i = 0; i < allChecks.length; i++) {
+      allChecks[i].checked = false;
+    }
+    var defOnset = document.querySelector('input[name="onset"][value="unknown"]');
+    if (defOnset) defOnset.checked = true;
+
+    var btns = document.querySelectorAll('.preset-btn');
+    for (var b = 0; b < btns.length; b++) {
+      btns[b].className = 'preset-btn';
+    }
+    document.getElementById('copy-status').textContent = '';
+    evaluateAll();
+  }
+
+  function copySummary() {
+    var area = document.getElementById('summary-text');
+    var status = document.getElementById('copy-status');
+    var text = area.value;
+    text = text.replace(/[～〜]/g, '-');
+
+    function showDone() {
+      status.textContent = 'コピーしました（全角チルダを半角ハイフンへ変換済み）';
+      setTimeout(function() {
+        status.textContent = '';
+      }, 3000);
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function() {
+        showDone();
+      }, function() {
+        fallbackCopy(text);
+      });
+    } else {
+      fallbackCopy(text);
+    }
+
+    function fallbackCopy(val) {
+      var temp = document.createElement('textarea');
+      temp.value = val;
+      temp.style.position = 'fixed';
+      temp.style.left = '-9999px';
+      document.body.appendChild(temp);
+      temp.select();
+      try {
+        document.execCommand('copy');
+        showDone();
+      } catch (e) {
+        status.textContent = 'コピーに失敗しました。手動で選択してコピーしてください。';
+      }
+      document.body.removeChild(temp);
+    }
+  }
+
+  document.addEventListener('change', function(e) {
+    if (!e.target) return;
+    if (e.target.name === 'triage' || e.target.name === 'finding' || e.target.name === 'onset') {
+      var btns = document.querySelectorAll('.preset-btn');
+      for (var b = 0; b < btns.length; b++) {
+        btns[b].className = 'preset-btn';
+      }
+      evaluateAll();
+    }
+  });
+
+  var presetBtns = document.querySelectorAll('.preset-btn');
+  for (var p = 0; p < presetBtns.length; p++) {
+    presetBtns[p].addEventListener('click', function() {
+      applyPreset(this.getAttribute('data-preset'));
+    });
+  }
+
+  document.getElementById('btn-reset').addEventListener('click', resetAll);
+  document.getElementById('btn-copy').addEventListener('click', copySummary);
+  document.getElementById('btn-print').addEventListener('click', function() {
+    window.print();
+  });
+
+  evaluateAll();
+})();
+</script>
+</body>
+</html>
