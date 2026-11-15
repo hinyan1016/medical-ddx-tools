@@ -10,6 +10,11 @@ manifest.json を読み、各 deck のフォルダにビューア index.html / P
   python build.py --slug dementia-feeding-refusal   # 単一 deck
   python build.py --dry-run      # コピー先・上書き予定をプレビュー
   python build.py --index-only   # デッキは作り直さず、一覧ページと一覧用 card.webp だけ更新
+  python build.py --slug <slug> --content-root <medical-content の場所>   # 作業コピーが OneDrive の外にあるとき
+
+素材（medical-content）の場所は --content-root ＞ 環境変数 MEDICAL_CONTENT_ROOT ＞ このリポの隣
+（OneDrive のワークスペース）の順で決める。公開用の作業コピーは ~/publish-repos/ に置くので（2026-11-15
+改善計画 第2段 項目6）、隣に medical-content が無いときは場所を渡す。
 
 前提:
   - medical-content/youtube-slides/<source_dir>/ にPNGとPDFがある
@@ -31,8 +36,20 @@ DDX_ROOT = SLIDES_ROOT.parent                       # medical-ddx-tools/
 sys.path.insert(0, str(DDX_ROOT))
 from png8 import quantize_png                        # noqa: E402
 from card_webp import write_card                     # noqa: E402
-WORKSPACE = DDX_ROOT.parent                          # Claude_task_new/
-SOURCE_ROOT = WORKSPACE / "medical-content" / "youtube-slides"
+WORKSPACE = DDX_ROOT.parent                          # Claude_task_new/（OneDrive のワークスペースにあるとき）
+CONTENT_ROOT = WORKSPACE / "medical-content"         # set_content_root() で差し替える
+SOURCE_ROOT = CONTENT_ROOT / "youtube-slides"
+
+
+def set_content_root(arg=None):
+    """素材の場所を決める（--content-root ＞ MEDICAL_CONTENT_ROOT ＞ このリポの隣）。見つからなければ None。"""
+    global CONTENT_ROOT, SOURCE_ROOT
+    import os
+    root = Path(arg or os.environ.get("MEDICAL_CONTENT_ROOT") or (WORKSPACE / "medical-content")).resolve()
+    if not (root / "youtube-slides").is_dir():
+        return None
+    CONTENT_ROOT, SOURCE_ROOT = root, root / "youtube-slides"
+    return root
 TEMPLATE_DIR = SLIDES_ROOT / "_template"
 MANIFEST = SLIDES_ROOT / "manifest.json"
 
@@ -318,7 +335,7 @@ def build_deck(deck: dict, dry_run: bool = False) -> bool:
     # Copy 抄読会用デッキ (paper-prep) if requested.
     has_jc = False
     if deck.get("jc_deck") and deck.get("jc_source"):
-        jc_dir = WORKSPACE / "medical-content" / deck["jc_source"]
+        jc_dir = CONTENT_ROOT / deck["jc_source"]
         has_jc = copy_jc_deck(jc_dir, dst)
         if not has_jc:
             print(f"  [WARN] jc_deck=true だが deck.html が無い: {jc_dir}", file=sys.stderr)
@@ -340,6 +357,7 @@ def main():
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--skip-index", action="store_true", help="一覧ページの再生成をスキップ")
     parser.add_argument("--index-only", action="store_true", help="デッキは作り直さず、一覧ページと一覧用 card.webp だけ更新")
+    parser.add_argument("--content-root", help="medical-content の場所（既定は環境変数 MEDICAL_CONTENT_ROOT か、このリポの隣）")
     args = parser.parse_args()
 
     manifest = load_manifest()
@@ -350,6 +368,11 @@ def main():
         (SLIDES_ROOT / "index.html").write_text(render_index(decks), encoding="utf-8", newline="\n")
         print(f"  [OK] index.html ({len(decks)} decks)")
         return
+
+    if set_content_root(args.content_root) is None:
+        print("素材（medical-content/youtube-slides）が見つかりません。--content-root で medical-content の場所を渡してください"
+              f"（探した場所: {args.content_root or WORKSPACE / 'medical-content'}）", file=sys.stderr)
+        sys.exit(2)
 
     if args.slug:
         decks_to_build = [d for d in decks if d["slug"] == args.slug]
@@ -373,6 +396,8 @@ def main():
         print(f"  [OK] index.html ({len(decks)} decks)")
 
     print(f"Done. {len(built)} deck(s) built.")
+    if args.slug and not built:
+        sys.exit(1)   # 1件指定で作れなかったら失敗として返す（呼び出し側が push まで進まないように）
 
 
 if __name__ == "__main__":
