@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v413';
+const CACHE_NAME = 'ddx-tools-v414';
 const ASSETS = [
   './infographics/focal-status-epilepticus-mri-reference-repair-20261117/index.html',
   './infographics/focal-status-epilepticus-mri-reference-repair-20261117/infographic.png',

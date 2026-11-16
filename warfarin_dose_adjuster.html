@@ -9,9 +9,9 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>ワーファリン用量調整の提案ツール（PT-INRと現在の用量から）</title>
-<meta name="description" content="目標PT-INR・今回のPT-INR・現在の用量を入れると、継続・増量・減量・休薬のどれにあたるか、週用量と1日ごとの飲み方（mg）、次の検査の目安を、カナダBC州ガイドライン2023とCHEST 2012に沿って提案します。カルテ用の文をコピーできます。">
+<meta name="description" content="目標PT-INR・今回のPT-INR・現在の用量を入れると、継続・増量・減量・休薬のどれにあたるか、変更後の飲み方（毎日同じ量か、1日おき）、次の検査の目安を、カナダBC州ガイドライン2023とCHEST 2012に沿って提案します。カルテ用の文をコピーできます。">
 <meta property="og:title" content="ワーファリン用量調整の提案ツール（PT-INRと現在の用量から）">
-<meta property="og:description" content="目標PT-INR・今回のPT-INR・現在の用量を入れると、継続・増量・減量・休薬のどれにあたるか、週用量と1日ごとの飲み方（mg）、次の検査の目安を、カナダBC州ガイドライン2023とCHEST 2012に沿って提案します。カルテ用の文をコピーできます。">
+<meta property="og:description" content="目標PT-INR・今回のPT-INR・現在の用量を入れると、継続・増量・減量・休薬のどれにあたるか、変更後の飲み方（毎日同じ量か、1日おき）、次の検査の目安を、カナダBC州ガイドライン2023とCHEST 2012に沿って提案します。カルテ用の文をコピーできます。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://tools.ichisouzo-lab.com/warfarin_dose_adjuster.html">
 <meta property="og:image" content="https://tools.ichisouzo-lab.com/assets/og-tools.png">
@@ -98,6 +98,7 @@
   table.t th { background: #1A5276; color: #fff; }
   table.t tr.pick td { background: #fff7e0; font-weight: 700; }
   .pill { display: inline-block; font-size: 0.78em; background: var(--orange); color: #fff; border-radius: 10px; padding: 1px 8px; margin-left: 6px; font-weight: 700; }
+  .pill.warn { background: var(--red); }
   .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 8px; }
   .days div { border: 1px solid #dbe5ee; border-radius: 6px; text-align: center; padding: 5px 2px; font-size: 0.85em; background: #fbfdff; }
   .days div b { display: block; font-size: 1.05em; color: var(--dark); }
@@ -182,12 +183,18 @@
         <span class="lbl">飲み方</span>
         <div class="seg" id="doseModeSeg">
           <button type="button" data-v="daily" class="active">毎日同じ量</button>
+          <button type="button" data-v="alt">1日おき</button>
           <button type="button" data-v="week">曜日で量が違う</button>
         </div>
       </div>
       <div class="field" id="dailyBox">
         <label for="daily">1日量</label>
         <div class="inline"><input type="number" id="daily" step="0.25" min="0" max="20" inputmode="decimal" placeholder="例 2.5"><span>mg／日</span></div>
+      </div>
+      <div class="field hidden" id="altBox">
+        <span class="lbl">1日おきに飲んでいる2つの量</span>
+        <div class="inline"><input type="number" id="altA" step="0.25" min="0" max="20" inputmode="decimal" placeholder="例 2.5" aria-label="1日おきの量（1つめ）"><span>mg と</span><input type="number" id="altB" step="0.25" min="0" max="20" inputmode="decimal" placeholder="例 2" aria-label="1日おきの量（2つめ）"><span>mg を1日おき</span></div>
+        <p class="hint">間の日に飲まない場合は、片方に 0 を入れます。</p>
       </div>
       <div class="field hidden" id="weekBox">
         <span class="lbl">曜日ごとの量（mg）</span>
@@ -262,7 +269,10 @@
           <tr><td>10 を超えて出血なし</td><td>経口ビタミンKを使う</td><td>CHEST 2012（推奨 9.1）</td></tr>
         </table>
       </div>
-      <p style="margin-top:12px;">原典が示しているのは「10-20%」という幅です。このツールは幅の中から1つを選んで色を付けますが、どれを選ぶかはツール側の目安で、10%・15%・20% の3通りを並べて表示します。再検の時期は BC 2023 の図に沿って示します。図では、用量を調整したあとは 2-4日ごとの検査に戻り、目標域内が2回続けば週1回にします。この間隔で検査できない場合の「変更後 1-2週間以内」と、一時的な原因があるときなどの「1週間以内」は、ツール側の目安です。</p>
+      <p style="margin-top:12px;">原典が示しているのは「10-20%」という幅です。このツールは、提案する飲み方を「毎日同じ量」と「きざみ1つ分だけ違う2つの量を1日おき」の2種類に絞っています。週に何日かだけ量を変える飲み方は、処方と服薬の管理が複雑になるので提案しません（ツール側の判断）。</p>
+      <p>この2種類で作れる量のうち、現在からの変化が四捨五入して 10-20% に入るものを最大3つ並べ、実際の変化の割合を添えます。目安の印は、ツールが選んだ割合にいちばん近い飲み方に付けます（同じ近さのときは、毎日同じ量のほうに付けます）。</p>
+      <p>現在の量が少ないとき（0.5 mg きざみでは 1日平均 1 mg 以下）や、曜日ごとに違う量から切り替えるときは、10-20% に入る飲み方を作れないことがあります。その場合は幅の外であることを明記して近い量を示し、0.25 mg きざみを案内します。1日おきを曜日で固定すると（週4日と週3日）週用量がずれるので、ずれの量を提案の下に示します。</p>
+      <p>再検の時期は BC 2023 の図に沿って示します。図では、用量を調整したあとは 2-4日ごとの検査に戻り、目標域内が2回続けば週1回にします。この間隔で検査できない場合の「変更後 1-2週間以内」と、一時的な原因があるときなどの「1週間以内」は、ツール側の目安です。</p>
       <details class="fold">
         <summary>この方式の限界<small>クリック／タップで開閉</small></summary>
         <div class="fold-body">
@@ -316,32 +326,71 @@
 
   function fmt(x){ return String(Math.round(x * 100) / 100); }
 
-  /* 週用量（mg）を、きざみ u の2段階の量で7日に割り振る */
-  function schedule(weeklyMg, u){
-    var T = Math.round(weeklyMg / u + 1e-9);
-    if (T < 0) T = 0;
-    var base = Math.floor(T / 7), extra = T - base * 7, days = [], i;
-    for (i = 0; i < 7; i++) {
-      var hi = Math.floor((i + 1) * extra / 7) > Math.floor(i * extra / 7);
-      days.push((base + (hi ? 1 : 0)) * u);
+  /* 1日平均・週用量は 0.125 mg 単位になることがある。8倍して整数になるときは3桁まで出す */
+  function fmtAvg(x){
+    var e = x * 8;
+    if (Math.abs(e - Math.round(e)) < 1e-6) return String(Math.round(x * 1000) / 1000);
+    return fmt(x);
+  }
+
+  /* 変化の割合の丸め。表示と「10-20% に入るか」の判定に同じ値を使う */
+  function rpct(p){ return Math.round(p + 1e-9); }
+
+  /* 飲み方は2種類だけ。m は「きざみの半分」を単位にした1日平均（m×u/2 mg）。
+     m が偶数なら毎日同じ量、奇数なら きざみ1つ分だけ違う2つの量を1日おき */
+  function regimen(m, u){
+    var g = { m: m, avg: m * u / 2, alt: m % 2 !== 0, hi: 0, lo: 0, text: '' };
+    if (!g.alt) { g.hi = g.lo = g.avg; g.text = fmt(g.avg) + ' mg を毎日'; }
+    else {
+      g.hi = (m + 1) / 2 * u; g.lo = (m - 1) / 2 * u;
+      g.text = g.lo === 0 ? fmt(g.hi) + ' mg を1日おき（間の日は飲まない）' : fmt(g.hi) + ' mg と ' + fmt(g.lo) + ' mg を1日おき';
     }
-    return { weekly: T * u, days: days, lo: base * u, hi: (base + 1) * u, nHi: extra };
+    return g;
   }
 
-  /* 現在の週用量を pct% だけ dir(+1/-1) 方向へ動かし、きざみに丸める。丸めて変わらなければ1きざみ動かす */
-  function adjust(curWeekly, pct, dir, u){
-    var cur = Math.round(curWeekly / u + 1e-9);
-    var T = Math.round(curWeekly * (1 + dir * pct / 100) / u + 1e-9);
-    if (T === cur) T = cur + dir;
-    if (T < 0) T = 0;
-    return schedule(T * u, u);
+  /* target% にいちばん近い候補の添字。同じ近さなら毎日同じ量を先に選ぶ */
+  function nearest(list, target){
+    var best = -1, bd = 0, i, d;
+    for (i = 0; i < list.length; i++) {
+      d = Math.abs(list[i].pct - target);
+      if (best < 0 || d < bd - 1e-6 || (Math.abs(d - bd) <= 1e-6 && !list[i].alt && list[best].alt)) { best = i; bd = d; }
+    }
+    return best;
   }
 
-  function scheduleText(s){
-    if (s.weekly === 0) return '休薬';
-    if (s.nHi === 0) return '毎日 ' + fmt(s.lo) + ' mg';
-    if (s.lo === 0) return fmt(s.hi) + ' mg を週' + s.nHi + '日（残りの' + (7 - s.nHi) + '日は飲まない）';
-    return fmt(s.hi) + ' mg を週' + s.nHi + '日、' + fmt(s.lo) + ' mg を週' + (7 - s.nHi) + '日';
+  /* 現在の週用量から dir(+1/-1) の向きに、2種類の飲み方の候補を作る。
+     out=false：10-20% に入る候補（最大3つ）／out=true：幅に入る候補がなく、幅の外でいちばん近いもの */
+  function candidates(weekly, dir, u){
+    var c = weekly / 7, half = u / 2, inb = [], rows = [], below = null, above = null, m, g, k, i, j, t;
+    m = dir > 0 ? Math.floor(c / half + 1e-9) + 1 : Math.ceil(c / half - 1e-9) - 1;
+    for (k = 0; k < 400 && m >= 1; k++, m += dir) {
+      g = regimen(m, u);
+      g.pct = Math.abs(g.avg - c) / c * 100; g.rp = rpct(g.pct);
+      g.band = g.rp < 10 ? 'below' : (g.rp > 20 ? 'above' : 'in');
+      g.weekly = g.avg * 7;
+      if (g.band === 'in') inb.push(g);
+      else if (g.band === 'below') below = g;
+      else { above = g; break; }
+    }
+    if (inb.length > 3) {
+      t = [10, 15, 20];
+      for (i = 0; i < t.length; i++) { j = nearest(inb, t[i]); if (rows.indexOf(inb[j]) < 0) rows.push(inb[j]); }
+      rows.sort(function(a, b){ return a.pct - b.pct; });
+      return { rows: rows, out: false };
+    }
+    if (inb.length > 0) return { rows: inb, out: false };
+    if (below) rows.push(below);
+    if (above) rows.push(above);
+    return { rows: rows, out: true };
+  }
+
+  /* 1日おきの2週間（1日目は多いほうの量） */
+  function days14(g){ var d = [], i; for (i = 0; i < 14; i++) d.push(i % 2 === 0 ? g.hi : g.lo); return d; }
+
+  function chgText(nw, cw){
+    var p = rpct(Math.abs(nw - cw) / cw * 100);
+    if (p === 0) return '現在とほぼ同じ';
+    return '現在より約' + p + '%' + (nw > cw ? '増' : '減');
   }
 
   /*
@@ -502,10 +551,10 @@
     return r;
   }
 
-  window.WFDose = { suggest: suggest, schedule: schedule, adjust: adjust, scheduleText: scheduleText };
+  window.WFDose = { suggest: suggest, regimen: regimen, candidates: candidates, nearest: nearest, days14: days14, fmtAvg: fmtAvg, chgText: chgText };
 
   /* ---------- 画面 ---------- */
-  var doseMode = 'daily', unit = 0.5, lastResult = null, lastInput = null, pickedPct = 0;
+  var doseMode = 'daily', unit = 0.5, lastResult = null, lastInput = null, lastCands = null, picked = -1;
 
   function $(id){ return document.getElementById(id); }
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -530,6 +579,7 @@
   bindSeg('doseModeSeg', function(v){
     doseMode = v;
     $('dailyBox').className = 'field' + (v === 'daily' ? '' : ' hidden');
+    $('altBox').className = 'field' + (v === 'alt' ? '' : ' hidden');
     $('weekBox').className = 'field' + (v === 'week' ? '' : ' hidden');
   });
   bindSeg('unitSeg', function(v){ unit = parseFloat(v); if (lastInput) calc(); });
@@ -539,7 +589,7 @@
   });
 
   function readInput(){
-    var p = $('preset').value, lo, hi, weekly = 0, cur = [], i, v;
+    var p = $('preset').value, lo, hi, weekly = 0, cur = [], curText = '', i, v, a, b;
     if (p === 'custom') { lo = parseFloat($('lo').value); hi = parseFloat($('hi').value); }
     else { lo = parseFloat(p.split(',')[0]); hi = parseFloat(p.split(',')[1]); }
     var inr = parseFloat($('inr').value);
@@ -551,6 +601,17 @@
       if (isNaN(v) || v <= 0) return { error: '現在の1日量（mg）を入れてください。' };
       for (i = 0; i < 7; i++) cur.push(v);
       weekly = v * 7;
+      curText = fmt(v) + ' mg を毎日（週 ' + fmtAvg(v * 7) + ' mg）';
+    } else if (doseMode === 'alt') {
+      a = parseFloat($('altA').value); b = parseFloat($('altB').value);
+      if (isNaN(a) || isNaN(b) || a < 0 || b < 0) return { error: '1日おきに飲んでいる2つの量（mg）を入れてください（飲まない日は 0）。' };
+      if (a + b <= 0) return { error: '現在の量を入れてください。' };
+      if (a > 20 || b > 20) return { error: '1日量が 20 mg を超えています。入力の単位（mg）を確かめてください。' };
+      cur = [a, b];
+      weekly = (a + b) / 2 * 7;
+      if (a === b) curText = fmt(a) + ' mg を毎日（週 ' + fmtAvg(a * 7) + ' mg）';
+      else if (Math.min(a, b) === 0) curText = fmt(Math.max(a, b)) + ' mg を1日おき（間の日は飲まない。1日平均 ' + fmtAvg((a + b) / 2) + ' mg）';
+      else curText = fmt(Math.max(a, b)) + ' mg と ' + fmt(Math.min(a, b)) + ' mg を1日おき（1日平均 ' + fmtAvg((a + b) / 2) + ' mg）';
     } else {
       for (i = 0; i < 7; i++) {
         v = parseFloat($('wd' + i).value);
@@ -558,28 +619,49 @@
         cur.push(v); weekly += v;
       }
       if (weekly <= 0) return { error: '現在の量を入れてください。' };
+      curText = '週 ' + fmtAvg(weekly) + ' mg（1日平均 ' + fmt(weekly / 7) + ' mg）';
     }
     if (weekly > 140) return { error: '1日量が 20 mg を超えています。入力の単位（mg）を確かめてください。' };
     return {
-      lo: lo, hi: hi, inr: inr, weekly: Math.round(weekly * 100) / 100, cur: cur, unit: unit,
+      lo: lo, hi: hi, inr: inr, weekly: Math.round(weekly * 1000) / 1000, cur: cur, curText: curText, unit: unit,
       bleed: $('bleed').value, status: $('status').value,
       transient: $('transient').checked, bleedRisk: $('bleedRisk').checked, thrombRisk: $('thrombRisk').checked
     };
   }
 
-  function daysHtml(s){
-    var h = '<div class="days">', i;
-    for (i = 0; i < 7; i++) h += '<div' + (s.nHi > 0 && s.days[i] === s.hi ? ' class="hi"' : '') + '>' + DAYS[i] + '<b>' + fmt(s.days[i]) + '</b></div>';
+  /* 1日おきの2週間。上は何日目か、下はその日の量（mg） */
+  function daysHtml(g){
+    var d = days14(g), h = '<div class="days">', i;
+    for (i = 0; i < 14; i++) h += '<div' + (d[i] === g.hi ? ' class="hi"' : '') + '>' + (i + 1) + '<b>' + fmt(d[i]) + '</b></div>';
     return h + '</div>';
   }
 
-  function summaryText(o, r, s){
+  /* 幅に入る候補がないときの説明 */
+  function outNote(o, r, cd){
+    var t, c2, g;
+    if (!cd.rows.length) return fmt(o.unit) + ' mg きざみでは、現在より少ない飲み方を作れません。';
+    t = '「毎日同じ量」と「' + fmt(o.unit) + ' mg 差の1日おき」だけでは、現在の量から 10-20% の変更を作れません。下の表は、幅の外でいちばん近い量です。自動では選んでいないので、使う場合は行をタップしてください。';
+    if (o.unit > 0.25) {
+      c2 = candidates(o.weekly, r.dir, 0.25);
+      if (!c2.out && c2.rows.length) {
+        g = c2.rows[nearest(c2.rows, r.pct || 15)];
+        t += 'きざみを 0.25 mg にすると、「' + g.text + '」（' + chgText(g.weekly, o.weekly) + '）のように幅に入る飲み方を出せます（半錠や顆粒を使う場合）。上の「提案する量のきざみ」で切り替えてください。';
+      } else {
+        t += '0.25 mg きざみにしても幅に入る飲み方は作れません。量は、検査値の推移をみて処方医が決めてください。';
+      }
+    } else {
+      t += '量は、検査値の推移をみて処方医が決めてください。';
+    }
+    return t;
+  }
+
+  function summaryText(o, r, g){
     var t = '【ワーファリン用量調整の検討（参考）】\n';
     t += '目標 PT-INR ' + o.lo.toFixed(1) + '-' + o.hi.toFixed(1) + '／今回 ' + fmt(o.inr) + '\n';
-    t += '現在の用量：週 ' + fmt(o.weekly) + ' mg（1日平均 ' + fmt(o.weekly / 7) + ' mg）\n';
+    t += '現在の用量：' + o.curText + '\n';
     t += '方針：' + r.title + '\n';
-    if (s) {
-      t += (r.cls === 'v-hold' ? '再開時の用量' : '変更後の用量') + '：週 ' + fmt(s.weekly) + ' mg（' + scheduleText(s) + '、現在より約' + Math.round(Math.abs(s.weekly - o.weekly) / o.weekly * 100) + '%' + (r.dir > 0 ? '増' : '減') + '）\n';
+    if (g) {
+      t += (r.cls === 'v-hold' ? '再開時の用量' : '変更後の用量') + '：' + g.text + '（' + (g.alt ? '1日平均 ' + fmtAvg(g.avg) + ' mg、' : '') + chgText(g.weekly, o.weekly) + (g.band !== 'in' ? '。10-20% の幅の外' : '') + '）\n';
     }
     t += '次の検査：' + r.recheck + '\n';
     t += '参照：' + r.basis + '\n';
@@ -590,7 +672,7 @@
   function render(){
     var o = lastInput, r = lastResult, h = '', i, s = null;
     h += '<div class="verdict ' + r.cls + '"><div class="v-label">' + esc(r.label) + '</div><div class="v-title">' + esc(r.title) + '</div><div class="v-sub">' + esc(r.sub) + '</div></div>';
-    h += '<p>目標 ' + o.lo.toFixed(1) + '-' + o.hi.toFixed(1) + '、今回 <strong>' + fmt(o.inr) + '</strong>。現在は週 <strong>' + fmt(o.weekly) + ' mg</strong>（1日平均 ' + fmt(o.weekly / 7) + ' mg）です。</p>';
+    h += '<p>目標 ' + o.lo.toFixed(1) + '-' + o.hi.toFixed(1) + '、今回 <strong>' + fmt(o.inr) + '</strong>。現在は 1日平均 <strong>' + fmtAvg(o.weekly / 7) + ' mg</strong>（週あたり ' + fmtAvg(o.weekly) + ' mg）です。</p>';
     for (i = 0; i < r.notes.length; i++) h += '<div class="alert-disclaimer" style="margin-bottom:10px;">' + esc(r.notes[i]) + '</div>';
 
     h += '<div class="sub-title">対応</div><ul class="steps">';
@@ -598,22 +680,33 @@
     h += '</ul>';
 
     if (r.dir !== 0) {
-      var pcts = [10, 15, 20], word = r.dir > 0 ? '増' : '減';
-      h += '<div class="sub-title">' + (r.cls === 'v-hold' ? '再開するときの用量' : (r.pct ? '変更後の用量' : '減量する場合の用量')) + '（行をタップして選べます）</div>';
-      h += '<div class="tbl-wrap"><table class="t"><tr><th style="background:#1A5276;color:#fff;">変更幅</th><th style="background:#1A5276;color:#fff;">週用量</th><th style="background:#1A5276;color:#fff;">飲み方</th></tr>';
-      for (i = 0; i < pcts.length; i++) {
-        var a = adjust(o.weekly, pcts[i], r.dir, o.unit);
-        h += '<tr class="pctRow' + (pcts[i] === pickedPct ? ' pick' : '') + '" data-p="' + pcts[i] + '" style="cursor:pointer;"><td>' + pcts[i] + '% ' + word + (pcts[i] === r.pct ? '<span class="pill">目安</span>' : '') + '</td><td>' + fmt(a.weekly) + ' mg</td><td>' + esc(scheduleText(a)) + '</td></tr>';
+      var cd = lastCands, rows0 = cd.rows, word = r.dir > 0 ? '増' : '減';
+      var mark = (!cd.out && r.pct > 0) ? nearest(rows0, r.pct) : -1, g, w43, w34;
+      h += '<div class="sub-title">' + (r.cls === 'v-hold' ? '再開するときの用量' : (r.pct ? '変更後の用量' : '減量する場合の用量')) + (rows0.length ? '（行をタップして選べます）' : '') + '</div>';
+      if (cd.out) h += '<div class="alert-disclaimer" style="margin-bottom:10px;">' + esc(outNote(o, r, cd)) + '</div>';
+      if (rows0.length) {
+        h += '<div class="tbl-wrap"><table class="t"><tr><th style="background:#1A5276;color:#fff;">飲み方</th><th style="background:#1A5276;color:#fff;">1日平均（週あたり）</th><th style="background:#1A5276;color:#fff;">現在からの変化</th></tr>';
+        for (i = 0; i < rows0.length; i++) {
+          g = rows0[i];
+          h += '<tr class="pctRow' + (i === picked ? ' pick' : '') + '" data-i="' + i + '" style="cursor:pointer;"><td>' + esc(g.text) + (i === mark ? '<span class="pill">目安</span>' : '') + '</td>';
+          h += '<td>' + fmtAvg(g.avg) + ' mg（週 ' + fmtAvg(g.weekly) + ' mg）</td>';
+          h += '<td>約' + g.rp + '% ' + word + (g.band === 'above' ? '<span class="pill warn">20% を超える</span>' : (g.band === 'below' ? '<span class="pill warn">10% 未満</span>' : '')) + '</td></tr>';
+        }
+        h += '</table></div>';
       }
-      h += '</table></div>';
-      if (r.pctNote) h += '<p class="hint">目安の選び方：' + esc(r.pctNote) + '。原典は 10-20% の幅を示しています。</p>';
-      if (pickedPct) {
-        s = adjust(o.weekly, pickedPct, r.dir, o.unit);
-        h += '<div class="sub-title">' + pickedPct + '% ' + word + 'にした場合の1週間（mg）</div>' + daysHtml(s);
-        var real = Math.round(Math.abs(s.weekly - o.weekly) / o.weekly * 100);
-        h += '<p class="hint">' + fmt(o.unit) + ' mg きざみに丸めたので、実際の変更幅は約 ' + real + '% です。曜日の割り振りは一例です。</p>';
-        var avg = s.weekly / 7;
-        if (avg > 5 || (avg < 1 && s.weekly > 0)) h += '<p class="hint">電子添文では、成人の維持量は 1日 1-5 mg 程度になることが多いとされています。この範囲を外れるときは、服薬状況と相互作用をあらためて確認してください。</p>';
+      if (mark >= 0) h += '<p class="hint">目安の選び方：' + esc(r.pctNote) + '。表の中で ' + r.pct + '% にいちばん近い飲み方に「目安」の印を付けています。原典は 10-20% の幅を示しています。</p>';
+      if (picked >= 0 && rows0[picked]) {
+        g = rows0[picked]; s = g;
+        if (g.alt) {
+          h += '<div class="sub-title">「' + esc(g.text) + '」の2週間（上の数字は何日目か、下はその日の量 mg）</div>' + daysHtml(g);
+          h += '<p class="hint">1日おきを続けると 1日平均 ' + fmtAvg(g.avg) + ' mg（週あたり ' + fmtAvg(g.weekly) + ' mg）で、' + chgText(g.weekly, o.weekly) + 'です。どちらの量から始めても平均は同じです。</p>';
+          w43 = g.hi * 4 + g.lo * 3; w34 = g.hi * 3 + g.lo * 4;
+          if (g.lo === 0) h += '<p class="hint">曜日で固定して ' + fmt(g.hi) + ' mg を週4日飲むと週 ' + fmtAvg(w43) + ' mg（' + chgText(w43, o.weekly) + '）、週3日飲むと週 ' + fmtAvg(w34) + ' mg（' + chgText(w34, o.weekly) + '）になり、1日おきとは週用量がずれます。</p>';
+          else h += '<p class="hint">曜日で固定して ' + fmt(g.hi) + ' mg を週4日・' + fmt(g.lo) + ' mg を週3日にすると週 ' + fmtAvg(w43) + ' mg（' + chgText(w43, o.weekly) + '）、' + fmt(g.hi) + ' mg を週3日・' + fmt(g.lo) + ' mg を週4日にすると週 ' + fmtAvg(w34) + ' mg（' + chgText(w34, o.weekly) + '）になり、1日おきとは週用量がずれます。</p>';
+        } else {
+          h += '<p style="margin-top:10px;">選んだ飲み方：<strong>' + esc(g.text) + '</strong>（週あたり ' + fmtAvg(g.weekly) + ' mg、' + chgText(g.weekly, o.weekly) + '）。</p>';
+        }
+        if (g.avg > 5 || g.avg < 1) h += '<p class="hint">電子添文では、成人の維持量は 1日 1-5 mg 程度になることが多いとされています。この範囲を外れるときは、服薬状況と相互作用をあらためて確認してください。</p>';
       }
       if (r.topUp) {
         var tu = Math.round(o.weekly * 0.2 / o.unit) * o.unit;
@@ -632,7 +725,7 @@
 
     var rows = $('resultBody').querySelectorAll('.pctRow');
     for (i = 0; i < rows.length; i++) {
-      rows[i].addEventListener('click', function(){ pickedPct = parseInt(this.getAttribute('data-p'), 10); render(); });
+      rows[i].addEventListener('click', function(){ picked = parseInt(this.getAttribute('data-i'), 10); render(); });
     }
     $('copyBtn').addEventListener('click', function(){
       var btn = this;
@@ -664,7 +757,11 @@
       lastInput = null; lastResult = null;
       return false;
     }
-    lastInput = o; lastResult = suggest(o); pickedPct = lastResult.pct;
+    lastInput = o; lastResult = suggest(o); lastCands = null; picked = -1;
+    if (lastResult.dir !== 0) {
+      lastCands = candidates(o.weekly, lastResult.dir, o.unit);
+      if (!lastCands.out && lastResult.pct > 0) picked = nearest(lastCands.rows, lastResult.pct);
+    }
     render();
     return true;
   }
@@ -675,7 +772,7 @@
   });
   $('resetBtn').addEventListener('click', function(){
     var i;
-    $('inr').value = ''; $('daily').value = '';
+    $('inr').value = ''; $('daily').value = ''; $('altA').value = ''; $('altB').value = '';
     for (i = 0; i < 7; i++) $('wd' + i).value = '';
     $('bleed').value = 'none'; $('status').value = 'stable';
     $('transient').checked = false; $('bleedRisk').checked = false; $('thrombRisk').checked = false;
