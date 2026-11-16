@@ -1,5 +1,11 @@
-const CACHE_NAME = 'ddx-tools-v406';
+const CACHE_NAME = 'ddx-tools-v407';
 const ASSETS = [
+  './infographics/aspiration-pneumonia-overview-reference-repair-20261116/index.html',
+  './infographics/aspiration-pneumonia-overview-reference-repair-20261116/infographic.png',
+  './infographics/aspiration-pneumonia-antibiotics-elderly-reference-repair-20261116/index.html',
+  './infographics/aspiration-pneumonia-antibiotics-elderly-reference-repair-20261116/infographic.png',
+  './infographics/uti-antibiotics-japan-international-reference-repair-20261116/index.html',
+  './infographics/uti-antibiotics-japan-international-reference-repair-20261116/infographic.png',
   './infographics/antibody-hospital-economics/index.html',
   './infographics/neurology-practice-changing-2026-autumn/index.html',
   './infographics/carotid-web-a-to-a-stroke/index.html',
