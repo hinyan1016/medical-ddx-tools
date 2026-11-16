@@ -1,5 +1,11 @@
-const CACHE_NAME = 'ddx-tools-v411';
+const CACHE_NAME = 'ddx-tools-v412';
 const ASSETS = [
+  './infographics/afib-doac-selection-reference-repair-20261116/index.html',
+  './infographics/afib-doac-selection-reference-repair-20261116/infographic.png',
+  './infographics/asm-drug-interactions-reference-repair-20261116/index.html',
+  './infographics/asm-drug-interactions-reference-repair-20261116/infographic.png',
+  './infographics/resident-emergency-drugs-reference-repair-20261116/index.html',
+  './infographics/resident-emergency-drugs-reference-repair-20261116/infographic.png',
   './infographics/aspiration-pneumonia-overview-reference-repair-20261116/index.html',
   './infographics/aspiration-pneumonia-overview-reference-repair-20261116/infographic.png',
   './infographics/aspiration-pneumonia-antibiotics-elderly-reference-repair-20261116/index.html',
