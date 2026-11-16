@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v407';
+const CACHE_NAME = 'ddx-tools-v408';
 const ASSETS = [
   './infographics/aspiration-pneumonia-overview-reference-repair-20261116/index.html',
   './infographics/aspiration-pneumonia-overview-reference-repair-20261116/infographic.png',
@@ -137,6 +137,7 @@ const ASSETS = [
   './select_score.html',
   './abcd2_calculator.html',
   './aspects_calculator.html',
+  './warfarin_dose_adjuster.html',
   './infographics/aspects-score/index.html',
   './infographics/abcd2-tia-risk-score/index.html',
   './infographics/moca-j-v81/index.html',

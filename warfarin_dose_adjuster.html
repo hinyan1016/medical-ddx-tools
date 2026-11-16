@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A5276">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>ワーファリン用量調整の提案ツール（PT-INRと現在の用量から）</title>
+<meta name="description" content="目標PT-INR・今回のPT-INR・現在の用量を入れると、継続・増量・減量・休薬のどれにあたるか、週用量と1日ごとの飲み方（mg）、次の検査の目安を、カナダBC州ガイドライン2023とCHEST 2012に沿って提案します。カルテ用の文をコピーできます。">
+<meta property="og:title" content="ワーファリン用量調整の提案ツール（PT-INRと現在の用量から）">
+<meta property="og:description" content="目標PT-INR・今回のPT-INR・現在の用量を入れると、継続・増量・減量・休薬のどれにあたるか、週用量と1日ごとの飲み方（mg）、次の検査の目安を、カナダBC州ガイドライン2023とCHEST 2012に沿って提案します。カルテ用の文をコピーできます。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tools.ichisouzo-lab.com/warfarin_dose_adjuster.html">
+<meta property="og:image" content="https://tools.ichisouzo-lab.com/assets/og-tools.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="医知創造ラボ">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root {
+    --dark: #1A5276;
+    --primary: #1F6391;
+    --mid: #2E86C1;
+    --light: #E8F1F8;
+    --red: #C0392B;
+    --orange: #E08600;
+    --green: #2E7D32;
+    --gray: #6C757D;
+    --light-gray: #F4F6F8;
+    --white: #FFFFFF;
+    --shadow: 0 2px 8px rgba(26,82,118,0.10);
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "游ゴシック", "Yu Gothic", "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #E8F1F8 0%, #F4F6F8 100%);
+    color: #222; min-height: 100vh; padding: 0 0 40px; line-height: 1.6;
+  }
+  header {
+    background: linear-gradient(135deg, var(--dark), var(--mid));
+    color: var(--white); padding: 14px 20px 18px; text-align: center;
+    box-shadow: 0 4px 16px rgba(26,82,118,0.18);
+  }
+  .back-bar { display: flex; align-items: center; margin-bottom: 8px; }
+  .back-bar a { color: rgba(255,255,255,0.85); text-decoration: none; font-size: 0.85em; padding: 4px 8px; border-radius: 6px; }
+  header h1 { font-size: 1.35em; font-weight: 700; letter-spacing: 0.02em; }
+  header p { font-size: 0.85em; margin-top: 6px; opacity: 0.92; }
+  .container { max-width: 860px; margin: 0 auto; padding: 20px 14px; }
+  .card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 16px; overflow: hidden; }
+  .card-header { padding: 12px 16px; background: var(--light); border-bottom: 2px solid var(--primary); font-weight: 700; color: var(--primary); }
+  .card-body { padding: 16px; }
+  .card-body p { font-size: 0.92em; margin-bottom: 10px; }
+  .card-body p:last-child { margin-bottom: 0; }
+  .alert-disclaimer { background: #fff8e1; border-left: 4px solid var(--orange); padding: 10px 14px; margin-bottom: 16px; border-radius: 6px; font-size: 0.85em; color: #5d4400; }
+
+  .field { margin-bottom: 14px; }
+  .field:last-child { margin-bottom: 0; }
+  .field > label, .field > .lbl { display: block; font-weight: 700; font-size: 0.9em; color: var(--primary); margin-bottom: 5px; }
+  .hint { font-size: 0.82em; color: var(--gray); margin-top: 4px; }
+  select, input[type="number"] {
+    font-family: inherit; font-size: 1em; padding: 9px 10px; border: 1.5px solid #b8cad9; border-radius: 8px;
+    background: var(--white); color: #222; min-height: 42px; max-width: 100%;
+  }
+  select { width: 100%; }
+  input[type="number"] { width: 6.5em; }
+  .inline { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+  .inline span { font-size: 0.92em; }
+  .seg { display: inline-flex; flex-wrap: wrap; border: 1.5px solid var(--primary); border-radius: 8px; overflow: hidden; }
+  .seg button { border: none; background: var(--white); color: var(--primary); padding: 8px 12px; font-size: 0.9em; font-family: inherit; cursor: pointer; border-right: 1px solid #c9d9e6; min-height: 40px; }
+  .seg button:last-child { border-right: none; }
+  .seg button.active { background: var(--primary); color: var(--white); font-weight: 700; }
+  .week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 8px; }
+  .week div { text-align: center; font-size: 0.82em; color: var(--gray); }
+  .week input { width: 100%; padding: 8px 2px; text-align: center; }
+  @media (max-width: 520px) { .week { grid-template-columns: repeat(4, 1fr); } }
+  .checks label { display: flex; align-items: flex-start; gap: 8px; font-size: 0.92em; padding: 7px 0; cursor: pointer; }
+  .checks input { width: 20px; height: 20px; margin-top: 2px; flex: 0 0 auto; }
+
+  .verdict { border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; border-left: 6px solid var(--gray); background: var(--light-gray); }
+  .verdict .v-label { font-size: 0.82em; font-weight: 700; color: var(--gray); }
+  .verdict .v-title { font-size: 1.35em; font-weight: 800; line-height: 1.35; margin-top: 2px; }
+  .verdict .v-sub { font-size: 0.92em; margin-top: 6px; }
+  .v-keep { border-left-color: var(--green); background: #e7f4ea; } .v-keep .v-title { color: var(--green); }
+  .v-up { border-left-color: var(--mid); background: #e6f1fa; } .v-up .v-title { color: var(--dark); }
+  .v-down { border-left-color: var(--orange); background: #fff3e0; } .v-down .v-title { color: #9a5700; }
+  .v-hold { border-left-color: var(--red); background: #fdecea; } .v-hold .v-title { color: var(--red); }
+  .v-em { border-left-color: #7b1010; background: #fbdedb; } .v-em .v-title { color: #7b1010; }
+
+  .sub-title { font-weight: 700; color: var(--dark); font-size: 0.95em; margin: 16px 0 6px; }
+  .tbl-wrap { overflow-x: auto; max-width: 100%; }
+  table.t { width: 100%; border-collapse: collapse; font-size: 0.88em; }
+  table.t th, table.t td { border: 1px solid #dbe5ee; padding: 7px 8px; text-align: left; vertical-align: top; }
+  table.t th { background: #1A5276; color: #fff; }
+  table.t tr.pick td { background: #fff7e0; font-weight: 700; }
+  .pill { display: inline-block; font-size: 0.78em; background: var(--orange); color: #fff; border-radius: 10px; padding: 1px 8px; margin-left: 6px; font-weight: 700; }
+  .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 8px; }
+  .days div { border: 1px solid #dbe5ee; border-radius: 6px; text-align: center; padding: 5px 2px; font-size: 0.85em; background: #fbfdff; }
+  .days div b { display: block; font-size: 1.05em; color: var(--dark); }
+  .days div.hi { background: #e6f1fa; }
+  ul.steps { margin: 0 0 0 1.2em; }
+  ul.steps li { font-size: 0.92em; margin-bottom: 6px; }
+  .recheck { background: var(--light); border-radius: 8px; padding: 10px 12px; font-size: 0.95em; }
+  .recheck b { color: var(--dark); }
+  .summary { white-space: pre-wrap; background: var(--light-gray); border: 1px solid #dde3ea; border-radius: 8px; padding: 10px 12px; font-size: 0.88em; margin-top: 8px; font-family: inherit; }
+  .btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .btn { border: none; border-radius: 8px; padding: 9px 14px; font-size: 0.9em; font-family: inherit; cursor: pointer; background: var(--primary); color: var(--white); min-height: 40px; }
+  .btn.sub { background: var(--white); color: var(--primary); border: 1.5px solid var(--primary); }
+  .btn.copied { background: var(--green); }
+  .err { color: var(--red); font-size: 0.92em; font-weight: 700; }
+  .refs li { font-size: 0.8em; margin: 0 0 6px 1.4em; line-height: 1.55; word-break: break-word; }
+  .refs a, .card-body a { color: var(--mid); }
+  .article-link { display: block; border: 1.5px solid var(--mid); border-radius: 8px; padding: 10px 12px; text-decoration: none; color: var(--dark); font-weight: 700; }
+  .article-link span { display: block; font-weight: 400; font-size: 0.85em; color: var(--gray); }
+  details.fold { border: 1px solid #c9d9e6; border-radius: 8px; margin-top: 10px; }
+  details.fold summary { cursor: pointer; padding: 10px 12px; background: var(--light); font-weight: 700; color: var(--primary); font-size: 0.92em; border-radius: 8px; }
+  details.fold summary small { display: block; font-weight: 400; color: var(--gray); }
+  details.fold .fold-body { padding: 12px; }
+  footer { max-width: 860px; margin: 30px auto 0; padding: 14px; text-align: center; color: var(--gray); font-size: 0.78em; line-height: 1.6; }
+  footer a { color: var(--mid); text-decoration: none; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<nav id="ics-globalnav" style="background:#15324E;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
+<div style="max-width:1040px;margin:0 auto;padding:8px 12px;display:flex;align-items:center;gap:2px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;">
+<a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;padding-right:8px;">医知創造ラボ</a>
+<a href="https://ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ホーム</a>
+<a href="https://blog.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ブログ</a>
+<a href="https://tools.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ツール</a>
+<a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">YouTube</a>
+</div>
+</nav>
+
+<header>
+  <div class="back-bar"><a href="index.html">← ツール一覧へ</a></div>
+  <h1>ワーファリン用量調整の提案ツール</h1>
+  <p>PT-INR と現在の用量から、継続・増量・減量・休薬と、次の検査の目安を示します（維持期・成人）</p>
+</header>
+
+<div class="container">
+
+  <div class="alert-disclaimer">
+    <strong>⚠ 使用上の注意</strong>：処方する医師・薬剤師のための<strong>参考用</strong>の計算機です。提案は海外の指針（カナダBC州 2023、CHEST 2012）の表を機械的に当てはめたもので、日本人や国内の目標域（1.6-2.6 など）でこの表の成績を確かめた研究は確認できていません。出血・血栓のリスク、併用薬、肝腎機能、検査値の推移を確かめたうえで、処方医が決めてください。患者さんがご自身で用量を変えるためのものではありません。
+  </div>
+
+  <div class="card">
+    <div class="card-header">① 目標と今回の検査値</div>
+    <div class="card-body">
+      <div class="field">
+        <label for="preset">目標 PT-INR の範囲</label>
+        <select id="preset">
+          <option value="1.6,2.6">1.6-2.6　心房細動：一次予防の低リスク、または70歳以上（JCS/JHRS 2020）</option>
+          <option value="2.0,3.0">2.0-3.0　心房細動：70歳未満の二次予防・高リスク（JCS/JHRS 2020）</option>
+          <option value="1.5,2.5">1.5-2.5　静脈血栓塞栓症（JCS 2025）</option>
+          <option value="2.0,2.5">2.0-2.5　機械弁：大動脈弁位で塞栓リスクなし（JCS 2020）</option>
+          <option value="2.0,3.0">2.0-3.0　機械弁：僧帽弁位、または塞栓リスクのある大動脈弁位（JCS 2020）</option>
+          <option value="custom">範囲を自分で入力する</option>
+        </select>
+        <div class="inline hidden" id="customRange" style="margin-top:8px;">
+          <input type="number" id="lo" step="0.1" min="1" max="4" value="2.0" inputmode="decimal" aria-label="目標下限">
+          <span>から</span>
+          <input type="number" id="hi" step="0.1" min="1.5" max="4.5" value="3.0" inputmode="decimal" aria-label="目標上限">
+        </div>
+        <p class="hint">目標域は適応・年齢・リスクで変わります。患者さんごとに決めた範囲を選んでください。</p>
+      </div>
+      <div class="field">
+        <label for="inr">今回の PT-INR</label>
+        <input type="number" id="inr" step="0.01" min="0.5" max="20" inputmode="decimal" placeholder="例 3.4">
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">② 現在の用量</div>
+    <div class="card-body">
+      <div class="field">
+        <span class="lbl">飲み方</span>
+        <div class="seg" id="doseModeSeg">
+          <button type="button" data-v="daily" class="active">毎日同じ量</button>
+          <button type="button" data-v="week">曜日で量が違う</button>
+        </div>
+      </div>
+      <div class="field" id="dailyBox">
+        <label for="daily">1日量</label>
+        <div class="inline"><input type="number" id="daily" step="0.25" min="0" max="20" inputmode="decimal" placeholder="例 2.5"><span>mg／日</span></div>
+      </div>
+      <div class="field hidden" id="weekBox">
+        <span class="lbl">曜日ごとの量（mg）</span>
+        <div class="week" id="weekInputs"></div>
+        <p class="hint">飲まない日は 0 を入れます。</p>
+      </div>
+      <div class="field">
+        <span class="lbl">提案する量のきざみ</span>
+        <div class="seg" id="unitSeg">
+          <button type="button" data-v="0.5" class="active">0.5 mg</button>
+          <button type="button" data-v="0.25">0.25 mg</button>
+        </div>
+        <p class="hint">ワーファリン錠は 0.5 mg・1 mg・5 mg です。0.25 mg きざみは半錠や顆粒を使う場合に選びます。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">③ 患者さんの状況</div>
+    <div class="card-body">
+      <div class="field">
+        <label for="bleed">出血</label>
+        <select id="bleed">
+          <option value="none">出血はない</option>
+          <option value="minor">軽い出血がある（鼻出血、歯肉出血、皮下出血など）</option>
+          <option value="major">重大な出血がある、または疑う（頭蓋内、消化管、止まらない出血など）</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="status">これまでの経過</label>
+        <select id="status">
+          <option value="stable">維持期で、これまで用量を変えずに目標域で安定していた</option>
+          <option value="repeat">維持期だが、前回も同じ向きに目標域を外れていた</option>
+          <option value="recent">前回の用量変更から5日たっていない</option>
+          <option value="init">飲み始めて間もない（導入期）</option>
+        </select>
+      </div>
+      <div class="field checks">
+        <span class="lbl">あてはまるもの</span>
+        <label><input type="checkbox" id="transient"><span>一時的な原因がはっきりしている（飲み忘れ・飲みすぎ、抗菌薬などの短期の薬、多量の飲酒）</span></label>
+        <label><input type="checkbox" id="bleedRisk"><span>出血のリスクが高い（高齢、抗血小板薬や NSAIDs の併用、出血の既往など）</span></label>
+        <label><input type="checkbox" id="thrombRisk"><span>血栓のリスクが高い（機械弁、最近の血栓塞栓症など）</span></label>
+        <p class="hint">下痢などの消化器症状や、食事の大きな変化があるときは、BC 2023 は検査の回数を増やすことがあるとしています。用量を変えなくてよい理由には挙げられていないので、上の「一時的な原因」には含めていません。</p>
+      </div>
+      <div class="btns">
+        <button type="button" class="btn" id="calcBtn">提案を表示する</button>
+        <button type="button" class="btn sub" id="resetBtn">入力を消す</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card hidden" id="resultCard">
+    <div class="card-header">④ 提案</div>
+    <div class="card-body" id="resultBody"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">このツールの決め方</div>
+    <div class="card-body">
+      <p>PT-INR の区分と対応は、カナダ・ブリティッシュコロンビア州の診療指針（BC Guidelines 2023）の用量調整表に沿っています。この表は「目標域より上か下か」に加えて、1.5・5.0・9.0 という固定の値でも区分しています。固定の値は目標域によらず同じなので、国内の低めの目標域（1.6-2.6、1.5-2.5）にそのまま合うとは限りません。そこで、安定していた人が目標域から 0.5 以内で1回だけ外れた場合は、1.5 未満でも CHEST 2012 の推奨 3.2（用量を変えずに再検）を先に当てはめています。</p>
+      <div class="tbl-wrap">
+        <table class="t">
+          <tr><th style="background:#1A5276;color:#fff;">今回の PT-INR</th><th style="background:#1A5276;color:#fff;">対応</th><th style="background:#1A5276;color:#fff;">出典</th></tr>
+          <tr><td>1.5 未満</td><td>1回だけ週用量の 20% を上乗せし、あわせて週用量を 10-20% 増やす</td><td>BC 2023</td></tr>
+          <tr><td>1.5 以上で目標域より低い</td><td>用量は変えない。2回続けて低ければ週用量を 10-20% 増やす</td><td>BC 2023</td></tr>
+          <tr><td>目標域内</td><td>変更しない</td><td>BC 2023</td></tr>
+          <tr><td>目標域より高く 5.0 未満</td><td>週用量を 10-20% 減らす、または1回休薬を考える。上限から 0.1-0.4 高いだけなら減量しなくてよいことがある</td><td>BC 2023</td></tr>
+          <tr><td>5.0-9.0</td><td>1-2回休薬して再検する。目標域に戻ったら週用量を 10-20% 減らして再開する。出血リスクが高ければ経口ビタミンK 1-2 mg を考える</td><td>BC 2023</td></tr>
+          <tr><td>9.0 を超える</td><td>いったん中止し、経口ビタミンK 2-5 mg を考えて再検する。目標域に戻ったら週用量を 20% 減らして再開する</td><td>BC 2023</td></tr>
+          <tr><td>安定していた人が、目標域から 0.5 以内で1回だけ外れた</td><td>用量を変えず、1-2週以内に再検する</td><td>CHEST 2012（推奨 3.2）</td></tr>
+          <tr><td>4.5-10 で出血なし</td><td>ビタミンKを一律には使わない</td><td>CHEST 2012（推奨 9.1）</td></tr>
+          <tr><td>10 を超えて出血なし</td><td>経口ビタミンKを使う</td><td>CHEST 2012（推奨 9.1）</td></tr>
+        </table>
+      </div>
+      <p style="margin-top:12px;">原典が示しているのは「10-20%」という幅です。このツールは幅の中から1つを選んで色を付けますが、どれを選ぶかはツール側の目安で、10%・15%・20% の3通りを並べて表示します。再検の時期は BC 2023 の図に沿って示します。図では、用量を調整したあとは 2-4日ごとの検査に戻り、目標域内が2回続けば週1回にします。この間隔で検査できない場合の「変更後 1-2週間以内」と、一時的な原因があるときなどの「1週間以内」は、ツール側の目安です。</p>
+      <details class="fold">
+        <summary>この方式の限界<small>クリック／タップで開閉</small></summary>
+        <div class="fold-body">
+          <ul class="steps">
+            <li>週用量を割合で増減する方式は、主に目標 2.0-3.0 の海外の患者で使われてきました。RE-LY 試験の解析では、目標域内は変更なし・域外は週用量を 10-15% 変える方式に沿った施設ほど、目標域内で過ごす時間の割合（TTR）が高い関連がありました。</li>
+            <li>一方、カナダの診療所を対象にした無作為化試験では、簡単な用量調整アルゴリズムを使っても TTR は通常診療と変わりませんでした（72.1% と 71.4%）。</li>
+            <li>国内の目標域（1.6-2.6、1.5-2.5 など）や日本人で、この表の成績を確かめた研究は確認できていません。</li>
+            <li>導入期の用量の増減（PT-INR 5.0 未満）、小児、妊娠中、手術前後の休薬、重大な出血の治療は対象にしていません。</li>
+            <li>ビタミンKの量は海外指針の記載です。国内で使う製剤・量・経路は、添付文書と施設の手順で確認してください。</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">関連する解説</div>
+    <div class="card-body">
+      <a class="article-link" href="https://blog.ichisouzo-lab.com/entry/2025/05/29/140015" target="_blank" rel="noopener">ワーファリン用量調整の実践ポイント（医知創造ラボ ブログ）<span>適応別の目標 PT-INR、相互作用、高値・低値のときの考え方、周術期の扱いを解説しています（動画あり）</span></a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">参考文献</div>
+    <div class="card-body">
+      <ol class="refs">
+        <li>Guidelines and Protocols Advisory Committee. Warfarin. BC Guidelines. Effective Date: January 18, 2023. <a href="https://www2.gov.bc.ca/gov/content/health/practitioner-professional-resources/bc-guidelines/warfarin" target="_blank" rel="noopener">公式ページ</a>（Table 3: Warfarin dose adjustments、Figure 2）</li>
+        <li>Holbrook A, et al. Evidence-based management of anticoagulant therapy: Antithrombotic Therapy and Prevention of Thrombosis, 9th ed: American College of Chest Physicians Evidence-Based Clinical Practice Guidelines. Chest. 2012. 141(2 Suppl):e152S-e184S. doi:10.1378/chest.11-2295. <a href="https://pubmed.ncbi.nlm.nih.gov/22315259/" target="_blank" rel="noopener">PubMed PMID:22315259</a></li>
+        <li>沢井製薬. ワーファリン錠0.5mg・1mg・5mg／顆粒0.2% 電子添文（2026年4月改訂）. <a href="https://www.pmda.go.jp/PmdaSearch/iyakuDetail/ResultDataSetPDF/300119_3332001D1023_2_01" target="_blank" rel="noopener">PMDA電子添文</a></li>
+        <li>Van Spall HG, et al. Variation in warfarin dose adjustment practice is responsible for differences in the quality of anticoagulation control between centers and countries: an analysis of patients receiving warfarin in the randomized evaluation of long-term anticoagulation therapy (RE-LY) trial. Circulation. 2012. 126(19):2309-16. doi:10.1161/CIRCULATIONAHA.112.101808. <a href="https://pubmed.ncbi.nlm.nih.gov/23027801/" target="_blank" rel="noopener">PubMed PMID:23027801</a></li>
+        <li>Nieuwlaat R, et al. Cluster randomized controlled trial of a simple warfarin maintenance dosing algorithm versus usual care among primary care practices. J Thromb Thrombolysis. 2014. 37(4):435-42. doi:10.1007/s11239-013-0969-x. <a href="https://pubmed.ncbi.nlm.nih.gov/23877621/" target="_blank" rel="noopener">PubMed PMID:23877621</a></li>
+        <li>Ono K, et al. JCS/JHRS 2020 Guideline on Pharmacotherapy of Cardiac Arrhythmias. J Arrhythm. 2022. 38(6):833-973. doi:10.1002/joa3.12714. <a href="https://pubmed.ncbi.nlm.nih.gov/36524037/" target="_blank" rel="noopener">PubMed PMID:36524037</a></li>
+        <li>Izumi C, et al. JCS/JSCS/JATS/JSVS 2020 Guidelines on the Management of Valvular Heart Disease. Circ J. 2020. 84(11):2037-2119. doi:10.1253/circj.CJ-20-0135. <a href="https://pubmed.ncbi.nlm.nih.gov/32921646/" target="_blank" rel="noopener">PubMed PMID:32921646</a></li>
+        <li>Tamura Y, et al. JCS/JPCPHS 2025 Guideline on Pulmonary Hypertension and Pulmonary Embolism/Deep Vein Thrombosis. Circ J. 2026. 90(10):1484-1570. doi:10.1253/circj.CJ-25-1144. <a href="https://pubmed.ncbi.nlm.nih.gov/42386545/" target="_blank" rel="noopener">PubMed PMID:42386545</a></li>
+      </ol>
+      <p class="hint">根拠確認日：2026年11月16日</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <p>本ツールは医療従事者向けの教育・参考情報です。診断や処方の代替ではありません。最終的な判断は最新ガイドライン・添付文書・施設プロトコル・個別症例の臨床状況に基づき医師が行ってください。</p>
+  <p style="margin-top:6px;">© 医知創造ラボ ｜ <a href="index.html">DDxツール一覧</a></p>
+</footer>
+
+<script>
+(function(){
+  var DAYS = ['月','火','水','木','金','土','日'];
+
+  function fmt(x){ return String(Math.round(x * 100) / 100); }
+
+  /* 週用量（mg）を、きざみ u の2段階の量で7日に割り振る */
+  function schedule(weeklyMg, u){
+    var T = Math.round(weeklyMg / u + 1e-9);
+    if (T < 0) T = 0;
+    var base = Math.floor(T / 7), extra = T - base * 7, days = [], i;
+    for (i = 0; i < 7; i++) {
+      var hi = Math.floor((i + 1) * extra / 7) > Math.floor(i * extra / 7);
+      days.push((base + (hi ? 1 : 0)) * u);
+    }
+    return { weekly: T * u, days: days, lo: base * u, hi: (base + 1) * u, nHi: extra };
+  }
+
+  /* 現在の週用量を pct% だけ dir(+1/-1) 方向へ動かし、きざみに丸める。丸めて変わらなければ1きざみ動かす */
+  function adjust(curWeekly, pct, dir, u){
+    var cur = Math.round(curWeekly / u + 1e-9);
+    var T = Math.round(curWeekly * (1 + dir * pct / 100) / u + 1e-9);
+    if (T === cur) T = cur + dir;
+    if (T < 0) T = 0;
+    return schedule(T * u, u);
+  }
+
+  function scheduleText(s){
+    if (s.weekly === 0) return '休薬';
+    if (s.nHi === 0) return '毎日 ' + fmt(s.lo) + ' mg';
+    if (s.lo === 0) return fmt(s.hi) + ' mg を週' + s.nHi + '日（残りの' + (7 - s.nHi) + '日は飲まない）';
+    return fmt(s.hi) + ' mg を週' + s.nHi + '日、' + fmt(s.lo) + ' mg を週' + (7 - s.nHi) + '日';
+  }
+
+  /*
+   * 入力 o: {lo, hi, inr, weekly, unit, bleed, status, transient, bleedRisk, thrombRisk}
+   * 返り値: {cls, label, title, sub, dir, pct, pctNote, topUp, steps[], recheck, notes[], basis}
+   */
+  function suggest(o){
+    var r = { cls: 'v-keep', label: '', title: '', sub: '', dir: 0, pct: 0, pctNote: '', topUp: false, steps: [], recheck: '', notes: [], basis: '' };
+    var inr = o.inr, L = o.lo, U = o.hi;
+
+    if (o.bleed === 'major') {
+      r.cls = 'v-em'; r.label = '緊急対応'; r.title = 'ワーファリンを中止し、ただちに出血の治療と拮抗を検討する';
+      r.sub = '重大な出血では、PT-INR の値にかかわらず緊急の対応が必要です。用量の計算は行いません。';
+      r.steps = [
+        'ワーファリンを中止し、出血源の検索と止血、全身管理を優先します。',
+        'CHEST 2012 は、迅速な拮抗に4因子プロトロンビン複合体製剤を血漿より優先し、ビタミンK 5-10 mg の緩徐な静注を併用することを提案しています（推奨 9.3）。',
+        '国内の電子添文には、過量投与による出血にビタミンK製剤の静脈内投与が奏効すると記載されています。製剤と量は添付文書と施設の手順で確認します。',
+        '止血後の抗凝固の再開時期は、血栓リスクと再出血リスクから個別に決めます。'
+      ];
+      r.recheck = '拮抗後の PT-INR を施設の手順に沿って確認します。';
+      r.basis = 'CHEST 2012、ワーファリン電子添文';
+      return r;
+    }
+
+    var RC_CHANGED = '用量を変えたあとは 2-4日ごとに再検し、目標域内が2回続いたら週1回にします（BC 2023 の図）。この間隔が難しい場合も、変更後 1-2週間以内には再検します（ツールの目安）。';
+
+    if (o.bleed === 'minor') {
+      r.notes.push('軽い出血があります。出血の部位と程度、貧血の進行を診察で確かめ、数値より症状を優先してください。PT-INR が目標域を超えていれば、下の対応に加えて休薬やビタミンKも検討します。目標域内でも出血源の検索が必要です。');
+    }
+
+    if (o.status === 'init' && inr >= 5.0) {
+      r.notes.push('飲み始めて間もない時期です。休薬とビタミンKは、BC 2023 の維持期の表を導入期にも当てはめて示しています（当てはめはツールの判断）。維持量がまだ決まっていないので、再開する量は下の表の割合にこだわらず、検査値の推移をみて決めてください（ツールの目安）。');
+    }
+
+    if (o.status === 'init' && inr < 5.0) {
+      r.cls = 'v-hold'; r.label = '対象外'; r.title = '導入期はこのツールの対象外です';
+      r.sub = 'この表は、維持量が決まったあとの調整を想定しています。';
+      r.steps = [
+        '飲み始めの時期は、PT-INR が上がっても抗凝固効果が十分とは限らず、このツールでは維持期の増減量の表を当てはめていません（ツールの判断）。',
+        'BC 2023 の図では、開始後は 2-4日ごとに検査し、目標域内が2回続いたら週1回にします。その後、目標域内が4回続けば2週ごと、さらに4回続けば4週ごとへ延ばします。',
+        '電子添文では、成人の初回量は通常 1日1回 1-5 mg で、数日かけて検査値をみながら維持量を決めます。'
+      ];
+      if (inr > U) r.steps.push('今回の値は目標域より高めです。減量や1回の休薬が必要かどうかは、検査値の推移をみて処方医が判断してください。');
+      r.recheck = '目標域内が2回続くまでは 2-4日ごと（BC 2023）。';
+      r.basis = 'BC 2023（Figure 2）、ワーファリン電子添文';
+      return r;
+    }
+
+    var devHigh = Math.round((inr - U) * 100) / 100;
+    var devLow = Math.round((L - inr) * 100) / 100;
+
+    if (inr > 9.0) {
+      r.cls = 'v-hold'; r.label = '休薬'; r.title = 'いったん中止し、経口ビタミンKを検討して翌日に再検する';
+      r.sub = '出血がなくても、この範囲は出血の危険が高い値です。';
+      r.steps = [
+        'ワーファリンをいったん中止します。',
+        'BC 2023 は経口ビタミンK 2-5 mg を考え、24時間で十分に下がらなければ追加するとしています。CHEST 2012 は、10 を超えて出血がなければ経口ビタミンKの使用を提案しています。',
+        '目標域に戻ったら、週用量を 20% 減らして再開します（下の表）。',
+        '原因（併用薬の開始、飲みすぎ、食事量の低下、肝機能・心不全の悪化など）を確認します。'
+      ];
+      r.dir = -1; r.pct = 20; r.pctNote = 'BC 2023 の記載どおり';
+      r.recheck = '24時間後（翌日）に再検。目標域に戻るまで頻回に確認します。';
+      r.basis = 'BC 2023（Table 3）、CHEST 2012（推奨 9.1）';
+    } else if (inr >= 5.0) {
+      r.cls = 'v-hold'; r.label = '休薬'; r.title = '1-2回休薬して再検し、目標域に戻ったら減量して再開する';
+      r.sub = 'PT-INR が 5 を超えると出血の危険が急に高くなります。';
+      r.steps = [
+        'ワーファリンを 1-2回分休みます。',
+        '目標域に戻ったら、週用量を 10-20% 減らして再開します（下の表）。' + (o.transient ? 'BC 2023 は、飲みすぎなどが原因の場合は用量調整が必ずしも要らないとしています。原因が一時的で、すでに取り除かれているなら、元の量で再開することも選べます（ツールの目安）。' : ''),
+        o.bleedRisk ? '出血リスクが高いので、BC 2023 に沿って経口ビタミンK 1-2 mg を検討します。' : 'CHEST 2012 は、4.5-10 で出血がなければビタミンKを一律には使わないとしています。BC 2023 は、出血リスクが高い場合に経口ビタミンK 1-2 mg を考えるとしています。',
+        '原因（併用薬の開始、飲みすぎ、食事量の低下、肝機能・心不全の悪化など）を確認します。'
+      ];
+      r.dir = -1; r.pct = 15; r.pctNote = '10-20% の中央（ツールの目安）';
+      r.recheck = '1-2回休薬したあと（1-2日後）に再検。目標域に戻るまで検査の間隔を詰めます。';
+      r.basis = 'BC 2023（Table 3）、CHEST 2012（推奨 9.1）';
+    } else if (inr > U) {
+      if (o.status === 'recent') {
+        r.cls = 'v-keep'; r.label = '継続して再検'; r.title = '用量は重ねて変えず、変更の効果が出そろってから再検する';
+        r.sub = '前回の変更が PT-INR に反映されるまで 4-5日かかることがあります。';
+        r.steps = ['前回の変更から5日たっていなければ、用量調整は必ずしも要りません（BC 2023）。', '週に2回を超える用量変更は勧められていません（BC 2023）。'];
+        r.recheck = '2-4日後に再検（BC 2023 の図）。前回の変更から 4-5日たったあとの値で、次の調整を考えます（ツールの目安）。';
+        r.basis = 'BC 2023（Figure 2）';
+      } else if (o.transient) {
+        r.cls = 'v-keep'; r.label = '継続して再検'; r.title = '維持量は変えず、原因を取り除いて1週間以内に再検する';
+        r.sub = '一時的な原因による変動では、維持量の変更は必ずしも要りません。';
+        r.steps = ['飲みすぎ、短期の併用薬、多量の飲酒などによる一時的な変動では、維持量を必ずしも変えなくてよいとされています（BC 2023）。', '値が高めで気になる場合は、1回だけ休薬することも選べます。', '原因の薬が続く場合は、一時的な原因とは扱わず、減量を検討します。'];
+        r.recheck = '1週間以内に再検（ツールの目安）。相互作用のある薬を始めた場合は、1週間以内の検査が必要になることがあります（BC 2023）。';
+        r.basis = 'BC 2023';
+      } else if (devHigh <= 0.5 && o.status === 'stable') {
+        r.cls = 'v-keep'; r.label = '継続して再検'; r.title = '用量を変えず、1-2週以内に再検する';
+        r.sub = '安定していた人が、上限から 0.5 以内で1回だけ外れた場合です。';
+        r.steps = ['CHEST 2012 は、安定していた患者が目標域から 0.5 以内で1回だけ外れたときは、現在の量を続けて 1-2週以内に再検することを提案しています。', 'BC 2023 も、上限から 0.1-0.4 高いだけなら減量しなくてよいことがあるとしています。', '服薬、併用薬、食事、体調の変化を確認します。再検でも高ければ減量します。'];
+        if (o.bleedRisk) r.steps.push('出血リスクが高い場合は、待たずに 10% の減量を選ぶこともできます（下の表。ツールの目安）。');
+        r.recheck = '1-2週以内に再検。';
+        r.basis = 'CHEST 2012（推奨 3.2）、BC 2023（Table 3）';
+        if (o.bleedRisk) { r.dir = -1; r.pct = 0; r.pctNote = ''; }
+      } else {
+        r.cls = 'v-down'; r.label = '減量'; r.title = '週用量を 10-20% 減らす';
+        r.sub = devHigh > 1.0 ? '上限から 1.0 より大きく外れています。' : '目標域より高い値です。';
+        r.steps = ['週用量を 10-20% 減らします（下の表）。BC 2023 は、減量の代わりに1回休薬する方法も挙げています。', '服薬、併用薬、食事、体調の変化を確認します。'];
+        r.dir = -1; r.pct = devHigh > 1.0 ? 15 : 10;
+        r.pctNote = devHigh > 1.0 ? '外れ幅が大きいので 15%（ツールの目安）' : '外れ幅が小さいので 10%（ツールの目安）';
+        r.recheck = RC_CHANGED;
+        r.basis = 'BC 2023（Table 3、Figure 2）';
+      }
+    } else if (inr >= L) {
+      r.cls = 'v-keep'; r.label = '継続'; r.title = '現在の用量を続ける';
+      r.sub = '目標域に入っています。';
+      r.steps = ['目標域内での小さな上下では、用量を変える必要はありません（BC 2023）。'];
+      if (o.status === 'stable') {
+        r.recheck = 'いまの検査間隔を続けます。北米では安定した患者は通常4週ごとで、CHEST 2012 は安定が続いていれば最長12週までの間隔を提案しています。';
+      } else {
+        r.recheck = 'いまの検査間隔を続けます。BC 2023 の図では、目標域内が2回続けば週1回、その後4回続けば2週ごと、さらに4回続けば4週ごとへ延ばします。';
+      }
+      if (L === 1.6 && U === 2.6 && inr < 2.0) {
+        r.notes.push('JCS/JHRS 2020 は、1.6-2.6 を目標にする場合も下限を狙わず、2.0 付近を目指すとしています。');
+      }
+      r.basis = 'BC 2023（Table 3、Figure 2）、CHEST 2012（推奨 3.1）';
+    } else {
+      /* 目標域より低い */
+      if (o.status === 'recent') {
+        r.cls = 'v-keep'; r.label = '継続して再検'; r.title = '用量は重ねて変えず、変更の効果が出そろってから再検する';
+        r.sub = '前回の変更が PT-INR に反映されるまで 4-5日かかることがあります。';
+        r.steps = ['前回の変更から5日たっていなければ、用量調整は必ずしも要りません（BC 2023）。', '週に2回を超える用量変更は勧められていません（BC 2023）。'];
+        r.recheck = '2-4日後に再検（BC 2023 の図）。前回の変更から 4-5日たったあとの値で、次の調整を考えます（ツールの目安）。';
+        r.basis = 'BC 2023（Figure 2）';
+      } else if (o.transient) {
+        r.cls = 'v-keep'; r.label = '継続して再検'; r.title = '維持量は変えず、原因を取り除いて1週間以内に再検する';
+        r.sub = '飲み忘れなどの一時的な原因では、維持量の変更は必ずしも要りません。';
+        r.steps = ['飲み忘れが原因なら、いつもの量を確実に飲むことを確認します（BC 2023）。', '納豆・クロレラ食品・青汁の摂取、作用を弱める薬の開始がないかを確認します。原因が続く場合は増量を検討します。'];
+        r.recheck = '1週間以内に再検（ツールの目安）。';
+        r.basis = 'BC 2023、ワーファリン電子添文';
+      } else if (inr < 1.5 && !(o.status === 'stable' && devLow <= 0.5)) {
+        r.cls = 'v-up'; r.label = '増量'; r.title = '週用量を 10-20% 増やす';
+        r.sub = 'PT-INR が 1.5 未満です。';
+        r.steps = ['週用量を 10-20% 増やします（下の表）。', o.bleedRisk ? 'BC 2023 は、増量とあわせて1回だけ週用量の 20% を上乗せするとしています。出血リスクが高いので、このツールでは上乗せの量を表示しません（ツール側の判断）。' : 'BC 2023 は、増量とあわせて1回だけ週用量の 20% を上乗せするとしています（下に量を表示）。','飲み忘れ、作用を弱める薬や食品（納豆・クロレラ食品・青汁）を確認します。'];
+        r.dir = 1; r.pct = 15; r.pctNote = '10-20% の中央（ツールの目安）'; r.topUp = !o.bleedRisk;
+        r.recheck = RC_CHANGED;
+        r.basis = 'BC 2023（Table 3、Figure 2）';
+      } else if (o.status === 'repeat') {
+        r.cls = 'v-up'; r.label = '増量'; r.title = '週用量を 10-20% 増やす';
+        r.sub = '2回続けて目標域より低い値です。';
+        r.steps = ['2回続けて低ければ、週用量を 10-20% 増やします（BC 2023、下の表）。', '飲み忘れ、作用を弱める薬や食品（納豆・クロレラ食品・青汁）を確認します。'];
+        r.dir = 1; r.pct = 10; r.pctNote = '外れ幅が小さいので 10%（ツールの目安）';
+        r.recheck = RC_CHANGED;
+        r.basis = 'BC 2023（Table 3、Figure 2）';
+      } else {
+        r.cls = 'v-keep'; r.label = '継続して再検'; r.title = '用量を変えず、1-2週以内に再検する';
+        r.sub = inr < 1.5 ? '安定していた人が、下限から 0.5 以内で1回だけ外れた場合です。' : '1.5 以上で、目標域より少し低い値が1回出た場合です。';
+        r.steps = [inr < 1.5 ? 'BC 2023 の表は 1.5 未満で増量としていますが、この区切りは目標域によらない固定の値です。目標域の下限が低いので、このツールでは CHEST 2012 の推奨を先に当てはめています。再検でも低ければ増量します。' : 'BC 2023 は、1.5 以上で目標域より低い値では用量を変えず、2回続けば増量するとしています。',devLow <= 0.5 ? 'CHEST 2012 も、安定していた患者が目標域から 0.5 以内で1回だけ外れたときは、現在の量を続けて 1-2週以内に再検することを提案しています。' : '外れ幅が 0.5 を超えているので、再検を早めにします。', '飲み忘れ、作用を弱める薬や食品を確認します。'];
+        r.recheck = devLow <= 0.5 ? '1-2週以内に再検。' : '1週間以内に再検（ツールの目安）。';
+        r.basis = 'BC 2023（Table 3）、CHEST 2012（推奨 3.2）';
+      }
+      if (o.thrombRisk) {
+        r.notes.push('血栓リスクが高い患者さんです。血栓を疑う症状があれば再検を待たずに評価してください。CHEST 2012 は、安定していた患者の1回だけの低値にヘパリンを一律に併用しないことを提案していますが（推奨 3.3）、機械弁などでの追加の抗凝固は循環器の担当医と個別に決めます。');
+      }
+    }
+    return r;
+  }
+
+  window.WFDose = { suggest: suggest, schedule: schedule, adjust: adjust, scheduleText: scheduleText };
+
+  /* ---------- 画面 ---------- */
+  var doseMode = 'daily', unit = 0.5, lastResult = null, lastInput = null, pickedPct = 0;
+
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  (function buildWeek(){
+    var h = '', i;
+    for (i = 0; i < 7; i++) h += '<div>' + DAYS[i] + '<input type="number" id="wd' + i + '" step="0.25" min="0" max="20" inputmode="decimal" aria-label="' + DAYS[i] + '曜の量"></div>';
+    $('weekInputs').innerHTML = h;
+  })();
+
+  function bindSeg(id, fn){
+    var btns = $(id).querySelectorAll('button'), i;
+    for (i = 0; i < btns.length; i++) {
+      btns[i].addEventListener('click', function(){
+        var all = this.parentNode.querySelectorAll('button'), j;
+        for (j = 0; j < all.length; j++) all[j].classList.remove('active');
+        this.classList.add('active');
+        fn(this.getAttribute('data-v'));
+      });
+    }
+  }
+  bindSeg('doseModeSeg', function(v){
+    doseMode = v;
+    $('dailyBox').className = 'field' + (v === 'daily' ? '' : ' hidden');
+    $('weekBox').className = 'field' + (v === 'week' ? '' : ' hidden');
+  });
+  bindSeg('unitSeg', function(v){ unit = parseFloat(v); if (lastInput) calc(); });
+
+  $('preset').addEventListener('change', function(){
+    $('customRange').className = 'inline' + (this.value === 'custom' ? '' : ' hidden');
+  });
+
+  function readInput(){
+    var p = $('preset').value, lo, hi, weekly = 0, cur = [], i, v;
+    if (p === 'custom') { lo = parseFloat($('lo').value); hi = parseFloat($('hi').value); }
+    else { lo = parseFloat(p.split(',')[0]); hi = parseFloat(p.split(',')[1]); }
+    var inr = parseFloat($('inr').value);
+    if (isNaN(lo) || isNaN(hi) || lo >= hi) return { error: '目標 PT-INR の範囲を、下限が上限より小さくなるように入れてください。' };
+    if (lo < 1.0 || hi > 4.5) return { error: '目標 PT-INR の範囲は 1.0 から 4.5 の間で入れてください。' };
+    if (isNaN(inr) || inr < 0.5 || inr > 20) return { error: '今回の PT-INR を 0.5 から 20 の間で入れてください。' };
+    if (doseMode === 'daily') {
+      v = parseFloat($('daily').value);
+      if (isNaN(v) || v <= 0) return { error: '現在の1日量（mg）を入れてください。' };
+      for (i = 0; i < 7; i++) cur.push(v);
+      weekly = v * 7;
+    } else {
+      for (i = 0; i < 7; i++) {
+        v = parseFloat($('wd' + i).value);
+        if (isNaN(v) || v < 0) return { error: '曜日ごとの量を7日分すべて入れてください（飲まない日は 0）。' };
+        cur.push(v); weekly += v;
+      }
+      if (weekly <= 0) return { error: '現在の量を入れてください。' };
+    }
+    if (weekly > 140) return { error: '1日量が 20 mg を超えています。入力の単位（mg）を確かめてください。' };
+    return {
+      lo: lo, hi: hi, inr: inr, weekly: Math.round(weekly * 100) / 100, cur: cur, unit: unit,
+      bleed: $('bleed').value, status: $('status').value,
+      transient: $('transient').checked, bleedRisk: $('bleedRisk').checked, thrombRisk: $('thrombRisk').checked
+    };
+  }
+
+  function daysHtml(s){
+    var h = '<div class="days">', i;
+    for (i = 0; i < 7; i++) h += '<div' + (s.nHi > 0 && s.days[i] === s.hi ? ' class="hi"' : '') + '>' + DAYS[i] + '<b>' + fmt(s.days[i]) + '</b></div>';
+    return h + '</div>';
+  }
+
+  function summaryText(o, r, s){
+    var t = '【ワーファリン用量調整の検討（参考）】\n';
+    t += '目標 PT-INR ' + o.lo.toFixed(1) + '-' + o.hi.toFixed(1) + '／今回 ' + fmt(o.inr) + '\n';
+    t += '現在の用量：週 ' + fmt(o.weekly) + ' mg（1日平均 ' + fmt(o.weekly / 7) + ' mg）\n';
+    t += '方針：' + r.title + '\n';
+    if (s) {
+      t += (r.cls === 'v-hold' ? '再開時の用量' : '変更後の用量') + '：週 ' + fmt(s.weekly) + ' mg（' + scheduleText(s) + '、現在より約' + Math.round(Math.abs(s.weekly - o.weekly) / o.weekly * 100) + '%' + (r.dir > 0 ? '増' : '減') + '）\n';
+    }
+    t += '次の検査：' + r.recheck + '\n';
+    t += '参照：' + r.basis + '\n';
+    t += '※海外指針の表に基づく目安。出血・血栓リスク、併用薬、経過を確認して処方医が決定。';
+    return t.replace(/[～〜]/g, '-');
+  }
+
+  function render(){
+    var o = lastInput, r = lastResult, h = '', i, s = null;
+    h += '<div class="verdict ' + r.cls + '"><div class="v-label">' + esc(r.label) + '</div><div class="v-title">' + esc(r.title) + '</div><div class="v-sub">' + esc(r.sub) + '</div></div>';
+    h += '<p>目標 ' + o.lo.toFixed(1) + '-' + o.hi.toFixed(1) + '、今回 <strong>' + fmt(o.inr) + '</strong>。現在は週 <strong>' + fmt(o.weekly) + ' mg</strong>（1日平均 ' + fmt(o.weekly / 7) + ' mg）です。</p>';
+    for (i = 0; i < r.notes.length; i++) h += '<div class="alert-disclaimer" style="margin-bottom:10px;">' + esc(r.notes[i]) + '</div>';
+
+    h += '<div class="sub-title">対応</div><ul class="steps">';
+    for (i = 0; i < r.steps.length; i++) h += '<li>' + esc(r.steps[i]) + '</li>';
+    h += '</ul>';
+
+    if (r.dir !== 0) {
+      var pcts = [10, 15, 20], word = r.dir > 0 ? '増' : '減';
+      h += '<div class="sub-title">' + (r.cls === 'v-hold' ? '再開するときの用量' : (r.pct ? '変更後の用量' : '減量する場合の用量')) + '（行をタップして選べます）</div>';
+      h += '<div class="tbl-wrap"><table class="t"><tr><th style="background:#1A5276;color:#fff;">変更幅</th><th style="background:#1A5276;color:#fff;">週用量</th><th style="background:#1A5276;color:#fff;">飲み方</th></tr>';
+      for (i = 0; i < pcts.length; i++) {
+        var a = adjust(o.weekly, pcts[i], r.dir, o.unit);
+        h += '<tr class="pctRow' + (pcts[i] === pickedPct ? ' pick' : '') + '" data-p="' + pcts[i] + '" style="cursor:pointer;"><td>' + pcts[i] + '% ' + word + (pcts[i] === r.pct ? '<span class="pill">目安</span>' : '') + '</td><td>' + fmt(a.weekly) + ' mg</td><td>' + esc(scheduleText(a)) + '</td></tr>';
+      }
+      h += '</table></div>';
+      if (r.pctNote) h += '<p class="hint">目安の選び方：' + esc(r.pctNote) + '。原典は 10-20% の幅を示しています。</p>';
+      if (pickedPct) {
+        s = adjust(o.weekly, pickedPct, r.dir, o.unit);
+        h += '<div class="sub-title">' + pickedPct + '% ' + word + 'にした場合の1週間（mg）</div>' + daysHtml(s);
+        var real = Math.round(Math.abs(s.weekly - o.weekly) / o.weekly * 100);
+        h += '<p class="hint">' + fmt(o.unit) + ' mg きざみに丸めたので、実際の変更幅は約 ' + real + '% です。曜日の割り振りは一例です。</p>';
+        var avg = s.weekly / 7;
+        if (avg > 5 || (avg < 1 && s.weekly > 0)) h += '<p class="hint">電子添文では、成人の維持量は 1日 1-5 mg 程度になることが多いとされています。この範囲を外れるときは、服薬状況と相互作用をあらためて確認してください。</p>';
+      }
+      if (r.topUp) {
+        var tu = Math.round(o.weekly * 0.2 / o.unit) * o.unit;
+        if (tu > 0) h += '<p style="margin-top:10px;">1回だけ上乗せする場合の量：<strong>' + fmt(tu) + ' mg</strong>（週用量の 20%、BC 2023）。</p>';
+      }
+    }
+
+    h += '<div class="sub-title">次の検査</div><div class="recheck"><b>' + esc(r.recheck) + '</b></div>';
+    h += '<p class="hint" style="margin-top:8px;">参照：' + esc(r.basis) + '</p>';
+
+    h += '<div class="sub-title">カルテ用の文</div><div class="summary" id="summaryBox">' + esc(summaryText(o, r, s)) + '</div>';
+    h += '<div class="btns"><button type="button" class="btn" id="copyBtn">📋 文をコピー</button></div>';
+
+    $('resultBody').innerHTML = h;
+    $('resultCard').className = 'card';
+
+    var rows = $('resultBody').querySelectorAll('.pctRow');
+    for (i = 0; i < rows.length; i++) {
+      rows[i].addEventListener('click', function(){ pickedPct = parseInt(this.getAttribute('data-p'), 10); render(); });
+    }
+    $('copyBtn').addEventListener('click', function(){
+      var btn = this;
+      var text = $('summaryBox').textContent;
+      text = text.replace(/[～〜]/g, '-');
+      function done(ok){
+        btn.textContent = ok ? '✓ コピー完了' : 'コピーできませんでした（文を選択してコピーしてください）';
+        if (ok) btn.classList.add('copied');
+        setTimeout(function(){ btn.textContent = '📋 文をコピー'; btn.classList.remove('copied'); }, 2400);
+      }
+      function fallback(){
+        var ok = false;
+        var ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta);
+        ta.select(); try { ok = document.execCommand('copy'); } catch (err) { ok = false; } document.body.removeChild(ta); done(ok);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function(){ done(true); }, fallback);
+      } else {
+        fallback();
+      }
+    });
+  }
+
+  function calc(){
+    var o = readInput();
+    if (o.error) {
+      $('resultBody').innerHTML = '<p class="err">' + esc(o.error) + '</p>';
+      $('resultCard').className = 'card';
+      lastInput = null; lastResult = null;
+      return false;
+    }
+    lastInput = o; lastResult = suggest(o); pickedPct = lastResult.pct;
+    render();
+    return true;
+  }
+
+  $('calcBtn').addEventListener('click', function(){
+    calc();
+    $('resultCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  $('resetBtn').addEventListener('click', function(){
+    var i;
+    $('inr').value = ''; $('daily').value = '';
+    for (i = 0; i < 7; i++) $('wd' + i).value = '';
+    $('bleed').value = 'none'; $('status').value = 'stable';
+    $('transient').checked = false; $('bleedRisk').checked = false; $('thrombRisk').checked = false;
+    $('resultCard').className = 'card hidden'; lastInput = null; lastResult = null;
+  });
+})();
+</script>
+</body>
+</html>
