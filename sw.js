@@ -1,5 +1,11 @@
-const CACHE_NAME = 'ddx-tools-v412';
+const CACHE_NAME = 'ddx-tools-v413';
 const ASSETS = [
+  './infographics/focal-status-epilepticus-mri-reference-repair-20261117/index.html',
+  './infographics/focal-status-epilepticus-mri-reference-repair-20261117/infographic.png',
+  './infographics/multifocal-cidp-lewis-sumner-reference-repair-20261117/index.html',
+  './infographics/multifocal-cidp-lewis-sumner-reference-repair-20261117/infographic.png',
+  './infographics/alzheimers-antibody-therapies-reference-repair-20261117/index.html',
+  './infographics/alzheimers-antibody-therapies-reference-repair-20261117/infographic.png',
   './infographics/afib-doac-selection-reference-repair-20261116/index.html',
   './infographics/afib-doac-selection-reference-repair-20261116/infographic.png',
   './infographics/asm-drug-interactions-reference-repair-20261116/index.html',
