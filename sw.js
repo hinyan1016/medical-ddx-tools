@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v410';
+const CACHE_NAME = 'ddx-tools-v411';
 const ASSETS = [
   './infographics/aspiration-pneumonia-overview-reference-repair-20261116/index.html',
   './infographics/aspiration-pneumonia-overview-reference-repair-20261116/infographic.png',
