@@ -1478,7 +1478,10 @@
       }
     } else {
       if (r.thromboticRisk && r.thromboticRisk.high) {
-        out.push('血栓塞栓症の高発症群に相当します: ' + r.thromboticRisk.reasons.join('、') + '。');
+        var reasons = r.thromboticRisk.reasons.map(function (x) {
+          return x.replace(/（[^（）]*(?:JGES|CHEST|BSG\/ESGE)[^（）]*）/g, '');
+        });
+        out.push('血栓塞栓症の高発症群に相当します: ' + reasons.join('、') + '。');
       }
       if (r.deferRecommended) {
         out.push(r.deferRecommended.reason + '。');
