@@ -1,5 +1,10 @@
-const CACHE_NAME = 'ddx-tools-v424';
+const CACHE_NAME = 'ddx-tools-v425';
 const ASSETS = [
+  './infographics/hemorrhagic-stroke-seizure-prophylaxis/index.html',
+  './infographics/hemorrhagic-stroke-seizure-prophylaxis/infographic.png',
+  './slides/hemorrhagic-stroke-seizure-prophylaxis/index.html',
+  './slides/hemorrhagic-stroke-seizure-prophylaxis/slide-01.png',
+
   './infographics/dural-avf-reference-repair-20261117/index.html',
   './infographics/dural-avf-reference-repair-20261117/infographic.png',
   './infographics/young-pd-pregnancy-reference-repair-20261117/index.html',
