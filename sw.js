@@ -1,5 +1,11 @@
-const CACHE_NAME = 'ddx-tools-v421';
+const CACHE_NAME = 'ddx-tools-v422';
 const ASSETS = [
+  './infographics/dural-avf-reference-repair-20261117/index.html',
+  './infographics/dural-avf-reference-repair-20261117/infographic.png',
+  './infographics/young-pd-pregnancy-reference-repair-20261117/index.html',
+  './infographics/young-pd-pregnancy-reference-repair-20261117/infographic.png',
+  './infographics/migraine-drug-selection-reference-repair-20261117/index.html',
+  './infographics/migraine-drug-selection-reference-repair-20261117/infographic.png',
   './infographics/cerebral-circulation-metabolism-drugs-reference-repair-20261117/index.html',
   './infographics/cerebral-circulation-metabolism-drugs-reference-repair-20261117/infographic.png',
   './infographics/venipuncture-pain-numbness-reference-repair-20261117/index.html',
