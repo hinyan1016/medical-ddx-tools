@@ -97,8 +97,20 @@ def main():
         assert s['w'] == [] and s['cards'] == 2, s
         assert '睡眠時に出現、左前側頭部（F7最大）に起始、5-7 Hzの律動性シータ活動、同側半球へ伝播、持続60-90秒。脳波変化は臨床症状に約10秒先行。' in s['t'], s
         assert '発作後：左側優位の徐波化' in s['t'], s
+        # ビデオ記録の注記は発作の記載に付き、発作後の脳波はその後に続く
+        assert '右上肢のジストニア肢位（ビデオ脳波で記録）。発作後：左側優位の徐波化' in s['t'], s
 
-        # 9) 種類を切り替えると入力欄が入れ替わる
+        # 8b) 発作後変化の持続：括弧を重ねず、秒と分を選べる
+        r = run([dict(stype='gtc', dist='generalized', post='supp', postDur='40')], cls='marked')
+        assert '（ビデオ脳波で記録）。発作後：全般性の抑制（postictal generalized EEG suppression）、約40秒持続' in r['findJa'], r
+        assert '）（' not in r['findJa'].split('発作後：')[1], r
+        assert '(recorded on video-EEG). Postictal: generalized EEG suppression (PGES) for about 40 sec' in r['en'], r
+        r = run([dict(side='L', post='lslow', postDur='3', postDurU='m', video=False)], cls='moderate')
+        assert '発作後：左側優位の徐波化、約3分持続' in r['findJa'] and 'ビデオ脳波で記録' not in r['findJa'], r
+        assert 'Postictal: left-predominant slowing for about 3 min' in r['en'], r
+
+        # 9) 種類を切り替えると入力欄が入れ替わる（8b で状態を作り替えたので記入例を読み直す）
+        page.evaluate("loadSample('ictal')")
         page.select_option('#fc1 select[data-k="kind"]', 'noeeg')
         assert page.locator('#fc1 select[data-k="evt"]').count() == 1
         assert page.locator('#fc1 select[data-k="dist"]').count() == 0
@@ -106,10 +118,11 @@ def main():
         page.select_option('#fc1 select[data-k="dist"]', 'unclear')
         assert page.locator('#fc1 select[data-k="loc"]').count() == 0
         assert page.locator('#fc1 select[data-k="lead"]').count() == 1
+        assert page.locator('#fc1 select[data-k="postDurU"]').count() == 1
 
         browser.close()
     assert errors == [], errors
-    print('OK: eeg_report_writer 発作時記録 9項目')
+    print('OK: eeg_report_writer 発作時記録 10項目')
 
 
 if __name__ == '__main__':

@@ -738,7 +738,7 @@ function newFinding(cat) {
   if (cat === 'slow') return { cat: 'slow', cont: 'intermittent', morph: 'irregular', band: 'delta', f1: '', f2: '', dist: 'regional', side: 'R', loc: 'temporal', max: '', prevT: 'p', n: '1', a: '', b: '', acat: 'frequent', plus: '', mods: {}, runs: '' };
   if (cat === 'epi') return { cat: 'epi', type: 'sharp', f1: '', f2: '', d1: '', d2: '', dist: 'regional', side: 'R', loc: 'temporal', max: '', prevT: 'p', n: '1', a: '', b: '', acat: 'occasional', plus: '', mods: {}, runs: '' };
   if (cat === 'asym') return { cat: 'asym', what: 'beta', side: 'R', loc: 'frontotemporal', deg: '' };
-  if (cat === 'seiz') return { cat: 'seiz', kind: 'clin', video: true, count: '1', dist: 'regional', side: 'R', loc: 'temporal', max: '', pat: 'delta', f1: '', f2: '', prop: '', dur: '', dur2: '', durU: 's', ese: false, stype: 'fias', state: '', lead: '', leadSec: '', post: '', postDur: '', evt: 'fas', pdrKept: false, evo_ja: '', evo_en: '', sem_ja: '', sem_en: '' };
+  if (cat === 'seiz') return { cat: 'seiz', kind: 'clin', video: true, count: '1', dist: 'regional', side: 'R', loc: 'temporal', max: '', pat: 'delta', f1: '', f2: '', prop: '', dur: '', dur2: '', durU: 's', ese: false, stype: 'fias', state: '', lead: '', leadSec: '', post: '', postDur: '', postDurU: 's', evt: 'fas', pdrKept: false, evo_ja: '', evo_en: '', sem_ja: '', sem_en: '' };
   return { cat: 'other', ja: '', en: '' };
 }
 S = defaults();
@@ -961,8 +961,9 @@ function findingLine(f, L) {
       if (f.kind === 'clin' && ld[4]) s += '. ' + ld[4] + (lsec && f.lead !== 'same' ? ' by about ' + lsec + ' sec' : '');
       var sem = trim(f.sem_en) || trim(f.sem_ja);
       if (sem) s += '. Clinically, ' + sem;
-      if (f.kind !== 'noeeg' && pst[2]) s += '. Postictal: ' + pst[2] + (pdur ? ' (about ' + pdur + ' sec)' : '');
+      // ビデオ記録の注記は発作そのものの記載に付け、発作後の脳波はその後に書く
       if (f.video) s += ' (recorded on video-EEG)';
+      if (f.kind !== 'noeeg' && pst[2]) s += '. Postictal: ' + pst[2] + (pdur ? ' for about ' + pdur + (f.postDurU === 'm' ? ' min' : ' sec') : '');
       return s;
     }
     var sj = (art ? '臨床的イベント' : k[1]) + '（' + cnt + '回）';
@@ -988,8 +989,8 @@ function findingLine(f, L) {
     if (f.kind === 'clin' && f.lead && ld[2]) sj += '。' + ld[2] + (lsec && f.lead !== 'same' ? '約' + lsec + '秒' : '') + ld[3];
     var smj = trim(f.sem_ja) || trim(f.sem_en);
     if (smj) sj += '。臨床症状：' + smj;
-    if (f.kind !== 'noeeg' && f.post && pst[1]) sj += '。発作後：' + pst[1] + (pdur ? '（約' + pdur + '秒）' : '');
     if (f.video) sj += '（ビデオ脳波で記録）';
+    if (f.kind !== 'noeeg' && f.post && pst[1]) sj += '。発作後：' + pst[1] + (pdur ? '、約' + pdur + (f.postDurU === 'm' ? '分' : '秒') + '持続' : '');
     return sj;
   }
   return pick(f.ja, f.en, L);
@@ -1569,7 +1570,7 @@ function cardHTML(i) {
       else h += '<label class="chk"><input type="checkbox" data-f="' + i + '" data-k="ese"' + (f.ese ? ' checked' : '') + '>脳波上のてんかん重積状態（ESE：10分以上連続、または任意の60分間の20%以上）</label>';
       h += '<p class="hint">ACNSの脳波上の発作（ESz）は、平均2.5 Hzを超えるてんかん性放電が10秒以上続くか、明らかな変化（evolution）を伴うパターンが10秒以上続くものです。臨床症状がはっきり伴う発作は10秒未満でも electroclinical seizure にあたります。</p>';
       h += '<div class="row">' + txt(i, 'evo_ja', f.evo_ja, '脳波の経過（日本語・任意）', 'wide', '例：10秒間の反復性棘波の後、律動性シータ活動に移行') + txt(i, 'evo_en', f.evo_en, '脳波の経過（英語・任意）', 'wide', 'e.g., evolving into rhythmic theta activity') + '</div>';
-      h += '<div class="row">' + sel(i, 'post', SPOSTS, f.post || '', '発作後の脳波（任意）', 1, null) + txt(i, 'postDur', f.postDur, '発作後変化の持続（秒・任意）', 'narrow', '30', 'decimal') + '</div>';
+      h += '<div class="row">' + sel(i, 'post', SPOSTS, f.post || '', '発作後の脳波（任意）', 1, null) + txt(i, 'postDur', f.postDur, '発作後変化の持続（任意）', 'narrow', '30', 'decimal') + sel(i, 'postDurU', [['s', '秒'], ['m', '分']], f.postDurU || 's', '単位', 1, null) + '</div>';
     } else {
       var evts = [];
       for (var q2 = 0; q2 < SEVTS.length; q2++) evts.push([SEVTS[q2][0], SEVTS[q2][1]]);
