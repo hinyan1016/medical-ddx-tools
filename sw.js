@@ -1,5 +1,9 @@
-const CACHE_NAME = 'ddx-tools-v419';
+const CACHE_NAME = 'ddx-tools-v420';
 const ASSETS = [
+  './infographics/bad-early-mobilization-reference-repair-20261117/index.html',
+  './infographics/bad-early-mobilization-reference-repair-20261117/infographic.png',
+  './infographics/cervical-spondylosis-numbness-reference-repair-20261117/index.html',
+  './infographics/cervical-spondylosis-numbness-reference-repair-20261117/infographic.png',
   './infographics/atogepant-acute-approval/index.html',
   './infographics/focal-status-epilepticus-mri-reference-repair-20261117/index.html',
   './infographics/focal-status-epilepticus-mri-reference-repair-20261117/infographic.png',
