@@ -9,9 +9,9 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>ワーファリン用量調整の提案ツール（PT-INRと現在の用量から）</title>
-<meta name="description" content="目標PT-INR・今回のPT-INR・現在の用量を入れると、継続・増量・減量・休薬のどれにあたるか、変更後の飲み方（毎日同じ量か、1日おき）、次の検査の目安を、カナダBC州ガイドライン2023とCHEST 2012に沿って提案します。カルテ用の文をコピーできます。">
+<meta name="description" content="目標PT-INR・今回のPT-INR・現在の用量を入れると、継続・増量・減量・休薬のどれにあたるか、変更後の飲み方（毎日同じ量か、1日おき）、次の検査の目安を、カナダBC州ガイドライン2023とCHEST 2012に沿って提案します。導入期の開始量の目安と再検の時期も示します。カルテ用の文をコピーできます。">
 <meta property="og:title" content="ワーファリン用量調整の提案ツール（PT-INRと現在の用量から）">
-<meta property="og:description" content="目標PT-INR・今回のPT-INR・現在の用量を入れると、継続・増量・減量・休薬のどれにあたるか、変更後の飲み方（毎日同じ量か、1日おき）、次の検査の目安を、カナダBC州ガイドライン2023とCHEST 2012に沿って提案します。カルテ用の文をコピーできます。">
+<meta property="og:description" content="目標PT-INR・今回のPT-INR・現在の用量を入れると、継続・増量・減量・休薬のどれにあたるか、変更後の飲み方（毎日同じ量か、1日おき）、次の検査の目安を、カナダBC州ガイドライン2023とCHEST 2012に沿って提案します。導入期の開始量の目安と再検の時期も示します。カルテ用の文をコピーできます。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://tools.ichisouzo-lab.com/warfarin_dose_adjuster.html">
 <meta property="og:image" content="https://tools.ichisouzo-lab.com/assets/og-tools.png">
@@ -140,7 +140,7 @@
 <header>
   <div class="back-bar"><a href="index.html">← ツール一覧へ</a></div>
   <h1>ワーファリン用量調整の提案ツール</h1>
-  <p>PT-INR と現在の用量から、継続・増量・減量・休薬と、次の検査の目安を示します（維持期・成人）</p>
+  <p>PT-INR と現在の用量から、継続・増量・減量・休薬と、次の検査の目安を示します（維持期・導入期、成人）</p>
 </header>
 
 <div class="container">
@@ -232,12 +232,47 @@
           <option value="init">飲み始めて間もない（導入期）</option>
         </select>
       </div>
+      <div class="field hidden" id="initBox">
+        <label for="initPhase">導入期の時期</label>
+        <select id="initPhase">
+          <option value="early">開始から5日たっていない</option>
+          <option value="chg">開始から5日以上たったが、前回の用量変更から5日たっていない</option>
+          <option value="ok">開始からも、前回の用量変更からも5日以上たった</option>
+        </select>
+        <div class="checks" style="margin-top:8px;">
+          <label><input type="checkbox" id="initPrevLow"><span>前回の検査でも目標域より低かった</span></label>
+          <label><input type="checkbox" id="shojiChk"><span>1日 2 mg で始めた場合の Shoji 2020 の推定値を参考に表示する（目標 1.6-2.6 のときだけ）</span></label>
+        </div>
+        <p class="hint">導入期の量の候補は、維持期の 10-20% の増減を導入期に当てはめたものです。導入期に検証された方式ではありません（当てはめはツールの判断）。</p>
+        <details class="fold">
+          <summary>開始量の目安<small>クリック／タップで開閉</small></summary>
+          <div class="fold-body">
+            <p style="margin-top:0;">あてはまるものに印を付けると、BC 2023 の開始量の目安を表示します。</p>
+            <div class="checks">
+              <label><input type="checkbox" class="lowStart"><span>虚弱（フレイル）</span></label>
+              <label><input type="checkbox" class="lowStart"><span>70歳を超える</span></label>
+              <label><input type="checkbox" class="lowStart"><span>開始前の PT-INR が 1.2-1.3 と高め</span></label>
+              <label><input type="checkbox" class="lowStart"><span>低アルブミン血症（低栄養、肝疾患、術後など）</span></label>
+              <label><input type="checkbox" class="lowStart"><span>心不全</span></label>
+              <label><input type="checkbox" class="lowStart"><span>腸内細菌に影響する抗菌薬を最近使った</span></label>
+              <label><input type="checkbox" class="lowStart"><span>ワーファリンの作用を強める薬を飲んでいる</span></label>
+            </div>
+            <div class="recheck" id="startGuide" style="margin-top:8px;"></div>
+            <ul class="steps" style="margin-top:8px;">
+              <li>電子添文：成人の初回量は通常 1日1回 1-5 mg です。抗凝固効果の発現を急ぐ場合は、初回投与時にヘパリン等の併用を考慮します。</li>
+              <li>BC 2023：開始量は通常 1日 5 mg で、上のいずれかにあてはまれば 1日 1-2 mg から始めることを考えます。アジア系の患者さんは少ない量で足りる傾向があります。</li>
+              <li>BC 2023：急性の血栓症では、ワーファリンは開始から5日以内には PT-INR の値にかかわらず治療効果に達しないため、ヘパリン類を少なくとも5日併用します。</li>
+              <li>タイの静脈血栓塞栓症の患者さん 56人の無作為化試験（Suwanawiboon 2022）では、最初の2日間を 3 mg で始めた群と 5 mg で始めた群で、8日以内に PT-INR 2.0-3.0 に達した割合は 60.7% と 78.6% で、統計的な差はありませんでした（p=0.146）。5日目に達していた割合は 25.0% と 53.6% で、5 mg 群のほうが高い結果でした（p=0.029）。</li>
+            </ul>
+          </div>
+        </details>
+      </div>
       <div class="field checks">
         <span class="lbl">あてはまるもの</span>
         <label><input type="checkbox" id="transient"><span>一時的な原因がはっきりしている（飲み忘れ・飲みすぎ、抗菌薬などの短期の薬、多量の飲酒）</span></label>
         <label><input type="checkbox" id="bleedRisk"><span>出血のリスクが高い（高齢、抗血小板薬や NSAIDs の併用、出血の既往など）</span></label>
         <label><input type="checkbox" id="thrombRisk"><span>血栓のリスクが高い（機械弁、最近の血栓塞栓症など）</span></label>
-        <p class="hint">下痢などの消化器症状や、食事の大きな変化があるときは、BC 2023 は検査の回数を増やすことがあるとしています。用量を変えなくてよい理由には挙げられていないので、上の「一時的な原因」には含めていません。</p>
+        <p class="hint">消化器の病気を併発したときや、食事が大きく変わったときは、BC 2023 は検査の回数を増やすことがあるとしています。用量を変えなくてよい理由には挙げられていないので、上の「一時的な原因」には含めていません。</p>
       </div>
       <div class="btns">
         <button type="button" class="btn" id="calcBtn">提案を表示する</button>
@@ -273,6 +308,7 @@
       <p>この2種類で作れる量のうち、現在からの変化が四捨五入して 10-20% に入るものを最大3つ並べ、実際の変化の割合を添えます。目安の印は、ツールが選んだ割合にいちばん近い飲み方に付けます（同じ近さのときは、毎日同じ量のほうに付けます）。</p>
       <p>現在の量が少ないとき（0.5 mg きざみでは 1日平均 1 mg 以下）や、曜日ごとに違う量から切り替えるときは、10-20% に入る飲み方を作れないことがあります。その場合は幅の外であることを明記して近い量を示し、0.25 mg きざみを案内します。1日おきを曜日で固定すると（週4日と週3日）週用量がずれるので、ずれの量を提案の下に示します。</p>
       <p>再検の時期は BC 2023 の図に沿って示します。図では、用量を調整したあとは 2-4日ごとの検査に戻り、目標域内が2回続けば週1回にします。この間隔で検査できない場合の「変更後 1-2週間以内」と、一時的な原因があるときなどの「1週間以内」は、ツール側の目安です。</p>
+      <p>飲み始めて間もない時期（導入期）は、BC 2023 の開始量と検査間隔の考え方に沿って示します。BC 2023 は、どの PT-INR でも開始から5日以内には治療効果が出ないこと、効果が出そろうまで 5-7日かかること、維持期には用量の変更が PT-INR に表れるまで 4-5日かかることがあることを挙げています。そこで、開始から5日未満や、前回の変更から5日未満のときは、量を変えずに 2-4日後に再検する提案を先に出します（ツールの判断）。5日以上たって目標域から外れている場合の量の候補は、維持期の 10-20% の増減を導入期に当てはめたもので、導入期に検証された方式ではありません（当てはめはツールの判断）。</p>
       <details class="fold">
         <summary>この方式の限界<small>クリック／タップで開閉</small></summary>
         <div class="fold-body">
@@ -280,7 +316,7 @@
             <li>週用量を割合で増減する方式は、主に目標 2.0-3.0 の海外の患者で使われてきました。RE-LY 試験の解析では、目標域内は変更なし・域外は週用量を 10-15% 変える方式に沿った施設ほど、目標域内で過ごす時間の割合（TTR）が高い関連がありました。</li>
             <li>一方、カナダの診療所を対象にした無作為化試験では、簡単な用量調整アルゴリズムを使っても TTR は通常診療と変わりませんでした（72.1% と 71.4%）。</li>
             <li>国内の目標域（1.6-2.6、1.5-2.5 など）や日本人で、この表の成績を確かめた研究は確認できていません。</li>
-            <li>導入期の用量の増減（PT-INR 5.0 未満）、小児、妊娠中、手術前後の休薬、重大な出血の治療は対象にしていません。</li>
+            <li>導入期の用量の増減は、維持期の表を当てはめたツールの判断で、導入期に検証された方式ではありません。小児、妊娠中、手術前後の休薬、重大な出血の治療は対象にしていません。</li>
             <li>ビタミンKの量は海外指針の記載です。国内で使う製剤・量・経路は、添付文書と施設の手順で確認してください。</li>
           </ul>
         </div>
@@ -308,8 +344,10 @@
         <li>Ono K, et al. JCS/JHRS 2020 Guideline on Pharmacotherapy of Cardiac Arrhythmias. J Arrhythm. 2022. 38(6):833-973. doi:10.1002/joa3.12714. <a href="https://pubmed.ncbi.nlm.nih.gov/36524037/" target="_blank" rel="noopener">PubMed PMID:36524037</a></li>
         <li>Izumi C, et al. JCS/JSCS/JATS/JSVS 2020 Guidelines on the Management of Valvular Heart Disease. Circ J. 2020. 84(11):2037-2119. doi:10.1253/circj.CJ-20-0135. <a href="https://pubmed.ncbi.nlm.nih.gov/32921646/" target="_blank" rel="noopener">PubMed PMID:32921646</a></li>
         <li>Tamura Y, et al. JCS/JPCPHS 2025 Guideline on Pulmonary Hypertension and Pulmonary Embolism/Deep Vein Thrombosis. Circ J. 2026. 90(10):1484-1570. doi:10.1253/circj.CJ-25-1144. <a href="https://pubmed.ncbi.nlm.nih.gov/42386545/" target="_blank" rel="noopener">PubMed PMID:42386545</a></li>
+        <li>Shoji M, et al. A Simple Formula for Predicting the Maintenance Dose of Warfarin with Reference to the Initial Response to Low Dosing at an Outpatient Clinic. Intern Med. 2020. 59(1):29-35. doi:10.2169/internalmedicine.3415-19. <a href="https://pubmed.ncbi.nlm.nih.gov/31511484/" target="_blank" rel="noopener">PubMed PMID:31511484</a></li>
+        <li>Suwanawiboon B, et al. The efficacy of low-dose warfarin initiation (3 mg versus 5 mg) in newly diagnosed venous thromboembolism patients among a population with a high prevalence of warfarin-sensitive haplotype of the VKORC1 gene: a randomized controlled trial. Hematology. 2022. 27(1):95-104. doi:10.1080/16078454.2021.2019891. <a href="https://pubmed.ncbi.nlm.nih.gov/35068386/" target="_blank" rel="noopener">PubMed PMID:35068386</a></li>
       </ol>
-      <p class="hint">根拠確認日：2026年11月16日</p>
+      <p class="hint">根拠確認日：2026年11月17日</p>
     </div>
   </div>
 
@@ -394,7 +432,8 @@
   }
 
   /*
-   * 入力 o: {lo, hi, inr, weekly, unit, bleed, status, transient, bleedRisk, thrombRisk}
+   * 入力 o: {lo, hi, inr, weekly, unit, bleed, status, transient, bleedRisk, thrombRisk, initPhase, initPrevLow, shoji}
+   *   initPhase（導入期のみ）: 'early' 開始から5日未満 / 'chg' 前回の変更から5日未満 / 'ok' どちらも5日以上
    * 返り値: {cls, label, title, sub, dir, pct, pctNote, topUp, steps[], recheck, notes[], basis}
    */
   function suggest(o){
@@ -426,16 +465,78 @@
     }
 
     if (o.status === 'init' && inr < 5.0) {
-      r.cls = 'v-hold'; r.label = '対象外'; r.title = '導入期はこのツールの対象外です';
-      r.sub = 'この表は、維持量が決まったあとの調整を想定しています。';
-      r.steps = [
-        '飲み始めの時期は、PT-INR が上がっても抗凝固効果が十分とは限らず、このツールでは維持期の増減量の表を当てはめていません（ツールの判断）。',
-        'BC 2023 の図では、開始後は 2-4日ごとに検査し、目標域内が2回続いたら週1回にします。その後、目標域内が4回続けば2週ごと、さらに4回続けば4週ごとへ延ばします。',
-        '電子添文では、成人の初回量は通常 1日1回 1-5 mg で、数日かけて検査値をみながら維持量を決めます。'
-      ];
-      if (inr > U) r.steps.push('今回の値は目標域より高めです。減量や1回の休薬が必要かどうかは、検査値の推移をみて処方医が判断してください。');
-      r.recheck = '目標域内が2回続くまでは 2-4日ごと（BC 2023）。';
-      r.basis = 'BC 2023（Figure 2）、ワーファリン電子添文';
+      /* 導入期（PT-INR 5.0 未満）。維持期の 10-20% の増減を当てはめる（ツールの判断） */
+      var iHigh = Math.round((inr - U) * 100) / 100;
+      var settled = (o.initPhase === 'ok');
+      var RC_INIT = '2-4日ごとに検査し、目標域内が2回続いたら週1回にします。その後、目標域内が4回続けば2週ごと、さらに4回続けば4週ごとへ延ばします（BC 2023 の図）。';
+      var waitStep = o.initPhase === 'chg'
+        ? 'BC 2023 は、維持期には用量を変えてから PT-INR に反映されるまで 4-5日かかることがあり、週に2回を超える用量変更は勧めないとしています。この間隔を導入期にも当てはめています（ツールの判断）。'
+        : 'BC 2023 は、ワーファリンの効果が出そろうまで 5-7日かかるとしています。開始から5日たたないうちの値で量を変えると、効果が出そろう前に重ねて変えることになります（ツールの判断）。';
+      r.basis = 'BC 2023（Initial Dose、Figure 2。Table 3 の増減幅を導入期に当てはめ）、ワーファリン電子添文';
+      if (inr >= L && inr <= U) {
+        r.cls = 'v-keep'; r.label = '継続'; r.title = '現在の用量を続ける';
+        r.sub = '目標域に入っています。';
+        r.steps = [
+          'BC 2023 は、ワーファリンは開始から5日以内には PT-INR の値にかかわらず治療効果に達しないとしています。値が目標域に入っても、飲み始めの時期は効果が十分とは限りません。',
+          '急性の血栓症でヘパリンを併用している場合、BC 2023 はヘパリンを少なくとも5日続けるとしています。中止の時期は処方医が判断します。'
+        ];
+        r.recheck = RC_INIT;
+        return r;
+      }
+      var NOTE_INIT = '導入期の量の候補は、維持期の 10-20% の増減を導入期に当てはめたものです。導入期に検証された方式ではありません（当てはめはツールの判断）。';
+      if (inr < L) {
+        if (o.thrombRisk) {
+          r.notes.push('血栓リスクが高い患者さんです。飲み始めの低値の時期は、抗凝固が足りていない可能性があります。電子添文は、抗凝固効果の発現を急ぐ場合にヘパリン等の併用を考慮するとしています。併用と中止の時期は処方医が判断してください。');
+        }
+        if (o.transient) {
+          r.cls = 'v-keep'; r.label = '継続して再検'; r.title = '用量は変えず、原因を確かめて 2-4日後に再検する';
+          r.sub = '飲み忘れなどの一時的な原因がある場合です。';
+          r.steps = ['飲み忘れが原因なら、決めた量を確実に飲むことを確認します（BC 2023）。', '納豆・クロレラ食品・青汁の摂取、作用を弱める薬の開始がないかを確認します。'];
+          r.recheck = '2-4日後に再検（BC 2023 の図）。';
+          return r;
+        }
+        if (!settled) {
+          r.cls = 'v-keep'; r.label = '継続して再検'; r.title = '用量はまだ変えず、2-4日後に再検する';
+          r.sub = o.initPhase === 'chg' ? '前回の用量変更から5日たっていません。' : '開始から5日たっていません。';
+          r.steps = [waitStep, '急いで抗凝固が必要な場合（急性の血栓症など）は、ヘパリン等の併用を処方医が判断します（電子添文、BC 2023）。', '飲み忘れ、作用を弱める薬や食品（納豆・クロレラ食品・青汁）を確認します。'];
+          r.recheck = '2-4日後に再検（BC 2023 の図）。開始や前回の変更から5日以上たった値で、増量を考えます（ツールの目安）。';
+          return r;
+        }
+        r.notes.push(NOTE_INIT);
+        r.cls = 'v-up'; r.label = '増量'; r.title = '週用量を 10-20% 増やす';
+        r.sub = (o.initPrevLow ? '前回に続いて、' : '') + '開始と前回の変更から5日以上たっても目標域より低い値です。';
+        r.steps = [
+          '週用量を 10-20% 増やします（下の表。維持期の増量幅を導入期に当てはめたもので、ツールの判断）。',
+          o.initPrevLow ? '前回も低かったので、増量の理由はより強くなります。維持期でも、BC 2023 は目標域より低い値が2回続けば増量するとしています。' : '1回だけの低値で増量するかどうかは、開始量と値の推移をみて処方医が判断します。',
+          '飲み忘れ、作用を弱める薬や食品（納豆・クロレラ食品・青汁）を確認します。'
+        ];
+        r.dir = 1; r.pct = inr < 1.5 ? 15 : 10;
+        r.pctNote = inr < 1.5 ? '1.5 未満なので 15%（ツールの目安）' : '下限に近いので 10%（ツールの目安）';
+        r.recheck = RC_INIT;
+        return r;
+      }
+      /* 目標域より高い（5.0 未満） */
+      r.notes.push(NOTE_INIT);
+      r.cls = 'v-down'; r.label = '減量'; r.title = '週用量を 10-20% 減らすか、1回休薬する';
+      if (!settled) {
+        r.sub = o.initPhase === 'chg' ? '前回の用量変更から5日たたないうちに、目標域を超えました。' : '開始から5日たたないうちに、目標域を超えました。';
+        r.steps = [
+          '効果が出そろう前に目標域を超えたのは、量が多すぎる兆しの可能性があります（ツールの判断）。',
+          '週用量を 10-20% 減らすか、1回休薬します（BC 2023 の維持期の表が挙げる方法を導入期に当てはめたもの。ツールの判断）。',
+          'BC 2023 は、維持期には週に2回を超える用量変更を勧めていません。これを導入期にも当てはめています（ツールの判断）。今週すでに2回変えている場合は、量は変えずに1回の休薬で様子をみる方法もあります（ツールの目安）。',
+          '併用薬の開始、食事量の低下、肝機能・心不全の悪化などを確認します。'
+        ];
+        r.dir = -1; r.pct = 15; r.pctNote = '早い時期に超えたので 15%（ツールの目安）';
+      } else {
+        r.sub = iHigh > 1.0 ? '上限から 1.0 より大きく外れています。' : '目標域より高い値です。';
+        r.steps = [
+          '週用量を 10-20% 減らすか、1回休薬します（BC 2023 の維持期の表が挙げる方法を導入期に当てはめたもの。ツールの判断）。',
+          '併用薬の開始、食事量の低下、肝機能・心不全の悪化などを確認します。'
+        ];
+        r.dir = -1; r.pct = iHigh > 1.0 ? 15 : 10;
+        r.pctNote = iHigh > 1.0 ? '外れ幅が大きいので 15%（ツールの目安）' : '外れ幅が小さいので 10%（ツールの目安）';
+      }
+      r.recheck = RC_INIT;
       return r;
     }
 
@@ -551,7 +652,25 @@
     return r;
   }
 
-  window.WFDose = { suggest: suggest, regimen: regimen, candidates: candidates, nearest: nearest, days14: days14, fmtAvg: fmtAvg, chgText: chgText };
+  /*
+   * Shoji 2020 の式（参考値）：1日 2 mg で始めて 2-4週の PT-INR から維持量を推定する。
+   * 維持量(mg/日) = -2.009 × 初回 PT-INR + 6.172（R²=0.706）。
+   * 対象：目標 1.6-2.6、1日 2 mg、初回 PT-INR 1.1 以上（1.1 未満は解析から除外）。
+   * 推定値が 0 以下になる値（3.07 を超える）も出さない。0.5 mg 単位に切り上げて表示する（Shoji 2020 の考察が、実用のため 0.5 mg 単位へ切り上げるとしている）。
+   */
+  function shojiEst(inr, lo, hi, weekly){
+    var res = { ok: false, mg: 0, raw: 0, reason: '' };
+    if (Math.abs(lo - 1.6) > 1e-9 || Math.abs(hi - 2.6) > 1e-9) { res.reason = 'この式は目標 1.6-2.6 の患者さんで作られています。'; return res; }
+    if (Math.abs(weekly - 14) > 1e-9) { res.reason = 'この式は 1日 2 mg で始めた患者さんで作られています。入力した現在の量が 1日 2 mg（週 14 mg）のときだけ計算します。'; return res; }
+    if (inr < 1.1) { res.reason = '初回 PT-INR が 1.1 未満の患者さんは、この式の解析から除かれています。'; return res; }
+    res.raw = Math.round((-2.009 * inr + 6.172) * 1000) / 1000;
+    if (res.raw <= 0) { res.reason = 'この値では式の推定値が 0 以下になり、使えません。'; return res; }
+    res.mg = Math.ceil(res.raw / 0.5 - 1e-9) * 0.5;
+    res.ok = true;
+    return res;
+  }
+
+  window.WFDose = { suggest: suggest, regimen: regimen, candidates: candidates, nearest: nearest, days14: days14, fmtAvg: fmtAvg, chgText: chgText, shojiEst: shojiEst };
 
   /* ---------- 画面 ---------- */
   var doseMode = 'daily', unit = 0.5, lastResult = null, lastInput = null, lastCands = null, picked = -1;
@@ -587,6 +706,23 @@
   $('preset').addEventListener('change', function(){
     $('customRange').className = 'inline' + (this.value === 'custom' ? '' : ' hidden');
   });
+  $('status').addEventListener('change', function(){
+    $('initBox').className = 'field' + (this.value === 'init' ? '' : ' hidden');
+  });
+
+  /* 開始量の目安（BC 2023 Initial Dose） */
+  function updateStartGuide(){
+    var boxes = document.querySelectorAll('.lowStart'), n = 0, i;
+    for (i = 0; i < boxes.length; i++) if (boxes[i].checked) n++;
+    $('startGuide').innerHTML = n > 0
+      ? '<b>あてはまる項目が ' + n + ' つあります。BC 2023 は、1日 1-2 mg のような少ない量から始めることを考えるとしています。</b>'
+      : '<b>あてはまる項目はありません。BC 2023 の開始量は通常 1日 5 mg です（電子添文の成人の初回量は通常 1日 1-5 mg）。</b>';
+  }
+  (function(){
+    var boxes = document.querySelectorAll('.lowStart'), i;
+    for (i = 0; i < boxes.length; i++) boxes[i].addEventListener('change', updateStartGuide);
+    updateStartGuide();
+  })();
 
   function readInput(){
     var p = $('preset').value, lo, hi, weekly = 0, cur = [], curText = '', i, v, a, b;
@@ -625,7 +761,8 @@
     return {
       lo: lo, hi: hi, inr: inr, weekly: Math.round(weekly * 1000) / 1000, cur: cur, curText: curText, unit: unit,
       bleed: $('bleed').value, status: $('status').value,
-      transient: $('transient').checked, bleedRisk: $('bleedRisk').checked, thrombRisk: $('thrombRisk').checked
+      transient: $('transient').checked, bleedRisk: $('bleedRisk').checked, thrombRisk: $('thrombRisk').checked,
+      initPhase: $('initPhase').value, initPrevLow: $('initPrevLow').checked, shoji: $('shojiChk').checked
     };
   }
 
@@ -663,8 +800,10 @@
     if (g) {
       t += (r.cls === 'v-hold' ? '再開時の用量' : '変更後の用量') + '：' + g.text + '（' + (g.alt ? '1日平均 ' + fmtAvg(g.avg) + ' mg、' : '') + chgText(g.weekly, o.weekly) + (g.band !== 'in' ? '。10-20% の幅の外' : '') + '）\n';
     }
+    var se = (o.status === 'init' && o.shoji) ? shojiEst(o.inr, o.lo, o.hi, o.weekly) : null;
+    if (se && se.ok) t += 'Shoji 2020 の式による維持量の推定（参考値・用量指示ではない）：1日 約' + fmt(se.raw) + ' mg（0.5 mg 単位で ' + fmt(se.mg) + ' mg）\n';
     t += '次の検査：' + r.recheck + '\n';
-    t += '参照：' + r.basis + '\n';
+    t += '参照：' + r.basis + (se && se.ok ? '、Shoji 2020' : '') + '\n';
     t += '※海外指針の表に基づく目安。出血・血栓リスク、併用薬、経過を確認して処方医が決定。';
     return t.replace(/[～〜]/g, '-');
   }
@@ -712,6 +851,17 @@
         var tu = Math.round(o.weekly * 0.2 / o.unit) * o.unit;
         if (tu > 0) h += '<p style="margin-top:10px;">1回だけ上乗せする場合の量：<strong>' + fmt(tu) + ' mg</strong>（週用量の 20%、BC 2023）。</p>';
       }
+    }
+
+    if (o.status === 'init' && o.shoji) {
+      var se = shojiEst(o.inr, o.lo, o.hi, o.weekly);
+      h += '<div class="sub-title">Shoji 2020 の式による維持量の推定（参考値・用量指示ではない）</div>';
+      if (se.ok) {
+        h += '<p>維持量 = −2.009 × 初回 PT-INR + 6.172 で、1日 約 <strong>' + fmt(se.raw) + ' mg</strong>（0.5 mg 単位に切り上げると ' + fmt(se.mg) + ' mg）です。</p>';
+      } else {
+        h += '<div class="alert-disclaimer" style="margin-bottom:10px;">' + esc(se.reason) + '推定値は表示しません。</div>';
+      }
+      h += '<p class="hint">国内の外来で、1日 2 mg で始めて 2-4週後に測った初回 PT-INR と、1年後に目標 1.6-2.6 に達していた患者さんの維持量から作られた式です（後ろ向き研究、初回 PT-INR 1.1 未満の32人を除く95人、R²=0.706）。著者らも前向きの検証が必要としています。今回の PT-INR が 2-4週後の値でない場合は当てはまりません。</p>';
     }
 
     h += '<div class="sub-title">次の検査</div><div class="recheck"><b>' + esc(r.recheck) + '</b></div>';
@@ -776,6 +926,10 @@
     for (i = 0; i < 7; i++) $('wd' + i).value = '';
     $('bleed').value = 'none'; $('status').value = 'stable';
     $('transient').checked = false; $('bleedRisk').checked = false; $('thrombRisk').checked = false;
+    $('initPhase').value = 'early'; $('initPrevLow').checked = false; $('shojiChk').checked = false;
+    var ls = document.querySelectorAll('.lowStart');
+    for (i = 0; i < ls.length; i++) ls[i].checked = false;
+    $('initBox').className = 'field hidden'; updateStartGuide();
     $('resultCard').className = 'card hidden'; lastInput = null; lastResult = null;
   });
 })();

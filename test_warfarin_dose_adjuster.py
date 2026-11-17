@@ -1,7 +1,7 @@
 """Regression checks for warfarin_dose_adjuster.html.
 
 提案する飲み方を「毎日同じ量」と「きざみ1つ分だけ違う2つの量の1日おき」に
-絞った計算（2026-11-17 改修）を、node で実際のページの関数を動かして確かめる。
+絞った計算（2026-11-17 改修）と、導入期の提案・Shoji 2020 の式（同日追加）を、node で実際のページの関数を動かして確かめる。
 標準ライブラリだけで動く（GitHub Pages のリポジトリに依存を足さない）。
 """
 
@@ -76,6 +76,30 @@ for (d = 1.25; d <= 20.0001; d += 0.25) {
   }
 }
 out.sweepBad = bad;
+/* 導入期（status 'init'、PT-INR 5.0 未満） */
+function ini(inr, ph, pl, extra){
+  var o = { lo: 1.6, hi: 2.6, inr: inr, weekly: 14, unit: 0.5, bleed: 'none', status: 'init',
+    transient: false, bleedRisk: false, thrombRisk: false, initPhase: ph, initPrevLow: !!pl, shoji: false };
+  var k; if (extra) for (k in extra) o[k] = extra[k];
+  var r = W.suggest(o);
+  return { cls: r.cls, label: r.label, dir: r.dir, pct: r.pct, recheck: r.recheck, notes: r.notes, steps: r.steps, basis: r.basis };
+}
+out.init = {
+  inEarly: ini(2.0, 'early'),
+  lowEarly: ini(1.3, 'early'),
+  lowChg: ini(1.3, 'chg'),
+  lowOk: ini(1.3, 'ok'),
+  lowOk2: ini(1.8 - 0.3, 'ok', true),
+  low16: ini(1.55, 'ok'),
+  lowTrans: ini(1.3, 'ok', false, { transient: true }),
+  lowThromb: ini(1.3, 'early', false, { thrombRisk: true }),
+  hiEarly: ini(3.0, 'early'),
+  hiOkSmall: ini(3.0, 'ok'),
+  hiOkBig: ini(4.0, 'ok'),
+  over5: ini(6.0, 'early')
+};
+out.shoji = [W.shojiEst(1.5, 1.6, 2.6, 14), W.shojiEst(1.0, 1.6, 2.6, 14), W.shojiEst(3.2, 1.6, 2.6, 14),
+  W.shojiEst(1.5, 2.0, 3.0, 14), W.shojiEst(1.5, 1.6, 2.6, 21), W.shojiEst(2.2, 1.6, 2.6, 14)];
 console.log(JSON.stringify(out));
 """ % calc_js
     with tempfile.NamedTemporaryFile("w", suffix=".js", delete=False, encoding="utf-8") as fh:
@@ -173,6 +197,48 @@ def main() -> None:
     assert out["chg"] == ["現在より約20%減", "現在より約10%増", "現在とほぼ同じ"]
     assert out["fmtAvg"] == ["0.875", "2.25", "15.75", "2"]
     assert out["sweepBad"] == [], out["sweepBad"][:10]
+
+    # --- 導入期 ---------------------------------------------------------------
+    NOT_VALIDATED = "導入期に検証された方式ではありません"
+    it = out["init"]
+    assert it["inEarly"]["label"] == "継続" and it["inEarly"]["dir"] == 0
+    assert it["inEarly"]["notes"] == []  # 目標域内では当てはめの注記を出さない
+    assert "週1回" in it["inEarly"]["recheck"]
+    for key in ["lowEarly", "lowChg"]:
+        r = it[key]
+        assert r["label"] == "継続して再検" and r["dir"] == 0, key
+        assert "2-4日後" in r["recheck"], key
+        # 候補を出さない「継続して再検」では、候補の当てはめの注記を出さない
+        assert not any(NOT_VALIDATED in n for n in r["notes"]), key
+    assert any("4-5日" in s for s in it["lowChg"]["steps"])
+    assert any("5-7日" in s for s in it["lowEarly"]["steps"])
+    assert it["lowOk"]["label"] == "増量" and it["lowOk"]["dir"] == 1 and it["lowOk"]["pct"] == 15
+    assert it["low16"]["dir"] == 1 and it["low16"]["pct"] == 10
+    assert any("2回続けば増量" in s for s in it["lowOk2"]["steps"])
+    assert not any("2回続けば増量" in s for s in it["lowOk"]["steps"])
+    assert it["lowTrans"]["dir"] == 0 and it["lowTrans"]["label"] == "継続して再検"
+    assert any("ヘパリン等の併用を考慮" in n for n in it["lowThromb"]["notes"])
+    assert it["hiEarly"]["label"] == "減量" and it["hiEarly"]["dir"] == -1 and it["hiEarly"]["pct"] == 15
+    assert it["hiOkSmall"]["pct"] == 10 and it["hiOkBig"]["pct"] == 15
+    for key in ["hiEarly", "hiOkSmall", "lowOk"]:
+        assert any(NOT_VALIDATED in n for n in it[key]["notes"]), key
+        assert "Table 3 の増減幅を導入期に当てはめ" in it[key]["basis"], key
+    assert it["over5"]["label"] == "休薬"  # 5.0 以上は従来どおり
+
+    # --- Shoji 2020 の式（参考値） -----------------------------------------
+    sh = out["shoji"]
+    assert sh[0]["ok"] is True and sh[0]["raw"] == 3.159 and sh[0]["mg"] == 3.5
+    assert sh[1]["ok"] is False  # 初回 PT-INR 1.1 未満は式の対象外
+    assert sh[2]["ok"] is False  # 推定値が 0 以下
+    assert sh[3]["ok"] is False  # 目標 1.6-2.6 以外
+    assert sh[4]["ok"] is False  # 1日 2 mg（週 14 mg）以外
+    assert sh[5]["ok"] is True and sh[5]["mg"] == 2.0  # -2.009*2.2+6.172=1.752 -> 2.0
+
+    # --- 画面の文言 ---------------------------------------------------------
+    assert "導入期の開始量の目安" in desc
+    assert 'id="initBox"' in html and 'id="startGuide"' in html
+    assert html.count('class="lowStart"') == 7
+    assert "PMID:31511484" in html and "PMID:35068386" in html
 
     print("ok: warfarin_dose_adjuster")
 
