@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v427';
+const CACHE_NAME = 'ddx-tools-v428';
 const ASSETS = [
   './infographics/hemorrhagic-stroke-seizure-prophylaxis/index.html',
   './infographics/hemorrhagic-stroke-seizure-prophylaxis/infographic.png',
@@ -591,6 +591,7 @@ const ASSETS = [
   './infographics/typhoon-health-risks/index.html',
   './infographics/type2-diabetes-lifestyle-guidance/index.html',
   './infographics/what-is-happiness/index.html',
+  './infographics/no-stool-low-intake-orders/index.html',
   './handouts/index.html',
   './handouts/stroke-secondary-prevention/index.html',
   './handouts/parkinson-rehab-guidance/index.html',
