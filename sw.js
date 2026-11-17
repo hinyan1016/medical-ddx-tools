@@ -1,5 +1,11 @@
-const CACHE_NAME = 'ddx-tools-v420';
+const CACHE_NAME = 'ddx-tools-v421';
 const ASSETS = [
+  './infographics/cerebral-circulation-metabolism-drugs-reference-repair-20261117/index.html',
+  './infographics/cerebral-circulation-metabolism-drugs-reference-repair-20261117/infographic.png',
+  './infographics/venipuncture-pain-numbness-reference-repair-20261117/index.html',
+  './infographics/venipuncture-pain-numbness-reference-repair-20261117/infographic.png',
+  './infographics/insomnia-nonpharmacological-therapy-reference-repair-20261117/index.html',
+  './infographics/insomnia-nonpharmacological-therapy-reference-repair-20261117/infographic.png',
   './infographics/bad-early-mobilization-reference-repair-20261117/index.html',
   './infographics/bad-early-mobilization-reference-repair-20261117/infographic.png',
   './infographics/cervical-spondylosis-numbness-reference-repair-20261117/index.html',
