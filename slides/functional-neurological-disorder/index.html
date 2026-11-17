@@ -265,7 +265,7 @@
 <div class="container">
   <div class="action-bar">
     
-    <a class="btn btn-pdf" href="slides.pdf" target="_blank" rel="noopener">
+    <a class="btn btn-pdf" href="slides.pdf?v=20261117" target="_blank" rel="noopener">
       📄 PDFをダウンロード
     </a>
         <a class="btn btn-blog" href="https://blog.ichisouzo-lab.com/entry/2026/04/05/081707" target="_blank" rel="noopener">
@@ -286,6 +286,10 @@
     動画を見る時間が無い方向けに、スライドのみを閲覧できるページです。各スライドをクリックすると拡大表示され、矢印キーまたはスワイプで送れます。PDFは保存・印刷可能です。
   </div>
 
+  <div class="info-box"><strong>2026年11月17日更新（スライド7・8）</strong><br>
+通常脳波が正常というだけで機能性発作とは診断できず、てんかんも否定できません。病歴・発作の特徴や動画、必要に応じたビデオ脳波を合わせて評価し、両者の併存にも注意します。特定の難治性てんかん集団の割合を、一般外来の割合として示した記述を削除しました。<br>
+根拠：<a href="https://www.aan.com/PressRoom/Home/PressRelease/5302" target="_blank" rel="noopener">AAN診療ガイドライン</a>・<a href="https://www.neurology-jp.org/guidelinem/epilepsy/Part1_chapter14.html" target="_blank" rel="noopener">日本神経学会ガイドライン第14章</a>・<a href="https://pubmed.ncbi.nlm.nih.gov/27719851/" target="_blank" rel="noopener">Duncan 2016</a>。動画は今回の改訂対象には含まれません。
+</div>
   <div class="slide-grid" id="slideGrid">
         <div class="slide-card" data-idx="0">
       <span class="slide-num">1 / 11</span>
@@ -313,11 +317,11 @@
     </div>
     <div class="slide-card" data-idx="6">
       <span class="slide-num">7 / 11</span>
-      <img src="slide-07.webp" alt="スライド7" loading="lazy">
+      <img src="slide-07.webp?v=20261117" alt="スライド7" loading="lazy">
     </div>
     <div class="slide-card" data-idx="7">
       <span class="slide-num">8 / 11</span>
-      <img src="slide-08.webp" alt="スライド8" loading="lazy">
+      <img src="slide-08.webp?v=20261117" alt="スライド8" loading="lazy">
     </div>
     <div class="slide-card" data-idx="8">
       <span class="slide-num">9 / 11</span>
@@ -370,7 +374,7 @@
   var cards = document.querySelectorAll('.slide-card');
 
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
-  function srcOf(i) { return 'slide-' + pad(i + 1) + '.png'; }
+  function srcOf(i) { return cards[i].querySelector('img').getAttribute('src'); }
 
   function show(i) {
     if (i < 0) i = 0;
