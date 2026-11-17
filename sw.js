@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v426';
+const CACHE_NAME = 'ddx-tools-v427';
 const ASSETS = [
   './infographics/hemorrhagic-stroke-seizure-prophylaxis/index.html',
   './infographics/hemorrhagic-stroke-seizure-prophylaxis/infographic.png',

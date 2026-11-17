@@ -202,6 +202,10 @@ def render_viewer(deck: dict, slide_count: int, has_deck: bool = False,
         "{{BLOG_BUTTON}}": blog_button,
         "{{VIEWER_NOTICE}}": deck.get("viewer_notice", "本資料は医療従事者・医療系学生向けの学習教材です。診療判断は必ず最新ガイドライン・主治医判断に従ってください。"),
     }
+    if deck.get("slide_numbers_outside_image"):
+        # 節ラベルを隠さないよう、このデッキの番号を画像外の専用行に置く。
+        css = "#slideGrid .slide-num{position:static;display:block;width:fit-content;margin:6px 8px;}"
+        template = template.replace("</style>", css + "\n</style>", 1)
     html = template
     for k, v in replacements.items():
         html = html.replace(k, v)

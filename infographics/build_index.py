@@ -43,9 +43,11 @@ def update_cards(items):
         if not src.exists():
             continue
         size = src.stat().st_size
-        if not card.exists() or record.get(it["slug"]) != size:
-            made += write_card(src, card)
-            record[it["slug"]] = size
+        fit = it.get("card_fit", "cover")
+        stamp = size if fit == "cover" else f"{size}:{fit}"
+        if not card.exists() or record.get(it["slug"]) != stamp:
+            made += write_card(src, card, fit=fit)
+            record[it["slug"]] = stamp
     record = {it["slug"]: record[it["slug"]] for it in items if it["slug"] in record}
     record_path.write_text(json.dumps(record, ensure_ascii=False, indent=1, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
     print("card.webp 更新: {} 件".format(made))

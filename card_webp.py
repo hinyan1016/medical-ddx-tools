@@ -29,10 +29,19 @@ def _flatten(image):
     return image.convert("RGB")
 
 
-def card_bytes(src):
+def card_bytes(src, fit="cover"):
     """画像ファイル src から、カード用WebPのバイト列を返す。"""
     with Image.open(src) as source:
         image = _flatten(source)
+    if fit not in ("cover", "contain"):
+        raise ValueError("fit must be cover or contain")
+    if fit == "contain":
+        image.thumbnail((WIDTH, HEIGHT), Image.LANCZOS)
+        canvas = Image.new("RGB", (WIDTH, HEIGHT), "white")
+        canvas.paste(image, ((WIDTH - image.width) // 2, (HEIGHT - image.height) // 2))
+        buffer = io.BytesIO()
+        canvas.save(buffer, "WEBP", quality=80, method=6)
+        return buffer.getvalue()
     width, height = image.size
     if width * HEIGHT > height * WIDTH:
         crop = round(height * WIDTH / HEIGHT)
@@ -47,9 +56,9 @@ def card_bytes(src):
     return buffer.getvalue()
 
 
-def write_card(src, dst):
+def write_card(src, dst, fit="cover"):
     """dst（card.webp）を書き出す。中身が同じなら書き換えない。書き換えたら True。"""
-    data = card_bytes(src)
+    data = card_bytes(src, fit=fit)
     try:
         if dst.read_bytes() == data:
             return False
