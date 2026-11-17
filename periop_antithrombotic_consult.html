@@ -76,6 +76,7 @@
   .pill.interrupt { background: var(--warn-bg); color: var(--warn-ink); }
   .pill.escape { background: var(--danger-bg); color: var(--danger-ink); }
   textarea#letter { min-height: 340px; font-family: "MS Gothic", monospace; font-size: 13px; line-height: 1.6; }
+  #letterPrint { display: none; white-space: pre-wrap; overflow-wrap: anywhere; }
   .confirm { display: flex; gap: 8px; align-items: flex-start; background: var(--warn-bg);
              border: 1px solid var(--warn-line); border-radius: 4px; padding: 9px 12px; margin: 10px 0; }
   .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
@@ -83,10 +84,12 @@
   #unsupported { display: none; }
   @media print {
     body { background: #fff; }
-    .noprint, header.app, .panel.input-panel { display: none !important; }
+    .noprint, header.app, .input-panel, #scope-notice, #kblock { display: none !important; }
+    .cols { display: block; }
     .wrap { max-width: none; padding: 0; }
     .panel { border: none; padding: 0; }
-    textarea#letter { border: none; height: auto; min-height: 0; font-size: 12pt; }
+    textarea#letter, #resultPanel { display: none; }
+    #letterPrint { display: block; font-size: 12pt; }
     @page { margin: 15mm; }
   }
 </style>
@@ -105,16 +108,16 @@
     <strong>ご利用にあたって（必ずお読みください）</strong>
     <ul>
       <li><strong>医療従事者向けです。</strong>患者さんご自身の判断のために使用しないでください。</li>
-      <li>本ツールは、脳梗塞の既往がある患者様の周術期抗血栓療法について、
+      <li>本ツールは、脳梗塞・TIA・一過性黒内障の既往がある患者様の周術期抗血栓療法について、
         公開されている診療ガイドラインの記載を整理して<strong>参考情報を提示するもの</strong>です。
         診断を行うものではなく、個々の患者様の治療方針を決定するものでもありません。</li>
       <li>出力される休薬期間・日付・返書文面は<strong>すべて「案」</strong>です。
         主治医・術者・麻酔科医が診療情報を踏まえて内容を検証し、最終的な判断を行ってください。
         本ツールの出力をそのまま診療に用いた結果について、作成者は責任を負いかねます。</li>
       <li>本ツールは<strong>プログラム医療機器（承認・認証を受けた医療機器）ではありません。</strong></li>
-      <li>準拠したガイドラインの版と該当箇所は、各推奨の根拠として画面と返書に表示されます。
+      <li>準拠したガイドラインの版と該当箇所は、各推奨の根拠として画面と詳細版の返書に表示されます。
         <strong>必ず原典をご確認ください。</strong>ガイドラインは改訂されます。</li>
-      <li>入力内容はブラウザー内でのみ処理され、外部への送信も保存も行いません。
+      <li>入力内容の処理はブラウザー内で完結し、外部への送信・保存はありません。
         患者氏名・IDは入力しないでください。</li>
     </ul>
   </div>
@@ -134,12 +137,14 @@
 
         <div class="row">
           <div>
-            <label>脳梗塞の病型</label>
+            <label for="strokeType">脳梗塞の病型・TIAなど</label>
             <select id="strokeType">
               <option value="atherothrombotic">アテローム血栓性</option>
               <option value="lacunar">ラクナ</option>
               <option value="cardioembolic">心原性塞栓</option>
               <option value="esus">ESUS・その他</option>
+              <option value="tia">TIA（一過性脳虚血発作）</option>
+              <option value="amaurosis_fugax">一過性黒内障</option>
             </select>
           </div>
           <div>
@@ -239,6 +244,14 @@
         <div class="banner warn noprint">
           これは<strong>案</strong>です。必ず全文をご確認・修正のうえ発行してください。
         </div>
+        <div class="noprint">
+          <label for="letterStyle">返書の長さ</label>
+          <select id="letterStyle" aria-describedby="letterStyleHint">
+            <option value="concise">簡潔版</option>
+            <option value="detailed">詳細版（従来の文面）</option>
+          </select>
+          <p class="hint" id="letterStyleHint">作成後も切り替えられます。簡潔版にも薬剤ごとの方針と症例ごとの注意点を記載します。</p>
+        </div>
         <div class="confirm noprint">
           <input type="checkbox" id="confirmRead">
           <label for="confirmRead" style="margin:0;font-weight:normal">
@@ -246,6 +259,7 @@
           </label>
         </div>
         <textarea id="letter" readonly spellcheck="false"></textarea>
+        <div id="letterPrint"></div>
         <div class="actions noprint">
           <button type="button" id="btn-copy" disabled>クリップボードにコピー</button>
           <button type="button" class="sub" id="btn-print">印刷</button>
@@ -466,7 +480,7 @@
     biopsy_route_unknown: '前立腺生検の経路が未入力のため個別協議',
     mechanical_valve: '機械弁置換後',
     valvular_af: '弁膜症性心房細動（中等度以上の僧帽弁狭窄を伴う）',
-    stroke_within_3months: '発症3か月以内の脳梗塞・TIA',
+    stroke_within_3months: '発症3か月以内の脳梗塞・TIA・一過性黒内障',
     vte_within_3months: '3か月以内の静脈血栓塞栓症・再発性VTE',
     coronary_stent_dapt: '冠動脈ステント留置後のDAPT期間内',
     cerebral_revascularization: '脳血行再建術後（CEA・CAS・頭蓋内ステント等）',
@@ -664,7 +678,7 @@
       out.onsetMonthsAgo = input.onsetMonthsAgo;
       if (input.onsetMonthsAgo <= 3) flags.push('stroke_within_3months');
     } else {
-      errors.push({ code: 'missing_required_input', field: 'onsetMonthsAgo', message: '脳梗塞の発症時期が入力されていません。' });
+      errors.push({ code: 'missing_required_input', field: 'onsetMonthsAgo', message: '脳梗塞・TIA・一過性黒内障の発症時期が入力されていません。' });
     }
     out.strokeType = input.strokeType || null;
 
@@ -1143,6 +1157,8 @@
     lacunar: 'ラクナ梗塞',
     cardioembolic: '心原性脳塞栓症',
     esus: 'ESUS・その他の脳梗塞',
+    tia: 'TIA（一過性脳虚血発作）',
+    amaurosis_fugax: '一過性黒内障',
     other: 'その他の脳梗塞'
   };
 
@@ -1203,7 +1219,7 @@
 
   function caseSummary(r) {
     var lines = ['【症例の概要】'];
-    lines.push('・脳梗塞の病型: ' + (STROKE_TYPE_JP[r.strokeType] || '不明') + '（' + onsetText(r.onsetMonthsAgo) + '）');
+    lines.push('・脳梗塞の病型・TIAなど: ' + (STROKE_TYPE_JP[r.strokeType] || '不明') + '（' + onsetText(r.onsetMonthsAgo) + '）');
     lines.push('・現在の抗血栓薬:');
     r.drugs.forEach(function (d) { lines.push('　' + drugLine(d)); });
     if (r.procedure) {
@@ -1239,45 +1255,8 @@
     return joinLines(lines);
   }
 
-  /* ===== 型A（通常） ===== */
-  function buildLetterA(r, toolMeta) {
-    toolMeta = toolMeta || {};
-    var out = [header(), caseSummary(r)];
-
-    /* 血栓塞栓リスク */
-    var t = ['【血栓塞栓リスク】'];
-    if (r.thromboticRisk && r.thromboticRisk.high) {
-      t.push('本症例は以下の点から、休薬による血栓塞栓症の高発症群に相当すると考えます。');
-      r.thromboticRisk.reasons.forEach(function (x) { t.push('・' + x); });
-    } else {
-      t.push('本ツールで確認した範囲では、休薬による血栓塞栓症の高発症群に該当する所見は認めませんでした。');
-    }
-    t.push('なお本判定は、機械弁・弁膜症性心房細動・直近3か月のイベント・心房細動のリスクスコアを');
-    t.push('確認したものです。これら以外に留意すべき病態がありましたらご教示ください。');
-    t.push('');
-    out.push(joinLines(t));
-
-    /* 出血リスク */
-    if (r.procedure) {
-      out.push(joinLines([
-        '【予定処置の出血リスク】',
-        '・' + r.procedure.jp + ' は ' + r.procedure.riskLabel + ' に相当します。',
-        '',
-      ]));
-    }
-
-    /* 延期の第一推奨（DAPT×出血高危険度内視鏡） */
-    if (r.deferRecommended) {
-      out.push(joinLines([
-        '【まずご検討いただきたいこと】',
-        r.deferRecommended.reason + '。',
-        r.deferRecommended.alternative + '。',
-        sourceLine(r.deferRecommended.source),
-        ''
-      ]));
-    }
-
-    /* 薬剤ごとの方針 */
+  /* 方針・日付・条件を共通化し、簡潔版では出典の行だけ省く。 */
+  function planText(r, compact) {
     var p = ['【抗血栓薬の取り扱い（案）】'];
     r.plan.forEach(function (it) {
       var head = '・' + it.jp + ': ';
@@ -1320,13 +1299,55 @@
       }
       if (it.caveat) p.push('　　※' + it.caveat);
       if (it.note) p.push('　　※' + it.note);
-      (it.sources || []).forEach(function (s) {
+      (compact ? [] : (it.sources || [])).forEach(function (s) {
         var line = sourceLine(s);
         if (line) p.push(line);
       });
       p.push('');
     });
-    out.push(joinLines(p));
+    return joinLines(p);
+  }
+
+  /* ===== 型A（通常） ===== */
+  function buildLetterA(r, toolMeta) {
+    toolMeta = toolMeta || {};
+    var out = [header(), caseSummary(r)];
+
+    /* 血栓塞栓リスク */
+    var t = ['【血栓塞栓リスク】'];
+    if (r.thromboticRisk && r.thromboticRisk.high) {
+      t.push('本症例は以下の点から、休薬による血栓塞栓症の高発症群に相当すると考えます。');
+      r.thromboticRisk.reasons.forEach(function (x) { t.push('・' + x); });
+    } else {
+      t.push('本ツールで確認した範囲では、休薬による血栓塞栓症の高発症群に該当する所見は認めませんでした。');
+    }
+    t.push('なお本判定は、機械弁・弁膜症性心房細動・直近3か月のイベント・心房細動のリスクスコアを');
+    t.push('確認したものです。これら以外に留意すべき病態がありましたらご教示ください。');
+    t.push('');
+    out.push(joinLines(t));
+
+    /* 出血リスク */
+    if (r.procedure) {
+      out.push(joinLines([
+        '【予定処置の出血リスク】',
+        '・' + r.procedure.jp + ' は ' + r.procedure.riskLabel + ' に相当します。',
+        '',
+      ]));
+    }
+
+    /* 延期の第一推奨（DAPT×出血高危険度内視鏡） */
+    if (r.deferRecommended) {
+      out.push(joinLines([
+        '【まずご検討いただきたいこと】',
+        r.deferRecommended.reason + '。',
+        r.deferRecommended.alternative + '。',
+        sourceLine(r.deferRecommended.source),
+        ''
+      ]));
+    }
+
+    /* 薬剤の方針・条件は両版で同じ生成処理を使う */
+    out.push(planText(r, false));
 
     /* ヘパリン置換 */
     var h = ['【ヘパリン置換について】'];
@@ -1435,9 +1456,59 @@
     return out.join(NL);
   }
 
-  function build(r, toolMeta) {
+  /* ===== 簡潔版（通常・個別協議） ===== */
+  function buildConcise(r) {
+    var out = ['ご相談ありがとうございます。周術期抗血栓療法について、以下の方針案をご報告します。', ''];
+    out.push((STROKE_TYPE_JP[r.strokeType] || '病型不明') + '（' + onsetText(r.onsetMonthsAgo) + '）。');
+    if (r.procedure) out.push('予定処置: ' + r.procedure.jp + '（' + L.fmtJPDate(r.surgeryDate) + '）。');
+    r.drugs.forEach(function (d) { out.push(drugLine(d)); });
+    if (typeof r.crcl === 'number') out.push('CrCl 約' + Math.round(r.crcl) + ' mL/min（Cockcroft-Gault式）。');
+    out.push('');
+
+    if (r.letterType === 'B') {
+      out.push('本症例は以下の理由から個別の検討が必要です。定型的な休薬日数は提示していません。');
+      (r.escapeReasons || []).forEach(function (e) { out.push('・' + e.label); });
+      if (r.deferSurgery) out.push('可能であれば手術・処置の延期をご検討ください。');
+      if ((r.escapeCodes || []).indexOf('label_discrepancy') >= 0) {
+        out.push('電子添文と手技別指針で中止期間が異なるため、処方医・術者と個別に協議してください。');
+      }
+      out.push('処方医・術者・麻酔科（必要に応じて循環器内科）で協議のうえ、方針をご検討ください。');
+      if ((r.escapeCodes || []).indexOf('regional_anesthesia') >= 0) {
+        out.push('区域麻酔の穿刺・カテーテル抜去の時期は、貴院麻酔科の規定をご確認ください。');
+      }
+    } else {
+      if (r.thromboticRisk && r.thromboticRisk.high) {
+        out.push('血栓塞栓症の高発症群に相当します: ' + r.thromboticRisk.reasons.join('、') + '。');
+      }
+      if (r.deferRecommended) {
+        out.push(r.deferRecommended.reason + '。');
+        out.push(r.deferRecommended.alternative + '。');
+      }
+      out.push(planText(r, true));
+      if (r.drugs.some(function (d) { return d.doac; })) {
+        out.push('DOACのヘパリン置換は行いません。');
+      } else if (r.drugs.some(function (d) { return d.vka; })) {
+        out.push(r.thromboticRisk && r.thromboticRisk.high
+          ? 'ヘパリン置換の要否は循環器内科ともご相談ください。'
+          : 'ヘパリン置換は原則不要と考えます。');
+      }
+      out.push('休薬期間は目安です。再開は止血を確認し、術者の許可のもとでお願いします。');
+      out.push('休薬中に脱力・言語障害・視野障害などが出現した場合は、速やかにご連絡ください。');
+      if (r.mustShowSecondarySourceNotice) out.push('一部の方針は二次情報に基づくため、原典の確認が必要です。');
+    }
+    (r.advisories || []).forEach(function (a) { out.push('・' + a.message); });
+    if (r.kbExpiredWarning) out.push('知識ベースのレビュー期限を超過しています。ガイドライン改訂の確認が必要です。');
+    out.push('');
+    out.push('本返書は' + L.fmtJPDate(r.today) + '時点で共有された診療情報に基づく案です。最終判断は術者・麻酔科でお願いします。');
+    out.push('予定や病状が変わった場合は再度ご相談ください。');
+    if (r.caseRef) out.push('整理番号: ' + r.caseRef);
+    return joinLines(out);
+  }
+
+  function build(r, toolMeta, style) {
     if (!r || !r.letterGenerated) return null;
-    var raw = (r.letterType === 'B') ? buildLetterB(r, toolMeta) : buildLetterA(r, toolMeta);
+    var raw = style === 'concise' ? buildConcise(r)
+      : ((r.letterType === 'B') ? buildLetterB(r, toolMeta) : buildLetterA(r, toolMeta));
     return sanitizeForKarte(raw);
   }
 
@@ -1512,7 +1583,7 @@
   }
 
   return {
-    build: build, buildLetterA: buildLetterA, buildLetterB: buildLetterB,
+    build: build, buildLetterA: buildLetterA, buildLetterB: buildLetterB, buildConcise: buildConcise,
     findNonJisChars: findNonJisChars, sanitizeForKarte: sanitizeForKarte,
     COMMON_PHRASES: COMMON_PHRASES, TYPE_A_PHRASES: TYPE_A_PHRASES,
     STROKE_TYPE_JP: STROKE_TYPE_JP, NL: NL
@@ -1673,6 +1744,17 @@
     return input;
   }
 
+  /* 表示済みの判定を保持し、長さの変更では再判定しない。 */
+  var currentResult = null;
+  function updateLetter() {
+    if (!currentResult || !currentResult.letterGenerated) return;
+    $('letter').value = T.build(currentResult, TOOL, $('letterStyle').value);
+    $('letterPrint').textContent = $('letter').value;
+    $('confirmRead').checked = false;
+    $('btn-copy').disabled = true;
+    $('copyMsg').textContent = '';
+  }
+
   /* ---- 表示 ---- */
   function esc(s) {
     return String(s).replace(/[&<>"]/g, function (c) {
@@ -1681,6 +1763,7 @@
   }
 
   function render(r) {
+    currentResult = r.letterGenerated ? r : null;
     var out = [];
     if (r.inputError) {
       out.push('<div class="banner danger"><strong>入力が不足しています。返書は作成できません。</strong><ul>'
@@ -1696,7 +1779,7 @@
     }
 
     out.push('<p class="src">CrCl 約' + Math.round(r.crcl) + ' mL/min（Cockcroft-Gault式）'
-             + ' ／ ' + esc(r.procedure.jp) + '： ' + esc(r.procedure.riskLabel) + '</p>');
+             + (r.procedure ? ' ／ ' + esc(r.procedure.jp) + '： ' + esc(r.procedure.riskLabel) : ' ／ 処置不明') + '</p>');
 
     if (r.escape) {
       out.push('<div class="banner danger"><strong><span class="pill escape">個別判断</span> '
@@ -1749,8 +1832,7 @@
     }
     $('result').innerHTML = out.join('');
 
-    var letter = T.build(r, TOOL);
-    $('letter').value = letter;
+    updateLetter();
     $('letterPanel').style.display = 'block';
     $('confirmRead').checked = false;
     $('btn-copy').disabled = true;
@@ -1763,6 +1845,7 @@
     var ta = $('letter'), msg = $('copyMsg');
     var text = ta.value.replace(/[～〜]/g, '-');
     ta.value = text;
+    $('letterPrint').textContent = text;
     function fallback() {
       ta.removeAttribute('readonly');
       ta.focus(); ta.select(); ta.setSelectionRange(0, text.length);
@@ -1795,6 +1878,7 @@
   });
   $('btn-back').addEventListener('click', function () { setInputsDisabled(false); });
   $('confirmRead').addEventListener('change', function () { $('btn-copy').disabled = !this.checked; });
+  $('letterStyle').addEventListener('change', updateLetter);
   $('btn-copy').addEventListener('click', copyLetter);
   $('btn-print').addEventListener('click', function () { window.print(); });
   $('btn-new').addEventListener('click', function () {
@@ -1805,7 +1889,7 @@
   function setInputsDisabled(v) {
     Array.prototype.forEach.call(
       document.querySelectorAll('.input-panel input, .input-panel select, .input-panel button'),
-      function (el) { if (el.id !== 'btn-new') el.disabled = v; });
+      function (el) { if (el.id !== 'btn-new' && el.id !== 'btn-back') el.disabled = v; });
     $('btn-eval').disabled = v || lock.locked;
     $('btn-back').style.display = v ? 'inline-block' : 'none';
   }

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v415';
+const CACHE_NAME = 'ddx-tools-v416';
 const ASSETS = [
   './infographics/atogepant-acute-approval/index.html',
   './infographics/focal-status-epilepticus-mri-reference-repair-20261117/index.html',
