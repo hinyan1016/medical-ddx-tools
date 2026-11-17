@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v422';
+const CACHE_NAME = 'ddx-tools-v423';
 const ASSETS = [
   './infographics/dural-avf-reference-repair-20261117/index.html',
   './infographics/dural-avf-reference-repair-20261117/infographic.png',

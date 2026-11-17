@@ -188,6 +188,7 @@
         <button class="btn small" type="button" onclick="loadSample('focal')">左側頭部の焦点性異常</button>
         <button class="btn small" type="button" onclick="loadSample('diffuse')">意識障害・びまん性異常</button>
         <button class="btn small" type="button" onclick="loadSample('gen')">全般性てんかん性放電</button>
+        <button class="btn small" type="button" onclick="loadSample('ictal')">発作時記録（焦点発作）</button>
         <button class="btn small danger" type="button" onclick="resetAll()">すべてクリア</button>
       </div>
       <div class="row">
@@ -462,7 +463,7 @@
             <li><b>LPDs</b>：脳卒中が主な原因で、発作との関連が強い。重症患者の持続脳波では、LPDsは周波数によらず発作との関連が最も強かった。<br>Pohlmann-Eden B, et al. Periodic lateralized epileptiform discharges--a critical review. J Clin Neurophysiol. 1996;13(6):519-30. <a href="https://pubmed.ncbi.nlm.nih.gov/8978624/" target="_blank" rel="noopener">PMID 8978624</a><br>Rodriguez Ruiz A, et al. Association of Periodic and Rhythmic Electroencephalographic Patterns With Seizures in Critically Ill Patients. JAMA Neurol. 2017;74(2):181-188. <a href="https://pubmed.ncbi.nlm.nih.gov/27992625/" target="_blank" rel="noopener">PMID 27992625</a></li>
             <li><b>GPDs</b>：急性の脳障害・全身疾患・心停止後でみられ、非けいれん性発作・非けいれん性てんかん重積状態と強く関連する。発作との関連は1.5 Hz以上やPlus修飾子で強い。<br>Foreman B, et al. Generalized periodic discharges in the critically ill: a case-control study of 200 patients. Neurology. 2012;79(19):1951-60. <a href="https://pubmed.ncbi.nlm.nih.gov/23035068/" target="_blank" rel="noopener">PMID 23035068</a><br>Rodriguez Ruiz A, et al. JAMA Neurol. 2017（上記）</li>
             <li><b>LRDA・GRDA</b>：重症患者の持続脳波で、LRDAは1.5 Hz以上かPlus修飾子を伴うときに発作と関連した。GRDAは周期性・律動性パターンがない場合と発作の頻度に差がなかった。<br>Rodriguez Ruiz A, et al. JAMA Neurol. 2017（上記）</li>
-            <li><b>用語と定義（ACNS 2021）</b>：分布（G・L・BI・UI・Mf、focal・regional・hemispheric は L に含む）、PDs・RDA・SW、Plus修飾子（+F・+R・+S）、出現率の区分、背景の連続性（nearly continuous・discontinuous・burst-attenuation/suppression・suppression）と電位（低電位20 µV未満・抑制10 µV未満）、非対称の程度、棘波・鋭波の持続、脳波上の発作（ESz）・てんかん重積状態（ESE）・BIRDs の定義。本文（PMC8135051）で確認。<br>Hirsch LJ, et al. American Clinical Neurophysiology Society's Standardized Critical Care EEG Terminology: 2021 Version. J Clin Neurophysiol. 2021;38(1):1-29. <a href="https://pubmed.ncbi.nlm.nih.gov/33475321/" target="_blank" rel="noopener">PMID 33475321</a></li>
+            <li><b>用語と定義（ACNS 2021）</b>：分布（G・L・BI・UI・Mf、focal・regional・hemispheric は L に含む）、PDs・RDA・SW、Plus修飾子（+F・+R・+S）、出現率の区分、背景の連続性（nearly continuous・discontinuous・burst-attenuation/suppression・suppression）と電位（低電位20 µV未満・抑制10 µV未満）、非対称の程度、棘波・鋭波の持続、脳波上の発作（ESz）・臨床症状を伴う発作（ECSz）・てんかん重積状態（ESE・ECSE）・BIRDs の定義。本文（PMC8135051）で確認。<br>Hirsch LJ, et al. American Clinical Neurophysiology Society's Standardized Critical Care EEG Terminology: 2021 Version. J Clin Neurophysiol. 2021;38(1):1-29. <a href="https://pubmed.ncbi.nlm.nih.gov/33475321/" target="_blank" rel="noopener">PMID 33475321</a></li>
             <li><b>6 Hz棘徐波のWHAM型・FOLD型</b>：WHAM型は主に発作のある例、FOLD型は主に自律神経症状や心理的な訴えのある例でみられた。<br>Hughes JR. Two forms of the 6/sec spike and wave complex. Electroencephalogr Clin Neurophysiol. 1980;48(5):535-50. <a href="https://pubmed.ncbi.nlm.nih.gov/6153962/" target="_blank" rel="noopener">PMID 6153962</a></li>
             <li><b>正常亜型</b>（wicket spikes、small sharp spikes、RMTD、6 Hz棘徐波、14&amp;6 Hz陽性棘波）：過去には異常とされたが、現在は正常（または臨床的意義の不確かな）亜型とされ、てんかん性と読みすぎないことが重要。<br>Amin U, et al. Normal variants and artifacts: Importance in EEG interpretation. Epileptic Disord. 2023;25(5):591-648. <a href="https://pubmed.ncbi.nlm.nih.gov/36938895/" target="_blank" rel="noopener">PMID 36938895</a></li>
             <li><b>excessive betaと薬剤</b>、<b>burst-suppressionと薬剤</b>：過剰な速波は薬剤による脳波変化として最も多いものの一つ。burst-suppressionなども薬剤が主因なら正常化しうる。<br>Blume WT. Drug effects on EEG. J Clin Neurophysiol. 2006;23(4):306-11. <a href="https://pubmed.ncbi.nlm.nih.gov/16885705/" target="_blank" rel="noopener">PMID 16885705</a></li>
@@ -471,7 +472,7 @@
             <li><b>脳波変化を伴わない臨床的イベント</b>：単純部分発作87回のうち、発作時の頭皮脳波に変化があったのは21%で、正常な脳波は診断を否定しない。<br>Devinsky O, et al. Clinical and electroencephalographic features of simple partial seizures. Neurology. 1988;38(9):1347-52. <a href="https://pubmed.ncbi.nlm.nih.gov/3137487/" target="_blank" rel="noopener">PMID 3137487</a></li>
             <li><b>正常脳波でもてんかんは否定されない・再検査</b>：発作間欠期てんかん性放電が見つかった患者のうち、初回の脳波で見つかったのは50%、3回目までで84%だった。<br>Salinsky M, et al. Effectiveness of multiple EEGs in supporting the diagnosis of epilepsy: an operational curve. Epilepsia. 1987;28(4):331-4. <a href="https://pubmed.ncbi.nlm.nih.gov/3622408/" target="_blank" rel="noopener">PMID 3622408</a></li>
           </ul>
-          <p class="hint">文献を付けていない文（びまん性異常の程度、全般性・局在性放電と発作型の対応、睡眠期の鋭一過性波、覚醒と軽睡眠の繰り返しと睡眠時無呼吸、光突発反応など）は、臨床脳波レポートの一般的な記載例に沿った下書きです。</p>
+          <p class="hint">文献を付けていない文（びまん性異常の程度、全般性・局在性放電と発作型の対応、睡眠期の鋭一過性波、覚醒と軽睡眠の繰り返しと睡眠時無呼吸、光突発反応、発作時脳波の起始部位やアーチファクトの記載など）は、臨床脳波レポートの一般的な記載例に沿った下書きです。</p>
         </div>
       </details>
     </div>
@@ -592,6 +593,8 @@ var EPIS = [
 function isSporadicEpi(f) { return f.cat === 'epi' && /^(spike|polyspike|sharp|swc|pswc|sswc)$/.test(f.type); }
 function isRDA(f) { return f.cat === 'slow' && f.morph === 'rhythmic' && f.band === 'delta'; }
 function isPD(f) { return f.cat === 'epi' && f.type === 'pd'; }
+// 脳波変化を伴わない臨床的イベントと自由記載は、脳波の異常所見に数えない
+function isAbnormalFinding(f) { return f.cat !== 'other' && !(f.cat === 'seiz' && f.kind === 'noeeg'); }
 var MODS = [
   ['sleep', '主に睡眠期', 'mainly during sleep'],
   ['drowsy', '主に傾眠期', 'mostly during drowsy state'],
@@ -620,11 +623,62 @@ var SPATS = [
   ['delta', '律動性デルタ活動', 'rhythmic delta activity'],
   ['theta', '律動性シータ活動', 'rhythmic theta activity'],
   ['alpha', '律動性アルファ活動', 'rhythmic alpha activity'],
+  ['beta', '律動性速波（ベータ帯域）', 'rhythmic beta activity'],
   ['lvfa', '低振幅速波', 'low-voltage fast activity'],
   ['rspike', '反復性棘波', 'repetitive spikes'],
+  ['rsharp', '反復性鋭波', 'repetitive sharp waves'],
+  ['rsw', '律動性棘徐波', 'rhythmic spike-and-wave'],
   ['atten', '背景活動の平坦化（electrodecrement）', 'electrodecremental change'],
   ['gsw', '全般性棘徐波', 'generalized spike-and-wave'],
+  ['gpsw', '全般性多棘徐波', 'generalized polyspike-and-wave'],
+  ['gpfa', '全般性突発性速波', 'generalized paroxysmal fast activity'],
   ['', '（指定しない）', '']
+];
+// 発作起始の分布（発作時記録用）。起始を決められない記録のために「特定できない」を足す。
+var SDISTS = [
+  ['regional', '局在性（ACNSのLに含む）', 'regional'],
+  ['lateralized', '一側性 L', 'lateralized'],
+  ['generalized', '全般性 G', 'generalized'],
+  ['unclear', '起始部位を特定できない', 'not localizable']
+];
+// 発作が出現したときの状態・賦活
+var SSTATES = [
+  ['', '（記載しない）', ''],
+  ['wake', '覚醒時', 'during wakefulness'],
+  ['drowsy', '傾眠時', 'during drowsiness'],
+  ['sleep', '睡眠時', 'during sleep'],
+  ['hv', '過呼吸中', 'during hyperventilation'],
+  ['ps', '光刺激中', 'during photic stimulation']
+];
+// 発作時活動の伝播
+var SPROPS = [
+  ['', '（記載しない）', ''],
+  ['ipsi', '同側半球へ伝播', 'spreading to the ipsilateral hemisphere'],
+  ['contra', '対側半球へ伝播', 'spreading to the contralateral hemisphere'],
+  ['bilat', '両側性に伝播', 'with bilateral spread'],
+  ['none', '起始部位に限局', 'remaining confined to the onset region']
+];
+// 脳波変化と臨床症状の時間関係：[id, 選択肢, 日本語の前半, 日本語の後半, 英語]
+var SLEADS = [
+  ['', '（記載しない）', '', '', ''],
+  ['eeg', '脳波変化が臨床症状に先行', '脳波変化は臨床症状に', '先行', 'EEG onset preceded clinical onset'],
+  ['clin', '臨床症状が脳波変化に先行', '臨床症状は脳波変化に', '先行', 'Clinical onset preceded EEG onset'],
+  ['same', 'ほぼ同時', '脳波変化と臨床症状はほぼ同時に出現', '', 'EEG and clinical onset were nearly simultaneous']
+];
+// 発作後の脳波
+var SPOSTS = [
+  ['', '（記載しない）', ''],
+  ['gslow', '全般性の徐波化', 'generalized slowing'],
+  ['rslow', '右側優位の徐波化', 'right-predominant slowing'],
+  ['lslow', '左側優位の徐波化', 'left-predominant slowing'],
+  ['supp', '全般性の抑制（postictal generalized EEG suppression）', 'generalized EEG suppression (PGES)'],
+  ['none', '明らかな変化なし', 'no definite change']
+];
+// 脳波変化を伴わない臨床的イベントの書き方
+var SEVTS = [
+  ['fas', '脳波変化なし（意識が保たれる発作は頭皮脳波に出にくい旨を添える）'],
+  ['plain', '脳波変化なし（事実だけを書く）'],
+  ['artifact', 'アーチファクトのため評価困難']
 ];
 // 発作型：[id, 現行JA, 従来JA, 現行EN, 従来EN]
 var STYPES = [
@@ -634,8 +688,12 @@ var STYPES = [
   ['focal', '焦点発作', '部分発作', 'focal seizure', 'partial seizure'],
   ['gtc', '全般強直間代発作', '全般強直間代発作', 'generalized tonic-clonic seizure', 'generalized tonic-clonic seizure'],
   ['abs', '欠神発作', '欠神発作', 'absence seizure', 'absence seizure'],
+  ['aabs', '非定型欠神発作', '非定型欠神発作', 'atypical absence seizure', 'atypical absence seizure'],
   ['myo', 'ミオクロニー発作', 'ミオクロニー発作', 'myoclonic seizure', 'myoclonic seizure'],
   ['tonic', '強直発作', '強直発作', 'tonic seizure', 'tonic seizure'],
+  ['clonic', '間代発作', '間代発作', 'clonic seizure', 'clonic seizure'],
+  ['atonic', '脱力発作', '脱力発作', 'atonic seizure', 'atonic seizure'],
+  ['spasm', 'てんかん性スパズム', 'てんかん性スパズム', 'epileptic spasm', 'epileptic spasm'],
   ['unk', '発作（分類不能）', '発作（分類不能）', 'seizure (unclassified)', 'seizure (unclassified)']
 ];
 var CLS = {
@@ -680,7 +738,7 @@ function newFinding(cat) {
   if (cat === 'slow') return { cat: 'slow', cont: 'intermittent', morph: 'irregular', band: 'delta', f1: '', f2: '', dist: 'regional', side: 'R', loc: 'temporal', max: '', prevT: 'p', n: '1', a: '', b: '', acat: 'frequent', plus: '', mods: {}, runs: '' };
   if (cat === 'epi') return { cat: 'epi', type: 'sharp', f1: '', f2: '', d1: '', d2: '', dist: 'regional', side: 'R', loc: 'temporal', max: '', prevT: 'p', n: '1', a: '', b: '', acat: 'occasional', plus: '', mods: {}, runs: '' };
   if (cat === 'asym') return { cat: 'asym', what: 'beta', side: 'R', loc: 'frontotemporal', deg: '' };
-  if (cat === 'seiz') return { cat: 'seiz', kind: 'clin', video: true, count: '1', dist: 'regional', side: 'R', loc: 'temporal', pat: 'delta', dur: '', durU: 's', ese: false, stype: 'fias', evo_ja: '', evo_en: '', sem_ja: '', sem_en: '' };
+  if (cat === 'seiz') return { cat: 'seiz', kind: 'clin', video: true, count: '1', dist: 'regional', side: 'R', loc: 'temporal', max: '', pat: 'delta', f1: '', f2: '', prop: '', dur: '', dur2: '', durU: 's', ese: false, stype: 'fias', state: '', lead: '', leadSec: '', post: '', postDur: '', evt: 'fas', pdrKept: false, evo_ja: '', evo_en: '', sem_ja: '', sem_en: '' };
   return { cat: 'other', ja: '', en: '' };
 }
 S = defaults();
@@ -873,36 +931,64 @@ function findingLine(f, L) {
   if (f.cat === 'seiz') {
     var k = look(SKINDS, f.kind), p = look(SPATS, f.pat);
     var cnt = trim(f.count) || '1';
-    var dur = trim(f.dur);
-    var onset;
+    var dur = range(f.dur, f.dur2);
+    var shz = range(f.f1, f.f2), smx = trim(f.max);
+    var stt = look(SSTATES, f.state || ''), prp = look(SPROPS, f.prop || ''), pst = look(SPOSTS, f.post || ''), ld = look(SLEADS, f.lead || '');
+    var lsec = trim(f.leadSec), pdur = trim(f.postDur);
+    var art = f.kind === 'noeeg' && f.evt === 'artifact';
+    var seg = [], onset;
     if (L === 'en') {
-      var s = k[2] + (cnt !== '1' ? ' (x' + cnt + ')' : ' (x1)');
+      var s = (art ? 'Clinical event' : k[2]) + ' (x' + cnt + ')';
+      if (stt[2]) seg.push(stt[2]);
       if (f.kind !== 'noeeg') {
-        onset = (f.dist === 'generalized') ? 'generalized onset' : look(DISTS, f.dist)[2] + ' ' + locWord(f, 'en') + ' onset';
-        s += ': ' + onset;
-        if (p[2]) s += ', ' + p[2];
-        if (dur) s += ', lasting ' + dur + (f.durU === 'm' ? ' min' : ' sec');
-        if (f.ese) s += ', meeting criteria for electrographic status epilepticus (ESE)';
+        if (f.dist === 'generalized') onset = 'generalized onset';
+        else if (f.dist === 'unclear') onset = 'onset not localizable';
+        else onset = look(DISTS, f.dist)[2] + ' ' + locWord(f, 'en') + ' onset' + (smx ? ' (max. ' + smx + ')' : '');
+        seg.push(onset);
+        if (p[2]) seg.push(p[2] + (shz ? ' (' + shz + ' Hz)' : ''));
+        else if (shz) seg.push(shz + ' Hz');
+        if (prp[2]) seg.push(prp[2]);
+        if (dur) seg.push('lasting ' + dur + (f.durU === 'm' ? ' min' : ' sec'));
+        if (f.ese) seg.push('meeting criteria for ' + (f.kind === 'clin' ? 'electroclinical status epilepticus (ECSE)' : 'electrographic status epilepticus (ESE)'));
+      } else if (art) {
+        seg.push('EEG during the event obscured by muscle and movement artifacts');
+      } else if (f.pdrKept) {
+        seg.push('posterior dominant rhythm preserved during the event');
       }
+      if (seg.length) s += ': ' + seg.join(', ');
       var evo = trim(f.evo_en) || trim(f.evo_ja);
       if (evo) s += '; ' + evo;
+      if (f.kind === 'clin' && ld[4]) s += '. ' + ld[4] + (lsec && f.lead !== 'same' ? ' by about ' + lsec + ' sec' : '');
       var sem = trim(f.sem_en) || trim(f.sem_ja);
       if (sem) s += '. Clinically, ' + sem;
+      if (f.kind !== 'noeeg' && pst[2]) s += '. Postictal: ' + pst[2] + (pdur ? ' (about ' + pdur + ' sec)' : '');
       if (f.video) s += ' (recorded on video-EEG)';
       return s;
     }
-    var sj = k[1] + '（' + cnt + '回）';
+    var sj = (art ? '臨床的イベント' : k[1]) + '（' + cnt + '回）';
+    if (stt[1] && f.state) seg.push(stt[1] + 'に出現');
     if (f.kind !== 'noeeg') {
-      onset = (f.dist === 'generalized') ? '全般性に起始' : locWord(f, 'ja') + 'に起始';
-      sj += '：' + onset;
-      if (p[1]) sj += '、' + p[1];
-      if (dur) sj += '、持続' + dur + (f.durU === 'm' ? '分' : '秒');
-      if (f.ese) sj += '、脳波上のてんかん重積状態（ESE）の基準を満たす';
+      if (f.dist === 'generalized') onset = '全般性に起始';
+      else if (f.dist === 'unclear') onset = '起始部位は特定できない';
+      else onset = locWord(f, 'ja') + (smx ? '（' + smx + '最大）' : '') + 'に起始';
+      seg.push(onset);
+      if (p[1] && f.pat) seg.push((shz ? shz + ' Hzの' : '') + p[1]);
+      else if (shz) seg.push(shz + ' Hz');
+      if (prp[1] && f.prop) seg.push(prp[1]);
+      if (dur) seg.push('持続' + dur + (f.durU === 'm' ? '分' : '秒'));
+      if (f.ese) seg.push(f.kind === 'clin' ? '臨床症状を伴うてんかん重積状態（ECSE）の基準を満たす' : '脳波上のてんかん重積状態（ESE）の基準を満たす');
+    } else if (art) {
+      seg.push('イベント中の脳波は筋電図・体動によるアーチファクトのため評価困難');
+    } else if (f.pdrKept) {
+      seg.push('イベント中も後頭部優位律動が保たれている');
     }
+    if (seg.length) sj += '：' + seg.join('、');
     var evj = trim(f.evo_ja) || trim(f.evo_en);
     if (evj) sj += '。' + evj;
+    if (f.kind === 'clin' && f.lead && ld[2]) sj += '。' + ld[2] + (lsec && f.lead !== 'same' ? '約' + lsec + '秒' : '') + ld[3];
     var smj = trim(f.sem_ja) || trim(f.sem_en);
     if (smj) sj += '。臨床症状：' + smj;
+    if (f.kind !== 'noeeg' && f.post && pst[1]) sj += '。発作後：' + pst[1] + (pdur ? '（約' + pdur + '秒）' : '');
     if (f.video) sj += '（ビデオ脳波で記録）';
     return sj;
   }
@@ -1043,7 +1129,7 @@ function interpLines(L) {
 
   // 1) 正常
   var anyFinding = false;
-  for (i = 0; i < F.length; i++) { if (F[i].cat !== 'other') anyFinding = true; }
+  for (i = 0; i < F.length; i++) { if (isAbnormalFinding(F[i])) anyFinding = true; }
   if (S.cls === 'normal' && !anyFinding) {
     out.push(en ? 'This is a normal EEG.' : '正常脳波である。');
   }
@@ -1150,23 +1236,47 @@ function interpLines(L) {
   if (birds.length) out.push(en ? 'Brief potentially ictal rhythmic discharges (BIRDs) are present; clinical correlation is required.' : 'BIRDs（短時間の、発作の可能性がある律動性放電）を認める。臨床的相関の検討を要する。');
 
   // 4) 発作時記録
+  var evt = [];
   for (i = 0; i < F.length; i++) {
     f = F[i];
     if (f.cat !== 'seiz') continue;
-    hasSz = true;
-    var where = f.dist === 'generalized' ? (en ? '' : '全般性に出現する') : (en ? ' arising from ' + lw(f) : lw(f) + 'から出現する');
-    if (f.kind === 'clin') {
-      if (en) out.push('A' + (/^[aeiou]/i.test(stype(f, 'en')) ? 'n ' : ' ') + stype(f, 'en') + where + ' was recorded' + (f.video ? ' on video-EEG' : '') + '.');
-      else out.push('記録中に、' + where + stype(f, 'ja') + 'が' + (f.video ? 'ビデオと脳波で' : '') + '記録されている。');
-    } else if (f.kind === 'eeg') {
-      if (en) out.push('An electrographic seizure without clinical signs' + where + ' was recorded.');
-      else out.push('記録中に、' + where + '臨床症状を伴わない脳波上の発作（electrographic seizure）が記録されている。');
+    var sc = parseInt(trim(f.count), 10); if (!(sc > 1)) sc = 1;
+    if (f.kind === 'noeeg') {
+      // 脳波変化を伴わない臨床的イベントは、発作間欠期の記載の後にまとめて書く
+      var fasW = S.term === 'classic' ? ['単純部分発作', 'Simple partial seizures'] : ['焦点意識保持発作', 'Focal aware seizures'];
+      if (en) {
+        var e1 = sc > 1 ? 'Clinical events (x' + sc + ') were recorded' : 'A clinical event was recorded';
+        if (f.evt === 'artifact') evt.push(e1 + ', but the EEG during the event' + (sc > 1 ? 's' : '') + ' was obscured by muscle and movement artifacts; clinical correlation is required.');
+        else evt.push(e1 + ' without an EEG change' + (f.pdrKept ? ', and the posterior dominant rhythm was preserved during the event' + (sc > 1 ? 's' : '') : '') + '. ' + (f.evt === 'plain' ? 'Clinical correlation is required.' : fasW[1] + ' often lack a scalp EEG correlate, so a seizure cannot be excluded; clinical correlation is required.'));
+      } else {
+        var j1 = '臨床的イベントを' + (sc > 1 ? sc + '回' : '') + '記録したが、';
+        if (f.evt === 'artifact') evt.push(j1 + 'イベント中の脳波は筋電図・体動によるアーチファクトのため評価が困難である。臨床的相関の検討を要する。');
+        else evt.push(j1 + (sc > 1 ? 'いずれも' : '') + (f.pdrKept ? 'イベント中の脳波変化を認めず、後頭部優位律動が保たれている。' : '脳波変化を認めない。') + (f.evt === 'plain' ? '' : fasW[0] + 'は頭皮脳波に変化が出ないことが多く、発作は否定できない。') + '臨床的相関の検討を要する。');
+      }
+      continue;
     }
-    if (f.ese && f.kind !== 'noeeg') {
-      out.push(en ? 'This meets the criteria for electrographic status epilepticus (ESE: seizure activity for 10 or more continuous minutes, or 20% or more of any 60-minute period).' : '脳波上のてんかん重積状態（ESE：10分以上連続、または任意の60分間の20%以上）の基準を満たす。');
+    hasSz = true;
+    var genType = f.kind === 'clin' && /^(gtc|abs|aabs)$/.test(f.stype);
+    var where;
+    if (f.dist === 'unclear' || (f.dist === 'generalized' && genType)) where = '';
+    else if (f.dist === 'generalized') where = en ? ' with generalized onset' : '全般性に出現する';
+    else where = en ? ' arising from ' + lw(f) : lw(f) + 'から出現する';
+    if (f.kind === 'clin') {
+      var ste = stype(f, 'en');
+      if (en && sc > 1) {
+        var pl = ste.indexOf('seizure') >= 0 ? ste.replace('seizure', 'seizures') : ste + 's';
+        out.push(pl.charAt(0).toUpperCase() + pl.slice(1) + ' (x' + sc + ')' + where + ' were recorded' + (f.video ? ' on video-EEG' : '') + '.');
+      } else if (en) out.push('A' + (/^[aeiou]/i.test(ste) ? 'n ' : ' ') + ste + where + ' was recorded' + (f.video ? ' on video-EEG' : '') + '.');
+      else out.push('記録中に、' + where + stype(f, 'ja') + 'が' + (sc > 1 ? sc + '回、' : '') + (f.video ? 'ビデオと脳波で' : '') + '記録されている。');
     } else {
-      if (en) out.push('A clinical event was recorded without an EEG change. ' + (S.term === 'classic' ? 'Simple partial seizures' : 'Focal aware seizures') + ' often lack a scalp EEG correlate, so a seizure cannot be excluded; clinical correlation is required.');
-      else out.push('臨床的イベントを記録したが、脳波変化を認めない。' + (S.term === 'classic' ? '単純部分発作' : '焦点意識保持発作') + 'は頭皮脳波に変化が出ないことが多く、発作は否定できない。臨床的相関の検討を要する。');
+      if (en) out.push(sc > 1 ? 'Electrographic seizures without clinical signs (x' + sc + ')' + where + ' were recorded.' : 'An electrographic seizure without clinical signs' + where + ' was recorded.');
+      else out.push('記録中に、' + where + '臨床症状を伴わない脳波上の発作（electrographic seizure）が' + (sc > 1 ? sc + '回' : '') + '記録されている。');
+    }
+    if (f.dist === 'unclear') out.push(en ? 'The ictal EEG onset could not be localized.' : '発作時脳波の起始部位は特定できない。');
+    if (f.ese && f.kind === 'clin') {
+      out.push(en ? 'This meets the criteria for electroclinical status epilepticus (ECSE: an electroclinical seizure for 10 or more continuous minutes, or 20% or more of any 60-minute period; 5 or more continuous minutes with bilateral tonic-clonic motor activity).' : '臨床症状を伴うてんかん重積状態（ECSE：臨床症状を伴う発作が10分以上連続、または任意の60分間の20%以上。両側強直間代の運動症状は5分以上連続）の基準を満たす。');
+    } else if (f.ese) {
+      out.push(en ? 'This meets the criteria for electrographic status epilepticus (ESE: seizure activity for 10 or more continuous minutes, or 20% or more of any 60-minute period).' : '脳波上のてんかん重積状態（ESE：10分以上連続、または任意の60分間の20%以上）の基準を満たす。');
     }
   }
   if (!hasEpi && !hasSz && !rppSeen && !(S.cls === 'normal' && !anyFinding)) {
@@ -1178,6 +1288,7 @@ function interpLines(L) {
   if (hasEpi && singleEpi) {
     out.push(en ? 'However, the epileptiform discharge was recorded only once; correlation with clinical seizures is required.' : 'ただし、てんかん性放電は記録中1回のみで、発作の有無との相関の検討を要する。');
   }
+  out = out.concat(evt);
 
   // 5) Note由来
   var noteI = [];
@@ -1323,7 +1434,7 @@ function warnings() {
   }
   if (any && Math.abs(sum - 100) > 0.5) w.push('睡眠段階の合計が ' + sum + '% です（100% になるか確認してください）。');
   var abnormalFinding = false;
-  for (i = 0; i < S.findings.length; i++) { if (S.findings[i].cat !== 'other') abnormalFinding = true; }
+  for (i = 0; i < S.findings.length; i++) { if (isAbnormalFinding(S.findings[i])) abnormalFinding = true; }
   if (S.cls === 'normal' && (abnormalFinding || S.pdrOrg === 'poor' || S.pdrOrg === 'disorg' || S.pdrOrg === 'absent' || S.special !== 'none')) w.push('判定が「正常」ですが、異常所見が入力されています。判定を見直してください。');
   if (S.cls !== 'normal' && !abnormalFinding && S.pdrOrg === 'well' && S.special === 'none') w.push('判定が異常ですが、異常の根拠となる所見がまだ入力されていません。');
   if (S.st.coma && (S.st.awake || S.st.sleep || S.st.drowsy)) w.push('「昏睡」を選んだときは、記録状態は「Comatose」だけを出力します。');
@@ -1349,7 +1460,21 @@ function warnings() {
     // ACNS の定義との食い違い
     var hiHz = parseFloat(trim(f.f2) || trim(f.f1));
     if (isRDA(f) && hiHz > 4) w.push((i + 1) + ') ACNSのRDAは0.5〜4 Hzです。4 Hzを超える律動性活動は、10秒未満ならBIRDs、10秒以上なら脳波上の発作にあたる可能性があります。');
-    if (isPD(f) && hiHz > 2.5) w.push((i + 1) + ') ACNSでは、2.5 Hzを超える周期性放電が10秒以上続けば脳波上の発作（ESz）にあたります。持続を確かめてください。');    if (f.cat === 'seiz' && f.kind === 'eeg' && f.durU === 's' && trim(f.dur) && parseFloat(f.dur) < 10) w.push((i + 1) + ') ACNSの脳波上の発作（ESz）は10秒以上です。10秒未満の律動性放電はBIRDsにあたる可能性があります。');
+    if (isPD(f) && hiHz > 2.5) w.push((i + 1) + ') ACNSでは、2.5 Hzを超える周期性放電が10秒以上続けば脳波上の発作（ESz）にあたります。持続を確かめてください。');
+    if (f.cat === 'seiz' && f.kind !== 'noeeg') {
+      // 持続は範囲で入力されることがあるので、長いほうで判定する
+      var dMax = parseFloat(trim(f.dur2) || trim(f.dur));
+      if (f.kind === 'eeg' && f.durU === 's' && dMax < 10) w.push((i + 1) + ') ACNSの脳波上の発作（ESz）は10秒以上です。10秒未満の律動性放電はBIRDsにあたる可能性があります。');
+      var dMin = f.durU === 'm' ? dMax : dMax / 60;
+      var btc = f.kind === 'clin' && (f.stype === 'gtc' || f.stype === 'fbtc');
+      var lim = btc ? 5 : 10;
+      var seName = f.kind === 'clin' ? '臨床症状を伴うてんかん重積状態（ECSE）' : '脳波上のてんかん重積状態（ESE）';
+      var seRule = '10分以上連続、または任意の60分間の20%以上' + (btc ? '。両側強直間代の運動症状は5分以上連続' : '');
+      if (!f.ese && dMin >= lim) w.push((i + 1) + ') 持続が' + lim + '分以上です。ACNSの' + seName + '（' + seRule + '）にあたらないか確かめてください。');
+      if (f.ese && (trim(f.count) || '1') === '1' && dMin < lim) w.push((i + 1) + ') 1回で' + lim + '分未満の発作は、ACNSの' + seName + 'の基準（' + seRule + '）を満たしません。チェックを確かめてください。');
+      if (f.kind === 'clin' && f.dist === 'generalized' && /^(fias|fas|fbtc|focal)$/.test(f.stype)) w.push((i + 1) + ') 起始の分布が全般性ですが、発作型は焦点起始の発作です。どちらかを確かめてください。');
+      if (f.kind === 'clin' && (f.dist === 'regional' || f.dist === 'lateralized') && /^(gtc|abs|aabs)$/.test(f.stype)) w.push((i + 1) + ') 起始の分布が局在性・一側性ですが、発作型は全般起始の発作です。どちらかを確かめてください。');
+    }
   }
   return w;
 }
@@ -1432,17 +1557,30 @@ function cardHTML(i) {
   } else if (f.cat === 'asym') {
     h += '<div class="row">' + sel(i, 'what', ASYMS, f.what, '内容', 1, 2) + sel(i, 'side', SIDES.slice(0, 2), f.side, '低下している側', 1, null) + sel(i, 'loc', LOCS, f.loc, '部位', 1, null) + sel(i, 'deg', [['', '記載しない'], ['mild', '軽度 mild（電位差50%未満、周波数差0.5〜1 Hz）'], ['marked', '高度 marked（電位差50%以上、周波数差1 Hz超）']], f.deg, '程度（ACNS）', 1, null) + '</div>';
   } else if (f.cat === 'seiz') {
-    h += '<div class="row">' + sel(i, 'kind', SKINDS, f.kind, '種類', 1, null, true) + txt(i, 'count', f.count, '回数', 'narrow', '1', 'numeric') + '</div>';
+    h += '<div class="row">' + sel(i, 'kind', SKINDS, f.kind, '種類', 1, null, true) + txt(i, 'count', f.count, '回数', 'narrow', '1', 'numeric') + sel(i, 'state', SSTATES, f.state || '', '出現時の状態・賦活（任意）', 1, null) + '</div>';
     h += '<label class="chk"><input type="checkbox" data-f="' + i + '" data-k="video"' + (f.video ? ' checked' : '') + '>ビデオ脳波で記録</label>';
     if (f.kind !== 'noeeg') {
-      h += '<div class="row">' + sel(i, 'dist', DISTS.slice(0, 3), f.dist, '起始の分布', 1, 2) + sel(i, 'side', SIDES, f.side, '左右', 1, null) + sel(i, 'loc', LOCS, f.loc, '起始部位', 1, null) + '</div>';
-      h += '<div class="row">' + sel(i, 'pat', SPATS, f.pat, '発作パターン', 1, null) + txt(i, 'dur', f.dur, '持続', 'narrow', '2', 'decimal') + sel(i, 'durU', [['s', '秒'], ['m', '分']], f.durU, '単位', 1, null) + '</div>';
-      h += '<label class="chk"><input type="checkbox" data-f="' + i + '" data-k="ese"' + (f.ese ? ' checked' : '') + '>脳波上のてんかん重積状態（ESE：10分以上連続、または任意の60分間の20%以上）</label>';
+      h += '<div class="row">' + sel(i, 'dist', SDISTS, f.dist, '起始の分布', 1, 2, true);
+      if (f.dist !== 'generalized' && f.dist !== 'unclear') h += sel(i, 'side', SIDES, f.side, '左右', 1, null) + sel(i, 'loc', LOCS, f.loc, '起始部位', 1, null) + txt(i, 'max', f.max, '最大電極（任意）', 'narrow', 'F7');
+      h += '</div>';
+      h += '<div class="row">' + sel(i, 'pat', SPATS, f.pat, '起始時の発作パターン', 1, null) + txt(i, 'f1', f.f1, '周波数（任意・下限 Hz）', 'narrow', '5', 'decimal') + txt(i, 'f2', f.f2, '周波数（上限 Hz）', 'narrow', '7', 'decimal') + sel(i, 'prop', SPROPS, f.prop || '', '伝播（任意）', 1, null) + '</div>';
+      h += '<div class="row">' + txt(i, 'dur', f.dur, '持続（複数回なら最短）', 'narrow', '60', 'decimal') + txt(i, 'dur2', f.dur2, '持続（最長・任意）', 'narrow', '90', 'decimal') + sel(i, 'durU', [['s', '秒'], ['m', '分']], f.durU, '単位', 1, null) + '</div>';
+      if (f.kind === 'clin') h += '<label class="chk"><input type="checkbox" data-f="' + i + '" data-k="ese"' + (f.ese ? ' checked' : '') + '>臨床症状を伴うてんかん重積状態（ECSE：10分以上連続、または任意の60分間の20%以上。両側強直間代の運動症状は5分以上連続）</label>';
+      else h += '<label class="chk"><input type="checkbox" data-f="' + i + '" data-k="ese"' + (f.ese ? ' checked' : '') + '>脳波上のてんかん重積状態（ESE：10分以上連続、または任意の60分間の20%以上）</label>';
       h += '<p class="hint">ACNSの脳波上の発作（ESz）は、平均2.5 Hzを超えるてんかん性放電が10秒以上続くか、明らかな変化（evolution）を伴うパターンが10秒以上続くものです。臨床症状がはっきり伴う発作は10秒未満でも electroclinical seizure にあたります。</p>';
       h += '<div class="row">' + txt(i, 'evo_ja', f.evo_ja, '脳波の経過（日本語・任意）', 'wide', '例：10秒間の反復性棘波の後、律動性シータ活動に移行') + txt(i, 'evo_en', f.evo_en, '脳波の経過（英語・任意）', 'wide', 'e.g., evolving into rhythmic theta activity') + '</div>';
+      h += '<div class="row">' + sel(i, 'post', SPOSTS, f.post || '', '発作後の脳波（任意）', 1, null) + txt(i, 'postDur', f.postDur, '発作後変化の持続（秒・任意）', 'narrow', '30', 'decimal') + '</div>';
+    } else {
+      var evts = [];
+      for (var q2 = 0; q2 < SEVTS.length; q2++) evts.push([SEVTS[q2][0], SEVTS[q2][1]]);
+      if (S.term === 'classic') evts[0][1] = '脳波変化なし（単純部分発作は頭皮脳波に出にくい旨を添える）';
+      else evts[0][1] = '脳波変化なし（焦点意識保持発作は頭皮脳波に出にくい旨を添える）';
+      h += '<div class="row">' + sel(i, 'evt', evts, f.evt || 'fas', 'イベント中の脳波と判読文', 1, null, true) + '</div>';
+      if (f.evt !== 'artifact') h += '<label class="chk"><input type="checkbox" data-f="' + i + '" data-k="pdrKept"' + (f.pdrKept ? ' checked' : '') + '>イベント中も後頭部優位律動が保たれている</label>';
+      h += '<p class="hint">意識が保たれるイベントでは、焦点意識保持発作（単純部分発作）が頭皮脳波に出にくいことを判読文に添えられます。意識減損や全身のけいれんを伴うイベントでは「事実だけを書く」を選び、解釈は追加コメントに書いてください。</p>';
     }
-    if (f.kind === 'clin' || f.kind === 'noeeg') {
-      h += '<div class="row">' + sel(i, 'stype', STYPES, f.stype, '発作型（判読文に使用）', S.term === 'classic' ? 2 : 1, null) + '</div>';
+    if (f.kind === 'clin') {
+      h += '<div class="row">' + sel(i, 'stype', STYPES, f.stype, '発作型（判読文に使用）', S.term === 'classic' ? 2 : 1, null) + sel(i, 'lead', SLEADS, f.lead || '', '脳波変化と臨床症状の時間関係（任意）', 1, null) + txt(i, 'leadSec', f.leadSec, '時間差（秒・任意）', 'narrow', '10', 'decimal') + '</div>';
     }
     h += '<div class="row">' + txt(i, 'sem_ja', f.sem_ja, '臨床症状（日本語）', 'wide', '例：動作停止、口部自動症') + txt(i, 'sem_en', f.sem_en, '臨床症状（英語）', 'wide', 'e.g., behavioral arrest with oral automatisms') + '</div>';
   } else {
@@ -1599,6 +1737,19 @@ function loadSample(k) {
     S.findings.push(f);
     S.hv = 'nc'; S.ps = 'ppr';
     S.rec.clin = true;
+  } else if (k === 'ictal') {
+    S.age = '34'; S.sex = 'F'; S.clin_ja = '長時間ビデオ脳波モニタリング（発作型の確認）'; S.clin_en = 'long-term video-EEG monitoring for seizure characterization';
+    S.st = { awake: true, drowsy: false, sleep: true, coma: false };
+    S.sp = { w: '55', s1: '20', s2: '20', s3: '5', s4: '', rem: '' };
+    S.cls = 'moderate'; S.pdrOrg = 'well'; S.pdrF1 = '10'; S.pdrF2 = '10'; S.pdrReact = 'good';
+    f = newFinding('epi'); f.type = 'sharp'; f.side = 'L'; f.loc = 'anteriortemporal'; f.max = 'F7'; f.a = '5'; f.b = '10'; f.mods = { sleep: true };
+    S.findings.push(f);
+    f = newFinding('seiz'); f.count = '2'; f.state = 'sleep'; f.side = 'L'; f.loc = 'anteriortemporal'; f.max = 'F7';
+    f.pat = 'theta'; f.f1 = '5'; f.f2 = '7'; f.prop = 'ipsi'; f.dur = '60'; f.dur2 = '90'; f.stype = 'fias';
+    f.lead = 'eeg'; f.leadSec = '10'; f.post = 'lslow';
+    f.sem_ja = '動作停止、口部自動症、右上肢のジストニア肢位'; f.sem_en = 'behavioral arrest, oral automatisms, and dystonic posturing of the right arm';
+    S.findings.push(f);
+    S.rec.img = true;
   }
   syncStatic(); renderFindings(); update();
   toast('記入例を読み込みました');
