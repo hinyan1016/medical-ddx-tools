@@ -203,7 +203,8 @@
           </div>
         </div>
         <div class="row">
-          <div><label>手術・処置予定日</label><input type="date" id="surgeryDate"></div>
+          <div><label for="surgeryDate">手術・処置予定日（任意）</label><input type="date" id="surgeryDate" aria-describedby="surgeryDateHint">
+            <span class="hint" id="surgeryDateHint">未定なら空欄にしてください。手術の何日前かで表示します。</span></div>
           <div><label>予定時刻</label>
             <select id="surgeryTime">
               <option value="unknown">不明</option><option value="am">午前</option><option value="pm">午後</option>
@@ -314,7 +315,7 @@
     if (!d) return null;
     return d.getUTCFullYear() + '-' + ('0' + (d.getUTCMonth() + 1)).slice(-2) + '-' + ('0' + d.getUTCDate()).slice(-2);
   }
-  function addDays(d, n) { return new Date(d.getTime() + n * 86400000); }
+  function addDays(d, n) { return d ? new Date(d.getTime() + n * 86400000) : null; }
   function diffDays(a, b) { return Math.round((a.getTime() - b.getTime()) / 86400000); }
   function parseHHMM(s) {
     var m = /^(\d{1,2}):(\d{2})$/.exec(s || '');
@@ -588,8 +589,10 @@
     out.today = today;
 
     var sd = parseDate(input.surgeryDate);
-    if (!sd) errors.push({ code: 'missing_required_input', field: 'surgeryDate', message: '手術予定日が入力されていません。' });
-    else if (diffDays(sd, today) < 0) errors.push({ code: 'surgery_date_in_past', field: 'surgeryDate', message: '手術予定日が過去の日付です。' });
+    if (input.surgeryDate && !sd) errors.push({ code: 'invalid_surgery_date', field: 'surgeryDate', message: '手術予定日が正しい日付ではありません。' });
+    else if (sd && diffDays(sd, today) < 0) errors.push({ code: 'surgery_date_in_past', field: 'surgeryDate', message: '手術予定日が過去の日付です。' });
+    if (!input.surgeryDate) advisories.push({ code: 'surgery_date_undecided',
+      message: '手術・処置日は未定です。日程確定後に病状・内服薬・検査値を確認し、休薬計画を再確認してください。' });
     out.surgeryDate = sd;
     out.surgeryTime = input.surgeryTime || 'unknown';
 
@@ -625,11 +628,12 @@
     if (typeof out.crcl === 'number' && out.crcl < 30) flags.push('severe_renal_impairment');
 
     /* 血清Cr有効期間（手術日起点、エスケープしない） */
-    if (out.crclSource === 'computed' && input.creatinineDate && sd) {
+    if (out.crclSource === 'computed' && input.creatinineDate) {
       var crD = parseDate(input.creatinineDate);
-      if (crD && diffDays(sd, crD) * 24 > LAB_VALIDITY_HOURS.creatinine) {
+      if (crD && diffDays(sd || today, crD) * 24 > LAB_VALIDITY_HOURS.creatinine) {
         advisories.push({ code: 'creatinine_stale',
-                          message: '血清クレアチニンの測定から手術予定日まで4週間を超えます。処置前の再検をご検討ください。' });
+                          message: sd ? '血清クレアチニンの測定から手術予定日まで4週間を超えます。処置前の再検をご検討ください。'
+                            : '血清クレアチニンの測定から4週間を超えています。処置前の再検をご検討ください。' });
       }
     }
 
@@ -706,11 +710,12 @@
       /* 有効期間: 手術日起点。エスケープせず再検依頼 */
       var win = LAB_VALIDITY_HOURS.inr[domain] || 168;
       if (domain === 'dental' && input.warfarinStable === true) win = LAB_VALIDITY_HOURS.inr.dentalStable;
-      if (d.inrDate && sd) {
+      if (d.inrDate) {
         var iD = parseDate(d.inrDate);
-        if (iD && diffDays(sd, iD) * 24 > win) {
+        if (iD && diffDays(sd || today, iD) * 24 > win) {
           advisories.push({ code: 'inr_stale',
-                            message: 'PT-INRの測定から手術予定日まで' + Math.round(win / 24) + '日を超えます。処置前の再検をお願いします。' });
+                            message: sd ? 'PT-INRの測定から手術予定日まで' + Math.round(win / 24) + '日を超えます。処置前の再検をお願いします。'
+                              : 'PT-INRの測定から' + Math.round(win / 24) + '日を超えています。処置前の再検をお願いします。' });
         }
       }
     });
@@ -783,6 +788,7 @@
     return addDays(surgeryDate, basis === 'drug_free_days' ? -(n + 1) : -n);
   }
   function lastDoseByHours(surgeryDate, surgeryTime, drug, hours) {
+    if (!surgeryDate) return { date: null, timeKnown: false };
     var st = TIME_ASSUMPTION[surgeryTime];
     var dtRaw = (drug.doseTime && drug.doseTime !== 'unknown') ? drug.doseTime : null;
     var dt = dtRaw || TIME_ASSUMPTION[drug.freq];
@@ -911,6 +917,7 @@
           it.lastDoseDate = fmtDate(addDays(sd, -1));
           it.resumeDate = fmtDate(addDays(sd, 1));
           it.reason = '前日まで内服を継続し、処置当日の朝から中止、翌日の朝から再開';
+          if (!sd) it.resumeAdvice = '処置翌日の朝に、止血を確認してから再開してください';
           it.sources.push(srcOf(kbApi, 'jges2017.statement6.doac_high_risk_interruption'));
           it.sources.push(srcOf(kbApi, 'jges2017.statement6.doac_resumption_next_morning'));
         }
@@ -971,7 +978,7 @@
           it.ehraRisk = proc.ehra;
           it.reason = '手術開始の' + hrs + '時間以上前を最終内服とします（CrCl ' + Math.round(norm.crcl)
                     + ' mL/min、EHRA分類 ' + EHRA_LABEL[proc.ehra] + '）';
-          it.note = ld.timeKnown
+          it.note = !sd ? '手術日時と内服時刻が決まったら、必要な休薬時間を確保できるよう最終内服を調整してください。' : ld.timeKnown
             ? '内服時刻を' + ld.time + '、手術開始を' + ld.surgeryTimeAssumed + 'と仮定して算出しています。'
             : '内服時刻または手術予定時刻が不明のため、保守的に1日繰り上げています。時刻が確認できれば1日短縮できる可能性があります。';
           it.resumeAdvice = ehraHigh ? '止血確認後、48〜72時間後の再開が目安です' : '止血確認後、24時間後の再開が目安です';
@@ -1223,7 +1230,7 @@
     lines.push('・現在の抗血栓薬:');
     r.drugs.forEach(function (d) { lines.push('　' + drugLine(d)); });
     if (r.procedure) {
-      lines.push('・予定処置: ' + r.procedure.jp + '（' + L.fmtJPDate(r.surgeryDate) + '）');
+      lines.push('・予定処置: ' + r.procedure.jp + '（' + (r.surgeryDate ? L.fmtJPDate(r.surgeryDate) : '日程未定') + '）');
     }
     if (typeof r.crcl === 'number') {
       var c = 'ク  ・腎機能: クレアチニンクリアランス 約' + Math.round(r.crcl) + ' mL/min';
@@ -1255,6 +1262,13 @@
     return joinLines(lines);
   }
 
+  /* 日程未定では、無投薬日数と最終内服日のずれを区別して表示する。 */
+  function relativeLastDose(it) {
+    if (it.interruptionHours) return '手術開始の' + it.interruptionHours + '時間以上前までに最終内服';
+    if (it.basis === 'drug_free_days') return '手術の' + it.interruptionDays + '日前から休薬（最終内服は' + (it.interruptionDays + 1) + '日前）';
+    return '最終内服は手術の' + it.interruptionDays + '日前まで';
+  }
+
   /* 方針・日付・条件を共通化し、簡潔版では出典の行だけ省く。 */
   function planText(r, compact) {
     var p = ['【抗血栓薬の取り扱い（案）】'];
@@ -1268,7 +1282,9 @@
       if (it.reason) p.push('　　' + it.reason + '。');
 
       if (it.action === 'interrupt') {
-        if (it.interruptionHours && it.lastDoseTime) {
+        if (!r.surgeryDate) {
+          p.push('　　' + relativeLastDose(it));
+        } else if (it.interruptionHours && it.lastDoseTime) {
           p.push('　　最終内服: ' + L.fmtJPDate(it.lastDoseDate) + ' ' + it.lastDoseTime + ' まで'
                  + '（手術開始の' + it.interruptionHours + '時間前）');
         } else if (it.interruptionHours) {
@@ -1288,7 +1304,8 @@
       }
       if (it.optionalInterruption) {
         p.push('　　' + it.optionalInterruption.note);
-        p.push('　　その場合の最終内服: ' + L.fmtJPDate(it.optionalInterruption.lastDoseDate));
+        p.push(r.surgeryDate ? '　　その場合の最終内服: ' + L.fmtJPDate(it.optionalInterruption.lastDoseDate)
+          : '　　その場合は' + relativeLastDose({ interruptionDays: it.optionalInterruption.days, basis: it.optionalInterruption.basis }));
       }
       if (it.timingAdvice) p.push('　　' + it.timingAdvice + '。');
       if (it.resumeAdvice && it.action !== 'interrupt') p.push('　　再開: ' + it.resumeAdvice + '。');
@@ -1451,6 +1468,9 @@
     last.push('最終判断は術者および麻酔科の先生のご判断に委ねます。');
     last.push('手術予定・病状に変更が生じた場合は再度ご相談ください。');
     out.push(joinLines(last));
+    if (!r.surgeryDate) {
+      out.push(joinLines((r.advisories || []).map(function (a) { return '・' + a.message; })));
+    }
     out.push(footer(r, toolMeta));
 
     return out.join(NL);
@@ -1460,7 +1480,7 @@
   function buildConcise(r) {
     var out = ['ご相談ありがとうございます。周術期抗血栓療法について、以下の方針案をご報告します。', ''];
     out.push((STROKE_TYPE_JP[r.strokeType] || '病型不明') + '（' + onsetText(r.onsetMonthsAgo) + '）。');
-    if (r.procedure) out.push('予定処置: ' + r.procedure.jp + '（' + L.fmtJPDate(r.surgeryDate) + '）。');
+    if (r.procedure) out.push('予定処置: ' + r.procedure.jp + '（' + (r.surgeryDate ? L.fmtJPDate(r.surgeryDate) : '日程未定') + '）。');
     r.drugs.forEach(function (d) { out.push(drugLine(d)); });
     if (typeof r.crcl === 'number') out.push('CrCl 約' + Math.round(r.crcl) + ' mL/min（Cockcroft-Gault式）。');
     out.push('');
@@ -1589,7 +1609,7 @@
     build: build, buildLetterA: buildLetterA, buildLetterB: buildLetterB, buildConcise: buildConcise,
     findNonJisChars: findNonJisChars, sanitizeForKarte: sanitizeForKarte,
     COMMON_PHRASES: COMMON_PHRASES, TYPE_A_PHRASES: TYPE_A_PHRASES,
-    STROKE_TYPE_JP: STROKE_TYPE_JP, NL: NL
+    STROKE_TYPE_JP: STROKE_TYPE_JP, NL: NL, relativeLastDose: relativeLastDose
   };
 });
 </script>
@@ -1805,6 +1825,7 @@
         var label = { continue: '継続', continue_or_consult: '継続（術者判断）',
                       adjust_timing: '時刻調整', interrupt: '休薬' }[it.action] || it.action;
         var detail = [];
+        if (!r.surgeryDate && it.action === 'interrupt') detail.push(T.relativeLastDose(it));
         if (it.lastDoseDate) {
           detail.push('最終内服 ' + L.fmtJPDate(it.lastDoseDate)
             + (it.lastDoseTime ? ' ' + it.lastDoseTime : '')
