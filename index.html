@@ -79,7 +79,7 @@ button, select, input { font:inherit; color:inherit; }
 .field select { height:36px; border:1px solid var(--line-2); border-radius:9px; background:#fff; padding:0 30px 0 10px; font-size:14px; color:var(--ink); }
 .mini-search { display:none; }
 .filter-toggle { display:none; }
-.theme-strip { display:none; }
+.theme-picker { display:none; }
 
 /* ── 2カラム：左にテーマ ── */
 .layout { max-width:1240px; margin:0 auto; padding:22px 20px 40px; display:grid; grid-template-columns:232px minmax(0,1fr); gap:28px; align-items:start; }
@@ -119,8 +119,9 @@ button, select, input { font:inherit; color:inherit; }
 .mini .pi { flex:none; width:32px; height:32px; border-radius:9px; display:grid; place-items:center; background:color-mix(in srgb,var(--c,#5d6b7a) 12%,#fff); color:var(--c,#5d6b7a); }
 .mini .pi svg { width:18px; height:18px; }
 .mini .t { font-size:13.5px; font-weight:600; line-height:1.45; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-.more-link { display:inline-block; margin-top:12px; border:0; background:none; padding:4px 0; font-size:13px; color:var(--accent); cursor:pointer; text-align:left; }
-.more-link:hover { text-decoration:underline; text-underline-offset:3px; }
+.related-grid { margin-top:10px; }
+.related-grid .t { display:block; overflow:visible; }
+.section-head .browse-theme { margin-left:auto; flex:none; border:0; background:none; color:var(--accent); font-size:13px; cursor:pointer; padding:5px; text-decoration:underline; text-underline-offset:3px; }
 
 /* ── セクションとカード ── */
 .section { margin-bottom:34px; scroll-margin-top:80px; }
@@ -173,13 +174,8 @@ mark { background:#fff1a8; color:inherit; border-radius:3px; padding:0 1px; }
 @media (max-width:980px) {
   .layout { grid-template-columns:minmax(0,1fr); padding-top:14px; }
   .side { display:none; }
-  .theme-strip { display:block; border-top:1px solid var(--line); }
-  .theme-strip ul { list-style:none; max-width:1240px; margin:0 auto; display:flex; gap:6px; overflow-x:auto; padding:8px 20px; scrollbar-width:none; }
-  .theme-strip ul::-webkit-scrollbar { display:none; }
-  .theme-strip .theme-btn { white-space:nowrap; width:auto; border:1px solid var(--line-2); background:#fff; padding:4px 12px; font-size:13px; border-radius:999px; }
-  .theme-strip .theme-btn[aria-pressed="true"] { background:var(--navy); color:#fff; border-color:var(--navy); box-shadow:none; }
-  .theme-strip .theme-btn[aria-pressed="true"] .n { color:#c6d6e6; }
-  .theme-strip .theme-btn .dot { width:7px; height:7px; }
+  .theme-picker { display:flex; gap:10px; padding:0 20px 9px; }
+  .theme-picker select { min-width:0; flex:auto; max-width:30em; }
 }
 /* ── スマートフォン ── */
 @media (max-width:640px) {
@@ -205,7 +201,8 @@ mark { background:#fff1a8; color:inherit; border-radius:3px; padding:0 1px; }
   .filter-toggle { display:inline-flex; align-items:center; gap:4px; border:1px solid var(--line-2); background:#fff; border-radius:10px; height:40px; padding:0 10px; font-size:13px; cursor:pointer; flex:none; }
   .filter-toggle .on { width:7px; height:7px; border-radius:50%; background:#d9480f; display:none; }
   .filter-toggle.active .on { display:inline-block; }
-  .theme-strip ul { padding:7px 14px; }
+  .theme-picker { padding:0 14px 8px; }
+  .theme-picker select { height:40px; }
   .layout { padding:12px 14px 30px; }
   .grid { grid-template-columns:minmax(0,1fr); gap:10px; }
   .mini-grid { grid-template-columns:minmax(0,1fr); gap:8px; }
@@ -249,12 +246,10 @@ noscript p, .load-status { font-size:13px; color:var(--sub); margin-bottom:14px;
 @media (max-width:1100px) and (min-width:641px) { .toolbar-inner { gap:8px; } .tb-right { gap:7px; } .seg button { padding:6px 9px; } }
 @media (max-width:640px) {
  .toolbar-inner { flex-wrap:wrap; }
- .toolbar-inner > .view-field { flex:1 0 100%; justify-content:flex-end; }
- .toolbar-inner > .view-field .view-switch { flex:1; }
+ .tb-right .view-switch { flex:1; }
  .view-switch button { flex:1; min-height:40px; }
  .card-top { flex-wrap:wrap; gap:4px 8px; }
 }
-@media (min-width:641px) { .toolbar-inner > .view-field { margin-left:auto; } .tb-right { margin-left:0; } }
 @media print {
  .hero .search, .shelf, .chips, .toast, .empty, .load-status { display:none !important; }
  .hero { background:#fff; color:#000; } .lead, .lead b, .eyebrow { color:#333; }
@@ -282,12 +277,12 @@ noscript p, .load-status { font-size:13px; color:var(--sub); margin-bottom:14px;
     <p class="lead">鑑別・計算・説明に使える診療ツールと、患者さんに渡せる配布資料を、病名・症状から探せます。<span id="leadCounts" hidden></span></p>
     <div class="search" role="search" data-js hidden>
       <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <label class="sr-only" for="searchInput">病名・症状・ツール名で検索</label>
-      <input id="searchInput" type="search" placeholder="病名・症状・ツール名（例：低ナトリウム、めまい）" autocomplete="off" enterkeyhint="search">
+      <label class="sr-only" for="searchInput">病名・症状・薬・ツール名で検索</label>
+      <input id="searchInput" type="search" placeholder="例：脳梗塞 休薬、めまい、低Na" autocomplete="off" enterkeyhint="search">
       <span class="kbd" id="kbd" aria-hidden="true">/</span>
       <button class="clear" id="clearQ" type="button" hidden>消す</button>
     </div>
-    <div class="quick" id="quick" data-js hidden><span>よく探される言葉</span></div>
+    <div class="quick" id="quick" data-js hidden><span>検索例</span></div>
   </div>
 </header>
 
@@ -298,9 +293,9 @@ noscript p, .load-status { font-size:13px; color:var(--sub); margin-bottom:14px;
       <button type="button" data-kind="tool" aria-pressed="false">診療ツール<span class="n"></span></button>
       <button type="button" data-kind="handout" aria-pressed="false">配布資料<span class="n"></span></button>
     </div>
-    <button class="filter-toggle" id="filterToggle" type="button" aria-expanded="false" aria-controls="tbRight">条件<span class="on" aria-hidden="true"></span></button>
-    <div class="field view-field"><span id="viewLabel">表示</span><div class="view-switch" role="group" aria-labelledby="viewLabel"><button type="button" data-view="detail" aria-pressed="true">詳しく</button><button type="button" data-view="compact" aria-pressed="false">コンパクト</button></div></div>
+    <button class="filter-toggle" id="filterToggle" type="button" aria-expanded="false" aria-controls="tbRight">表示・条件<span class="on" aria-hidden="true"></span></button>
     <div class="tb-right" id="tbRight">
+      <div class="field"><span id="viewLabel">表示</span><div class="view-switch" role="group" aria-labelledby="viewLabel"><button type="button" data-view="detail" aria-pressed="true">詳しく</button><button type="button" data-view="compact" aria-pressed="false">コンパクト</button></div></div>
       <label class="field">用途 <select id="purposeFilter"></select></label>
       <label class="field">並び順 <select id="sort">
         <option value="theme">テーマ別</option>
@@ -308,7 +303,7 @@ noscript p, .load-status { font-size:13px; color:var(--sub); margin-bottom:14px;
       </select></label>
     </div>
   </div>
-  <nav class="theme-strip" aria-label="診療テーマ（横にスクロールできます）"><ul id="themeStrip"></ul></nav>
+  <label class="field theme-picker">診療テーマ <select id="themeSelect"></select></label>
 </div>
 
 <div class="layout">
@@ -328,7 +323,7 @@ noscript p, .load-status { font-size:13px; color:var(--sub); margin-bottom:14px;
     <noscript><p>JavaScriptが無効のため、診療ツールを一覧表示しています。配布資料は下の専用一覧からお探しください。</p></noscript>
     <p class="load-status" id="loadStatus" role="status" hidden>配布資料の検索データを読み込んでいます。</p>
     <div class="status" data-js hidden>
-      <p class="count" id="count" role="status" aria-live="polite" aria-atomic="true"></p>
+      <p class="count" id="count" role="status" aria-live="polite" aria-atomic="true" tabindex="-1"></p>
       <div class="chips" id="chips"></div>
     </div>
     <section class="shelf" id="pinShelf" hidden aria-labelledby="pinHead">
@@ -441,7 +436,8 @@ noscript p, .load-status { font-size:13px; color:var(--sub); margin-bottom:14px;
 <a class="tool-card" href="periop_antithrombotic_consult.html">
       <div class="tool-emoji">🩸</div>
       <div class="tool-name">周術期抗血栓薬コンサルト返書ツール</div>
-      <div class="tool-desc">脳梗塞既往患者の周術期抗血栓療法について、消化器内視鏡・外科手術・抜歯・白内障・皮膚小手術の各ガイドラインから休薬・継続の参考情報と返書文案を作成します。機械弁・発症3か月以内・ステント留置後など定型判断の範囲外は休薬日数を出さず個別協議を促します。医療従事者向け。</div>
+      <div class="tool-desc">脳梗塞・TIAの既往がある方の手術や処置に向けて、抗血栓薬の休薬・継続を検討し、依頼元への返書を作成できます。消化器内視鏡・外科手術・抜歯・白内障手術・皮膚小手術に対応します。機械弁・発症3か月以内・ステント留置後など定型判断の範囲外は休薬日数を出さず個別協議を促します。医療従事者向け。</div>
+      <span class="tool-tag">脳梗塞・TIAの既往 / 術前の休薬相談 / 返書作成</span>
     </a>
 
 <a class="tool-card" href="status_epilepticus_initial_calculator.html">
@@ -1051,7 +1047,8 @@ noscript p, .load-status { font-size:13px; color:var(--sub); margin-bottom:14px;
     <div class="empty" id="empty" hidden>
       <h2>条件に合うものが見つかりませんでした</h2>
       <p>言葉を短くするか、テーマ・用途の条件を外してみてください。</p>
-      <button class="btn primary" type="button" data-reset>条件をすべて外す</button>
+      <button class="btn primary" id="searchEverywhere" type="button" hidden></button>
+      <button class="btn" type="button" data-reset>条件をすべて外す</button>
     </div>
     <aside class="other-resources" aria-labelledby="otherResources"><h2 id="otherResources">ほかの資料・専用一覧</h2><div class="resource-links">
     <a href="handouts/">📄 配布資料の専用一覧 →</a><a href="slides/">📊 スライド資料 →</a><a href="infographics/">🖼️ インフォグラフィック →</a><a href="https://check.ichisouzo-lab.com/">🩺 一般向け症状セルフチェック →</a>
@@ -1077,8 +1074,8 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js', { 
 
   // テーマ（id, 表示名, 検索用の言い換え, 色）
   var themes = [
-    ['stroke','脳卒中・脳画像','脳梗塞 脳血管 MNI MRI','#2f66b3'],
-    ['epilepsy','てんかん・脳波','癲癇 発作 AED ASM EEG','#7656a8'],
+    ['stroke','脳卒中・脳画像','脳血管','#2f66b3'],
+    ['epilepsy','てんかん・脳波','癲癇 発作','#7656a8'],
     ['headache','頭痛・めまい','片頭痛 偏頭痛 ずつう ふらつき','#2a8aa6'],
     ['neuro','神経・運動・しびれ','神経 しびれ 痺れ 振戦 ふるえ パーキンソン','#227a69'],
     ['dementia','認知症・せん妄','もの忘れ 物忘れ BPSD','#a06a2c'],
@@ -1088,7 +1085,7 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js', { 
     ['digestive','消化器・肝臓','腹痛 肝機能 便秘 胃 食道 脂肪肝','#8a7420'],
     ['general','全身症状・感染症・血液','不明熱 感染 貧血 ワクチン','#56677a'],
     ['nutrition','栄養・リハビリ・暮らし','低栄養 運動 食事 転倒 睡眠 禁煙 飲酒','#3f8a3a'],
-    ['medication','薬剤・周術期・診療支援','薬 くすり 手術 休薬 病状説明 保険病名','#5b54a0']
+    ['medication','薬剤・周術期・診療支援','薬 くすり 診療補助','#5b54a0']
   ];
   var purposes = {
     diagnosis:['鑑別','鑑別・原因検索'], calculation:['計算','計算・スコア'], treatment:['治療','薬剤・治療の確認'],
@@ -1109,54 +1106,74 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js', { 
   }
   var starSvg = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 16.9l-5.2 2.8 1-5.9-4.3-4.1 5.9-.8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>';
 
-  // URL単位の分類。タイトル・説明・リンクは静的カードを正本とする。
+  // テーマ・用途は空白区切りで併記する。4列目は個別の検索語。
+  // タイトル・説明・リンクは静的カードを正本とする。
   var toolGroups = [
     ['stroke','learning','vascular-territory-atlas'],
     ['stroke neuro metabolic dementia epilepsy','diagnosis','cerebral_calcification'],
-    ['stroke','diagnosis','bilateral_thalamus'],
+    ['stroke','diagnosis','bilateral_thalamus','頭部MRI'],
     ['stroke','treatment','stroke_reperfusion'],
     ['stroke medication','communication','stroke_ic_note'],
     ['epilepsy neuro','diagnosis','seizure_lateralization'],
-    ['epilepsy medication','calculation','antiepileptic_load_calculator status_epilepticus_initial_calculator'],
-    ['epilepsy medication','treatment','asm_interaction_checker cceeg status_epilepticus_sedation'],
-    ['epilepsy neuro','communication','eeg_report_writer'],
+    ['epilepsy medication','calculation','antiepileptic_load_calculator','抗発作薬 ASM AED'],
+    ['epilepsy medication','calculation treatment','status_epilepticus_initial_calculator','けいれん重積 痙攣重積'],
+    ['epilepsy medication','treatment','asm_interaction_checker','抗てんかん薬 抗発作薬 ASM AED'],
+    ['epilepsy medication','treatment','cceeg','持続脳波 EEG'],
+    ['epilepsy medication','treatment','status_epilepticus_sedation','けいれん重積 痙攣重積'],
+    ['epilepsy neuro','communication','eeg_report_writer','EEG 脳波レポート'],
     ['neuro','communication','ncs_report_writer'],
     ['headache','diagnosis','headache vertigo vestibular_neuritis'],
     ['headache','calculation','hit6_calculator mibs4_calculator midas_calculator'],
     ['headache','selfcheck','vestibular_migraine'],
-    ['neuro','diagnosis','facial_palsy_assessment bilateral_facial_palsy hyperckemia sensory_polyneuropathy polyneuropathy_workup abducens_palsy nerve_localization neurodiagnosis tremor gait_ataxia hemichorea'],
+    ['neuro','diagnosis','facial_palsy_assessment bilateral_facial_palsy hyperckemia sensory_polyneuropathy polyneuropathy_workup abducens_palsy nerve_localization neurodiagnosis tremor gait_ataxia'],
+    ['neuro stroke metabolic','diagnosis','hemichorea'],
     ['neuro medication','diagnosis','neuro_test_navigator'],
     ['neuro cardioresp','diagnosis','post_cardiac_arrest_prognosis'],
     ['neuro medication','calculation','levodopa_equivalent_calculator'],
     ['neuro','learning','cavernous_sinus infographics/tolosa_hunt'],
     ['stroke dementia neuro','communication','driving_fitness_evaluation'],
-    ['stroke','calculation','abcd2_calculator'],
+    ['stroke','calculation','abcd2_calculator','TIA 一過性脳虚血発作'],
     ['stroke','calculation','aspects_calculator'],
     ['stroke epilepsy','calculation','cave_score'],
     ['stroke epilepsy','calculation','select_score'],
     ['stroke dementia neuro','calculation','fazekas_calculator'],
-    ['dementia general','communication','daily_living_independence'],
+    ['dementia general nutrition','communication','daily_living_independence'],
     ['dementia','diagnosis','hypoactive_delirium'],
-    ['renal','diagnosis','aki edema edema_distribution hyponatremia hypokalemia hyperkalemia hypernatremia hypercalcemia highbun'],
-    ['metabolic','diagnosis','secondary_hypertension thyroid_dysfunction'],
-    ['cardioresp','diagnosis','chest_pain dyspnea syncope'],
+    ['renal','diagnosis','aki highbun'],
+    ['renal cardioresp','diagnosis','edema edema_distribution','むくみ 浮腫'],
+    ['renal','diagnosis','hyponatremia','低Na 低ナトリウム'],
+    ['renal','diagnosis','hypernatremia','高Na 高ナトリウム'],
+    ['renal','diagnosis','hypokalemia','低K 低カリウム'],
+    ['renal','diagnosis','hyperkalemia','高K 高カリウム'],
+    ['renal metabolic','diagnosis','hypercalcemia','高Ca 高カルシウム'],
+    ['metabolic cardioresp renal','diagnosis','secondary_hypertension'],
+    ['metabolic','diagnosis','thyroid_dysfunction'],
+    ['cardioresp','diagnosis','chest_pain dyspnea'],
+    ['cardioresp neuro epilepsy','diagnosis','syncope','失神 意識消失'],
     ['digestive','diagnosis','abdominal_pain liver_dysfunction'],
     ['digestive epilepsy general','diagnosis','hyperammonemia'],
-    ['general','diagnosis','anemia consciousness fuo'],
+    ['general','diagnosis','anemia fuo'],
+    ['general neuro','diagnosis','consciousness'],
     ['general','calculation','bfcrs_calculator news2_calculator'],
-    ['nutrition','diagnosis','glim_nutrition refeeding_risk'],
+    ['nutrition','diagnosis','glim_nutrition'],
+    ['nutrition renal','diagnosis','refeeding_risk'],
     ['nutrition neuro stroke dementia renal metabolic','calculation','calorie_protein_calculator'],
     ['medication general','diagnosis','drug_eruption_assessment'],
-    ['medication','treatment','periop_medication_navigator periop_antithrombotic_consult ivig_calculator'],
+    ['medication metabolic cardioresp neuro','treatment','periop_medication_navigator','術前休薬 手術前の休薬 術後再開 手術前の薬 術前の薬'],
+    ['medication stroke','treatment communication','periop_antithrombotic_consult','脳梗塞後 脳卒中後 TIA 一過性脳虚血発作 一過性黒内障 術前休薬 手術前の休薬 術後再開 周術期抗血栓薬調整 周術期の抗血栓薬の調整 抗血小板薬 抗凝固薬 DOAC ワルファリン ワーファリン アスピリン'],
+    ['medication neuro','treatment calculation','ivig_calculator'],
     ['medication','calculation','dex_calculator nad_calculator'],
-    ['medication stroke','calculation','warfarin_dose_adjuster'],
+    ['medication stroke cardioresp','calculation treatment','warfarin_dose_adjuster','ワルファリン 抗凝固薬 INR 用量調節'],
     ['neuro stroke dementia','communication','neuro_exam_helper'],
     ['stroke dementia neuro medication','communication','referral_helper'],
-    ['medication','communication','hoken_byomei_checker shojo_shoki_helper spikes_explainer']
+    ['medication','communication','hoken_byomei_checker spikes_explainer'],
+    ['medication stroke epilepsy cardioresp','communication','shojo_shoki_helper']
   ];
   var toolMeta = {};
   toolGroups.forEach(function (group) {
-    group[2].split(' ').forEach(function (slug) { toolMeta[slug + '.html'] = {themes:group[0].split(' '), purpose:group[1]}; });
+    group[2].split(' ').forEach(function (slug) {
+      toolMeta[slug + '.html'] = {themes:group[0].split(' '), purposes:group[1].split(' '), keywords:group[3] || ''};
+    });
   });
 
   var themeMap = {};
@@ -1173,16 +1190,17 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js', { 
   function handoutThemes(it) {
     var slug = it.slug, ids = [];
     if (/^dementia-|bpsd/.test(slug)) ids.push('dementia');
-    if (/stroke/.test(slug)) ids.push('stroke');
+    if (/^stroke-/.test(slug)) ids.push('stroke');
     if (/epilep/.test(slug)) ids.push('epilepsy');
     if (/migraine|headache|dizziness|bppv/.test(slug)) ids.push('headache');
-    if (/parkinson|tremor|carpal-tunnel|facial-palsy|diabetic-foot/.test(slug)) ids.push('neuro');
+    if (/parkinson|tremor|carpal-tunnel|facial-palsy|diabetic-foot|^rls-/.test(slug)) ids.push('neuro');
     if (/ckd|edema|bladder/.test(slug)) ids.push('renal');
-    if (/hypertension|diabet|dyslipid|gout|obesity|ldl/.test(slug)) ids.push('metabolic');
+    if (/hypertension|diabet|dyslipid|gout|obesity|ldl|fatty-liver/.test(slug)) ids.push('metabolic');
     if (/orthostatic|atrial|heart-failure|cpap|sleep-apnea|aspiration|atherosclerosis/.test(slug)) ids.push('cardioresp');
     if (/gerd|constipation|fatty-liver/.test(slug)) ids.push('digestive');
     if (/shingles|cold|flu-covid|anemia|cancer/.test(slug)) ids.push('general');
-    if (/rls|anxiety|smoking|alcohol|heatstroke|fall-prevention|sleeping-pills|osteoporosis|multidomain|multiple-risk/.test(slug)) ids.push('nutrition');
+    if (/rls|anxiety|smoking|alcohol|heatstroke|fall-prevention|sleeping-pills|osteoporosis|multidomain|multiple-risk|rehab|stroke-secondary-prevention|aspiration-prevention/.test(slug)) ids.push('nutrition');
+    if (/sleeping-pills|^atrial-fibrillation-/.test(slug)) ids.push('medication');
     if (slug === 'status-epilepticus-sedation') ids = ['epilepsy','medication'];
     return ids.length ? ids : ['nutrition'];
   }
@@ -1204,7 +1222,7 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js', { 
   var items = [], byId = {}, handoutState = 'loading';
   Array.prototype.forEach.call(document.querySelectorAll('#catalog a.tool-card'), function (card) {
     var href = card.getAttribute('href');
-    var meta = toolMeta[href] || {themes:['medication'], purpose:'learning'};
+    var meta = toolMeta[href] || {themes:['medication'], purposes:['learning'], keywords:''};
     var tags = [];
     Array.prototype.forEach.call(card.querySelectorAll('.tool-tag'), function (tag) {
       tags = tags.concat(tag.textContent.trim().split(/\s*[/／]\s*/));
@@ -1212,11 +1230,15 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js', { 
     tags = tags.filter(function (tag) { return tag && !/医療(従事)?者向け/.test(tag); }).slice(0, 3);
     items.push({id:href, kind:'tool', href:href, title:card.querySelector('.tool-name').textContent.trim(),
       desc:card.querySelector('.tool-desc').textContent.trim().replace(/\s+/g, ' '), tags:tags,
-      themes:meta.themes, purpose:meta.purpose, audience:meta.purpose === 'selfcheck' ? '一般向け' : '医療者向け', isNew:false});
+      themes:meta.themes, purposes:meta.purposes, keywords:meta.keywords, audience:meta.purposes[0] === 'selfcheck' ? '一般向け' : '医療者向け', isNew:false});
   });
   function prepare(it) {
     it.nTitle = normalize(it.title);
-    it.nAll = normalize(it.title + ' ' + it.desc + ' ' + it.tags.join(' ') + ' ' + (it.series || '') + ' ' + it.audience + ' ' + purposes[it.purpose][1] + ' ' +
+    it.purpose = it.purposes[0];
+    it.nTerms = normalize([it.keywords || ''].concat(it.tags).join(' '));
+    it.nDesc = normalize(it.desc);
+    it.nAll = [it.nTitle, it.nTerms, it.nDesc].join(' ') + ' ' + normalize((it.series || '') + ' ' + it.audience + ' ' +
+      it.purposes.map(function (id) { return purposes[id][1]; }).join(' ') + ' ' +
       it.themes.map(function (id) { return themeMap[id][1] + ' ' + themeMap[id][2]; }).join(' '));
     byId[it.id] = it;
     return it;
@@ -1259,18 +1281,22 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js', { 
 
   // ── 一致判定と並べ替え ──
   function words() { return normalize(state.q).trim().split(/\s+/).filter(Boolean); }
+  function matchesWords(it, queryWords) {
+    return queryWords.every(function (word) { return it.nAll.indexOf(word) !== -1; });
+  }
   function match(it, ignore) {
     if (ignore !== 'kind' && state.kind !== 'all' && it.kind !== state.kind) return false;
     if (ignore !== 'theme' && state.theme !== 'all' && it.themes.indexOf(state.theme) === -1) return false;
-    if (ignore !== 'purpose' && state.purpose !== 'all' && it.purpose !== state.purpose) return false;
-    var w = words();
-    return w.every(function (x) { return it.nAll.indexOf(x) !== -1; });
+    if (ignore !== 'purpose' && state.purpose !== 'all' && it.purposes.indexOf(state.purpose) === -1) return false;
+    return matchesWords(it, words());
   }
   function score(it) {
     var w = words(), s = 0;
     w.forEach(function (x) {
-      if (it.nTitle.indexOf(x) === 0) s += 6;
-      else if (it.nTitle.indexOf(x) !== -1) s += 4;
+      if (it.nTitle.indexOf(x) === 0) s += 10;
+      else if (it.nTitle.indexOf(x) !== -1) s += 8;
+      else if (it.nTerms.indexOf(x) !== -1) s += 6;
+      else if (it.nDesc.indexOf(x) !== -1) s += 4;
       else s += 1;
     });
     if (it.kind === 'tool') s += 0.5;
@@ -1283,6 +1309,7 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js', { 
   function highlight(text) {
     // 正規化後の位置を元の文字へ戻し、実体参照や挿入済みタグを再検索しない。
     text = String(text);
+    if (!state.q.trim()) return esc(text);
     var normalized = '', starts = [], ends = [], ranges = [], i, j, part;
     for (i = 0; i < text.length; i++) {
       part = normalize(text.charAt(i));
@@ -1314,16 +1341,16 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js', { 
   // ── カード ──
   function card(it) {
     var c = themeMap[it.themes[0]][3];
-    var p = purposes[it.purpose];
+    var purposeLabel = it.purposes.map(function (id) { return purposes[id][0]; }).join('・');
     var pinned = pins.indexOf(it.id) !== -1;
     var h = '<article class="card" style="--c:' + c + '">';
-    h += '<div class="card-top"><span class="badge">' + svg(it.purpose) + esc(p[0]) + '</span><span class="aud">' + esc(it.audience) + '</span>' + (it.isNew ? '<span class="new">NEW</span>' : '') + '</div>';
+    h += '<div class="card-top"><span class="badge">' + svg(it.purpose) + esc(purposeLabel) + '</span><span class="aud">' + esc(it.audience) + '</span>' + (it.isNew ? '<span class="new">NEW</span>' : '') + '</div>';
     h += '<h3><a class="' + 'tool-card' + '" href="' + esc(it.href) + '" data-id="' + esc(it.id) + '">' + highlight(it.title) + '</a></h3>';
     h += '<p class="desc">' + highlight(it.desc) + '</p>';
     if (it.tags.length) h += '<ul class="tags">' + it.tags.map(function (g) { return '<li>' + esc(g) + '</li>'; }).join('') + '</ul>';
     h += '<div class="card-foot">';
     if (it.series) h += '<span class="series">' + esc(it.series) + '</span>';
-    it.themes.slice(0, 2).forEach(function (id) { h += '<span class="th" style="--tc:' + themeMap[id][3] + '"><i></i>' + esc(themeMap[id][1]) + '</span>'; });
+    it.themes.forEach(function (id) { h += '<span class="th" style="--tc:' + themeMap[id][3] + '"><i></i>' + esc(themeMap[id][1]) + '</span>'; });
     if (it.blog) h += '<a class="ext" href="' + esc(it.blog) + '" target="_blank" rel="noopener">解説記事</a>';
     if (it.yt) h += '<a class="ext" href="https://www.youtube.com/watch?v=' + esc(it.yt) + '" target="_blank" rel="noopener">解説動画</a>';
     h += '</div>';
@@ -1336,20 +1363,34 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js', { 
   }
 
   // ── 描画 ──
-  function themeButtons(ul, strip) {
+  function renderThemeFilters() {
     var cand = items.filter(function (it) { return match(it, 'theme'); });
     var list = [['all','すべて','', '#8a99a8']].concat(themes);
-    ul.innerHTML = list.map(function (t) {
+    var options = [];
+    $('themeList').innerHTML = list.map(function (t) {
       var n = t[0] === 'all' ? cand.length : cand.filter(function (it) { return it.themes.indexOf(t[0]) !== -1; }).length;
       var on = state.theme === t[0];
-      return '<li><button class="theme-btn '+ (strip ? 'theme-strip-button' : 'theme-button') +'" type="button" data-theme="' + t[0] + '" aria-pressed="' + on + '"' + (n || on ? '' : ' disabled') + ' style="--c:' + t[3] + '">' +
-        (t[0] === 'all' ? '' : '<span class="dot"></span>') + '<span class="lbl">' + esc(strip && t[0] === 'all' ? 'すべてのテーマ' : t[1]) + '</span><span class="n">' + n + '</span></button></li>';
+      var disabled = n || on ? '' : ' disabled';
+      options.push('<option value="' + t[0] + '"' + disabled + '>' + esc(t[0] === 'all' ? 'すべてのテーマ' : t[1]) + '（' + n + '件）</option>');
+      return '<li><button class="theme-btn" type="button" data-theme="' + t[0] + '" aria-pressed="' + on + '"' + disabled + ' style="--c:' + t[3] + '">' +
+        (t[0] === 'all' ? '' : '<span class="dot"></span>') + '<span class="lbl">' + esc(t[1]) + '</span><span class="n">' + n + '</span></button></li>';
     }).join('');
+    $('themeSelect').innerHTML = options.join('');
+    $('themeSelect').value = state.theme;
+  }
+  function themeGroup(entries, theme) {
+    if (state.theme !== 'all') return '<div class="grid">' + entries.map(card).join('') + '</div>';
+    var primary = [], related = [];
+    entries.forEach(function (it) {
+      if (it.themes[0] === theme) primary.push(card(it));
+      else related.push(mini(it));
+    });
+    return (primary.length ? '<div class="grid">' + primary.join('') + '</div>' : '') +
+      (related.length ? '<div class="mini-grid related-grid">' + related.join('') + '</div>' : '');
   }
   function render() {
     var focused = document.activeElement;
     var focusTheme = focused && focused.getAttribute('data-theme');
-    var focusStrip = focused && focused.classList.contains('theme-strip-button');
     var list = items.filter(function (it) { return match(it); });
     var searching = words().length > 0;
     var html = '';
@@ -1365,23 +1406,28 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js', { 
     } else {
       themes.forEach(function (t) {
         if (state.theme !== 'all' && state.theme !== t[0]) return;
-        var g = list.filter(function (it) { return (state.theme !== 'all' ? state.theme : it.themes[0]) === t[0]; });
-        var extra = state.theme === 'all' ? list.filter(function (it) { return it.themes.indexOf(t[0]) > 0; }).length : 0;
-        if (!g.length && !extra) return;
+        var g = list.filter(function (it) { return it.themes.indexOf(t[0]) !== -1; });
+        if (!g.length) return;
         var tools = g.filter(function (it) { return it.kind === 'tool'; }).sort(byName);
         var hand = g.filter(function (it) { return it.kind === 'handout'; }).sort(byName);
-        html += '<section class="section" id="sec-' + t[0] + '" style="--c:' + t[3] + '"><div class="section-head"><span class="bar"></span><h2>' + esc(t[1]) + '</h2><span class="n">' + g.length + '件</span></div>';
-        if (tools.length) html += (hand.length ? '<p class="sub-head">診療ツール ' + tools.length + '</p>' : '') + '<div class="grid">' + tools.map(card).join('') + '</div>';
-        if (hand.length) html += (tools.length ? '<p class="sub-head">配布資料 ' + hand.length + '</p>' : '') + '<div class="grid">' + hand.map(card).join('') + '</div>';
-        // 主テーマが別でも、このテーマにも関わるもの（絞り込むと一緒に出る）
-        if (state.theme === 'all') {
-          if (extra) html += '<button class="more-link" type="button" data-theme="' + t[0] + '">ほかのテーマにも関わるもの' + extra + '件を含めて、' + esc(t[1]) + 'だけを見る →</button>';
-        }
+        html += '<section class="section" id="sec-' + t[0] + '" style="--c:' + t[3] + '"><div class="section-head"><span class="bar"></span><h2>' + esc(t[1]) + '</h2>';
+        if (state.theme === 'all') html += '<button class="browse-theme" type="button" data-theme="' + t[0] + '" aria-label="' + esc(t[1]) + 'の' + g.length + '件に絞る">' + g.length + '件に絞る</button>';
+        else html += '<span class="n">' + g.length + '件</span>';
+        html += '</div>';
+        if (tools.length) html += (hand.length ? '<p class="sub-head">診療ツール ' + tools.length + '</p>' : '') + themeGroup(tools, t[0]);
+        if (hand.length) html += (tools.length ? '<p class="sub-head">配布資料 ' + hand.length + '</p>' : '') + themeGroup(hand, t[0]);
         html += '</section>';
       });
     }
     $('catalog').innerHTML = html;
     $('empty').hidden = list.length > 0 || handoutState === 'loading';
+    var elsewhere = 0;
+    if (!list.length && searching && (state.theme !== 'all' || state.kind !== 'all' || state.purpose !== 'all')) {
+      var queryWords = words();
+      elsewhere = items.filter(function (it) { return matchesWords(it, queryWords); }).length;
+    }
+    $('searchEverywhere').hidden = elsewhere === 0;
+    if (elsewhere) $('searchEverywhere').textContent = 'この言葉で全体を検索（' + elsewhere + '件）';
     $('catalog').classList.toggle('compact', view === 'compact');
     Array.prototype.forEach.call(document.querySelectorAll('[data-view]'), function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-view') === view)); });
 
@@ -1402,10 +1448,9 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js', { 
       b.setAttribute('aria-pressed', String(state.kind === k));
       b.querySelector('.n').textContent = items.filter(function (it) { return (k === 'all' || it.kind === k) && match(it, 'kind'); }).length;
     });
-    themeButtons($('themeList'), false);
-    themeButtons($('themeStrip'), true);
+    renderThemeFilters();
     if (focusTheme !== null && focused && focused.classList.contains('theme-btn')) {
-      var focusButtons = (focusStrip ? $('themeStrip') : $('themeList')).querySelectorAll('[data-theme]');
+      var focusButtons = $('themeList').querySelectorAll('[data-theme]');
       Array.prototype.forEach.call(focusButtons, function (b) { if (b.getAttribute('data-theme') === focusTheme) b.focus(); });
     }
     $('clearQ').hidden = !state.q;
@@ -1430,7 +1475,7 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js', { 
   }
 
   // ── 初期化 ──
-  ['めまい','頭痛','てんかん','脳梗塞','低ナトリウム','認知症','血圧','栄養'].forEach(function (w) {
+  ['脳梗塞 休薬','めまい','頭痛','てんかん','脳梗塞','低ナトリウム','認知症','血圧','栄養'].forEach(function (w) {
     var b = document.createElement('button'); b.type = 'button'; b.textContent = w;
     b.addEventListener('click', function () { input.value = w; state.q = w; render(); scrollToResults(); });
     $('quick').appendChild(b);
@@ -1441,11 +1486,13 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js', { 
 
   function scrollToResults() {
     var top = $('main').getBoundingClientRect().top + window.pageYOffset - $('toolbar').offsetHeight - 8;
-    if (window.pageYOffset < top) {
-      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) window.scrollTo(0, top);
-      else { try { window.scrollTo({top:top, behavior:'smooth'}); } catch (e) { window.scrollTo(0, top); } }
-    }
+    window.scrollTo(0, Math.max(0, top));
   }
+  $('themeSelect').addEventListener('change', function () { state.theme = this.value; render(); scrollToResults(); });
+  $('searchEverywhere').addEventListener('click', function () {
+    state.kind = 'all'; state.theme = 'all'; state.purpose = 'all'; purposeSel.value = 'all';
+    render(); $('count').focus(); scrollToResults();
+  });
   input.addEventListener('input', function () { state.q = input.value; render(); });
   input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { state.q = input.value; render(); scrollToResults(); input.blur(); } if (e.key === 'Escape') { input.value = ''; state.q = ''; render(); } });
   $('clearQ').addEventListener('click', function () { input.value = ''; state.q = ''; render(); input.focus(); });
@@ -1477,7 +1524,11 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js', { 
     b = closest(t, '[data-kind]');
     if (b) { state.kind = b.getAttribute('data-kind'); render(); return; }
     b = closest(t, '[data-theme]');
-    if (b) { state.theme = b.getAttribute('data-theme'); render(); scrollToResults(); return; }
+    if (b) {
+      state.theme = b.getAttribute('data-theme'); render();
+      if (b.classList.contains('browse-theme')) $('count').focus();
+      scrollToResults(); return;
+    }
     b = closest(t, '[data-pin]');
     if (b) {
       var id = b.getAttribute('data-pin'), i = pins.indexOf(id);
@@ -1536,7 +1587,7 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js', { 
         seen[h.slug] = true;
         var href = 'handouts/' + h.slug + '/';
         return {id:href, kind:'handout', href:href, title:h.title, desc:h.desc, tags:[], series:h.series || '',
-          themes:handoutThemes(h), purpose:'handout', audience:audienceLabel(h.audience),
+          themes:handoutThemes(h), purposes:['handout'], audience:audienceLabel(h.audience),
           blog:/^https?:\/\//i.test(h.blog_url || '') ? h.blog_url : '', yt:/^[a-zA-Z0-9_-]{11}$/.test(h.youtube_id || '') ? h.youtube_id : '', isNew:isNew(h.date)};
       });
       handouts.forEach(prepare);

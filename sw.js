@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v430';
+const CACHE_NAME = 'ddx-tools-v431';
 const ASSETS = [
   './infographics/stroke-antithrombotic-ppi-pcab/index.html',
   './infographics/stroke-antithrombotic-ppi-pcab/infographic.png',
