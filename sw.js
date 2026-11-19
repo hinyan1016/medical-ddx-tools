@@ -1,5 +1,7 @@
-const CACHE_NAME = 'ddx-tools-v435';
+const CACHE_NAME = 'ddx-tools-v436';
 const ASSETS = [
+  './infographics/trousseau-syndrome-20261120/index.html',
+  './infographics/trousseau-syndrome-20261120/overview.png',
   './infographics/sep-upper-lower-limb/index.html',
   './infographics/sep-upper-lower-limb/infographic.png',
   './infographics/sep-upper-lower-limb/fig0-electrodes.png',
