@@ -1,5 +1,14 @@
-const CACHE_NAME = 'ddx-tools-v433';
+const CACHE_NAME = 'ddx-tools-v434';
 const ASSETS = [
+  './infographics/sep-upper-lower-limb/index.html',
+  './infographics/sep-upper-lower-limb/infographic.png',
+  './infographics/sep-upper-lower-limb/fig0-electrodes.png',
+  './infographics/sep-upper-lower-limb/fig1-fustes2021-upper.jpg',
+  './infographics/sep-upper-lower-limb/fig2-oka2026-tibial.jpg',
+  './infographics/sep-upper-lower-limb/fig3-boscarino2020.jpg',
+  './infographics/sep-upper-lower-limb/fig4-fustes2021-n20.jpg',
+  './infographics/sep-upper-lower-limb/fig5-storti2017-giant.jpg',
+  './infographics/epilepsy-literature-2026-oct-nov/index.html',
   './infographics/optimal-stroke-bp-120/index.html',
   './infographics/optimal-stroke-bp-120/infographic.png',
   './infographics/levetiracetam-early-alzheimer-dementia/index.html',
