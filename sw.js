@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v432';
+const CACHE_NAME = 'ddx-tools-v433';
 const ASSETS = [
   './infographics/optimal-stroke-bp-120/index.html',
   './infographics/optimal-stroke-bp-120/infographic.png',
