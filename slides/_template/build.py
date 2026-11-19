@@ -133,6 +133,12 @@ def render_viewer(deck: dict, slide_count: int, has_deck: bool = False,
         import re as _re
         template = _re.sub(r'[ \t]*<a class="btn btn-pdf".*?</a>\s*?\n', '', template, flags=_re.S)
         template = template.replace("PDFは保存・印刷可能です。", "")
+    elif deck.get("pdf_download"):
+        template = template.replace(
+            'href="slides.pdf" target="_blank" rel="noopener"',
+            f'href="slides.pdf" download="{deck["slug"]}.pdf"',
+            1,
+        )
 
     cards_html = []
     for i in range(1, slide_count + 1):
