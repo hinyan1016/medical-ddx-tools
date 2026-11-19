@@ -1,8 +1,12 @@
-const CACHE_NAME = 'ddx-tools-v434';
+const CACHE_NAME = 'ddx-tools-v435';
 const ASSETS = [
   './infographics/sep-upper-lower-limb/index.html',
   './infographics/sep-upper-lower-limb/infographic.png',
   './infographics/sep-upper-lower-limb/fig0-electrodes.png',
+  './infographics/sep-upper-lower-limb/fig0-electrodes-upper.png',
+  './infographics/sep-upper-lower-limb/fig0-electrodes-lower.png',
+  './infographics/huntington-disease/index.html',
+  './infographics/huntington-disease/overview.png',
   './infographics/sep-upper-lower-limb/fig1-fustes2021-upper.jpg',
   './infographics/sep-upper-lower-limb/fig2-oka2026-tibial.jpg',
   './infographics/sep-upper-lower-limb/fig3-boscarino2020.jpg',
