@@ -1,5 +1,9 @@
-const CACHE_NAME = 'ddx-tools-v431';
+const CACHE_NAME = 'ddx-tools-v432';
 const ASSETS = [
+  './infographics/optimal-stroke-bp-120/index.html',
+  './infographics/optimal-stroke-bp-120/infographic.png',
+  './infographics/levetiracetam-early-alzheimer-dementia/index.html',
+  './infographics/levetiracetam-early-alzheimer-dementia/infographic.png',
   './infographics/stroke-antithrombotic-ppi-pcab/index.html',
   './infographics/stroke-antithrombotic-ppi-pcab/infographic.png',
   './infographics/nbia-diagnosis-treatment/index.html',
