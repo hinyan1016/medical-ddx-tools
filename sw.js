@@ -1,5 +1,7 @@
-const CACHE_NAME = 'ddx-tools-v437';
+const CACHE_NAME = 'ddx-tools-v438';
 const ASSETS = [
+  './infographics/ccb-clinical-guide/index.html',
+  './infographics/ccb-clinical-guide/infographic.png',
   './infographics/working-patient-medical-cost-support/index.html',
   './infographics/working-patient-medical-cost-support/infographic.png',
   './infographics/trousseau-syndrome-20261120/index.html',
