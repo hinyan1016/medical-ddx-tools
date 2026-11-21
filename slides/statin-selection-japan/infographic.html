@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LDL-Cからスタチンを選ぶ｜図を拡大</title>
+  <style>
+    body { margin: 0; background: #edf6fa; color: #18354c; font-family: system-ui, "Yu Gothic", sans-serif; }
+    main { margin: 0 auto; max-width: 1048px; padding: 16px 12px 24px; }
+    h1 { margin: 0; font-size: clamp(1.18rem, 3vw, 1.55rem); }
+    .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 12px; }
+    button { background: #18354c; color: #fff; border: 0; border-radius: 6px; padding: 9px 14px; font: inherit; cursor: pointer; }
+    button:focus-visible, .viewport:focus-visible { outline: 3px solid #2877a7; outline-offset: 3px; }
+    .viewport { overflow: auto; max-width: 100%; max-height: 80vh; background: #fff; border: 1px solid #b3c7d5; border-radius: 6px; }
+    img { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+    .original img { max-width: none; margin: 0; }
+    p { margin: 10px 0 0; font-size: .88rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <header class="controls">
+      <h1>LDL-Cからスタチンを選ぶ</h1>
+      <button type="button" aria-pressed="false" aria-controls="image-viewport">原寸で見る</button>
+    </header>
+    <section id="image-viewport" class="viewport" aria-label="スタチン選択の図" tabindex="0">
+      <img src="./infographic.png" width="1024" height="1536" alt="仮想症例におけるLDL-Cの低下幅の見積もり、切り替え候補、併用薬と腎機能の確認、再診での測定を示す。">
+    </section>
+    <footer>
+      <p>40.3%は国内の直接比較試験ASTRO-1で、ロスバスタチン2.5 mg群の8週時点に観察された平均低下率です。<a href="https://www.jstage.jst.go.jp/article/avd/2/3/2_oa090017/_pdf">ASTRO-1原著</a></p>
+      <p>原寸表示では上下左右にスクロールできます。</p>
+    </footer>
+  </main>
+  <script>
+    const button = document.querySelector("button");
+    const viewport = document.querySelector("#image-viewport");
+    button.addEventListener("click", () => {
+      const isOriginal = viewport.classList.toggle("original");
+      button.setAttribute("aria-pressed", String(isOriginal));
+      button.textContent = isOriginal ? "画面幅に合わせる" : "原寸で見る";
+      viewport.scrollTo(0, 0);
+    });
+  </script>
+</body>
+</html>

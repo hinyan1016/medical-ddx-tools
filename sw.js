@@ -1,5 +1,9 @@
-const CACHE_NAME = 'ddx-tools-v438';
+const CACHE_NAME = 'ddx-tools-v439';
 const ASSETS = [
+  './slides/statin-selection-japan/index.html',
+  './slides/statin-selection-japan/slide-01.png',
+  './slides/statin-selection-japan/infographic.html',
+  './slides/statin-selection-japan/infographic.png',
   './infographics/ccb-clinical-guide/index.html',
   './infographics/ccb-clinical-guide/infographic.png',
   './infographics/working-patient-medical-cost-support/index.html',
