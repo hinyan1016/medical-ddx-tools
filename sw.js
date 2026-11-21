@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v439';
+const CACHE_NAME = 'ddx-tools-v440';
 const ASSETS = [
   './slides/statin-selection-japan/index.html',
   './slides/statin-selection-japan/slide-01.png',
