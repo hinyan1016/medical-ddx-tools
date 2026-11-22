@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v444';
+const CACHE_NAME = 'ddx-tools-v445';
 const ASSETS = [
   './infographics/mind-body-01-overview/illustrations/pain-context/index.html',
   './infographics/mind-body-01-overview/illustrations/visit-notes/index.html',
