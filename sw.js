@@ -1,8 +1,14 @@
-const CACHE_NAME = 'ddx-tools-v445';
+const CACHE_NAME = 'ddx-tools-v446';
 const ASSETS = [
   './infographics/mind-body-01-overview/illustrations/pain-context/index.html',
   './infographics/mind-body-01-overview/illustrations/visit-notes/index.html',
   './infographics/mind-body-01-overview/illustrations/visual-dizziness/index.html',
+  './infographics/tavi-stroke-management-20261121/index.html',
+  './infographics/tavi-stroke-management-20261121/infographic.png',
+  './infographics/ondexxya-doac-ich-20261121/index.html',
+  './infographics/ondexxya-doac-ich-20261121/infographic.png',
+  './infographics/elderly-antithrombotic-20261121/index.html',
+  './infographics/elderly-antithrombotic-20261121/infographic.png',
   './infographics/mind-body-02-symptom-modulation/index.html',
   './infographics/mind-body-02-symptom-modulation/infographic.png',
   './infographics/fatty-liver-nafld-afld-reference-repair-20261123/index.html',
