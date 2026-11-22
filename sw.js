@@ -1,5 +1,7 @@
-const CACHE_NAME = 'ddx-tools-v443';
+const CACHE_NAME = 'ddx-tools-v444';
 const ASSETS = [
+  './infographics/mind-body-02-symptom-modulation/index.html',
+  './infographics/mind-body-02-symptom-modulation/infographic.png',
   './infographics/fatty-liver-nafld-afld-reference-repair-20261123/index.html',
   './infographics/fatty-liver-nafld-afld-reference-repair-20261123/infographic.png',
   './infographics/bow-hunter-syndrome-reference-repair-20261123/index.html',
