@@ -1,5 +1,9 @@
-const CACHE_NAME = 'ddx-tools-v442';
+const CACHE_NAME = 'ddx-tools-v443';
 const ASSETS = [
+  './infographics/fatty-liver-nafld-afld-reference-repair-20261123/index.html',
+  './infographics/fatty-liver-nafld-afld-reference-repair-20261123/infographic.png',
+  './infographics/bow-hunter-syndrome-reference-repair-20261123/index.html',
+  './infographics/bow-hunter-syndrome-reference-repair-20261123/infographic.png',
   './infographics/aga-sunburst-visual-update/index.html',
   './infographics/aga-sunburst-visual-update/index.png',
   './infographics/aga-sunburst-visual-update/photos.html',
