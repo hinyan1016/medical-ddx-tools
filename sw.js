@@ -1,5 +1,19 @@
-const CACHE_NAME = 'ddx-tools-v441';
+const CACHE_NAME = 'ddx-tools-v442';
 const ASSETS = [
+  './infographics/aga-sunburst-visual-update/index.html',
+  './infographics/aga-sunburst-visual-update/index.png',
+  './infographics/aga-sunburst-visual-update/photos.html',
+  './infographics/aga-sunburst-visual-update/photos.png',
+  './infographics/aga-sunburst-visual-update/scalp.html',
+  './infographics/aga-sunburst-visual-update/scalp.png',
+  './infographics/amshepri-parkinson-20261122/index.html',
+  './infographics/amshepri-parkinson-20261122/infographic.png',
+  './infographics/pollinosis-treatment-sunburst/entryway.html',
+  './infographics/pollinosis-treatment-sunburst/entryway.png',
+  './infographics/pollinosis-treatment-sunburst/immunotherapy.html',
+  './infographics/pollinosis-treatment-sunburst/immunotherapy.png',
+  './infographics/pollinosis-treatment-sunburst/index.html',
+  './infographics/pollinosis-treatment-sunburst/index.png',
   './infographics/mind-body-01-overview/index.html',
   './infographics/mind-body-01-overview/infographic.png',
   './infographics/ada-diabetes-care-reference-repair-20261122/1.png',
