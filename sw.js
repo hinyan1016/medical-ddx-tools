@@ -1,5 +1,14 @@
-const CACHE_NAME = 'ddx-tools-v452';
+const CACHE_NAME = 'ddx-tools-v453';
 const ASSETS = [
+  './infographics/china-clinical-ai-202611/index.html',
+  './infographics/bow-hunter-comprehensive-care-202611/index.html',
+  './infographics/valproate-fatherhood-202611/index.html',
+  './infographics/colorectal-cancer-prevention-treatment-202611/index.html',
+  './infographics/caa-related-inflammation-202611/index.html',
+  './infographics/anca-vasculitic-neuropathy-202611/index.html',
+  './infographics/hypothyroidism-tsh-ft4-202611/index.html',
+  './infographics/myasthenia-gravis-initial-ivig-202611/index.html',
+  './infographics/gpt-6-2-astra-sol-202611/index.html',
   './infographics/bow-hunter-patient-guide-202611/index.html',
   './infographics/stroke-care-twenty-years-202611/index.html',
   './infographics/erythromelalgia-care-202611/index.html',
