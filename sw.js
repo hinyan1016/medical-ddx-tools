@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v449';
+const CACHE_NAME = 'ddx-tools-v450';
 const ASSETS = [
   './infographics/bppv-exercises-reference-repair-20261123/index.html',
   './infographics/bppv-exercises-reference-repair-20261123/infographic.png',
