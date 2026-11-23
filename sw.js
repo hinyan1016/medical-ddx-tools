@@ -1,5 +1,7 @@
-const CACHE_NAME = 'ddx-tools-v448';
+const CACHE_NAME = 'ddx-tools-v449';
 const ASSETS = [
+  './infographics/bppv-exercises-reference-repair-20261123/index.html',
+  './infographics/bppv-exercises-reference-repair-20261123/infographic.png',
   './slides/mind-body-02-symptom-modulation/index.html',
   './infographics/mind-body-01-overview/illustrations/pain-context/index.html',
   './infographics/mind-body-01-overview/illustrations/visit-notes/index.html',
