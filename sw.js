@@ -1,5 +1,7 @@
-const CACHE_NAME = 'ddx-tools-v450';
+const CACHE_NAME = 'ddx-tools-v451';
 const ASSETS = [
+  './infographics/adult-asthma-standard-care/index.html',
+  './infographics/dyslipidemia-ldl-tg-treatment/index.html',
   './infographics/bppv-exercises-reference-repair-20261123/index.html',
   './infographics/bppv-exercises-reference-repair-20261123/infographic.png',
   './slides/mind-body-02-symptom-modulation/index.html',
