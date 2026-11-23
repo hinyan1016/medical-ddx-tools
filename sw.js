@@ -1,5 +1,8 @@
-const CACHE_NAME = 'ddx-tools-v453';
+const CACHE_NAME = 'ddx-tools-v454';
 const ASSETS = [
+  './slides/mind-body-03-functional-disorders/index.html',
+  './infographics/mind-body-03-functional-disorders/index.html',
+  './infographics/mind-body-03-functional-disorders/infographic.png',
   './infographics/china-clinical-ai-202611/index.html',
   './infographics/bow-hunter-comprehensive-care-202611/index.html',
   './infographics/valproate-fatherhood-202611/index.html',
