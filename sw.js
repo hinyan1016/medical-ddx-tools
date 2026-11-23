@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v456';
+const CACHE_NAME = 'ddx-tools-v457';
 const ASSETS = [
   './infographics/ms-treatment-20years-reference-repair-20261124/index.html',
   './infographics/ms-treatment-20years-reference-repair-20261124/infographic.png',
