@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v457';
+const CACHE_NAME = 'ddx-tools-v458';
 const ASSETS = [
   './infographics/ms-treatment-20years-reference-repair-20261124/index.html',
   './infographics/ms-treatment-20years-reference-repair-20261124/infographic.png',
@@ -137,6 +137,8 @@ const ASSETS = [
   './infographics/nbia-diagnosis-treatment/infographic.png',
   './infographics/sleep-epilepsy-interaction/index.html',
   './infographics/sleep-epilepsy-interaction/infographic.png',
+  './infographics/carpal-tunnel-gliding/index.html',
+  './infographics/carpal-tunnel-gliding/infographic.png',
   './infographics/hemorrhagic-stroke-seizure-prophylaxis/index.html',
   './infographics/hemorrhagic-stroke-seizure-prophylaxis/infographic.png',
   './slides/hemorrhagic-stroke-seizure-prophylaxis/index.html',
