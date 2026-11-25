@@ -423,7 +423,8 @@
 
   function pct(base, cur){
     if (base == null || cur == null || base <= 0) return null;
-    return ((base - cur) / base) * 100;
+    // 表示と同じ小数1桁に丸めてから判定する（1.0→0.9 が 9.999…% になり境界で一段ずれるのを防ぐ）
+    return Math.round(((base - cur) / base) * 1000) / 10;
   }
 
   function render(){

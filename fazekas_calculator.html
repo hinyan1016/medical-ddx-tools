@@ -997,22 +997,29 @@
   }
 
   function getLadisInfo(pvh, dwmh) {
-    var maxG = Math.max(pvh, dwmh);
-    if (maxG === 0) {
+    // LADIS の重症度は深部白質（DWMH）の Fazekas 段階で分類する（PVH は用いない）
+    if (dwmh === 0) {
+      if (pvh === 0) {
+        return {
+          level: '異常なし（Grade 0）',
+          shortLabel: '異常なし',
+          sub: '明らかな大脳白質高信号を認めません。'
+        };
+      }
       return {
-        level: '異常なし（Grade 0）',
-        shortLabel: '異常なし',
-        sub: '明らかな大脳白質高信号を認めません。'
+        level: '深部白質病変なし（PVHのみ）',
+        shortLabel: '深部白質病変なし（PVHのみ）',
+        sub: 'LADIS研究の重症度区分は深部白質病変（DWMH）のFazekas段階で分類するため、脳室周囲病変（PVH）のみでは区分の対象外です。'
       };
     }
-    if (dwmh === 3 || pvh === 3) {
+    if (dwmh === 3) {
       return {
         level: '高度（Severe / Grade 3相当）',
         shortLabel: '高度（Severe）',
         sub: 'LADIS研究（自立高齢者639例・3年追跡）：IADL障害移行または死亡の年間発生率 29.5%（軽度群に対する調整HR 2.36［95%CI 1.65-3.81］）。歩行・遂行機能・排尿障害に注意。'
       };
     }
-    if (dwmh === 2 || pvh === 2) {
+    if (dwmh === 2) {
       return {
         level: '中等度（Moderate / Grade 2相当）',
         shortLabel: '中等度（Moderate）',
