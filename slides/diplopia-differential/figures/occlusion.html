@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>片眼ずつ覆ったときの複視の変化</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f2f5f6; color: #18354c; font-family: "BIZ UDPGothic", "Yu Gothic", Meiryo, sans-serif; }
+    .fig { width: 100%; max-width: 960px; margin: 0 auto; padding: 32px 42px 25px; background: white; border-top: 8px solid #1a5276; }
+    header { margin-bottom: 21px; }
+    h1 { margin: 0 0 13px; font-size: clamp(22px, 4.5vw, 42px); line-height: 1.3; letter-spacing: .012em; }
+    header p { margin: 0; font-size: clamp(14px, 2.1vw, 20px); line-height: 1.7; }
+    table { border-collapse: separate; border-spacing: 0; table-layout: fixed; width: 100%; }
+    th, td { padding: 0; }
+    col.condition { width: 26%; }
+    col.example { width: 37%; }
+    thead th { padding: 16px 4px; line-height: 1.4; vertical-align: middle; }
+    thead th:first-child { padding-left: 3px; color: #506574; text-align: left; font-size: clamp(13px, 1.9vw, 18px); font-weight: 400; }
+    thead th.case { background: #eaf2f7; color: #174e71; font-size: clamp(14px, 2.7vw, 26px); }
+    thead th.mono { background: #fff0e7; color: #76381f; border-left: 4px solid white; }
+    .nowrap { white-space: nowrap; }
+    tbody th, tbody td { border-bottom: 1px solid #c9d5db; }
+    tbody th { padding: 12px 4px; text-align: left; font-size: clamp(14px, 2.7vw, 26px); font-weight: 700; line-height: 1.45; }
+    tbody th span { display: block; color: #536774; font-size: clamp(12px, 1.9vw, 18px); font-weight: 400; }
+    td { text-align: center; vertical-align: middle; }
+    .observation { display: flex; justify-content: center; align-items: center; gap: 18px; min-height: 91px; }
+    .target { display: block; width: 102px; height: 57px; }
+    .number { font-size: clamp(14px, 2.5vw, 24px); white-space: nowrap; }
+    footer { margin-top: 17px; }
+    .note { margin: 0; font-size: clamp(12px, 1.9vw, 17px); color: #415867; line-height: 1.6; }
+    .credit { margin: 7px 0 0; font-size: clamp(11px, 1.6vw, 15px); color: #4d606b; line-height: 1.6; }
+    a { color: inherit; text-decoration-color: #99aebd; text-underline-offset: 3px; }
+    .symbols { position: absolute; width: 0; height: 0; overflow: hidden; }
+    @media (max-width: 600px) {
+      .fig { padding: 17px 12px 15px; border-top-width: 5px; }
+      header { margin-bottom: 12px; }
+      h1 { margin-bottom: 8px; }
+      thead th { padding: 9px 2px; }
+      thead th.case { font-size: clamp(13px, 3.5vw, 19px); }
+      .observation { flex-direction: column; min-height: 75px; padding: 5px 0; gap: 0; }
+      .target { width: 76px; height: 41px; }
+      footer { margin-top: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <svg class="symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <g id="tree" fill="#215766">
+        <path d="M0 1 13 20H9L17 33H4V44H-4V33H-17L-9 20H-13Z"/>
+      </g>
+      <symbol id="one" viewBox="0 0 100 50"><use href="#tree" x="50" y="2"/></symbol>
+      <symbol id="two" viewBox="0 0 100 50"><use href="#tree" x="29" y="2"/><use href="#tree" x="71" y="2"/></symbol>
+    </defs>
+  </svg>
+  <main class="fig">
+    <header>
+      <h1>片眼ずつ覆うと、どう見える？</h1>
+      <p>1本の木を見ている人に、両眼、右眼だけ、左眼だけの順に見え方を尋ねます。</p>
+    </header>
+    <table aria-label="両眼性複視と右眼の単眼性複視で、患者に見える木の本数を比較">
+      <colgroup><col class="condition"><col class="example"><col class="example"></colgroup>
+      <thead>
+        <tr>
+          <th scope="col">見るときの条件</th>
+          <th class="case" scope="col"><span class="nowrap">両眼性複視</span><span class="nowrap">の例</span></th>
+          <th class="case mono" scope="col"><span class="nowrap">右眼の</span><span class="nowrap">単眼性複視の例</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">両眼で見る</th>
+          <td><div class="observation"><svg class="target" aria-hidden="true"><use href="#two"/></svg><span class="number">2本</span></div></td>
+          <td><div class="observation"><svg class="target" aria-hidden="true"><use href="#two"/></svg><span class="number">2本</span></div></td>
+        </tr>
+        <tr>
+          <th scope="row">右眼だけ<span>左眼を覆う</span></th>
+          <td><div class="observation"><svg class="target" aria-hidden="true"><use href="#one"/></svg><span class="number">1本</span></div></td>
+          <td><div class="observation"><svg class="target" aria-hidden="true"><use href="#two"/></svg><span class="number">2本</span></div></td>
+        </tr>
+        <tr>
+          <th scope="row">左眼だけ<span>右眼を覆う</span></th>
+          <td><div class="observation"><svg class="target" aria-hidden="true"><use href="#one"/></svg><span class="number">1本</span></div></td>
+          <td><div class="observation"><svg class="target" aria-hidden="true"><use href="#one"/></svg><span class="number">1本</span></div></td>
+        </tr>
+      </tbody>
+    </table>
+    <footer>
+      <p class="note">左右は患者本人を基準とします。像のずれる向きや間隔は例示です。</p>
+      <p class="credit">医知創造ラボ作図 ／ 参考　<a href="https://www.gankaikai.or.jp/info/kenshinhandbook2026v2.pdf#page=18">日本眼科医会『はたらく人の目を守る眼科検診ハンドブック Q&amp;A』第7章 Q2</a></p>
+    </footer>
+  </main>
+</body>
+</html>
