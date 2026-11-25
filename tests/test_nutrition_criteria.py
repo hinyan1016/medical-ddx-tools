@@ -15,8 +15,6 @@
 """
 from __future__ import annotations
 
-import pytest
-
 from calc_browser import fill, open_tool, seg_click, text
 
 
@@ -171,10 +169,7 @@ def test_refeeding_aspen_severity():
             check_aspen(page, *case)
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "既知の不具合: 低下率を丸めずに比較するため、1.0→0.9 のようなちょうど10%・20%の低下が"
-    "9.999…% として一段軽く、4.0→2.8 のようなちょうど30%の低下が 30.000…% として重症に判定される。"
-    "画面には −10.0% と出るのに『基準未満』となる。ページ側を直したら xfail を外す。"))
+# 1.0→0.9 のような値は浮動小数では 9.999…% になる。表示と同じ小数1桁で判定することを確かめる。
 def test_refeeding_aspen_exact_boundaries():
     with open_tool("refeeding_risk.html") as page:
         check_aspen(page, (1.0, 0.9), None, None, False, 10)    # 10% ちょうど → 軽症
@@ -187,4 +182,5 @@ if __name__ == "__main__":
     test_glim_bmi_from_height_weight()
     test_refeeding_nice_high_risk_and_start_rate()
     test_refeeding_aspen_severity()
+    test_refeeding_aspen_exact_boundaries()
     print("PASS: GLIM / refeeding")

@@ -35,14 +35,20 @@ def test_fazekas_total_and_rt_band():
 
 
 def test_fazekas_ladis_severity_follows_dwmh():
-    """LADIS の重症度は深部白質（DWMH）の Fazekas 段階。PVH が DWMH 以下の組み合わせで照合する。"""
-    labels = {0: "異常なし", 1: "軽度", 2: "中等度", 3: "高度"}
+    """LADIS の重症度は深部白質（DWMH）の Fazekas 段階だけで決まり、PVH には左右されない。"""
+    labels = {1: "軽度", 2: "中等度", 3: "高度"}
     with open_tool("fazekas_calculator.html") as page:
-        for dwmh in range(4):
-            for pvh in range(dwmh + 1):
-                click(page, "pvh", pvh)
-                click(page, "dwmh", dwmh)
-                assert labels[dwmh] in text(page, "#ladisPill"), (pvh, dwmh, text(page, "#ladisPill"))
+        for pvh, dwmh in itertools.product(range(4), repeat=2):
+            click(page, "pvh", pvh)
+            click(page, "dwmh", dwmh)
+            pill = text(page, "#ladisPill")
+            if dwmh == 0:
+                expected = "異常なし" if pvh == 0 else "深部白質病変なし"
+            else:
+                expected = labels[dwmh]
+            assert expected in pill, (pvh, dwmh, pill)
+            others = [v for k, v in labels.items() if k != dwmh]
+            assert not any(o in pill for o in others), (pvh, dwmh, pill)
 
 
 if __name__ == "__main__":

@@ -17,9 +17,3 @@ python -m pytest tests/test_news2_calculator.py tests/test_abcd2_calculator.py t
 
 各ファイルは `python tests/test_news2_calculator.py` のように単体でも実行できます。
 Chromium を別の場所に置いている場合は `PLAYWRIGHT_CHROMIUM_EXECUTABLE` にパスを指定してください。
-
-## 既知の不具合（xfail）
-
-- `test_nutrition_criteria.py::test_refeeding_aspen_exact_boundaries`
-  リフィーディングツールの ASPEN 2020 重症度判定で、低下率を丸めずに比較しているため、
-  ちょうど10%・20%の低下が一段軽く、ちょうど30%の低下が重症に判定されます。ページ側を直したら `xfail` を外してください。
