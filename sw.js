@@ -1,5 +1,6 @@
-const CACHE_NAME = 'ddx-tools-v465';
+const CACHE_NAME = 'ddx-tools-v466';
 const ASSETS = [
+  './infographics/arb-prescribing-guide/v2/index.html',
   './diplopia-differential.html',
   './slides/mind-body-06-practical-coping/index.html',
   './infographics/mind-body-06-practical-coping/index.html',
