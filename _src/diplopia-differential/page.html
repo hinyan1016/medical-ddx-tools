@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<script>if('serviceWorker'in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(reg){reg.update()})});navigator.serviceWorker.addEventListener('message',function(e){if(e.data&&e.data.type==='SW_UPDATED')window.location.reload()})}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#124b48">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>成人の複視｜初診時の鑑別支援</title>
+<meta name="description" content="緊急所見、片眼遮閉、問診、眼球運動をタップで入力すると、緊急度・局在の候補・次に確かめることを整理し、申し送り文にまとめます。">
+<meta property="og:title" content="成人の複視｜初診時の鑑別支援">
+<meta property="og:description" content="緊急所見、片眼遮閉、問診、眼球運動をタップで入力すると、緊急度・局在の候補・次に確かめることを整理し、申し送り文にまとめます。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tools.ichisouzo-lab.com/diplopia-differential.html">
+<meta property="og:image" content="https://tools.ichisouzo-lab.com/assets/og-tools.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="医知創造ラボ">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+:root { --ink:#162f37; --muted:#485f65; --line:#c9d7d6; --teal:#17665f; --dark:#124b48; --warn:#a53d21; --warnbg:#fff2e9; --soft:#eef5f1; }
+* { box-sizing:border-box }
+html { -webkit-text-size-adjust:100% }
+body { margin:0; font-family:"BIZ UDPGothic","Yu Gothic UI","Yu Gothic",Meiryo,sans-serif; color:var(--ink); background:#f5f6f2; line-height:1.7 }
+h1,h2,h3,h4,p,ul { margin:0 }
+button { font:inherit; color:inherit; cursor:pointer; touch-action:manipulation }
+button:focus-visible,a:focus-visible,summary:focus-visible,textarea:focus-visible,[tabindex]:focus-visible { outline:3px solid #c2702e; outline-offset:2px }
+a { color:var(--teal) }
+.shell { max-width:1240px; margin:0 auto; padding:0 28px 40px }
+.back { font-size:.82rem; padding:12px 0 0 }
+.back a { text-decoration:none }
+h1 { font-size:2.1rem; line-height:1.35; margin:14px 0 6px; letter-spacing:-.02em }
+h1 span { display:inline-block; padding-left:.6em; color:var(--teal); font-size:.56em; font-weight:650 }
+.intro { color:var(--muted); font-size:.97rem }
+.related { margin:6px 0 0; font-size:.88rem }
+.related a { margin-right:1.2em; white-space:nowrap }
+.banner { display:none; margin:14px 0 0; padding:10px 14px; background:#fff7dd; border:1px solid #d9bd62; border-radius:8px; font-size:.9rem }
+.banner.on { display:block }
+.banner button { margin-left:10px }
+.layout { display:grid; grid-template-columns:minmax(0,1.55fr) minmax(300px,1fr); grid-gap:20px; align-items:start; margin-top:18px }
+.stepnav { display:none }
+.card { background:#fff; border:1px solid var(--line); border-radius:12px; padding:20px 22px; margin-bottom:16px }
+.card h2 { font-size:1.2rem; line-height:1.5; display:flex; align-items:baseline }
+.num { flex:none; display:inline-block; width:1.75em; height:1.75em; line-height:1.75em; margin-right:.5em; text-align:center; border-radius:50%; background:var(--dark); color:#fff; font-size:.8em; font-weight:700 }
+.guide { color:#345058; font-size:.9rem; margin:6px 0 12px }
+.subhead { font-size:.98rem; margin:18px 0 4px; color:var(--dark) }
+.fields { display:block }
+.field { padding:10px 0; border-top:1px solid #e3ebe9 }
+.field:first-child { border-top:0 }
+.field[hidden] { display:none }
+.flabel { font-size:.92rem; font-weight:650; line-height:1.55 }
+.fhint { font-size:.8rem; color:var(--muted); font-weight:400; line-height:1.5; margin-top:2px }
+.seg { margin:6px -3px -3px; display:flex; flex-wrap:wrap }
+.seg button { margin:3px; min-height:44px; padding:6px 13px; border:1px solid #8ca8a5; border-radius:8px; background:#fff; font-size:.9rem; line-height:1.4; text-align:left }
+.seg button:hover { background:#eff6f3 }
+.seg button[aria-pressed=true] { background:var(--dark); border-color:var(--dark); color:#fff; font-weight:700 }
+.flag { display:flex; align-items:center; padding:8px 0; border-top:1px solid #e3ebe9 }
+.flag:first-child { border-top:0 }
+.flag .flabel { flex:1; padding-right:12px }
+.flag .seg { flex:none; margin:0 -3px; flex-wrap:nowrap }
+.flag .seg button { min-width:58px; text-align:center }
+.flag .seg button.yes[aria-pressed=true] { background:var(--warn); border-color:var(--warn) }
+.flag-tools { display:flex; flex-wrap:wrap; align-items:center; margin-top:12px }
+.flag-tools span { font-size:.84rem; color:var(--muted); margin-left:12px }
+.btn { min-height:44px; padding:8px 14px; border-radius:8px; border:1px solid var(--dark); background:var(--dark); color:#fff; font-weight:700; font-size:.9rem }
+.btn:hover { background:#0c3836 }
+.btn.ghost { background:#fff; color:var(--dark) }
+.btn.ghost:hover { background:#eff6f3 }
+.btn.small { min-height:38px; padding:5px 11px; font-size:.84rem }
+.quiet { border:0; background:none; padding:6px 0; color:#4f686c; font-size:.84rem; text-decoration:underline; text-underline-offset:3px; min-height:38px }
+.note { margin-top:12px; padding:10px 14px; border-left:3px solid var(--teal); background:var(--soft); font-size:.9rem; font-weight:650 }
+/* motility */
+.tabs { display:flex; margin:10px 0 14px; border-bottom:2px solid var(--line) }
+.tabs button { border:0; background:none; padding:9px 14px; min-height:44px; font-size:.92rem; color:var(--muted); border-bottom:3px solid transparent; margin-bottom:-2px }
+.tabs button[aria-selected=true] { color:var(--dark); font-weight:700; border-bottom-color:var(--dark) }
+.pads { display:flex; justify-content:center; flex-wrap:wrap }
+.pad { margin:0 12px 12px; text-align:center }
+.pad h3 { font-size:.95rem; margin-bottom:6px }
+.pad h3 b { display:inline-block; min-width:1.6em; margin-right:.3em; border-radius:4px; background:var(--dark); color:#fff; font-size:.85em }
+.pad-grid { display:grid; grid-template-columns:repeat(3,64px); grid-gap:5px }
+.pad-grid button { height:58px; padding:2px; border:1px solid #8ca8a5; border-radius:8px; background:#fff; font-size:.72rem; line-height:1.25 }
+.pad-grid button i { display:block; font-style:normal; font-size:1.15rem; line-height:1.1 }
+.pad-grid button.ob { border-style:dashed; color:#4f686c }
+.pad-grid button[aria-pressed=true] { background:#c2571b; border-color:#9c4212; border-style:solid; color:#fff; font-weight:700 }
+.pad-eye { display:flex; align-items:center; justify-content:center; border-radius:50%; background:radial-gradient(circle,#1b3139 0 22%,#5d7a72 23% 52%,#fdfdfb 54%); border:1px solid #9bb0ad }
+.pad-side { font-size:.74rem; color:var(--muted); margin-top:5px }
+.mot-tools { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; margin-top:4px }
+.mot-tools .btn { margin:4px }
+.mot-status { text-align:center; font-size:.86rem; color:var(--muted); margin-top:6px }
+.canvas { padding:10px 12px 4px; background:#f1f6f4; border:1px solid #c7d9d3; border-radius:9px }
+.canvas-top { display:flex; align-items:center; justify-content:space-between; color:#49655e; font-size:.83rem }
+.canvas-top strong { color:var(--dark); border:1px solid #a4c4b9; border-radius:100px; padding:2px 10px; font-size:.8rem }
+#face svg { display:block; max-width:100%; margin:auto }
+.draw-controls { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,1fr); grid-gap:18px; margin-top:14px }
+#directions { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); grid-gap:4px; margin-top:6px }
+.dir { position:relative; border:1px solid var(--line); background:#fff; border-radius:6px; min-height:44px; font-size:.85rem; font-weight:600 }
+.dir[aria-pressed=true] { color:#fff; background:var(--dark); border-color:var(--dark) }
+.dir .mark { position:absolute; right:4px; top:1px; font-size:.6rem }
+.draw-help { font-size:.84rem; color:var(--muted); margin:4px 0 8px }
+/* results */
+.results { position:-webkit-sticky; position:sticky; top:10px; max-height:calc(100vh - 20px); overflow:auto; border-top:4px solid var(--teal); margin-bottom:0 }
+.results h2 { font-size:1.15rem }
+.sheet-close { display:none }
+.urg { margin-top:12px; padding:11px 14px; border-radius:8px; font-size:.9rem; line-height:1.65; background:#f2f5ef; color:#435a50 }
+.urg strong { display:block; font-size:.96rem }
+.urg.urgent { background:var(--warnbg); border-left:5px solid var(--warn); color:#6d2416 }
+.urg.clear { background:#e8f3ec; border-left:5px solid #3d8a63; color:#22503a }
+.urg ul { padding-left:1.2em; margin-top:4px }
+.urg li { margin-top:5px }
+.rblock { margin-top:16px }
+.rblock h3 { font-size:.82rem; color:var(--teal); letter-spacing:.04em; margin-bottom:3px }
+.rblock p { font-size:.9rem }
+.rtitle { font-weight:700; font-size:1rem; line-height:1.55 }
+.notice { margin-top:8px; padding:8px 12px; background:#fff7dd; border-left:3px solid #c79a1a; font-size:.86rem }
+.cands { list-style:none; padding:0 }
+.cands li { border-top:1px solid var(--line); padding:10px 0 }
+.cands li:first-child { border-top:0; padding-top:2px }
+.cands strong { color:var(--dark); font-size:.95rem; line-height:1.5; display:block }
+.cands p { font-size:.88rem; margin-top:2px }
+.why,.refs { font-size:.78rem; color:var(--muted); margin-top:4px; line-height:1.55 }
+.why b { font-weight:650; color:#3c5a55 }
+.refs a { margin-right:.8em }
+.todo { padding-left:1.2em; font-size:.88rem }
+textarea { display:block; width:100%; resize:vertical; margin:6px 0 8px; border:1px solid #93aea7; border-radius:6px; font:inherit; font-size:.86rem; padding:8px 10px; line-height:1.65; color:var(--ink); background:#fbfcfa }
+.actions { display:flex; flex-wrap:wrap; align-items:center }
+.actions .btn { margin:0 8px 6px 0 }
+#copy-status { font-size:.84rem }
+.limit { margin-top:12px; font-size:.78rem; color:var(--muted); line-height:1.7 }
+details { margin:14px 0 0; border:1px solid var(--line); padding:11px 16px; background:#f9faf8; border-radius:8px }
+summary { cursor:pointer; color:var(--dark); font-weight:700 }
+details p,details li { font-size:.9rem; margin:8px 0 }
+.ex-list { display:flex; flex-wrap:wrap; margin:6px -4px 0 }
+.ex-list button { margin:4px }
+figure { margin:12px 0 6px }
+figure img { width:100%; height:auto; max-width:730px; border:1px solid var(--line); display:block; cursor:zoom-in }
+figcaption { margin-top:4px; color:var(--muted); font-size:.8rem }
+.fig-pair { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); grid-gap:18px }
+footer { display:flex; align-items:center; justify-content:space-between; color:var(--muted); font-size:.8rem; margin-top:18px }
+#zoom { display:none; position:fixed; left:0; top:0; right:0; bottom:0; z-index:50; background:rgba(23,46,53,.86); overflow:auto; padding:12px }
+#zoom.on { display:block }
+#zoom img { display:block; max-width:none; background:#fff; margin-top:10px }
+#bar { display:none }
+.sr { position:absolute; width:1px; height:1px; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap }
+@media (min-width:1180px) {
+  .fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); grid-column-gap:26px }
+  .fields .field:nth-child(2) { border-top:0 }
+  .fields .field.wide { grid-column:1 / -1 }
+}
+@media (max-width:980px) {
+  .stepnav { display:flex; position:-webkit-sticky; position:sticky; top:0; z-index:10; margin:0 -14px 10px; padding:6px 10px; background:#f5f6f2; border-bottom:1px solid var(--line); overflow-x:auto; white-space:nowrap }
+  .stepnav a { flex:none; margin-right:6px; padding:7px 11px; min-height:36px; border:1px solid #adc7bd; border-radius:100px; background:#fff; text-decoration:none; font-size:.82rem }
+  .card { scroll-margin-top:56px }
+  .shell { padding:0 14px 96px }
+  h1 { font-size:1.65rem }
+  .layout { display:block }
+  .card { padding:15px 14px }
+  .results { position:static; max-height:none; overflow:visible; margin-bottom:16px }
+  #bar { display:flex; align-items:center; position:fixed; left:0; right:0; bottom:0; z-index:20; padding:8px 12px; padding-bottom:calc(8px + env(safe-area-inset-bottom)); background:#fff; border-top:2px solid var(--teal); box-shadow:0 -3px 12px rgba(0,0,0,.12) }
+  #bar.urgent { border-top-color:var(--warn); background:var(--warnbg) }
+  #bar-text { flex:1; min-width:0; font-size:.84rem; line-height:1.4; padding-right:10px }
+  #bar-text b { display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+  #bar-text span { display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--muted) }
+  body.sheet { overflow:hidden }
+  body.sheet .results { position:fixed; left:0; right:0; top:0; bottom:0; z-index:30; margin:0; border-radius:0; overflow:auto; -webkit-overflow-scrolling:touch; padding-bottom:40px }
+  body.sheet #bar { display:none }
+  body.sheet .sheet-close { display:inline-block; float:right }
+  .draw-controls { grid-template-columns:1fr }
+  .fig-pair { grid-template-columns:1fr }
+}
+@media (max-width:420px) {
+  .pads { flex-wrap:nowrap }
+  .pad { margin:0 5px 12px }
+  .pad h3 { font-size:.84rem }
+  .pad-grid { grid-template-columns:repeat(3,48px); grid-gap:3px }
+  .pad-grid button { height:52px; font-size:.62rem; padding:1px }
+  .pad-side { font-size:.66rem }
+  .flag .seg button { min-width:52px; padding:6px 8px }
+}
+@media print {
+  #ics-globalnav,.back,.related,.banner,#bar,.steps,details,footer,.actions,.sheet-close,#zoom { display:none !important }
+  body { background:#fff }
+  .layout { display:block }
+  .results { position:static; max-height:none; overflow:visible; border:0; padding:0 }
+  textarea { border:0; height:auto; min-height:22em }
+}
+</style>
+</head>
+<body>
+<nav id="ics-globalnav" style="background:#15324E;font-family:'Yu Gothic','游ゴシック','Segoe UI',sans-serif;font-size:14px;line-height:1.4;">
+<div style="max-width:1040px;margin:0 auto;padding:8px 12px;display:flex;align-items:center;gap:2px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;">
+<a href="https://ichisouzo-lab.com/" style="color:#fff;text-decoration:none;font-weight:700;letter-spacing:.04em;margin-right:auto;padding-right:8px;">医知創造ラボ</a>
+<a href="https://ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ホーム</a>
+<a href="https://blog.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ブログ</a>
+<a href="https://tools.ichisouzo-lab.com/" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">ツール</a>
+<a href="https://www.youtube.com/channel/UCmZ9m9j2T9isCuJpsoiY9qQ" style="color:#cfe0ee;text-decoration:none;padding:5px 7px;border-radius:6px;font-size:13px;">YouTube</a>
+</div>
+</nav>
+<main class="shell">
+  <header>
+    <div class="back"><a href="index.html">&larr; 診断ツール一覧に戻る</a></div>
+    <h1>成人の複視<span>初診時の鑑別支援</span></h1>
+    <p class="intro">後天性の複視を訴える成人が対象の、医療者向けツールです。分かる項目だけタップすれば、緊急度と局在の候補がその場で更新されます。</p>
+    <p class="related"><a href="https://blog.ichisouzo-lab.com/entry/2026/11/25/154745">解説記事</a><a href="/slides/diplopia-differential/">スライド</a><a href="https://youtu.be/gWpFVWvdlzo">解説動画</a></p>
+    <div class="banner" id="banner" role="status"><span id="banner-text"></span><button type="button" class="btn small ghost" id="banner-back">自分の入力に戻る</button></div>
+  </header>
+  <div class="layout">
+    <div class="steps">
+      <nav class="stepnav" aria-label="入力欄へ移動"><a href="#step-flags">1 緊急</a><a href="#step-cover">2 遮閉</a><a href="#step-history">3 問診</a><a href="#step-exam">4 診察</a><a href="#step-mot">5 眼球運動</a></nav>
+      <section class="card" id="step-flags" aria-labelledby="h-flags">
+        <h2 id="h-flags"><span class="num">1</span>対応を急ぐ所見はあるか</h2>
+        <p class="guide">発症時から現在までを確認します。すでに消えた症状も「あり」にします。該当するものだけ「あり」を押し、残りはまとめて「なし」にできます。</p>
+        <div id="flags"></div>
+        <div class="flag-tools"><button type="button" class="btn ghost" id="flags-none">未選択をすべて「なし」にする</button><span id="flags-count"></span></div>
+      </section>
+      <section class="card" id="step-cover" aria-labelledby="h-cover">
+        <h2 id="h-cover"><span class="num">2</span>片眼ずつ隠すと、像はどうなるか</h2>
+        <p class="guide">複視が出ている条件（同じ視標・距離・向き）で、片眼ずつ隠します。左右はすべて患者の右・左です。</p>
+        <div id="g-cover"></div>
+        <p class="note" id="cover-note" role="status"></p>
+      </section>
+      <section class="card" id="step-history" aria-labelledby="h-history">
+        <h2 id="h-history"><span class="num">3</span>問診</h2>
+        <div id="g-history" class="fields"></div>
+      </section>
+      <section class="card" id="step-exam" aria-labelledby="h-exam">
+        <h2 id="h-exam"><span class="num">4</span>眼瞼・瞳孔・眼窩の診察</h2>
+        <div id="g-exam" class="fields"></div>
+      </section>
+      <section class="card" id="step-mot" aria-labelledby="h-mot">
+        <h2 id="h-mot"><span class="num">5</span>眼球運動</h2>
+        <p class="guide">頭を正面に固定し、視標を追ってもらいます。図は診察者から見た向きで、<b>患者の右眼が画面の左</b>です。</p>
+        <div class="tabs" role="tablist" aria-label="眼球運動の入力方法">
+          <button type="button" role="tab" id="tab-simple" aria-controls="mot-simple">かんたん入力</button>
+          <button type="button" role="tab" id="tab-draw" aria-controls="mot-draw">眼位図で詳しく記録</button>
+        </div>
+        <div id="mot-simple" role="tabpanel" aria-labelledby="tab-simple">
+          <p class="guide">動きが悪い方向をタップします（もう一度押すと解除）。点線の斜め方向は、分かる場合だけで構いません。</p>
+          <div class="pads" id="pads"></div>
+          <div class="mot-tools"><button type="button" class="btn ghost" id="mot-normal">両眼とも全方向で制限なし</button><button type="button" class="quiet" id="mot-clear">未確認に戻す</button></div>
+          <p class="mot-status" id="mot-status" role="status"></p>
+        </div>
+        <div id="mot-draw" role="tabpanel" aria-labelledby="tab-draw" hidden>
+          <p class="guide">見てもらう方向を選ぶと、正常に動いた場合の眼位が表示されます。動きが悪い眼をドラッグ（またはタップ、矢印キー）で実際の位置に直します。直した時点で記録されます。</p>
+          <div class="canvas">
+            <div class="canvas-top"><span>診察者から見た患者の顔</span><strong id="view-label">正面視</strong></div>
+            <div id="face"></div>
+          </div>
+          <div class="draw-controls">
+            <div>
+              <h3 class="subhead" style="margin-top:0" id="dir-title">患者に見てもらう方向</h3>
+              <div id="directions" role="group" aria-labelledby="dir-title"></div>
+              <p class="draw-help">● 記録済み　<span id="draw-count"></span></p>
+            </div>
+            <div>
+              <h3 class="subhead" style="margin-top:0" id="current-title">正面視</h3>
+              <p class="draw-help" id="current-help"></p>
+              <button type="button" class="btn small" id="draw-save">表示中の位置で記録</button>
+              <button type="button" class="quiet" id="draw-remove">この方向の記録を消す</button>
+            </div>
+          </div>
+          <p class="limit">図の座標は模式的で、斜視角の実測値には換算できません。小さな眼位ずれ、回旋、サッカードの速度は診察で確かめます。</p>
+        </div>
+        <div id="g-mot"></div>
+      </section>
+      <details id="examples"><summary>模擬例で使い方を確かめる</summary>
+        <p>例を開いても、自分の入力は保持されます。上部の「自分の入力に戻る」で元に戻せます。</p>
+        <div class="ex-list" id="ex-list"></div>
+      </details>
+      <details><summary>図で確かめる（遮閉の見方・外眼筋と神経）</summary>
+        <figure><img id="fig0" src="{{FIG_COVER}}" alt="同じ木を視標として、両眼を開けたとき、右眼だけ、左眼だけの三条件を両眼性と右単眼性で比較する図" tabindex="0"><figcaption>片眼ずつの遮閉による両眼性・単眼性の見分け方。図を選ぶと拡大します。</figcaption></figure>
+        <div class="fig-pair">
+          <figure><img src="{{FIG_MUSCLES}}" alt="右眼窩を外側から見た原図と眼球運動を担う六筋の支配神経" tabindex="0"><figcaption>右眼窩を外側から見た解剖図。Gray第20版・図889。</figcaption></figure>
+          <figure><img src="{{FIG_ABDUCTION}}" alt="右眼の外転制限で患者の右方視を診察者が正面から観察する例と、患者が見る二つの像" tabindex="0"><figcaption>患者の右方視と、右外転制限を正面から観察した模擬例。</figcaption></figure>
+        </div>
+      </details>
+      <details><summary>使い方・限界・参考資料</summary>
+        <p>すべての項目を埋める必要はありません。入力した範囲で結果が更新され、未確認の重要項目は「次に確かめること」に表示されます。</p>
+        <p>入力内容はこの端末のブラウザ内だけに一時保存され、外部には送信されません。患者を特定できる情報は入力欄にありません。共用端末では使用後に「入力をすべて消去」を押してください。</p>
+        <p>このツールは入力された所見を定性的に組み合わせて候補を示すもので、診断精度は臨床例で検証されていません。診断や治療方針は、診察した医師が判断してください。</p>
+        <h3 class="subhead">参考資料</h3>
+        <ul id="source-list"></ul>
+      </details>
+      <footer><span>医知創造ラボ</span><button type="button" id="reset" class="quiet">入力をすべて消去</button></footer>
+    </div>
+    <aside class="card results" id="results" aria-labelledby="h-results">
+      <button type="button" class="btn small ghost sheet-close" id="sheet-close">入力に戻る</button>
+      <h2 id="h-results" tabindex="-1">評価のまとめ</h2>
+      <div id="r-urg" class="urg" aria-live="polite"></div>
+      <div class="rblock"><h3>遮閉による分類</h3><p id="r-cover"></p></div>
+      <div class="rblock"><h3>眼球運動のパターン</h3><p class="rtitle" id="r-pattern"></p><p id="r-pattern-detail"></p><div id="r-notices"></div></div>
+      <div class="rblock"><h3>考える病態と次の対応</h3><ul class="cands" id="r-cands"></ul></div>
+      <div class="rblock"><h3>次に確かめること</h3><ul class="todo" id="r-todo"></ul></div>
+      <div class="rblock"><h3><label for="handoff">申し送り用の所見</label></h3>
+        <textarea id="handoff" rows="9" readonly></textarea>
+        <div class="actions"><button type="button" id="copy" class="btn">所見をコピー</button><button type="button" id="print" class="btn ghost">印刷</button><span id="copy-status" role="status"></span></div>
+      </div>
+      <p class="limit">入力された所見を定性的に組み合わせた候補です。診断精度は臨床例で検証されていません。急変や新たな神経・眼所見があれば、その時点で緊急性を評価し直してください。</p>
+    </aside>
+  </div>
+</main>
+<div id="bar"><div id="bar-text"><b id="bar-main"></b><span id="bar-sub"></span></div><button type="button" class="btn" id="bar-open">結果を見る</button></div>
+<div id="zoom" role="dialog" aria-label="参考図の拡大表示"><button type="button" class="btn" id="zoom-close">図を閉じる</button><img id="zoom-img" alt=""></div>
+<noscript><p style="padding:16px">入力と結果の表示にはJavaScriptを有効にしてください。</p></noscript>
+<script>
+/* ===== 判定ロジック（DOMに依存しない） ===== */
+(function () {
+  'use strict';
+  var SIDE = {right: '右', left: '左'};
+  var FLAGS = [
+    ['neuro', '急な構音障害・片麻痺・失調・意識障害など'],
+    ['headache', '突然の激しい頭痛'],
+    ['breathing', '新しい、または悪化する呼吸困難・嚥下障害'],
+    ['vision', '新しい視力低下・視野障害・一過性の視力消失'],
+    ['suspectedThird', '新たな動眼神経麻痺を疑う（眼瞼下垂、散瞳、内転・上下転の制限）'],
+    ['wernicke', '低栄養・多量飲酒・嘔吐の持続があり、意識の変化または失調を伴う'],
+    ['rapidBilateral', '数日で進む両眼の運動障害に、腱反射低下・失調・脱力を伴う'],
+    ['trauma', '頭部・顔面・眼窩の外傷後に発症した'],
+    ['orbitAcute', '急な眼球突出、または眼瞼の発赤・腫脹と眼球運動痛'],
+    ['immuno', '免疫不全・コントロール不良の糖尿病があり、顔面痛・鼻症状・発熱を伴う'],
+    ['gca', '50歳以上で、新しい頭痛・顎跛行・頭皮の痛みなどがある'],
+    ['icp', '臥位や起床時に強い頭痛、嘔吐、うっ血乳頭など頭蓋内圧亢進を疑う']
+  ];
+  var FIELDS = [
+    {id: 'cover', group: 'cover', label: '片眼ずつ隠したときの見え方', options: [
+      ['binocular', 'どちらを隠しても一つになる'], ['monoR', '右眼だけで見ても二重'], ['monoL', '左眼だけで見ても二重'],
+      ['monoBoth', 'どちらの眼だけで見ても二重'], ['absent', '今は複視が出ていない']]},
+    {id: 'onset', group: 'history', label: '発症のしかた', options: [['sudden', '突然（分から時間）'], ['days', '数日かけて'], ['gradual', '徐々に（週から月）']]},
+    {id: 'course', group: 'history', label: '経過', options: [['stable', '持続している'], ['variable', '疲労や時間帯で変動する'], ['progressive', '進行している'], ['transient', '一過性で消失した']]},
+    {id: 'axis', group: 'history', label: '像のずれ方', options: [['horizontal', '横に並ぶ'], ['vertical', '縦に並ぶ'], ['oblique', '斜めにずれる・傾く']]},
+    {id: 'range', group: 'history', label: '複視が強い距離', options: [['far', '遠く'], ['near', '手元'], ['same', '遠くも手元も同じ']]},
+    {id: 'gaze', group: 'history', label: '複視が強くなる向き', hint: '患者から見た向き', options: [['right', '右を見たとき'], ['left', '左を見たとき'], ['up', '上'], ['down', '下（階段・読書）'], ['same', '向きによる差が乏しい'], ['other', '斜め・複数']]},
+    {id: 'age', group: 'history', label: '年齢', options: [['young', '18-49歳'], ['middle', '50-64歳'], ['older', '65歳以上']]},
+    {id: 'pain', group: 'history', label: '眼・眼窩の痛み', options: [['none', 'なし'], ['move', '眼を動かすと痛い'], ['periorbital', '眼の奥・周囲が持続して痛い']]},
+    {id: 'bg', group: 'history', multi: true, label: '背景（該当するものすべて）', options: [['vascular', '糖尿病・高血圧などの血管危険因子'], ['thyroid', '甲状腺疾患'], ['cancer', '悪性腫瘍'], ['strabismus', '斜視・プリズム眼鏡の既往']]},
+    {id: 'lid', group: 'exam', label: '眼瞼下垂', options: [['no', 'なし'], ['newRight', '右に新しく出現'], ['newLeft', '左に新しく出現'], ['both', '両側'], ['variable', '変動する・疲労で悪化']]},
+    {id: 'pupil', group: 'exam', label: '瞳孔', hint: '散瞳側が異常なら明所で、縮瞳側が異常なら暗所で左右差が目立ちます', options: [['equal', '左右同大・対光反射正常'], ['rightMyd', '右が大きい（対光反射が鈍い）'], ['leftMyd', '左が大きい（対光反射が鈍い）'], ['rightMio', '右が小さい（暗所で差が目立つ）'], ['leftMio', '左が小さい（暗所で差が目立つ）'], ['unknown', '左右差あり・詳細不明']]},
+    {id: 'orbit', group: 'exam', multi: true, label: '眼窩・眼瞼の所見（該当するものすべて）', options: [['proptosis', '眼球突出'], ['retraction', '上眼瞼後退・瞼の遅れ'], ['chemosis', '結膜の充血・浮腫'], ['bruit', '眼窩の雑音・拍動性耳鳴']]},
+    {id: 'sensation', group: 'exam', label: '額・頬の感覚低下', options: [['no', 'なし'], ['right', '右'], ['left', '左'], ['both', '両側']]},
+    {id: 'fatigue', group: 'exam', label: '易疲労性', hint: '上方注視を1分ほど続けると下垂や複視が悪化する、またはアイスパック試験で下垂が改善する', options: [['yes', 'あり'], ['no', 'なし']]},
+    {id: 'hyper', group: 'exam', label: '正面視で高い位置にある眼', showIf: 'vertical', options: [['right', '右眼が高い'], ['left', '左眼が高い'], ['none', '上下差なし']]},
+    {id: 'hyperGaze', group: 'exam', label: '上下のずれが大きくなる側方視', showIf: 'vertical', options: [['right', '右を見たとき'], ['left', '左を見たとき'], ['same', '変わらない']]},
+    {id: 'tilt', group: 'exam', label: '上下のずれが大きくなる頭部傾斜', showIf: 'vertical', options: [['right', '右肩へ傾けたとき'], ['left', '左肩へ傾けたとき'], ['same', '変わらない']]},
+    {id: 'nystagmus', group: 'mot', label: '側方視で、外転した眼に眼振がみられる', showIf: 'adduction', options: [['right', '右眼'], ['left', '左眼'], ['both', '両眼'], ['no', 'なし']]}
+  ];
+  var REFS = {
+    cover: ['日本眼科医会「眼科検診ハンドブックQ&A」複視と片眼遮閉', 'https://www.gankaikai.or.jp/info/kenshinhandbook2026v2.pdf'],
+    chart: ['日本神経学会「神経学的検査チャート作成の手引き」', 'https://www.neurology-jp.org/news/news_20080715_01.html'],
+    third: ['Patel・Burdon 孤立性動眼神経麻痺と画像評価（Eye）', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC8727561/'],
+    tamhankar: ['Tamhankarら 50歳以上の急性孤立性III・IV・VI麻痺の前向き研究', 'https://pubmed.ncbi.nlm.nih.gov/23747163/'],
+    gaze: ['Bronsteinら 水平注視麻痺・核間性眼筋麻痺と橋病変のMRI（JNNP）', 'https://jnnp.bmj.com/content/53/3/200'],
+    cavernous: ['海綿静脈洞周囲の脳神経の解剖（Frontiers in Neuroanatomy 2024）', 'https://doi.org/10.3389/fnana.2024.1367533'],
+    mg: ['日本神経学会 重症筋無力症／LEMS診療ガイドライン2022', 'https://www.neurology-jp.org/guidelinem/mg_2022.html'],
+    icepack: ['アイスパック試験（Sethiら）', 'https://pubmed.ncbi.nlm.nih.gov/3614664/'],
+    stroke: ['米国脳卒中協会 脳卒中の症状', 'https://www.stroke.org/en/about-stroke/stroke-symptoms'],
+    gca: ['英国リウマチ学会 巨細胞性動脈炎ガイドライン2020', 'https://academic.oup.com/rheumatology/article/59/3/487/5714025'],
+    ted: ['米国・欧州甲状腺学会 甲状腺眼症コンセンサス2022', 'https://pmc.ncbi.nlm.nih.gov/articles/PMC9727317/'],
+    cellulitis: ['NHS Forth Valley 成人の眼窩蜂窩織炎プロトコル', 'https://www.rightdecisions.scot.nhs.uk/media/rthbs104/v20-orbital-cellulitis-in-adults-protocol.pdf'],
+    sagging: ['Chaudhuri・Demer サギングアイ症候群', 'https://pubmed.ncbi.nlm.nih.gov/23471194/'],
+    strabismus: ['米国眼科学会 Adult Strabismus Preferred Practice Pattern（2023）', 'https://www.aao.org/Assets/f946258f-83a6-44b0-b736-0beb96d83cc1/638434228319570000/adult-strabismus-ppp-pdf'],
+    wernicke: ['EFNS ウェルニッケ脳症の診断・治療・予防ガイドライン', 'https://pubmed.ncbi.nlm.nih.gov/20642790/'],
+    gbs: ['日本神経学会 ギラン・バレー症候群、フィッシャー症候群診療ガイドライン2024', 'https://www.neurology-jp.org/guidelinem/pdf/gbs_2024_01.pdf'],
+    threestep: ['Manchandia・Demer 上斜筋麻痺に対する3段階法の感度', 'https://pubmed.ncbi.nlm.nih.gov/25459202/'],
+    upright: ['Wong skew deviation と滑車神経麻痺を見分ける upright-supine test', 'https://pubmed.ncbi.nlm.nih.gov/20227626/']
+  };
+  var DEF = {};
+  (function () { for (var i = 0; i < FIELDS.length; i++) DEF[FIELDS[i].id] = FIELDS[i]; })();
+
+  function optLabel(id, value) {
+    var o = DEF[id].options;
+    for (var i = 0; i < o.length; i++) if (o[i][0] === value) return o[i][1];
+    return '';
+  }
+  function lab(a, id) {
+    var f = DEF[id], v = a[id];
+    if (!v) return '';
+    if (f.multi) {
+      var out = [];
+      for (var i = 0; i < f.options.length; i++) if (v[f.options[i][0]]) out.push(f.options[i][1]);
+      return out.join('、');
+    }
+    return optLabel(id, v);
+  }
+  function flagLabel(id) { for (var i = 0; i < FLAGS.length; i++) if (FLAGS[i][0] === id) return FLAGS[i][1]; return ''; }
+  function other(s) { return s === 'right' ? 'left' : 'right'; }
+  function emptyEye() { return {abd: false, add: false, up: false, down: false, upOut: false, upIn: false, downOut: false, downIn: false}; }
+  function emptyMot() { return {status: '', right: emptyEye(), left: emptyEye()}; }
+  function card(e) {
+    e = e || {};
+    return {abd: !!e.abd, add: !!e.add, up: !!(e.up || e.upOut || e.upIn), down: !!(e.down || e.downOut || e.downIn)};
+  }
+  function cnt(c) { return (c.abd ? 1 : 0) + (c.add ? 1 : 0) + (c.up ? 1 : 0) + (c.down ? 1 : 0); }
+  var MOVE = {abd: '外転', add: '内転', up: '上転', down: '下転', upOut: '外上転', upIn: '内上転', downOut: '外下転', downIn: '内下転'};
+  var MOVE_KEYS = ['abd', 'add', 'up', 'down', 'upOut', 'upIn', 'downOut', 'downIn'];
+  function eyeText(e) {
+    var out = [];
+    for (var i = 0; i < MOVE_KEYS.length; i++) if (e && e[MOVE_KEYS[i]]) out.push(MOVE[MOVE_KEYS[i]]);
+    return out.join('・');
+  }
+  function motText(mot) {
+    if (!mot || !mot.status) return '未確認';
+    if (mot.status === 'partial') return '記録した方向では制限なし（未記録の方向あり）';
+    if (mot.status === 'normal') return '両眼とも制限なし';
+    var parts = [], r = eyeText(mot.right), l = eyeText(mot.left);
+    if (r) parts.push('右眼 ' + r);
+    if (l) parts.push('左眼 ' + l);
+    return parts.length ? parts.join('／') + ' の制限' : '両眼とも制限なし';
+  }
+  function muscleHints(e, side) {
+    var s = SIDE[side] + '眼の', out = [];
+    if (e.downIn) out.push(s + '内転位での下転は上斜筋（滑車神経）の作用方向です。');
+    if (e.upIn) out.push(s + '内転位での上転は下斜筋の作用方向で、制限は上斜筋腱の機械的制限（Brown症候群）でも生じます。');
+    if (e.upOut) out.push(s + '外転位での上転は上直筋の作用方向です。');
+    if (e.downOut) out.push(s + '外転位での下転は下直筋の作用方向です。');
+    return out.join('');
+  }
+
+  /* 眼球運動の制限の組み合わせから局在パターンを決める */
+  function motPattern(mot) {
+    if (!mot || !mot.status) return {key: 'unknown', title: '眼球運動は未確認です', detail: '動きが悪い方向をタップするか、「制限なし」を選びます。'};
+    if (mot.status === 'partial') return {key: 'unknown', title: '記録した方向では制限がありません', detail: '未記録の方向があります。左右・上下の4方向を確かめると判定できます。'};
+    var R = card(mot.right), L = card(mot.left), nR = cnt(R), nL = cnt(L);
+    if (mot.status === 'normal' || nR + nL === 0) {
+      return {key: 'normal', title: '眼球運動の制限なし', detail: '運動制限のない複視では、斜位の代償不全、輻輳・開散の異常、サギングアイ症候群、skew deviation、初期の重症筋無力症などを考えます。向きによってずれの量が変わらないかを遮閉試験で確かめます。'};
+    }
+    var hints = muscleHints(mot.right, 'right') + muscleHints(mot.left, 'left');
+    function P(key, side, title, detail) { return {key: key, side: side || '', title: title, detail: detail + (hints ? ' ' + hints : '')}; }
+    if (nR === 4 && nL === 4) return P('total', '', '両眼の全方向の運動制限（全外眼筋麻痺）', '神経筋接合部、複数の脳神経、脳幹、外眼筋のいずれでも生じます。発症の速さ、瞳孔、腱反射、失調、意識、球症状で絞ります。');
+    var vfree = !R.up && !R.down && !L.up && !L.down;
+    var hfree = !R.abd && !R.add && !L.abd && !L.add;
+    var s, side;
+    if (vfree) {
+      s = (R.abd ? 'A' : '') + (R.add ? 'D' : '') + '|' + (L.abd ? 'A' : '') + (L.add ? 'D' : '');
+      if (s === 'AD|D' || s === 'D|AD') {
+        side = s === 'AD|D' ? 'right' : 'left';
+        return P('onehalf', side, 'one-and-a-half 症候群のパターン（' + SIDE[side] + '）', SIDE[side] + 'への水平注視麻痺に、' + SIDE[side] + '眼の内転制限が加わっています。動くのは' + SIDE[other(side)] + '眼の外転だけです。' + SIDE[side] + '側の橋被蓋（傍正中橋網様体または外転神経核と、内側縦束）の病変を考えます。');
+      }
+      if (s === 'A|D' || s === 'D|A') {
+        side = s === 'A|D' ? 'right' : 'left';
+        return P('gazeH', side, SIDE[side] + 'への水平注視麻痺のパターン', '両眼とも' + SIDE[side] + 'へ動きません。' + SIDE[side] + '側の橋（外転神経核・傍正中橋網様体）の病変を考えます。' + SIDE[side] + '外転神経麻痺と' + SIDE[other(side)] + '眼の内転制限の合併でも同じ記録になるため、頭位変換眼球反射（人形の目現象）や他の脳幹所見を確かめます。');
+      }
+      if (s === 'AD|AD') return P('gazeHBoth', '', '両側への水平注視麻痺のパターン', '両眼とも左右へ動かず、上下の動きは保たれています。橋被蓋の両側性病変を考えます。重症筋無力症やMiller Fisher症候群でも生じます。');
+      if (s === 'D|D') return P('biINO', '', '両眼の内転制限：両側の核間性眼筋麻痺のパターン', '両側の内側縦束の障害を考えます。輻輳で内転できれば核間性を支持します。重症筋無力症でも似た所見（偽性核間性眼筋麻痺）が生じます。');
+      if (s === 'A|A') return P('biAbd', '', '両眼の外転制限', '両側の外転神経麻痺のほか、頭蓋内圧亢進、ウェルニッケ脳症、Miller Fisher症候群、斜台・髄膜の病変、甲状腺眼症（両側内直筋の拘縮）、重症筋無力症を考えます。');
+      if (s === 'A|' || s === '|A') {
+        side = s === 'A|' ? 'right' : 'left';
+        return P('abd', side, SIDE[side] + '眼の外転制限', SIDE[side] + '外転神経（VI）・外直筋の障害が候補です。内直筋の拘縮（甲状腺眼症）や眼窩内壁骨折、重症筋無力症でも同じ所見になります。');
+      }
+      if (s === 'D|' || s === '|D') {
+        side = s === 'D|' ? 'right' : 'left';
+        return P('add', side, SIDE[side] + '眼の内転制限', SIDE[side] + '側の内側縦束の障害（核間性眼筋麻痺）、内直筋・動眼神経（III）の部分的な障害、重症筋無力症が候補です。反対眼の外転時眼振と、輻輳での内転を確かめます。');
+      }
+      if (s === 'AD|' || s === '|AD') {
+        side = s === 'AD|' ? 'right' : 'left';
+        return P('uniMulti', side, SIDE[side] + '眼の外転・内転の制限', '片眼の水平運動が両方向で制限されています。単一の神経では説明しにくく、眼窩内の機械的制限、重症筋無力症、複数の脳神経障害を考えます。');
+      }
+      return P('mixed', '', '単一の神経では説明しにくい水平運動制限', '複数の神経または筋が関わるパターンです。重症筋無力症、甲状腺眼症、複数の脳神経障害、脳幹病変を考えます。');
+    }
+    if (hfree) {
+      s = (R.up ? 'U' : '') + (R.down ? 'N' : '') + '|' + (L.up ? 'U' : '') + (L.down ? 'N' : '');
+      if (s === 'U|U') return P('upgaze', '', '両眼の上転制限：上方注視麻痺のパターン', '中脳背側（視蓋前域・後交連）の病変を考え、対光近見反応解離、輻輳後退眼振、上眼瞼後退を確かめます。両側の甲状腺眼症や重症筋無力症でも生じます。高齢者では軽い上転制限が加齢でもみられます。');
+      if (s === 'N|N') return P('downgaze', '', '両眼の下転制限：下方注視麻痺のパターン', '中脳吻側（内側縦束吻側間質核）の病変や、進行性核上性麻痺を考えます。頭位変換眼球反射で下転が出れば核上性を支持します。');
+      if (s === 'UN|UN') return P('vgaze', '', '両眼の上下転制限：垂直注視麻痺のパターン', '中脳・視床中脳移行部の病変、進行性核上性麻痺を考えます。重症筋無力症、Miller Fisher症候群、慢性進行性外眼筋麻痺でも生じます。');
+      if (s === 'U|' || s === '|U') {
+        side = s === 'U|' ? 'right' : 'left';
+        return P('uniUp', side, SIDE[side] + '眼の上転制限', '成人では下直筋の拘縮（甲状腺眼症）と眼窩底骨折による機械的制限が代表的です。動眼神経上枝の障害（眼瞼下垂を伴う）、重症筋無力症も候補です。');
+      }
+      if (s === 'N|' || s === '|N') {
+        side = s === 'N|' ? 'right' : 'left';
+        return P('uniDown', side, SIDE[side] + '眼の下転制限', '上斜筋（滑車神経、内転位での下転）または下直筋（外転位での下転）の障害を考えます。眼窩底骨折、重症筋無力症でも生じます。');
+      }
+      if (s === 'UN|' || s === '|UN') {
+        side = s === 'UN|' ? 'right' : 'left';
+        return P('uniVert', side, SIDE[side] + '眼の上下転制限', '眼窩内の機械的制限（甲状腺眼症、骨折、炎症）、重症筋無力症、動眼神経の部分的な障害を考えます。');
+      }
+      return P('mixed', '', '単一の神経では説明しにくい上下運動制限', '左右で異なる上下方向の制限です。重症筋無力症、甲状腺眼症、skew deviation を伴う脳幹病変を考えます。');
+    }
+    if (nR === 0 || nL === 0) {
+      side = nL === 0 ? 'right' : 'left';
+      var E = side === 'right' ? R : L;
+      if (cnt(E) === 4) return P('uniTotal', side, SIDE[side] + '眼の全方向の運動制限', SIDE[side] + 'の動眼・滑車・外転神経がまとめて障害される部位（海綿静脈洞、上眼窩裂、眼窩先端）と、眼窩内病変、重症筋無力症を考えます。視力と額・頬の感覚を確かめます。');
+      if (E.add && E.up && E.down && !E.abd) return P('third', side, SIDE[side] + '動眼神経（III）麻痺のパターン', SIDE[side] + '眼の内転・上転・下転が制限され、外転は保たれています。眼瞼下垂と瞳孔を確かめます。瞳孔が左右同大でも圧迫性病変は否定できません。');
+      if (E.add && (E.up || E.down) && !E.abd) return P('partialThird', side, SIDE[side] + '動眼神経（III）の部分麻痺の可能性', SIDE[side] + '眼の内転と' + (E.up ? '上転' : '下転') + 'が制限されています。動眼神経の部分麻痺では瞳孔所見から圧迫性かどうかを判断できません。重症筋無力症や眼窩病変でも生じます。');
+      return P('uniMulti', side, SIDE[side] + '眼の複数方向の運動制限', '単一の神経では説明しにくい組み合わせです。甲状腺眼症（下直筋と内直筋の拘縮で上転・外転が制限される）などの眼窩病変、海綿静脈洞・眼窩先端での複数の脳神経障害、重症筋無力症を考えます。');
+    }
+    return P('mixed', '', '両眼にまたがる複数方向の運動制限', '単一の神経や単一の病変では説明しにくいパターンです。重症筋無力症、甲状腺眼症、Miller Fisher症候群、複数の脳神経障害（髄膜・頭蓋底・海綿静脈洞）、脳幹病変を考えます。');
+  }
+
+  /* 3段階法（Parks-Bielschowsky）。高い眼、ずれが増える側方視、ずれが増える頭部傾斜から単独麻痺筋を求める */
+  function threeStep(hyper, gaze, tilt) {
+    if ((hyper !== 'right' && hyper !== 'left') || (gaze !== 'right' && gaze !== 'left') || (tilt !== 'right' && tilt !== 'left')) return null;
+    var opp = other(hyper);
+    if (gaze === opp && tilt === hyper) return {side: hyper, muscle: '上斜筋', so: true};
+    if (gaze === opp && tilt === opp) return {side: opp, muscle: '上直筋', so: false};
+    if (gaze === hyper && tilt === hyper) return {side: opp, muscle: '下斜筋', so: false};
+    return {side: hyper, muscle: '下直筋', so: false};
+  }
+
+  function classifyCover(a) {
+    var c = a.cover;
+    if (!c) return {kind: 'unknown', title: '遮閉による分類は未確認です。', next: '複視が出ている条件で片眼ずつ隠し、像が一つになるかを確かめます。'};
+    if (c === 'absent') return {kind: 'absent', title: '現在は複視を再現できません。', next: '発症時に片眼を閉じて一つになったか、持続時間、随伴症状を聴取します。今の所見だけでは単眼性・両眼性は決まりません。'};
+    if (c === 'binocular') return {kind: 'binocular', title: 'どちらの眼を隠しても一つになる、両眼性複視です。', next: '眼位のずれと、向きごとの眼球運動を調べます。'};
+    var who = c === 'monoBoth' ? '左右それぞれの眼' : c === 'monoR' ? '右眼' : '左眼';
+    return {kind: 'monocular', title: who + 'だけで見ても像が重なる、単眼性複視です。', next: '各眼の視力とピンホールでの変化を調べ、涙液・角膜・屈折・水晶体、必要に応じて黄斑を眼科で評価します。'};
+  }
+
+  function assess(a, mot) {
+    a = a || {};
+    var bg = a.bg || {}, orbit = a.orbit || {};
+    var cover = classifyCover(a);
+    var pat = motPattern(mot);
+    var P = pat.key, ps = pat.side;
+    var R = card(mot && mot.right), L = card(mot && mot.left);
+    var sudden = a.onset === 'sudden', days = a.onset === 'days', acute = sudden || days;
+    var ptosisSide = a.lid === 'newRight' ? 'right' : a.lid === 'newLeft' ? 'left' : '';
+    var mydSide = a.pupil === 'rightMyd' ? 'right' : a.pupil === 'leftMyd' ? 'left' : '';
+    var mioSide = a.pupil === 'rightMio' ? 'right' : a.pupil === 'leftMio' ? 'left' : '';
+    var horner = mioSide && (ptosisSide === mioSide || a.lid === 'both');
+    var thirdPattern = P === 'third' || P === 'partialThird';
+    var thirdSigns = thirdPattern || a.suspectedThird === 'yes' || (ptosisSide && mydSide === ptosisSide) || (mydSide && (P === 'uniTotal' || P === 'uniMulti') && ps === mydSide);
+    var central = P === 'gazeH' || P === 'gazeHBoth' || P === 'onehalf' || P === 'upgaze' || P === 'downgaze' || P === 'vgaze';
+    var inoSide = '';
+    if (P === 'add') {
+      var nys = a.nystagmus;
+      if (nys === 'both' || nys === other(ps)) inoSide = ps;
+    }
+    var ino = !!inoSide || (P === 'biINO' && a.nystagmus && a.nystagmus !== 'no');
+    var older = a.age === 'middle' || a.age === 'older';
+    var motLimited = !!(mot && mot.status === 'limited');
+    var pupilNormal = a.pupil === 'equal';
+
+    var alerts = [];
+    function alert(id, text, refs) { alerts.push({id: id, text: text, refs: refs || []}); }
+    if (a.breathing === 'yes') alert('breathing', '呼吸・嚥下の悪化があります。気道と換気（肺活量、SpO2、血液ガス）を直ちに評価し、救急対応を始めます。重症筋無力症のクリーゼ、ギラン・バレー症候群、ボツリヌス症、脳幹病変を考えます。', ['mg', 'gbs']);
+    if (a.neuro === 'yes' || (sudden && (central || ino))) alert('stroke', (a.neuro === 'yes' ? '急性の神経症状があります。' : '突然発症の注視麻痺・核間性眼筋麻痺のパターンです。') + '脳幹を含む脳卒中を疑い、最終健常時刻を確認して、院内の脳卒中対応経路で脳と血管の画像評価を急ぎます。', ['stroke', 'gaze']);
+    if (a.headache === 'yes') alert('headache', '突然の激しい頭痛があります。くも膜下出血（動脈瘤による動眼神経麻痺を含む）、下垂体卒中（視力・視野障害や眼筋麻痺を伴う）、脳静脈洞血栓症、動脈解離を考え、救急で画像評価します。');
+    if (thirdSigns) {
+      if (a.suspectedThird === 'yes' || acute || !a.onset) alert('third', '新たな動眼神経麻痺が疑われます。瞳孔が左右同大でも圧迫性病変は否定できないため、動脈瘤を調べる頭部CTAまたはMRAを含む緊急の画像評価を手配します。', ['third']);
+      else alert('third', '動眼神経麻痺を示す所見があります。発症時期を確かめ、新しい麻痺であれば瞳孔所見にかかわらず頭部CTA・MRAを含む画像評価を速やかに行います。', ['third']);
+    }
+    if (a.wernicke === 'yes') alert('wernicke', 'ウェルニッケ脳症を疑います。検査結果を待たずにチアミン（ビタミンB1）の静注を始め、ブドウ糖はチアミンより先に単独で投与しません。眼球運動障害、失調、意識変化の三徴がそろうとは限りません。', ['wernicke']);
+    if (a.rapidBilateral === 'yes' || (acute && (P === 'total' || P === 'mixed' || P === 'gazeHBoth'))) alert('rapid', (a.rapidBilateral === 'yes' ? '' : '急性の両眼にまたがる運動制限です。') + 'Miller Fisher症候群・ギラン・バレー症候群、ボツリヌス症、重症筋無力症、ウェルニッケ脳症を考えます。腱反射、失調、瞳孔、球症状、呼吸機能を確かめ、当日中に脳神経内科へ相談します。', ['gbs', 'wernicke', 'mg']);
+    if (a.vision === 'yes') alert('vision', '新しい視機能低下があります。複視と視力・視野障害の合併は、眼窩先端、海綿静脈洞・下垂体、巨細胞性動脈炎、網膜・視神経の虚血を考え、当日中に眼科と画像で評価します。');
+    if (a.orbitAcute === 'yes') alert('orbit', '急性の眼窩所見があります。視力・色覚・瞳孔・眼球運動を確かめ、眼窩蜂窩織炎や眼窩膿瘍を考えて、救急・眼科へ連絡し眼窩CTを検討します。', ['cellulitis']);
+    if (a.immuno === 'yes') alert('immuno', '免疫不全または血糖管理不良の糖尿病がある患者の、顔面痛・鼻症状を伴う複視です。侵襲性副鼻腔真菌症（ムーコル症など）と眼窩先端症候群を考え、当日中に眼窩・副鼻腔の画像と耳鼻咽喉科・眼科への相談を行います。');
+    if (a.gca === 'yes') alert('gca', '巨細胞性動脈炎が疑われます。複視や視覚症状がある場合は当日中に眼科で評価し、血算・CRP・赤沈を確認します。強く疑う場合は、検査結果を待たずに高用量ステロイドを開始します。', ['gca']);
+    if (a.trauma === 'yes') alert('trauma', '外傷後の複視です。眼窩吹き抜け骨折（上転・下転の制限、頬のしびれ）と頭蓋内損傷を考え、眼窩・頭部CTを検討します。若年者で悪心・徐脈を伴う運動制限は、筋の絞扼として緊急に眼科・形成外科へ相談します。');
+    if (a.icp === 'yes' || (P === 'biAbd' && a.icp !== 'no' && acute)) alert('icp', (a.icp === 'yes' ? '頭蓋内圧亢進を疑う所見があります。' : '急性の両側外転制限です。頭蓋内圧亢進でも生じます。') + '眼底でうっ血乳頭を確かめ、脳静脈洞血栓症を含めて頭部画像を急ぎます。外転神経麻痺は病変部位を示さない偽性局在徴候として生じます。');
+    if (horner && (sudden || days || (a.pain && a.pain !== 'none'))) alert('horner', '眼瞼下垂と同側の縮瞳（ホルネル症候群）が、急性または痛みを伴って出現しています。内頸動脈解離を考え、当日中に頭頸部の血管画像を検討します。');
+    if (a.course === 'transient' && (sudden || !a.onset) && !alerts.length) alert('tia', '一過性の複視です。突然始まった場合は椎骨脳底動脈系の一過性脳虚血発作を考え、症状が消えていても当日中に脳卒中としての評価を行います。', ['stroke']);
+    if (sudden && !alerts.length) alert('acute', '突然発症の複視です。症状が軽くても、発症時の神経症状と視機能を確かめ、脳卒中が疑われれば直ちに救急評価します。', ['stroke']);
+
+    var cands = [], seen = {};
+    function add(id, title, detail, why, refs) {
+      if (seen[id]) return;
+      seen[id] = true;
+      var w = [];
+      for (var i = 0; i < (why || []).length; i++) if (why[i]) w.push(why[i]);
+      cands.push({id: id, title: title, detail: detail, why: w, refs: refs || []});
+    }
+    var wMot = motLimited ? '眼球運動：' + motText(mot) : '';
+    var binoc = cover.kind === 'binocular';
+
+    if (cover.kind === 'monocular') add('mono', '単眼性複視：眼球の光学的な原因', cover.next + ' 単眼性複視は通常、神経疾患では生じません。両眼を開けたときに別のずれも加わる場合は、眼位も調べます。', [lab(a, 'cover')], ['cover', 'chart']);
+
+    if (thirdSigns) {
+      var tSide = ps || ptosisSide || mydSide;
+      add('third', (tSide ? SIDE[tSide] : '') + '動眼神経麻痺：動脈瘤・圧迫、虚血、中脳病変', '後交通動脈瘤などの圧迫性病変を最初に除外します。瞳孔が保たれた完全麻痺は虚血性が多いものの、部分麻痺では瞳孔から判断できません。' + (mydSide ? '散瞳を伴うため、圧迫性病変の可能性が高まります。' : '') + '反対側の片麻痺や失調を伴えば中脳病変を考えます。', [thirdPattern ? wMot : '', a.suspectedThird === 'yes' ? '診察で動眼神経麻痺を疑う' : '', ptosisSide ? lab(a, 'lid') : '', mydSide ? lab(a, 'pupil') : ''], ['third', 'tamhankar']);
+    }
+    if (horner || (mioSide && !a.lid)) {
+      add('horner', SIDE[mioSide] + 'ホルネル症候群の可能性', '軽い眼瞼下垂と同側の縮瞳です。動眼神経麻痺の下垂（散瞳を伴う）とは逆の瞳孔所見です。同側の外転制限を伴えば海綿静脈洞、頸部痛・顔面痛を伴えば内頸動脈解離、脳幹症状を伴えば延髄外側を考えます。', [lab(a, 'pupil'), a.lid ? lab(a, 'lid') : ''], []);
+    }
+    if (P === 'onehalf' || P === 'gazeH' || P === 'gazeHBoth') {
+      add('pons', '橋被蓋の病変：' + (P === 'onehalf' ? 'one-and-a-half 症候群' : '水平注視麻痺'), pat.detail + (older || bg.vascular ? ' この年齢層・背景では脳幹梗塞や出血をまず考えます。' : a.age === 'young' ? ' 若年では多発性硬化症などの脱髄疾患も考えます。' : '') + ' 同側の顔面神経麻痺の有無を確かめ、脳幹を含むMRIを行います。', [wMot, lab(a, 'onset') && '発症：' + lab(a, 'onset')], ['gaze']);
+    }
+    if (P === 'add' || P === 'biINO') {
+      var inoTitle = P === 'biINO' ? '両側の核間性眼筋麻痺' : SIDE[ps] + '核間性眼筋麻痺（内側縦束）';
+      add('ino', (ino ? '' : '内転制限：') + inoTitle + (ino ? '' : 'など'), (ino ? '内転制限と反対眼の外転時眼振がそろっています。' : '反対眼の外転時眼振があれば核間性眼筋麻痺を支持します。') + '輻輳で内転できるかを確かめます。' + (a.age === 'young' ? '若年では多発性硬化症などの脱髄疾患が代表的です。' : older || bg.vascular ? 'この年齢層・背景では脳幹梗塞をまず考えます。' : '高齢者では脳幹梗塞、若年者では脱髄疾患が代表的です。') + ' 重症筋無力症でも似た所見が生じるため、変動と易疲労性を確かめます。', [wMot, a.nystagmus && a.nystagmus !== 'no' ? '外転眼の眼振：' + lab(a, 'nystagmus') : ''], ['gaze']);
+    }
+    if (P === 'upgaze' || P === 'downgaze' || P === 'vgaze') {
+      add('midbrain', P === 'downgaze' ? '中脳吻側の病変・進行性核上性麻痺' : '中脳背側症候群など', pat.detail + ' 松果体部腫瘍、水頭症、中脳・視床の梗塞や出血を考え、頭部MRIを行います。', [wMot], []);
+    }
+    if (P === 'abd' || P === 'biAbd') {
+      var vi = P === 'biAbd' ? '両側' : SIDE[ps];
+      add('sixth', vi + '外転神経麻痺・外直筋の障害', (P === 'biAbd' ? '両側性では、頭蓋内圧亢進、ウェルニッケ脳症、Miller Fisher症候群、斜台・髄膜の病変をまず除外します。眼底でうっ血乳頭を確かめます。' : '遠くと患側を見たときに強い水平複視が典型です。外転神経は走行が長く、頭蓋内圧亢進、頭蓋底・海綿静脈洞の病変、虚血、外傷で障害されます。') + (a.age === 'young' ? ' 50歳未満や血管危険因子のない場合は、早期に造影MRIを行います。' : '') + ' 内直筋の拘縮（甲状腺眼症）や重症筋無力症でも外転が制限されます。', [wMot, a.range === 'far' ? '遠くで強い' : '', (a.gaze === 'right' || a.gaze === 'left') ? '複視が強い向き：' + lab(a, 'gaze') : ''], ['tamhankar']);
+    }
+    if (P === 'total') {
+      add('total', '全外眼筋麻痺を起こす病態', (acute ? '急性・亜急性では、Miller Fisher症候群（腱反射消失・失調）、ウェルニッケ脳症、ボツリヌス症（散瞳・下行性の麻痺）、重症筋無力症、下垂体卒中を考えます。' : '慢性の経過では、重症筋無力症、慢性進行性外眼筋麻痺（ミトコンドリア病）、甲状腺眼症、眼咽頭型筋ジストロフィーを考えます。') + ' 瞳孔が侵されていれば重症筋無力症は考えにくくなります。', [wMot, a.onset ? '発症：' + lab(a, 'onset') : ''], ['gbs', 'wernicke', 'mg']);
+    }
+    var faceSens = a.sensation === 'right' || a.sensation === 'left' || a.sensation === 'both';
+    if (P === 'uniTotal' || faceSens || (P === 'uniMulti' && (a.pain === 'periorbital' || a.vision === 'yes'))) {
+      add('cavernous', '海綿静脈洞・上眼窩裂・眼窩先端の病変', '同じ側の複数の眼球運動神経と三叉神経第1・2枝がまとめて障害される部位です。視神経障害を伴えば眼窩先端を考えます。腫瘍、動脈瘤、炎症（Tolosa-Hunt症候群は除外診断）、感染、内頸動脈海綿静脈洞瘻が原因になります。眼窩から海綿静脈洞を含む造影MRIを行います。', [P === 'uniTotal' || P === 'uniMulti' ? wMot : '', faceSens ? '額・頬の感覚低下：' + lab(a, 'sensation') : '', a.pain === 'periorbital' ? lab(a, 'pain') : ''], ['cavernous']);
+    }
+    var mgPattern = P === 'mixed' || P === 'total' || P === 'uniMulti' || P === 'uniVert' || P === 'biINO' || P === 'gazeHBoth' || P === 'vgaze';
+    if (a.lid === 'variable' || a.fatigue === 'yes' || (a.course === 'variable' && cover.kind !== 'monocular') || (mgPattern && !mydSide && !mioSide)) {
+      add('mg', '重症筋無力症（神経筋接合部）', '変動する眼瞼下垂や複視、単一の神経で説明できない運動制限で考えます。瞳孔は侵されません。' + (mydSide || mioSide ? '瞳孔異常があるため、重症筋無力症だけでは説明できません。' : '') + '上方注視の持続による下垂の悪化、アイスパック試験、球症状・呼吸症状を確かめ、抗アセチルコリン受容体抗体（陰性なら抗MuSK抗体）、反復刺激試験、胸部CT（胸腺腫）を検討します。', [a.lid === 'variable' ? lab(a, 'lid') : '', a.course === 'variable' ? lab(a, 'course') : '', a.fatigue === 'yes' ? '易疲労性あり' : '', mgPattern ? wMot : '', pupilNormal ? '瞳孔正常' : ''], ['mg', 'icepack']);
+    }
+    var tedPattern = P === 'uniUp' || P === 'uniVert' || P === 'uniMulti' || P === 'upgaze';
+    if (bg.thyroid || orbit.proptosis || orbit.retraction || tedPattern) {
+      add('ted', '甲状腺眼症（外眼筋の拘縮）', '下直筋、次いで内直筋が侵されやすく、上転制限や外転制限として現れて神経麻痺に似ます。起床時に強い複視、上眼瞼後退、眼球突出が手掛かりです。甲状腺機能が正常でも生じます。TSH・FT4・TSH受容体抗体と眼窩CT・MRI（筋腹の腫大）を検討し、視力・色覚の低下があれば圧迫性視神経症として急ぎます。', [bg.thyroid ? '甲状腺疾患の背景' : '', orbit.proptosis ? '眼球突出' : '', orbit.retraction ? '上眼瞼後退' : '', tedPattern ? wMot : ''], ['ted']);
+    }
+    if (orbit.chemosis || orbit.bruit) {
+      add('ccf', '内頸動脈海綿静脈洞瘻・眼窩のうっ血', '結膜血管の怒張・浮腫、眼球突出、拍動性の雑音は、海綿静脈洞への動静脈短絡を示します。眼圧上昇と視機能を確かめ、MRA・CTAを検討します。眼窩の炎症や蜂窩織炎でも結膜浮腫が生じます。', [lab(a, 'orbit')], []);
+    }
+    if ((a.pain === 'move' || a.pain === 'periorbital') && (motLimited || a.orbitAcute === 'yes' || orbit.proptosis)) {
+      add('painful', '有痛性の眼筋麻痺', '痛みを伴う眼球運動障害では、動脈瘤による動眼神経麻痺、巨細胞性動脈炎（50歳以上）、海綿静脈洞・眼窩先端の病変、眼窩筋炎・特発性眼窩炎症、下垂体卒中、副鼻腔由来の感染を順に除外します。虚血性の単神経麻痺でも痛みは生じます。Tolosa-Hunt症候群は除外診断です。', [lab(a, 'pain'), wMot], ['gca']);
+    }
+    var ts = threeStep(a.hyper, a.hyperGaze, a.tilt);
+    var fourth = (ts && ts.so) || (P === 'uniDown' && ((ps === 'right' && mot.right.downIn) || (ps === 'left' && mot.left.downIn)));
+    if (ts) {
+      if (ts.so) add('fourth', SIDE[ts.side] + '上斜筋（滑車神経）麻痺のパターン', '3段階法（高い眼、ずれが増える側方視、ずれが増える頭部傾斜）が' + SIDE[ts.side] + '上斜筋麻痺に一致します。原因は頭部外傷、虚血、先天性の代償不全（昔の写真での頭位傾斜、大きな上下融像幅）が代表的です。3段階法は skew deviation でも陽性になりうるため、失調・眼振などの脳幹・小脳所見を確かめ、仰臥位で上下ずれが半分以下に減るか（upright-supine test）をみます。', ['高い眼：' + lab(a, 'hyper'), '増える側方視：' + lab(a, 'hyperGaze'), '増える傾斜：' + lab(a, 'tilt')], ['threestep', 'upright']);
+      else add('threestepOther', '3段階法では' + SIDE[ts.side] + ts.muscle + 'の単独麻痺のパターン', SIDE[ts.side] + ts.muscle + 'の単独麻痺はまれです。3段階法は単独の麻痺筋を前提とするため、甲状腺眼症などの機械的制限、重症筋無力症、skew deviation、複数筋の障害では誤った筋を示します。これらを先に考えます。', ['高い眼：' + lab(a, 'hyper'), '増える側方視：' + lab(a, 'hyperGaze'), '増える傾斜：' + lab(a, 'tilt')], ['threestep']);
+    }
+    var verticalHx = a.axis === 'vertical' || a.axis === 'oblique' || a.hyper === 'right' || a.hyper === 'left';
+    if (cover.kind !== 'monocular' && (verticalHx || P === 'uniDown') && !ts) {
+      add('vertical', '上下・斜めの複視：滑車神経麻痺、skew deviation、眼窩性の制限', '下方視や読書で強ければ滑車神経麻痺を、上方視で強ければ下直筋の拘縮（甲状腺眼症・眼窩底骨折）を考えます。高い眼、左右の側方視での変化、頭部傾斜での変化を調べると3段階法で整理できます。失調・眼振・構音障害を伴えば skew deviation として脳幹・小脳を評価します。頭部傾斜試験だけでは滑車神経麻痺と skew deviation を区別できません。', [a.axis ? lab(a, 'axis') : '', a.gaze === 'down' || a.gaze === 'up' ? '複視が強い向き：' + lab(a, 'gaze') : '', P === 'uniDown' ? wMot : ''], ['threestep', 'upright']);
+    }
+    var isolated = (P === 'abd' || P === 'third' || P === 'partialThird' || fourth) && !faceSens && a.vision !== 'yes' && a.neuro !== 'yes';
+    if (isolated && older && bg.vascular && a.course !== 'progressive') {
+      add('micro', '微小血管性（虚血性）の単神経麻痺', '50歳以上で血管危険因子があり、単一の神経に限られた急性の麻痺では頻度の高い原因です。ただし除外診断であり、危険因子があっても他の原因が見つかることがあるため、画像検査を検討します。50歳以上では巨細胞性動脈炎も確かめます。多くは数か月（目安は3か月）で改善します。改善しない、進行する、他の神経所見が加わる場合は再評価します。' + (thirdSigns ? ' 動眼神経麻痺では、虚血性と判断する前に動脈瘤を画像で除外します。' : ''), [lab(a, 'age'), '血管危険因子あり', wMot], ['tamhankar', 'gca']);
+    }
+    if (a.course === 'progressive') add('progressive', '進行性の経過：圧迫性・浸潤性病変', '進行する複視は、腫瘍、動脈瘤、炎症性・浸潤性病変、甲状腺眼症を考えます。虚血性の麻痺は進行しません。眼窩から頭蓋底・脳幹を含む造影MRIを行います。', [lab(a, 'course')], []);
+    if (bg.cancer) add('cancer', '悪性腫瘍の既往：転移・髄膜播種・頭蓋底浸潤', '悪性腫瘍の既往がある患者では、単一の神経麻痺に見えても、頭蓋底転移、髄膜癌腫症、眼窩転移を考えます。早期に造影MRIを行い、必要に応じて髄液検査を検討します。', ['悪性腫瘍の背景'], []);
+    if (a.course === 'transient') add('transient', '一過性の複視', '突然発症なら椎骨脳底動脈系の一過性脳虚血発作を考えます。疲労時に繰り返すなら重症筋無力症や斜位の代償不全、50歳以上なら巨細胞性動脈炎も候補です。', [lab(a, 'course'), a.onset ? '発症：' + lab(a, 'onset') : ''], ['stroke', 'gca']);
+    if (a.trauma === 'yes') add('trauma', '外傷性：眼窩骨折・外傷性の脳神経麻痺', '眼窩底骨折では上転・下転が制限され、眼窩下神経領域（頬）の感覚低下を伴います。閉鎖性頭部外傷では滑車神経麻痺（両側性もある）が多く、外転神経麻痺も生じます。', ['外傷後に発症'], []);
+    var motKnownNormal = mot && mot.status === 'normal';
+    if (binoc && a.axis === 'horizontal' && a.range === 'far' && P !== 'abd' && P !== 'biAbd') {
+      if (a.age === 'older' && motKnownNormal) add('sagging', 'サギングアイ症候群を含む遠見内斜視（開散不全型）', '高齢、遠くで強い水平複視、外転が保たれる、という組み合わせです。眼窩結合組織の加齢性変化による遠見内斜視が候補です。遠近での眼位差、側方視で内斜視が増えないこと、上眼瞼溝の深まりを確かめます。新しい外転制限、うっ血乳頭、神経症状があれば別の原因を考えます。', [lab(a, 'age'), '遠くで強い', '眼球運動の制限なし'], ['sagging', 'strabismus']);
+      else add('distance', '遠くで強い水平複視：外転神経麻痺と遠見内斜視', '片眼ずつの外転を確かめて外転神経麻痺を除外します。外転が保たれ、側方視でずれが増えなければ、開散不全型の内斜視（高齢者ではサギングアイ症候群）を考えます。', ['遠くで強い', lab(a, 'axis')], ['sagging', 'strabismus']);
+    }
+    if (binoc && a.axis === 'horizontal' && !motLimited && (a.range === 'near' || (a.gaze === 'same' && a.range !== 'far'))) {
+      add('convergence', '輻輳不全・斜位の代償不全', '手元で強い、または向きによる差が乏しい水平複視です。遠近での遮閉試験と輻輳近点を確かめ、過去の斜視やプリズム眼鏡を聴取します。輻輳不全はパーキンソン病などでもみられます。' + (bg.strabismus ? ' 斜視の既往があり、代償不全を支持します。' : ''), [a.range === 'near' ? '手元で強い' : '', a.gaze === 'same' ? '向きによる差が乏しい' : '', bg.strabismus ? '斜視・プリズム眼鏡の既往' : ''], ['strabismus']);
+    }
+    if (binoc && (!mot || !mot.status) && a.axis === 'horizontal' && (a.gaze === 'right' || a.gaze === 'left')) {
+      var g = a.gaze, sg = SIDE[g];
+      add('gazeHx', sg + 'を見ると強い水平複視：' + sg + '眼の外転または' + SIDE[other(g)] + '眼の内転の障害', '複視は、麻痺した筋が働く向きで最も強くなります。' + sg + '方視で' + sg + '眼が外へ、' + SIDE[other(g)] + '眼が内へ十分動くかを確かめます。' + (a.range === 'far' ? '遠くで強い点は外転の障害（外転神経麻痺）を支持します。' : a.range === 'near' ? '手元で強い点は内転の障害を支持します。' : ''), ['複視が強い向き：' + lab(a, 'gaze')], []);
+    }
+    if (a.wernicke === 'yes' || ((P === 'biAbd' || P === 'gazeH' || P === 'gazeHBoth' || P === 'total') && acute && a.wernicke !== 'no')) {
+      add('wernicke', 'ウェルニッケ脳症', '外転制限、注視麻痺、眼振が多く、意識変化と失調を伴います。飲酒歴がなくても、低栄養、悪阻、消化管手術後、長期の輸液で生じます。疑った時点でチアミンを投与します。', [a.wernicke === 'yes' ? '低栄養・飲酒などの背景と意識変化・失調' : wMot], ['wernicke']);
+    }
+    if (!cands.length) {
+      if (cover.kind === 'binocular') add('none', '両眼性複視：原因を絞る情報が不足しています', '像のずれ方、複視が強い向きと距離、眼球運動を入力すると候補が絞られます。', [], []);
+      else add('none', '現時点では原因を絞れません', cover.next, [], []);
+    }
+
+    var notices = [];
+    if (motLimited && cover.kind === 'binocular') {
+      var limR = R.abd || L.add, limL = L.abd || R.add;
+      if (a.gaze === 'right' && !limR && limL) notices.push('問診では「右を見たとき」に強い複視ですが、眼球運動の記録は左への動きの制限です。左右（患者の右・左）を確かめてください。');
+      if (a.gaze === 'left' && !limL && limR) notices.push('問診では「左を見たとき」に強い複視ですが、眼球運動の記録は右への動きの制限です。左右（患者の右・左）を確かめてください。');
+    }
+    if (cover.kind === 'monocular' && motLimited) notices.push('単眼性複視に眼球運動制限が加わっています。光学的な原因と眼球運動障害の両方を評価します。');
+    if (cover.kind === 'binocular' && mot && mot.status === 'normal' && a.suspectedThird === 'yes') notices.push('動眼神経麻痺を疑う一方で、眼球運動は「制限なし」と記録されています。内転・上転・下転を確かめ直してください。');
+    if (mydSide && ptosisSide && mydSide !== ptosisSide) notices.push('眼瞼下垂と散瞳の左右が一致していません。下垂側の瞳孔が小さい場合はホルネル症候群を考えます。');
+
+    var todo = [], i, unknownFlags = [];
+    for (i = 0; i < FLAGS.length; i++) if (!a[FLAGS[i][0]]) unknownFlags.push(FLAGS[i][1]);
+    if (unknownFlags.length) todo.push('緊急所見の未確認 ' + unknownFlags.length + '項目');
+    if (!a.cover) todo.push('片眼ずつの遮閉');
+    if (!a.onset) todo.push('発症のしかた');
+    if (!a.pupil) todo.push('瞳孔の左右差と対光反射');
+    if (!a.lid) todo.push('眼瞼下垂');
+    if (!mot || !mot.status || mot.status === 'partial') todo.push('眼球運動（左右・上下）');
+    if (verticalHx && !ts && cover.kind !== 'monocular') todo.push('高い眼、側方視と頭部傾斜での上下ずれの変化（3段階法）');
+    if ((P === 'add' || P === 'biINO') && !a.nystagmus) todo.push('外転した眼の眼振、輻輳での内転');
+    if (P === 'biAbd' || a.icp === 'yes') todo.push('眼底（うっ血乳頭）');
+    if (P === 'upgaze' || P === 'vgaze') todo.push('対光近見反応解離、輻輳後退眼振');
+    if (P === 'total' || P === 'mixed' || a.rapidBilateral === 'yes') todo.push('腱反射、失調、球症状、呼吸機能');
+    if (thirdSigns && !a.pupil) todo.push('動眼神経麻痺を疑うため、瞳孔を最優先で確認');
+    if (older && a.gca !== 'no' && a.gca !== 'yes') todo.push('50歳以上：頭痛、顎跛行、頭皮の痛み（巨細胞性動脈炎）');
+    if (cover.kind === 'binocular' && !a.fatigue && !thirdSigns && !central) todo.push('変動と易疲労性（重症筋無力症）');
+
+    var level = alerts.length ? 'urgent' : unknownFlags.length ? 'pending' : 'clear';
+    return {cover: cover, pattern: pat, alerts: alerts, candidates: cands, notices: notices, todo: todo, level: level, unknownFlags: unknownFlags};
+  }
+
+  function handoff(a, mot, res) {
+    var out = ['【複視 初診評価】'], i;
+    if (res.level === 'urgent') {
+      out.push('緊急度：優先して評価する所見あり（' + res.alerts.length + '件）');
+      for (i = 0; i < res.alerts.length; i++) out.push('・' + res.alerts[i].text);
+    } else if (res.level === 'clear') out.push('緊急度：緊急所見' + FLAGS.length + '項目を確認し、該当なし');
+    else out.push('緊急度：緊急所見のうち未確認 ' + res.unknownFlags.length + '項目');
+    var pos = [];
+    for (i = 0; i < FLAGS.length; i++) if (a[FLAGS[i][0]] === 'yes') pos.push(FLAGS[i][1]);
+    if (pos.length) out.push('緊急所見あり：' + pos.join('／'));
+    out.push('遮閉：' + (a.cover ? lab(a, 'cover') + '。' : '未確認。') + res.cover.title);
+    function join(group) {
+      var parts = [];
+      for (var k = 0; k < FIELDS.length; k++) {
+        var f = FIELDS[k];
+        if (f.group !== group) continue;
+        var v = lab(a, f.id);
+        if (v) parts.push(f.label.replace(/（該当するものすべて）/, '') + '＝' + v);
+      }
+      return parts.join('、');
+    }
+    var hx = join('history'), ex = join('exam'), mx = join('mot');
+    if (hx) out.push('問診：' + hx);
+    if (ex) out.push('診察：' + ex);
+    out.push('眼球運動：' + motText(mot) + (mx ? '、' + mx : '') + (res.pattern.key !== 'unknown' && res.pattern.key !== 'normal' ? '。' + res.pattern.title : ''));
+    var c = [];
+    for (i = 0; i < res.candidates.length; i++) c.push(res.candidates[i].title);
+    out.push('鑑別：' + c.join('／'));
+    if (res.todo.length) out.push('未確認：' + res.todo.join('、'));
+    return out.join('\n').replace(/[\uFF5E\u301C]/g, '-');
+  }
+
+  /* 眼位図の記録（座標）から制限の有無を求める */
+  var DIRS = {
+    right: [-1, 0], left: [1, 0], up: [0, -1], down: [0, 1],
+    upRight: [-1, -1], upLeft: [1, -1], downRight: [-1, 1], downLeft: [1, 1]
+  };
+  function zeroPose() { return {right: {x: 0, y: 0}, left: {x: 0, y: 0}}; }
+  function clamp(v) { return isFinite(v) ? Math.max(-1, Math.min(1, v)) : 0; }
+  function lag(pose, c, side, axis, sign) {
+    var t = sign * (pose[side][axis] - c[side][axis]);
+    var room = 1 - sign * c[side][axis];
+    if (room < 0.35) return false;
+    var f = other(side);
+    var tf = sign * (pose[f][axis] - c[f][axis]);
+    return t < 0.4 * Math.min(1, room) || (tf - t > 0.22 && t < 0.65 * tf);
+  }
+  function deriveMot(records) {
+    var mot = emptyMot(), c = (records && records.center) || zeroPose(), any = 0, limited = false, key, sides = ['right', 'left'];
+    for (key in DIRS) {
+      if (!records || !records[key]) continue;
+      any++;
+      var sx = DIRS[key][0], sy = DIRS[key][1], pose = records[key];
+      for (var i = 0; i < 2; i++) {
+        var side = sides[i], abducting = (sx < 0) === (side === 'right'), name = '';
+        if (sx && !sy) { if (lag(pose, c, side, 'x', sx)) name = abducting ? 'abd' : 'add'; }
+        else if (sy && !sx) { if (lag(pose, c, side, 'y', sy)) name = sy < 0 ? 'up' : 'down'; }
+        else if (sx * (pose[side].x - c[side].x) >= 0.35 && lag(pose, c, side, 'y', sy)) name = (sy < 0 ? 'up' : 'down') + (abducting ? 'Out' : 'In');
+        if (name) { mot[side][name] = true; limited = true; }
+      }
+    }
+    var cardinals = records && records.right && records.left && records.up && records.down;
+    mot.status = !any ? '' : limited ? 'limited' : cardinals ? 'normal' : 'partial';
+    return mot;
+  }
+  function primaryNote(records) {
+    var c = records && records.center;
+    if (!c) return '';
+    var parts = [], h = c.right.x - c.left.x, v = c.right.y - c.left.y;
+    if (Math.abs(h) > 0.22) parts.push(h > 0 ? '内寄り（内斜）' : '外寄り（外斜）');
+    if (Math.abs(v) > 0.22) parts.push(v < 0 ? '右眼が高い' : '左眼が高い');
+    return parts.length ? '正面視の眼位：' + parts.join('、') + '。' : '';
+  }
+  function seedRecords(mot) {
+    var rec = {center: zeroPose()}, sides = ['right', 'left'], key;
+    var obl = false;
+    for (var s = 0; s < 2; s++) { var e = mot[sides[s]]; if (e.upOut || e.upIn || e.downOut || e.downIn) obl = true; }
+    for (key in DIRS) {
+      var sx = DIRS[key][0], sy = DIRS[key][1];
+      if (sx && sy && !obl) continue;
+      var pose = zeroPose();
+      for (var i = 0; i < 2; i++) {
+        var side = sides[i], e2 = mot[side], abducting = (sx < 0) === (side === 'right');
+        var hl = sx && (abducting ? e2.abd : e2.add);
+        var vl = false;
+        if (sy && !sx) vl = sy < 0 ? (e2.up) : (e2.down);
+        if (sy && sx) vl = e2[(sy < 0 ? 'up' : 'down') + (abducting ? 'Out' : 'In')] || (sy < 0 ? e2.up : e2.down);
+        pose[side].x = sx * (hl ? 0.06 : 0.8);
+        pose[side].y = sy * (vl ? 0.06 : 0.8);
+      }
+      rec[key] = pose;
+    }
+    return rec;
+  }
+
+  window.DiplopiaLogic = {
+    FLAGS: FLAGS, FIELDS: FIELDS, REFS: REFS, DIRS: DIRS, SIDE: SIDE,
+    assess: assess, motPattern: motPattern, threeStep: threeStep, handoff: handoff, motText: motText,
+    emptyMot: emptyMot, emptyEye: emptyEye, deriveMot: deriveMot, seedRecords: seedRecords, primaryNote: primaryNote,
+    zeroPose: zeroPose, clamp: clamp, card: card
+  };
+})();
+</script>
+<script>
+/* ===== 眼位図（ドラッグで眼を動かす） ===== */
+(function () {
+  'use strict';
+  var centers = {right: 174, left: 466}, baseline = 104, travelX = 55, sides = ['right', 'left'];
+  var names = {right: '患者の右眼', left: '患者の左眼'}, tags = {right: 'R', left: 'L'};
+  function clamp(v) { return isFinite(v) ? Math.max(-1, Math.min(1, v)) : 0; }
+  function travelY(x) { return 23 - 6 * Math.abs(x); }
+  function eyeMarkup(side) {
+    var m = side === 'right' ? 1 : -1, i, fibers = '';
+    var lid = 'M-90,-2 C-72,-10 -49,-37 -12,-38 C24,-40 53,-28 76,-13 Q83,-8 89,-2 C78,1 69,12 52,19 C19,34 -25,34 -56,18 Q-76,7 -90,-2Z';
+    for (i = 0; i < 26; i++) fibers += '<path d="M0,-16.5 L1,-27" transform="rotate(' + (i * 360 / 26) + ')"/>';
+    return '<g transform="translate(' + centers[side] + ' ' + baseline + ')">' +
+      '<defs><clipPath id="mf-lid-' + side + '"><path d="' + lid + '" transform="scale(' + m + ' 1)"/></clipPath></defs>' +
+      '<g transform="scale(' + m + ' 1)" pointer-events="none">' +
+      '<path d="M-99,-48 C-73,-66 -40,-73 -5,-69 C21,-67 41,-56 59,-52 C35,-53 10,-58 -14,-60 C-47,-63 -72,-57 -99,-48Z" fill="#b6a79a" opacity=".64"/>' +
+      '<path d="M-91,-16 C-64,-43 -38,-51 -9,-50 C22,-50 51,-37 71,-23" fill="none" stroke="#b8a59a" stroke-width="2.2" stroke-linecap="round"/></g>' +
+      '<g clip-path="url(#mf-lid-' + side + ')" pointer-events="none">' +
+      '<rect x="-94" y="-42" width="188" height="83" fill="url(#mf-sclera)"/>' +
+      '<g data-iris="' + side + '"><circle r="32" fill="url(#mf-iris)" stroke="#324c50" stroke-width="1.8"/>' +
+      '<g fill="none" stroke="#c4d1bb" opacity=".23" stroke-width="1.2">' + fibers + '</g>' +
+      '<circle r="13.3" fill="#1b3139"/><circle cx="-7" cy="-8.5" r="3.5" fill="#f7fbf7" opacity=".9"/></g>' +
+      '<path d="M70,-4 Q78,-11 89,-3 Q80,1 72,3Z" transform="scale(' + m + ' 1)" fill="#e3c8be"/></g>' +
+      '<g transform="scale(' + m + ' 1)" fill="none" stroke-linecap="round" pointer-events="none">' +
+      '<path d="M-90,-2 C-72,-10 -49,-37 -12,-38 C24,-40 53,-28 76,-13 Q83,-8 89,-2" stroke="#635b55" stroke-width="3"/>' +
+      '<path d="M89,-2 C78,1 69,12 52,19 C19,34 -25,34 -56,18 Q-76,7 -90,-2" stroke="#997e70" stroke-width="2"/>' +
+      '<path d="M-69,23 Q-37,43 -5,42" stroke="#c9b9ad" stroke-width="1.5"/></g>' +
+      '<g class="mf-grip" data-eye="' + side + '" tabindex="0" role="group" aria-label="' + names[side] + '（矢印キーで調整）" style="cursor:grab;touch-action:none;outline:none">' +
+      '<rect class="mf-focus" x="-103" y="-54" width="206" height="105" rx="20" fill="none" stroke="#147b76" stroke-dasharray="6 5" stroke-width="2.4" opacity="0" pointer-events="none"/>' +
+      '<rect x="-103" y="-54" width="206" height="105" rx="20" fill="transparent" pointer-events="all"/></g>' +
+      '<g pointer-events="none"><rect x="-74" y="66" width="30" height="27" rx="5" fill="#124b48"/>' +
+      '<text x="-59" y="87" text-anchor="middle" fill="#fff" font-size="20" font-weight="700">' + tags[side] + '</text>' +
+      '<text x="-36" y="87" fill="#3b5556" font-size="21" font-weight="650">' + names[side] + '</text></g></g>';
+  }
+  function mount(element, onChange) {
+    element.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 210" role="group" aria-label="正面から見た患者の眼位" style="display:block;width:100%;height:auto;user-select:none;-webkit-user-select:none">' +
+      '<defs><linearGradient id="mf-sclera" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#d6ddd9"/><stop offset=".42" stop-color="#fffefb"/><stop offset="1" stop-color="#eaece5"/></linearGradient>' +
+      '<radialGradient id="mf-iris" cx=".43" cy=".39" r=".64"><stop stop-color="#77795e"/><stop offset=".52" stop-color="#75897d"/><stop offset=".88" stop-color="#536d69"/><stop offset="1" stop-color="#38565a"/></radialGradient></defs>' +
+      '<style>.mf-grip:focus .mf-focus{opacity:1}</style>' +
+      '<g fill="none" stroke="#b6a293" stroke-linecap="round" pointer-events="none">' +
+      '<path d="M287,74 C298,88 303,99 301,117 C299,133 288,149 286,158 Q284,167 291,169 M353,74 C342,88 337,99 339,117 C341,133 352,149 354,158 Q356,167 349,169" stroke-width="2.2"/>' +
+      '<path d="M293,161 Q299,156 305,162 M335,162 Q341,156 347,161 M307,168 Q320,176 333,168" stroke-width="2"/></g>' +
+      eyeMarkup('right') + eyeMarkup('left') + '</svg>';
+    var svg = element.querySelector('svg'), iris = {}, pos = {right: {x: 0, y: 0}, left: {x: 0, y: 0}};
+    function draw(side) {
+      var p = pos[side];
+      iris[side].setAttribute('transform', 'translate(' + (p.x * travelX) + ' ' + (p.y * travelY(p.x)) + ') scale(' + (1 - 0.18 * Math.abs(p.x)) + ' ' + (1 - 0.12 * Math.abs(p.y)) + ')');
+    }
+    function get() { return {right: {x: pos.right.x, y: pos.right.y}, left: {x: pos.left.x, y: pos.left.y}}; }
+    function set(next) {
+      for (var i = 0; i < 2; i++) {
+        var s = sides[i], p = next && next[s];
+        pos[s] = {x: clamp(p ? p.x : 0), y: clamp(p ? p.y : 0)};
+        draw(s);
+      }
+    }
+    function change(side, x, y) {
+      var nx = clamp(x), ny = clamp(y);
+      if (pos[side].x === nx && pos[side].y === ny) return;
+      pos[side] = {x: nx, y: ny};
+      draw(side);
+      if (onChange) onChange(get(), side);
+    }
+    function local(clientX, clientY, side) {
+      var pt = svg.createSVGPoint();
+      pt.x = clientX; pt.y = clientY;
+      var q = pt.matrixTransform(svg.getScreenCTM().inverse());
+      return {x: q.x - centers[side], y: q.y - baseline};
+    }
+    function fromPoint(side, x, y) {
+      var nx = clamp(x / travelX);
+      change(side, nx, y / travelY(nx));
+    }
+    function bind(side) {
+      var grip = svg.querySelector('[data-eye="' + side + '"]'), drag = null;
+      iris[side] = svg.querySelector('[data-iris="' + side + '"]');
+      function start(cx, cy) {
+        var pt = local(cx, cy, side), p = pos[side];
+        var off = {x: p.x * travelX - pt.x, y: p.y * travelY(p.x) - pt.y};
+        var onIris = Math.sqrt(off.x * off.x + off.y * off.y) <= 32;
+        drag = {sx: cx, sy: cy, off: onIris ? off : {x: 0, y: 0}, moved: false};
+      }
+      function move(cx, cy) {
+        if (!drag) return;
+        if (!drag.moved && Math.abs(cx - drag.sx) + Math.abs(cy - drag.sy) < 4) return;
+        drag.moved = true;
+        var pt = local(cx, cy, side);
+        fromPoint(side, pt.x + drag.off.x, pt.y + drag.off.y);
+      }
+      function end(cx, cy) {
+        if (!drag) return;
+        if (!drag.moved) { var pt = local(cx, cy, side); fromPoint(side, pt.x, pt.y); }
+        drag = null;
+      }
+      if (window.PointerEvent) {
+        grip.addEventListener('pointerdown', function (e) {
+          if (drag || e.button) return;
+          e.preventDefault();
+          try { grip.focus(); grip.setPointerCapture(e.pointerId); } catch (err) {}
+          start(e.clientX, e.clientY);
+        });
+        grip.addEventListener('pointermove', function (e) { move(e.clientX, e.clientY); });
+        grip.addEventListener('pointerup', function (e) { move(e.clientX, e.clientY); end(e.clientX, e.clientY); });
+        grip.addEventListener('pointercancel', function () { drag = null; });
+      } else {
+        grip.addEventListener('touchstart', function (e) { var t = e.changedTouches[0]; e.preventDefault(); start(t.clientX, t.clientY); });
+        grip.addEventListener('touchmove', function (e) { var t = e.changedTouches[0]; e.preventDefault(); move(t.clientX, t.clientY); });
+        grip.addEventListener('touchend', function (e) { var t = e.changedTouches[0]; end(t.clientX, t.clientY); });
+        grip.addEventListener('mousedown', function (e) {
+          e.preventDefault(); start(e.clientX, e.clientY);
+          function mm(ev) { move(ev.clientX, ev.clientY); }
+          function mu(ev) { end(ev.clientX, ev.clientY); document.removeEventListener('mousemove', mm); document.removeEventListener('mouseup', mu); }
+          document.addEventListener('mousemove', mm); document.addEventListener('mouseup', mu);
+        });
+      }
+      grip.addEventListener('keydown', function (e) {
+        var map = {ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1], Left: [-1, 0], Right: [1, 0], Up: [0, -1], Down: [0, 1]};
+        if (!Object.prototype.hasOwnProperty.call(map, e.key)) return;
+        e.preventDefault();
+        var d = map[e.key], p = pos[side];
+        change(side, p.x + 0.1 * d[0], p.y + 0.1 * d[1]);
+      });
+      draw(side);
+    }
+    bind('right'); bind('left');
+    return {setPositions: set, getPositions: get};
+  }
+  window.MotilityFace = {mount: mount};
+})();
+</script>
+<script>
+/* ===== 画面 ===== */
+(function () {
+  'use strict';
+  var L = window.DiplopiaLogic, STORE = 'diplopia-differential-v2';
+  function $(id) { return document.getElementById(id); }
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.appendChild(document.createTextNode(text));
+    return n;
+  }
+  function clear(n) { while (n.firstChild) n.removeChild(n.firstChild); }
+  function copyPose(p) { return {right: {x: p.right.x, y: p.right.y}, left: {x: p.left.x, y: p.left.y}}; }
+  function blank() { return {a: {}, mot: L.emptyMot(), mode: 'simple', records: {}, direction: 'center'}; }
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+
+  var state = blank(), own = null, exampleName = '';
+  try {
+    var saved = JSON.parse(window.localStorage.getItem(STORE) || 'null');
+    if (saved && saved.a && saved.mot && saved.mot.right && saved.mot.left) {
+      state = saved;
+      state.records = state.records || {};
+      state.direction = state.direction || 'center';
+      state.mode = state.mode === 'draw' ? 'draw' : 'simple';
+    }
+  } catch (e) {}
+  function save() {
+    if (own) return;
+    try { window.localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) {}
+  }
+
+  /* --- 緊急所見 --- */
+  var flagButtons = {};
+  (function () {
+    var box = $('flags');
+    for (var i = 0; i < L.FLAGS.length; i++) (function (id, label) {
+      var row = el('div', 'flag'), seg = el('div', 'seg');
+      row.appendChild(el('div', 'flabel', label));
+      seg.setAttribute('role', 'group');
+      seg.setAttribute('aria-label', label);
+      var yes = el('button', 'yes', 'あり'), no = el('button', '', 'なし');
+      yes.type = no.type = 'button';
+      yes.addEventListener('click', function () { setValue(id, state.a[id] === 'yes' ? '' : 'yes'); });
+      no.addEventListener('click', function () { setValue(id, state.a[id] === 'no' ? '' : 'no'); });
+      seg.appendChild(yes); seg.appendChild(no);
+      row.appendChild(seg); box.appendChild(row);
+      flagButtons[id] = {yes: yes, no: no};
+    })(L.FLAGS[i][0], L.FLAGS[i][1]);
+    $('flags-none').addEventListener('click', function () {
+      for (var i = 0; i < L.FLAGS.length; i++) if (!state.a[L.FLAGS[i][0]]) state.a[L.FLAGS[i][0]] = 'no';
+      render();
+    });
+  })();
+
+  /* --- 選択式の項目 --- */
+  var fieldNodes = {};
+  (function () {
+    for (var i = 0; i < L.FIELDS.length; i++) (function (f) {
+      var wrap = el('div', 'field' + (f.options.length > 4 || f.multi ? ' wide' : '')), seg = el('div', 'seg'), buttons = {};
+      var label = el('div', 'flabel', f.label);
+      label.id = 'fl-' + f.id;
+      wrap.appendChild(label);
+      if (f.hint) wrap.appendChild(el('div', 'fhint', f.hint));
+      seg.setAttribute('role', 'group');
+      seg.setAttribute('aria-labelledby', label.id);
+      for (var k = 0; k < f.options.length; k++) (function (value, text) {
+        var b = el('button', '', text);
+        b.type = 'button';
+        b.addEventListener('click', function () {
+          if (f.multi) {
+            var cur = state.a[f.id] || {};
+            if (cur[value]) delete cur[value]; else cur[value] = true;
+            state.a[f.id] = cur;
+            render();
+          } else setValue(f.id, state.a[f.id] === value ? '' : value);
+        });
+        seg.appendChild(b);
+        buttons[value] = b;
+      })(f.options[k][0], f.options[k][1]);
+      wrap.appendChild(seg);
+      $('g-' + f.group).appendChild(wrap);
+      fieldNodes[f.id] = {wrap: wrap, buttons: buttons, def: f};
+    })(L.FIELDS[i]);
+  })();
+  function setValue(id, value) {
+    if (value) state.a[id] = value; else delete state.a[id];
+    render();
+  }
+
+  /* --- 眼球運動：かんたん入力 --- */
+  var padButtons = {right: {}, left: {}};
+  (function () {
+    var layout = [['up', -1, 'Out'], ['up', 0, ''], ['up', 1, 'In'], ['', -1, ''], ['', 0, ''], ['', 1, ''], ['down', -1, 'Out'], ['down', 0, ''], ['down', 1, 'In']];
+    var arrows = {'-1,-1': '↖', '0,-1': '↑', '1,-1': '↗', '-1,0': '←', '1,0': '→', '-1,1': '↙', '0,1': '↓', '1,1': '↘'};
+    var names = {abd: '外転', add: '内転', up: '上転', down: '下転', upOut: '外上転', upIn: '内上転', downOut: '外下転', downIn: '内下転'};
+    var sides = ['right', 'left'];
+    for (var s = 0; s < 2; s++) (function (side) {
+      var pad = el('div', 'pad'), h = el('h3'), grid = el('div', 'pad-grid');
+      h.appendChild(el('b', '', side === 'right' ? 'R' : 'L'));
+      h.appendChild(document.createTextNode(side === 'right' ? '患者の右眼' : '患者の左眼'));
+      pad.appendChild(h);
+      grid.setAttribute('role', 'group');
+      grid.setAttribute('aria-label', (side === 'right' ? '患者の右眼' : '患者の左眼') + 'で動きが悪い方向');
+      for (var r = 0; r < 3; r++) for (var c = 0; c < 3; c++) (function (r, c) {
+        var dx = c - 1, dy = r - 1;
+        if (!dx && !dy) { grid.appendChild(el('div', 'pad-eye')); return; }
+        /* 右眼は画面左側が外転側、左眼は画面右側が外転側 */
+        var out = side === 'right' ? dx < 0 : dx > 0;
+        var key = !dy ? (out ? 'abd' : 'add') : !dx ? (dy < 0 ? 'up' : 'down') : (dy < 0 ? 'up' : 'down') + (out ? 'Out' : 'In');
+        var b = el('button', dx && dy ? 'ob' : '');
+        b.type = 'button';
+        b.appendChild(el('i', '', arrows[dx + ',' + dy]));
+        b.appendChild(document.createTextNode(names[key]));
+        b.setAttribute('aria-label', (side === 'right' ? '右眼' : '左眼') + 'の' + names[key] + 'が悪い');
+        b.addEventListener('click', function () {
+          state.mot[side][key] = !state.mot[side][key];
+          var any = false, k2, ss;
+          for (ss = 0; ss < 2; ss++) for (k2 in state.mot[sides[ss]]) if (state.mot[sides[ss]][k2]) any = true;
+          state.mot.status = any ? 'limited' : '';
+          render();
+        });
+        grid.appendChild(b);
+        padButtons[side][key] = b;
+      })(r, c);
+      pad.appendChild(grid);
+      pad.appendChild(el('div', 'pad-side', side === 'right' ? '← 耳側　　鼻側 →' : '← 鼻側　　耳側 →'));
+      $('pads').appendChild(pad);
+    })(sides[s]);
+    $('mot-normal').addEventListener('click', function () { state.mot = L.emptyMot(); state.mot.status = 'normal'; render(); });
+    $('mot-clear').addEventListener('click', function () { state.mot = L.emptyMot(); render(); });
+  })();
+
+  /* --- 眼球運動：眼位図 --- */
+  var DIRLIST = [
+    ['upRight', '右上', '右上方視', '↖'], ['up', '上', '上方視', '↑'], ['upLeft', '左上', '左上方視', '↗'],
+    ['right', '右', '右方視', '←'], ['center', '正面', '正面視', '・'], ['left', '左', '左方視', '→'],
+    ['downRight', '右下', '右下方視', '↙'], ['down', '下', '下方視', '↓'], ['downLeft', '左下', '左下方視', '↘']
+  ];
+  var dirButtons = {}, dirNames = {};
+  var face = window.MotilityFace.mount($('face'), function (positions) {
+    state.records[state.direction] = copyPose(positions);
+    render();
+  });
+  function defaultPose(key) {
+    var c = state.records.center || L.zeroPose();
+    if (key === 'center') return copyPose(c);
+    var d = L.DIRS[key];
+    return {right: {x: L.clamp(c.right.x + d[0] * 0.8), y: L.clamp(c.right.y + d[1] * 0.8)}, left: {x: L.clamp(c.left.x + d[0] * 0.8), y: L.clamp(c.left.y + d[1] * 0.8)}};
+  }
+  function loadFace() { face.setPositions(state.records[state.direction] || defaultPose(state.direction)); }
+  (function () {
+    for (var i = 0; i < DIRLIST.length; i++) (function (d) {
+      var b = el('button', 'dir'), mark = el('span', 'mark');
+      b.type = 'button';
+      b.appendChild(document.createTextNode(d[3] + ' ' + d[1]));
+      b.appendChild(mark);
+      b.addEventListener('click', function () { state.direction = d[0]; loadFace(); render(); });
+      $('directions').appendChild(b);
+      dirButtons[d[0]] = {button: b, mark: mark};
+      dirNames[d[0]] = d[2];
+    })(DIRLIST[i]);
+    $('draw-save').addEventListener('click', function () { state.records[state.direction] = copyPose(face.getPositions()); render(); });
+    $('draw-remove').addEventListener('click', function () { delete state.records[state.direction]; loadFace(); render(); });
+  })();
+  function hasRecords() { for (var k in state.records) return true; return false; }
+  function setMode(mode) {
+    if (mode === state.mode) return;
+    if (mode === 'draw') {
+      if (!hasRecords() && state.mot.status) state.records = L.seedRecords(state.mot);
+      state.direction = 'center';
+    } else if (hasRecords()) {
+      state.mot = L.deriveMot(state.records);
+      if (state.mot.status === 'partial') state.mot.status = '';
+    }
+    state.mode = mode;
+    loadFace();
+    render();
+  }
+  $('tab-simple').addEventListener('click', function () { setMode('simple'); });
+  $('tab-draw').addEventListener('click', function () { setMode('draw'); });
+  function currentMot() { return state.mode === 'draw' ? L.deriveMot(state.records) : state.mot; }
+
+  /* --- 模擬例 --- */
+  function noFlags(extra) {
+    var a = {}, i;
+    for (i = 0; i < L.FLAGS.length; i++) a[L.FLAGS[i][0]] = 'no';
+    for (i in extra) a[i] = extra[i];
+    return a;
+  }
+  function motOf(right, left) {
+    var m = L.emptyMot(), i;
+    for (i = 0; i < right.length; i++) m.right[right[i]] = true;
+    for (i = 0; i < left.length; i++) m.left[left[i]] = true;
+    m.status = right.length + left.length ? 'limited' : 'normal';
+    return m;
+  }
+  var EXAMPLES = [
+    ['右を見ると水平複視（外転制限）', noFlags({cover: 'binocular', onset: 'sudden', course: 'stable', axis: 'horizontal', range: 'far', gaze: 'right', age: 'older', bg: {vascular: true}, lid: 'no', pupil: 'equal'}), motOf(['abd'], [])],
+    ['右を見ると左眼が内転しない', {cover: 'binocular', onset: 'sudden', axis: 'horizontal', gaze: 'right', age: 'older', nystagmus: 'right'}, motOf([], ['add'])],
+    ['急な右眼瞼下垂、瞳孔は同大', noFlags({suspectedThird: 'yes', cover: 'binocular', onset: 'sudden', lid: 'newRight', pupil: 'equal', age: 'older', bg: {vascular: true}}), motOf(['add', 'up', 'down'], [])],
+    ['夕方の眼瞼下垂と新しい息苦しさ', {breathing: 'yes', cover: 'binocular', course: 'variable', lid: 'variable'}, L.emptyMot()],
+    ['右眼だけでも二重、急な構音障害', {neuro: 'yes', cover: 'monoR', onset: 'sudden'}, L.emptyMot()],
+    ['遠くの標識が二重に見える高齢者', noFlags({cover: 'binocular', onset: 'gradual', course: 'stable', axis: 'horizontal', range: 'far', gaze: 'same', age: 'older', lid: 'no', pupil: 'equal'}), motOf([], [])],
+    ['飲酒・低栄養で両眼が外を向けない', noFlags({wernicke: 'yes', cover: 'binocular', onset: 'days', axis: 'horizontal', age: 'middle'}), motOf(['abd'], ['abd'])],
+    ['階段で縦にずれる（頭部外傷後）', noFlags({trauma: 'yes', cover: 'binocular', onset: 'sudden', axis: 'vertical', gaze: 'down', hyper: 'right', hyperGaze: 'left', tilt: 'right', lid: 'no', pupil: 'equal'}), motOf(['downIn'], [])]
+  ];
+  (function () {
+    for (var i = 0; i < EXAMPLES.length; i++) (function (ex) {
+      var b = el('button', 'btn small ghost', ex[0]);
+      b.type = 'button';
+      b.addEventListener('click', function () {
+        if (!own) own = state;
+        state = blank();
+        state.a = clone(ex[1]);
+        state.mot = clone(ex[2]);
+        exampleName = ex[0];
+        loadFace();
+        render();
+        window.scrollTo(0, 0);
+      });
+      $('ex-list').appendChild(b);
+    })(EXAMPLES[i]);
+    $('banner-back').addEventListener('click', function () {
+      if (own) { state = own; own = null; }
+      loadFace();
+      render();
+    });
+  })();
+
+  /* --- 参考資料 --- */
+  (function () {
+    for (var k in L.REFS) {
+      var li = el('li'), a = el('a', '', L.REFS[k][0]);
+      a.href = L.REFS[k][1];
+      a.rel = 'noopener';
+      li.appendChild(a);
+      $('source-list').appendChild(li);
+    }
+  })();
+
+  /* --- 描画 --- */
+  function render() {
+    var a = state.a, mot = currentMot(), res = L.assess(a, mot), i, k, id;
+    var yes = 0, unknown = 0;
+    for (i = 0; i < L.FLAGS.length; i++) {
+      id = L.FLAGS[i][0];
+      flagButtons[id].yes.setAttribute('aria-pressed', String(a[id] === 'yes'));
+      flagButtons[id].no.setAttribute('aria-pressed', String(a[id] === 'no'));
+      if (a[id] === 'yes') yes++;
+      if (!a[id]) unknown++;
+    }
+    $('flags-count').textContent = 'あり ' + yes + '、未確認 ' + unknown + ' ／ 全' + L.FLAGS.length + '項目';
+    $('flags-none').disabled = !unknown;
+    var vertical = a.axis === 'vertical' || a.axis === 'oblique' || !!a.hyper;
+    var c = L.card(mot.right), c2 = L.card(mot.left);
+    for (id in fieldNodes) {
+      var node = fieldNodes[id], f = node.def;
+      var show = !f.showIf || (f.showIf === 'vertical' ? vertical : (c.add || c2.add || !!a.nystagmus));
+      node.wrap.hidden = !show;
+      for (k in node.buttons) node.buttons[k].setAttribute('aria-pressed', String(f.multi ? !!(a[id] && a[id][k]) : a[id] === k));
+    }
+    $('cover-note').textContent = res.cover.title + ' ' + res.cover.next;
+    /* 眼球運動 */
+    var draw = state.mode === 'draw';
+    $('tab-simple').setAttribute('aria-selected', String(!draw));
+    $('tab-draw').setAttribute('aria-selected', String(draw));
+    $('mot-simple').hidden = draw;
+    $('mot-draw').hidden = !draw;
+    var sides = ['right', 'left'];
+    for (i = 0; i < 2; i++) for (k in padButtons[sides[i]]) padButtons[sides[i]][k].setAttribute('aria-pressed', String(!!state.mot[sides[i]][k]));
+    $('mot-normal').setAttribute('aria-pressed', String(state.mot.status === 'normal'));
+    $('mot-status').textContent = '現在の記録：' + L.motText(state.mot);
+    var count = 0;
+    for (k in dirButtons) {
+      var rec = !!state.records[k];
+      if (rec) count++;
+      dirButtons[k].button.setAttribute('aria-pressed', String(k === state.direction));
+      dirButtons[k].button.setAttribute('aria-label', dirNames[k] + (rec ? '、記録済み' : '、未記録'));
+      dirButtons[k].mark.textContent = rec ? '●' : '';
+    }
+    $('draw-count').textContent = '記録 ' + count + ' / 9';
+    $('view-label').textContent = dirNames[state.direction];
+    $('current-title').textContent = dirNames[state.direction];
+    $('current-help').textContent = state.records[state.direction] ? '記録済みです。眼を動かすと修正できます。' : state.direction === 'center' ? '正面を見たときの眼位です。ずれがなければそのまま記録します。' : '正常に動いた場合の位置を表示しています。動きが悪い眼だけ直してください。';
+    $('draw-remove').disabled = !state.records[state.direction];
+    /* まとめ */
+    var urg = $('r-urg');
+    clear(urg);
+    urg.className = 'urg ' + res.level;
+    urg.appendChild(el('strong', '', res.level === 'urgent' ? '優先して評価する所見（' + res.alerts.length + '件）' : res.level === 'clear' ? '緊急所見' + L.FLAGS.length + '項目はすべて「なし」です' : '緊急所見を確認中（未確認 ' + res.unknownFlags.length + '項目）'));
+    if (res.alerts.length) {
+      var ul = el('ul');
+      for (i = 0; i < res.alerts.length; i++) {
+        var li = el('li', '', res.alerts[i].text);
+        appendRefs(li, res.alerts[i].refs);
+        ul.appendChild(li);
+      }
+      urg.appendChild(ul);
+    }
+    $('r-cover').textContent = res.cover.title;
+    var note = draw ? L.primaryNote(state.records) : '';
+    $('r-pattern').textContent = res.pattern.title;
+    $('r-pattern-detail').textContent = note + res.pattern.detail;
+    var nb = $('r-notices');
+    clear(nb);
+    for (i = 0; i < res.notices.length; i++) nb.appendChild(el('p', 'notice', res.notices[i]));
+    var list = $('r-cands');
+    clear(list);
+    for (i = 0; i < res.candidates.length; i++) {
+      var cand = res.candidates[i], item = el('li');
+      item.appendChild(el('strong', '', cand.title));
+      item.appendChild(el('p', '', cand.detail));
+      if (cand.why.length) {
+        var why = el('div', 'why');
+        why.appendChild(el('b', '', '手掛かり：'));
+        why.appendChild(document.createTextNode(cand.why.join('、')));
+        item.appendChild(why);
+      }
+      appendRefs(item, cand.refs);
+      list.appendChild(item);
+    }
+    var todo = $('r-todo');
+    clear(todo);
+    if (!res.todo.length) todo.appendChild(el('li', '', '優先して確認する未入力項目はありません。'));
+    for (i = 0; i < res.todo.length; i++) todo.appendChild(el('li', '', res.todo[i]));
+    $('handoff').value = L.handoff(a, mot, res);
+    $('copy-status').textContent = '';
+    /* 下部バー・バナー */
+    $('bar').className = res.level === 'urgent' ? 'urgent' : '';
+    $('bar-main').textContent = res.level === 'urgent' ? '優先評価 ' + res.alerts.length + '件：' + res.alerts[0].text : res.level === 'clear' ? '緊急所見なし' : '緊急所見 未確認 ' + res.unknownFlags.length + '項目';
+    $('bar-sub').textContent = '候補：' + res.candidates[0].title;
+    $('banner').className = 'banner' + (own ? ' on' : '');
+    $('banner-text').textContent = own ? '模擬例を表示中：' + exampleName : '';
+    save();
+  }
+  function appendRefs(parent, refs) {
+    if (!refs || !refs.length) return;
+    var box = el('div', 'refs');
+    box.appendChild(document.createTextNode('根拠：'));
+    for (var i = 0; i < refs.length; i++) {
+      var r = L.REFS[refs[i]];
+      if (!r) continue;
+      var a = el('a', '', r[0]);
+      a.href = r[1];
+      a.rel = 'noopener';
+      box.appendChild(a);
+    }
+    parent.appendChild(box);
+  }
+
+  /* --- そのほかの操作 --- */
+  $('reset').addEventListener('click', function () {
+    if (!window.confirm('入力した所見と眼位の記録をすべて消去しますか？')) return;
+    own = null;
+    state = blank();
+    try { window.localStorage.removeItem(STORE); } catch (e) {}
+    loadFace();
+    render();
+  });
+  $('copy').addEventListener('click', function () {
+    var field = $('handoff'), text = field.value.replace(/[\uFF5E\u301C]/g, '-');
+    function done(ok) { $('copy-status').textContent = ok ? '所見をコピーしました。' : '文章を選択しました。端末のコピー操作を使ってください。'; }
+    function fallback() {
+      var ok = false;
+      field.value = text;
+      field.focus(); field.select();
+      try { ok = document.execCommand('copy'); } catch (e) {}
+      done(ok);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { done(true); }, fallback);
+    else fallback();
+  });
+  $('print').addEventListener('click', function () { window.print(); });
+  var lastFocus = null;
+  $('bar-open').addEventListener('click', function () {
+    lastFocus = document.activeElement;
+    document.body.className += ' sheet';
+    $('results').scrollTop = 0;
+    $('h-results').focus();
+  });
+  $('sheet-close').addEventListener('click', function () {
+    document.body.className = document.body.className.replace(/\s*sheet/g, '');
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  });
+  var zoomFrom = null;
+  function openZoom(img) { zoomFrom = img; $('zoom-img').src = img.src; $('zoom-img').alt = img.alt; $('zoom').className = 'on'; $('zoom-close').focus(); }
+  function closeZoom() { $('zoom').className = ''; if (zoomFrom) zoomFrom.focus(); }
+  (function () {
+    var imgs = document.querySelectorAll('figure img');
+    for (var i = 0; i < imgs.length; i++) (function (img) {
+      img.addEventListener('click', function () { openZoom(img); });
+      img.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openZoom(img); } });
+    })(imgs[i]);
+    $('zoom-close').addEventListener('click', closeZoom);
+    $('zoom').addEventListener('click', function (e) { if (e.target === $('zoom')) closeZoom(); });
+    document.addEventListener('keydown', function (e) { if ((e.key === 'Escape' || e.key === 'Esc') && $('zoom').className === 'on') closeZoom(); });
+  })();
+
+  loadFace();
+  render();
+})();
+</script>
+</body>
+</html>
