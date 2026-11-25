@@ -1,5 +1,8 @@
-const CACHE_NAME = 'ddx-tools-v461';
+const CACHE_NAME = 'ddx-tools-v462';
 const ASSETS = [
+  './slides/mind-body-05-cancer-dementia-causality/index.html',
+  './infographics/mind-body-05-cancer-dementia-causality/index.html',
+  './infographics/mind-body-05-cancer-dementia-causality/infographic.png',
   './infographics/diplopia/v1/index.html',
   './infographics/diplopia/v1/completed.png',
   './slides/mind-body-04-stress-physical-diseases/index.html',
