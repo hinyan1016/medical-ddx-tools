@@ -1,8 +1,10 @@
-const CACHE_NAME = 'ddx-tools-v459';
+const CACHE_NAME = 'ddx-tools-v460';
 const ASSETS = [
   './slides/mind-body-04-stress-physical-diseases/index.html',
   './infographics/mind-body-04-stress-physical-diseases/index.html',
   './infographics/mind-body-04-stress-physical-diseases/infographic.png',
+  './infographics/sagging-eye-syndrome/index.html',
+  './infographics/sagging-eye-syndrome/infographic.png',
   './infographics/ms-treatment-20years-reference-repair-20261124/index.html',
   './infographics/ms-treatment-20years-reference-repair-20261124/infographic.png',
   './infographics/pd-rehab-scene-reference-repair-20261124/index.html',
