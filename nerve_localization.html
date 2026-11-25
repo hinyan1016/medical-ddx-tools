@@ -201,7 +201,7 @@
 
 <script>
 // ===== データ定義 =====
-const DATA = {
+var DATA = {
   upper: {
     levels: ['C5','C6','C7','C8','T1'],
     hasCordTrunk: true,
@@ -260,7 +260,7 @@ const DATA = {
 };
 
 // ===== 色定義 =====
-const NERVE_COLORS = {
+var NERVE_COLORS = {
   '長胸神経':'#6b7280','肩甲上神経':'#8b5cf6','胸背神経':'#06b6d4','腋窩神経':'#f59e0b',
   '筋皮神経':'#10b981','橈骨神経':'#ef4444','正中神経':'#3b82f6','尺骨神経':'#ec4899',
   '大腿神経/腰神経叢':'#6b7280','上殿神経':'#8b5cf6','下殿神経':'#06b6d4',
@@ -268,13 +268,13 @@ const NERVE_COLORS = {
   '大腿神経':'#10b981','脛骨神経/総腓骨神経':'#ec4899','浅腓骨神経':'#f97316'
 };
 
-const CORD_COLORS = {'外':'#10b981','内':'#ec4899','後':'#f59e0b'};
-const CORD_LABELS = {'外':'外側束','内':'内側束','後':'後束'};
-const CORD_ORDER = ['外','内','後'];
+var CORD_COLORS = {'外':'#10b981','内':'#ec4899','後':'#f59e0b'};
+var CORD_LABELS = {'外':'外側束','内':'内側束','後':'後束'};
+var CORD_ORDER = ['外','内','後'];
 
-const TRUNK_COLORS = {'上':'#ef4444','中':'#8b5cf6','下':'#3b82f6'};
-const TRUNK_LABELS = {'上':'上幹','中':'中幹','下':'下幹'};
-const TRUNK_ORDER = ['上','中','下'];
+var TRUNK_COLORS = {'上':'#ef4444','中':'#8b5cf6','下':'#3b82f6'};
+var TRUNK_LABELS = {'上':'上幹','中':'中幹','下':'下幹'};
+var TRUNK_ORDER = ['上','中','下'];
 
 // 複合値を分解するユーティリティ
 function parseCord(val) {
@@ -291,67 +291,67 @@ function parseTrunk(val) {
 
 // ===== テーブル生成 =====
 function buildTable(region) {
-  const d = DATA[region];
-  const thead = document.getElementById('thead-' + region);
-  const tbody = document.getElementById('tbody-' + region);
+  var d = DATA[region];
+  var thead = document.getElementById('thead-' + region);
+  var tbody = document.getElementById('tbody-' + region);
 
   // ヘッダー生成
-  let hdr = '<tr><th>筋肉</th><th>支配神経</th>';
+  var hdr = '<tr><th>筋肉</th><th>支配神経</th>';
   if (d.hasCordTrunk) {
     hdr += '<th>束</th><th>幹</th>';
   }
-  d.levels.forEach(l => { hdr += `<th>${l}</th>`; });
+  d.levels.forEach(function(l) { hdr += '<th>' + l + '</th>'; });
   hdr += '<th>MMT</th></tr>';
   thead.innerHTML = hdr;
 
   // ボディ生成
   tbody.innerHTML = '';
-  d.muscles.forEach((m, i) => {
-    const tr = document.createElement('tr');
-    let cells = `<td>${m.name}</td>`;
-    const nc = NERVE_COLORS[m.nerve] || '#6b7280';
-    cells += `<td><span class="nerve-badge" style="background:${nc}20;color:${nc};border:1px solid ${nc}60">${m.nerve}</span></td>`;
+  d.muscles.forEach(function(m, i) {
+    var tr = document.createElement('tr');
+    var cells = '<td>' + m.name + '</td>';
+    var nc = NERVE_COLORS[m.nerve] || '#6b7280';
+    cells += '<td><span class="nerve-badge" style="background:' + nc + '20;color:' + nc + ';border:1px solid ' + nc + '60">' + m.nerve + '</span></td>';
 
     if (d.hasCordTrunk) {
       // 束セル
       if (m.cord) {
-        const cords = parseCord(m.cord);
-        const badges = cords.map(c => {
-          const cc = CORD_COLORS[c];
-          return `<span class="cord-badge" style="background:${cc}20;color:${cc};border:1px solid ${cc}60">${c}</span>`;
+        var cords = parseCord(m.cord);
+        var badges = cords.map(function(c) {
+          var cc = CORD_COLORS[c];
+          return '<span class="cord-badge" style="background:' + cc + '20;color:' + cc + ';border:1px solid ' + cc + '60">' + c + '</span>';
         }).join(' ');
-        cells += `<td>${badges}</td>`;
+        cells += '<td>' + badges + '</td>';
       } else {
         cells += '<td><span class="badge-none">-</span></td>';
       }
       // 幹セル
       if (m.trunk) {
-        const trunks = parseTrunk(m.trunk);
-        const badges = trunks.map(t => {
-          const tc = TRUNK_COLORS[t];
-          return `<span class="trunk-badge" style="background:${tc}20;color:${tc};border:1px solid ${tc}60">${t}</span>`;
+        var trunks = parseTrunk(m.trunk);
+        var badges = trunks.map(function(t) {
+          var tc = TRUNK_COLORS[t];
+          return '<span class="trunk-badge" style="background:' + tc + '20;color:' + tc + ';border:1px solid ' + tc + '60">' + t + '</span>';
         }).join(' ');
-        cells += `<td>${badges}</td>`;
+        cells += '<td>' + badges + '</td>';
       } else {
         cells += '<td><span class="badge-none">-</span></td>';
       }
     }
 
-    m.weights.forEach(w => {
-      cells += `<td class="w${w}">${w}</td>`;
+    m.weights.forEach(function(w) {
+      cells += '<td class="w' + w + '">' + w + '</td>';
     });
-    cells += `<td><select class="mmt-select" id="mmt-${region}-${i}" onchange="onMMTChange(this)">
-      <option value="">-</option>
-      <option value="5">5</option><option value="4">4</option><option value="3">3</option>
-      <option value="2">2</option><option value="1">1</option><option value="0">0</option>
-    </select></td>`;
+    cells += '<td><select class="mmt-select" id="mmt-' + region + '-' + i + '" onchange="onMMTChange(this)">\n' +
+'      <option value="">-</option>\n' +
+'      <option value="5">5</option><option value="4">4</option><option value="3">3</option>\n' +
+'      <option value="2">2</option><option value="1">1</option><option value="0">0</option>\n' +
+'    </select></td>';
     tr.innerHTML = cells;
     tbody.appendChild(tr);
   });
 }
 
 function onMMTChange(sel) {
-  const v = parseInt(sel.value);
+  var v = parseInt(sel.value);
   if (!isNaN(v) && v < 5) {
     sel.classList.add('mmt-reduced');
   } else {
@@ -360,16 +360,16 @@ function onMMTChange(sel) {
 }
 
 function setAllNormal(region) {
-  DATA[region].muscles.forEach((_, i) => {
-    const sel = document.getElementById(`mmt-${region}-${i}`);
+  DATA[region].muscles.forEach(function(_, i) {
+    var sel = document.getElementById('mmt-' + region + '-' + i);
     sel.value = '5';
     sel.classList.remove('mmt-reduced');
   });
 }
 
 function resetMMT(region) {
-  DATA[region].muscles.forEach((_, i) => {
-    const sel = document.getElementById(`mmt-${region}-${i}`);
+  DATA[region].muscles.forEach(function(_, i) {
+    var sel = document.getElementById('mmt-' + region + '-' + i);
     sel.value = '';
     sel.classList.remove('mmt-reduced');
   });
@@ -379,37 +379,37 @@ function resetMMT(region) {
 
 // ===== タブ切替 =====
 function switchTab(tab) {
-  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+  document.querySelectorAll('.tab-btn').forEach(function(b, i) {
     b.classList.toggle('active', ['upper','lower','both'][i] === tab);
   });
-  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(function(c) { return c.classList.remove('active'); });
   document.getElementById('tab-' + tab).classList.add('active');
 }
 
 // ===== 解析ロジック =====
 function getMMTValues(region) {
-  const d = DATA[region];
-  return d.muscles.map((m, i) => {
-    const sel = document.getElementById(`mmt-${region}-${i}`);
-    const v = sel.value === '' ? null : parseInt(sel.value);
-    return { ...m, mmt: v, index: i };
+  var d = DATA[region];
+  return d.muscles.map(function(m, i) {
+    var sel = document.getElementById('mmt-' + region + '-' + i);
+    var v = sel.value === '' ? null : parseInt(sel.value);
+    return Object.assign({}, m, { mmt: v, index: i });
   });
 }
 
 function computeScores(region, mmtData) {
-  const d = DATA[region];
-  const levelScores = {};
-  d.levels.forEach(l => levelScores[l] = 0);
-  const nerveImpaired = {};
-  const cordImpaired = {};
-  const trunkImpaired = {};
+  var d = DATA[region];
+  var levelScores = {};
+  d.levels.forEach(function(l) { return levelScores[l] = 0; });
+  var nerveImpaired = {};
+  var cordImpaired = {};
+  var trunkImpaired = {};
 
-  mmtData.forEach(m => {
+  mmtData.forEach(function(m) {
     if (m.mmt === null || m.mmt >= 5) return;
-    const deficit = 5 - m.mmt;
+    var deficit = 5 - m.mmt;
 
     // 脊髄レベルスコア
-    m.weights.forEach((w, li) => {
+    m.weights.forEach(function(w, li) {
       if (w > 0) levelScores[d.levels[li]] += w * deficit;
     });
 
@@ -419,7 +419,7 @@ function computeScores(region, mmtData) {
 
     // 神経束（Cord）
     if (m.cord) {
-      parseCord(m.cord).forEach(c => {
+      parseCord(m.cord).forEach(function(c) {
         if (!cordImpaired[c]) cordImpaired[c] = [];
         cordImpaired[c].push({ name: m.name, mmt: m.mmt });
       });
@@ -427,106 +427,106 @@ function computeScores(region, mmtData) {
 
     // 神経幹（Trunk）
     if (m.trunk) {
-      parseTrunk(m.trunk).forEach(t => {
+      parseTrunk(m.trunk).forEach(function(t) {
         if (!trunkImpaired[t]) trunkImpaired[t] = [];
         trunkImpaired[t].push({ name: m.name, mmt: m.mmt });
       });
     }
   });
 
-  return { levelScores, nerveImpaired, cordImpaired, trunkImpaired };
+  return { levelScores: levelScores, nerveImpaired: nerveImpaired, cordImpaired: cordImpaired, trunkImpaired: trunkImpaired };
 }
 
 function analyze(region) {
-  const mmtData = getMMTValues(region);
-  if (!mmtData.some(m => m.mmt !== null)) {
+  var mmtData = getMMTValues(region);
+  if (!mmtData.some(function(m) { return m.mmt !== null; })) {
     alert('MMTの値を少なくとも1つ入力してください。');
     return;
   }
-  const scores = computeScores(region, mmtData);
+  var scores = computeScores(region, mmtData);
   renderResult(region, scores, mmtData);
 }
 
 function analyzeBoth() {
-  const upperMMT = getMMTValues('upper');
-  const lowerMMT = getMMTValues('lower');
-  const hasU = upperMMT.some(m => m.mmt !== null);
-  const hasL = lowerMMT.some(m => m.mmt !== null);
+  var upperMMT = getMMTValues('upper');
+  var lowerMMT = getMMTValues('lower');
+  var hasU = upperMMT.some(function(m) { return m.mmt !== null; });
+  var hasL = lowerMMT.some(function(m) { return m.mmt !== null; });
   if (!hasU && !hasL) {
     alert('上肢または下肢のMMTを入力してください。');
     return;
   }
 
-  const allLevels = ['C5','C6','C7','C8','T1','L1','L2','L3','L4','L5','S1','S2'];
-  const combined = { levelScores:{}, nerveImpaired:{}, cordImpaired:{}, trunkImpaired:{} };
-  allLevels.forEach(l => combined.levelScores[l] = 0);
+  var allLevels = ['C5','C6','C7','C8','T1','L1','L2','L3','L4','L5','S1','S2'];
+  var combined = { levelScores:{}, nerveImpaired:{}, cordImpaired:{}, trunkImpaired:{} };
+  allLevels.forEach(function(l) { return combined.levelScores[l] = 0; });
 
-  ['upper','lower'].forEach(region => {
-    const mmtData = region === 'upper' ? upperMMT : lowerMMT;
-    const hasData = mmtData.some(m => m.mmt !== null);
+  ['upper','lower'].forEach(function(region) {
+    var mmtData = region === 'upper' ? upperMMT : lowerMMT;
+    var hasData = mmtData.some(function(m) { return m.mmt !== null; });
     if (!hasData) return;
-    const s = computeScores(region, mmtData);
-    Object.entries(s.levelScores).forEach(([k,v]) => combined.levelScores[k] += v);
-    Object.entries(s.nerveImpaired).forEach(([k,v]) => {
+    var s = computeScores(region, mmtData);
+    Object.entries(s.levelScores).forEach(function(_p1) { var k = _p1[0], v = _p1[1]; return combined.levelScores[k] += v; });
+    Object.entries(s.nerveImpaired).forEach(function(_p2) { var k = _p2[0], v = _p2[1];
       if (!combined.nerveImpaired[k]) combined.nerveImpaired[k] = [];
-      combined.nerveImpaired[k].push(...v);
+      combined.nerveImpaired[k].push.apply(combined.nerveImpaired[k], v);
     });
-    Object.entries(s.cordImpaired).forEach(([k,v]) => {
+    Object.entries(s.cordImpaired).forEach(function(_p3) { var k = _p3[0], v = _p3[1];
       if (!combined.cordImpaired[k]) combined.cordImpaired[k] = [];
-      combined.cordImpaired[k].push(...v);
+      combined.cordImpaired[k].push.apply(combined.cordImpaired[k], v);
     });
-    Object.entries(s.trunkImpaired).forEach(([k,v]) => {
+    Object.entries(s.trunkImpaired).forEach(function(_p4) { var k = _p4[0], v = _p4[1];
       if (!combined.trunkImpaired[k]) combined.trunkImpaired[k] = [];
-      combined.trunkImpaired[k].push(...v);
+      combined.trunkImpaired[k].push.apply(combined.trunkImpaired[k], v);
     });
   });
 
-  const allMMT = [...upperMMT.map(m=>({...m,region:'上肢'})), ...lowerMMT.map(m=>({...m,region:'下肢'}))];
+  var allMMT = [].concat(upperMMT.map(function(m) {return (Object.assign({}, m, { region:'上肢' })); }), lowerMMT.map(function(m) {return (Object.assign({}, m, { region:'下肢' })); }));
   renderResult('both', combined, allMMT);
 }
 
 // ===== 結果表示 =====
 function renderResult(region, scores, mmtData) {
-  const { levelScores, nerveImpaired, cordImpaired, trunkImpaired } = scores;
-  const panel = document.getElementById('result-' + region);
-  const hasImpairment = Object.values(levelScores).some(v => v > 0);
+  var _d5 = scores, levelScores = _d5.levelScores, nerveImpaired = _d5.nerveImpaired, cordImpaired = _d5.cordImpaired, trunkImpaired = _d5.trunkImpaired;
+  var panel = document.getElementById('result-' + region);
+  var hasImpairment = Object.values(levelScores).some(function(v) { return v > 0; });
 
   if (!hasImpairment) {
-    panel.innerHTML = `<div class="interpretation"><h4>✅ 筋力低下なし</h4><p>全てMMT 5（正常）のため、神経障害は示唆されません。</p></div>`;
+    panel.innerHTML = '<div class="interpretation"><h4>✅ 筋力低下なし</h4><p>全てMMT 5（正常）のため、神経障害は示唆されません。</p></div>';
     panel.classList.add('show');
     panel.scrollIntoView({ behavior:'smooth', block:'start' });
     return;
   }
 
-  let html = '';
+  var html = '';
 
   // ■ 脊髄レベル別スコア
-  const sortedLevels = Object.entries(levelScores).sort((a,b) => b[1] - a[1]);
-  const maxLevel = Math.max(...Object.values(levelScores), 1);
-  html += `<div class="result-section"><h3>🔷 脊髄レベル別スコア（重み付け加重合計）</h3><div class="bar-chart">`;
-  sortedLevels.forEach(([lv, score]) => {
-    const pct = (score / maxLevel * 100).toFixed(0);
-    html += `<div class="bar-row">
-      <span class="bar-label">${lv}</span>
-      <div class="bar-track"><div class="bar-fill spinal" style="width:${Math.max(pct, score>0?8:0)}%">${score>0?score:''}</div></div>
-      <span class="bar-value">${score>0? score+' pt':'-'}</span>
-    </div>`;
+  var sortedLevels = Object.entries(levelScores).sort(function(a, b) { return b[1] - a[1]; });
+  var maxLevel = Math.max.apply(Math, [].concat(Object.values(levelScores), [1]));
+  html += '<div class="result-section"><h3>🔷 脊髄レベル別スコア（重み付け加重合計）</h3><div class="bar-chart">';
+  sortedLevels.forEach(function(_p6) { var lv = _p6[0], score = _p6[1];
+    var pct = (score / maxLevel * 100).toFixed(0);
+    html += '<div class="bar-row">\n' +
+'      <span class="bar-label">' + lv + '</span>\n' +
+'      <div class="bar-track"><div class="bar-fill spinal" style="width:' + Math.max(pct, score>0?8:0) + '%">' + (score>0?score:'') + '</div></div>\n' +
+'      <span class="bar-value">' + (score>0? score+' pt':'-') + '</span>\n' +
+'    </div>';
   });
   html += '</div></div>';
 
   // ■ 末梢神経別
-  const nerveEntries = Object.entries(nerveImpaired).sort((a,b) => b[1].length - a[1].length);
-  html += `<div class="result-section"><h3>🔶 末梢神経別 — 障害筋数</h3>`;
+  var nerveEntries = Object.entries(nerveImpaired).sort(function(a, b) { return b[1].length - a[1].length; });
+  html += '<div class="result-section"><h3>🔶 末梢神経別 — 障害筋数</h3>';
   if (nerveEntries.length > 0) {
-    const maxN = Math.max(...nerveEntries.map(([_,v])=>v.length), 1);
+    var maxN = Math.max.apply(Math, [].concat(nerveEntries.map(function(_p7) { var _ = _p7[0], v = _p7[1]; return v.length; }), [1]));
     html += '<div class="bar-chart">';
-    nerveEntries.forEach(([nv, muscles]) => {
-      const pct = (muscles.length / maxN * 100).toFixed(0);
-      html += `<div class="bar-row">
-        <span class="bar-label">${nv}</span>
-        <div class="bar-track"><div class="bar-fill nerve" style="width:${Math.max(pct,8)}%">${muscles.length}</div></div>
-        <span class="bar-value">${muscles.length} 筋</span>
-      </div>`;
+    nerveEntries.forEach(function(_p8) { var nv = _p8[0], muscles = _p8[1];
+      var pct = (muscles.length / maxN * 100).toFixed(0);
+      html += '<div class="bar-row">\n' +
+'        <span class="bar-label">' + nv + '</span>\n' +
+'        <div class="bar-track"><div class="bar-fill nerve" style="width:' + Math.max(pct,8) + '%">' + muscles.length + '</div></div>\n' +
+'        <span class="bar-value">' + muscles.length + ' 筋</span>\n' +
+'      </div>';
     });
     html += '</div>';
     html += renderDetailCards(nerveEntries, NERVE_COLORS, '#E8850C');
@@ -534,42 +534,42 @@ function renderResult(region, scores, mmtData) {
   html += '</div>';
 
   // ■ 神経束（Cord）別
-  const cordEntries = CORD_ORDER.filter(c => cordImpaired[c]).map(c => [c, cordImpaired[c]]);
+  var cordEntries = CORD_ORDER.filter(function(c) { return cordImpaired[c]; }).map(function(c) { return [c, cordImpaired[c]]; });
   if (cordEntries.length > 0) {
-    const maxC = Math.max(...cordEntries.map(([_,v])=>v.length), 1);
-    html += `<div class="result-section"><h3>🟢 神経束（Cord）別 — 障害筋数</h3><div class="bar-chart">`;
-    cordEntries.forEach(([c, muscles]) => {
-      const pct = (muscles.length / maxC * 100).toFixed(0);
-      const label = CORD_LABELS[c];
-      html += `<div class="bar-row">
-        <span class="bar-label">${label}</span>
-        <div class="bar-track"><div class="bar-fill cord" style="width:${Math.max(pct,8)}%">${muscles.length}</div></div>
-        <span class="bar-value">${muscles.length} 筋</span>
-      </div>`;
+    var maxC = Math.max.apply(Math, [].concat(cordEntries.map(function(_p9) { var _ = _p9[0], v = _p9[1]; return v.length; }), [1]));
+    html += '<div class="result-section"><h3>🟢 神経束（Cord）別 — 障害筋数</h3><div class="bar-chart">';
+    cordEntries.forEach(function(_p10) { var c = _p10[0], muscles = _p10[1];
+      var pct = (muscles.length / maxC * 100).toFixed(0);
+      var label = CORD_LABELS[c];
+      html += '<div class="bar-row">\n' +
+'        <span class="bar-label">' + label + '</span>\n' +
+'        <div class="bar-track"><div class="bar-fill cord" style="width:' + Math.max(pct,8) + '%">' + muscles.length + '</div></div>\n' +
+'        <span class="bar-value">' + muscles.length + ' 筋</span>\n' +
+'      </div>';
     });
     html += '</div>';
-    const cardData = cordEntries.map(([c, muscles]) => [CORD_LABELS[c], muscles]);
-    html += renderDetailCards(cardData, Object.fromEntries(Object.entries(CORD_LABELS).map(([k,v])=>[v, CORD_COLORS[k]])), '#10b981');
+    var cardData = cordEntries.map(function(_p11) { var c = _p11[0], muscles = _p11[1]; return [CORD_LABELS[c], muscles]; });
+    html += renderDetailCards(cardData, Object.fromEntries(Object.entries(CORD_LABELS).map(function(_p12) { var k = _p12[0], v = _p12[1]; return [v, CORD_COLORS[k]]; })), '#10b981');
     html += '</div>';
   }
 
   // ■ 神経幹（Trunk）別
-  const trunkEntries = TRUNK_ORDER.filter(t => trunkImpaired[t]).map(t => [t, trunkImpaired[t]]);
+  var trunkEntries = TRUNK_ORDER.filter(function(t) { return trunkImpaired[t]; }).map(function(t) { return [t, trunkImpaired[t]]; });
   if (trunkEntries.length > 0) {
-    const maxT = Math.max(...trunkEntries.map(([_,v])=>v.length), 1);
-    html += `<div class="result-section"><h3>🟣 神経幹（Trunk）別 — 障害筋数</h3><div class="bar-chart">`;
-    trunkEntries.forEach(([t, muscles]) => {
-      const pct = (muscles.length / maxT * 100).toFixed(0);
-      const label = TRUNK_LABELS[t];
-      html += `<div class="bar-row">
-        <span class="bar-label">${label}</span>
-        <div class="bar-track"><div class="bar-fill trunk" style="width:${Math.max(pct,8)}%">${muscles.length}</div></div>
-        <span class="bar-value">${muscles.length} 筋</span>
-      </div>`;
+    var maxT = Math.max.apply(Math, [].concat(trunkEntries.map(function(_p13) { var _ = _p13[0], v = _p13[1]; return v.length; }), [1]));
+    html += '<div class="result-section"><h3>🟣 神経幹（Trunk）別 — 障害筋数</h3><div class="bar-chart">';
+    trunkEntries.forEach(function(_p14) { var t = _p14[0], muscles = _p14[1];
+      var pct = (muscles.length / maxT * 100).toFixed(0);
+      var label = TRUNK_LABELS[t];
+      html += '<div class="bar-row">\n' +
+'        <span class="bar-label">' + label + '</span>\n' +
+'        <div class="bar-track"><div class="bar-fill trunk" style="width:' + Math.max(pct,8) + '%">' + muscles.length + '</div></div>\n' +
+'        <span class="bar-value">' + muscles.length + ' 筋</span>\n' +
+'      </div>';
     });
     html += '</div>';
-    const cardData = trunkEntries.map(([t, muscles]) => [TRUNK_LABELS[t], muscles]);
-    html += renderDetailCards(cardData, Object.fromEntries(Object.entries(TRUNK_LABELS).map(([k,v])=>[v, TRUNK_COLORS[k]])), '#8b5cf6');
+    var cardData = trunkEntries.map(function(_p15) { var t = _p15[0], muscles = _p15[1]; return [TRUNK_LABELS[t], muscles]; });
+    html += renderDetailCards(cardData, Object.fromEntries(Object.entries(TRUNK_LABELS).map(function(_p16) { var k = _p16[0], v = _p16[1]; return [v, TRUNK_COLORS[k]]; })), '#8b5cf6');
     html += '</div>';
   }
 
@@ -579,7 +579,7 @@ function renderResult(region, scores, mmtData) {
   // ■ 臨床解釈
   html += renderInterpretation(sortedLevels, nerveEntries, cordEntries, trunkEntries, levelScores);
 
-  html += `<div class="note-box">⚠️ 本ツールはあくまで補助的な推測です。臨床所見・画像検査・電気生理学的検査と合わせて総合的に判断してください。</div>`;
+  html += '<div class="note-box">⚠️ 本ツールはあくまで補助的な推測です。臨床所見・画像検査・電気生理学的検査と合わせて総合的に判断してください。</div>';
 
   panel.innerHTML = html;
   panel.classList.add('show');
@@ -588,15 +588,15 @@ function renderResult(region, scores, mmtData) {
 
 // 詳細カード共通レンダラー
 function renderDetailCards(entries, colorMap, defaultColor) {
-  let html = '<div class="detail-cards">';
-  entries.forEach(([label, muscles]) => {
-    const color = colorMap[label] || defaultColor;
-    html += `<div class="detail-card" style="border-left:4px solid ${color}">
-      <h4>${label} <span class="count-badge" style="background:${color}">${muscles.length}筋低下</span></h4>
-      <div class="muscle-list">`;
-    muscles.forEach(m => {
-      const cls = m.mmt < 3 ? 'reduced' : '';
-      html += `<div class="muscle-item"><span>${m.name}</span><span class="mmt-val ${cls}">MMT ${m.mmt}</span></div>`;
+  var html = '<div class="detail-cards">';
+  entries.forEach(function(_p17) { var label = _p17[0], muscles = _p17[1];
+    var color = colorMap[label] || defaultColor;
+    html += '<div class="detail-card" style="border-left:4px solid ' + color + '">\n' +
+'      <h4>' + label + ' <span class="count-badge" style="background:' + color + '">' + muscles.length + '筋低下</span></h4>\n' +
+'      <div class="muscle-list">';
+    muscles.forEach(function(m) {
+      var cls = m.mmt < 3 ? 'reduced' : '';
+      html += '<div class="muscle-item"><span>' + m.name + '</span><span class="mmt-val ' + cls + '">MMT ' + m.mmt + '</span></div>';
     });
     html += '</div></div>';
   });
@@ -606,89 +606,89 @@ function renderDetailCards(entries, colorMap, defaultColor) {
 
 // 階層的局在診断ボックス
 function renderLocalization(sortedLevels, nerveEntries, cordEntries, trunkEntries, mmtData) {
-  const impairedMuscles = mmtData.filter(m => m.mmt !== null && m.mmt < 5);
+  var impairedMuscles = mmtData.filter(function(m) { return m.mmt !== null && m.mmt < 5; });
   if (impairedMuscles.length === 0) return '';
 
-  const totalImpaired = impairedMuscles.length;
+  var totalImpaired = impairedMuscles.length;
 
   // 各レベルで最も多くの障害筋を説明できるものを探す
   // 末梢神経レベル
-  let bestNerve = null;
+  var bestNerve = null;
   if (nerveEntries.length > 0) {
     bestNerve = nerveEntries[0];
   }
 
   // 束レベル
-  let bestCord = null;
+  var bestCord = null;
   if (cordEntries.length > 0) {
-    const sorted = [...cordEntries].sort((a,b) => b[1].length - a[1].length);
+    var sorted = [].concat(cordEntries).sort(function(a, b) { return b[1].length - a[1].length; });
     bestCord = sorted[0];
   }
 
   // 幹レベル
-  let bestTrunk = null;
+  var bestTrunk = null;
   if (trunkEntries.length > 0) {
-    const sorted = [...trunkEntries].sort((a,b) => b[1].length - a[1].length);
+    var sorted = [].concat(trunkEntries).sort(function(a, b) { return b[1].length - a[1].length; });
     bestTrunk = sorted[0];
   }
 
   // 脊髄レベル
-  const topSpinal = sortedLevels.filter(([_,v]) => v > 0);
+  var topSpinal = sortedLevels.filter(function(_p18) { var _ = _p18[0], v = _p18[1]; return v > 0; });
 
-  let html = `<div class="localization-box"><h4>🎯 階層的局在診断サマリー（障害筋 ${totalImpaired}筋）</h4>`;
+  var html = '<div class="localization-box"><h4>🎯 階層的局在診断サマリー（障害筋 ' + totalImpaired + '筋）</h4>';
 
   // 末梢神経
   if (bestNerve) {
-    const ratio = bestNerve[1].length;
-    const cls = ratio === totalImpaired ? 'loc-match' : ratio >= totalImpaired * 0.7 ? 'loc-partial' : 'loc-no';
-    const explanation = ratio === totalImpaired
+    var ratio = bestNerve[1].length;
+    var cls = ratio === totalImpaired ? 'loc-match' : ratio >= totalImpaired * 0.7 ? 'loc-partial' : 'loc-no';
+    var explanation = ratio === totalImpaired
       ? '→ 全障害筋を説明可能 ✓'
-      : `→ ${ratio}/${totalImpaired}筋を説明`;
-    html += `<div class="loc-level">
-      <span class="loc-icon">🔶</span>
-      <span class="loc-name">末梢神経</span>
-      <span class="loc-detail"><span class="${cls}">${bestNerve[0]}（${ratio}筋）</span> ${explanation}</span>
-    </div>`;
+      : '→ ' + ratio + '/' + totalImpaired + '筋を説明';
+    html += '<div class="loc-level">\n' +
+'      <span class="loc-icon">🔶</span>\n' +
+'      <span class="loc-name">末梢神経</span>\n' +
+'      <span class="loc-detail"><span class="' + cls + '">' + bestNerve[0] + '（' + ratio + '筋）</span> ' + explanation + '</span>\n' +
+'    </div>';
   }
 
   // 束
   if (bestCord) {
-    const label = CORD_LABELS[bestCord[0]] || bestCord[0];
-    const ratio = bestCord[1].length;
-    const cls = ratio === totalImpaired ? 'loc-match' : ratio >= totalImpaired * 0.7 ? 'loc-partial' : 'loc-no';
-    const explanation = ratio === totalImpaired
+    var label = CORD_LABELS[bestCord[0]] || bestCord[0];
+    var ratio = bestCord[1].length;
+    var cls = ratio === totalImpaired ? 'loc-match' : ratio >= totalImpaired * 0.7 ? 'loc-partial' : 'loc-no';
+    var explanation = ratio === totalImpaired
       ? '→ 全障害筋を説明可能 ✓'
-      : `→ ${ratio}/${totalImpaired}筋を説明`;
-    html += `<div class="loc-level">
-      <span class="loc-icon">🟢</span>
-      <span class="loc-name">神経束</span>
-      <span class="loc-detail"><span class="${cls}">${label}（${ratio}筋）</span> ${explanation}</span>
-    </div>`;
+      : '→ ' + ratio + '/' + totalImpaired + '筋を説明';
+    html += '<div class="loc-level">\n' +
+'      <span class="loc-icon">🟢</span>\n' +
+'      <span class="loc-name">神経束</span>\n' +
+'      <span class="loc-detail"><span class="' + cls + '">' + label + '（' + ratio + '筋）</span> ' + explanation + '</span>\n' +
+'    </div>';
   }
 
   // 幹
   if (bestTrunk) {
-    const label = TRUNK_LABELS[bestTrunk[0]] || bestTrunk[0];
-    const ratio = bestTrunk[1].length;
-    const cls = ratio === totalImpaired ? 'loc-match' : ratio >= totalImpaired * 0.7 ? 'loc-partial' : 'loc-no';
-    const explanation = ratio === totalImpaired
+    var label = TRUNK_LABELS[bestTrunk[0]] || bestTrunk[0];
+    var ratio = bestTrunk[1].length;
+    var cls = ratio === totalImpaired ? 'loc-match' : ratio >= totalImpaired * 0.7 ? 'loc-partial' : 'loc-no';
+    var explanation = ratio === totalImpaired
       ? '→ 全障害筋を説明可能 ✓'
-      : `→ ${ratio}/${totalImpaired}筋を説明`;
-    html += `<div class="loc-level">
-      <span class="loc-icon">🟣</span>
-      <span class="loc-name">神経幹</span>
-      <span class="loc-detail"><span class="${cls}">${label}（${ratio}筋）</span> ${explanation}</span>
-    </div>`;
+      : '→ ' + ratio + '/' + totalImpaired + '筋を説明';
+    html += '<div class="loc-level">\n' +
+'      <span class="loc-icon">🟣</span>\n' +
+'      <span class="loc-name">神経幹</span>\n' +
+'      <span class="loc-detail"><span class="' + cls + '">' + label + '（' + ratio + '筋）</span> ' + explanation + '</span>\n' +
+'    </div>';
   }
 
   // 脊髄
   if (topSpinal.length > 0) {
-    const top = topSpinal.slice(0, 3).map(([l,v]) => `${l}(${v}pt)`).join(', ');
-    html += `<div class="loc-level">
-      <span class="loc-icon">🔷</span>
-      <span class="loc-name">脊髄レベル</span>
-      <span class="loc-detail">最高スコア: ${top}</span>
-    </div>`;
+    var top = topSpinal.slice(0, 3).map(function(_p19) { var l = _p19[0], v = _p19[1]; return '' + l + '(' + v + 'pt)'; }).join(', ');
+    html += '<div class="loc-level">\n' +
+'      <span class="loc-icon">🔷</span>\n' +
+'      <span class="loc-name">脊髄レベル</span>\n' +
+'      <span class="loc-detail">最高スコア: ' + top + '</span>\n' +
+'    </div>';
   }
 
   html += '</div>';
@@ -697,70 +697,70 @@ function renderLocalization(sortedLevels, nerveEntries, cordEntries, trunkEntrie
 
 // 臨床解釈
 function renderInterpretation(sortedLevels, nerveEntries, cordEntries, trunkEntries, levelScores) {
-  let html = '<div class="interpretation"><h4>💡 解釈の手引き</h4><ul>';
+  var html = '<div class="interpretation"><h4>💡 解釈の手引き</h4><ul>';
 
   // 脊髄レベル解釈
-  const topLevels = sortedLevels.filter(([_,v]) => v > 0);
+  var topLevels = sortedLevels.filter(function(_p20) { var _ = _p20[0], v = _p20[1]; return v > 0; });
   if (topLevels.length > 0) {
-    const top3 = topLevels.slice(0, 3);
-    html += `<li><strong>最もスコアが高い脊髄レベル:</strong> <span class="highlight">${top3.map(([l,v])=>`${l}(${v}pt)`).join(' > ')}</span></li>`;
+    var top3 = topLevels.slice(0, 3);
+    html += '<li><strong>最もスコアが高い脊髄レベル:</strong> <span class="highlight">' + top3.map(function(_p21) { var l = _p21[0], v = _p21[1]; return '' + l + '(' + v + 'pt)'; }).join(' > ') + '</span></li>';
 
     // 連続性チェック
-    const allLevels = Object.keys(levelScores);
-    const impaired = topLevels.map(([l]) => l);
-    const indices = impaired.map(l => allLevels.indexOf(l)).sort((a,b) => a - b);
+    var allLevels = Object.keys(levelScores);
+    var impaired = topLevels.map(function(_p22) { var l = _p22[0]; return l; });
+    var indices = impaired.map(function(l) { return allLevels.indexOf(l); }).sort(function(a, b) { return a - b; });
     if (indices.length >= 2) {
-      const isContiguous = indices.every((v, i) => i === 0 || v === indices[i-1] + 1);
+      var isContiguous = indices.every(function(v, i) { return i === 0 || v === indices[i-1] + 1; });
       if (isContiguous) {
-        html += `<li>障害レベルが <strong>${impaired[0]}〜${impaired[impaired.length-1]}</strong> と連続 → <strong>脊髄症/神経根障害</strong>を示唆</li>`;
+        html += '<li>障害レベルが <strong>' + impaired[0] + '〜' + impaired[impaired.length-1] + '</strong> と連続 → <strong>脊髄症/神経根障害</strong>を示唆</li>';
       } else {
-        html += `<li>障害レベルが非連続 → <strong>多発性神経根障害</strong>や<strong>末梢神経障害の組み合わせ</strong>を考慮</li>`;
+        html += '<li>障害レベルが非連続 → <strong>多発性神経根障害</strong>や<strong>末梢神経障害の組み合わせ</strong>を考慮</li>';
       }
     }
   }
 
   // 末梢神経解釈
   if (nerveEntries.length > 0) {
-    const topNerve = nerveEntries[0];
-    html += `<li><strong>最も障害筋が多い神経:</strong> <span class="highlight">${topNerve[0]}（${topNerve[1].length}筋）</span></li>`;
+    var topNerve = nerveEntries[0];
+    html += '<li><strong>最も障害筋が多い神経:</strong> <span class="highlight">' + topNerve[0] + '（' + topNerve[1].length + '筋）</span></li>';
     if (nerveEntries.length === 1) {
-      html += `<li>単一神経の支配筋のみ低下 → <strong>末梢神経単独障害</strong>の可能性が高い</li>`;
+      html += '<li>単一神経の支配筋のみ低下 → <strong>末梢神経単独障害</strong>の可能性が高い</li>';
     } else if (nerveEntries.length >= 3) {
-      html += `<li>複数の神経に跨る筋力低下 → <strong>より近位（束・幹・脊髄根）の障害</strong>を考慮</li>`;
+      html += '<li>複数の神経に跨る筋力低下 → <strong>より近位（束・幹・脊髄根）の障害</strong>を考慮</li>';
     }
   }
 
   // 神経束解釈
   if (cordEntries.length > 0) {
-    const affectedCords = cordEntries.map(([c]) => CORD_LABELS[c] || c);
+    var affectedCords = cordEntries.map(function(_p23) { var c = _p23[0]; return CORD_LABELS[c] || c; });
     if (cordEntries.length === 1) {
-      const c = cordEntries[0][0];
-      const label = CORD_LABELS[c];
-      html += `<li><strong>${label}のみの障害</strong> → <span class="highlight">${label}単独障害</span>の可能性</li>`;
+      var c = cordEntries[0][0];
+      var label = CORD_LABELS[c];
+      html += '<li><strong>' + label + 'のみの障害</strong> → <span class="highlight">' + label + '単独障害</span>の可能性</li>';
     } else if (cordEntries.length >= 3) {
-      html += `<li>全ての神経束に障害 → <strong>神経幹レベル以上の近位障害</strong>を考慮</li>`;
+      html += '<li>全ての神経束に障害 → <strong>神経幹レベル以上の近位障害</strong>を考慮</li>';
     } else {
-      html += `<li>障害された神経束: <strong>${affectedCords.join('、')}</strong></li>`;
+      html += '<li>障害された神経束: <strong>' + affectedCords.join('、') + '</strong></li>';
     }
   }
 
   // 神経幹解釈
   if (trunkEntries.length > 0) {
     if (trunkEntries.length === 1) {
-      const t = trunkEntries[0][0];
-      const label = TRUNK_LABELS[t];
+      var t = trunkEntries[0][0];
+      var label = TRUNK_LABELS[t];
       if (t === '上') {
-        html += `<li><strong>${label}のみの障害</strong> → <span class="highlight">Erb-Duchenne型（上位型）麻痺パターン</span>（C5-C6優位）</li>`;
+        html += '<li><strong>' + label + 'のみの障害</strong> → <span class="highlight">Erb-Duchenne型（上位型）麻痺パターン</span>（C5-C6優位）</li>';
       } else if (t === '下') {
-        html += `<li><strong>${label}のみの障害</strong> → <span class="highlight">Klumpke型（下位型）麻痺パターン</span>（C8-T1優位）</li>`;
+        html += '<li><strong>' + label + 'のみの障害</strong> → <span class="highlight">Klumpke型（下位型）麻痺パターン</span>（C8-T1優位）</li>';
       } else {
-        html += `<li><strong>${label}のみの障害</strong> → <span class="highlight">${label}単独障害パターン</span></li>`;
+        html += '<li><strong>' + label + 'のみの障害</strong> → <span class="highlight">' + label + '単独障害パターン</span></li>';
       }
     } else if (trunkEntries.length >= 3) {
-      html += `<li>全ての神経幹に障害 → <strong>広範な腕神経叢障害</strong>を考慮</li>`;
+      html += '<li>全ての神経幹に障害 → <strong>広範な腕神経叢障害</strong>を考慮</li>';
     } else {
-      const labels = trunkEntries.map(([t]) => TRUNK_LABELS[t]);
-      html += `<li>障害された神経幹: <strong>${labels.join('、')}</strong></li>`;
+      var labels = trunkEntries.map(function(_p24) { var t = _p24[0]; return TRUNK_LABELS[t]; });
+      html += '<li>障害された神経幹: <strong>' + labels.join('、') + '</strong></li>';
     }
   }
 

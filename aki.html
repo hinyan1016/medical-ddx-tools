@@ -390,7 +390,7 @@
 
 <script>
 // ===== 疾患データ =====
-const DISEASES = {
+var DISEASES = {
   // 腎前性
   dehydration: {
     name: "脱水・出血",
@@ -504,7 +504,7 @@ const DISEASES = {
 };
 
 // ===== ステップ定義 =====
-const STEPS = [
+var STEPS = [
   {
     id: "urgency",
     title: "緊急度の評価",
@@ -609,10 +609,10 @@ const STEPS = [
 
 // ===== スコアリングロジック =====
 function calcScores(answers) {
-  const scores = {};
-  Object.keys(DISEASES).forEach(k => scores[k] = 0);
+  var scores = {};
+  Object.keys(DISEASES).forEach(function(k) { return scores[k] = 0; });
 
-  const a = {
+  var a = {
     urgency: answers.urgency || [],
     obstruction: answers.obstruction,
     hemodynamics: answers.hemodynamics,
@@ -672,64 +672,64 @@ function calcScores(answers) {
 }
 
 // ===== UI描画 =====
-const app = document.getElementById("app");
-let currentStep = 0;
-const answers = {};
+var app = document.getElementById("app");
+var currentStep = 0;
+var answers = {};
 
 function render() {
-  let html = "";
+  var html = "";
 
   // アルゴリズム説明
-  html += `<div class="algo-note">
-    <strong>使い方：</strong>各ステップの質問に順番に回答してください。すべてのステップ完了後に鑑別診断の候補が優先順位付きで表示されます。<br>
-    <strong>参考基準：</strong>KDIGO AKI診断基準 — 48時間以内にCr≧0.3 mg/dL上昇、または7日以内にCr≧基礎値の1.5倍、または尿量<0.5 mL/kg/時が6時間以上持続。
-  </div>`;
+  html += '<div class="algo-note">\n' +
+'    <strong>使い方：</strong>各ステップの質問に順番に回答してください。すべてのステップ完了後に鑑別診断の候補が優先順位付きで表示されます。<br>\n' +
+'    <strong>参考基準：</strong>KDIGO AKI診断基準 — 48時間以内にCr≧0.3 mg/dL上昇、または7日以内にCr≧基礎値の1.5倍、または尿量<0.5 mL/kg/時が6時間以上持続。\n' +
+'  </div>';
 
   // 各ステップ
-  STEPS.forEach((step, i) => {
-    const isActive = i === currentStep;
-    const isDone = i < currentStep;
-    const cls = isDone ? "completed" : (isActive ? "" : "inactive");
+  STEPS.forEach(function(step, i) {
+    var isActive = i === currentStep;
+    var isDone = i < currentStep;
+    var cls = isDone ? "completed" : (isActive ? "" : "inactive");
 
-    html += `<div class="step-card ${cls}" id="step-${i}">`;
-    html += `<div class="step-header">
-      <span class="step-number ${isDone ? 'done' : ''}">${isDone ? '✓' : (i + 1)}</span>
-      <span class="step-title">${step.title}</span>
-    </div>`;
+    html += '<div class="step-card ' + cls + '" id="step-' + i + '">';
+    html += '<div class="step-header">\n' +
+'      <span class="step-number ' + (isDone ? 'done' : '') + '">' + (isDone ? '✓' : (i + 1)) + '</span>\n' +
+'      <span class="step-title">' + step.title + '</span>\n' +
+'    </div>';
 
     if (isActive || isDone) {
-      html += `<div class="step-body">`;
-      html += `<p style="font-weight:600;margin-bottom:4px;">${step.question}</p>`;
-      if (step.hint) html += `<p class="hint">${step.hint}</p>`;
+      html += '<div class="step-body">';
+      html += '<p style="font-weight:600;margin-bottom:4px;">' + step.question + '</p>';
+      if (step.hint) html += '<p class="hint">' + step.hint + '</p>';
 
       if (step.type === "single") {
-        html += `<div class="option-group">`;
-        step.options.forEach(opt => {
-          const selected = answers[step.id] === opt.value;
-          html += `<button class="option-btn ${selected ? 'selected' : ''}"
-            onclick="selectSingle('${step.id}', '${opt.value}', ${i})" ${isDone && !isActive ? 'disabled' : ''}>
-            <span class="icon">${opt.icon || ''}</span>${opt.label}
-          </button>`;
+        html += '<div class="option-group">';
+        step.options.forEach(function(opt) {
+          var selected = answers[step.id] === opt.value;
+          html += '<button class="option-btn ' + (selected ? 'selected' : '') + '"\n' +
+'            onclick="selectSingle(\'' + step.id + '\', \'' + opt.value + '\', ' + i + ')" ' + (isDone && !isActive ? 'disabled' : '') + '>\n' +
+'            <span class="icon">' + (opt.icon || '') + '</span>' + opt.label + '\n' +
+'          </button>';
         });
-        html += `</div>`;
+        html += '</div>';
       } else {
-        html += `<div class="checklist">`;
-        const currentAnswers = answers[step.id] || [];
-        step.options.forEach(opt => {
-          const checked = currentAnswers.includes(opt.value);
-          html += `<div class="check-item" onclick="toggleCheck('${step.id}', '${opt.value}', this)">
-            <input type="checkbox" ${checked ? 'checked' : ''} ${isDone && !isActive ? 'disabled' : ''}>
-            <label>${opt.label}</label>
-          </div>`;
+        html += '<div class="checklist">';
+        var currentAnswers = answers[step.id] || [];
+        step.options.forEach(function(opt) {
+          var checked = currentAnswers.includes(opt.value);
+          html += '<div class="check-item" onclick="toggleCheck(\'' + step.id + '\', \'' + opt.value + '\', this)">\n' +
+'            <input type="checkbox" ' + (checked ? 'checked' : '') + ' ' + (isDone && !isActive ? 'disabled' : '') + '>\n' +
+'            <label>' + opt.label + '</label>\n' +
+'          </div>';
         });
-        html += `</div>`;
+        html += '</div>';
         if (isActive) {
-          html += `<button class="next-btn" onclick="nextStep(${i})">次へ ▶</button>`;
+          html += '<button class="next-btn" onclick="nextStep(' + i + ')">次へ ▶</button>';
         }
       }
-      html += `</div>`;
+      html += '</div>';
     }
-    html += `</div>`;
+    html += '</div>';
   });
 
   // 結果パネル
@@ -739,15 +739,15 @@ function render() {
 
   // リセットボタン
   if (currentStep > 0) {
-    html += `<button class="reset-btn" onclick="resetAll()">🔄 最初からやり直す</button>`;
+    html += '<button class="reset-btn" onclick="resetAll()">🔄 最初からやり直す</button>';
   }
 
   app.innerHTML = html;
 
   // 結果表示後スクロール
   if (currentStep >= STEPS.length) {
-    setTimeout(() => {
-      const panel = document.querySelector('.result-panel');
+    setTimeout(function() {
+      var panel = document.querySelector('.result-panel');
       if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
   }
@@ -762,7 +762,7 @@ function selectSingle(stepId, value, stepIndex) {
 
 function toggleCheck(stepId, value, el) {
   if (!answers[stepId]) answers[stepId] = [];
-  const idx = answers[stepId].indexOf(value);
+  var idx = answers[stepId].indexOf(value);
   if (idx >= 0) answers[stepId].splice(idx, 1);
   else answers[stepId].push(value);
 
@@ -770,7 +770,7 @@ function toggleCheck(stepId, value, el) {
   if (value === "none" && answers[stepId].includes("none")) {
     answers[stepId] = ["none"];
   } else if (value !== "none" && answers[stepId].includes("none")) {
-    answers[stepId] = answers[stepId].filter(v => v !== "none");
+    answers[stepId] = answers[stepId].filter(function(v) { return v !== "none"; });
   }
 
   render();
@@ -783,118 +783,118 @@ function nextStep(stepIndex) {
 }
 
 function scrollToStep(idx) {
-  setTimeout(() => {
-    const el = document.getElementById(`step-${idx}`) || document.querySelector('.result-panel');
+  setTimeout(function() {
+    var el = document.getElementById('step-' + idx) || document.querySelector('.result-panel');
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, 100);
 }
 
 function resetAll() {
-  Object.keys(answers).forEach(k => delete answers[k]);
+  Object.keys(answers).forEach(function(k) { return delete answers[k]; });
   currentStep = 0;
   render();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function renderResults() {
-  const scores = calcScores(answers);
-  const sorted = Object.entries(scores)
-    .filter(([, s]) => s > 0)
-    .sort((a, b) => b[1] - a[1]);
+  var scores = calcScores(answers);
+  var sorted = Object.entries(scores)
+    .filter(function(_p1) { var s = _p1[1]; return s > 0; })
+    .sort(function(a, b) { return b[1] - a[1]; });
 
-  const maxScore = sorted.length > 0 ? sorted[0][1] : 0;
+  var maxScore = sorted.length > 0 ? sorted[0][1] : 0;
 
-  let html = `<div class="result-panel show">`;
-  html += `<div class="result-header">📋 鑑別診断の結果</div>`;
-  html += `<div class="result-body">`;
+  var html = '<div class="result-panel show">';
+  html += '<div class="result-header">📋 鑑別診断の結果</div>';
+  html += '<div class="result-body">';
 
   // 緊急アラート
-  const urgency = answers.urgency || [];
-  const hasUrgency = urgency.length > 0 && !urgency.includes("none");
+  var urgency = answers.urgency || [];
+  var hasUrgency = urgency.length > 0 && !urgency.includes("none");
   if (hasUrgency) {
-    html += `<div class="alert-box danger">
-      <div class="alert-title">🚨 緊急透析の適応を検討</div>
-      <div>`;
+    html += '<div class="alert-box danger">\n' +
+'      <div class="alert-title">🚨 緊急透析の適応を検討</div>\n' +
+'      <div>';
     if (urgency.includes("hyperK")) html += "・難治性高カリウム血症<br>";
     if (urgency.includes("pulm_edema")) html += "・利尿薬不応性肺水腫<br>";
     if (urgency.includes("acidosis")) html += "・重症代謝性アシドーシス<br>";
     if (urgency.includes("uremia")) html += "・尿毒症症状<br>";
     if (urgency.includes("toxin")) html += "・中毒物質の除去<br>";
-    html += `<strong>→ 腎臓内科へ緊急相談し透析導入を検討してください。</strong></div></div>`;
+    html += '<strong>→ 腎臓内科へ緊急相談し透析導入を検討してください。</strong></div></div>';
   }
 
   // 初期対応サマリー
-  html += `<div class="summary-box">`;
-  html += `<div class="summary-title">🎯 初期対応の3つの柱</div>`;
-  html += `<strong>①</strong> 尿路閉塞の除外（エコー・導尿）<br>`;
-  html += `<strong>②</strong> 循環不全の是正（輸液・昇圧薬）<br>`;
-  html += `<strong>③</strong> 腎毒性物質の中止（NSAIDs、RAS阻害薬、造影剤など）`;
-  html += `</div>`;
+  html += '<div class="summary-box">';
+  html += '<div class="summary-title">🎯 初期対応の3つの柱</div>';
+  html += '<strong>①</strong> 尿路閉塞の除外（エコー・導尿）<br>';
+  html += '<strong>②</strong> 循環不全の是正（輸液・昇圧薬）<br>';
+  html += '<strong>③</strong> 腎毒性物質の中止（NSAIDs、RAS阻害薬、造影剤など）';
+  html += '</div>';
 
   // 鑑別診断リスト
   if (sorted.length === 0) {
-    html += `<p style="color:var(--gray);text-align:center;padding:20px;">入力された情報からは特定の鑑別が示唆されませんでした。追加の検査情報を入力してください。</p>`;
+    html += '<p style="color:var(--gray);text-align:center;padding:20px;">入力された情報からは特定の鑑別が示唆されませんでした。追加の検査情報を入力してください。</p>';
   } else {
-    sorted.forEach(([key, score]) => {
-      const d = DISEASES[key];
-      let level, levelLabel;
+    sorted.forEach(function(_p2) { var key = _p2[0], score = _p2[1];
+      var d = DISEASES[key];
+      var level, levelLabel;
       if (score >= maxScore * 0.7 && score >= 3) { level = "high"; levelLabel = "可能性 高"; }
       else if (score >= maxScore * 0.4 && score >= 2) { level = "medium"; levelLabel = "可能性 中"; }
       else { level = "low"; levelLabel = "可能性 低"; }
 
-      html += `<div class="dx-card ${level}">`;
-      html += `<div class="dx-name">
-        <span>${d.emoji}</span>
-        <span>${d.name}</span>
-        <span class="prob-badge">${levelLabel}</span>
-      </div>`;
-      html += `<span class="category-label ${d.catClass}">${d.category}</span>`;
-      html += `<div class="dx-detail">${d.detail}</div>`;
-      html += `<div class="dx-workup">🔍 追加検査: ${d.workup}</div>`;
-      html += `</div>`;
+      html += '<div class="dx-card ' + level + '">';
+      html += '<div class="dx-name">\n' +
+'        <span>' + d.emoji + '</span>\n' +
+'        <span>' + d.name + '</span>\n' +
+'        <span class="prob-badge">' + levelLabel + '</span>\n' +
+'      </div>';
+      html += '<span class="category-label ' + d.catClass + '">' + d.category + '</span>';
+      html += '<div class="dx-detail">' + d.detail + '</div>';
+      html += '<div class="dx-workup">🔍 追加検査: ' + d.workup + '</div>';
+      html += '</div>';
     });
   }
 
   // 腎臓内科コンサルトの赤旗
-  html += `<div class="red-flag-box">
-    <div class="rf-title">🚩 腎臓内科への早期相談を考慮すべき状況</div>
-    <ul>
-      <li>KDIGOステージ2以上（Cr≧基礎値の2倍、または尿量<0.5 mL/kg/時×12時間以上）</li>
-      <li>原因不明のAKI</li>
-      <li>蛋白尿＋血尿の合併（糸球体疾患の疑い）</li>
-      <li>赤血球円柱の出現</li>
-      <li>溶血性貧血＋血小板減少（TMAの疑い）</li>
-      <li>電解質・酸塩基平衡のコントロール困難</li>
-      <li>透析導入が視野に入る場合</li>
-      <li>高度CKD（eGFR<30）の既存・単腎患者</li>
-      <li>腎移植患者</li>
-      <li>妊娠中のAKI</li>
-    </ul>
-  </div>`;
+  html += '<div class="red-flag-box">\n' +
+'    <div class="rf-title">🚩 腎臓内科への早期相談を考慮すべき状況</div>\n' +
+'    <ul>\n' +
+'      <li>KDIGOステージ2以上（Cr≧基礎値の2倍、または尿量<0.5 mL/kg/時×12時間以上）</li>\n' +
+'      <li>原因不明のAKI</li>\n' +
+'      <li>蛋白尿＋血尿の合併（糸球体疾患の疑い）</li>\n' +
+'      <li>赤血球円柱の出現</li>\n' +
+'      <li>溶血性貧血＋血小板減少（TMAの疑い）</li>\n' +
+'      <li>電解質・酸塩基平衡のコントロール困難</li>\n' +
+'      <li>透析導入が視野に入る場合</li>\n' +
+'      <li>高度CKD（eGFR<30）の既存・単腎患者</li>\n' +
+'      <li>腎移植患者</li>\n' +
+'      <li>妊娠中のAKI</li>\n' +
+'    </ul>\n' +
+'  </div>';
 
   // 注意事項
-  html += `<div class="summary-box" style="margin-top:16px;">
-    <div class="summary-title">⚠️ AKI管理の注意事項</div>
-    <strong>推奨されない治療：</strong>低用量ドパミン（AKI予防・治療目的）、ルーチンの利尿薬投与（容量過剰管理以外では推奨されない）<br>
-    <strong>退院後フォロー：</strong>AKI後はCKD移行・心血管リスク増加のため、数週〜3か月でCr/eGFR再評価。原因薬剤の再投与は慎重に判断。血圧管理と脱水回避を指導。
-  </div>`;
+  html += '<div class="summary-box" style="margin-top:16px;">\n' +
+'    <div class="summary-title">⚠️ AKI管理の注意事項</div>\n' +
+'    <strong>推奨されない治療：</strong>低用量ドパミン（AKI予防・治療目的）、ルーチンの利尿薬投与（容量過剰管理以外では推奨されない）<br>\n' +
+'    <strong>退院後フォロー：</strong>AKI後はCKD移行・心血管リスク増加のため、数週〜3か月でCr/eGFR再評価。原因薬剤の再投与は慎重に判断。血圧管理と脱水回避を指導。\n' +
+'  </div>';
 
   // KDIGOステージ表
-  html += `<div style="margin-top:20px;">`;
-  html += `<p style="font-weight:700;color:var(--navy);margin-bottom:8px;">📊 KDIGO AKIステージ分類（参考）</p>`;
-  html += `<table class="kdigo-table">
-    <thead>
-      <tr><th>ステージ</th><th>血清Cr基準</th><th>尿量基準</th></tr>
-    </thead>
-    <tbody>
-      <tr><td><strong>1</strong></td><td>≧0.3 mg/dL上昇 or 基礎値の1.5〜1.9倍</td><td><0.5 mL/kg/時 ×6〜12時間</td></tr>
-      <tr><td><strong>2</strong></td><td>基礎値の2.0〜2.9倍</td><td><0.5 mL/kg/時 ×12時間以上</td></tr>
-      <tr><td><strong>3</strong></td><td>基礎値の3倍以上 or ≧4.0 mg/dL or 透析導入</td><td><0.3 mL/kg/時 ×24時間以上 or 無尿12時間以上</td></tr>
-    </tbody>
-  </table>`;
-  html += `</div>`;
+  html += '<div style="margin-top:20px;">';
+  html += '<p style="font-weight:700;color:var(--navy);margin-bottom:8px;">📊 KDIGO AKIステージ分類（参考）</p>';
+  html += '<table class="kdigo-table">\n' +
+'    <thead>\n' +
+'      <tr><th>ステージ</th><th>血清Cr基準</th><th>尿量基準</th></tr>\n' +
+'    </thead>\n' +
+'    <tbody>\n' +
+'      <tr><td><strong>1</strong></td><td>≧0.3 mg/dL上昇 or 基礎値の1.5〜1.9倍</td><td><0.5 mL/kg/時 ×6〜12時間</td></tr>\n' +
+'      <tr><td><strong>2</strong></td><td>基礎値の2.0〜2.9倍</td><td><0.5 mL/kg/時 ×12時間以上</td></tr>\n' +
+'      <tr><td><strong>3</strong></td><td>基礎値の3倍以上 or ≧4.0 mg/dL or 透析導入</td><td><0.3 mL/kg/時 ×24時間以上 or 無尿12時間以上</td></tr>\n' +
+'    </tbody>\n' +
+'  </table>';
+  html += '</div>';
 
-  html += `</div></div>`;
+  html += '</div></div>';
   return html;
 }
 

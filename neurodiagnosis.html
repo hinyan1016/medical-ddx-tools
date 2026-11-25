@@ -598,7 +598,7 @@
 
 <script>
     // ===== Data =====
-    const locations = [
+    var locations = [
         { name:"海綿静脈洞", en:"Cavernous Sinus", nerves:["III","IV","VI","V1","V2","Sympathetic"],
           desc:"有痛性眼筋麻痺、Horner症候群。Tolosa-Hunt、動脈瘤、血栓症。", urgent:true },
         { name:"眼窩先端", en:"Orbital Apex", nerves:["II","III","IV","VI","V1"],
@@ -617,11 +617,11 @@
           desc:"通常、対側片麻痺や感覚障害（長経路徴候）を伴う。", urgent:true }
     ];
 
-    const checkboxes = document.querySelectorAll('.symptom-cb');
+    var checkboxes = document.querySelectorAll('.symptom-cb');
 
     // ===== Toggle item =====
     function toggleItem(label) {
-        const cb = label.querySelector('input');
+        var cb = label.querySelector('input');
         cb.checked = !cb.checked;
         label.classList.toggle('checked', cb.checked);
         updateGroupCounts();
@@ -635,13 +635,13 @@
 
     // ===== Tab switching =====
     function switchTab(name) {
-        document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-page').forEach(function(p) { return p.classList.remove('active'); });
         document.getElementById('page-' + name).classList.add('active');
         // Mobile tabs
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(function(b) { return b.classList.remove('active'); });
         document.getElementById(name === 'input' ? 'tabInput' : 'tabResult').classList.add('active');
         // Desktop tabs
-        document.querySelectorAll('.desktop-tab').forEach((b, i) => {
+        document.querySelectorAll('.desktop-tab').forEach(function(b, i) {
             b.classList.toggle('active', (name === 'input' && i === 0) || (name === 'result' && i === 1));
         });
         window.scrollTo(0, 0);
@@ -649,9 +649,9 @@
 
     // ===== Update group badge counts =====
     function updateGroupCounts() {
-        ['eye','face','throat'].forEach(g => {
-            const cnt = document.querySelectorAll('.symptom-cb[data-group="'+g+'"]:checked').length;
-            const badge = document.getElementById('count-' + g);
+        ['eye','face','throat'].forEach(function(g) {
+            var cnt = document.querySelectorAll('.symptom-cb[data-group="'+g+'"]:checked').length;
+            var badge = document.getElementById('count-' + g);
             badge.textContent = cnt;
             badge.classList.toggle('visible', cnt > 0);
         });
@@ -659,29 +659,29 @@
 
     // ===== Main analyze =====
     function analyze() {
-        let detected = new Set();
-        let checkedCount = 0;
+        var detected = new Set();
+        var checkedCount = 0;
 
-        checkboxes.forEach(cb => {
+        checkboxes.forEach(function(cb) {
             if (cb.checked) {
                 checkedCount++;
-                cb.getAttribute('data-nerves').split(',').forEach(n => detected.add(n));
+                cb.getAttribute('data-nerves').split(',').forEach(function(n) { return detected.add(n); });
             }
         });
 
         // Nerve bar
-        const nerveBar = document.getElementById('nerveBar');
-        const nerveBadges = document.getElementById('nerveBadges');
+        var nerveBar = document.getElementById('nerveBar');
+        var nerveBadges = document.getElementById('nerveBadges');
         if (checkedCount > 0) {
             nerveBar.classList.add('visible');
             nerveBadges.innerHTML = Array.from(detected).sort()
-                .map(n => '<span class="nerve-badge">' + n + '</span>').join('');
+                .map(function(n) { return '<span class="nerve-badge">' + n + '</span>'; }).join('');
         } else {
             nerveBar.classList.remove('visible');
         }
 
         // Result badge
-        const resultBadge = document.getElementById('resultBadge');
+        var resultBadge = document.getElementById('resultBadge');
 
         if (checkedCount === 0) {
             document.getElementById('resultEmpty').style.display = '';
@@ -691,33 +691,33 @@
         }
 
         // Score
-        let scores = locations.map(loc => {
-            const matched = loc.nerves.filter(n => detected.has(n));
-            const coverage = detected.size > 0 ? matched.length / detected.size : 0;
-            return { ...loc, matchCount: matched.length, matchNerves: matched, coverage };
+        var scores = locations.map(function(loc) {
+            var matched = loc.nerves.filter(function(n) { return detected.has(n); });
+            var coverage = detected.size > 0 ? matched.length / detected.size : 0;
+            return Object.assign({}, loc, { matchCount: matched.length, matchNerves: matched, coverage: coverage });
         });
-        scores.sort((a, b) => b.matchCount !== a.matchCount ? b.matchCount - a.matchCount : b.coverage - a.coverage);
+        scores.sort(function(a, b) { return b.matchCount !== a.matchCount ? b.matchCount - a.matchCount : b.coverage - a.coverage; });
 
         // Render
-        const list = document.getElementById('diagnosisList');
+        var list = document.getElementById('diagnosisList');
         list.innerHTML = '';
-        let highCount = 0;
+        var highCount = 0;
 
-        scores.forEach(s => {
+        scores.forEach(function(s) {
             if (s.matchCount < 1) return;
-            const isHigh = (s.matchCount >= 2 && s.coverage >= 0.6) || (checkedCount === 1 && s.matchCount === 1);
+            var isHigh = (s.matchCount >= 2 && s.coverage >= 0.6) || (checkedCount === 1 && s.matchCount === 1);
             if (isHigh) highCount++;
 
-            const level = isHigh ? 'high' : (s.matchCount >= 2 ? 'mid' : 'low');
-            const pct = Math.round(s.coverage * 100);
+            var level = isHigh ? 'high' : (s.matchCount >= 2 ? 'mid' : 'low');
+            var pct = Math.round(s.coverage * 100);
 
-            const nerveStr = s.nerves.map(n =>
-                s.matchNerves.includes(n) ? '<b>' + n + '</b>' : '<span style="color:#ccc;">' + n + '</span>'
+            var nerveStr = s.nerves.map(function(n) {
+                return s.matchNerves.includes(n) ? '<b>' + n + '</b>' : '<span style="color:#ccc;">' + n + '</span>'; }
             ).join(' ');
 
-            const barColor = isHigh ? 'var(--red)' : (s.matchCount >= 2 ? 'var(--blue)' : '#ccc');
+            var barColor = isHigh ? 'var(--red)' : (s.matchCount >= 2 ? 'var(--blue)' : '#ccc');
 
-            const card = document.createElement('div');
+            var card = document.createElement('div');
             card.className = 'result-card ' + level;
             card.innerHTML =
                 '<div class="score-pill' + (isHigh ? ' high-score' : '') + '">' + pct + '%</div>' +
@@ -730,8 +730,8 @@
         });
 
         // Warning
-        const top = scores[0];
-        const warn = document.getElementById('warningCard');
+        var top = scores[0];
+        var warn = document.getElementById('warningCard');
         warn.classList.toggle('visible', checkedCount >= 2 && top.coverage < 0.7);
 
         // Show result
@@ -739,14 +739,14 @@
         document.getElementById('resultContent').style.display = '';
 
         // Badge
-        resultBadge.textContent = highCount || scores.filter(s => s.matchCount >= 1).length;
+        resultBadge.textContent = highCount || scores.filter(function(s) { return s.matchCount >= 1; }).length;
         resultBadge.classList.add('visible');
     }
 
     // ===== Reset =====
     function resetAll() {
-        checkboxes.forEach(cb => { cb.checked = false; });
-        document.querySelectorAll('.item').forEach(i => i.classList.remove('checked'));
+        checkboxes.forEach(function(cb) { cb.checked = false; });
+        document.querySelectorAll('.item').forEach(function(i) { return i.classList.remove('checked'); });
         updateGroupCounts();
         analyze();
         switchTab('input');

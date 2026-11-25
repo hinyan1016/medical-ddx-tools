@@ -610,28 +610,28 @@
 </div>
 
 <script>
-const steps = ['step1','step2','step3','step4','step5','step6','step7','summary'];
-const stepLabels = ['1','2','3','4','5','6','7','結果'];
-let currentStep = 0;
-let data = {};
+var steps = ['step1','step2','step3','step4','step5','step6','step7','summary'];
+var stepLabels = ['1','2','3','4','5','6','7','結果'];
+var currentStep = 0;
+var data = {};
 
 // Scores for each category
-let scores = { prerenal: 0, renal: 0, postrenal: 0, other: 0 };
+var scores = { prerenal: 0, renal: 0, postrenal: 0, other: 0 };
 
 function initProgress() {
-  const bar = document.getElementById('progressBar');
+  var bar = document.getElementById('progressBar');
   bar.innerHTML = '';
-  stepLabels.forEach((label, i) => {
-    const el = document.createElement('div');
+  stepLabels.forEach(function(label, i) {
+    var el = document.createElement('div');
     el.className = 'progress-step' + (i === 0 ? ' active' : '');
     el.textContent = label;
-    el.onclick = () => { if (i <= currentStep) goToStepIndex(i); };
+    el.onclick = function() { if (i <= currentStep) goToStepIndex(i); };
     bar.appendChild(el);
   });
 }
 
 function updateProgress() {
-  document.querySelectorAll('.progress-step').forEach((d, i) => {
+  document.querySelectorAll('.progress-step').forEach(function(d, i) {
     d.className = 'progress-step';
     if (i < currentStep) d.classList.add('done');
     if (i === currentStep) d.classList.add('active');
@@ -639,7 +639,7 @@ function updateProgress() {
 }
 
 function goToStep(id) {
-  const idx = steps.indexOf(id);
+  var idx = steps.indexOf(id);
   if (idx >= 0) goToStepIndex(idx);
 }
 function goToStepIndex(idx) {
@@ -654,19 +654,19 @@ function nextStep() {
 }
 
 function calcRatio() {
-  const bun = parseFloat(document.getElementById('bunValue').value);
-  const cr = parseFloat(document.getElementById('crValue').value);
-  const el = document.getElementById('ratioDisplay');
+  var bun = parseFloat(document.getElementById('bunValue').value);
+  var cr = parseFloat(document.getElementById('crValue').value);
+  var el = document.getElementById('ratioDisplay');
 
   if (isNaN(bun) || isNaN(cr) || cr === 0) {
     el.style.display = 'none';
     return;
   }
 
-  const ratio = (bun / cr).toFixed(1);
+  var ratio = (bun / cr).toFixed(1);
   el.style.display = 'block';
 
-  let cls, label;
+  var cls, label;
   if (ratio > 20) {
     cls = 'ratio-prerenal';
     label = '腎前性 / 腎外性を示唆';
@@ -678,15 +678,15 @@ function calcRatio() {
     label = '肝機能低下 / 低栄養を示唆';
   }
 
-  el.innerHTML = `<div class="ratio-display ${cls}">
-    <div class="ratio-value">BUN/Cr = ${ratio}</div>
-    <div class="ratio-label">${label}</div>
-  </div>`;
+  el.innerHTML = '<div class="ratio-display ' + cls + '">\n' +
+'    <div class="ratio-value">BUN/Cr = ' + ratio + '</div>\n' +
+'    <div class="ratio-label">' + label + '</div>\n' +
+'  </div>';
 }
 
 function evaluateStep1() {
-  const bun = parseFloat(document.getElementById('bunValue').value);
-  const cr = parseFloat(document.getElementById('crValue').value);
+  var bun = parseFloat(document.getElementById('bunValue').value);
+  var cr = parseFloat(document.getElementById('crValue').value);
 
   if (isNaN(bun) || isNaN(cr) || cr === 0) {
     document.getElementById('ratioDisplay').style.display = 'block';
@@ -722,16 +722,16 @@ function evaluateStep1() {
 }
 
 function getChecked(name) {
-  return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(c => c.value);
+  return Array.from(document.querySelectorAll('input[name="' + name + '"]:checked')).map(function(c) { return c.value; });
 }
 
 function evaluateStep2() {
-  const vals = getChecked('dehydration');
+  var vals = getChecked('dehydration');
   data.dehydration = vals;
-  const el = document.getElementById('dehydrationResult');
+  var el = document.getElementById('dehydrationResult');
   el.style.display = 'block';
 
-  const dehydrationSigns = vals.filter(v => v !== 'none');
+  var dehydrationSigns = vals.filter(function(v) { return v !== 'none'; });
   if (dehydrationSigns.length >= 2) {
     scores.prerenal += 3;
     el.innerHTML = '<div class="result-box result-warning">複数の脱水所見あり &#8212; 腎前性の可能性が高いです。補液による改善を評価してください。</div>';
@@ -745,13 +745,13 @@ function evaluateStep2() {
 }
 
 function evaluateStep3() {
-  const vals = getChecked('bleeding');
+  var vals = getChecked('bleeding');
   data.bleeding = vals;
-  const el = document.getElementById('bleedingResult');
+  var el = document.getElementById('bleedingResult');
   el.style.display = 'block';
 
-  const bleedingSigns = vals.filter(v => v !== 'none');
-  if (bleedingSigns.some(v => ['melena', 'hematemesis'].includes(v))) {
+  var bleedingSigns = vals.filter(function(v) { return v !== 'none'; });
+  if (bleedingSigns.some(function(v) { return ['melena', 'hematemesis'].includes(v); })) {
     scores.other += 4;
     scores.prerenal += 1;
     el.innerHTML = '<div class="result-box result-abnormal"><strong>上部消化管出血の所見あり</strong> &#8212; 血液中タンパク代謝によるBUN産生増加が原因の可能性が高いです。BUN/Cr比30以上も起こり得ます。緊急の消化管精査を検討してください。</div>';
@@ -765,16 +765,16 @@ function evaluateStep3() {
 }
 
 function evaluateStep4() {
-  const vals = getChecked('urinary');
+  var vals = getChecked('urinary');
   data.urinary = vals;
-  const el = document.getElementById('urinaryResult');
+  var el = document.getElementById('urinaryResult');
   el.style.display = 'block';
 
-  const uriSigns = vals.filter(v => v !== 'none');
-  if (uriSigns.some(v => ['hydronephrosis', 'distension', 'tumor'].includes(v))) {
+  var uriSigns = vals.filter(function(v) { return v !== 'none'; });
+  if (uriSigns.some(function(v) { return ['hydronephrosis', 'distension', 'tumor'].includes(v); })) {
     scores.postrenal += 4;
     el.innerHTML = '<div class="result-box result-abnormal">尿路閉塞を強く示唆する所見あり &#8212; 腎後性の可能性が高いです。泌尿器科的介入を検討してください。</div>';
-  } else if (uriSigns.some(v => ['dysuria', 'prostate', 'stone'].includes(v))) {
+  } else if (uriSigns.some(function(v) { return ['dysuria', 'prostate', 'stone'].includes(v); })) {
     scores.postrenal += 2;
     el.innerHTML = '<div class="result-box result-warning">尿路閉塞のリスク因子あり &#8212; 膀胱エコー・腎エコーでの確認を推奨します。</div>';
   } else if (uriSigns.includes('oliguria')) {
@@ -788,13 +788,13 @@ function evaluateStep4() {
 }
 
 function evaluateStep5() {
-  const vals = getChecked('meds');
+  var vals = getChecked('meds');
   data.meds = vals;
-  const el = document.getElementById('medsResult');
+  var el = document.getElementById('medsResult');
   el.style.display = 'block';
 
-  const medSigns = vals.filter(v => v !== 'none');
-  let msgs = [];
+  var medSigns = vals.filter(function(v) { return v !== 'none'; });
+  var msgs = [];
 
   if (medSigns.includes('steroid')) {
     scores.other += 2;
@@ -819,7 +819,7 @@ function evaluateStep5() {
   }
 
   if (msgs.length > 0) {
-    el.innerHTML = `<div class="result-box result-warning"><strong>薬剤・食事因子:</strong><ul style="margin-top:6px;">${msgs.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
+    el.innerHTML = '<div class="result-box result-warning"><strong>薬剤・食事因子:</strong><ul style="margin-top:6px;">' + msgs.map(function(m) { return '<li>' + m + '</li>'; }).join('') + '</ul></div>';
   } else {
     el.innerHTML = '<div class="result-box result-normal">BUN上昇に関連する薬剤・食事因子なし</div>';
   }
@@ -827,13 +827,13 @@ function evaluateStep5() {
 }
 
 function evaluateStep6() {
-  const vals = getChecked('comorbid');
+  var vals = getChecked('comorbid');
   data.comorbid = vals;
-  const el = document.getElementById('comorbidResult');
+  var el = document.getElementById('comorbidResult');
   el.style.display = 'block';
 
-  const cSigns = vals.filter(v => v !== 'none');
-  let msgs = [];
+  var cSigns = vals.filter(function(v) { return v !== 'none'; });
+  var msgs = [];
 
   if (cSigns.includes('hf')) {
     scores.prerenal += 2;
@@ -868,7 +868,7 @@ function evaluateStep6() {
   }
 
   if (msgs.length > 0) {
-    el.innerHTML = `<div class="result-box result-warning"><ul style="margin:0;">${msgs.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
+    el.innerHTML = '<div class="result-box result-warning"><ul style="margin:0;">' + msgs.map(function(m) { return '<li>' + m + '</li>'; }).join('') + '</ul></div>';
   } else {
     el.innerHTML = '<div class="result-box result-normal">特記すべき基礎疾患なし</div>';
   }
@@ -876,16 +876,16 @@ function evaluateStep6() {
 }
 
 function evaluateStep7() {
-  const ua = document.querySelector('input[name="ua"]:checked')?.value;
-  const echo = document.querySelector('input[name="echo"]:checked')?.value;
-  const fena = parseFloat(document.getElementById('fenaValue').value);
+  var ua = (document.querySelector('input[name="ua"]:checked') || {}).value;
+  var echo = (document.querySelector('input[name="echo"]:checked') || {}).value;
+  var fena = parseFloat(document.getElementById('fenaValue').value);
   data.ua = ua;
   data.echo = echo;
   data.fena = fena;
 
-  const el = document.getElementById('labResult');
+  var el = document.getElementById('labResult');
   el.style.display = 'block';
-  let msgs = [];
+  var msgs = [];
 
   if (ua === 'proteinuria' || ua === 'cast') {
     scores.renal += 2;
@@ -907,17 +907,17 @@ function evaluateStep7() {
   if (!isNaN(fena)) {
     if (fena < 1) {
       scores.prerenal += 3;
-      msgs.push(`FENa ${fena}% (<1%) &#8212; 腎前性を強く示唆`);
+      msgs.push('FENa ' + fena + '% (<1%) &#8212; 腎前性を強く示唆');
     } else if (fena >= 2) {
       scores.renal += 3;
-      msgs.push(`FENa ${fena}% (>=2%) &#8212; 腎性（ATNなど）を示唆`);
+      msgs.push('FENa ' + fena + '% (>=2%) &#8212; 腎性（ATNなど）を示唆');
     } else {
-      msgs.push(`FENa ${fena}% &#8212; 境界域`);
+      msgs.push('FENa ' + fena + '% &#8212; 境界域');
     }
   }
 
   if (msgs.length > 0) {
-    el.innerHTML = `<div class="result-box result-info"><ul style="margin:0;">${msgs.map(m => `<li>${m}</li>`).join('')}</ul></div>`;
+    el.innerHTML = '<div class="result-box result-info"><ul style="margin:0;">' + msgs.map(function(m) { return '<li>' + m + '</li>'; }).join('') + '</ul></div>';
   } else {
     el.innerHTML = '<div class="result-box result-normal">追加検査結果入力なし</div>';
   }
@@ -927,12 +927,12 @@ function evaluateStep7() {
 
 function showSummary() {
   goToStep('summary');
-  const el = document.getElementById('summaryContent');
+  var el = document.getElementById('summaryContent');
 
   // Normalize scores
-  const maxScore = Math.max(scores.prerenal, scores.renal, scores.postrenal, scores.other, 1);
+  var maxScore = Math.max(scores.prerenal, scores.renal, scores.postrenal, scores.other, 1);
 
-  const categories = [
+  var categories = [
     { key: 'prerenal', name: '腎前性', tag: 'tag-prerenal', color: '#e67e22',
       causes: '脱水、出血、心不全、ショック、利尿薬',
       detail: 'BUN/Cr比 >20、FENa <1%が特徴。補液で改善すれば確定的。' },
@@ -948,49 +948,49 @@ function showSummary() {
   ];
 
   // Sort by score
-  categories.sort((a, b) => scores[b.key] - scores[a.key]);
+  categories.sort(function(a, b) { return scores[b.key] - scores[a.key]; });
 
-  let html = '';
+  var html = '';
 
   // Basic data summary
   html += '<div style="margin-bottom:16px;">';
-  html += `<div class="summary-item"><span class="summary-label">BUN</span><span class="summary-value positive">${data.bun} mg/dL</span></div>`;
-  html += `<div class="summary-item"><span class="summary-label">Cr</span><span class="summary-value">${data.cr} mg/dL</span></div>`;
-  html += `<div class="summary-item"><span class="summary-label">BUN/Cr比</span><span class="summary-value positive">${data.ratio}</span></div>`;
+  html += '<div class="summary-item"><span class="summary-label">BUN</span><span class="summary-value positive">' + data.bun + ' mg/dL</span></div>';
+  html += '<div class="summary-item"><span class="summary-label">Cr</span><span class="summary-value">' + data.cr + ' mg/dL</span></div>';
+  html += '<div class="summary-item"><span class="summary-label">BUN/Cr比</span><span class="summary-value positive">' + data.ratio + '</span></div>';
   if (!isNaN(data.fena)) {
-    html += `<div class="summary-item"><span class="summary-label">FENa</span><span class="summary-value">${data.fena}%</span></div>`;
+    html += '<div class="summary-item"><span class="summary-label">FENa</span><span class="summary-value">' + data.fena + '%</span></div>';
   }
   html += '</div>';
 
   // Category likelihood
   html += '<h3 style="color:var(--primary); margin-bottom:12px;">鑑別カテゴリー（可能性順）</h3>';
 
-  categories.forEach((cat, i) => {
-    const score = scores[cat.key];
-    const pct = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
-    const highlighted = i === 0 && score > 0 ? 'highlighted' : '';
+  categories.forEach(function(cat, i) {
+    var score = scores[cat.key];
+    var pct = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
+    var highlighted = i === 0 && score > 0 ? 'highlighted' : '';
 
-    html += `<div class="category-card ${highlighted}">
-      <h3><span class="category-tag ${cat.tag}">${cat.name}</span>
-        ${i === 0 && score > 0 ? '<span style="font-size:0.8rem; color:var(--warning);">&#9733; 最も疑わしい</span>' : ''}
-      </h3>
-      <div class="likelihood-bar">
-        <div class="likelihood-fill" style="width:${pct}%; background:${cat.color};"></div>
-      </div>
-      <div style="font-size:0.82rem; color:var(--text-light); margin-bottom:4px;">
-        <strong>主な原因:</strong> ${cat.causes}
-      </div>
-      <div style="font-size:0.82rem; color:var(--text-light);">
-        ${cat.detail}
-      </div>
-    </div>`;
+    html += '<div class="category-card ' + highlighted + '">\n' +
+'      <h3><span class="category-tag ' + cat.tag + '">' + cat.name + '</span>\n' +
+'        ' + (i === 0 && score > 0 ? '<span style="font-size:0.8rem; color:var(--warning);">&#9733; 最も疑わしい</span>' : '') + '\n' +
+'      </h3>\n' +
+'      <div class="likelihood-bar">\n' +
+'        <div class="likelihood-fill" style="width:' + pct + '%; background:' + cat.color + ';"></div>\n' +
+'      </div>\n' +
+'      <div style="font-size:0.82rem; color:var(--text-light); margin-bottom:4px;">\n' +
+'        <strong>主な原因:</strong> ' + cat.causes + '\n' +
+'      </div>\n' +
+'      <div style="font-size:0.82rem; color:var(--text-light);">\n' +
+'        ' + cat.detail + '\n' +
+'      </div>\n' +
+'    </div>';
   });
 
   // Recommended actions
   html += '<h3 style="color:var(--primary); margin:16px 0 8px;">推奨される次のアクション</h3>';
 
-  let actions = [];
-  const topCat = categories[0].key;
+  var actions = [];
+  var topCat = categories[0].key;
 
   if (topCat === 'prerenal') {
     actions.push('補液負荷試験（生理食塩水投与後のBUN・Cr再検）');
@@ -1021,8 +1021,8 @@ function showSummary() {
   if (isNaN(data.fena)) actions.push('FENa（尿中Na排泄分画）の測定を検討');
 
   html += '<div style="margin-top:8px;">';
-  actions.forEach(a => {
-    html += `<div class="result-box result-info" style="margin:6px 0; padding:8px 12px;">${a}</div>`;
+  actions.forEach(function(a) {
+    html += '<div class="result-box result-info" style="margin:6px 0; padding:8px 12px;">' + a + '</div>';
   });
   html += '</div>';
 
@@ -1032,12 +1032,12 @@ function showSummary() {
 function resetAll() {
   data = {};
   scores = { prerenal: 0, renal: 0, postrenal: 0, other: 0 };
-  document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
-  document.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
+  document.querySelectorAll('input[type="radio"]').forEach(function(r) { return r.checked = false; });
+  document.querySelectorAll('input[type="checkbox"]').forEach(function(c) { return c.checked = false; });
   document.getElementById('bunValue').value = '';
   document.getElementById('crValue').value = '';
   document.getElementById('fenaValue').value = '';
-  document.querySelectorAll('[id$="Result"], #ratioDisplay').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('[id$="Result"], #ratioDisplay').forEach(function(el) { return el.style.display = 'none'; });
   document.getElementById('summaryContent').innerHTML = '';
   goToStepIndex(0);
 }

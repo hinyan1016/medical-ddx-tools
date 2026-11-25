@@ -211,7 +211,7 @@
 
 <script>
 // ===== 疾患データ =====
-const DISEASES = {
+var DISEASES = {
   deep_venous_thrombosis: {
     name: "脳深部静脈血栓症",
     emoji: "🔴",
@@ -313,7 +313,7 @@ const DISEASES = {
 };
 
 // ===== ステップ定義 =====
-const STEPS = [
+var STEPS = [
   {
     id: "onset",
     title: "発症様式・臨床経過",
@@ -431,11 +431,11 @@ const STEPS = [
 
 // ===== スコアリングエンジン =====
 function calcScores(answers) {
-  const s = {};
-  Object.keys(DISEASES).forEach(k => s[k] = 0);
+  var s = {};
+  Object.keys(DISEASES).forEach(function(k) { return s[k] = 0; });
 
   // --- Step 1: 発症様式 ---
-  const onset = answers.onset;
+  var onset = answers.onset;
   if (onset === "hyperacute") {
     s.percheron_infarction += 5; s.deep_venous_thrombosis += 3;
   } else if (onset === "acute") {
@@ -450,8 +450,8 @@ function calcScores(answers) {
   }
 
   // --- Step 2: MRI画像パターン ---
-  const mri = answers.mri_pattern || [];
-  mri.forEach(v => {
+  var mri = answers.mri_pattern || [];
+  mri.forEach(function(v) {
     if (v === "dwi_restriction") {
       s.percheron_infarction += 5; s.cns_lymphoma += 4; s.cjd += 4;
     }
@@ -486,8 +486,8 @@ function calcScores(answers) {
   });
 
   // --- Step 3: 臨床症状 ---
-  const sx = answers.symptoms || [];
-  sx.forEach(v => {
+  var sx = answers.symptoms || [];
+  sx.forEach(function(v) {
     if (v === "consciousness") {
       s.percheron_infarction += 4; s.deep_venous_thrombosis += 3; s.ane += 3;
     }
@@ -528,8 +528,8 @@ function calcScores(answers) {
   });
 
   // --- Step 4: 背景・既往歴 ---
-  const hx = answers.history || [];
-  hx.forEach(v => {
+  var hx = answers.history || [];
+  hx.forEach(function(v) {
     if (v === "malnutrition") { s.wernicke += 5; }
     if (v === "rapid_na_correction") { s.osmotic_demyelination += 7; }
     if (v === "liver_disease") { s.hepatic_encephalopathy += 6; }
@@ -545,8 +545,8 @@ function calcScores(answers) {
   });
 
   // --- Step 5: 検査所見 ---
-  const labs = answers.labs || [];
-  labs.forEach(v => {
+  var labs = answers.labs || [];
+  labs.forEach(function(v) {
     if (v === "csf_pleocytosis") {
       s.japanese_encephalitis += 4; s.autoimmune_encephalitis += 3; s.adem += 2;
     }
@@ -566,8 +566,8 @@ function calcScores(answers) {
   });
 
   // --- Step 6: 追加画像所見 ---
-  const img = answers.additional_imaging || [];
-  img.forEach(v => {
+  var img = answers.additional_imaging || [];
+  img.forEach(function(v) {
     if (v === "venous_thrombus") { s.deep_venous_thrombosis += 7; }
     if (v === "avf_confirmed") { s.dural_avf += 7; }
     if (v === "midbrain_infarct") { s.percheron_infarction += 5; }
@@ -583,123 +583,123 @@ function calcScores(answers) {
 
 function rankDiseases(scores) {
   return Object.entries(scores)
-    .map(([key, score]) => ({ key, score, ...DISEASES[key] }))
-    .filter(d => d.score > 0)
-    .sort((a, b) => b.score - a.score);
+    .map(function(_p1) { var key = _p1[0], score = _p1[1]; return (Object.assign({}, { key: key, score: score }, DISEASES[key])); })
+    .filter(function(d) { return d.score > 0; })
+    .sort(function(a, b) { return b.score - a.score; });
 }
 
 function getProbLevel(score, maxScore) {
-  const ratio = score / Math.max(maxScore, 1);
+  var ratio = score / Math.max(maxScore, 1);
   if (ratio >= 0.7) return { level: "high", label: "可能性 高" };
   if (ratio >= 0.35) return { level: "medium", label: "可能性 中" };
   return { level: "low", label: "可能性 低" };
 }
 
 // ===== UIレンダリング =====
-let currentStep = 0;
-const answers = {};
+var currentStep = 0;
+var answers = {};
 
 function render() {
-  const app = document.getElementById("app");
-  let html = "";
+  var app = document.getElementById("app");
+  var html = "";
 
-  html += `<div class="emergency-box">
-    <strong>🚨 まず血管性病変を除外：</strong>脳深部静脈血栓症・Percheron動脈梗塞・硬膜動静脈瘻は<strong>見逃すと致命的</strong>です。DWI/ADC、SWI、MRV/CTVを最優先で評価してください。
-  </div>`;
+  html += '<div class="emergency-box">\n' +
+'    <strong>🚨 まず血管性病変を除外：</strong>脳深部静脈血栓症・Percheron動脈梗塞・硬膜動静脈瘻は<strong>見逃すと致命的</strong>です。DWI/ADC、SWI、MRV/CTVを最優先で評価してください。\n' +
+'  </div>';
 
-  html += `<div class="algo-note">
-    <strong>💡 診断アルゴリズム:</strong>
-    発症様式 → MRI画像パターン → 臨床症状 → 背景・既往歴 → 検査所見 → 追加画像 で系統的に鑑別します。<br>
-    「<strong>血管性 → 感染・炎症 → 代謝・栄養 → 腫瘍 → 変性</strong>」の順に除外していくのが安全なアプローチです。
-  </div>`;
+  html += '<div class="algo-note">\n' +
+'    <strong>💡 診断アルゴリズム:</strong>\n' +
+'    発症様式 → MRI画像パターン → 臨床症状 → 背景・既往歴 → 検査所見 → 追加画像 で系統的に鑑別します。<br>\n' +
+'    「<strong>血管性 → 感染・炎症 → 代謝・栄養 → 腫瘍 → 変性</strong>」の順に除外していくのが安全なアプローチです。\n' +
+'  </div>';
 
-  STEPS.forEach((step, i) => {
-    const state = i < currentStep ? "completed" : i === currentStep ? "" : "inactive";
-    const numClass = i < currentStep ? "done" : "";
-    html += `<div class="step-card ${state}" id="step-${i}">`;
-    html += `<div class="step-header">
-      <span class="step-number ${numClass}">${i < currentStep ? "✓" : i + 1}</span>
-      <span class="step-title">${step.title}</span>
-    </div>`;
+  STEPS.forEach(function(step, i) {
+    var state = i < currentStep ? "completed" : i === currentStep ? "" : "inactive";
+    var numClass = i < currentStep ? "done" : "";
+    html += '<div class="step-card ' + state + '" id="step-' + i + '">';
+    html += '<div class="step-header">\n' +
+'      <span class="step-number ' + numClass + '">' + (i < currentStep ? "✓" : i + 1) + '</span>\n' +
+'      <span class="step-title">' + step.title + '</span>\n' +
+'    </div>';
 
     if (i <= currentStep) {
-      html += `<div class="step-body">`;
-      html += `<p style="font-weight:600; margin-bottom:4px;">${step.question}</p>`;
-      if (step.hint) html += `<p class="hint">${step.hint}</p>`;
+      html += '<div class="step-body">';
+      html += '<p style="font-weight:600; margin-bottom:4px;">' + step.question + '</p>';
+      if (step.hint) html += '<p class="hint">' + step.hint + '</p>';
 
       if (step.type === "single") {
-        html += `<div class="option-group">`;
-        step.options.forEach(opt => {
-          const sel = answers[step.id] === opt.value ? "selected" : "";
-          html += `<button class="option-btn ${sel}" onclick="selectOption('${step.id}', '${opt.value}', ${i})">
-            <span class="icon">${opt.icon}</span> ${opt.label}
-          </button>`;
+        html += '<div class="option-group">';
+        step.options.forEach(function(opt) {
+          var sel = answers[step.id] === opt.value ? "selected" : "";
+          html += '<button class="option-btn ' + sel + '" onclick="selectOption(\'' + step.id + '\', \'' + opt.value + '\', ' + i + ')">\n' +
+'            <span class="icon">' + opt.icon + '</span> ' + opt.label + '\n' +
+'          </button>';
         });
-        html += `</div>`;
+        html += '</div>';
       } else {
-        html += `<div class="checklist">`;
-        const checked = answers[step.id] || [];
-        step.options.forEach(opt => {
-          const isChecked = checked.includes(opt.value);
-          html += `<div class="check-item" onclick="toggleCheck('${step.id}', '${opt.value}')">
-            <input type="checkbox" ${isChecked ? "checked" : ""} tabindex="-1">
-            <label>${opt.label}</label>
-          </div>`;
+        html += '<div class="checklist">';
+        var checked = answers[step.id] || [];
+        step.options.forEach(function(opt) {
+          var isChecked = checked.includes(opt.value);
+          html += '<div class="check-item" onclick="toggleCheck(\'' + step.id + '\', \'' + opt.value + '\')">\n' +
+'            <input type="checkbox" ' + (isChecked ? "checked" : "") + ' tabindex="-1">\n' +
+'            <label>' + opt.label + '</label>\n' +
+'          </div>';
         });
-        html += `</div>`;
+        html += '</div>';
         if (i === currentStep) {
-          const hasSelection = checked.length > 0;
-          html += `<button class="next-btn" onclick="nextStep(${i})" ${hasSelection ? "" : "disabled"}>
-            次へ ▶
-          </button>`;
+          var hasSelection = checked.length > 0;
+          html += '<button class="next-btn" onclick="nextStep(' + i + ')" ' + (hasSelection ? "" : "disabled") + '>\n' +
+'            次へ ▶\n' +
+'          </button>';
         }
       }
-      html += `</div>`;
+      html += '</div>';
     }
-    html += `</div>`;
+    html += '</div>';
   });
 
   // 結果表示
   if (currentStep >= STEPS.length) {
-    const scores = calcScores(answers);
-    const ranked = rankDiseases(scores);
-    const maxScore = ranked.length > 0 ? ranked[0].score : 1;
+    var scores = calcScores(answers);
+    var ranked = rankDiseases(scores);
+    var maxScore = ranked.length > 0 ? ranked[0].score : 1;
 
-    html += `<div class="result-panel show">`;
-    html += `<div class="result-header">📊 鑑別診断結果</div>`;
-    html += `<div class="result-body">`;
-    html += `<p style="margin-bottom:14px; color:#555; font-size:0.9em;">入力された臨床・画像情報に基づく鑑別疾患の優先度です。確定診断には追加精査が必要です。</p>`;
+    html += '<div class="result-panel show">';
+    html += '<div class="result-header">📊 鑑別診断結果</div>';
+    html += '<div class="result-body">';
+    html += '<p style="margin-bottom:14px; color:#555; font-size:0.9em;">入力された臨床・画像情報に基づく鑑別疾患の優先度です。確定診断には追加精査が必要です。</p>';
 
-    ranked.forEach(d => {
-      const prob = getProbLevel(d.score, maxScore);
-      html += `<div class="dx-card ${prob.level}">
-        <div class="dx-name">
-          ${d.emoji} ${d.name}
-          <span class="prob-badge">${prob.label}</span>
-        </div>
-        <div class="dx-detail">${d.detail}</div>
-        <div class="dx-workup">🔍 <strong>追加検査:</strong> ${d.workup}</div>
-      </div>`;
+    ranked.forEach(function(d) {
+      var prob = getProbLevel(d.score, maxScore);
+      html += '<div class="dx-card ' + prob.level + '">\n' +
+'        <div class="dx-name">\n' +
+'          ' + d.emoji + ' ' + d.name + '\n' +
+'          <span class="prob-badge">' + prob.label + '</span>\n' +
+'        </div>\n' +
+'        <div class="dx-detail">' + d.detail + '</div>\n' +
+'        <div class="dx-workup">🔍 <strong>追加検査:</strong> ' + d.workup + '</div>\n' +
+'      </div>';
     });
 
-    html += `<div class="divider"></div>`;
-    html += `<p style="font-size:0.82em; color:#888; line-height:1.6;">
-      ⚠️ 本ツールは臨床判断の補助を目的としており、確定診断を行うものではありません。<br>
-      血管性病変（深部静脈血栓症・Percheron動脈梗塞・dAVF）は治療が遅れると致命的となるため、最優先で除外してください。<br>
-      Wernicke脳症が疑われる場合は検査結果を待たずにチアミン大量静注を開始してください。<br>
-      PCNSLが鑑別に挙がる場合、生検前のステロイド投与は診断を困難にするため避けてください。
-    </p>`;
-    html += `</div></div>`;
+    html += '<div class="divider"></div>';
+    html += '<p style="font-size:0.82em; color:#888; line-height:1.6;">\n' +
+'      ⚠️ 本ツールは臨床判断の補助を目的としており、確定診断を行うものではありません。<br>\n' +
+'      血管性病変（深部静脈血栓症・Percheron動脈梗塞・dAVF）は治療が遅れると致命的となるため、最優先で除外してください。<br>\n' +
+'      Wernicke脳症が疑われる場合は検査結果を待たずにチアミン大量静注を開始してください。<br>\n' +
+'      PCNSLが鑑別に挙がる場合、生検前のステロイド投与は診断を困難にするため避けてください。\n' +
+'    </p>';
+    html += '</div></div>';
   }
 
-  html += `<button class="reset-btn" onclick="resetAll()">🔄 最初からやり直す</button>`;
+  html += '<button class="reset-btn" onclick="resetAll()">🔄 最初からやり直す</button>';
   app.innerHTML = html;
 
   if (currentStep < STEPS.length) {
-    const el = document.getElementById(`step-${currentStep}`);
+    var el = document.getElementById('step-' + currentStep);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
   } else {
-    const panel = document.querySelector(".result-panel");
+    var panel = document.querySelector(".result-panel");
     if (panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 }
@@ -712,15 +712,15 @@ function selectOption(stepId, value, stepIndex) {
 
 function toggleCheck(stepId, value) {
   if (!answers[stepId]) answers[stepId] = [];
-  const arr = answers[stepId];
-  const idx = arr.indexOf(value);
+  var arr = answers[stepId];
+  var idx = arr.indexOf(value);
 
   if (value === "none" || value === "unknown") {
     answers[stepId] = idx >= 0 ? [] : [value];
   } else {
-    const noneIdx = arr.indexOf("none");
+    var noneIdx = arr.indexOf("none");
     if (noneIdx >= 0) arr.splice(noneIdx, 1);
-    const unkIdx = arr.indexOf("unknown");
+    var unkIdx = arr.indexOf("unknown");
     if (unkIdx >= 0) arr.splice(unkIdx, 1);
     if (idx >= 0) arr.splice(idx, 1);
     else arr.push(value);
@@ -735,7 +735,7 @@ function nextStep(stepIndex) {
 
 function resetAll() {
   currentStep = 0;
-  Object.keys(answers).forEach(k => delete answers[k]);
+  Object.keys(answers).forEach(function(k) { return delete answers[k]; });
   render();
   window.scrollTo({ top: 0, behavior: "smooth" });
 }

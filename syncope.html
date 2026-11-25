@@ -393,7 +393,7 @@
 
 <script>
 // ===== 疾患データ =====
-const DISEASES = {
+var DISEASES = {
   // 反射性失神
   vasovagal: {
     name: "血管迷走神経性失神",
@@ -515,7 +515,7 @@ const DISEASES = {
 };
 
 // ===== ステップ定義 =====
-const STEPS = [
+var STEPS = [
   {
     id: "triggers",
     title: "誘因・状況",
@@ -658,7 +658,7 @@ const STEPS = [
 
 // ===== スコアリングロジック =====
 function calcScores(answers) {
-  const scores = {};
+  var scores = {};
   Object.keys(DISEASES).forEach(function(k) { scores[k] = 0; });
 
   var a = {
@@ -760,12 +760,12 @@ function calcScores(answers) {
 }
 
 // ===== UI描画 =====
-const app = document.getElementById("app");
-let currentStep = 0;
-const answers = {};
+var app = document.getElementById("app");
+var currentStep = 0;
+var answers = {};
 
 function render() {
-  let html = "";
+  var html = "";
 
   // アルゴリズム説明
   html += '<div class="algo-note">';
