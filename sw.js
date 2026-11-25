@@ -1,5 +1,9 @@
-const CACHE_NAME = 'ddx-tools-v462';
+const CACHE_NAME = 'ddx-tools-v463';
 const ASSETS = [
+  './diplopia-differential.html',
+  './slides/mind-body-06-practical-coping/index.html',
+  './infographics/mind-body-06-practical-coping/index.html',
+  './infographics/mind-body-06-practical-coping/infographic.png',
   './slides/mind-body-05-cancer-dementia-causality/index.html',
   './infographics/mind-body-05-cancer-dementia-causality/index.html',
   './infographics/mind-body-05-cancer-dementia-causality/infographic.png',
