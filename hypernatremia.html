@@ -208,7 +208,7 @@
 
 <script>
 // ===== 疾患データ定義 =====
-const DISEASES = {
+var DISEASES = {
   central_di: {
     name: "中枢性尿崩症",
     emoji: "🧠",
@@ -282,7 +282,7 @@ const DISEASES = {
 };
 
 // ===== ステップ定義 =====
-const STEPS = [
+var STEPS = [
   {
     id: "volume",
     title: "体液量（細胞外液量）の評価",
@@ -393,11 +393,11 @@ const STEPS = [
 
 // ===== スコアリングエンジン =====
 function calcScores(answers) {
-  const scores = {};
-  Object.keys(DISEASES).forEach(k => scores[k] = 0);
+  var scores = {};
+  Object.keys(DISEASES).forEach(function(k) { return scores[k] = 0; });
 
   // Step 1: 体液量
-  const vol = answers.volume;
+  var vol = answers.volume;
   if (vol === "decreased") {
     scores.extrarenal_loss += 4;
     scores.gi_loss += 4;
@@ -426,7 +426,7 @@ function calcScores(answers) {
   }
 
   // Step 2: 尿浸透圧
-  const uosm = answers.urine_osm;
+  var uosm = answers.urine_osm;
   if (uosm === "high") { // >800
     scores.extrarenal_loss += 4;
     scores.gi_loss += 4;
@@ -453,7 +453,7 @@ function calcScores(answers) {
   }
 
   // Step 3: 尿量
-  const uvol = answers.urine_volume;
+  var uvol = answers.urine_volume;
   if (uvol === "polyuria") {
     scores.central_di += 4;
     scores.nephrogenic_di += 4;
@@ -475,8 +475,8 @@ function calcScores(answers) {
   }
 
   // Step 4: 検査所見
-  const labs = answers.labs || [];
-  labs.forEach(v => {
+  var labs = answers.labs || [];
+  labs.forEach(function(v) {
     if (v === "high_glucose") { scores.osmotic_diuresis += 6; }
     if (v === "high_bun_cr") { scores.extrarenal_loss += 3; scores.gi_loss += 3; scores.inadequate_intake += 3; }
     if (v === "high_ca") { scores.nephrogenic_di += 4; }
@@ -488,8 +488,8 @@ function calcScores(answers) {
   });
 
   // Step 5: 臨床所見
-  const sx = answers.symptoms || [];
-  sx.forEach(v => {
+  var sx = answers.symptoms || [];
+  sx.forEach(function(v) {
     if (v === "fever_burn") scores.extrarenal_loss += 5;
     if (v === "diarrhea") scores.gi_loss += 5;
     if (v === "polyuria_polydipsia") { scores.central_di += 4; scores.nephrogenic_di += 4; }
@@ -503,8 +503,8 @@ function calcScores(answers) {
   });
 
   // Step 6: 薬剤
-  const drugs = answers.drugs || [];
-  drugs.forEach(v => {
+  var drugs = answers.drugs || [];
+  drugs.forEach(function(v) {
     if (v === "lithium") scores.nephrogenic_di += 6;
     if (v === "loop_diuretic") scores.loop_diuretic += 5;
     if (v === "mannitol") scores.osmotic_diuresis += 5;
@@ -516,7 +516,7 @@ function calcScores(answers) {
   });
 
   // Step 7: DDAVP反応
-  const ddavp = answers.ddavp;
+  var ddavp = answers.ddavp;
   if (ddavp === "responsive") {
     scores.central_di += 6;
     scores.nephrogenic_di -= 4;
@@ -530,118 +530,118 @@ function calcScores(answers) {
 
 function rankDiseases(scores) {
   return Object.entries(scores)
-    .map(([key, score]) => ({ key, score, ...DISEASES[key] }))
-    .filter(d => d.score > 0)
-    .sort((a, b) => b.score - a.score);
+    .map(function(_p1) { var key = _p1[0], score = _p1[1]; return (Object.assign({}, { key: key, score: score }, DISEASES[key])); })
+    .filter(function(d) { return d.score > 0; })
+    .sort(function(a, b) { return b.score - a.score; });
 }
 
 function getProbLevel(score, maxScore) {
-  const ratio = score / Math.max(maxScore, 1);
+  var ratio = score / Math.max(maxScore, 1);
   if (ratio >= 0.7) return { level: "high", label: "可能性 高" };
   if (ratio >= 0.35) return { level: "medium", label: "可能性 中" };
   return { level: "low", label: "可能性 低" };
 }
 
 // ===== UIレンダリング =====
-let currentStep = 0;
-const answers = {};
+var currentStep = 0;
+var answers = {};
 
 function render() {
-  const app = document.getElementById("app");
-  let html = "";
+  var app = document.getElementById("app");
+  var html = "";
 
-  html += `<div class="algo-note">
-    <strong>💡 診断アルゴリズム:</strong>
-    体液量評価 → 尿浸透圧 → 尿量 → 検査所見 → 病歴・薬剤 → DDAVP試験で系統的に鑑別します。<br>
-    高Na血症は本質的に<strong>「水欠乏」</strong>の状態です。水分喪失（腎性 or 腎外性）か、水分摂取不足か、Na過剰負荷かを判別します。
-  </div>`;
+  html += '<div class="algo-note">\n' +
+'    <strong>💡 診断アルゴリズム:</strong>\n' +
+'    体液量評価 → 尿浸透圧 → 尿量 → 検査所見 → 病歴・薬剤 → DDAVP試験で系統的に鑑別します。<br>\n' +
+'    高Na血症は本質的に<strong>「水欠乏」</strong>の状態です。水分喪失（腎性 or 腎外性）か、水分摂取不足か、Na過剰負荷かを判別します。\n' +
+'  </div>';
 
-  STEPS.forEach((step, i) => {
-    const state = i < currentStep ? "completed" : i === currentStep ? "" : "inactive";
-    const numClass = i < currentStep ? "done" : "";
-    html += `<div class="step-card ${state}" id="step-${i}">`;
-    html += `<div class="step-header">
-      <span class="step-number ${numClass}">${i < currentStep ? "✓" : i + 1}</span>
-      <span class="step-title">${step.title}</span>
-    </div>`;
+  STEPS.forEach(function(step, i) {
+    var state = i < currentStep ? "completed" : i === currentStep ? "" : "inactive";
+    var numClass = i < currentStep ? "done" : "";
+    html += '<div class="step-card ' + state + '" id="step-' + i + '">';
+    html += '<div class="step-header">\n' +
+'      <span class="step-number ' + numClass + '">' + (i < currentStep ? "✓" : i + 1) + '</span>\n' +
+'      <span class="step-title">' + step.title + '</span>\n' +
+'    </div>';
 
     if (i <= currentStep) {
-      html += `<div class="step-body">`;
-      html += `<p style="font-weight:600; margin-bottom:4px;">${step.question}</p>`;
-      if (step.hint) html += `<p class="hint">${step.hint}</p>`;
+      html += '<div class="step-body">';
+      html += '<p style="font-weight:600; margin-bottom:4px;">' + step.question + '</p>';
+      if (step.hint) html += '<p class="hint">' + step.hint + '</p>';
 
       if (step.type === "single") {
-        html += `<div class="option-group">`;
-        step.options.forEach(opt => {
-          const sel = answers[step.id] === opt.value ? "selected" : "";
-          html += `<button class="option-btn ${sel}" onclick="selectOption('${step.id}', '${opt.value}', ${i})">
-            <span class="icon">${opt.icon}</span> ${opt.label}
-          </button>`;
+        html += '<div class="option-group">';
+        step.options.forEach(function(opt) {
+          var sel = answers[step.id] === opt.value ? "selected" : "";
+          html += '<button class="option-btn ' + sel + '" onclick="selectOption(\'' + step.id + '\', \'' + opt.value + '\', ' + i + ')">\n' +
+'            <span class="icon">' + opt.icon + '</span> ' + opt.label + '\n' +
+'          </button>';
         });
-        html += `</div>`;
+        html += '</div>';
       } else {
-        html += `<div class="checklist">`;
-        const checked = answers[step.id] || [];
-        step.options.forEach(opt => {
-          const isChecked = checked.includes(opt.value);
-          html += `<div class="check-item" onclick="toggleCheck('${step.id}', '${opt.value}')">
-            <input type="checkbox" ${isChecked ? "checked" : ""} tabindex="-1">
-            <label>${opt.label}</label>
-          </div>`;
+        html += '<div class="checklist">';
+        var checked = answers[step.id] || [];
+        step.options.forEach(function(opt) {
+          var isChecked = checked.includes(opt.value);
+          html += '<div class="check-item" onclick="toggleCheck(\'' + step.id + '\', \'' + opt.value + '\')">\n' +
+'            <input type="checkbox" ' + (isChecked ? "checked" : "") + ' tabindex="-1">\n' +
+'            <label>' + opt.label + '</label>\n' +
+'          </div>';
         });
-        html += `</div>`;
+        html += '</div>';
         if (i === currentStep) {
-          const hasSelection = checked.length > 0;
-          html += `<button class="next-btn" onclick="nextStep(${i})" ${hasSelection ? "" : "disabled"}>
-            次へ ▶
-          </button>`;
+          var hasSelection = checked.length > 0;
+          html += '<button class="next-btn" onclick="nextStep(' + i + ')" ' + (hasSelection ? "" : "disabled") + '>\n' +
+'            次へ ▶\n' +
+'          </button>';
         }
       }
-      html += `</div>`;
+      html += '</div>';
     }
-    html += `</div>`;
+    html += '</div>';
   });
 
   // 結果表示
   if (currentStep >= STEPS.length) {
-    const scores = calcScores(answers);
-    const ranked = rankDiseases(scores);
-    const maxScore = ranked.length > 0 ? ranked[0].score : 1;
+    var scores = calcScores(answers);
+    var ranked = rankDiseases(scores);
+    var maxScore = ranked.length > 0 ? ranked[0].score : 1;
 
-    html += `<div class="result-panel show">`;
-    html += `<div class="result-header">📊 鑑別診断結果</div>`;
-    html += `<div class="result-body">`;
-    html += `<p style="margin-bottom:14px; color:#555; font-size:0.9em;">入力された臨床情報に基づく鑑別疾患の優先度です。確定診断には追加検査が必要です。</p>`;
+    html += '<div class="result-panel show">';
+    html += '<div class="result-header">📊 鑑別診断結果</div>';
+    html += '<div class="result-body">';
+    html += '<p style="margin-bottom:14px; color:#555; font-size:0.9em;">入力された臨床情報に基づく鑑別疾患の優先度です。確定診断には追加検査が必要です。</p>';
 
-    ranked.forEach(d => {
-      const prob = getProbLevel(d.score, maxScore);
-      html += `<div class="dx-card ${prob.level}">
-        <div class="dx-name">
-          ${d.emoji} ${d.name}
-          <span class="prob-badge">${prob.label}</span>
-        </div>
-        <div class="dx-detail">${d.detail}</div>
-        <div class="dx-workup">🔍 <strong>追加検査:</strong> ${d.workup}</div>
-      </div>`;
+    ranked.forEach(function(d) {
+      var prob = getProbLevel(d.score, maxScore);
+      html += '<div class="dx-card ' + prob.level + '">\n' +
+'        <div class="dx-name">\n' +
+'          ' + d.emoji + ' ' + d.name + '\n' +
+'          <span class="prob-badge">' + prob.label + '</span>\n' +
+'        </div>\n' +
+'        <div class="dx-detail">' + d.detail + '</div>\n' +
+'        <div class="dx-workup">🔍 <strong>追加検査:</strong> ' + d.workup + '</div>\n' +
+'      </div>';
     });
 
-    html += `<div class="divider"></div>`;
-    html += `<p style="font-size:0.82em; color:#888; line-height:1.6;">
-      ⚠️ 本ツールは臨床判断の補助を目的としており、確定診断を行うものではありません。<br>
-      補正速度：急性（＜48h）では1 mEq/L/時以下、慢性（≧48h）では10〜12 mEq/L/日以下（≒0.5 mEq/L/時以下）が目安です。<br>
-      慢性例の急速な補正は脳浮腫のリスクがあるため、頻回なNa再検と慎重なモニタリングが必要です。
-    </p>`;
-    html += `</div></div>`;
+    html += '<div class="divider"></div>';
+    html += '<p style="font-size:0.82em; color:#888; line-height:1.6;">\n' +
+'      ⚠️ 本ツールは臨床判断の補助を目的としており、確定診断を行うものではありません。<br>\n' +
+'      補正速度：急性（＜48h）では1 mEq/L/時以下、慢性（≧48h）では10〜12 mEq/L/日以下（≒0.5 mEq/L/時以下）が目安です。<br>\n' +
+'      慢性例の急速な補正は脳浮腫のリスクがあるため、頻回なNa再検と慎重なモニタリングが必要です。\n' +
+'    </p>';
+    html += '</div></div>';
   }
 
-  html += `<button class="reset-btn" onclick="resetAll()">🔄 最初からやり直す</button>`;
+  html += '<button class="reset-btn" onclick="resetAll()">🔄 最初からやり直す</button>';
   app.innerHTML = html;
 
   if (currentStep < STEPS.length) {
-    const el = document.getElementById(`step-${currentStep}`);
+    var el = document.getElementById('step-' + currentStep);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
   } else {
-    const panel = document.querySelector(".result-panel");
+    var panel = document.querySelector(".result-panel");
     if (panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 }
@@ -654,15 +654,15 @@ function selectOption(stepId, value, stepIndex) {
 
 function toggleCheck(stepId, value) {
   if (!answers[stepId]) answers[stepId] = [];
-  const arr = answers[stepId];
-  const idx = arr.indexOf(value);
+  var arr = answers[stepId];
+  var idx = arr.indexOf(value);
 
   if (value === "none" || value === "unknown") {
     answers[stepId] = idx >= 0 ? [] : [value];
   } else {
-    const noneIdx = arr.indexOf("none");
+    var noneIdx = arr.indexOf("none");
     if (noneIdx >= 0) arr.splice(noneIdx, 1);
-    const unkIdx = arr.indexOf("unknown");
+    var unkIdx = arr.indexOf("unknown");
     if (unkIdx >= 0) arr.splice(unkIdx, 1);
     if (idx >= 0) arr.splice(idx, 1);
     else arr.push(value);
@@ -677,7 +677,7 @@ function nextStep(stepIndex) {
 
 function resetAll() {
   currentStep = 0;
-  Object.keys(answers).forEach(k => delete answers[k]);
+  Object.keys(answers).forEach(function(k) { return delete answers[k]; });
   render();
   window.scrollTo({ top: 0, behavior: "smooth" });
 }

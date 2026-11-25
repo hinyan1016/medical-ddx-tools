@@ -717,19 +717,19 @@
 </div>
 
 <script>
-const steps = ['step1','step4','step5','step6','step7','step8','step9','step10','step12','summary'];
-const stepLabels = ['1-3','4','5','6','7','8','9','10-11','12','結果'];
-let currentStep = 0;
-let data = {};
+var steps = ['step1','step4','step5','step6','step7','step8','step9','step10','step12','summary'];
+var stepLabels = ['1-3','4','5','6','7','8','9','10-11','12','結果'];
+var currentStep = 0;
+var data = {};
 
 function initProgress() {
-  const bar = document.getElementById('progressBar');
+  var bar = document.getElementById('progressBar');
   bar.innerHTML = '';
-  stepLabels.forEach((label, i) => {
-    const el = document.createElement('div');
+  stepLabels.forEach(function(label, i) {
+    var el = document.createElement('div');
     el.className = 'progress-step' + (i === 0 ? ' active' : '');
     el.textContent = label;
-    el.onclick = () => {
+    el.onclick = function() {
       if (i <= currentStep) goToStepIndex(i);
     };
     bar.appendChild(el);
@@ -737,8 +737,8 @@ function initProgress() {
 }
 
 function updateProgress() {
-  const dots = document.querySelectorAll('.progress-step');
-  dots.forEach((d, i) => {
+  var dots = document.querySelectorAll('.progress-step');
+  dots.forEach(function(d, i) {
     d.className = 'progress-step';
     if (i < currentStep) d.classList.add('done');
     if (i === currentStep) d.classList.add('active');
@@ -746,7 +746,7 @@ function updateProgress() {
 }
 
 function goToStep(id) {
-  const idx = steps.indexOf(id);
+  var idx = steps.indexOf(id);
   if (idx >= 0) goToStepIndex(idx);
 }
 
@@ -765,9 +765,9 @@ function nextStep() {
 }
 
 function getULN() {
-  const sex = document.querySelector('input[name="sex"]:checked')?.value;
-  const race = document.querySelector('input[name="race"]:checked')?.value;
-  const age = document.querySelector('input[name="age"]:checked')?.value;
+  var sex = (document.querySelector('input[name="sex"]:checked') || {}).value;
+  var race = (document.querySelector('input[name="race"]:checked') || {}).value;
+  var age = (document.querySelector('input[name="age"]:checked') || {}).value;
   if (!sex || !race || !age) return null;
 
   if (race === 'black') {
@@ -778,9 +778,9 @@ function getULN() {
 }
 
 function evaluateCK() {
-  const ck = parseFloat(document.getElementById('ckValue').value);
-  const uln = getULN();
-  const el = document.getElementById('ckResult');
+  var ck = parseFloat(document.getElementById('ckValue').value);
+  var uln = getULN();
+  var el = document.getElementById('ckResult');
 
   if (!uln || isNaN(ck)) {
     el.style.display = 'block';
@@ -790,79 +790,79 @@ function evaluateCK() {
 
   data.ck = ck;
   data.uln = uln;
-  const ratio = (ck / uln).toFixed(1);
+  var ratio = (ck / uln).toFixed(1);
   data.ckRatio = ratio;
 
   el.style.display = 'block';
 
   if (ck <= uln) {
-    el.innerHTML = `<div class="ck-result ck-normal">CK ${ck} U/L = ${ratio}x ULN<br>正常範囲内</div>
-      <div class="result-box result-normal">CK値は基準値内です。高CK血症の精査は不要です。</div>`;
+    el.innerHTML = '<div class="ck-result ck-normal">CK ' + ck + ' U/L = ' + ratio + 'x ULN<br>正常範囲内</div>\n' +
+'      <div class="result-box result-normal">CK値は基準値内です。高CK血症の精査は不要です。</div>';
   } else if (ck <= uln * 1.5) {
-    el.innerHTML = `<div class="ck-result ck-elevated">CK ${ck} U/L = ${ratio}x ULN<br>軽度上昇（精査閾値未満）</div>
-      <div class="result-box result-info">ULNは超えていますが精査閾値（1.5xULN = ${Math.round(uln*1.5)} U/L）未満です。経過観察を推奨します。精査を進める場合は次へ。</div>`;
+    el.innerHTML = '<div class="ck-result ck-elevated">CK ' + ck + ' U/L = ' + ratio + 'x ULN<br>軽度上昇（精査閾値未満）</div>\n' +
+'      <div class="result-box result-info">ULNは超えていますが精査閾値（1.5xULN = ' + Math.round(uln*1.5) + ' U/L）未満です。経過観察を推奨します。精査を進める場合は次へ。</div>';
     setTimeout(nextStep, 100);
   } else if (ck <= uln * 3) {
-    el.innerHTML = `<div class="ck-result ck-elevated">CK ${ck} U/L = ${ratio}x ULN<br>精査閾値超過</div>
-      <div class="result-box result-abnormal">1.5xULN以上です。系統的な鑑別診断を進めてください。</div>`;
+    el.innerHTML = '<div class="ck-result ck-elevated">CK ' + ck + ' U/L = ' + ratio + 'x ULN<br>精査閾値超過</div>\n' +
+'      <div class="result-box result-abnormal">1.5xULN以上です。系統的な鑑別診断を進めてください。</div>';
     setTimeout(nextStep, 100);
   } else if (ck <= uln * 10) {
-    el.innerHTML = `<div class="ck-result ck-high">CK ${ck} U/L = ${ratio}x ULN<br>中等度上昇（3xULN超）</div>
-      <div class="result-box result-abnormal">3xULN以上 &#8212; 筋生検の適応基準の一つを満たします。系統的な鑑別診断を進めてください。</div>`;
+    el.innerHTML = '<div class="ck-result ck-high">CK ' + ck + ' U/L = ' + ratio + 'x ULN<br>中等度上昇（3xULN超）</div>\n' +
+'      <div class="result-box result-abnormal">3xULN以上 &#8212; 筋生検の適応基準の一つを満たします。系統的な鑑別診断を進めてください。</div>';
     setTimeout(nextStep, 100);
   } else {
-    el.innerHTML = `<div class="ck-result ck-high">CK ${ck} U/L = ${ratio}x ULN<br>高度上昇（10xULN超）</div>
-      <div class="result-box result-abnormal">10xULN以上 &#8212; 積極的な精査が必要です。横紋筋融解症のリスクにも注意してください。</div>`;
+    el.innerHTML = '<div class="ck-result ck-high">CK ' + ck + ' U/L = ' + ratio + 'x ULN<br>高度上昇（10xULN超）</div>\n' +
+'      <div class="result-box result-abnormal">10xULN以上 &#8212; 積極的な精査が必要です。横紋筋融解症のリスクにも注意してください。</div>';
     setTimeout(nextStep, 100);
   }
 }
 
 function evaluateNeuro() {
-  const checks = document.querySelectorAll('input[name="neuro"]:checked');
-  data.neuroFindings = Array.from(checks).map(c => c.value);
-  const el = document.getElementById('neuroResult');
+  var checks = document.querySelectorAll('input[name="neuro"]:checked');
+  data.neuroFindings = Array.from(checks).map(function(c) { return c.value; });
+  var el = document.getElementById('neuroResult');
   el.style.display = 'block';
 
   if (data.neuroFindings.length === 0) {
     el.innerHTML = '<div class="result-box result-normal">神経学的異常所見なし &#8212; 無症候性高CK血症として評価を続行します。</div>';
   } else {
-    const labels = {
+    var labels = {
       weakness: '筋力低下', atrophy: '筋萎縮', myalgia: '筋痛', cramps: '筋けいれん',
       myotonia: 'ミオトニア', contracture: '拘縮', fatigue: '易疲労性',
       myoglobinuria: 'ミオグロビン尿', family: '家族歴(+)', mh_family: '悪性高熱症家族歴(+)'
     };
-    const found = data.neuroFindings.map(f => labels[f]).join('、');
-    el.innerHTML = `<div class="result-box result-warning">所見あり: ${found}<br>乏症候性高CK血症として評価を続行します。症状の程度により鑑別の優先度が変わります。</div>`;
+    var found = data.neuroFindings.map(function(f) { return labels[f]; }).join('、');
+    el.innerHTML = '<div class="result-box result-warning">所見あり: ' + found + '<br>乏症候性高CK血症として評価を続行します。症状の程度により鑑別の優先度が変わります。</div>';
   }
   setTimeout(nextStep, 100);
 }
 
 function evaluateAcquired() {
-  const checks = document.querySelectorAll('input[name="acquired"]:checked');
-  data.acquiredCauses = Array.from(checks).map(c => c.value);
-  const el = document.getElementById('acquiredResult');
+  var checks = document.querySelectorAll('input[name="acquired"]:checked');
+  data.acquiredCauses = Array.from(checks).map(function(c) { return c.value; });
+  var el = document.getElementById('acquiredResult');
   el.style.display = 'block';
 
   if (data.acquiredCauses.includes('none') && data.acquiredCauses.length === 1) {
     el.innerHTML = '<div class="result-box result-normal">後天性原因は該当なし &#8212; 神経筋疾患の評価へ進みます。</div>';
   } else {
-    const labels = {
+    var labels = {
       exercise: '過度の運動', trauma: '外傷', statin: 'スタチン', drug: '薬剤性',
       thyroid: '甲状腺機能異常', cardiac: '心疾患', viral: 'ウイルス感染', malignancy: '悪性腫瘍'
     };
-    const found = data.acquiredCauses.filter(c => c !== 'none').map(c => labels[c] || c).join('、');
+    var found = data.acquiredCauses.filter(function(c) { return c !== 'none'; }).map(function(c) { return labels[c] || c; }).join('、');
     if (found) {
-      el.innerHTML = `<div class="result-box result-warning">後天性原因の可能性: ${found}<br>これらの原因を治療・除外した上で、CKが持続的に高値であれば神経筋疾患の評価を続行してください。</div>`;
+      el.innerHTML = '<div class="result-box result-warning">後天性原因の可能性: ' + found + '<br>これらの原因を治療・除外した上で、CKが持続的に高値であれば神経筋疾患の評価を続行してください。</div>';
     }
   }
   setTimeout(nextStep, 100);
 }
 
 function evaluateGAA() {
-  const val = document.querySelector('input[name="gaa"]:checked')?.value;
+  var val = (document.querySelector('input[name="gaa"]:checked') || {}).value;
   if (!val) return;
   data.gaa = val;
-  const el = document.getElementById('gaaResult');
+  var el = document.getElementById('gaaResult');
   el.style.display = 'block';
 
   if (val === 'low') {
@@ -876,66 +876,66 @@ function evaluateGAA() {
 }
 
 function evaluateEMG() {
-  const val = document.querySelector('input[name="emg"]:checked')?.value;
+  var val = (document.querySelector('input[name="emg"]:checked') || {}).value;
   if (!val) return;
   data.emg = val;
-  const el = document.getElementById('emgResult');
+  var el = document.getElementById('emgResult');
   el.style.display = 'block';
 
-  const messages = {
+  var messages = {
     normal: '正常 &#8212; ただし正常EMGはミオパチーを除外しません。引き続き評価を進めてください。',
     myopathic: '筋原性パターン &#8212; 筋疾患（ジストロフィー、炎症性筋疾患、代謝性ミオパチーなど）を示唆します。',
     neurogenic: '神経原性パターン &#8212; 運動ニューロン疾患（ALS、Kennedy病、SMAなど）を考慮してください。これらの疾患ではCKは通常5xULN程度まで上昇します。',
     myotonic: 'ミオトニア放電あり &#8212; 筋強直性ジストロフィーやチャネロパチーを考慮してください。',
     pending: 'EMG未実施 &#8212; 弱い推奨ですが、鑑別に有用な場合があります。'
   };
-  const cls = val === 'normal' || val === 'pending' ? 'result-info' : 'result-warning';
-  el.innerHTML = `<div class="result-box ${cls}">${messages[val]}</div>`;
+  var cls = val === 'normal' || val === 'pending' ? 'result-info' : 'result-warning';
+  el.innerHTML = '<div class="result-box ' + cls + '">' + messages[val] + '</div>';
   setTimeout(nextStep, 100);
 }
 
 function evaluateMetabolic() {
-  const checks = document.querySelectorAll('input[name="metabolic"]:checked');
-  data.metabolic = Array.from(checks).map(c => c.value);
-  const el = document.getElementById('metabolicResult');
+  var checks = document.querySelectorAll('input[name="metabolic"]:checked');
+  data.metabolic = Array.from(checks).map(function(c) { return c.value; });
+  var el = document.getElementById('metabolicResult');
   el.style.display = 'block';
 
   if (data.metabolic.includes('none') || data.metabolic.length === 0) {
     el.innerHTML = '<div class="result-box result-normal">代謝異常なし / 未実施</div>';
   } else {
-    const labels = {
+    var labels = {
       lactate: '乳酸上昇', acylcarnitine: 'アシルカルニチン異常', urine_organic: '尿中有機酸異常'
     };
-    const found = data.metabolic.filter(m => m !== 'none').map(m => labels[m]).join('、');
-    el.innerHTML = `<div class="result-box result-abnormal">代謝異常: ${found}<br>代謝性ミオパチー（McArdle病、脂肪酸酸化異常症、ミトコンドリア病など）の精査を推奨します。</div>`;
+    var found = data.metabolic.filter(function(m) { return m !== 'none'; }).map(function(m) { return labels[m]; }).join('、');
+    el.innerHTML = '<div class="result-box result-abnormal">代謝異常: ' + found + '<br>代謝性ミオパチー（McArdle病、脂肪酸酸化異常症、ミトコンドリア病など）の精査を推奨します。</div>';
   }
   setTimeout(nextStep, 100);
 }
 
 function evaluateMRI() {
-  const val = document.querySelector('input[name="mri"]:checked')?.value;
+  var val = (document.querySelector('input[name="mri"]:checked') || {}).value;
   if (!val) return;
   data.mri = val;
-  const el = document.getElementById('mriResult');
+  var el = document.getElementById('mriResult');
   el.style.display = 'block';
 
-  const messages = {
+  var messages = {
     normal: '正常 &#8212; 筋構造の明らかな異常はありません。',
     fatty: '脂肪変性パターン &#8212; 慢性筋障害（筋ジストロフィーなど）を示唆します。分布パターンからの鑑別が可能です。',
     edema: '浮腫性変化 &#8212; 活動性の炎症を示唆します。炎症性筋疾患の可能性を考慮してください。',
     mixed: '混合パターン &#8212; 慢性・急性の筋障害の併存を示唆します。',
     pending: '未実施 &#8212; 強い推奨の検査です。非侵襲的で診断精度が高いため、実施を推奨します。'
   };
-  const cls = val === 'normal' || val === 'pending' ? 'result-info' : 'result-warning';
-  el.innerHTML = `<div class="result-box ${cls}">${messages[val]}</div>`;
+  var cls = val === 'normal' || val === 'pending' ? 'result-info' : 'result-warning';
+  el.innerHTML = '<div class="result-box ' + cls + '">' + messages[val] + '</div>';
   setTimeout(nextStep, 100);
 }
 
 function evaluateNGS() {
-  const val = document.querySelector('input[name="ngs"]:checked')?.value;
+  var val = (document.querySelector('input[name="ngs"]:checked') || {}).value;
   if (!val) return;
   data.ngs = val;
-  const el = document.getElementById('ngsResult');
+  var el = document.getElementById('ngsResult');
   el.style.display = 'block';
 
   if (val === 'pathogenic') {
@@ -943,8 +943,8 @@ function evaluateNGS() {
   } else if (val === 'vus') {
     el.innerHTML = '<div class="result-box result-warning">VUS検出 &#8212; 筋生検による機能的評価で病的意義の判定を支援できます。筋生検を検討してください。</div>';
     // Auto-check VUS in biopsy criteria
-    setTimeout(() => {
-      const vusBox = document.querySelector('input[name="biopsy"][value="vus"]');
+    setTimeout(function() {
+      var vusBox = document.querySelector('input[name="biopsy"][value="vus"]');
       if (vusBox) vusBox.checked = true;
     }, 200);
   } else if (val === 'negative') {
@@ -956,12 +956,12 @@ function evaluateNGS() {
 }
 
 function evaluateBiopsy() {
-  const checks = document.querySelectorAll('input[name="biopsy"]:checked');
-  data.biopsyCriteria = Array.from(checks).map(c => c.value);
+  var checks = document.querySelectorAll('input[name="biopsy"]:checked');
+  data.biopsyCriteria = Array.from(checks).map(function(c) { return c.value; });
 
   // Auto-populate some based on prior data
   if (data.ckRatio >= 3) {
-    const box = document.querySelector('input[name="biopsy"][value="ck3x"]');
+    var box = document.querySelector('input[name="biopsy"][value="ck3x"]');
     if (box && !box.checked) box.checked = true;
     if (!data.biopsyCriteria.includes('ck3x')) data.biopsyCriteria.push('ck3x');
   }
@@ -971,65 +971,65 @@ function evaluateBiopsy() {
 
 function showSummary() {
   goToStep('summary');
-  const el = document.getElementById('summaryContent');
+  var el = document.getElementById('summaryContent');
 
-  const neuroLabels = {
+  var neuroLabels = {
     weakness: '筋力低下', atrophy: '筋萎縮', myalgia: '筋痛', cramps: '筋けいれん',
     myotonia: 'ミオトニア', contracture: '拘縮', fatigue: '易疲労性',
     myoglobinuria: 'ミオグロビン尿', family: '家族歴(+)', mh_family: 'MH家族歴(+)'
   };
-  const emgLabels = {
+  var emgLabels = {
     normal: '正常', myopathic: '筋原性', neurogenic: '神経原性', myotonic: 'ミオトニア放電', pending: '未実施'
   };
-  const mriLabels = {
+  var mriLabels = {
     normal: '正常', fatty: '脂肪変性', edema: '浮腫性', mixed: '混合', pending: '未実施'
   };
-  const ngsLabels = {
+  var ngsLabels = {
     pathogenic: '病的バリアント(+)', vus: 'VUS', negative: '陰性', pending: '未実施'
   };
-  const gaaLabels = {
+  var gaaLabels = {
     normal: '正常', low: '低下（異常）', pending: '未実施'
   };
 
-  let html = '<div class="summary-section">';
+  var html = '<div class="summary-section">';
 
   // CK
-  html += `<div class="summary-item"><span class="summary-label">CK値</span><span class="summary-value ${data.ckRatio > 1.5 ? 'positive' : ''}">${data.ck || '-'} U/L (${data.ckRatio || '-'}x ULN)</span></div>`;
+  html += '<div class="summary-item"><span class="summary-label">CK値</span><span class="summary-value ' + (data.ckRatio > 1.5 ? 'positive' : '') + '">' + (data.ck || '-') + ' U/L (' + (data.ckRatio || '-') + 'x ULN)</span></div>';
 
   // Neuro
-  const neuroStr = data.neuroFindings?.length > 0 ? data.neuroFindings.map(f => neuroLabels[f]).join(', ') : 'なし';
-  html += `<div class="summary-item"><span class="summary-label">神経学的所見</span><span class="summary-value ${data.neuroFindings?.length > 0 ? 'positive' : 'negative'}">${neuroStr}</span></div>`;
+  var neuroStr = (data.neuroFindings != null ? data.neuroFindings.length : undefined) > 0 ? data.neuroFindings.map(function(f) { return neuroLabels[f]; }).join(', ') : 'なし';
+  html += '<div class="summary-item"><span class="summary-label">神経学的所見</span><span class="summary-value ' + ((data.neuroFindings != null ? data.neuroFindings.length : undefined) > 0 ? 'positive' : 'negative') + '">' + neuroStr + '</span></div>';
 
   // Acquired
-  const acqStr = data.acquiredCauses?.filter(c => c !== 'none').length > 0
-    ? data.acquiredCauses.filter(c => c !== 'none').join(', ')
+  var acqStr = (data.acquiredCauses != null ? data.acquiredCauses.filter(function(c) { return c !== 'none'; }).length : undefined) > 0
+    ? data.acquiredCauses.filter(function(c) { return c !== 'none'; }).join(', ')
     : 'なし';
-  html += `<div class="summary-item"><span class="summary-label">後天性原因</span><span class="summary-value">${acqStr}</span></div>`;
+  html += '<div class="summary-item"><span class="summary-label">後天性原因</span><span class="summary-value">' + acqStr + '</span></div>';
 
   // GAA
-  html += `<div class="summary-item"><span class="summary-label">GAA-DBS</span><span class="summary-value ${data.gaa === 'low' ? 'positive' : ''}">${gaaLabels[data.gaa] || '-'}</span></div>`;
+  html += '<div class="summary-item"><span class="summary-label">GAA-DBS</span><span class="summary-value ' + (data.gaa === 'low' ? 'positive' : '') + '">' + (gaaLabels[data.gaa] || '-') + '</span></div>';
 
   // EMG
-  html += `<div class="summary-item"><span class="summary-label">EMG/NCS</span><span class="summary-value">${emgLabels[data.emg] || '-'}</span></div>`;
+  html += '<div class="summary-item"><span class="summary-label">EMG/NCS</span><span class="summary-value">' + (emgLabels[data.emg] || '-') + '</span></div>';
 
   // Metabolic
-  const metStr = data.metabolic?.filter(m => m !== 'none').length > 0
-    ? data.metabolic.filter(m => m !== 'none').join(', ')
+  var metStr = (data.metabolic != null ? data.metabolic.filter(function(m) { return m !== 'none'; }).length : undefined) > 0
+    ? data.metabolic.filter(function(m) { return m !== 'none'; }).join(', ')
     : '異常なし';
-  html += `<div class="summary-item"><span class="summary-label">代謝検査</span><span class="summary-value ${data.metabolic?.filter(m=>m!=='none').length > 0 ? 'positive' : ''}">${metStr}</span></div>`;
+  html += '<div class="summary-item"><span class="summary-label">代謝検査</span><span class="summary-value ' + ((data.metabolic != null ? data.metabolic.filter(function(m) {return m!=='none'; }).length : undefined) > 0 ? 'positive' : '') + '">' + metStr + '</span></div>';
 
   // MRI
-  html += `<div class="summary-item"><span class="summary-label">筋MRI</span><span class="summary-value ${data.mri && data.mri !== 'normal' && data.mri !== 'pending' ? 'positive' : ''}">${mriLabels[data.mri] || '-'}</span></div>`;
+  html += '<div class="summary-item"><span class="summary-label">筋MRI</span><span class="summary-value ' + (data.mri && data.mri !== 'normal' && data.mri !== 'pending' ? 'positive' : '') + '">' + (mriLabels[data.mri] || '-') + '</span></div>';
 
   // NGS
-  html += `<div class="summary-item"><span class="summary-label">NGS</span><span class="summary-value ${data.ngs === 'pathogenic' ? 'positive' : ''}">${ngsLabels[data.ngs] || '-'}</span></div>`;
+  html += '<div class="summary-item"><span class="summary-label">NGS</span><span class="summary-value ' + (data.ngs === 'pathogenic' ? 'positive' : '') + '">' + (ngsLabels[data.ngs] || '-') + '</span></div>';
 
   html += '</div>';
 
   // Recommendations
   html += '<h3 style="margin-top:20px; color: var(--primary);">推奨アクション</h3>';
 
-  let recommendations = [];
+  var recommendations = [];
 
   if (data.ngs === 'pathogenic') {
     recommendations.push({
@@ -1046,16 +1046,16 @@ function showSummary() {
   }
 
   // Biopsy indication
-  if (data.biopsyCriteria?.length > 0) {
-    const biopsyLabels = {
+  if ((data.biopsyCriteria != null ? data.biopsyCriteria.length : undefined) > 0) {
+    var biopsyLabels = {
       vus: 'VUS検出', metabolic_suspicion: '代謝性ミオパチー疑い',
       inflammatory: '炎症性筋疾患疑い', mri_abnormal: '筋MRI異常',
       ck3x: 'CK >=3xULN', family_hx: '家族歴陽性', young: '25歳未満'
     };
-    const criteria = data.biopsyCriteria.map(c => biopsyLabels[c]).join('、');
+    var criteria = data.biopsyCriteria.map(function(c) { return biopsyLabels[c]; }).join('、');
     recommendations.push({
       type: 'result-warning',
-      text: `筋生検の適応基準を${data.biopsyCriteria.length}項目満たしています: ${criteria}。筋生検の実施を検討してください。筋MRI異常部位があればそこからの生検が推奨されます。`
+      text: '筋生検の適応基準を' + data.biopsyCriteria.length + '項目満たしています: ' + criteria + '。筋生検の実施を検討してください。筋MRI異常部位があればそこからの生検が推奨されます。'
     });
   } else if (data.ngs !== 'pathogenic' && data.gaa !== 'low') {
     recommendations.push({
@@ -1078,7 +1078,7 @@ function showSummary() {
     });
   }
 
-  if (data.metabolic?.some(m => m !== 'none')) {
+  if ((data.metabolic != null ? data.metabolic.some(function(m) { return m !== 'none'; }) : undefined)) {
     recommendations.push({
       type: 'result-warning',
       text: '代謝異常あり &#8212; McArdle病、脂肪酸酸化異常症、ミトコンドリア病等の精査を推奨します。'
@@ -1105,8 +1105,8 @@ function showSummary() {
     });
   }
 
-  recommendations.forEach(r => {
-    html += `<div class="result-box ${r.type}" style="margin:8px 0;">${r.text}</div>`;
+  recommendations.forEach(function(r) {
+    html += '<div class="result-box ' + r.type + '" style="margin:8px 0;">' + r.text + '</div>';
   });
 
   el.innerHTML = html;
@@ -1115,11 +1115,11 @@ function showSummary() {
 function resetAll() {
   data = {};
   // Reset all inputs
-  document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
-  document.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
+  document.querySelectorAll('input[type="radio"]').forEach(function(r) { return r.checked = false; });
+  document.querySelectorAll('input[type="checkbox"]').forEach(function(c) { return c.checked = false; });
   document.getElementById('ckValue').value = '';
   // Hide all results
-  document.querySelectorAll('[id$="Result"]').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('[id$="Result"]').forEach(function(el) { return el.style.display = 'none'; });
   document.getElementById('summaryContent').innerHTML = '';
   goToStepIndex(0);
 }

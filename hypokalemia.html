@@ -628,7 +628,7 @@
 
 <script>
 // State
-let state = {
+var state = {
   severity: null,
   pseudo: null,
   shifts: [],
@@ -641,38 +641,38 @@ let state = {
 };
 
 function selectOption(groupId, btn) {
-  document.querySelectorAll(`#${groupId} .option-btn`).forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('#' + groupId + ' .option-btn').forEach(function(b) { return b.classList.remove('selected'); });
   btn.classList.add('selected');
 }
 
 function toggleCheck(item, ev) {
   // Prevent double-toggle when clicking directly on the checkbox
   if (ev && ev.target.tagName === 'INPUT') return;
-  const cb = item.querySelector('input[type="checkbox"]');
-  const val = cb.value;
-  const parent = item.closest('.checklist');
+  var cb = item.querySelector('input[type="checkbox"]');
+  var val = cb.value;
+  var parent = item.closest('.checklist');
   if (val.startsWith('none')) {
     if (!cb.checked) {
-      parent.querySelectorAll('input[type="checkbox"]').forEach(c => { c.checked = false; });
+      parent.querySelectorAll('input[type="checkbox"]').forEach(function(c) { c.checked = false; });
       cb.checked = true;
     } else {
       cb.checked = false;
     }
   } else {
     cb.checked = !cb.checked;
-    const noneBox = parent.querySelector('input[value^="none"]');
+    var noneBox = parent.querySelector('input[value^="none"]');
     if (noneBox) noneBox.checked = false;
   }
 }
 
 function getChecked(clId) {
-  return Array.from(document.querySelectorAll(`#${clId} input:checked`)).map(c => c.value);
+  return Array.from(document.querySelectorAll('#' + clId + ' input:checked')).map(function(c) { return c.value; });
 }
 
 function activateStep(id) {
-  const el = document.getElementById(id);
+  var el = document.getElementById(id);
   el.classList.remove('inactive', 'hidden');
-  setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+  setTimeout(function() { return el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 100);
 }
 function hideStep(id) { document.getElementById(id).classList.add('hidden'); }
 function markDone(snId) { document.getElementById(snId).classList.add('done'); document.getElementById(snId).textContent = '✓'; }
@@ -698,18 +698,18 @@ function selectPseudo(val) {
 }
 
 function showPseudoResult() {
-  const html = `
-    <div class="severity-indicator severity-mild">偽性低カリウム血症の可能性</div>
-    <div class="dx-card high">
-      <div class="dx-name">偽性低カリウム血症 <span class="prob-badge">要確認</span></div>
-      <div class="dx-detail">
-        <strong>高度白血球増多</strong>（白血病など WBC &gt; 100,000/μL）がある場合、採血後に試料中で白血球がKを取り込み、見かけ上の低K値を呈する。<br>
-        <strong>対応：</strong>速やかに血漿を分離（採血後30分以内）し再検。ヘパリン採血も有用。
-      </div>
-      <div class="dx-workup">確認検査：採血後速やかな血漿分離で再測定 / 血液ガス分析でKを確認</div>
-    </div>
-    <p style="font-size:0.9em; color:#555; margin-top:12px;">偽性低Kが否定された場合は、Step 3以降の評価に進んでください。</p>
-  `;
+  var html = '\n' +
+'    <div class="severity-indicator severity-mild">偽性低カリウム血症の可能性</div>\n' +
+'    <div class="dx-card high">\n' +
+'      <div class="dx-name">偽性低カリウム血症 <span class="prob-badge">要確認</span></div>\n' +
+'      <div class="dx-detail">\n' +
+'        <strong>高度白血球増多</strong>（白血病など WBC &gt; 100,000/μL）がある場合、採血後に試料中で白血球がKを取り込み、見かけ上の低K値を呈する。<br>\n' +
+'        <strong>対応：</strong>速やかに血漿を分離（採血後30分以内）し再検。ヘパリン採血も有用。\n' +
+'      </div>\n' +
+'      <div class="dx-workup">確認検査：採血後速やかな血漿分離で再測定 / 血液ガス分析でKを確認</div>\n' +
+'    </div>\n' +
+'    <p style="font-size:0.9em; color:#555; margin-top:12px;">偽性低Kが否定された場合は、Step 3以降の評価に進んでください。</p>\n' +
+'  ';
   showResult(html);
 }
 
@@ -719,8 +719,8 @@ function submitShift() {
   if (state.shifts.length === 0) return;
   markDone('sn3');
 
-  const hasShift = !state.shifts.includes('none_shift') && state.shifts.length > 0;
-  if (hasShift && state.shifts.every(s => s !== 'none_shift')) {
+  var hasShift = !state.shifts.includes('none_shift') && state.shifts.length > 0;
+  if (hasShift && state.shifts.every(function(s) { return s !== 'none_shift'; })) {
     showShiftResult();
   }
   // 常にStep4も表示（シフト+喪失の併存を考慮）
@@ -803,29 +803,29 @@ function submitDiuretic() {
 
 // ===== 結果表示関数 =====
 function showResult(html) {
-  const panel = document.getElementById('resultPanel');
+  var panel = document.getElementById('resultPanel');
   document.getElementById('resultBody').innerHTML = getSeverityBanner() + getSummaryTags() + html + getTreatmentNote();
   panel.classList.add('show');
   document.getElementById('resetBtn').style.display = 'block';
-  setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+  setTimeout(function() { return panel.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 200);
 }
 
 function getSeverityBanner() {
-  const map = {
+  var map = {
     mild: ['severity-mild', '軽度低K血症（3.0〜3.4 mEq/L）'],
     moderate: ['severity-moderate', '中等度低K血症（2.5〜2.9 mEq/L）'],
     severe: ['severity-severe', '重度低K血症（< 2.5 mEq/L）— 緊急補正要']
   };
-  const [cls, txt] = map[state.severity] || ['', ''];
-  let banner = `<div class="severity-indicator ${cls}">${txt}</div>`;
+  var _d1 = map[state.severity] || ['', ''], cls = _d1[0], txt = _d1[1];
+  var banner = '<div class="severity-indicator ' + cls + '">' + txt + '</div>';
   if (state.severity === 'severe') {
-    banner += `<div class="emergency-box"><strong>🚨 緊急対応：</strong>K &lt; 2.5 mEq/Lは致死的不整脈のリスクが高く、心電図モニター下での静脈的K補正を直ちに開始する。原因検索と並行して治療を優先すること。</div>`;
+    banner += '<div class="emergency-box"><strong>🚨 緊急対応：</strong>K &lt; 2.5 mEq/Lは致死的不整脈のリスクが高く、心電図モニター下での静脈的K補正を直ちに開始する。原因検索と並行して治療を優先すること。</div>';
   }
   return banner;
 }
 
 function getSummaryTags() {
-  let tags = [];
+  var tags = [];
   if (state.urineK === 'extrarenal') tags.push('腎外性喪失');
   if (state.urineK === 'renal') tags.push('腎性喪失');
   if (state.bp === 'high') tags.push('高血圧');
@@ -834,41 +834,41 @@ function getSummaryTags() {
   if (state.acidBase === 'acidosis') tags.push('代謝性アシドーシス');
   if (state.shifts.length > 0 && !state.shifts.includes('none_shift')) tags.push('細胞内シフト');
   if (tags.length === 0) return '';
-  return '<div class="summary-row">' + tags.map(t => `<span class="summary-tag">${t}</span>`).join('') + '</div>';
+  return '<div class="summary-row">' + tags.map(function(t) { return '<span class="summary-tag">' + t + '</span>'; }).join('') + '</div>';
 }
 
 function getTreatmentNote() {
-  let note = '<div class="divider"></div><div class="section-label">治療の基本方針</div>';
+  var note = '<div class="divider"></div><div class="section-label">治療の基本方針</div>';
   if (state.severity === 'severe') {
-    note += `<ul class="workup-list">
-      <li>💉 静脈的K補正（KCl + 生食、10〜20 mEq/時、心電図モニター下）</li>
-      <li>⚠️ ブドウ糖液での希釈は禁忌（インスリン分泌でK↓）</li>
-      <li>🔬 血清Mg測定：低Mg合併時はMg補正も必須</li>
-      <li>📊 2〜4時間毎に血清K再検、反跳性高K血症に注意</li>
-      <li>🏥 原因治療と並行して進める</li>
-    </ul>`;
+    note += '<ul class="workup-list">\n' +
+'      <li>💉 静脈的K補正（KCl + 生食、10〜20 mEq/時、心電図モニター下）</li>\n' +
+'      <li>⚠️ ブドウ糖液での希釈は禁忌（インスリン分泌でK↓）</li>\n' +
+'      <li>🔬 血清Mg測定：低Mg合併時はMg補正も必須</li>\n' +
+'      <li>📊 2〜4時間毎に血清K再検、反跳性高K血症に注意</li>\n' +
+'      <li>🏥 原因治療と並行して進める</li>\n' +
+'    </ul>';
   } else if (state.severity === 'moderate') {
-    note += `<ul class="workup-list">
-      <li>💊 経口KCl補充が第一選択（症状あれば静注も検討）</li>
-      <li>🔬 血清Mg測定：低Mg合併時はMg補正も必須</li>
-      <li>📊 1〜2日おきに血清K再検</li>
-      <li>🏥 原因治療が重要</li>
-    </ul>`;
+    note += '<ul class="workup-list">\n' +
+'      <li>💊 経口KCl補充が第一選択（症状あれば静注も検討）</li>\n' +
+'      <li>🔬 血清Mg測定：低Mg合併時はMg補正も必須</li>\n' +
+'      <li>📊 1〜2日おきに血清K再検</li>\n' +
+'      <li>🏥 原因治療が重要</li>\n' +
+'    </ul>';
   } else {
-    note += `<ul class="workup-list">
-      <li>💊 経口KCl補充（40〜60 mEq/日を分割投与）</li>
-      <li>🔬 低Mg合併がないか確認</li>
-      <li>🏥 原因治療で改善するか経過観察</li>
-      <li>❤️ 心疾患合併時はK ≥ 4.0を目標に積極補充</li>
-    </ul>`;
+    note += '<ul class="workup-list">\n' +
+'      <li>💊 経口KCl補充（40〜60 mEq/日を分割投与）</li>\n' +
+'      <li>🔬 低Mg合併がないか確認</li>\n' +
+'      <li>🏥 原因治療で改善するか経過観察</li>\n' +
+'      <li>❤️ 心疾患合併時はK ≥ 4.0を目標に積極補充</li>\n' +
+'    </ul>';
   }
   return note;
 }
 
 // 腎外性喪失の結果
 function showExtrarenalResult() {
-  let cards = [];
-  const has = v => state.extrarenal.includes(v);
+  var cards = [];
+  var has = function(v) { return state.extrarenal.includes(v); };
 
   if (has('diarrhea')) {
     cards.push(dxCard('high', '下痢によるK喪失', '消化管からの直接的K喪失。慢性下痢では代謝性アシドーシスを伴うことが多い。感染性・IBD・VIPoma等の原因検索を行う。', '便培養 / 大腸内視鏡 / VIP測定（慢性時）'));
@@ -898,7 +898,7 @@ function showExtrarenalResult() {
 
 // 腎性+正常BP+アシドーシス
 function showAcidosisResult() {
-  let cards = [];
+  var cards = [];
   cards.push(dxCard('high', '尿細管性アシドーシス（RTA）', '<strong>遠位RTA（I型）：</strong>尿pH > 5.5、腎石灰化を伴うことあり。<strong>近位RTA（II型）：</strong>Fanconi症候群の一部として現れることがある。低K血症 + 代謝性アシドーシス + 腎性K喪失の組み合わせはRTAを強く示唆する。', '尿pH / 尿中アニオンギャップ / 重炭酸負荷試験'));
   cards.push(dxCard('medium', '糖尿病性ケトアシドーシス（DKA）治療中', 'DKA自体では初期に高Kのこともあるが、インスリン治療開始後に急速にKが細胞内に移行し著明な低Kに転じる。DKA治療時のK補正は鉄則。', 'DKA治療中のK管理プロトコル確認'));
   cards.push(dxCard('low', 'アムホテリシンB使用', '腎毒性によりRTA様の病態を惹起し、低K + 代謝性アシドーシスを呈しうる。', '薬剤歴の確認 / 腎機能評価'));
@@ -909,7 +909,7 @@ function showAcidosisResult() {
 
 // 腎性+正常BP+正常酸塩基
 function showNormalABResult() {
-  let cards = [];
+  var cards = [];
   cards.push(dxCard('medium', '利尿薬の遅延効果', '利尿薬中止後も数日間影響が残ることがある。現在は使用していなくても最近の使用歴を確認。', '詳細な薬剤歴'));
   cards.push(dxCard('medium', '低マグネシウム血症', 'Mg欠乏単独で腎からのK排泄亢進を招く。低K血症の50%以上でMg欠乏が合併。Mg補正なしにはK補正が困難。', '血清Mg測定 → 低値ならMg補充を優先'));
   cards.push(dxCard('low', 'Gitelman症候群（軽症型）', '軽症例では酸塩基異常が目立たないこともある。低Mg・低尿Caが手がかり。', '尿Ca / 血清Mg / 遺伝子検査'));
@@ -920,8 +920,8 @@ function showNormalABResult() {
 
 // 腎性+正常BP+アルカローシス → 利尿薬確認後
 function showAlkalosisResult() {
-  let cards = [];
-  const has = v => state.diureticClues.includes(v);
+  var cards = [];
+  var has = function(v) { return state.diureticClues.includes(v); };
 
   if (has('diuretic')) {
     cards.push(dxCard('high', '利尿薬による低K血症', '臨床的に最も頻度の高い腎性K喪失の原因。サイアザイド系・ループ利尿薬ともに低K + 代謝性アルカローシスを呈する。可能なら減量・中止、またはK保持性利尿薬の併用を検討。', '利尿薬の減量・中止検討 / K保持性利尿薬の併用'));
@@ -955,8 +955,8 @@ function showAlkalosisResult() {
 
 // 腎性+高血圧
 function showHTNResult() {
-  let cards = [];
-  const has = v => state.htnClues.includes(v);
+  var cards = [];
+  var has = function(v) { return state.htnClues.includes(v); };
 
   cards.push(dxCard('high', '原発性アルドステロン症（PA）', '低K + 高血圧の最も重要な鑑別。副腎アルドステロン産生腺腫（Conn症候群）or 特発性両側副腎過形成。<strong>低レニン・高アルドステロン</strong>が特徴。スクリーニングはARR（アルドステロン/レニン比）。', 'ARR測定 → 高値なら食塩負荷試験等の確認検査 → 副腎CT / 副腎静脈サンプリング'));
 
@@ -994,8 +994,8 @@ function showHTNResult() {
 // シフト関連カード
 function getShiftCards() {
   if (state.shifts.includes('none_shift') || state.shifts.length === 0) return [];
-  let cards = [];
-  const has = v => state.shifts.includes(v);
+  var cards = [];
+  var has = function(v) { return state.shifts.includes(v); };
 
   if (has('insulin')) {
     cards.push(dxCard('medium', '細胞内シフト：インスリン / 再栄養症候群', 'インスリン投与や再栄養でK↓。再栄養症候群ではリン・Mgも低下。DKA治療時のK補正は必須。', 'インスリン投与量の確認 / リン・Mg測定'));
@@ -1016,21 +1016,21 @@ function getShiftCards() {
 }
 
 function dxCard(level, name, detail, workup) {
-  const labels = { high: '可能性高', medium: '要考慮', low: '鑑別に含む' };
-  return `<div class="dx-card ${level}">
-    <div class="dx-name">${name} <span class="prob-badge">${labels[level]}</span></div>
-    <div class="dx-detail">${detail}</div>
-    <div class="dx-workup">🔍 ${workup}</div>
-  </div>`;
+  var labels = { high: '可能性高', medium: '要考慮', low: '鑑別に含む' };
+  return '<div class="dx-card ' + level + '">\n' +
+'    <div class="dx-name">' + name + ' <span class="prob-badge">' + labels[level] + '</span></div>\n' +
+'    <div class="dx-detail">' + detail + '</div>\n' +
+'    <div class="dx-workup">🔍 ' + workup + '</div>\n' +
+'  </div>';
 }
 
 function resetAll() {
   state = { severity: null, pseudo: null, shifts: [], urineK: null, bp: null, acidBase: null, extrarenal: [], htnClues: [], diureticClues: [] };
-  document.querySelectorAll('.step-card').forEach(c => { c.classList.add('inactive'); c.classList.remove('hidden'); });
+  document.querySelectorAll('.step-card').forEach(function(c) { c.classList.add('inactive'); c.classList.remove('hidden'); });
   document.getElementById('step1').classList.remove('inactive');
-  document.querySelectorAll('.step-number').forEach(s => { s.classList.remove('done'); s.textContent = s.id.replace('sn','').replace('a','').replace('b',''); });
-  document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-  document.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
+  document.querySelectorAll('.step-number').forEach(function(s) { s.classList.remove('done'); s.textContent = s.id.replace('sn','').replace('a','').replace('b',''); });
+  document.querySelectorAll('.option-btn').forEach(function(b) { return b.classList.remove('selected'); });
+  document.querySelectorAll('input[type="checkbox"]').forEach(function(c) { return c.checked = false; });
   document.getElementById('resultPanel').classList.remove('show');
   document.getElementById('resetBtn').style.display = 'none';
   window.scrollTo({ top: 0, behavior: 'smooth' });
