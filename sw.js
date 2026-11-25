@@ -1,5 +1,7 @@
-const CACHE_NAME = 'ddx-tools-v460';
+const CACHE_NAME = 'ddx-tools-v461';
 const ASSETS = [
+  './infographics/diplopia/v1/index.html',
+  './infographics/diplopia/v1/completed.png',
   './slides/mind-body-04-stress-physical-diseases/index.html',
   './infographics/mind-body-04-stress-physical-diseases/index.html',
   './infographics/mind-body-04-stress-physical-diseases/infographic.png',
