@@ -1,5 +1,7 @@
-const CACHE_NAME = 'ddx-tools-v466';
+const CACHE_NAME = 'ddx-tools-v467';
 const ASSETS = [
+  './infographics/hsv-encephalitis/v1/index.html',
+  './infographics/hsv-encephalitis/v1/completed.png',
   './infographics/arb-prescribing-guide/v2/index.html',
   './diplopia-differential.html',
   './slides/mind-body-06-practical-coping/index.html',
