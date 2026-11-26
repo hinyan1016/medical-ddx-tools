@@ -94,6 +94,38 @@ header {
   gap: 7px;
 }
 
+/* File menu (header) */
+.file-menu { position: relative; }
+.file-menu-summary { list-style: none; }
+.file-menu-summary::-webkit-details-marker { display: none; }
+.file-menu-summary::after { content: ' ▾'; }
+.file-menu[open] .file-menu-summary::after { content: ' ▴'; }
+.file-menu-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 50;
+  min-width: 280px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  box-shadow: 0 8px 24px rgba(15, 35, 55, 0.18);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+}
+.file-menu-item {
+  text-align: left;
+  background: #fff;
+  border: 0;
+  border-radius: 6px;
+  padding: 9px 11px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+}
+.file-menu-item:hover { background: #eef4f8; }
+
 /* Buttons */
 .btn {
   display: inline-flex;
@@ -772,9 +804,35 @@ footer {
   color: var(--muted);
 }
 
+.jump-editor-btn, .back-to-list-btn { display: none; }
 @media (max-width: 980px) {
   .workspace { grid-template-columns: 1fr; }
-  .editor-panel { position: static; }
+  .editor-panel { position: static; scroll-margin-top: 10px; }
+  .jump-editor-btn {
+    position: fixed;
+    right: 14px;
+    bottom: 16px;
+    z-index: 40;
+    display: inline-flex;
+    padding: 11px 16px;
+    border-radius: 999px;
+    box-shadow: 0 6px 18px rgba(15, 35, 55, 0.28);
+    font-size: 14px;
+  }
+  .jump-editor-btn[hidden] { display: none !important; }
+  .back-to-list-btn { display: flex; width: 100%; margin-top: 8px; }
+  .toast-status {
+    position: fixed;
+    left: 14px;
+    right: 14px;
+    bottom: 72px;
+    z-index: 41;
+    margin: 0;
+    box-shadow: 0 6px 18px rgba(15, 35, 55, 0.2);
+  }
+}
+@media (max-width: 600px) {
+  .file-menu-panel { position: fixed; left: 14px; right: 14px; top: auto; min-width: 0; }
 }
 @media (max-width: 600px) {
   header, main { padding-left: 14px; padding-right: 14px; }
@@ -801,17 +859,20 @@ footer {
       <h1>紹介状（診療情報提供書）入力補助ツール</h1>
       <p>単語クリック展開 ／ 患者呼称連動 ／ 回復期リハADL組み立て ／ 「○○」選択ジャンプ ／ オフライン対応</p>
     </div>
-    <div class="header-actions">
-      <button type="button" class="btn btn-header" id="btn-save-folder-js" style="background:#f59e0b;border-color:#fbbf24;color:#1e293b;font-weight:700;" title="HTMLと同じ個人フォルダ内の「紹介状単語データ.js」へ保存します（ローカルPCには保存しません）">💾 同階層の「紹介状単語データ.js」に保存</button>
-      <button type="button" class="btn btn-header" id="btn-open-txt-direct" title="フォルダ内の.txtファイルを選んでそのまま本文に展開します">📄 .txtを本文に直接展開</button>
-      <button type="button" class="btn btn-header" id="btn-import-txt-snippets" title="フォルダ内の.txtファイルを単語ボタンとして一括登録します">📂 .txtを単語登録</button>
-      <button type="button" class="btn btn-header" id="btn-save-standalone-html" title="現在登録している単語・ピン留めを埋め込んだHTMLファイルを同じフォルダへ保存します">💾 登録単語入りHTMLを保存</button>
-      <button type="button" class="btn btn-header" id="btn-export-json" title="単語帳データをJSONファイルに書き出します">書き出し(.json)</button>
-      <button type="button" class="btn btn-header" id="btn-import-json" title="書き出したJSONファイルを読み込みます">読み込み(.json)</button>
+    <details class="file-menu" id="file-menu">
+      <summary class="btn btn-header file-menu-summary">📁 ファイル操作（単語データの保存・読み込み）</summary>
+      <div class="file-menu-panel">
+        <button type="button" class="file-menu-item" id="btn-save-folder-js" title="HTMLと同じ個人フォルダ内の「紹介状単語データ.js」へ保存します（ローカルPCには保存しません）">💾 同階層の「紹介状単語データ.js」に保存</button>
+        <button type="button" class="file-menu-item" id="btn-open-txt-direct" title="フォルダ内の.txtファイルを選んでそのまま本文に展開します">📄 .txtを本文に直接展開</button>
+        <button type="button" class="file-menu-item" id="btn-import-txt-snippets" title="フォルダ内の.txtファイルを単語ボタンとして一括登録します">📂 .txtを単語として登録</button>
+        <button type="button" class="file-menu-item" id="btn-save-standalone-html" title="現在登録している単語・ピン留めを埋め込んだHTMLファイルを同じフォルダへ保存します">💾 登録単語入りHTMLを保存</button>
+        <button type="button" class="file-menu-item" id="btn-export-json" title="単語帳データをJSONファイルに書き出します">⬇ 単語データを書き出し（.json）</button>
+        <button type="button" class="file-menu-item" id="btn-import-json" title="書き出したJSONファイルを読み込みます">⬆ 単語データを読み込み（.json / .js）</button>
+      </div>
       <input type="file" id="file-direct-txt" accept=".txt,text/plain" multiple hidden>
       <input type="file" id="file-snippet-txt" accept=".txt,text/plain" multiple hidden>
       <input type="file" id="file-import-json" accept=".json,.js,application/json,text/javascript" hidden>
-    </div>
+    </details>
   </div>
 </header>
 
@@ -945,47 +1006,47 @@ footer {
 
           <div class="builder-row" data-group="motor">
             <span class="builder-label">① 運動・麻痺：</span>
-            <button type="button" class="builder-chip" data-text="明らかな麻痺なし">麻痺なし</button>
+            <button type="button" class="builder-chip" data-kind="neg" data-text="明らかな麻痺は認めません">麻痺なし</button>
             <button type="button" class="builder-chip" data-text="右片麻痺（Brs. 上肢○-手指○-下肢○）">右片麻痺(Brs)</button>
             <button type="button" class="builder-chip" data-text="左片麻痺（Brs. 上肢○-手指○-下肢○）">左片麻痺(Brs)</button>
-            <button type="button" class="builder-chip" data-text="軽度構音障害">軽度構音障害</button>
-            <button type="button" class="builder-chip" data-text="体幹・四肢失調">失調あり</button>
+            <button type="button" class="builder-chip" data-text="軽度の構音障害">軽度構音障害</button>
+            <button type="button" class="builder-chip" data-text="体幹・四肢の運動失調">失調あり</button>
           </div>
 
           <div class="builder-row" data-group="adl">
             <span class="builder-label">② 移動・ADL：</span>
-            <button type="button" class="builder-chip" data-text="独歩可能">独歩</button>
+            <button type="button" class="builder-chip" data-text="独歩自立">独歩</button>
             <button type="button" class="builder-chip" data-text="杖歩行見守りレベル">杖歩行見守り</button>
             <button type="button" class="builder-chip" data-text="歩行器歩行レベル">歩行器歩行</button>
             <button type="button" class="builder-chip" data-text="車椅子移乗見守りレベル">車椅子移乗見守り</button>
-            <button type="button" class="builder-chip" data-text="車椅子移乗軽介助〜介助レベル">車椅子移乗介助</button>
+            <button type="button" class="builder-chip" data-text="車椅子移乗に介助を要するレベル">車椅子移乗介助</button>
             <button type="button" class="builder-chip" data-text="mRS ○">mRS ○</button>
           </div>
 
           <div class="builder-row" data-group="swallow">
             <span class="builder-label">③ 食事・嚥下：</span>
-            <button type="button" class="builder-chip" data-text="常食をむせなく経口摂取可能">常食（むせなし）</button>
-            <button type="button" class="builder-chip" data-text="軟菜・一口大食を経口摂取中">軟菜・一口大</button>
-            <button type="button" class="builder-chip" data-text="嚥下調整食（とろみ付き）を経口摂取中">嚥下調整食・とろみ</button>
-            <button type="button" class="builder-chip" data-text="嚥下障害のため現在経鼻経管栄養管理中">経鼻経管栄養</button>
+            <button type="button" class="builder-chip" data-kind="sentence" data-text="食事は常食をむせなく経口摂取できています">常食（むせなし）</button>
+            <button type="button" class="builder-chip" data-kind="sentence" data-text="食事は軟菜・一口大食を経口摂取しています">軟菜・一口大</button>
+            <button type="button" class="builder-chip" data-kind="sentence" data-text="食事は嚥下調整食（とろみ付き）を経口摂取しています">嚥下調整食・とろみ</button>
+            <button type="button" class="builder-chip" data-kind="sentence" data-text="嚥下障害のため、現在は経鼻経管栄養を行っています">経鼻経管栄養</button>
           </div>
 
           <div class="builder-row" data-group="cognitive">
             <span class="builder-label">④ 高次脳・認知：</span>
-            <button type="button" class="builder-chip" data-text="明らかな高次脳機能障害は認めず">高次脳障害なし</button>
-            <button type="button" class="builder-chip" data-text="運動性失語あり">運動性失語</button>
-            <button type="button" class="builder-chip" data-text="感覚性失語あり">感覚性失語</button>
-            <button type="button" class="builder-chip" data-text="左半側空間無視あり">左半側空間無視</button>
-            <button type="button" class="builder-chip" data-text="注意障害・遂行機能障害あり">注意・遂行機能障害</button>
-            <button type="button" class="builder-chip" data-text="環境変化による夜間せん妄リスクに留意が必要">せん妄リスク留意</button>
+            <button type="button" class="builder-chip" data-kind="neg" data-text="明らかな高次脳機能障害は認めません">高次脳障害なし</button>
+            <button type="button" class="builder-chip" data-text="運動性失語">運動性失語</button>
+            <button type="button" class="builder-chip" data-text="感覚性失語">感覚性失語</button>
+            <button type="button" class="builder-chip" data-text="左半側空間無視">左半側空間無視</button>
+            <button type="button" class="builder-chip" data-text="注意障害・遂行機能障害">注意・遂行機能障害</button>
+            <button type="button" class="builder-chip" data-kind="sentence" data-text="環境の変化による夜間せん妄に留意が必要です">せん妄リスク留意</button>
           </div>
 
           <div class="builder-row" data-group="prevention">
             <span class="builder-label">⑤ 再発予防・管理：</span>
-            <button type="button" class="builder-chip" data-text="抗血小板薬単剤（○○）を継続中">抗血小板単剤(SAPT)</button>
-            <button type="button" class="builder-chip" data-text="抗血小板薬2剤併用（DAPT：○○＋○○）を行っており、○月○日頃より○○単剤へ減量予定">DAPT→単剤減量予定</button>
-            <button type="button" class="builder-chip" data-text="心房細動に対し抗凝固薬（○○）を内服中">DOAC/抗凝固薬</button>
-            <button type="button" class="builder-chip" data-text="収縮期血圧 ○○mmHg未満を目標に降圧管理中">目標血圧 ○○mmHg未満</button>
+            <button type="button" class="builder-chip" data-kind="sentence" data-text="抗血小板薬（○○）単剤を継続しています">抗血小板単剤(SAPT)</button>
+            <button type="button" class="builder-chip" data-kind="sentence" data-text="抗血小板薬2剤併用（DAPT：○○＋○○）を行っており、○月○日頃より○○単剤へ減量予定です">DAPT→単剤減量予定</button>
+            <button type="button" class="builder-chip" data-kind="sentence" data-text="心房細動に対し抗凝固薬（○○）を内服中です">DOAC/抗凝固薬</button>
+            <button type="button" class="builder-chip" data-kind="sentence" data-text="収縮期血圧○○mmHg未満を目標に降圧管理を行っています">目標血圧 ○○mmHg未満</button>
           </div>
 
           <div class="builder-preview-box" id="builder-preview">（上の項目をクリックすると、ここに組み立て文章がプレビューされます）</div>
@@ -1165,10 +1226,13 @@ footer {
         <button type="button" class="btn btn-secondary" id="btn-copy-both" style="width:100%; font-size:12.5px; padding:6px 10px;">📋 「【紹介目的】＋本文」をまとめてコピー</button>
       </div>
 
+      <button type="button" class="btn btn-secondary back-to-list-btn" id="btn-back-to-list">▲ 単語・定型文の一覧へ戻る</button>
       <div id="status-toast" class="toast-status" role="status" aria-live="polite" hidden></div>
     </aside>
   </div>
 </main>
+
+<button type="button" class="btn jump-editor-btn" id="btn-jump-editor" hidden>📝 作成エリアへ</button>
 
 <footer>
   <p>※ 本ツールはインターネット通信を一切行わず、また<strong>ローカルPC（ブラウザー内）への保存も一切行いません</strong>。HTMLと同じ個人フォルダ内の「<code>紹介状単語データ.js</code>」を自動で読み込み・上書き保存する設計のため、共有フォルダ内の個人フォルダで安全に管理できます。</p>
@@ -1254,14 +1318,14 @@ footer {
   {
     "id": "neuro-1",
     "cat": "neuro",
-    "title": "認知機能検査（MMSE/MoCA）",
-    "text": "認知機能検査では、MMSE ○○/30点、MoCA-J ○○/30点（CDR ○）でした。"
+    "title": "認知機能検査（HDS-R/MMSE/MoCA）",
+    "text": "認知機能検査では、HDS-R ○○/30点、MMSE ○○/30点、MoCA-J ○○/30点（CDR ○）でした。"
   },
   {
     "id": "neuro-2",
     "cat": "neuro",
     "title": "頭部MRI（もの忘れ精査）",
-    "text": "頭部MRIでは、年齢相応の慢性虚血性変化と軽度の海馬傍回萎縮を認めましたが、慢性硬膜下血腫や正常圧水頭症などの治療可能な二次性認知症を示唆する所見は認めませんでした。"
+    "text": "頭部MRIでは、海馬を含む側頭葉内側の萎縮は○○、白質病変は○○でした。慢性硬膜下血腫や正常圧水頭症など、治療可能な認知症の原因を示唆する所見は認めませんでした。"
   },
   {
     "id": "neuro-3",
@@ -1285,13 +1349,19 @@ footer {
     "id": "neuro-6",
     "cat": "neuro",
     "title": "頭痛精査（二次性頭痛否定）",
-    "text": "頭部MRI・MRAにて、くも膜下出血や脳腫瘍、脳静脈洞血栓症などの危険な二次性頭痛を示唆する所見は認めませんでした。"
+    "text": "頭部MRI・MRAにて、くも膜下出血や脳腫瘍、脳動脈瘤などの危険な二次性頭痛を示唆する所見は認めませんでした。"
   },
   {
     "id": "neuro-7",
     "cat": "neuro",
     "title": "めまい精査（中枢性否定）",
-    "text": "眼振所見および頭部MRIにて、脳幹・小脳梗塞などの危険な中枢性めまいを示唆する所見は認めませんでした。"
+    "text": "眼振所見および頭部MRIにて、脳幹・小脳梗塞などの危険な中枢性めまいを示唆する所見は認めませんでした。\n発症早期の画像検査では小さな脳幹・小脳梗塞が描出されないことがあるため、症状の増悪や新たな神経症状がみられた際には再度ご相談ください。"
+  },
+  {
+    "id": "neuro-11",
+    "cat": "neuro",
+    "title": "急性めまい：HINTS所見",
+    "text": "持続するめまいと眼振に対しHINTSを評価し、頭部インパルス試験 ○○、眼振の方向 ○○、斜偏位（skew deviation）○○でした。"
   },
   {
     "id": "neuro-8",
@@ -1730,7 +1800,18 @@ footer {
     return baseName + '様';
   }
 
+  // 新しい文面のグループを先頭に置く（旧文面のグループは、保存済みの単語データの変換用に残す）
   var IMAGING_PHRASE_GROUPS = [
+    {
+      mri_mra: '頭部MRI・MRAにて、くも膜下出血や脳腫瘍、脳動脈瘤などの危険な二次性頭痛を示唆する所見は認めませんでした。',
+      mri: '頭部MRIにて、くも膜下出血や脳腫瘍、慢性硬膜下血腫などの危険な二次性頭痛を示唆する所見は認めませんでした。',
+      ct: '頭部CTにて、くも膜下出血や頭蓋内出血、脳腫瘍、慢性硬膜下血腫などの危険な二次性頭痛を示唆する所見は認めませんでした。'
+    },
+    {
+      mri_mra: '頭部MRIでは、海馬を含む側頭葉内側の萎縮は○○、白質病変は○○でした。慢性硬膜下血腫や正常圧水頭症など、治療可能な認知症の原因を示唆する所見は認めませんでした。',
+      mri: '頭部MRIでは、海馬を含む側頭葉内側の萎縮は○○、白質病変は○○でした。慢性硬膜下血腫や正常圧水頭症など、治療可能な認知症の原因を示唆する所見は認めませんでした。',
+      ct: '頭部CTでは、側頭葉内側の萎縮は○○、白質の低吸収域は○○でした。慢性硬膜下血腫や正常圧水頭症など、治療可能な認知症の原因を示唆する所見は認めませんでした。'
+    },
     {
       mri_mra: '頭部MRI・MRAを施行いたしましたところ、明らかな急性期脳梗塞や頭蓋内占拠性病変、主幹動脈の有意狭窄は認めませんでした。',
       mri: '頭部MRIを施行いたしましたところ、明らかな急性期脳梗塞や頭蓋内出血、占拠性病変は認めませんでした。',
@@ -1856,13 +1937,14 @@ footer {
       jumpBtn.disabled = false;
       jumpBtn.textContent = '⚠️ 次の「○○」を選択して入力（残り ' + matches.length + ' 箇所）';
       jumpBtn.className = 'btn btn-amber placeholder-alert-btn';
-      hintEl.textContent = 'ボタンを押すと「○○」が選択され、そのまま上書き入力できます';
+      hintEl.textContent = 'ボタンまたは Ctrl+Enter で「○○」が選択され、そのまま上書き入力できます';
     } else {
       jumpBtn.disabled = true;
       jumpBtn.textContent = '✓ 未入力の「○○」はありません';
       jumpBtn.className = 'btn btn-secondary placeholder-alert-btn';
       hintEl.textContent = '';
     }
+    if (updateEditorStats._after) updateEditorStats._after();
   }
 
   function jumpToNextPlaceholder() {
@@ -2032,9 +2114,20 @@ footer {
     textarea.value = before + inserted + after;
 
     var newCursor = before.length + inserted.length;
-    textarea.focus();
-    textarea.setSelectionRange(newCursor, newCursor);
+    focusEditorAt(newCursor, newCursor);
     updateEditorStats();
+  }
+
+  // 狭い画面（作成エリアが下にある）では、挿入のたびに画面が作成エリアへ飛んだり
+  // キーボードが開いたりしないよう、フォーカスは移さずカーソル位置だけを更新する
+  function isNarrowLayout() {
+    return window.innerWidth <= 980;
+  }
+
+  function focusEditorAt(start, end) {
+    var ta = el('editor-textarea');
+    if (!isNarrowLayout()) ta.focus();
+    ta.setSelectionRange(start, end);
   }
 
   function applyPreset(presetKey) {
@@ -2068,7 +2161,7 @@ footer {
     } else if (presetKey === 'dementia-reply') {
       purposeText = '認知機能精査結果のご報告と今後のご加療のお願い';
       cursorTarget = applyImagingModeToText(
-        'ご紹介いただきました' + call + 'は、本日当院を受診されました。\n認知機能検査では、MMSE ○○/30点、MoCA-J ○○/30点（CDR ○）でした。\n頭部MRIでは、年齢相応の慢性虚血性変化と軽度の海馬傍回萎縮を認めましたが、治療可能な二次性認知症を示唆する所見は認めませんでした。\n',
+        'ご紹介いただきました' + call + 'は、本日当院を受診されました。\n認知機能検査では、HDS-R ○○/30点、MMSE ○○/30点、MoCA-J ○○/30点（CDR ○）でした（実施しなかった検査は削除してください）。\n頭部MRIでは、海馬を含む側頭葉内側の萎縮は○○、白質病変は○○でした。慢性硬膜下血腫や正常圧水頭症など、治療可能な認知症の原因を示唆する所見は認めませんでした。\n',
         state.imagingMode
       );
       text =
@@ -2128,52 +2221,50 @@ footer {
     textarea.value = text;
     var pos = text.indexOf(cursorTarget);
     var caret = pos !== -1 ? pos + cursorTarget.length : text.length;
-    textarea.focus();
-    textarea.setSelectionRange(caret, caret);
+    focusEditorAt(caret, caret);
     updateEditorStats();
     showToast(followup ? '紹介目的と本文をセットしました。「○○」を記入し、該当しない項目は削除してください。' :
       '基本骨格と紹介目的をセットしました。続けて単語ボタンをクリックするとカーソル位置に挿入されます。');
   }
 
   // 2. 回復期リハ ADL・状態クイック組み立てバー
+  // 組み立て文の文型。list は「前置き＋項目、項目＋結び」、sentence/neg は1項目＝1文
+  var BUILDER_FRAMES = {
+    motor: { pre: '神経学的所見としては、', post: 'を認めます。' },
+    adl: { pre: '移動・ADLは', post: 'です。' },
+    swallow: { pre: '', post: '' },
+    cognitive: { pre: '高次脳機能としては、', post: 'を認めます。' },
+    prevention: { pre: '', post: '', firstSentencePre: '再発予防として、' }
+  };
+
   function buildRehabSummaryText() {
     var groups = ['motor', 'adl', 'swallow', 'cognitive', 'prevention'];
-    var picked = {};
-    var totalCount = 0;
+    var sentences = [];
 
     for (var i = 0; i < groups.length; i++) {
       var g = groups[i];
-      picked[g] = [];
+      var frame = BUILDER_FRAMES[g];
       var row = document.querySelector('.builder-row[data-group="' + g + '"]');
       if (!row) continue;
       var activeChips = row.querySelectorAll('.builder-chip.selected');
+      var listItems = [];
+      var standalone = [];
       for (var j = 0; j < activeChips.length; j++) {
-        picked[g].push(activeChips[j].getAttribute('data-text'));
-        totalCount++;
+        var kind = activeChips[j].getAttribute('data-kind');
+        var t = activeChips[j].getAttribute('data-text');
+        if (kind === 'sentence' || kind === 'neg') {
+          standalone.push(t);
+        } else {
+          listItems.push(t);
+        }
       }
-    }
-
-    if (totalCount === 0) return '';
-
-    var sentences = [];
-    if (picked.motor.length > 0) {
-      sentences.push('現在の神経学的所見としては、' + picked.motor.join('、') + 'を認めます。');
-    }
-    var adlSwallowParts = [];
-    if (picked.adl.length > 0) {
-      adlSwallowParts.push('移動・ADLは' + picked.adl.join('・'));
-    }
-    if (picked.swallow.length > 0) {
-      adlSwallowParts.push('食事・嚥下は' + picked.swallow.join('、'));
-    }
-    if (adlSwallowParts.length > 0) {
-      sentences.push(adlSwallowParts.join('、') + 'の状態です。');
-    }
-    if (picked.cognitive.length > 0) {
-      sentences.push('高次脳機能・認知面につきましては、' + picked.cognitive.join('、') + '。');
-    }
-    if (picked.prevention.length > 0) {
-      sentences.push('再発予防・全身管理として、' + picked.prevention.join('、') + 'です。');
+      if (listItems.length > 0) {
+        sentences.push(frame.pre + listItems.join('、') + frame.post);
+      }
+      for (var k = 0; k < standalone.length; k++) {
+        var lead = (k === 0 && frame.firstSentencePre) ? frame.firstSentencePre : '';
+        sentences.push(lead + standalone[k] + '。');
+      }
     }
 
     return sentences.join('');
@@ -2964,6 +3055,54 @@ footer {
     });
     el('file-import-json').addEventListener('change', function () {
       if (this.files && this.files[0]) importJson(this.files[0]);
+    });
+
+    // 9. 本文入力中の Ctrl+Enter（Mac は ⌘+Enter）で次の「○○」へ
+    el('editor-textarea').addEventListener('keydown', function (e) {
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'Enter' || e.keyCode === 13)) {
+        e.preventDefault();
+        jumpToNextPlaceholder();
+      }
+    });
+
+    // 10. 書きかけの本文があるときは、ページを閉じる・再読み込みする前に確認する
+    window.addEventListener('beforeunload', function (e) {
+      if (el('editor-textarea').value.replace(/\s+/g, '') === '') return;
+      e.preventDefault();
+      e.returnValue = '';
+      return '';
+    });
+
+    // 11. 狭い画面では作成エリアが下にあるため、そこへ移動するボタンを出す
+    var jumpEditorBtn = el('btn-jump-editor');
+    var editorPanel = document.querySelector('.editor-panel');
+    function updateJumpEditorBtn() {
+      if (window.innerWidth > 980) { jumpEditorBtn.hidden = true; return; }
+      var r = editorPanel.getBoundingClientRect();
+      var visible = r.top < window.innerHeight - 80 && r.bottom > 0;
+      jumpEditorBtn.hidden = visible;
+      var n = findPlaceholderMatches(el('editor-textarea').value).length;
+      jumpEditorBtn.textContent = '📝 作成エリアへ' + (n > 0 ? '（○○ 残り' + n + '）' : '');
+    }
+    el('btn-back-to-list').addEventListener('click', function () {
+      document.getElementById('snippets-heading').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    jumpEditorBtn.addEventListener('click', function () {
+      editorPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    window.addEventListener('scroll', updateJumpEditorBtn, { passive: true });
+    window.addEventListener('resize', updateJumpEditorBtn);
+    el('editor-textarea').addEventListener('input', updateJumpEditorBtn);
+    updateEditorStats._after = updateJumpEditorBtn;
+
+    // ファイル操作メニューは、項目を選んだら閉じる
+    var fileMenu = el('file-menu');
+    var fileMenuItems = fileMenu.querySelectorAll('.file-menu-item');
+    for (var fm = 0; fm < fileMenuItems.length; fm++) {
+      fileMenuItems[fm].addEventListener('click', function () { fileMenu.open = false; });
+    }
+    document.addEventListener('click', function (e) {
+      if (fileMenu.open && !fileMenu.contains(e.target)) fileMenu.open = false;
     });
 
     updateCallPreviewAndBody();

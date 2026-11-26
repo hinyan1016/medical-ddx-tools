@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ddx-tools-v467';
+const CACHE_NAME = 'ddx-tools-v468';
 const ASSETS = [
   './infographics/hsv-encephalitis/v1/index.html',
   './infographics/hsv-encephalitis/v1/completed.png',
