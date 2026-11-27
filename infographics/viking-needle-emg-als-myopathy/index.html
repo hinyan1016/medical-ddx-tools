@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>針筋電図でALSとミオパチーを見分ける｜図の拡大</title>
+  <link rel="canonical" href="https://tools.ichisouzo-lab.com/infographics/viking-needle-emg-als-myopathy/">
+  <style>
+    :root { color-scheme: light; font-family: "BIZ UDPGothic", Meiryo, sans-serif; }
+    body { margin: 0; background: #eef4f8; color: #16314d; line-height: 1.6; }
+    main { box-sizing: border-box; max-width: 1120px; padding: 1rem; margin: auto; }
+    h1 { font-size: clamp(1.2rem, 3.3vw, 1.75rem); margin: 0 0 .6rem; }
+    p { margin: .65rem 0; }
+    .controls { display: flex; flex-wrap: wrap; align-items: center; gap: .55rem 1rem; margin: .85rem 0; }
+    .controls > * { display: inline-flex; align-items: center; min-height: 44px; }
+    a { color: #175b88; text-underline-offset: .18em; }
+    button { font: inherit; background: #18354c; color: white; border: 0; border-radius: .35rem; padding: .45rem .8rem; cursor: pointer; }
+    button[hidden] { display: none; }
+    :focus-visible { outline: 3px solid #2877a7; outline-offset: 3px; }
+    .viewer { overflow: auto; margin: 0; background: white; border: 1px solid #b3c7d6; border-radius: .45rem; }
+    .viewer img { display: block; max-width: 100%; height: auto; margin-inline: auto; }
+    .viewer.native { max-height: min(76vh, 900px); }
+    .viewer.native img { max-width: none; }
+    .figure-description { max-width: 70ch; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>針筋電図でALSとミオパチーを見分ける</h1>
+    <div class="controls">
+      <button id="zoom" type="button" aria-controls="figure-viewer" hidden>原寸で表示</button>
+      <a href="infographic-v2.png" target="_blank" rel="noopener noreferrer">原寸PNGを開く</a>
+      <a href="https://blog.ichisouzo-lab.com/entry/2025/03/07/063226">記事へ戻る</a>
+    </div>
+    <p id="zoom-help" hidden>図の表示枠をスクロールすると、原寸で全体を見られます。</p>
+    <figure id="figure-viewer" class="viewer" tabindex="0" aria-label="針筋電図のインフォグラフィック">
+      <img src="infographic-v2.png" width="1122" height="1402" alt="針筋電図の読み方。安静時の自発電位はALSとミオパチーの両方で出ることがある。弱収縮ではALSで長持続・大振幅、ミオパチーで短持続・小振幅の運動単位電位が典型的。力を少しずつ強めて、ALSの動員低下とミオパチーの早期動員を比較する。複数の筋を調べて診察所見と照合する。">
+    </figure>
+    <p class="figure-description">図は典型的な所見の傾向です。矢印は電位の持続時間と振幅を概念的に比較したものです。測定波形、実測値や診断の閾値は示していません。所見の例外、検査の条件、出典は記事本文をご覧ください。</p>
+  </main>
+  <script>
+    const zoom = document.getElementById("zoom");
+    const viewer = document.getElementById("figure-viewer");
+    const help = document.getElementById("zoom-help");
+    zoom.addEventListener("click", () => {
+      const native = viewer.classList.toggle("native");
+      zoom.textContent = native ? "幅に合わせる" : "原寸で表示";
+      help.hidden = !native;
+      if (!native) viewer.scrollTo(0, 0);
+    });
+    zoom.hidden = false;
+  </script>
+</body>
+</html>
+
